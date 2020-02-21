@@ -1,6 +1,6 @@
 # Quality - QUantum hArdware seLectIon uTilitY
 
-[![Build Status](TODO)
+[![Build Status](https://api.travis-ci.org/wederbn/quality.svg?branch=master)](https://travis-ci.org/wederbn/quality)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 ## Haftungsausschluss
