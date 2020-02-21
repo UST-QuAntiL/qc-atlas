@@ -1,6 +1,7 @@
 package org.planqk.quality.api.controller;
 
 import org.planqk.quality.api.Constants;
+import org.planqk.quality.api.dtos.AlgorithmListDto;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
@@ -21,9 +22,9 @@ public class AlgorithmController {
 
     @GetMapping("/")
     public HttpEntity<RepresentationModel> getAlgorithms() {
-        // TODO: display all existing algorithm entities
-        RepresentationModel responseEntity = new RepresentationModel<>();
-        responseEntity.add(linkTo(methodOn(AlgorithmController.class).getAlgorithms()).withSelfRel());
-        return new ResponseEntity<>(responseEntity, HttpStatus.OK);
+        AlgorithmListDto dto = new AlgorithmListDto();
+        // TODO: retrieve algorithm entities form backend
+        dto.add(linkTo(methodOn(AlgorithmController.class).getAlgorithms()).withSelfRel());
+        return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 }

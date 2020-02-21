@@ -1,6 +1,7 @@
 package org.planqk.quality.api.controller;
 
 import org.planqk.quality.api.Constants;
+import org.planqk.quality.api.dtos.ImplementationListDto;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
@@ -20,10 +21,10 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class ImplementationController {
 
     @GetMapping("/")
-    public HttpEntity<RepresentationModel> getImplementations() {
-        // TODO: display all existing implementation entities
-        RepresentationModel responseEntity = new RepresentationModel<>();
-        responseEntity.add(linkTo(methodOn(ImplementationController.class).getImplementations()).withSelfRel());
-        return new ResponseEntity<>(responseEntity, HttpStatus.OK);
+    public HttpEntity<ImplementationListDto> getImplementations() {
+        ImplementationListDto dto = new ImplementationListDto();
+        // TODO: retrieve implementation entities form backend
+        dto.add(linkTo(methodOn(ImplementationController.class).getImplementations()).withSelfRel());
+        return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 }
