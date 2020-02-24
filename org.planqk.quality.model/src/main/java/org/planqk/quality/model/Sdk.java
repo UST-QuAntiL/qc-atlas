@@ -24,40 +24,48 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.ManyToMany;
 
 import org.springframework.lang.NonNull;
 
 /**
- * Entity representing a quantum algorithm, e.g., Shors factorization algorithm.
+ * Entity representing a Sdk to define quantum algorithm {@link Implementation}s.
  */
 @Entity
-public class Algorithm extends Executable{
+public class Sdk {
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Long id;
 
-    @OneToMany
-    private List<Implementation> implementations;
+    private String name;
 
-    public Algorithm(){
-        super();
-    }
+    @ManyToMany
+    private List<Qpu> supportedQpus;
+
+    public Sdk(){}
 
     public Long getId() {
         return id;
     }
 
-    public void setImplementations(List<Implementation> implementations) {
-        this.implementations = implementations;
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     @NonNull
-    public List<Implementation> getImplementations(){
-        if(Objects.isNull(implementations)) {
+    public List<Qpu> getSupportedQpus() {
+        if(Objects.isNull(supportedQpus)){
             return new ArrayList<>();
         }
-        return implementations;
+        return supportedQpus;
+    }
+
+    public void setSupportedQpus(List<Qpu> supportedQpus){
+        this.supportedQpus = supportedQpus;
     }
 }

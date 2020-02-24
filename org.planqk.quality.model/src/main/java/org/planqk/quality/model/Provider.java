@@ -26,38 +26,63 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
-import org.springframework.lang.NonNull;
-
 /**
- * Entity representing a quantum algorithm, e.g., Shors factorization algorithm.
+ * Entity representing a quantum hardware provider.
  */
 @Entity
-public class Algorithm extends Executable{
+public class Provider {
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Long id;
 
-    @OneToMany
-    private List<Implementation> implementations;
+    private String name;
 
-    public Algorithm(){
-        super();
-    }
+    private String accessKey;
+
+    private String secretKey;
+
+    @OneToMany
+    private List<Qpu> supportedQpus;
+
+    public Provider(){}
 
     public Long getId() {
         return id;
     }
 
-    public void setImplementations(List<Implementation> implementations) {
-        this.implementations = implementations;
+    public String getName() {
+        return name;
     }
 
-    @NonNull
-    public List<Implementation> getImplementations(){
-        if(Objects.isNull(implementations)) {
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getAccessKey() {
+        return accessKey;
+    }
+
+    public void setAccessKey(String accessKey) {
+        this.accessKey = accessKey;
+    }
+
+    public String getSecretKey() {
+        return secretKey;
+    }
+
+    public void setSecretKey(String secretKey) {
+        this.secretKey = secretKey;
+    }
+
+    public List<Qpu> getSupportedQpus() {
+        if(Objects.isNull(supportedQpus)){
             return new ArrayList<>();
         }
-        return implementations;
+        return supportedQpus;
+    }
+
+    public void setSupportedQpus(List<Qpu> supportedQpus) {
+        this.supportedQpus = supportedQpus;
     }
 }

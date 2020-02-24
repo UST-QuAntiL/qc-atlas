@@ -16,13 +16,23 @@
 
 package org.planqk.quality.model;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+import org.springframework.lang.NonNull;
+
 public abstract class Executable {
 
     private String name;
 
-    public Executable(String name){
-        this.name = name;
-    }
+    private String requiredQubits;
+
+    private List<Parameter> inputParameters;
+
+    private List<Parameter> outputParameters;
+
+    public Executable(){}
 
     public void setName(String name){
         this.name = name;
@@ -30,5 +40,37 @@ public abstract class Executable {
 
     public String getName(){
         return name;
+    }
+
+    public void setRequiredQubits(String requiredQubits){
+        this.requiredQubits = requiredQubits;
+    }
+
+    public String getRequiredQubits(){
+        return requiredQubits;
+    }
+
+    public void setInputParameters(List<Parameter> inputParameters) {
+        this.inputParameters = inputParameters;
+    }
+
+    public List<Parameter> getInputParameters() {
+        if(Objects.isNull(inputParameters)){
+            return new ArrayList<>();
+        }
+        return inputParameters;
+    }
+
+    @NonNull
+    public void setOutputParameters(List<Parameter> outputParameters) {
+        this.outputParameters = outputParameters;
+    }
+
+    @NonNull
+    public List<Parameter> getOutputParameters() {
+        if(Objects.isNull(outputParameters)){
+            return new ArrayList<>();
+        }
+        return outputParameters;
     }
 }

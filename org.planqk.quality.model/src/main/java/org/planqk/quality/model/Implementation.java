@@ -16,9 +16,69 @@
 
 package org.planqk.quality.model;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+
+/**
+ * Entity representing an implementation of a certain quantum {@link Algorithm}.
+ */
+@Entity
 public class Implementation extends Executable{
 
-    public Implementation(String name) {
-        super(name);
+    @Id
+    @GeneratedValue(strategy= GenerationType.AUTO)
+    private Long id;
+
+    private String programmingLanguage;
+
+    private String selectionRule;
+
+    @ManyToOne
+    private Algorithm implementedAlgorithm;
+
+    @ManyToOne
+    private Sdk sdk;
+
+    public Implementation() {
+        super();
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setProgrammingLanguage(String programmingLanguage) {
+        this.programmingLanguage = programmingLanguage;
+    }
+
+    public String getProgrammingLanguage(){
+        return programmingLanguage;
+    }
+
+    public void setSelectionRule(String selectionRule) {
+        this.selectionRule = selectionRule;
+    }
+
+    public String getSelectionRule(){
+        return selectionRule;
+    }
+
+    public void setImplementedAlgorithm(Algorithm implementedAlgorithm) {
+        this.implementedAlgorithm = implementedAlgorithm;
+    }
+
+    public Algorithm getImplementedAlgorithm(){
+        return implementedAlgorithm;
+    }
+
+    public void setSdk(Sdk sdk) {
+        this.sdk = sdk;
+    }
+
+    public Sdk getSdk() {
+        return sdk;
     }
 }

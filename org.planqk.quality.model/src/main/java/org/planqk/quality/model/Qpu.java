@@ -16,48 +16,54 @@
 
 package org.planqk.quality.model;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
-
-import org.springframework.lang.NonNull;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 
 /**
- * Entity representing a quantum algorithm, e.g., Shors factorization algorithm.
+ * Entity representing a quantum processing unit (Qpu).
  */
 @Entity
-public class Algorithm extends Executable{
+public class Qpu {
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Long id;
 
-    @OneToMany
-    private List<Implementation> implementations;
+    private String name;
 
-    public Algorithm(){
-        super();
-    }
+    private int qubitCount;
+
+    @ManyToMany
+    private List<Sdk> supportedSdks;
+
+    @ManyToOne
+    private Provider provider;
+
+    public Qpu(){}
 
     public Long getId() {
         return id;
     }
 
-    public void setImplementations(List<Implementation> implementations) {
-        this.implementations = implementations;
+    public String getName() {
+        return name;
     }
 
-    @NonNull
-    public List<Implementation> getImplementations(){
-        if(Objects.isNull(implementations)) {
-            return new ArrayList<>();
-        }
-        return implementations;
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getQubitCount() {
+        return qubitCount;
+    }
+
+    public void setQubitCount(int qubitCount) {
+        this.qubitCount = qubitCount;
     }
 }
