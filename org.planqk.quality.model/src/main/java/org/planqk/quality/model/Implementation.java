@@ -32,6 +32,8 @@ public class Implementation extends Executable{
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Long id;
 
+    private String name;
+
     private String programmingLanguage;
 
     private String selectionRule;
@@ -48,6 +50,14 @@ public class Implementation extends Executable{
 
     public Long getId() {
         return id;
+    }
+
+    public void setName(String name){
+        this.name = name;
+    }
+
+    public String getName(){
+        return name;
     }
 
     public void setProgrammingLanguage(String programmingLanguage) {

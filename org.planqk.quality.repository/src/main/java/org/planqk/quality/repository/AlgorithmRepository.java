@@ -14,13 +14,17 @@
  *  ******************************************************************************
  */
 
-package org.planqk.quality.model;
+package org.planqk.quality.repository;
+
+import org.planqk.quality.model.Algorithm;
+import org.springframework.data.repository.CrudRepository;
 
 /**
- * Supported data types for {@link Parameter}s.
+ * Repository to access {@link Algorithm}s available in the data base with different queries.
  */
-public enum DataType {
+public interface AlgorithmRepository extends CrudRepository<Algorithm, Long> {
 
-    Integer,
-    String;
+    Algorithm findById(long id);
+
+    Algorithm findByName(String name);
 }

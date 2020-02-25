@@ -38,6 +38,8 @@ public class Algorithm extends Executable{
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Long id;
 
+    private String name;
+
     @OneToMany
     private List<Implementation> implementations;
 
@@ -47,6 +49,14 @@ public class Algorithm extends Executable{
 
     public Long getId() {
         return id;
+    }
+
+    public void setName(String name){
+        this.name = name;
+    }
+
+    public String getName(){
+        return name;
     }
 
     public void setImplementations(List<Implementation> implementations) {

@@ -24,8 +24,6 @@ import org.springframework.lang.NonNull;
 
 public abstract class Executable {
 
-    private String name;
-
     private String requiredQubits;
 
     private List<Parameter> inputParameters;
@@ -33,14 +31,6 @@ public abstract class Executable {
     private List<Parameter> outputParameters;
 
     public Executable(){}
-
-    public void setName(String name){
-        this.name = name;
-    }
-
-    public String getName(){
-        return name;
-    }
 
     public void setRequiredQubits(String requiredQubits){
         this.requiredQubits = requiredQubits;

@@ -14,13 +14,27 @@
  *  ******************************************************************************
  */
 
-package org.planqk.quality.model;
+package org.planqk.quality.api.dtos;
+
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import org.planqk.quality.model.Parameter;
+
+import org.assertj.core.util.Lists;
 
 /**
- * Supported data types for {@link Parameter}s.
+ * Data transfer object for multiple {@link Parameter}s
  */
-public enum DataType {
+public class ParameterListDto {
 
-    Integer,
-    String;
+    private List<ParameterDto> parameterDtos = Lists.newArrayList();
+
+    public List<ParameterDto> getParameters() {
+        return this.parameterDtos;
+    }
+
+    public void add(final List<ParameterDto> parameters) {
+        this.parameterDtos.addAll(parameters);
+    }
 }

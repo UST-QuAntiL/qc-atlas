@@ -16,10 +16,18 @@
 
 package org.planqk.quality.api.controller;
 
+import java.util.Objects;
+import java.util.Optional;
+
+import javax.websocket.server.PathParam;
+
 import org.planqk.quality.api.Application;
 import org.planqk.quality.api.Constants;
+import org.planqk.quality.api.dtos.ImplementationDto;
 import org.planqk.quality.api.dtos.ImplementationListDto;
+import org.planqk.quality.model.Algorithm;
 import org.planqk.quality.model.Implementation;
+import org.planqk.quality.model.Sdk;
 import org.planqk.quality.repository.ImplementationRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +37,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -53,15 +62,49 @@ public class ImplementationController {
     @GetMapping("/")
     public HttpEntity<ImplementationListDto> getImplementations() {
         LOG.debug("Get to retrieve all implementations received.");
-        ImplementationListDto dto = new ImplementationListDto();
+        ImplementationListDto dtoList = new ImplementationListDto();
 
         // add all available implementations to the response
         for(Implementation impl : implementationRepository.findAll()) {
-            // TODO
-        };
+            dtoList.add(createImplementationDto(impl));
+            dtoList.add(linkTo(methodOn(ImplementationController.class).getImplementation(impl.getId())).withRel(impl.getId().toString()));
+        }
 
-        // add links to related resources
-        dto.add(linkTo(methodOn(ImplementationController.class).getImplementations()).withSelfRel());
-        return new ResponseEntity<>(dto, HttpStatus.OK);
+        // add self link and status code
+        dtoList.add(linkTo(methodOn(ImplementationController.class).getImplementations()).withSelfRel());
+        return new ResponseEntity<>(dtoList, HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}")
+    public HttpEntity<ImplementationDto> getImplementation(@PathVariable Long id) {
+        LOG.debug("Get to retrieve implementation with id: {}.", id);
+
+        Optional<Implementation> implementationOptional = implementationRepository.findById(id);
+        if(!implementationOptional.isPresent()){
+            LOG.error("Unable to retrieve implementation with id {} form the repository.", id);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(createImplementationDto(implementationOptional.get()), HttpStatus.OK);
+    }
+
+    /**
+     * Create a DTO object for a given {@link Implementation} with the contained data and the links to related objects.
+     *
+     * @param implementation the {@link Implementation} to create the DTO for
+     * @return the created DTO
+     */
+    private ImplementationDto createImplementationDto(Implementation implementation){
+        ImplementationDto dto = ImplementationDto.Converter.convert(implementation);
+        Algorithm implementedAlgo = implementation.getImplementedAlgorithm();
+        if(Objects.nonNull(implementedAlgo)){
+            dto.add(linkTo(methodOn(AlgorithmController.class).getAlgorithm(implementedAlgo.getId())).withRel(implementedAlgo.getId().toString()));
+        }
+        Sdk usedSdk = implementation.getSdk();
+        if(Objects.nonNull(usedSdk)){
+            dto.add(linkTo(methodOn(SdkController.class).getSdk(usedSdk.getId())).withRel(usedSdk.getId().toString()));
+        }
+        dto.add(linkTo(methodOn(ImplementationController.class).getImplementation(implementation.getId())).withSelfRel());
+        return dto;
     }
 }
