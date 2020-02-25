@@ -21,14 +21,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-@SpringBootApplication(scanBasePackages = "org.planqk.quality")
+@SpringBootApplication(scanBasePackages = "org.planqk.quality.*")
+@EnableJpaRepositories("org.planqk.quality.*")
+@EntityScan("org.planqk.quality.*")
 public class Application {
 
     final private static Logger LOG = LoggerFactory.getLogger(Application.class);
-
-    @Value("${service.message}")
-    public static String message;
 
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);

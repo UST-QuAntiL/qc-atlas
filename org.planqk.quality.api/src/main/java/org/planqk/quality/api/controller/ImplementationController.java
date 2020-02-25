@@ -16,8 +16,14 @@
 
 package org.planqk.quality.api.controller;
 
+import org.planqk.quality.api.Application;
 import org.planqk.quality.api.Constants;
 import org.planqk.quality.api.dtos.ImplementationListDto;
+import org.planqk.quality.model.Implementation;
+import org.planqk.quality.repository.ImplementationRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
@@ -36,10 +42,25 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RequestMapping(Constants.IMPLEMENTATIONS)
 public class ImplementationController {
 
+    final private static Logger LOG = LoggerFactory.getLogger(ImplementationController.class);
+
+    private final ImplementationRepository implementationRepository;
+
+    public ImplementationController(ImplementationRepository implementationRepository) {
+        this.implementationRepository = implementationRepository;
+    }
+
     @GetMapping("/")
     public HttpEntity<ImplementationListDto> getImplementations() {
+        LOG.debug("Get to retrieve all implementations received.");
         ImplementationListDto dto = new ImplementationListDto();
-        // TODO: retrieve implementation entities form backend
+
+        // add all available implementations to the response
+        for(Implementation impl : implementationRepository.findAll()) {
+            // TODO
+        };
+
+        // add links to related resources
         dto.add(linkTo(methodOn(ImplementationController.class).getImplementations()).withSelfRel());
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }

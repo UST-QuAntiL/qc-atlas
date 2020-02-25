@@ -8,5 +8,6 @@
 	<modules>
 		<module>org.planqk.quality.api</module>
 		<module>org.planqk.quality.model</module>
+		<module>org.planqk.quality.repository</module>
 	</modules>
 </project>
