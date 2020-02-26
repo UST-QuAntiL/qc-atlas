@@ -29,11 +29,7 @@ import javax.persistence.ManyToOne;
  * Entity representing a quantum processing unit (Qpu).
  */
 @Entity
-public class Qpu {
-
-    @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
-    private Long id;
+public class Qpu extends HasId {
 
     private String name;
 
@@ -46,10 +42,6 @@ public class Qpu {
     private Provider provider;
 
     public Qpu(){}
-
-    public Long getId() {
-        return id;
-    }
 
     public String getName() {
         return name;

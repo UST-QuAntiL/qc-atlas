@@ -14,27 +14,24 @@
  *  ******************************************************************************
  */
 
-package org.planqk.quality.api.dtos;
+package org.planqk.quality.model;
 
-import java.util.List;
-
-import org.planqk.quality.model.Parameter;
-
-import org.assertj.core.util.Lists;
-import org.springframework.hateoas.RepresentationModel;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
 
 /**
- * Data transfer object for multiple {@link Parameter}s
+ * Base class defining the Id property for all JPA entity classes.
  */
-public class ParameterListDto extends RepresentationModel<ParameterListDto> {
+@MappedSuperclass
+public abstract class HasId {
 
-    private List<ParameterDto> parameterDtos = Lists.newArrayList();
+    @Id
+    @GeneratedValue(strategy= GenerationType.AUTO)
+    private Long id;
 
-    public List<ParameterDto> getParameters() {
-        return this.parameterDtos;
-    }
-
-    public void add(final List<ParameterDto> parameters) {
-        this.parameterDtos.addAll(parameters);
+    public Long getId() {
+        return id;
     }
 }

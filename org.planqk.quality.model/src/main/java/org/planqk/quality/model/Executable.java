@@ -20,17 +20,34 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import javax.persistence.CascadeType;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.OneToMany;
+
 import org.springframework.lang.NonNull;
 
-public abstract class Executable {
+@MappedSuperclass
+public abstract class Executable extends HasId {
+
+    private String name;
 
     private String requiredQubits;
 
+    @OneToMany(cascade=CascadeType.PERSIST)
     private List<Parameter> inputParameters;
 
+    @OneToMany(cascade= CascadeType.PERSIST)
     private List<Parameter> outputParameters;
 
     public Executable(){}
+
+    public void setName(String name){
+        this.name = name;
+    }
+
+    public String getName(){
+        return name;
+    }
 
     public void setRequiredQubits(String requiredQubits){
         this.requiredQubits = requiredQubits;
@@ -44,6 +61,7 @@ public abstract class Executable {
         this.inputParameters = inputParameters;
     }
 
+    @NonNull
     public List<Parameter> getInputParameters() {
         if(Objects.isNull(inputParameters)){
             return new ArrayList<>();
@@ -51,7 +69,6 @@ public abstract class Executable {
         return inputParameters;
     }
 
-    @NonNull
     public void setOutputParameters(List<Parameter> outputParameters) {
         this.outputParameters = outputParameters;
     }

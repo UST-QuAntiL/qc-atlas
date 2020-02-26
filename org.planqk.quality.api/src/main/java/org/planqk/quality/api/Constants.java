@@ -26,4 +26,7 @@ public class Constants {
     public static final String PROVIDERS = "providers";
     public static final String QPUS = "qpus";
     public static final String SDKS = "sdks";
+    public static final String ALGORITHM_LINK = "implementedAlgorithm";
+    public static final String INPUT_PARAMS = "inputParameters";
+    public static final String OUTPUT_PARAMS = "outputParameters";
 }

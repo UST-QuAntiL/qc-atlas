@@ -14,27 +14,17 @@
  *  ******************************************************************************
  */
 
-package org.planqk.quality.api.dtos;
+package org.planqk.quality.repository;
 
-import java.util.List;
+import java.util.Optional;
 
-import org.planqk.quality.model.Parameter;
-
-import org.assertj.core.util.Lists;
-import org.springframework.hateoas.RepresentationModel;
+import org.planqk.quality.model.Sdk;
+import org.springframework.data.repository.CrudRepository;
 
 /**
- * Data transfer object for multiple {@link Parameter}s
+ * Repository to access {@link Sdk}s available in the data base with different queries.
  */
-public class ParameterListDto extends RepresentationModel<ParameterListDto> {
+public interface SdkRepository extends CrudRepository<Sdk, Long> {
 
-    private List<ParameterDto> parameterDtos = Lists.newArrayList();
-
-    public List<ParameterDto> getParameters() {
-        return this.parameterDtos;
-    }
-
-    public void add(final List<ParameterDto> parameters) {
-        this.parameterDtos.addAll(parameters);
-    }
+    Optional<Sdk> findByName(String name);
 }

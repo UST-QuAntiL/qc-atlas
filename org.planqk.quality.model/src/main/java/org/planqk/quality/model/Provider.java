@@ -21,20 +21,13 @@ import java.util.List;
 import java.util.Objects;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
 /**
  * Entity representing a quantum hardware provider.
  */
 @Entity
-public class Provider {
-
-    @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
-    private Long id;
+public class Provider extends HasId {
 
     private String name;
 
@@ -46,10 +39,6 @@ public class Provider {
     private List<Qpu> supportedQpus;
 
     public Provider(){}
-
-    public Long getId() {
-        return id;
-    }
 
     public String getName() {
         return name;

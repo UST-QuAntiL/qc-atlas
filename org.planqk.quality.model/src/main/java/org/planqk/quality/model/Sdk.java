@@ -20,10 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 
 import org.springframework.lang.NonNull;
@@ -32,22 +30,15 @@ import org.springframework.lang.NonNull;
  * Entity representing a Sdk to define quantum algorithm {@link Implementation}s.
  */
 @Entity
-public class Sdk {
+public class Sdk extends HasId {
 
-    @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
-    private Long id;
-
+    @Column(unique=true)
     private String name;
 
     @ManyToMany
     private List<Qpu> supportedQpus;
 
     public Sdk(){}
-
-    public Long getId() {
-        return id;
-    }
 
     public String getName() {
         return name;

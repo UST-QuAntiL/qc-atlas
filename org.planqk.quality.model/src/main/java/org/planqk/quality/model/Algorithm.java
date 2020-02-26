@@ -21,9 +21,6 @@ import java.util.List;
 import java.util.Objects;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
 import org.springframework.lang.NonNull;
@@ -32,31 +29,13 @@ import org.springframework.lang.NonNull;
  * Entity representing a quantum algorithm, e.g., Shors factorization algorithm.
  */
 @Entity
-public class Algorithm extends Executable{
-
-    @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
-    private Long id;
-
-    private String name;
+public class Algorithm extends Executable {
 
     @OneToMany
     private List<Implementation> implementations;
 
     public Algorithm(){
         super();
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setName(String name){
-        this.name = name;
-    }
-
-    public String getName(){
-        return name;
     }
 
     public void setImplementations(List<Implementation> implementations) {

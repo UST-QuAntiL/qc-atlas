@@ -17,12 +17,16 @@
 package org.planqk.quality.api.dtos;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.planqk.quality.model.Algorithm;
 import org.planqk.quality.model.Implementation;
+import org.planqk.quality.model.Sdk;
 import org.springframework.hateoas.RepresentationModel;
+import org.springframework.lang.NonNull;
 
 /**
  * Data transfer object for the model class Implementation ({@link org.planqk.quality.model.Implementation}).
@@ -39,9 +43,11 @@ public class ImplementationDto extends RepresentationModel<ImplementationDto> {
 
     private String requiredQubits;
 
-    private List<ParameterDto> inputParameters;
+    private String sdk;
 
-    private List<ParameterDto> outputParameters;
+    private ParameterListDto inputParameters;
+
+    private ParameterListDto outputParameters;
 
     public ImplementationDto(){}
 
@@ -85,19 +91,35 @@ public class ImplementationDto extends RepresentationModel<ImplementationDto> {
         this.requiredQubits = requiredQubits;
     }
 
-    public List<ParameterDto> getInputParameters() {
+    public String getSdk() {
+        return sdk;
+    }
+
+    public void setSdk(String sdk) {
+        this.sdk = sdk;
+    }
+
+    @NonNull
+    public ParameterListDto getInputParameters() {
+        if(Objects.isNull(inputParameters)){
+            return new ParameterListDto();
+        }
         return inputParameters;
     }
 
-    public void setInputParameters(List<ParameterDto> inputParameters) {
+    public void setInputParameters(ParameterListDto inputParameters) {
         this.inputParameters = inputParameters;
     }
 
-    public List<ParameterDto> getOutputParameters() {
+    @NonNull
+    public ParameterListDto getOutputParameters() {
+        if(Objects.isNull(outputParameters)){
+            return new ParameterListDto();
+        }
         return outputParameters;
     }
 
-    public void setOutputParameters(List<ParameterDto> outputParameters) {
+    public void setOutputParameters(ParameterListDto outputParameters) {
         this.outputParameters = outputParameters;
     }
 
@@ -109,6 +131,7 @@ public class ImplementationDto extends RepresentationModel<ImplementationDto> {
                 ", programmingLanguage='" + programmingLanguage + '\'' +
                 ", selectionRule='" + selectionRule + '\'' +
                 ", requiredQubits='" + requiredQubits + '\'' +
+                ", sdk='" + sdk + '\'' +
                 ", inputParameters=" + inputParameters +
                 ", outputParameters=" + outputParameters +
                 '}';
@@ -123,11 +146,30 @@ public class ImplementationDto extends RepresentationModel<ImplementationDto> {
             dto.setProgrammingLanguage(object.getProgrammingLanguage());
             dto.setSelectionRule(object.getSelectionRule());
             dto.setRequiredQubits(object.getRequiredQubits());
-            dto.setInputParameters(object.getInputParameters().stream().map(ParameterDto.Converter::convert)
+            dto.setSdk(object.getSdk().getName());
+
+            ParameterListDto inputParams = new ParameterListDto();
+            inputParams.add(object.getInputParameters().stream().map(ParameterDto.Converter::convert)
                     .collect(Collectors.toList()));
-            dto.setOutputParameters(object.getOutputParameters().stream().map(ParameterDto.Converter::convert)
+            dto.setInputParameters(inputParams);
+
+            ParameterListDto outputParams = new ParameterListDto();
+            outputParams.add(object.getOutputParameters().stream().map(ParameterDto.Converter::convert)
                     .collect(Collectors.toList()));
+            dto.setOutputParameters(outputParams);
+
             return dto;
+        }
+
+        public static Implementation convert(final ImplementationDto object, final Sdk sdk, final Algorithm algo) {
+            Implementation implementation = new Implementation();
+            implementation.setName(object.getName());
+            implementation.setRequiredQubits(object.getRequiredQubits());
+            implementation.setProgrammingLanguage(object.getProgrammingLanguage());
+            implementation.setSelectionRule(object.getSelectionRule());
+            implementation.setSdk(sdk);
+            implementation.setImplementedAlgorithm(algo);
+            return implementation;
         }
     }
 }

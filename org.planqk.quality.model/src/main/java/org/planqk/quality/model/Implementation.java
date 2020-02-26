@@ -17,22 +17,13 @@
 package org.planqk.quality.model;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
 /**
  * Entity representing an implementation of a certain quantum {@link Algorithm}.
  */
 @Entity
-public class Implementation extends Executable{
-
-    @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
-    private Long id;
-
-    private String name;
+public class Implementation extends Executable {
 
     private String programmingLanguage;
 
@@ -46,18 +37,6 @@ public class Implementation extends Executable{
 
     public Implementation() {
         super();
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setName(String name){
-        this.name = name;
-    }
-
-    public String getName(){
-        return name;
     }
 
     public void setProgrammingLanguage(String programmingLanguage) {
