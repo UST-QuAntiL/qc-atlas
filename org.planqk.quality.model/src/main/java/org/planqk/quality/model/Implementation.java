@@ -43,7 +43,7 @@ public class Implementation extends Executable {
         this.programmingLanguage = programmingLanguage;
     }
 
-    public String getProgrammingLanguage(){
+    public String getProgrammingLanguage() {
         return programmingLanguage;
     }
 
@@ -51,7 +51,7 @@ public class Implementation extends Executable {
         this.selectionRule = selectionRule;
     }
 
-    public String getSelectionRule(){
+    public String getSelectionRule() {
         return selectionRule;
     }
 
@@ -59,7 +59,7 @@ public class Implementation extends Executable {
         this.implementedAlgorithm = implementedAlgorithm;
     }
 
-    public Algorithm getImplementedAlgorithm(){
+    public Algorithm getImplementedAlgorithm() {
         return implementedAlgorithm;
     }
 

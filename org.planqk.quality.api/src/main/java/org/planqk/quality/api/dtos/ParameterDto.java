@@ -32,7 +32,8 @@ public class ParameterDto {
 
     String description;
 
-    public ParameterDto(){}
+    public ParameterDto() {
+    }
 
     public String getName() {
         return name;

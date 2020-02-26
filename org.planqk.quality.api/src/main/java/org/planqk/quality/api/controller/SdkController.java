@@ -62,7 +62,7 @@ public class SdkController {
         SdkListDto sdkListDto = new SdkListDto();
 
         // add all available Sdks to the response
-        for(Sdk sdk : sdkRepository.findAll()) {
+        for (Sdk sdk : sdkRepository.findAll()) {
             sdkListDto.add(createSdkDto(sdk));
             sdkListDto.add(linkTo(methodOn(SdkController.class).getSdk(sdk.getId())).withRel(sdk.getName()));
         }
@@ -76,7 +76,7 @@ public class SdkController {
         LOG.debug("Get to retrieve SDK with id: {}.", id);
 
         Optional<Sdk> sdkOptional = sdkRepository.findById(id);
-        if(!sdkOptional.isPresent()){
+        if (!sdkOptional.isPresent()) {
             LOG.error("Unable to retrieve Sdk with id {} from the repository.", id);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -88,7 +88,7 @@ public class SdkController {
     public HttpEntity<SdkDto> createImplementation(@RequestBody SdkDto sdkDto) {
         LOG.debug("Post to create new Sdk received.");
 
-        if (Objects.isNull(sdkDto.getName())){
+        if (Objects.isNull(sdkDto.getName())) {
             LOG.error("Received invalid sdk object for post request: {}", sdkDto.toString());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }

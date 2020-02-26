@@ -27,7 +27,8 @@ import org.springframework.web.bind.annotation.RestController;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 /**
- * Root controller to access all entities within Quality, trigger the hardware selection, and execution of quantum algorithms.
+ * Root controller to access all entities within Quality, trigger the hardware selection, and execution of quantum
+ * algorithms.
  */
 @RestController
 public class RootController {

@@ -34,7 +34,7 @@ public class Algorithm extends Executable {
     @OneToMany
     private List<Implementation> implementations;
 
-    public Algorithm(){
+    public Algorithm() {
         super();
     }
 
@@ -43,8 +43,8 @@ public class Algorithm extends Executable {
     }
 
     @NonNull
-    public List<Implementation> getImplementations(){
-        if(Objects.isNull(implementations)) {
+    public List<Implementation> getImplementations() {
+        if (Objects.isNull(implementations)) {
             return new ArrayList<>();
         }
         return implementations;

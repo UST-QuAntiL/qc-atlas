@@ -16,8 +16,6 @@
 
 package org.planqk.quality.api.controller;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -25,17 +23,12 @@ import java.util.stream.Collectors;
 import org.planqk.quality.api.Constants;
 import org.planqk.quality.api.dtos.AlgorithmDto;
 import org.planqk.quality.api.dtos.AlgorithmListDto;
-import org.planqk.quality.api.dtos.ImplementationDto;
 import org.planqk.quality.api.dtos.ParameterDto;
 import org.planqk.quality.api.dtos.ParameterListDto;
 import org.planqk.quality.model.Algorithm;
-import org.planqk.quality.model.Implementation;
-import org.planqk.quality.model.Sdk;
 import org.planqk.quality.repository.AlgorithmRepository;
-import org.planqk.quality.repository.ImplementationRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -71,7 +64,7 @@ public class AlgorithmController {
         AlgorithmListDto dtoList = new AlgorithmListDto();
 
         // add all available algorithms to the response
-        for(Algorithm algo : algorithmRepository.findAll()) {
+        for (Algorithm algo : algorithmRepository.findAll()) {
             dtoList.add(createAlgorithmDto(algo));
             dtoList.add(linkTo(methodOn(AlgorithmController.class).getAlgorithm(algo.getId())).withRel(algo.getId().toString()));
         }
@@ -85,13 +78,13 @@ public class AlgorithmController {
     public HttpEntity<AlgorithmDto> createAlgorithm(@RequestBody AlgorithmDto algo) {
         LOG.debug("Post to create new algorithm received.");
 
-        if(Objects.isNull(algo.getName()) || Objects.isNull(algo.getRequiredQubits())){
+        if (Objects.isNull(algo.getName()) || Objects.isNull(algo.getRequiredQubits())) {
             LOG.error("Received invalid algorithm object for post request: {}", algo.toString());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         // check consistency of passed parameters
-        if(!parameterConsistent(algo.getInputParameters().getParameters(), algo.getOutputParameters().getParameters())){
+        if (!parameterConsistent(algo.getInputParameters().getParameters(), algo.getOutputParameters().getParameters())) {
             LOG.error("Received invalid parameter dto for post request.");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -106,7 +99,7 @@ public class AlgorithmController {
         LOG.debug("Get to retrieve algorithm with id: {}.", id);
 
         Optional<Algorithm> algorithmOptional = algorithmRepository.findById(id);
-        if(!algorithmOptional.isPresent()){
+        if (!algorithmOptional.isPresent()) {
             LOG.error("Unable to retrieve algorithm with id {} from the repository.", id);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -119,7 +112,7 @@ public class AlgorithmController {
         LOG.debug("Get to retrieve input parameters for algorithm with id: {}.", id);
 
         Optional<Algorithm> algorithmOptional = algorithmRepository.findById(id);
-        if(!algorithmOptional.isPresent()){
+        if (!algorithmOptional.isPresent()) {
             LOG.error("Unable to retrieve algorithm with id {} form the repository.", id);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -139,7 +132,7 @@ public class AlgorithmController {
         LOG.debug("Get to retrieve output parameters for algorithm with id: {}.", id);
 
         Optional<Algorithm> algorithmOptional = algorithmRepository.findById(id);
-        if(!algorithmOptional.isPresent()){
+        if (!algorithmOptional.isPresent()) {
             LOG.error("Unable to retrieve algorithm with id {} form the repository.", id);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -160,7 +153,7 @@ public class AlgorithmController {
      * @param algorithm the {@link Algorithm} to create the DTO for
      * @return the created DTO
      */
-    private AlgorithmDto createAlgorithmDto(Algorithm algorithm){
+    private AlgorithmDto createAlgorithmDto(Algorithm algorithm) {
         AlgorithmDto dto = AlgorithmDto.Converter.convert(algorithm);
         dto.add(linkTo(methodOn(AlgorithmController.class).getAlgorithm(algorithm.getId())).withSelfRel());
         dto.add(linkTo(methodOn(AlgorithmController.class).getInputParameters(algorithm.getId())).withRel(Constants.INPUT_PARAMS));

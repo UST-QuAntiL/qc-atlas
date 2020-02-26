@@ -33,27 +33,28 @@ public abstract class Executable extends HasId {
 
     private String requiredQubits;
 
-    @OneToMany(cascade=CascadeType.PERSIST)
+    @OneToMany(cascade = CascadeType.PERSIST)
     private List<Parameter> inputParameters;
 
-    @OneToMany(cascade= CascadeType.PERSIST)
+    @OneToMany(cascade = CascadeType.PERSIST)
     private List<Parameter> outputParameters;
 
-    public Executable(){}
+    public Executable() {
+    }
 
-    public void setName(String name){
+    public void setName(String name) {
         this.name = name;
     }
 
-    public String getName(){
+    public String getName() {
         return name;
     }
 
-    public void setRequiredQubits(String requiredQubits){
+    public void setRequiredQubits(String requiredQubits) {
         this.requiredQubits = requiredQubits;
     }
 
-    public String getRequiredQubits(){
+    public String getRequiredQubits() {
         return requiredQubits;
     }
 
@@ -63,7 +64,7 @@ public abstract class Executable extends HasId {
 
     @NonNull
     public List<Parameter> getInputParameters() {
-        if(Objects.isNull(inputParameters)){
+        if (Objects.isNull(inputParameters)) {
             return new ArrayList<>();
         }
         return inputParameters;
@@ -75,7 +76,7 @@ public abstract class Executable extends HasId {
 
     @NonNull
     public List<Parameter> getOutputParameters() {
-        if(Objects.isNull(outputParameters)){
+        if (Objects.isNull(outputParameters)) {
             return new ArrayList<>();
         }
         return outputParameters;

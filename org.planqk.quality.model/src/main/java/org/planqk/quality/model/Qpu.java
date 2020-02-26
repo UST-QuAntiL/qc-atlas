@@ -16,14 +16,15 @@
 
 package org.planqk.quality.model;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+
+import org.springframework.lang.NonNull;
 
 /**
  * Entity representing a quantum processing unit (Qpu).
@@ -41,7 +42,8 @@ public class Qpu extends HasId {
     @ManyToOne
     private Provider provider;
 
-    public Qpu(){}
+    public Qpu() {
+    }
 
     public String getName() {
         return name;
@@ -57,5 +59,25 @@ public class Qpu extends HasId {
 
     public void setQubitCount(int qubitCount) {
         this.qubitCount = qubitCount;
+    }
+
+    public Provider getProvider() {
+        return provider;
+    }
+
+    public void setProvider(Provider provider) {
+        this.provider = provider;
+    }
+
+    @NonNull
+    public List<Sdk> getSupportedSdks() {
+        if (Objects.isNull(supportedSdks)) {
+            return new ArrayList<>();
+        }
+        return supportedSdks;
+    }
+
+    public void setSupportedSdks(List<Sdk> supportedSdks) {
+        this.supportedSdks = supportedSdks;
     }
 }

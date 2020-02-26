@@ -32,13 +32,14 @@ import org.springframework.lang.NonNull;
 @Entity
 public class Sdk extends HasId {
 
-    @Column(unique=true)
+    @Column(unique = true)
     private String name;
 
     @ManyToMany
     private List<Qpu> supportedQpus;
 
-    public Sdk(){}
+    public Sdk() {
+    }
 
     public String getName() {
         return name;
@@ -50,13 +51,13 @@ public class Sdk extends HasId {
 
     @NonNull
     public List<Qpu> getSupportedQpus() {
-        if(Objects.isNull(supportedQpus)){
+        if (Objects.isNull(supportedQpus)) {
             return new ArrayList<>();
         }
         return supportedQpus;
     }
 
-    public void setSupportedQpus(List<Qpu> supportedQpus){
+    public void setSupportedQpus(List<Qpu> supportedQpus) {
         this.supportedQpus = supportedQpus;
     }
 }

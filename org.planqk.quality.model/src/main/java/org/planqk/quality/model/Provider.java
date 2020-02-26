@@ -38,7 +38,8 @@ public class Provider extends HasId {
     @OneToMany
     private List<Qpu> supportedQpus;
 
-    public Provider(){}
+    public Provider() {
+    }
 
     public String getName() {
         return name;
@@ -65,7 +66,7 @@ public class Provider extends HasId {
     }
 
     public List<Qpu> getSupportedQpus() {
-        if(Objects.isNull(supportedQpus)){
+        if (Objects.isNull(supportedQpus)) {
             return new ArrayList<>();
         }
         return supportedQpus;

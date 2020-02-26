@@ -16,7 +16,6 @@
 
 package org.planqk.quality.api.dtos;
 
-import org.planqk.quality.model.Implementation;
 import org.springframework.hateoas.RepresentationModel;
 
 import org.planqk.quality.model.Provider;

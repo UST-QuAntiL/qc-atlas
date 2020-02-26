@@ -14,25 +14,14 @@
  *  ******************************************************************************
  */
 
-package org.planqk.quality.api;
+package org.planqk.quality.repository;
 
-/**
- * Constants for the Quality API classes.
- */
-public class Constants {
+import java.util.Optional;
 
-    // URL snippets
-    public static final String IMPLEMENTATIONS = "implementations";
-    public static final String ALGORITHMS = "algorithms";
-    public static final String PROVIDERS = "providers";
-    public static final String QPUS = "qpus";
-    public static final String SDKS = "sdks";
+import org.planqk.quality.model.Qpu;
+import org.springframework.data.repository.CrudRepository;
 
-    // link names
-    public static final String ALGORITHM_LINK = "implementedAlgorithm";
-    public static final String USED_SDK = "usedSdk";
-    public static final String SUPPORTED_SDK = "supportedSdk";
-    public static final String INPUT_PARAMS = "inputParameters";
-    public static final String OUTPUT_PARAMS = "outputParameters";
-    public static final String PROVIDER = "provider";
+public interface QpuRepository extends CrudRepository<Qpu, Long> {
+
+    Optional<Qpu> findByName(String name);
 }

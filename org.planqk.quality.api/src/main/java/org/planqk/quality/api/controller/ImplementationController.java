@@ -108,7 +108,7 @@ public class ImplementationController {
         Optional<Algorithm> algorithmOptional = algorithmRepository.findById(algoId);
         if(!algorithmOptional.isPresent()){
             LOG.error("Unable to retrieve algorithm with id {} from the repository.", algoId);
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         // check consistency of the implementation object
@@ -123,7 +123,7 @@ public class ImplementationController {
         Optional<Sdk> sdkOptional = sdkRepository.findByName(impl.getSdk());
         if(!sdkOptional.isPresent()){
             LOG.error("Unable to retrieve Sdk with name {} from the repository.", impl.getSdk());
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         // check consistency of passed parameters
@@ -143,15 +143,15 @@ public class ImplementationController {
     public HttpEntity<ParameterListDto> getInputParameters(@PathVariable Long id) {
         LOG.debug("Get to retrieve input parameters for implementation with id: {}.", id);
 
-        Optional<Algorithm> algorithmOptional = algorithmRepository.findById(id);
-        if(!algorithmOptional.isPresent()){
-            LOG.error("Unable to retrieve algorithm with id {} form the repository.", id);
+        Optional<Implementation> implementationOptional = implementationRepository.findById(id);
+        if(!implementationOptional.isPresent()){
+            LOG.error("Unable to retrieve implementation with id {} form the repository.", id);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        // convert all output parameters to corresponding dtos
+        // convert all input parameters to corresponding dtos
         ParameterListDto parameterListDto = new ParameterListDto();
-        parameterListDto.add(algorithmOptional.get().getOutputParameters().stream()
+        parameterListDto.add(implementationOptional.get().getInputParameters().stream()
                 .map(ParameterDto.Converter::convert)
                 .collect(Collectors.toList()));
 
@@ -169,9 +169,9 @@ public class ImplementationController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        // convert all input parameters to corresponding dtos
+        // convert all output parameters to corresponding dtos
         ParameterListDto parameterListDto = new ParameterListDto();
-        parameterListDto.add(implementationOptional.get().getInputParameters().stream()
+        parameterListDto.add(implementationOptional.get().getOutputParameters().stream()
                 .map(ParameterDto.Converter::convert)
                 .collect(Collectors.toList()));
 

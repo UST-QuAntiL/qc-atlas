@@ -22,7 +22,7 @@ import javax.persistence.Entity;
  * Input or output parameter for an {@link Executable}.
  */
 @Entity
-public class Parameter extends HasId{
+public class Parameter extends HasId {
 
     String name;
 
@@ -32,7 +32,8 @@ public class Parameter extends HasId{
 
     String description;
 
-    public Parameter(){}
+    public Parameter() {
+    }
 
     public String getName() {
         return name;

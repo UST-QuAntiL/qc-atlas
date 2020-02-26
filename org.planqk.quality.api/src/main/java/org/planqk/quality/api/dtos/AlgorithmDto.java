@@ -38,22 +38,23 @@ public class AlgorithmDto extends RepresentationModel<AlgorithmDto> {
 
     private ParameterListDto outputParameters;
 
-    public AlgorithmDto(){}
-
-    public void setId(Long id) {
-        this.id = id;
+    public AlgorithmDto() {
     }
 
     public Long getId() {
         return id;
     }
 
-    public void setName(String name){
-        this.name = name;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public String getName(){
+    public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getRequiredQubits() {
@@ -66,7 +67,7 @@ public class AlgorithmDto extends RepresentationModel<AlgorithmDto> {
 
     @NonNull
     public ParameterListDto getInputParameters() {
-        if(Objects.isNull(inputParameters)){
+        if (Objects.isNull(inputParameters)) {
             return new ParameterListDto();
         }
         return inputParameters;
@@ -78,7 +79,7 @@ public class AlgorithmDto extends RepresentationModel<AlgorithmDto> {
 
     @NonNull
     public ParameterListDto getOutputParameters() {
-        if(Objects.isNull(outputParameters)){
+        if (Objects.isNull(outputParameters)) {
             return new ParameterListDto();
         }
         return outputParameters;

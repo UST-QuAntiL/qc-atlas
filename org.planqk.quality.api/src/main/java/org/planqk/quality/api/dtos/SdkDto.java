@@ -50,7 +50,7 @@ public class SdkDto extends RepresentationModel<SdkDto> {
             return dto;
         }
 
-        public static Sdk convert(final SdkDto object){
+        public static Sdk convert(final SdkDto object) {
             final Sdk sdk = new Sdk();
             sdk.setName(object.getName());
             return sdk;
