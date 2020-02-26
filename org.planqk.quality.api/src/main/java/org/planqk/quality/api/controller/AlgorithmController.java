@@ -74,7 +74,7 @@ public class AlgorithmController {
         for(Algorithm algo : algorithmRepository.findAll()) {
             dtoList.add(createAlgorithmDto(algo));
             dtoList.add(linkTo(methodOn(AlgorithmController.class).getAlgorithm(algo.getId())).withRel(algo.getId().toString()));
-        };
+        }
 
         // add self link and status code
         dtoList.add(linkTo(methodOn(AlgorithmController.class).getAlgorithms()).withSelfRel());
@@ -126,7 +126,7 @@ public class AlgorithmController {
 
         // convert all output parameters to corresponding dtos
         ParameterListDto parameterListDto = new ParameterListDto();
-        parameterListDto.add(algorithmOptional.get().getOutputParameters().stream()
+        parameterListDto.add(algorithmOptional.get().getInputParameters().stream()
                 .map(ParameterDto.Converter::convert)
                 .collect(Collectors.toList()));
 
@@ -146,7 +146,7 @@ public class AlgorithmController {
 
         // convert all input parameters to corresponding dtos
         ParameterListDto parameterListDto = new ParameterListDto();
-        parameterListDto.add(algorithmOptional.get().getInputParameters().stream()
+        parameterListDto.add(algorithmOptional.get().getOutputParameters().stream()
                 .map(ParameterDto.Converter::convert)
                 .collect(Collectors.toList()));
 

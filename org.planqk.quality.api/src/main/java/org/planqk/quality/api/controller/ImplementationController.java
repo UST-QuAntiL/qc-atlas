@@ -18,10 +18,13 @@ package org.planqk.quality.api.controller;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.planqk.quality.api.Constants;
 import org.planqk.quality.api.dtos.ImplementationDto;
 import org.planqk.quality.api.dtos.ImplementationListDto;
+import org.planqk.quality.api.dtos.ParameterDto;
+import org.planqk.quality.api.dtos.ParameterListDto;
 import org.planqk.quality.model.Algorithm;
 import org.planqk.quality.model.Implementation;
 import org.planqk.quality.model.Sdk;
@@ -100,7 +103,7 @@ public class ImplementationController {
 
     @PostMapping("/")
     public HttpEntity<ImplementationDto> createImplementation(@PathVariable Long algoId, @RequestBody ImplementationDto impl) {
-        LOG.debug("Post to create new algorithm received.");
+        LOG.debug("Post to create new implementation received.");
 
         Optional<Algorithm> algorithmOptional = algorithmRepository.findById(algoId);
         if(!algorithmOptional.isPresent()){
@@ -124,7 +127,7 @@ public class ImplementationController {
         }
 
         // check consistency of passed parameters
-        if(parameterConsistent(impl.getInputParameters().getParameters(), impl.getOutputParameters().getParameters())){
+        if(!parameterConsistent(impl.getInputParameters().getParameters(), impl.getOutputParameters().getParameters())){
             LOG.error("Received invalid parameter dto for post request.");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -134,6 +137,46 @@ public class ImplementationController {
         Implementation implementation =
                 implementationRepository.save(ImplementationDto.Converter.convert(impl, sdkOptional.get(), algorithmOptional.get()));
         return new ResponseEntity<>(createImplementationDto(algoId, implementation), HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}/" + Constants.INPUT_PARAMS)
+    public HttpEntity<ParameterListDto> getInputParameters(@PathVariable Long id) {
+        LOG.debug("Get to retrieve input parameters for implementation with id: {}.", id);
+
+        Optional<Algorithm> algorithmOptional = algorithmRepository.findById(id);
+        if(!algorithmOptional.isPresent()){
+            LOG.error("Unable to retrieve algorithm with id {} form the repository.", id);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        // convert all output parameters to corresponding dtos
+        ParameterListDto parameterListDto = new ParameterListDto();
+        parameterListDto.add(algorithmOptional.get().getOutputParameters().stream()
+                .map(ParameterDto.Converter::convert)
+                .collect(Collectors.toList()));
+
+        parameterListDto.add(linkTo(methodOn(AlgorithmController.class).getInputParameters(id)).withSelfRel());
+        return new ResponseEntity<>(parameterListDto, HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}/" + Constants.OUTPUT_PARAMS)
+    public HttpEntity<ParameterListDto> getOutputParameters(@PathVariable Long id) {
+        LOG.debug("Get to retrieve output parameters for implementation with id: {}.", id);
+
+        Optional<Implementation> implementationOptional = implementationRepository.findById(id);
+        if(!implementationOptional.isPresent()){
+            LOG.error("Unable to retrieve implementation with id {} form the repository.", id);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        // convert all input parameters to corresponding dtos
+        ParameterListDto parameterListDto = new ParameterListDto();
+        parameterListDto.add(implementationOptional.get().getInputParameters().stream()
+                .map(ParameterDto.Converter::convert)
+                .collect(Collectors.toList()));
+
+        parameterListDto.add(linkTo(methodOn(AlgorithmController.class).getOutputParameters(id)).withSelfRel());
+        return new ResponseEntity<>(parameterListDto, HttpStatus.OK);
     }
 
     /**
@@ -146,11 +189,11 @@ public class ImplementationController {
     private ImplementationDto createImplementationDto(Long algoId, Implementation implementation){
         ImplementationDto dto = ImplementationDto.Converter.convert(implementation);
         dto.add(linkTo(methodOn(ImplementationController.class).getImplementation(algoId, implementation.getId())).withSelfRel());
-        dto.add(linkTo(methodOn(AlgorithmController.class).getAlgorithm(algoId)).withRel(ALGORITHM_LINK));
+        dto.add(linkTo(methodOn(AlgorithmController.class).getAlgorithm(algoId)).withRel(Constants.ALGORITHM_LINK));
 
         Sdk usedSdk = implementation.getSdk();
         if(Objects.nonNull(usedSdk)){
-            dto.add(linkTo(methodOn(SdkController.class).getSdk(usedSdk.getId())).withRel(usedSdk.getId().toString()));
+            dto.add(linkTo(methodOn(SdkController.class).getSdk(usedSdk.getId())).withRel(Constants.USED_SDK));
         }
 
         return dto;

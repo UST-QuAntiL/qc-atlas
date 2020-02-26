@@ -16,12 +16,27 @@
 
 package org.planqk.quality.api.controller;
 
+import java.util.Objects;
+import java.util.Optional;
+
 import org.planqk.quality.api.Constants;
+import org.planqk.quality.api.dtos.AlgorithmDto;
+import org.planqk.quality.api.dtos.ProviderDto;
+import org.planqk.quality.api.dtos.ProviderListDto;
+import org.planqk.quality.model.Algorithm;
+import org.planqk.quality.model.Provider;
+import org.planqk.quality.repository.ProviderRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -35,11 +50,66 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RequestMapping(Constants.PROVIDERS)
 public class ProviderController {
 
+    final private static Logger LOG = LoggerFactory.getLogger(ProviderController.class);
+
+    private final ProviderRepository providerRepository;
+
+    public ProviderController(ProviderRepository providerRepository) {
+        this.providerRepository = providerRepository;
+    }
+
     @GetMapping("/")
-    public HttpEntity<RepresentationModel> getProviders() {
-        // TODO: display all existing provider entities
-        RepresentationModel responseEntity = new RepresentationModel<>();
-        responseEntity.add(linkTo(methodOn(ProviderController.class).getProviders()).withSelfRel());
-        return new ResponseEntity<>(responseEntity, HttpStatus.OK);
+    public HttpEntity<ProviderListDto> getProviders() {
+        LOG.debug("Get to retrieve all providers received.");
+        ProviderListDto providerListDto = new ProviderListDto();
+
+        // add all available providers to the response
+        for(Provider provider : providerRepository.findAll()){
+            providerListDto.add(createProviderDto(provider));
+            providerListDto.add(linkTo(methodOn(ProviderController.class).getProvider(provider.getId())).withRel(provider.getId().toString()));
+        }
+
+        providerListDto.add(linkTo(methodOn(ProviderController.class).getProviders()).withSelfRel());
+        return new ResponseEntity<>(providerListDto, HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}")
+    public HttpEntity<ProviderDto> getProvider(@PathVariable Long id) {
+        LOG.debug("Get to retrieve provider with id: {}.", id);
+
+        Optional<Provider> providerOptional = providerRepository.findById(id);
+        if(!providerOptional.isPresent()){
+            LOG.error("Unable to retrieve provider with id {} from the repository.", id);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(createProviderDto(providerOptional.get()), HttpStatus.OK);
+    }
+
+    @PostMapping("/")
+    public HttpEntity<ProviderDto> createProvider(@RequestBody ProviderDto providerDto) {
+        LOG.debug("Post to create new provider received.");
+
+        if(Objects.isNull(providerDto.getName()) || Objects.isNull(providerDto.getAccessKey())
+                || Objects.isNull(providerDto.getSecretKey())){
+            LOG.error("Received invalid provider object for post request: {}", providerDto.toString());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        Provider provider = providerRepository.save(ProviderDto.Converter.convert(providerDto));
+        return new ResponseEntity<>(createProviderDto(provider), HttpStatus.OK);
+    }
+
+    /**
+     * Create a DTO object for a given {@link Provider} with the contained data and the links to related objects.
+     *
+     * @param provider the {@link Provider} to create the DTO for
+     * @return the created DTO
+     */
+    private ProviderDto createProviderDto(Provider provider) {
+        ProviderDto providerDto = ProviderDto.Converter.convert(provider);
+        providerDto.add(linkTo(methodOn(ProviderController.class).getProvider(provider.getId())).withSelfRel());
+        providerDto.add(linkTo(methodOn(QpuController.class).getQpus(provider.getId())).withRel(Constants.QPUS));
+        return providerDto;
     }
 }

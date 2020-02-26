@@ -14,23 +14,28 @@
  *  ******************************************************************************
  */
 
-package org.planqk.quality.api;
+package org.planqk.quality.api.dtos;
+
+import java.util.Arrays;
+import java.util.List;
+
+import org.planqk.quality.model.Provider;
+
+import org.assertj.core.util.Lists;
+import org.springframework.hateoas.RepresentationModel;
 
 /**
- * Constants for the Quality API classes.
+ * Data transfer object for multiple {@link Provider}s.
  */
-public class Constants {
+public class ProviderListDto extends RepresentationModel<ProviderListDto> {
 
-    // URL snippets
-    public static final String IMPLEMENTATIONS = "implementations";
-    public static final String ALGORITHMS = "algorithms";
-    public static final String PROVIDERS = "providers";
-    public static final String QPUS = "qpus";
-    public static final String SDKS = "sdks";
+    private final List<ProviderDto> providerDtoList = Lists.newArrayList();
 
-    // link names
-    public static final String ALGORITHM_LINK = "implementedAlgorithm";
-    public static final String USED_SDK = "usedSdk";
-    public static final String INPUT_PARAMS = "inputParameters";
-    public static final String OUTPUT_PARAMS = "outputParameters";
+    public List<ProviderDto> getProviders() {
+        return this.providerDtoList;
+    }
+
+    public void add(final ProviderDto... provider) {
+        this.providerDtoList.addAll(Arrays.asList(provider));
+    }
 }

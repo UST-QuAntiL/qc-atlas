@@ -28,8 +28,6 @@ import org.springframework.data.repository.CrudRepository;
  */
 public interface ImplementationRepository extends CrudRepository<Implementation, Long> {
 
-    Implementation findById(long id);
-
     List<Implementation> findByImplementedAlgorithm(Algorithm implementedAlgorithm);
 
     List<Implementation> findBySdk(Sdk sdk);

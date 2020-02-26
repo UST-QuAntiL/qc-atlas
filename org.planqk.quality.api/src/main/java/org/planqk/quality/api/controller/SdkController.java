@@ -16,16 +16,25 @@
 
 package org.planqk.quality.api.controller;
 
+import java.util.Objects;
+import java.util.Optional;
+
 import org.planqk.quality.api.Constants;
-import org.planqk.quality.api.dtos.AlgorithmDto;
+import org.planqk.quality.api.dtos.ImplementationDto;
+import org.planqk.quality.api.dtos.SdkDto;
+import org.planqk.quality.api.dtos.SdkListDto;
+import org.planqk.quality.model.Implementation;
+import org.planqk.quality.model.Sdk;
+import org.planqk.quality.repository.SdkRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -41,21 +50,63 @@ public class SdkController {
 
     final private static Logger LOG = LoggerFactory.getLogger(SdkController.class);
 
+    private final SdkRepository sdkRepository;
+
+    public SdkController(SdkRepository sdkRepository) {
+        this.sdkRepository = sdkRepository;
+    }
+
     @GetMapping("/")
-    public HttpEntity<RepresentationModel> getSdks() {
-        // TODO: display all existing qpu entities
-        RepresentationModel responseEntity = new RepresentationModel<>();
-        responseEntity.add(linkTo(methodOn(SdkController.class).getSdks()).withSelfRel());
-        return new ResponseEntity<>(responseEntity, HttpStatus.OK);
+    public HttpEntity<SdkListDto> getSdks() {
+        LOG.debug("Get to retrieve all SDKs received.");
+        SdkListDto sdkListDto = new SdkListDto();
+
+        // add all available Sdks to the response
+        for(Sdk sdk : sdkRepository.findAll()) {
+            sdkListDto.add(createSdkDto(sdk));
+            sdkListDto.add(linkTo(methodOn(SdkController.class).getSdk(sdk.getId())).withRel(sdk.getName()));
+        }
+
+        sdkListDto.add(linkTo(methodOn(SdkController.class).getSdks()).withSelfRel());
+        return new ResponseEntity<>(sdkListDto, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public HttpEntity<RepresentationModel> getSdk(@PathVariable Long id) {
+    public HttpEntity<SdkDto> getSdk(@PathVariable Long id) {
         LOG.debug("Get to retrieve SDK with id: {}.", id);
-        // TODO: check for availability and abort otherwise
-        RepresentationModel dto = new RepresentationModel<>();
-        // TODO: handle dto
 
-        return new ResponseEntity<>(dto, HttpStatus.OK);
+        Optional<Sdk> sdkOptional = sdkRepository.findById(id);
+        if(!sdkOptional.isPresent()){
+            LOG.error("Unable to retrieve Sdk with id {} from the repository.", id);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(createSdkDto(sdkOptional.get()), HttpStatus.OK);
+    }
+
+    @PostMapping("/")
+    public HttpEntity<SdkDto> createImplementation(@RequestBody SdkDto sdkDto) {
+        LOG.debug("Post to create new Sdk received.");
+
+        if (Objects.isNull(sdkDto.getName())){
+            LOG.error("Received invalid sdk object for post request: {}", sdkDto.toString());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        // store and return implementation
+        Sdk sdk = sdkRepository.save(SdkDto.Converter.convert(sdkDto));
+        return new ResponseEntity<>(createSdkDto(sdk), HttpStatus.OK);
+    }
+
+    /**
+     * Create a DTO object for a given {@link Sdk}.
+     *
+     * @param sdk the {@link Sdk} to create the DTO for
+     * @return the created DTO
+     */
+    private SdkDto createSdkDto(Sdk sdk) {
+        SdkDto sdkDto = SdkDto.Converter.convert(sdk);
+        sdkDto.add(linkTo(methodOn(SdkController.class).getSdk(sdk.getId())).withSelfRel());
+        return sdkDto;
     }
 }

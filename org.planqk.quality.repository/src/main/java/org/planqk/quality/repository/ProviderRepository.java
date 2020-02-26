@@ -14,23 +14,17 @@
  *  ******************************************************************************
  */
 
-package org.planqk.quality.api;
+package org.planqk.quality.repository;
+
+import java.util.Optional;
+
+import org.planqk.quality.model.Provider;
+import org.springframework.data.repository.CrudRepository;
 
 /**
- * Constants for the Quality API classes.
+ * Repository to access {@link Provider}s available in the data base with different queries.
  */
-public class Constants {
+public interface ProviderRepository extends CrudRepository<Provider, Long> {
 
-    // URL snippets
-    public static final String IMPLEMENTATIONS = "implementations";
-    public static final String ALGORITHMS = "algorithms";
-    public static final String PROVIDERS = "providers";
-    public static final String QPUS = "qpus";
-    public static final String SDKS = "sdks";
-
-    // link names
-    public static final String ALGORITHM_LINK = "implementedAlgorithm";
-    public static final String USED_SDK = "usedSdk";
-    public static final String INPUT_PARAMS = "inputParameters";
-    public static final String OUTPUT_PARAMS = "outputParameters";
+    Optional<Provider> findByName(String name);
 }

@@ -16,6 +16,8 @@
 
 package org.planqk.quality.repository;
 
+import java.util.Optional;
+
 import org.planqk.quality.model.Algorithm;
 import org.springframework.data.repository.CrudRepository;
 
@@ -24,7 +26,5 @@ import org.springframework.data.repository.CrudRepository;
  */
 public interface AlgorithmRepository extends CrudRepository<Algorithm, Long> {
 
-    Algorithm findById(long id);
-
-    Algorithm findByName(String name);
+    Optional<Algorithm> findByName(String name);
 }

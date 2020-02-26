@@ -22,6 +22,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -32,14 +33,14 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
  * Controller to access and manipulate quantum processing units (QPUs).
  */
 @RestController
-@RequestMapping(Constants.QPUS)
+@RequestMapping(Constants.PROVIDERS + "/{providerId}/" + Constants.QPUS)
 public class QpuController {
 
     @GetMapping("/")
-    public HttpEntity<RepresentationModel> getQpus() {
+    public HttpEntity<RepresentationModel> getQpus(@PathVariable Long providerId) {
         // TODO: display all existing qpu entities
         RepresentationModel responseEntity = new RepresentationModel<>();
-        responseEntity.add(linkTo(methodOn(QpuController.class).getQpus()).withSelfRel());
+        responseEntity.add(linkTo(methodOn(QpuController.class).getQpus(providerId)).withSelfRel());
         return new ResponseEntity<>(responseEntity, HttpStatus.OK);
     }
 }
