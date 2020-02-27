@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 import org.planqk.quality.model.Algorithm;
 import org.planqk.quality.model.Implementation;
+import org.planqk.quality.model.ProgrammingLanguage;
 import org.planqk.quality.model.Sdk;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.lang.NonNull;
@@ -34,7 +35,7 @@ public class ImplementationDto extends RepresentationModel<ImplementationDto> {
 
     private String name;
 
-    private String programmingLanguage;
+    private ProgrammingLanguage programmingLanguage;
 
     private String selectionRule;
 
@@ -64,11 +65,11 @@ public class ImplementationDto extends RepresentationModel<ImplementationDto> {
         return name;
     }
 
-    public void setProgrammingLanguage(String programmingLanguage) {
+    public void setProgrammingLanguage(ProgrammingLanguage programmingLanguage) {
         this.programmingLanguage = programmingLanguage;
     }
 
-    public String getProgrammingLanguage() {
+    public ProgrammingLanguage getProgrammingLanguage() {
         return programmingLanguage;
     }
 

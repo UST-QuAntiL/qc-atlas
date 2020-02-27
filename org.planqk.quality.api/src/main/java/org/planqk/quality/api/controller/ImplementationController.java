@@ -198,7 +198,7 @@ public class ImplementationController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        Map<DataType, String> outputParams;
+        Map<String, String> outputParams;
         try {
             outputParams = controlService.executeQuantumAlgorithm(implementationOptional.get(), executionRequest.getParameters());
         } catch (RuntimeException e) {

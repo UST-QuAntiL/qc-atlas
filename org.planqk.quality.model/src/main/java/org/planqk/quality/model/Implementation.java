@@ -25,7 +25,7 @@ import javax.persistence.ManyToOne;
 @Entity
 public class Implementation extends Executable {
 
-    private String programmingLanguage;
+    private ProgrammingLanguage programmingLanguage;
 
     private String selectionRule;
 
@@ -39,11 +39,11 @@ public class Implementation extends Executable {
         super();
     }
 
-    public void setProgrammingLanguage(String programmingLanguage) {
+    public void setProgrammingLanguage(ProgrammingLanguage programmingLanguage) {
         this.programmingLanguage = programmingLanguage;
     }
 
-    public String getProgrammingLanguage() {
+    public ProgrammingLanguage getProgrammingLanguage() {
         return programmingLanguage;
     }
 

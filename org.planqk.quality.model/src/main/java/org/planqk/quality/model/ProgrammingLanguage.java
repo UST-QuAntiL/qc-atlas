@@ -14,22 +14,11 @@
  *  ******************************************************************************
  */
 
-package org.planqk.quality.api.dtos.requests;
-
-import java.util.Map;
+package org.planqk.quality.model;
 
 /**
- * Dto to exchange input and output parameters for a quantum algorithm implementation execution.
+ * Programming languages that are supported by the system.
  */
-public class ExecuteImplementationDto {
-
-    Map<String, String> parameters;
-
-    public Map<String, String> getParameters() {
-        return parameters;
-    }
-
-    public void setParameters(Map<String, String> parameters) {
-        this.parameters = parameters;
-    }
+public enum ProgrammingLanguage {
+    Python
 }
