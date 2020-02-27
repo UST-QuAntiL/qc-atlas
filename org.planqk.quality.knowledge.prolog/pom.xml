@@ -33,5 +33,12 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-	</dependencies>
+
+		<!-- https://mvnrepository.com/artifact/jpl/jpl -->
+		<dependency>
+			<groupId>jpl</groupId>
+			<artifactId>jpl</artifactId>
+			<version>7.4.0</version>
+		</dependency>
+    </dependencies>
 </project>

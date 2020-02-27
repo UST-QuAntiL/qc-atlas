@@ -45,5 +45,11 @@
             <version>RELEASE</version>
             <scope>compile</scope>
         </dependency>
-	</dependencies>
+        <dependency>
+            <groupId>org.planqk</groupId>
+            <artifactId>org.planqk.quality.knowledge.prolog</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
 </project>

@@ -16,7 +16,6 @@
 
 package org.planqk.quality.control;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -62,7 +61,7 @@ public class QualityControlService {
             LOG.error("Unable to find executor plugin for programming language {} and sdk name {}.",
                     implementation.getProgrammingLanguage(), implementation.getSdk().getName());
             throw new RuntimeException("Unable to find executor plugin for programming language "
-                    +  implementation.getProgrammingLanguage() + " and sdk name " + implementation.getSdk().getName());
+                    + implementation.getProgrammingLanguage() + " and sdk name " + implementation.getSdk().getName());
         }
 
         // TODO: retrieve file of the implementation

@@ -16,15 +16,19 @@
 
 package org.planqk.quality.model;
 
+import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
+import org.planqk.quality.model.listener.DatabaseListener;
+
 /**
  * Base class defining the Id property for all JPA entity classes.
  */
 @MappedSuperclass
+@EntityListeners(DatabaseListener.class)
 public abstract class HasId {
 
     @Id

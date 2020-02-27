@@ -37,7 +37,7 @@ public class PythonExecutor implements IExecutor {
 
     @Override
     public Map<String, String> executeQuantumAlgorithm(File algorithmImplementation, Map<String, String> parameters) throws RuntimeException{
-        // TODO:
+        // TODO: execute passed script and return resulting output
         return null;
     }
 
