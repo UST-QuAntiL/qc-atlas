@@ -22,6 +22,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 
+import org.jpl7.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,12 +34,22 @@ public class PrologKnowledgeBaseHandler {
     final private static Logger LOG = LoggerFactory.getLogger(PrologKnowledgeBaseHandler.class);
 
     // path to store the files for the local knowledge base
-    private static String basePath = System.getProperty("java.io.tmpdir") + File.separator + "quality";
+    private static String basePath = System.getProperty("java.io.tmpdir") + "quality";
+
+    protected static void activatePrologFile(String fileName) {
+        String activateQuery = "consult('" + basePath + File.separator + fileName + ".pl').";
+
+        // replace backslashs if running on windows as JPL cannot handle this
+        activateQuery = activateQuery.replace("\\", "/");
+
+        Query query = new Query(activateQuery);
+        LOG.debug("File: {} consulting finished with {}", fileName, query.hasSolution());
+    }
 
     /**
      * Write a Prolog file with the given content to the local directory
      *
-     * @param content the Prolog content to write to the file
+     * @param content  the Prolog content to write to the file
      * @param fileName the name of the file to create
      * @throws IOException is thrown in case the writing fails
      */
@@ -60,7 +71,7 @@ public class PrologKnowledgeBaseHandler {
      *
      * @param fileName the name of the Prolog file
      */
-    protected static void deletePrologFile(String fileName){
+    protected static void deletePrologFile(String fileName) {
         // TODO: deactivate Prolog file in knowledge base
         File file = new File(basePath + File.separator + fileName + ".pl");
         LOG.debug("Deleting prolog file successful: {}", file.delete());

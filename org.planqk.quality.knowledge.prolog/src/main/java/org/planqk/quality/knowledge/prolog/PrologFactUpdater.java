@@ -44,13 +44,13 @@ public class PrologFactUpdater {
     public static void handleImplementationInsertion(Long id, String usedSdk, Long implementedAlgoId, String selectionRule) {
         LOG.debug("Handling insertion of implementation with Id {} in Prolog knowledge base.", id);
 
-        String prologContent = createImplementationFacts(id, usedSdk, implementedAlgoId, selectionRule);
+        String prologContent = createImplementationFacts(id, usedSdk.toLowerCase(), implementedAlgoId, selectionRule);
         try {
             PrologKnowledgeBaseHandler.persistPrologFile(prologContent, id.toString());
+            PrologKnowledgeBaseHandler.activatePrologFile(id.toString());
         } catch (IOException e) {
             LOG.error("Unable to store prolog file to add new facts after implementation insertion: {}", e.getMessage());
         }
-        // TODO: activate rules in Prolog
     }
 
     /**
@@ -81,13 +81,13 @@ public class PrologFactUpdater {
         PrologKnowledgeBaseHandler.deletePrologFile(id.toString());
 
         // create and activate the Prolog file with the new facts
-        String prologContent = createImplementationFacts(id, usedSdk, implementedAlgoId, selectionRule);
+        String prologContent = createImplementationFacts(id, usedSdk.toLowerCase(), implementedAlgoId, selectionRule);
         try {
             PrologKnowledgeBaseHandler.persistPrologFile(prologContent, id.toString());
+            PrologKnowledgeBaseHandler.activatePrologFile(id.toString());
         } catch (IOException e) {
             LOG.error("Unable to store prolog file to add new facts after implementation insertion: {}", e.getMessage());
         }
-        // TODO: activate facts in Prolog
     }
 
     /**
@@ -130,7 +130,12 @@ public class PrologFactUpdater {
      * Create a string containing all required prologs fact for an implementation.
      */
     private static String createImplementationFacts(Long implId, String usedSdk, Long implementedAlgoId, String selectionRule) {
-        String prologContent = createImplementsFact(implId, implementedAlgoId) + newline;
+        // the following two lines are required to define the same predicate in multiple files
+        String prologContent = ":- multifile implements/2." + newline;
+        prologContent += ":- multifile requiredSdk/2." + newline;
+        prologContent += ":- multifile " + getNameOfPredicate(selectionRule) + "/" + getNumberOfParameters(selectionRule) + "." + newline;
+
+        prologContent += createImplementsFact(implId, implementedAlgoId) + newline;
         prologContent += createRequiredSdkFact(implId, usedSdk) + newline;
         prologContent += selectionRule + newline;
         return prologContent;
@@ -156,5 +161,34 @@ public class PrologFactUpdater {
      */
     private static String createRequiredSdkFact(Long implId, String sdkName) {
         return "requiredSdk(" + implId + "," + sdkName + ").";
+    }
+
+    /**
+     * Get the predicate name for the given Prolog rule. E.g. "executable(N, shor-15-qiskit)" --> "executable"
+     *
+     * @param rule the rule to retrieve the predicate name from
+     * @return the name of the predicate
+     */
+    private static String getNameOfPredicate(String rule) {
+        return rule.split("\\(")[0];
+    }
+
+    /**
+     * Get the number of parameters that are used for a given rule.
+     *
+     * @param rule the rule to get the parameter count from
+     * @return the number of available parameters
+     */
+    private static int getNumberOfParameters(String rule) {
+        // get String part between the brackets
+        String[] ruleParts = rule.split("\\(");
+
+        // rule is invalid as it does not contain brackets for the parameters
+        if (ruleParts.length < 2) {
+            return 0;
+        }
+
+        String parametersPart = rule.split("\\)")[0];
+        return parametersPart.split(",").length;
     }
 }
