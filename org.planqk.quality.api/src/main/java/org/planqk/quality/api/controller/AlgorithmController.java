@@ -21,10 +21,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.planqk.quality.api.Constants;
-import org.planqk.quality.api.dtos.AlgorithmDto;
-import org.planqk.quality.api.dtos.AlgorithmListDto;
-import org.planqk.quality.api.dtos.ParameterDto;
-import org.planqk.quality.api.dtos.ParameterListDto;
+import org.planqk.quality.api.dtos.entities.AlgorithmDto;
+import org.planqk.quality.api.dtos.entities.AlgorithmListDto;
+import org.planqk.quality.api.dtos.entities.ParameterDto;
+import org.planqk.quality.api.dtos.entities.ParameterListDto;
 import org.planqk.quality.model.Algorithm;
 import org.planqk.quality.repository.AlgorithmRepository;
 import org.slf4j.Logger;

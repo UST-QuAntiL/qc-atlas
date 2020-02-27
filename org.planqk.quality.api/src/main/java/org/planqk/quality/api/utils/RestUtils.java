@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Objects;
 
 import org.planqk.quality.api.controller.AlgorithmController;
-import org.planqk.quality.api.dtos.ParameterDto;
+import org.planqk.quality.api.dtos.entities.ParameterDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

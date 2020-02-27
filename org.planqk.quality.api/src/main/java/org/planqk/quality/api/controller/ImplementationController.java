@@ -16,16 +16,20 @@
 
 package org.planqk.quality.api.controller;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.planqk.quality.api.Constants;
-import org.planqk.quality.api.dtos.ImplementationDto;
-import org.planqk.quality.api.dtos.ImplementationListDto;
-import org.planqk.quality.api.dtos.ParameterDto;
-import org.planqk.quality.api.dtos.ParameterListDto;
+import org.planqk.quality.api.dtos.entities.ImplementationDto;
+import org.planqk.quality.api.dtos.entities.ImplementationListDto;
+import org.planqk.quality.api.dtos.entities.ParameterDto;
+import org.planqk.quality.api.dtos.entities.ParameterListDto;
+import org.planqk.quality.api.dtos.requests.ExecuteImplementationDto;
+import org.planqk.quality.control.QualityControlService;
 import org.planqk.quality.model.Algorithm;
+import org.planqk.quality.model.DataType;
 import org.planqk.quality.model.Implementation;
 import org.planqk.quality.model.Sdk;
 import org.planqk.quality.repository.AlgorithmRepository;
@@ -63,11 +67,15 @@ public class ImplementationController {
 
     private final SdkRepository sdkRepository;
 
+    private final QualityControlService controlService;
+
     public ImplementationController(ImplementationRepository implementationRepository,
-                                    AlgorithmRepository algorithmRepository, SdkRepository sdkRepository) {
+                                    AlgorithmRepository algorithmRepository, SdkRepository sdkRepository,
+                                    QualityControlService controlService) {
         this.implementationRepository = implementationRepository;
         this.algorithmRepository = algorithmRepository;
         this.sdkRepository = sdkRepository;
+        this.controlService = controlService;
     }
 
     @GetMapping("/")
@@ -76,7 +84,7 @@ public class ImplementationController {
         ImplementationListDto dtoList = new ImplementationListDto();
 
         // add all available implementations to the response
-        for(Implementation impl : implementationRepository.findAll()) {
+        for (Implementation impl : implementationRepository.findAll()) {
             dtoList.add(createImplementationDto(algoId, impl));
             dtoList.add(linkTo(methodOn(ImplementationController.class).getImplementation(algoId, impl.getId()))
                     .withRel(impl.getId().toString()));
@@ -93,7 +101,7 @@ public class ImplementationController {
         LOG.debug("Get to retrieve implementation with id: {}.", implId);
 
         Optional<Implementation> implementationOptional = implementationRepository.findById(implId);
-        if(!implementationOptional.isPresent()){
+        if (!implementationOptional.isPresent()) {
             LOG.error("Unable to retrieve implementation with id {} form the repository.", implId);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -106,7 +114,7 @@ public class ImplementationController {
         LOG.debug("Post to create new implementation received.");
 
         Optional<Algorithm> algorithmOptional = algorithmRepository.findById(algoId);
-        if(!algorithmOptional.isPresent()){
+        if (!algorithmOptional.isPresent()) {
             LOG.error("Unable to retrieve algorithm with id {} from the repository.", algoId);
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -121,13 +129,13 @@ public class ImplementationController {
 
         // retrieve referenced Sdk and abort if not present
         Optional<Sdk> sdkOptional = sdkRepository.findByName(impl.getSdk());
-        if(!sdkOptional.isPresent()){
+        if (!sdkOptional.isPresent()) {
             LOG.error("Unable to retrieve Sdk with name {} from the repository.", impl.getSdk());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         // check consistency of passed parameters
-        if(!parameterConsistent(impl.getInputParameters().getParameters(), impl.getOutputParameters().getParameters())){
+        if (!parameterConsistent(impl.getInputParameters().getParameters(), impl.getOutputParameters().getParameters())) {
             LOG.error("Received invalid parameter dto for post request.");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -144,7 +152,7 @@ public class ImplementationController {
         LOG.debug("Get to retrieve input parameters for implementation with id: {}.", id);
 
         Optional<Implementation> implementationOptional = implementationRepository.findById(id);
-        if(!implementationOptional.isPresent()){
+        if (!implementationOptional.isPresent()) {
             LOG.error("Unable to retrieve implementation with id {} form the repository.", id);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -164,7 +172,7 @@ public class ImplementationController {
         LOG.debug("Get to retrieve output parameters for implementation with id: {}.", id);
 
         Optional<Implementation> implementationOptional = implementationRepository.findById(id);
-        if(!implementationOptional.isPresent()){
+        if (!implementationOptional.isPresent()) {
             LOG.error("Unable to retrieve implementation with id {} form the repository.", id);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -179,20 +187,46 @@ public class ImplementationController {
         return new ResponseEntity<>(parameterListDto, HttpStatus.OK);
     }
 
+    @PostMapping("/{implId}/" + Constants.EXECUTION)
+    public HttpEntity executeImplementation(@PathVariable Long algoId, @PathVariable Long implId,
+                                            @RequestBody ExecuteImplementationDto executionRequest) {
+        LOG.debug("Post to execute implementation with Id: {}", implId);
+
+        Optional<Implementation> implementationOptional = implementationRepository.findById(implId);
+        if (!implementationOptional.isPresent()) {
+            LOG.error("Unable to retrieve implementation with id {} form the repository.", implId);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        Map<DataType, String> outputParams;
+        try {
+            outputParams = controlService.executeQuantumAlgorithm(implementationOptional.get(), executionRequest.getParameters());
+        } catch (RuntimeException e) {
+            LOG.error("Error while executing implementation: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error Message: " + e.getMessage());
+        }
+
+        // TODO: handle via long running resource
+
+        ExecuteImplementationDto dto = new ExecuteImplementationDto();
+        dto.setParameters(outputParams);
+        return new ResponseEntity<>(dto, HttpStatus.OK);
+    }
+
     /**
      * Create a DTO object for a given {@link Implementation} with the contained data and the links to related objects.
      *
-     * @param algoId the Id of the Algorithm this Implementation belongs to
+     * @param algoId         the Id of the Algorithm this Implementation belongs to
      * @param implementation the {@link Implementation} to create the DTO for
      * @return the created DTO
      */
-    private ImplementationDto createImplementationDto(Long algoId, Implementation implementation){
+    private ImplementationDto createImplementationDto(Long algoId, Implementation implementation) {
         ImplementationDto dto = ImplementationDto.Converter.convert(implementation);
         dto.add(linkTo(methodOn(ImplementationController.class).getImplementation(algoId, implementation.getId())).withSelfRel());
         dto.add(linkTo(methodOn(AlgorithmController.class).getAlgorithm(algoId)).withRel(Constants.ALGORITHM_LINK));
 
         Sdk usedSdk = implementation.getSdk();
-        if(Objects.nonNull(usedSdk)){
+        if (Objects.nonNull(usedSdk)) {
             dto.add(linkTo(methodOn(SdkController.class).getSdk(usedSdk.getId())).withRel(Constants.USED_SDK));
         }
 

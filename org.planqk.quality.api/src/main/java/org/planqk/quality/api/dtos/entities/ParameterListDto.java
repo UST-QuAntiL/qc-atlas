@@ -14,27 +14,27 @@
  *  ******************************************************************************
  */
 
-package org.planqk.quality.api.dtos;
+package org.planqk.quality.api.dtos.entities;
 
-import java.util.Arrays;
 import java.util.List;
 
+import org.planqk.quality.model.Parameter;
+
 import org.assertj.core.util.Lists;
-import org.planqk.quality.model.Qpu;
 import org.springframework.hateoas.RepresentationModel;
 
 /**
- * Data transfer object for multiple {@link Qpu}s.
+ * Data transfer object for multiple {@link Parameter}s
  */
-public class QpuListDto extends RepresentationModel<QpuListDto> {
+public class ParameterListDto extends RepresentationModel<ParameterListDto> {
 
-    private final List<QpuDto> qpuDtoList = Lists.newArrayList();
+    private List<ParameterDto> parameterDtos = Lists.newArrayList();
 
-    public List<QpuDto> getQpus() {
-        return this.qpuDtoList;
+    public List<ParameterDto> getParameters() {
+        return this.parameterDtos;
     }
 
-    public void add(final QpuDto... qpu) {
-        this.qpuDtoList.addAll(Arrays.asList(qpu));
+    public void add(final List<ParameterDto> parameters) {
+        this.parameterDtos.addAll(parameters);
     }
 }

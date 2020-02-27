@@ -20,16 +20,12 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.planqk.quality.api.Constants;
-import org.planqk.quality.api.dtos.AlgorithmDto;
-import org.planqk.quality.api.dtos.ProviderDto;
-import org.planqk.quality.api.dtos.ProviderListDto;
-import org.planqk.quality.model.Algorithm;
+import org.planqk.quality.api.dtos.entities.ProviderDto;
+import org.planqk.quality.api.dtos.entities.ProviderListDto;
 import org.planqk.quality.model.Provider;
 import org.planqk.quality.repository.ProviderRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.hateoas.Link;
-import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

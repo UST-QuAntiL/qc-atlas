@@ -14,26 +14,27 @@
  *  ******************************************************************************
  */
 
-package org.planqk.quality.api.dtos;
+package org.planqk.quality.api.dtos.entities;
 
 import java.util.Arrays;
 import java.util.List;
 
 import org.assertj.core.util.Lists;
+import org.planqk.quality.model.Sdk;
 import org.springframework.hateoas.RepresentationModel;
 
 /**
- * Data transfer object for multiple Implementations ({@link org.planqk.quality.model.Implementation}).
+ * Data transfer object for multiple {@link Sdk}s.
  */
-public class ImplementationListDto extends RepresentationModel<ImplementationListDto> {
+public class SdkListDto extends RepresentationModel<SdkListDto> {
 
-    private final List<ImplementationDto> implementationDtos = Lists.newArrayList();
+    private final List<SdkDto> sdkDtos = Lists.newArrayList();
 
-    public List<ImplementationDto> getImplementations() {
-        return this.implementationDtos;
+    public List<SdkDto> getSdks() {
+        return this.sdkDtos;
     }
 
-    public void add(final ImplementationDto... implementations) {
-        this.implementationDtos.addAll(Arrays.asList(implementations));
+    public void add(final SdkDto... sdk) {
+        this.sdkDtos.addAll(Arrays.asList(sdk));
     }
 }

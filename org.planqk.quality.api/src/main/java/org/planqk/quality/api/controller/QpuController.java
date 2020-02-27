@@ -22,8 +22,9 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.planqk.quality.api.Constants;
-import org.planqk.quality.api.dtos.QpuDto;
-import org.planqk.quality.api.dtos.QpuListDto;
+import org.planqk.quality.api.dtos.entities.QpuDto;
+import org.planqk.quality.api.dtos.entities.QpuListDto;
+import org.planqk.quality.api.dtos.requests.CreateQpuRequest;
 import org.planqk.quality.model.Provider;
 import org.planqk.quality.model.Qpu;
 import org.planqk.quality.model.Sdk;
@@ -92,7 +93,7 @@ public class QpuController {
     }
 
     @PostMapping("/")
-    public HttpEntity<QpuDto> createQpu(@PathVariable Long providerId, @RequestBody QpuDto qpuDto) {
+    public HttpEntity<QpuDto> createQpu(@PathVariable Long providerId, @RequestBody CreateQpuRequest qpuRequest) {
         LOG.debug("Post to create new QPU received.");
 
         Optional<Provider> providerOptional = providerRepository.findById(providerId);
@@ -102,16 +103,16 @@ public class QpuController {
         }
 
         // check consistency of the QPU object
-        if (Objects.isNull(qpuDto.getName())) {
-            LOG.error("Received invalid QPU object for post request: {}", qpuDto.toString());
+        if (Objects.isNull(qpuRequest.getName())) {
+            LOG.error("Received invalid QPU object for post request: {}", qpuRequest.toString());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         // add supported Sdks in case there are some defined
         List<Sdk> supportedSdks = new ArrayList<>();
-        if (Objects.nonNull(qpuDto.getSupportedSdkIds())) {
+        if (Objects.nonNull(qpuRequest.getSupportedSdkIds())) {
             LOG.debug("Supported SDKs are defined for the QPU.");
-            for (Long sdkId : qpuDto.getSupportedSdkIds()) {
+            for (Long sdkId : qpuRequest.getSupportedSdkIds()) {
                 Optional<Sdk> sdkOptional = sdkRepository.findById(sdkId);
                 if (!sdkOptional.isPresent()) {
                     LOG.error("Unable to retrieve SDK with id {} from the repository.", sdkId);
@@ -122,7 +123,7 @@ public class QpuController {
         }
 
         // store and return QPU
-        Qpu qpu = qpuRepository.save(QpuDto.Converter.convert(qpuDto, providerOptional.get(), supportedSdks));
+        Qpu qpu = qpuRepository.save(QpuDto.Converter.convert(qpuRequest, providerOptional.get(), supportedSdks));
         return new ResponseEntity<>(createQpuDto(providerId, qpu), HttpStatus.OK);
     }
 

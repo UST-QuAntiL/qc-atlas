@@ -14,7 +14,7 @@
  *  ******************************************************************************
  */
 
-package org.planqk.quality.api.dtos;
+package org.planqk.quality.api.dtos.entities;
 
 import java.util.Arrays;
 import java.util.List;

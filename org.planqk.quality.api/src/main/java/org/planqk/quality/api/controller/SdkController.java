@@ -20,10 +20,8 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.planqk.quality.api.Constants;
-import org.planqk.quality.api.dtos.ImplementationDto;
-import org.planqk.quality.api.dtos.SdkDto;
-import org.planqk.quality.api.dtos.SdkListDto;
-import org.planqk.quality.model.Implementation;
+import org.planqk.quality.api.dtos.entities.SdkDto;
+import org.planqk.quality.api.dtos.entities.SdkListDto;
 import org.planqk.quality.model.Sdk;
 import org.planqk.quality.repository.SdkRepository;
 import org.slf4j.Logger;

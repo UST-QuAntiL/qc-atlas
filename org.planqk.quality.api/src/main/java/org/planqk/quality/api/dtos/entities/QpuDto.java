@@ -14,46 +14,67 @@
  *  ******************************************************************************
  */
 
-package org.planqk.quality.api.dtos;
+package org.planqk.quality.api.dtos.entities;
 
+import java.util.List;
+
+import org.planqk.quality.model.Provider;
+import org.planqk.quality.model.Qpu;
 import org.planqk.quality.model.Sdk;
 import org.springframework.hateoas.RepresentationModel;
 
-public class SdkDto extends RepresentationModel<SdkDto> {
+/**
+ * Data transfer object for the model class {@link Qpu}.
+ */
+public class QpuDto extends RepresentationModel<ProviderDto> {
 
     private Long id;
 
     private String name;
 
-    public Long getId() {
-        return id;
-    }
+    private int numberOfQubits;
 
     public void setId(Long id) {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public Long getId() {
+        return id;
     }
 
     public void setName(String name) {
         this.name = name;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setNumberOfQubits(int numberOfQubits) {
+        this.numberOfQubits = numberOfQubits;
+    }
+
+    public int getNumberOfQubits() {
+        return numberOfQubits;
+    }
+
     public static final class Converter {
 
-        public static SdkDto convert(final Sdk object) {
-            final SdkDto dto = new SdkDto();
+        public static QpuDto convert(final Qpu object) {
+            QpuDto dto = new QpuDto();
             dto.setId(object.getId());
             dto.setName(object.getName());
+            dto.setNumberOfQubits(object.getQubitCount());
             return dto;
         }
 
-        public static Sdk convert(final SdkDto object) {
-            final Sdk sdk = new Sdk();
-            sdk.setName(object.getName());
-            return sdk;
+        public static Qpu convert(final QpuDto object, final Provider provider, final List<Sdk> supportedSdks) {
+            Qpu qpu = new Qpu();
+            qpu.setName(object.getName());
+            qpu.setQubitCount(object.getNumberOfQubits());
+            qpu.setProvider(provider);
+            qpu.setSupportedSdks(supportedSdks);
+            return qpu;
         }
     }
 }
