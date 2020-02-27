@@ -7,7 +7,9 @@
 	<packaging>pom</packaging>
 	<modules>
 		<module>org.planqk.quality.api</module>
+		<module>org.planqk.quality.knowledge.prolog</module>
 		<module>org.planqk.quality.model</module>
 		<module>org.planqk.quality.repository</module>
+		<module>org.planqk.quality.war</module>
 	</modules>
 </project>
