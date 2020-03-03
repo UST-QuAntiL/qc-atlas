@@ -62,7 +62,14 @@ public class PrologFactUpdater {
      */
     public static void handleQpuInsertion(Long id, int qubitCount, List<String> supportedSdks) {
         LOG.debug("Handling insertion of QPU with Id {} in Prolog knowledge base.", id);
-        // TODO
+
+        String prologContent = createQpuFacts(id, qubitCount, supportedSdks);
+        try {
+            PrologKnowledgeBaseHandler.persistPrologFile(prologContent, id.toString());
+            PrologKnowledgeBaseHandler.activatePrologFile(id.toString());
+        } catch (IOException e) {
+            LOG.error("Unable to store prolog file to add new facts after QPU insertion: {}", e.getMessage());
+        }
     }
 
     /**
@@ -86,7 +93,7 @@ public class PrologFactUpdater {
             PrologKnowledgeBaseHandler.persistPrologFile(prologContent, id.toString());
             PrologKnowledgeBaseHandler.activatePrologFile(id.toString());
         } catch (IOException e) {
-            LOG.error("Unable to store prolog file to add new facts after implementation insertion: {}", e.getMessage());
+            LOG.error("Unable to store prolog file to add new facts after implementation update: {}", e.getMessage());
         }
     }
 
@@ -103,7 +110,14 @@ public class PrologFactUpdater {
         // deactivate and delete the Prolog file with the old facts
         PrologKnowledgeBaseHandler.deletePrologFile(id.toString());
 
-        // TODO
+        // create and activate the Prolog file with the new facts
+        String prologContent = createQpuFacts(id, qubitCount, supportedSdks);
+        try {
+            PrologKnowledgeBaseHandler.persistPrologFile(prologContent, id.toString());
+            PrologKnowledgeBaseHandler.activatePrologFile(id.toString());
+        } catch (IOException e) {
+            LOG.error("Unable to store prolog file to add new facts after QPU update: {}", e.getMessage());
+        }
     }
 
     /**
@@ -127,10 +141,10 @@ public class PrologFactUpdater {
     }
 
     /**
-     * Create a string containing all required prologs fact for an implementation.
+     * Create a string containing all required prolog fact for an implementation.
      */
     private static String createImplementationFacts(Long implId, String usedSdk, Long implementedAlgoId, String selectionRule) {
-        // the following two lines are required to define the same predicate in multiple files
+        // the following three lines are required to define the same predicate in multiple files
         String prologContent = ":- multifile implements/2." + newline;
         prologContent += ":- multifile requiredSdk/2." + newline;
         prologContent += ":- multifile " + getNameOfPredicate(selectionRule) + "/" + getNumberOfParameters(selectionRule) + "." + newline;
@@ -139,6 +153,45 @@ public class PrologFactUpdater {
         prologContent += createRequiredSdkFact(implId, usedSdk) + newline;
         prologContent += selectionRule + newline;
         return prologContent;
+    }
+
+    /**
+     * Create a string containing all required prolog fact for an QPU.
+     */
+    private static String createQpuFacts(Long qpuId, int qubitCount, List<String> supportedSdks) {
+        // the following two lines are required to define the same predicate in multiple files
+        String prologContent = ":- multifile providesQubits/2." + newline;
+        prologContent += ":- multifile usesSdk/2." + newline;
+
+        prologContent += createProvidesQubitFact(qpuId, qubitCount) + newline;
+        prologContent += createUsesSdkFacts(qpuId, supportedSdks) + newline;
+        return prologContent;
+    }
+
+    /**
+     * Create a list of facts that the given QPU supports the given list of SDKs
+     *
+     * @param qpuId         the id of the QPU
+     * @param supportedSdks the list of SDKs that are supported by the QPU
+     * @return the Prolog facts
+     */
+    private static String createUsesSdkFacts(Long qpuId, List<String> supportedSdks) {
+        String prologContent = "";
+        for (String supportedSdk : supportedSdks) {
+            prologContent += "usesSdk(" + qpuId + "," + supportedSdk.toLowerCase() + ")." + newline;
+        }
+        return prologContent;
+    }
+
+    /**
+     * Create a fact that the given QPU provides the given number of Qubits
+     *
+     * @param qpuId      the id of the QPU
+     * @param qubitCount the number of Qubits that are provided by the QPU
+     * @return the Prolog fact
+     */
+    private static String createProvidesQubitFact(Long qpuId, int qubitCount) {
+        return "providesQubits(" + qpuId + "," + qubitCount + ").";
     }
 
     /**

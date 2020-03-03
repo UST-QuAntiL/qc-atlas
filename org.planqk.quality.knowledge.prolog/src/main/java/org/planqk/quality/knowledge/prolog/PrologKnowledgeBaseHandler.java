@@ -22,9 +22,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 
-import org.jpl7.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.planqk.quality.knowledge.prolog.Constants.basePath;
+import static org.planqk.quality.knowledge.prolog.PrologQueryUtility.hasSolution;
 
 /**
  * Class to access and change the local Prolog knowledge base.
@@ -33,17 +35,19 @@ public class PrologKnowledgeBaseHandler {
 
     final private static Logger LOG = LoggerFactory.getLogger(PrologKnowledgeBaseHandler.class);
 
-    // path to store the files for the local knowledge base
-    private static String basePath = System.getProperty("java.io.tmpdir") + "quality";
-
+    /**
+     * Activate the prolog facts and rules contained in the given file
+     *
+     * @param fileName the name of the file containing the prolog facts and rules
+     */
     protected static void activatePrologFile(String fileName) {
         String activateQuery = "consult('" + basePath + File.separator + fileName + ".pl').";
 
         // replace backslashs if running on windows as JPL cannot handle this
         activateQuery = activateQuery.replace("\\", "/");
 
-        Query query = new Query(activateQuery);
-        LOG.debug("File: {} consulting finished with {}", fileName, query.hasSolution());
+        // deactivate file in knowledge base
+        LOG.debug("Activation of file {} in knowledge base returned: {}", fileName, hasSolution(activateQuery));
     }
 
     /**
@@ -72,8 +76,27 @@ public class PrologKnowledgeBaseHandler {
      * @param fileName the name of the Prolog file
      */
     protected static void deletePrologFile(String fileName) {
-        // TODO: deactivate Prolog file in knowledge base
+        String deactivateQuery = "unload_file('" + basePath + File.separator + fileName + ".pl').";
+
+        // replace backslashs if running on windows as JPL cannot handle this
+        deactivateQuery = deactivateQuery.replace("\\", "/");
+
+        // deactivate file in knowledge base
+        LOG.debug("Deactivation of file {} in knowledge base returned: {}", fileName, hasSolution(deactivateQuery));
+
+        // delete the file
         File file = new File(basePath + File.separator + fileName + ".pl");
         LOG.debug("Deleting prolog file successful: {}", file.delete());
+    }
+
+    /**
+     * Check if the prolog file with the given name exists in the knowledge base directory
+     *
+     * @param fileName the name of the file
+     * @return <code>true</code> if the file exists, <code>false</code> otherwise
+     */
+    protected static boolean doesPrologFileExist(String fileName) {
+        File ruleFile = new File(basePath + File.separator + fileName + ".pl");
+        return ruleFile.exists();
     }
 }

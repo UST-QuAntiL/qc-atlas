@@ -21,7 +21,9 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.planqk.quality.execution.IExecutor;
+import org.planqk.quality.model.Algorithm;
 import org.planqk.quality.model.Implementation;
+import org.planqk.quality.model.Qpu;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -70,5 +72,17 @@ public class QualityControlService {
         return selectedExecutor.executeQuantumAlgorithm(null, inputParameters);
     }
 
-    // TODO: add selection functionality
+    /**
+     * Perform the selection of suitable implementations and corresponding QPUs for the given algorithm and the provided
+     * set of input parameters
+     *
+     * @param algorithm       the algorithm for which an implementation and corresponding QPU should be selected
+     * @param inputParameters the set of input parameters required for the selection
+     * @return a map with all possible implementations and the corresponding list of QPUs that are suitable to execute
+     * them
+     */
+    public Map<Implementation, List<Qpu>> performSelection(Algorithm algorithm, Map<String, String> inputParameters) {
+        // TODO
+        return null;
+    }
 }
