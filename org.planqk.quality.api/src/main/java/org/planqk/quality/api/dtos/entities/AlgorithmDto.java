@@ -32,7 +32,9 @@ public class AlgorithmDto extends RepresentationModel<AlgorithmDto> {
 
     private String name;
 
-    private String requiredQubits;
+    private String depthFormula;
+
+    private String widthFormula;
 
     private ParameterListDto inputParameters;
 
@@ -57,12 +59,20 @@ public class AlgorithmDto extends RepresentationModel<AlgorithmDto> {
         this.name = name;
     }
 
-    public String getRequiredQubits() {
-        return requiredQubits;
+    public String getDepthFormula() {
+        return depthFormula;
     }
 
-    public void setRequiredQubits(String requiredQubits) {
-        this.requiredQubits = requiredQubits;
+    public void setDepthFormula(String depthFormula) {
+        this.depthFormula = depthFormula;
+    }
+
+    public String getWidthFormula() {
+        return widthFormula;
+    }
+
+    public void setWidthFormula(String widthFormula) {
+        this.widthFormula = widthFormula;
     }
 
     @NonNull
@@ -94,7 +104,8 @@ public class AlgorithmDto extends RepresentationModel<AlgorithmDto> {
         return "AlgorithmDto{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", requiredQubits='" + requiredQubits + '\'' +
+                ", depthFormula='" + depthFormula + '\'' +
+                ", widthFormula='" + widthFormula + '\'' +
                 ", inputParameters=" + inputParameters +
                 ", outputParameters=" + outputParameters +
                 '}';
@@ -106,7 +117,8 @@ public class AlgorithmDto extends RepresentationModel<AlgorithmDto> {
             final AlgorithmDto dto = new AlgorithmDto();
             dto.setId(object.getId());
             dto.setName(object.getName());
-            dto.setRequiredQubits(object.getRequiredQubits());
+            dto.setDepthFormula(object.getDepthFormula());
+            dto.setWidthFormula(object.getWidthFormula());
 
             ParameterListDto inputParams = new ParameterListDto();
             inputParams.add(object.getInputParameters().stream().map(ParameterDto.Converter::convert)
@@ -124,7 +136,8 @@ public class AlgorithmDto extends RepresentationModel<AlgorithmDto> {
         public static Algorithm convert(final AlgorithmDto object) {
             final Algorithm algo = new Algorithm();
             algo.setName(object.getName());
-            algo.setRequiredQubits(object.getRequiredQubits());
+            algo.setDepthFormula(object.getDepthFormula());
+            algo.setWidthFormula(object.getWidthFormula());
             algo.setInputParameters(object.getInputParameters().getParameters().stream()
                     .map(ParameterDto.Converter::convert)
                     .collect(Collectors.toList()));

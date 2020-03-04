@@ -109,8 +109,8 @@ public class QualityControlService {
 
         // determine all suitable QPUs for the executable implementations
         for (Implementation execImplementation : executableImplementations) {
-            int requiredQubits = (int) Math.ceil(formulaEvaluator.evaluateFormula(execImplementation.getRequiredQubits(), inputParameters));
-            int circuitDepth = 0; // TODO: calculate from formula
+            int requiredQubits = (int) Math.ceil(formulaEvaluator.evaluateFormula(execImplementation.getDepthFormula(), inputParameters)); // TODO: use width
+            int circuitDepth = (int) Math.ceil(formulaEvaluator.evaluateFormula(execImplementation.getDepthFormula(), inputParameters));
             try {
                 List<Long> suitableQpuIds = PrologQueryUtility.getSuitableQpus(execImplementation.getId(), requiredQubits, circuitDepth);
                 LOG.debug("Found {} suitable QPUs for implementation with Id: {}", suitableQpuIds.size(), execImplementation.getId());

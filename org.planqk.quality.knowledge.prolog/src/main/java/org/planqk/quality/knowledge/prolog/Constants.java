@@ -28,5 +28,5 @@ public class Constants {
     public static final String CPU_RULE_CONTENT = "executableOnQpu(RequiredQubits, CircuitDepth, Impl, Qpu) :- requiredSdk(Impl, ReqSdk), usedSdk(Qpu, ReqSdk), providesQubits(Qpu, ProvidedQubit), ProvidedQubit >= RequiredQubits, CircuitDepth =< t1(Qpu)/tg(Qpu).";
 
     // path to store the files for the local knowledge base
-    public static String basePath = System.getProperty("java.io.tmpdir") + File.separator + "quality";
+    public static final String basePath = System.getProperty("java.io.tmpdir") + File.separator + "quality";
 }

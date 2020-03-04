@@ -39,7 +39,9 @@ public class ImplementationDto extends RepresentationModel<ImplementationDto> {
 
     private String selectionRule;
 
-    private String requiredQubits;
+    private String depthFormula;
+
+    private String widthFormula;
 
     private String sdk;
 
@@ -81,12 +83,20 @@ public class ImplementationDto extends RepresentationModel<ImplementationDto> {
         return selectionRule;
     }
 
-    public String getRequiredQubits() {
-        return requiredQubits;
+    public String getDepthFormula() {
+        return depthFormula;
     }
 
-    public void setRequiredQubits(String requiredQubits) {
-        this.requiredQubits = requiredQubits;
+    public void setDepthFormula(String depthFormula) {
+        this.depthFormula = depthFormula;
+    }
+
+    public String getWidthFormula() {
+        return widthFormula;
+    }
+
+    public void setWidthFormula(String widthFormula) {
+        this.widthFormula = widthFormula;
     }
 
     public String getSdk() {
@@ -128,7 +138,8 @@ public class ImplementationDto extends RepresentationModel<ImplementationDto> {
                 ", name='" + name + '\'' +
                 ", programmingLanguage='" + programmingLanguage + '\'' +
                 ", selectionRule='" + selectionRule + '\'' +
-                ", requiredQubits='" + requiredQubits + '\'' +
+                ", depthFormula='" + depthFormula + '\'' +
+                ", widthFormula='" + widthFormula + '\'' +
                 ", sdk='" + sdk + '\'' +
                 ", inputParameters=" + inputParameters +
                 ", outputParameters=" + outputParameters +
@@ -143,7 +154,8 @@ public class ImplementationDto extends RepresentationModel<ImplementationDto> {
             dto.setName(object.getName());
             dto.setProgrammingLanguage(object.getProgrammingLanguage());
             dto.setSelectionRule(object.getSelectionRule());
-            dto.setRequiredQubits(object.getRequiredQubits());
+            dto.setDepthFormula(object.getDepthFormula());
+            dto.setWidthFormula(object.getWidthFormula());
             dto.setSdk(object.getSdk().getName());
 
             ParameterListDto inputParams = new ParameterListDto();
@@ -162,7 +174,8 @@ public class ImplementationDto extends RepresentationModel<ImplementationDto> {
         public static Implementation convert(final ImplementationDto object, final Sdk sdk, final Algorithm algo) {
             Implementation implementation = new Implementation();
             implementation.setName(object.getName());
-            implementation.setRequiredQubits(object.getRequiredQubits());
+            implementation.setDepthFormula(object.getDepthFormula());
+            implementation.setWidthFormula(object.getWidthFormula());
             implementation.setProgrammingLanguage(object.getProgrammingLanguage());
             implementation.setSelectionRule(object.getSelectionRule());
             implementation.setSdk(sdk);

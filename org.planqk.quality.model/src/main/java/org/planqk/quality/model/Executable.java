@@ -31,7 +31,9 @@ public abstract class Executable extends HasId {
 
     private String name;
 
-    private String requiredQubits;
+    private String depthFormula;
+
+    private String widthFormula;
 
     @OneToMany(cascade = CascadeType.PERSIST)
     private List<Parameter> inputParameters;
@@ -50,12 +52,20 @@ public abstract class Executable extends HasId {
         return name;
     }
 
-    public void setRequiredQubits(String requiredQubits) {
-        this.requiredQubits = requiredQubits;
+    public void setDepthFormula(String depthFormula) {
+        this.depthFormula = depthFormula;
     }
 
-    public String getRequiredQubits() {
-        return requiredQubits;
+    public String getDepthFormula() {
+        return depthFormula;
+    }
+
+    public void setWidthFormula(String widthFormula) {
+        this.widthFormula = widthFormula;
+    }
+
+    public String getWidthFormula() {
+        return widthFormula;
     }
 
     public void setInputParameters(List<Parameter> inputParameters) {

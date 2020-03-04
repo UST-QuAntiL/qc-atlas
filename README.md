@@ -12,7 +12,7 @@
 
 The easiest way to get started is using Docker:
 
-1. `docker build -t quality .`.
+1. `docker build -t quality .`
    In case, there are issues, you can also try `docker build --no-cache -t quality .`
 2. `docker run -p 8080:8080 quality` to run Quality on <http://localhost:8080>
 
@@ -27,7 +27,7 @@ Build the project and deploy the WAR file located at `org.planqk.quality.war/tar
 Prerequisites:
 
 - [SWI Prolog](https://www.swi-prolog.org/) is installed on the machine where the Tomcat runs and the Path is configured correspondingly
-- [Qiskit](https://qiskit.org/)is installed locally and accessible
+- [Qiskit](https://qiskit.org/) is installed locally and accessible
 
 
 ## Haftungsausschluss

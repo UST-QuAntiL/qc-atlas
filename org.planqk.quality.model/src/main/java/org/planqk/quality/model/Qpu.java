@@ -36,6 +36,10 @@ public class Qpu extends HasId {
 
     private int qubitCount;
 
+    private float t1;
+
+    private float maxGateTime;
+
     @ManyToMany
     private List<Sdk> supportedSdks;
 
@@ -59,6 +63,22 @@ public class Qpu extends HasId {
 
     public void setQubitCount(int qubitCount) {
         this.qubitCount = qubitCount;
+    }
+
+    public float getT1() {
+        return t1;
+    }
+
+    public void setT1(float t1) {
+        this.t1 = t1;
+    }
+
+    public float getMaxGateTime() {
+        return maxGateTime;
+    }
+
+    public void setMaxGateTime(float maxGateTime) {
+        this.maxGateTime = maxGateTime;
     }
 
     public Provider getProvider() {

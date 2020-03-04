@@ -34,6 +34,10 @@ public class QpuDto extends RepresentationModel<ProviderDto> {
 
     private int numberOfQubits;
 
+    private float t1;
+
+    private float maxGateTime;
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -58,6 +62,22 @@ public class QpuDto extends RepresentationModel<ProviderDto> {
         return numberOfQubits;
     }
 
+    public float getT1() {
+        return t1;
+    }
+
+    public void setT1(float t1) {
+        this.t1 = t1;
+    }
+
+    public float getMaxGateTime() {
+        return maxGateTime;
+    }
+
+    public void setMaxGateTime(float maxGateTime) {
+        this.maxGateTime = maxGateTime;
+    }
+
     public static final class Converter {
 
         public static QpuDto convert(final Qpu object) {
@@ -65,6 +85,8 @@ public class QpuDto extends RepresentationModel<ProviderDto> {
             dto.setId(object.getId());
             dto.setName(object.getName());
             dto.setNumberOfQubits(object.getQubitCount());
+            dto.setT1(object.getT1());
+            dto.setMaxGateTime(object.getMaxGateTime());
             return dto;
         }
 
@@ -72,6 +94,8 @@ public class QpuDto extends RepresentationModel<ProviderDto> {
             Qpu qpu = new Qpu();
             qpu.setName(object.getName());
             qpu.setQubitCount(object.getNumberOfQubits());
+            qpu.setT1(object.getT1());
+            qpu.setMaxGateTime(object.getMaxGateTime());
             qpu.setProvider(provider);
             qpu.setSupportedSdks(supportedSdks);
             return qpu;

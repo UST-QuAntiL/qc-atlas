@@ -29,7 +29,6 @@ import org.planqk.quality.api.dtos.entities.ParameterListDto;
 import org.planqk.quality.api.dtos.requests.ExecuteImplementationDto;
 import org.planqk.quality.control.QualityControlService;
 import org.planqk.quality.model.Algorithm;
-import org.planqk.quality.model.DataType;
 import org.planqk.quality.model.Implementation;
 import org.planqk.quality.model.Sdk;
 import org.planqk.quality.repository.AlgorithmRepository;
@@ -120,7 +119,7 @@ public class ImplementationController {
         }
 
         // check consistency of the implementation object
-        if (Objects.isNull(impl.getName()) || Objects.isNull(impl.getRequiredQubits())
+        if (Objects.isNull(impl.getName()) || Objects.isNull(impl.getWidthFormula()) || Objects.isNull(impl.getDepthFormula())
                 || Objects.isNull(impl.getProgrammingLanguage()) || Objects.isNull(impl.getSelectionRule())
                 || Objects.isNull(impl.getSdk())) {
             LOG.error("Received invalid implementation object for post request: {}", impl.toString());
