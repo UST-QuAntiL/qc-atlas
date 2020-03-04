@@ -16,6 +16,8 @@
 
 package org.planqk.quality.model;
 
+import java.net.URL;
+
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 
@@ -28,6 +30,8 @@ public class Implementation extends Executable {
     private ProgrammingLanguage programmingLanguage;
 
     private String selectionRule;
+
+    private URL fileLocation;
 
     @ManyToOne
     private Algorithm implementedAlgorithm;
@@ -53,6 +57,14 @@ public class Implementation extends Executable {
 
     public String getSelectionRule() {
         return selectionRule;
+    }
+
+    public URL getFileLocation() {
+        return fileLocation;
+    }
+
+    public void setFileLocation(URL fileLocation) {
+        this.fileLocation = fileLocation;
     }
 
     public void setImplementedAlgorithm(Algorithm implementedAlgorithm) {

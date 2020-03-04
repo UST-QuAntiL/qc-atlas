@@ -19,9 +19,9 @@ package org.planqk.quality.api.dtos.requests;
 import java.util.Map;
 
 /**
- * Dto to exchange input and output parameters for a quantum algorithm implementation execution.
+ * Dto to exchange input and output parameters as key value pairs.
  */
-public class ExecuteImplementationDto {
+public class ParameterKeyValueDto {
 
     Map<String, String> parameters;
 

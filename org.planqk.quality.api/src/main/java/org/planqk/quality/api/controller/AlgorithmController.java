@@ -16,6 +16,8 @@
 
 package org.planqk.quality.api.controller;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -25,7 +27,12 @@ import org.planqk.quality.api.dtos.entities.AlgorithmDto;
 import org.planqk.quality.api.dtos.entities.AlgorithmListDto;
 import org.planqk.quality.api.dtos.entities.ParameterDto;
 import org.planqk.quality.api.dtos.entities.ParameterListDto;
+import org.planqk.quality.api.dtos.requests.ParameterKeyValueDto;
+import org.planqk.quality.api.utils.RestUtils;
+import org.planqk.quality.control.QualityControlService;
 import org.planqk.quality.model.Algorithm;
+import org.planqk.quality.model.Implementation;
+import org.planqk.quality.model.Qpu;
 import org.planqk.quality.repository.AlgorithmRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,8 +61,11 @@ public class AlgorithmController {
 
     private final AlgorithmRepository algorithmRepository;
 
-    public AlgorithmController(AlgorithmRepository algorithmRepository) {
+    private final QualityControlService controlService;
+
+    public AlgorithmController(AlgorithmRepository algorithmRepository, QualityControlService controlService) {
         this.algorithmRepository = algorithmRepository;
+        this.controlService = controlService;
     }
 
     @GetMapping("/")
@@ -105,6 +115,34 @@ public class AlgorithmController {
         }
 
         return new ResponseEntity<>(createAlgorithmDto(algorithmOptional.get()), HttpStatus.OK);
+    }
+
+    @PostMapping("/{id}/" + Constants.SELECTION)
+    public HttpEntity<AlgorithmDto> selectImplementations(@PathVariable Long id, @RequestBody ParameterKeyValueDto params) {
+        LOG.debug("Post to select implementations for algorithm with Id {} received.", id);
+
+        Optional<Algorithm> algorithmOptional = algorithmRepository.findById(id);
+        if (!algorithmOptional.isPresent()) {
+            LOG.error("Unable to retrieve algorithm with id {} from the repository.", id);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        Algorithm algorithm = algorithmOptional.get();
+
+        if (Objects.isNull(params.getParameters())) {
+            LOG.error("Parameter set for the selection is null.");
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        LOG.debug("Received {} parameters for the selection.", params.getParameters().size());
+
+        if (RestUtils.parametersAvailable(controlService.getRequiredSelectionParameters(algorithm), params.getParameters())) {
+            LOG.error("Parameter set for the selection is not valid.");
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        Map<Implementation, List<Qpu>> selectedPairs = controlService.performSelection(algorithm, params.getParameters());
+
+        // TODO: parse selected pairs to http response
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/{id}/" + Constants.INPUT_PARAMS)

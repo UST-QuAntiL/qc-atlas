@@ -16,7 +16,9 @@
 
 package org.planqk.quality.control;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +26,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.FileUtils;
 import org.planqk.quality.execution.IExecutor;
 import org.planqk.quality.knowledge.prolog.PrologQueryUtility;
 import org.planqk.quality.model.Algorithm;
@@ -82,10 +85,20 @@ public class QualityControlService {
                     + implementation.getProgrammingLanguage() + " and sdk name " + implementation.getSdk().getName());
         }
 
-        // TODO: retrieve file of the implementation
+        try{
+            // copy the implementation file from the URL
+            File file = File.createTempFile("temp", null);
+            file.deleteOnExit();
+            FileUtils.copyURLToFile(implementation.getFileLocation(), file);
 
-        // execute implementation
-        return selectedExecutor.executeQuantumAlgorithm(null, inputParameters);
+            // execute implementation
+            Map<String, String> result = selectedExecutor.executeQuantumAlgorithm(file, inputParameters);
+            LOG.debug("Deletion of the temporary file returned: {} ", file.delete());
+            return result;
+        } catch (IOException e){
+            LOG.error("Unable to copy implementation from URL: {}", implementation.getFileLocation());
+            throw new RuntimeException("Unable to copy implementation from URL: " + implementation.getFileLocation());
+        }
     }
 
     /**
@@ -109,7 +122,7 @@ public class QualityControlService {
 
         // determine all suitable QPUs for the executable implementations
         for (Implementation execImplementation : executableImplementations) {
-            int requiredQubits = (int) Math.ceil(formulaEvaluator.evaluateFormula(execImplementation.getDepthFormula(), inputParameters)); // TODO: use width
+            int requiredQubits = (int) Math.ceil(formulaEvaluator.evaluateFormula(execImplementation.getWidthFormula(), inputParameters));
             int circuitDepth = (int) Math.ceil(formulaEvaluator.evaluateFormula(execImplementation.getDepthFormula(), inputParameters));
             try {
                 List<Long> suitableQpuIds = PrologQueryUtility.getSuitableQpus(execImplementation.getId(), requiredQubits, circuitDepth);
@@ -130,5 +143,16 @@ public class QualityControlService {
         }
 
         return resultPairs;
+    }
+
+    /**
+     * Get the required parameters to select implementations for the given algorithm
+     *
+     * @param algorithm the algorithm to select an implementation for
+     * @return the list of required parameters
+     */
+    public List<String> getRequiredSelectionParameters(Algorithm algorithm){
+       // TODO
+        return new ArrayList<>();
     }
 }

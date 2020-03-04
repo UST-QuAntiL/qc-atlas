@@ -16,14 +16,16 @@
 
 package org.planqk.quality.execution.python;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.planqk.quality.execution.IExecutor;
 import org.planqk.quality.model.ProgrammingLanguage;
-import org.planqk.quality.model.Sdk;
 import org.springframework.stereotype.Service;
 
 /**
@@ -32,11 +34,27 @@ import org.springframework.stereotype.Service;
 @Service
 public class PythonExecutor implements IExecutor {
 
-    private static final List<ProgrammingLanguage> supportedProgrammingLanguages = new ArrayList<ProgrammingLanguage>() {{add(ProgrammingLanguage.Python);}};
-    private static final List<String> supportedSdks = new ArrayList<String>(){{add("Qiskit"); add("Forest");}};
+    private static final List<ProgrammingLanguage> supportedProgrammingLanguages = new ArrayList<ProgrammingLanguage>() {{
+        add(ProgrammingLanguage.Python);
+    }};
+    private static final List<String> supportedSdks = new ArrayList<String>() {{
+        add("Qiskit");
+        add("Forest");
+    }};
 
     @Override
-    public Map<String, String> executeQuantumAlgorithm(File algorithmImplementation, Map<String, String> parameters) throws RuntimeException{
+    public Map<String, String> executeQuantumAlgorithm(File algorithmImplementation, Map<String, String> parameters) throws RuntimeException {
+
+        // TODO: delete
+        try (BufferedReader br = new BufferedReader(new FileReader(algorithmImplementation))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                System.out.println(line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         // TODO: execute passed script and return resulting output
         return null;
     }

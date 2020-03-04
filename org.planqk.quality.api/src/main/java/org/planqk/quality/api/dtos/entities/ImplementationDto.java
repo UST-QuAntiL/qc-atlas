@@ -16,6 +16,7 @@
 
 package org.planqk.quality.api.dtos.entities;
 
+import java.net.URL;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -44,6 +45,8 @@ public class ImplementationDto extends RepresentationModel<ImplementationDto> {
     private String widthFormula;
 
     private String sdk;
+
+    private URL fileLocation;
 
     private ParameterListDto inputParameters;
 
@@ -107,6 +110,14 @@ public class ImplementationDto extends RepresentationModel<ImplementationDto> {
         this.sdk = sdk;
     }
 
+    public URL getFileLocation() {
+        return fileLocation;
+    }
+
+    public void setFileLocation(URL fileLocation) {
+        this.fileLocation = fileLocation;
+    }
+
     @NonNull
     public ParameterListDto getInputParameters() {
         if(Objects.isNull(inputParameters)){
@@ -141,6 +152,7 @@ public class ImplementationDto extends RepresentationModel<ImplementationDto> {
                 ", depthFormula='" + depthFormula + '\'' +
                 ", widthFormula='" + widthFormula + '\'' +
                 ", sdk='" + sdk + '\'' +
+                ", fileLocation='" + fileLocation + '\'' +
                 ", inputParameters=" + inputParameters +
                 ", outputParameters=" + outputParameters +
                 '}';
@@ -156,6 +168,7 @@ public class ImplementationDto extends RepresentationModel<ImplementationDto> {
             dto.setSelectionRule(object.getSelectionRule());
             dto.setDepthFormula(object.getDepthFormula());
             dto.setWidthFormula(object.getWidthFormula());
+            dto.setFileLocation(object.getFileLocation());
             dto.setSdk(object.getSdk().getName());
 
             ParameterListDto inputParams = new ParameterListDto();
@@ -178,6 +191,7 @@ public class ImplementationDto extends RepresentationModel<ImplementationDto> {
             implementation.setWidthFormula(object.getWidthFormula());
             implementation.setProgrammingLanguage(object.getProgrammingLanguage());
             implementation.setSelectionRule(object.getSelectionRule());
+            implementation.setFileLocation(object.getFileLocation());
             implementation.setSdk(sdk);
             implementation.setImplementedAlgorithm(algo);
             return implementation;

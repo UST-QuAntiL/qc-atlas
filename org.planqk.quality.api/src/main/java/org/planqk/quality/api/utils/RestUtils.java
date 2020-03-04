@@ -18,7 +18,9 @@ package org.planqk.quality.api.utils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.planqk.quality.api.controller.AlgorithmController;
 import org.planqk.quality.api.dtos.entities.ParameterDto;
@@ -29,18 +31,38 @@ public class RestUtils {
 
     final private static Logger LOG = LoggerFactory.getLogger(AlgorithmController.class);
 
-    public static boolean parameterConsistent(List<ParameterDto> inputParameters, List<ParameterDto> outputParameters){
+    /**
+     * Check if the given lists of input and output parameters are consistent and contain the required attributes to
+     * store them in the repository
+     *
+     * @param inputParameters  the list of input parameters
+     * @param outputParameters the list of output parameters
+     * @return <code>true</code> if all parameters are consistens, <code>false</code> otherwise
+     */
+    public static boolean parameterConsistent(List<ParameterDto> inputParameters, List<ParameterDto> outputParameters) {
         // avoid changing the potential live lists that are passed
         List<ParameterDto> parameters = new ArrayList<>();
         parameters.addAll(inputParameters);
         parameters.addAll(outputParameters);
 
-        for(ParameterDto param : parameters){
-            if(Objects.isNull(param.getName()) || Objects.isNull(param.getType())){
+        for (ParameterDto param : parameters) {
+            if (Objects.isNull(param.getName()) || Objects.isNull(param.getType())) {
                 LOG.error("Invalid parameter: {}", param.toString());
                 return false;
             }
         }
         return true;
+    }
+
+    /**
+     * Check if all required parameters are contained in the provided parameters
+     *
+     * @param requiredParameters the list of required parameters
+     * @param providedParameters the map with the provided parameters
+     * @return <code>true</code> if all required parameters are contained in the provided parameters, <code>false</code>
+     * otherwise
+     */
+    public static boolean parametersAvailable(List<String> requiredParameters, Map<String, String> providedParameters) {
+        return requiredParameters.stream().filter(param -> !providedParameters.containsKey(param)).count() == 0;
     }
 }

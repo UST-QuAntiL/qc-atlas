@@ -26,7 +26,7 @@ import org.planqk.quality.api.dtos.entities.ImplementationDto;
 import org.planqk.quality.api.dtos.entities.ImplementationListDto;
 import org.planqk.quality.api.dtos.entities.ParameterDto;
 import org.planqk.quality.api.dtos.entities.ParameterListDto;
-import org.planqk.quality.api.dtos.requests.ExecuteImplementationDto;
+import org.planqk.quality.api.dtos.requests.ParameterKeyValueDto;
 import org.planqk.quality.control.QualityControlService;
 import org.planqk.quality.model.Algorithm;
 import org.planqk.quality.model.Implementation;
@@ -121,7 +121,7 @@ public class ImplementationController {
         // check consistency of the implementation object
         if (Objects.isNull(impl.getName()) || Objects.isNull(impl.getWidthFormula()) || Objects.isNull(impl.getDepthFormula())
                 || Objects.isNull(impl.getProgrammingLanguage()) || Objects.isNull(impl.getSelectionRule())
-                || Objects.isNull(impl.getSdk())) {
+                || Objects.isNull(impl.getSdk()) || Objects.isNull(impl.getFileLocation())) {
             LOG.error("Received invalid implementation object for post request: {}", impl.toString());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -188,7 +188,7 @@ public class ImplementationController {
 
     @PostMapping("/{implId}/" + Constants.EXECUTION)
     public HttpEntity executeImplementation(@PathVariable Long algoId, @PathVariable Long implId,
-                                            @RequestBody ExecuteImplementationDto executionRequest) {
+                                            @RequestBody ParameterKeyValueDto executionRequest) {
         LOG.debug("Post to execute implementation with Id: {}", implId);
 
         Optional<Implementation> implementationOptional = implementationRepository.findById(implId);
@@ -207,7 +207,7 @@ public class ImplementationController {
 
         // TODO: handle via long running resource
 
-        ExecuteImplementationDto dto = new ExecuteImplementationDto();
+        ParameterKeyValueDto dto = new ParameterKeyValueDto();
         dto.setParameters(outputParams);
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
