@@ -18,12 +18,13 @@ package org.planqk.quality.control;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
@@ -85,7 +86,7 @@ public class QualityControlService {
                     + implementation.getProgrammingLanguage() + " and sdk name " + implementation.getSdk().getName());
         }
 
-        try{
+        try {
             // copy the implementation file from the URL
             File file = File.createTempFile("temp", null);
             file.deleteOnExit();
@@ -95,7 +96,7 @@ public class QualityControlService {
             Map<String, String> result = selectedExecutor.executeQuantumAlgorithm(file, inputParameters);
             LOG.debug("Deletion of the temporary file returned: {} ", file.delete());
             return result;
-        } catch (IOException e){
+        } catch (IOException e) {
             LOG.error("Unable to copy implementation from URL: {}", implementation.getFileLocation());
             throw new RuntimeException("Unable to copy implementation from URL: " + implementation.getFileLocation());
         }
@@ -149,10 +150,20 @@ public class QualityControlService {
      * Get the required parameters to select implementations for the given algorithm
      *
      * @param algorithm the algorithm to select an implementation for
-     * @return the list of required parameters
+     * @return the set of required parameters
      */
-    public List<String> getRequiredSelectionParameters(Algorithm algorithm){
-       // TODO
-        return new ArrayList<>();
+    public Set<String> getRequiredSelectionParameters(Algorithm algorithm) {
+        Set<String> requiredParameters = new HashSet<>();
+        List<Implementation> implementations = implementationRepository.findByImplementedAlgorithm(algorithm);
+        LOG.debug("Retrieving required selection parameters based on {} corresponding implementations.", implementations.size());
+
+        // add implementation parameters from formulas and selection rules
+        for (Implementation impl : implementations) {
+            requiredParameters.addAll(formulaEvaluator.getRequiredParameters(impl.getDepthFormula()));
+            requiredParameters.addAll(formulaEvaluator.getRequiredParameters(impl.getWidthFormula()));
+            requiredParameters.addAll(PrologQueryUtility.getVariablesForRule(impl.getSelectionRule()));
+        }
+
+        return requiredParameters;
     }
 }

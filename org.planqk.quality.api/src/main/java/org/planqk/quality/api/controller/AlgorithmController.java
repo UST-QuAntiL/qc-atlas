@@ -16,10 +16,12 @@
 
 package org.planqk.quality.api.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.planqk.quality.api.Constants;
@@ -28,6 +30,7 @@ import org.planqk.quality.api.dtos.entities.AlgorithmListDto;
 import org.planqk.quality.api.dtos.entities.ParameterDto;
 import org.planqk.quality.api.dtos.entities.ParameterListDto;
 import org.planqk.quality.api.dtos.requests.ParameterKeyValueDto;
+import org.planqk.quality.api.dtos.requests.SelectionParameterDto;
 import org.planqk.quality.api.utils.RestUtils;
 import org.planqk.quality.control.QualityControlService;
 import org.planqk.quality.model.Algorithm;
@@ -117,7 +120,26 @@ public class AlgorithmController {
         return new ResponseEntity<>(createAlgorithmDto(algorithmOptional.get()), HttpStatus.OK);
     }
 
-    @PostMapping("/{id}/" + Constants.SELECTION)
+    @GetMapping("/{id}/" + Constants.SELECTION_PARAMS)
+    public HttpEntity<SelectionParameterDto> getSelectionParams(@PathVariable Long id) {
+        LOG.debug("Get to retrieve selection parameters for algorithm with Id {} received.", id);
+
+        Optional<Algorithm> algorithmOptional = algorithmRepository.findById(id);
+        if (!algorithmOptional.isPresent()) {
+            LOG.error("Unable to retrieve algorithm with id {} from the repository.", id);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        // determine and return required selection parameters
+        Set<String> requiredParams = controlService.getRequiredSelectionParameters(algorithmOptional.get());
+        SelectionParameterDto dto = new SelectionParameterDto();
+        dto.setParameters(new ArrayList<>(requiredParams));
+        dto.add(linkTo(methodOn(AlgorithmController.class).getSelectionParams(id)).withSelfRel());
+        dto.add(linkTo(methodOn(AlgorithmController.class).getAlgorithm(id)).withRel(Constants.ALGORITHM));
+        return new ResponseEntity<>(dto, HttpStatus.OK);
+    }
+
+    @PostMapping("/{id}/" + Constants.SELECTION) // TODO: change return type
     public HttpEntity<AlgorithmDto> selectImplementations(@PathVariable Long id, @RequestBody ParameterKeyValueDto params) {
         LOG.debug("Post to select implementations for algorithm with Id {} received.", id);
 
@@ -196,6 +218,7 @@ public class AlgorithmController {
         dto.add(linkTo(methodOn(AlgorithmController.class).getAlgorithm(algorithm.getId())).withSelfRel());
         dto.add(linkTo(methodOn(AlgorithmController.class).getInputParameters(algorithm.getId())).withRel(Constants.INPUT_PARAMS));
         dto.add(linkTo(methodOn(AlgorithmController.class).getOutputParameters(algorithm.getId())).withRel(Constants.OUTPUT_PARAMS));
+        dto.add(linkTo(methodOn(AlgorithmController.class).getSelectionParams(algorithm.getId())).withRel(Constants.SELECTION_PARAMS));
         dto.add(linkTo(methodOn(ImplementationController.class).getImplementations(algorithm.getId())).withRel(Constants.IMPLEMENTATIONS));
         return dto;
     }

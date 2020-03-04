@@ -16,20 +16,22 @@
 
 package org.planqk.quality.api.dtos.requests;
 
-import java.util.Map;
+import java.util.List;
+
+import org.springframework.hateoas.RepresentationModel;
 
 /**
- * Dto to exchange input and output parameters as key value pairs.
+ * Dto to exchange parameter names.
  */
-public class ParameterKeyValueDto {
+public class SelectionParameterDto extends RepresentationModel<SelectionParameterDto> {
 
-    private Map<String, String> parameters;
+    private List<String> parameters;
 
-    public Map<String, String> getParameters() {
+    public List<String> getParameters() {
         return parameters;
     }
 
-    public void setParameters(Map<String, String> parameters) {
+    public void setParameters(List<String> parameters) {
         this.parameters = parameters;
     }
 }

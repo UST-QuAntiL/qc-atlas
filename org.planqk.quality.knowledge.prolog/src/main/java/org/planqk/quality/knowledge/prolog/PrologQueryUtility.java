@@ -18,8 +18,10 @@ package org.planqk.quality.knowledge.prolog;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.jpl7.PrologException;
 import org.jpl7.Query;
@@ -76,11 +78,49 @@ public class PrologQueryUtility {
     }
 
     /**
+     * Get the set of parameters that are required to evaluate the given rule
+     *
+     * @param rule the query to retrieve the parameters from
+     * @return the set of required parameters to evaluate the rule
+     */
+    public static Set<String> getVariablesForRule(String rule) {
+        LOG.debug("Getting variables for rule: {}", rule);
+
+        // get String part between the brackets
+        String[] ruleParts = rule.split("\\(");
+
+        HashSet<String> parameterSet = new HashSet<>();
+
+        // rule is invalid as it does not contain brackets for the parameters
+        if (ruleParts.length < 2) {
+            return parameterSet;
+        }
+
+        // get the set of parameters
+        String parametersPart = ruleParts[1].split("\\)")[0];
+        String[] params = parametersPart.split(",");
+        LOG.debug("Rule contains {} parameters.", params.length);
+
+        for (String param : params) {
+            String paramName = param.replaceAll("\\s","");
+            LOG.debug("Checking if param {} is variable.", paramName);
+
+            // variables have to start with an uppercase letter or an underscore
+            if (Character.isUpperCase(paramName.charAt(0)) || paramName.startsWith("_")){
+                LOG.debug("Parameter {} is a variable.", param);
+                parameterSet.add(paramName);
+            }
+        }
+
+        return parameterSet;
+    }
+
+    /**
      * TODO
      *
      * @return
      */
-    public static boolean checkExecutability(){
+    public static boolean checkExecutability() {
         // TODO
         return false;
     }

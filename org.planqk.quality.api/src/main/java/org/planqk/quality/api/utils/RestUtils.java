@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.planqk.quality.api.controller.AlgorithmController;
@@ -57,12 +58,12 @@ public class RestUtils {
     /**
      * Check if all required parameters are contained in the provided parameters
      *
-     * @param requiredParameters the list of required parameters
+     * @param requiredParameters the set of required parameters
      * @param providedParameters the map with the provided parameters
      * @return <code>true</code> if all required parameters are contained in the provided parameters, <code>false</code>
      * otherwise
      */
-    public static boolean parametersAvailable(List<String> requiredParameters, Map<String, String> providedParameters) {
+    public static boolean parametersAvailable(Set<String> requiredParameters, Map<String, String> providedParameters) {
         return requiredParameters.stream().filter(param -> !providedParameters.containsKey(param)).count() == 0;
     }
 }

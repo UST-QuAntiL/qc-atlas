@@ -16,6 +16,8 @@
 
 package org.planqk.quality.control;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
@@ -36,5 +38,16 @@ public class FormulaEvaluator {
     public float evaluateFormula(String formula, Map<String, String> params) {
         // TODO
         return 0;
+    }
+
+    /**
+     * Get all required parameters for the given formula
+     *
+     * @param formula the mathematical formula
+     * @return the list with all required parameters
+     */
+    public List<String> getRequiredParameters(String formula){
+        // TODO
+        return new ArrayList<>();
     }
 }
