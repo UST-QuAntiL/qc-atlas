@@ -16,14 +16,21 @@
 
 package org.planqk.quality.control;
 
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.planqk.quality.execution.IExecutor;
+import org.planqk.quality.knowledge.prolog.PrologQueryUtility;
 import org.planqk.quality.model.Algorithm;
 import org.planqk.quality.model.Implementation;
 import org.planqk.quality.model.Qpu;
+import org.planqk.quality.repository.ImplementationRepository;
+import org.planqk.quality.repository.QpuRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -38,8 +45,17 @@ public class QualityControlService {
 
     final private List<IExecutor> executorList;
 
-    public QualityControlService(List<IExecutor> executorList) {
+    final private FormulaEvaluator formulaEvaluator;
+
+    final private ImplementationRepository implementationRepository;
+
+    final private QpuRepository qpuRepository;
+
+    public QualityControlService(List<IExecutor> executorList, FormulaEvaluator formulaEvaluator, ImplementationRepository implementationRepository, QpuRepository qpuRepository) {
         this.executorList = executorList;
+        this.formulaEvaluator = formulaEvaluator;
+        this.implementationRepository = implementationRepository;
+        this.qpuRepository = qpuRepository;
     }
 
     /**
@@ -82,7 +98,37 @@ public class QualityControlService {
      * them
      */
     public Map<Implementation, List<Qpu>> performSelection(Algorithm algorithm, Map<String, String> inputParameters) {
-        // TODO
-        return null;
+        LOG.debug("Performing implementation and QPU selection for algorithm with Id: {}", algorithm.getId());
+        Map<Implementation, List<Qpu>> resultPairs = new HashMap<>();
+
+        // check all implementation if they can handle the given set of input parameters
+        List<Implementation> implementations = implementationRepository.findByImplementedAlgorithm(algorithm);
+        LOG.debug("Found {} implementations for the algorithm.", implementations.size());
+        List<Implementation> executableImplementations = implementations.stream().filter(implementation -> PrologQueryUtility.checkExecutability()).collect(Collectors.toList());
+        LOG.debug("{} implementations are executable for the given input parameters.", executableImplementations.size());
+
+        // determine all suitable QPUs for the executable implementations
+        for (Implementation execImplementation : executableImplementations) {
+            int requiredQubits = (int) Math.ceil(formulaEvaluator.evaluateFormula(execImplementation.getRequiredQubits(), inputParameters));
+            int circuitDepth = 0; // TODO: calculate from formula
+            try {
+                List<Long> suitableQpuIds = PrologQueryUtility.getSuitableQpus(execImplementation.getId(), requiredQubits, circuitDepth);
+                LOG.debug("Found {} suitable QPUs for implementation with Id: {}", suitableQpuIds.size(), execImplementation.getId());
+
+                List<Qpu> suitableQpus = suitableQpuIds.stream().map(qpuRepository::findById)
+                        .filter(Optional::isPresent)
+                        .map(Optional::get)
+                        .collect(Collectors.toList());
+
+                // add to result map if at least one suitable QPU is available
+                if (!suitableQpus.isEmpty()) {
+                    resultPairs.put(execImplementation, suitableQpus);
+                }
+            } catch (IOException e) {
+                LOG.error("IOException while evaluating suitable QPUs: {}", e.getMessage());
+            }
+        }
+
+        return resultPairs;
     }
 }

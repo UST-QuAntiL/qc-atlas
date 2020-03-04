@@ -43,7 +43,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
  * Controller to access and manipulate software development kits (SDKs).
  */
 @RestController
-@RequestMapping(Constants.SDKS)
+@RequestMapping("/" + Constants.SDKS)
 public class SdkController {
 
     final private static Logger LOG = LoggerFactory.getLogger(SdkController.class);

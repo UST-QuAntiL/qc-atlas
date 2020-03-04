@@ -50,7 +50,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
  * Controller to access and manipulate quantum processing units (QPUs).
  */
 @RestController
-@RequestMapping(Constants.PROVIDERS + "/{providerId}/" + Constants.QPUS)
+@RequestMapping("/" + Constants.PROVIDERS + "/{providerId}/" + Constants.QPUS)
 public class QpuController {
 
     private final static Logger LOG = LoggerFactory.getLogger(QpuController.class);

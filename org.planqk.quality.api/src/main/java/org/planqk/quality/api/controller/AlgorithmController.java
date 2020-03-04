@@ -47,7 +47,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
  * Controller to access and manipulate quantum algorithms.
  */
 @RestController
-@RequestMapping(Constants.ALGORITHMS)
+@RequestMapping("/" + Constants.ALGORITHMS)
 public class AlgorithmController {
 
     final private static Logger LOG = LoggerFactory.getLogger(AlgorithmController.class);

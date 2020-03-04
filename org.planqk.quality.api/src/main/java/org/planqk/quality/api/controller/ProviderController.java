@@ -43,7 +43,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
  * Controller to access and manipulate quantum computing providers.
  */
 @RestController
-@RequestMapping(Constants.PROVIDERS)
+@RequestMapping("/" + Constants.PROVIDERS)
 public class ProviderController {
 
     final private static Logger LOG = LoggerFactory.getLogger(ProviderController.class);

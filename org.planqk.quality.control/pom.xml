@@ -51,5 +51,11 @@
 			<version>1.0.0-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
+        <dependency>
+            <groupId>org.planqk</groupId>
+            <artifactId>org.planqk.quality.repository</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 </project>

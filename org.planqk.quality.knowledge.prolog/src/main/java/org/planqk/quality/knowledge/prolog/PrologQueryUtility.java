@@ -17,6 +17,7 @@
 package org.planqk.quality.knowledge.prolog;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -75,6 +76,16 @@ public class PrologQueryUtility {
     }
 
     /**
+     * TODO
+     *
+     * @return
+     */
+    public static boolean checkExecutability(){
+        // TODO
+        return false;
+    }
+
+    /**
      * Check the prolog knowledge base for QPUs that can handle the given implementation and return them
      *
      * @param implementationId the id of the implementation for which
@@ -83,17 +94,19 @@ public class PrologQueryUtility {
      * @return a list with an Id for each QPU that can execute the given implementation
      * @throws IOException is thrown if the required prolog files can not be created
      */
-    public List<Long> getSuitableQpus(Long implementationId, int requiredQubits, int circuitDepth) throws IOException {
+    public static List<Long> getSuitableQpus(Long implementationId, int requiredQubits, int circuitDepth) throws IOException {
         // check if file with required rule exists and create otherwise
         if (!doesPrologFileExist(Constants.CPU_RULE_NAME)) {
             persistPrologFile(Constants.CPU_RULE_CONTENT, Constants.CPU_RULE_NAME);
         }
         activatePrologFile(Constants.CPU_RULE_NAME);
 
-        // TODO: perform query and return results
+        List<Long> suitableQPUs = new ArrayList<>();
+
+        // TODO: perform query and add results to the list
         String query = "executableOnQpu(" + implementationId + "," + "TODO" + ")";
         Map<String, Term>[] solutions = getSolutions(query);
-        // TODO
-        return null;
+
+        return suitableQPUs;
     }
 }

@@ -14,19 +14,27 @@
  *  ******************************************************************************
  */
 
-package org.planqk.quality.knowledge.prolog;
+package org.planqk.quality.control;
 
-import java.io.File;
+import java.util.Map;
+
+import org.springframework.stereotype.Service;
 
 /**
- * Constants for the prolog knowledge handling.
+ * Class to evaluate mathematical formulas.
  */
-public class Constants {
+@Service
+public class FormulaEvaluator {
 
-    // basic rule to check the executability of an implementation on the available QPUs
-    public static final String CPU_RULE_NAME = "executableOnQpuRule";
-    public static final String CPU_RULE_CONTENT = "executableOnQpu(RequiredQubits, CircuitDepth, Impl, Qpu) :- requiredSdk(Impl, ReqSdk), usedSdk(Qpu, ReqSdk), providesQubits(Qpu, ProvidedQubit), ProvidedQubit >= RequiredQubits, CircuitDepth =< t1(Qpu)/tg(Qpu).";
-
-    // path to store the files for the local knowledge base
-    public static String basePath = System.getProperty("java.io.tmpdir") + File.separator + "quality";
+    /**
+     * Evaluate the given formula and return the result.
+     *
+     * @param formula the mathematical formula
+     * @param params the parameters that are needed for the evaluation
+     * @return the result of the calculation
+     */
+    public float evaluateFormula(String formula, Map<String, String> params) {
+        // TODO
+        return 0;
+    }
 }
