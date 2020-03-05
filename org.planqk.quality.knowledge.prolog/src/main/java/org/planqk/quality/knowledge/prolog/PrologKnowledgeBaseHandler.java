@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.planqk.quality.knowledge.prolog.Constants.basePath;
-import static org.planqk.quality.knowledge.prolog.PrologQueryUtility.hasSolution;
+import static org.planqk.quality.knowledge.prolog.PrologQueryEngine.hasSolution;
 
 /**
  * Class to access and change the local Prolog knowledge base.

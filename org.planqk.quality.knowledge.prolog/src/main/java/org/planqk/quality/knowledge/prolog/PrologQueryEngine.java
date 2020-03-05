@@ -18,10 +18,8 @@ package org.planqk.quality.knowledge.prolog;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.jpl7.PrologException;
 import org.jpl7.Query;
@@ -38,9 +36,9 @@ import static org.planqk.quality.knowledge.prolog.PrologKnowledgeBaseHandler.per
  * Class to execute different kinds of required prolog queries.
  */
 @Service
-public class PrologQueryUtility {
+public class PrologQueryEngine {
 
-    final private static Logger LOG = LoggerFactory.getLogger(PrologQueryUtility.class);
+    final private static Logger LOG = LoggerFactory.getLogger(PrologQueryEngine.class);
 
     /**
      * Execute a prolog query with variables and return all possible solutions
@@ -78,51 +76,44 @@ public class PrologQueryUtility {
     }
 
     /**
-     * Get the set of parameters that are required to evaluate the given rule
+     * Evaluate the given prolog selection rule with the given set of parameters
      *
-     * @param rule the query to retrieve the parameters from
-     * @return the set of required parameters to evaluate the rule
+     * @param selectionRule the prolog selection rule to evaluate to check the executability
+     * @param params        the set of parameters to use for the evaluation
+     * @return the evaluation result of the prolog rule
      */
-    public static Set<String> getVariablesForRule(String rule) {
-        LOG.debug("Getting variables for rule: {}", rule);
-
-        // get String part between the brackets
-        String[] ruleParts = rule.split("\\(");
-
-        HashSet<String> parameterSet = new HashSet<>();
+    public static boolean checkExecutability(String selectionRule, Map<String, String> params) {
+        // retrieve signature of the defined selection rule
+        String signature = PrologUtility.getSignatureOfRule(selectionRule);
+        String[] signatureParts = signature.split("\\(");
 
         // rule is invalid as it does not contain brackets for the parameters
-        if (ruleParts.length < 2) {
-            return parameterSet;
+        if (signatureParts.length < 2) {
+            LOG.error("Signature of selection rule is invalid: {}", signature);
+            return false;
         }
 
-        // get the set of parameters
-        String parametersPart = ruleParts[1].split("\\)")[0];
-        String[] params = parametersPart.split(",");
-        LOG.debug("Rule contains {} parameters.", params.length);
+        String ruleName = signatureParts[0];
+        String parameterPart = signatureParts[1];
 
-        for (String param : params) {
-            String paramName = param.replaceAll("\\s","");
-            LOG.debug("Checking if param {} is variable.", paramName);
-
-            // variables have to start with an uppercase letter or an underscore
-            if (Character.isUpperCase(paramName.charAt(0)) || paramName.startsWith("_")){
-                LOG.debug("Parameter {} is a variable.", param);
-                parameterSet.add(paramName);
+        // replace the variables in the signature with the given parameters
+        for (String variable : PrologUtility.getVariablesForRule(selectionRule)) {
+            if (!params.containsKey(variable)) {
+                LOG.error("Given parameter set to check executability does not contain required parameter: {}", variable);
+                return false;
             }
+
+            // FIXME: avoid replacing parts of another variable where the name contains the searched variable, e.g., search for variable 'A' and replace part of variable 'AB' by accident
+            parameterPart = parameterPart.replaceFirst(variable, params.get(variable));
         }
 
-        return parameterSet;
-    }
+        // add point to instruct prolog to evaluate the rule
+        String query = ruleName + parameterPart + ".";
 
-    /**
-     * TODO
-     *
-     * @return
-     */
-    public static boolean checkExecutability() {
-        // TODO
-        return false;
+        // evaluate the rule in the knowledge base
+        boolean evaluationResult = hasSolution(query);
+        LOG.debug("Evaluated selection rule {} with result: {}", query, evaluationResult);
+        return evaluationResult;
     }
 
     /**

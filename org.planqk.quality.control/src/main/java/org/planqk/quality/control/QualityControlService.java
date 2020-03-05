@@ -29,7 +29,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.planqk.quality.execution.IExecutor;
-import org.planqk.quality.knowledge.prolog.PrologQueryUtility;
+import org.planqk.quality.knowledge.prolog.PrologQueryEngine;
+import org.planqk.quality.knowledge.prolog.PrologUtility;
 import org.planqk.quality.model.Algorithm;
 import org.planqk.quality.model.Implementation;
 import org.planqk.quality.model.Qpu;
@@ -118,7 +119,9 @@ public class QualityControlService {
         // check all implementation if they can handle the given set of input parameters
         List<Implementation> implementations = implementationRepository.findByImplementedAlgorithm(algorithm);
         LOG.debug("Found {} implementations for the algorithm.", implementations.size());
-        List<Implementation> executableImplementations = implementations.stream().filter(implementation -> PrologQueryUtility.checkExecutability()).collect(Collectors.toList());
+        List<Implementation> executableImplementations = implementations.stream()
+                .filter(implementation -> PrologQueryEngine.checkExecutability(implementation.getSelectionRule(), inputParameters))
+                .collect(Collectors.toList());
         LOG.debug("{} implementations are executable for the given input parameters.", executableImplementations.size());
 
         // determine all suitable QPUs for the executable implementations
@@ -126,7 +129,7 @@ public class QualityControlService {
             int requiredQubits = (int) Math.ceil(formulaEvaluator.evaluateFormula(execImplementation.getWidthFormula(), inputParameters));
             int circuitDepth = (int) Math.ceil(formulaEvaluator.evaluateFormula(execImplementation.getDepthFormula(), inputParameters));
             try {
-                List<Long> suitableQpuIds = PrologQueryUtility.getSuitableQpus(execImplementation.getId(), requiredQubits, circuitDepth);
+                List<Long> suitableQpuIds = PrologQueryEngine.getSuitableQpus(execImplementation.getId(), requiredQubits, circuitDepth);
                 LOG.debug("Found {} suitable QPUs for implementation with Id: {}", suitableQpuIds.size(), execImplementation.getId());
 
                 List<Qpu> suitableQpus = suitableQpuIds.stream().map(qpuRepository::findById)
@@ -161,7 +164,7 @@ public class QualityControlService {
         for (Implementation impl : implementations) {
             requiredParameters.addAll(formulaEvaluator.getRequiredParameters(impl.getDepthFormula()));
             requiredParameters.addAll(formulaEvaluator.getRequiredParameters(impl.getWidthFormula()));
-            requiredParameters.addAll(PrologQueryUtility.getVariablesForRule(impl.getSelectionRule()));
+            requiredParameters.addAll(PrologUtility.getVariablesForRule(impl.getSelectionRule()));
         }
 
         return requiredParameters;

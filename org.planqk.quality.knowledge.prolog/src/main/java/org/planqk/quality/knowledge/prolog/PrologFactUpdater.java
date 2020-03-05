@@ -147,7 +147,7 @@ public class PrologFactUpdater {
         // the following three lines are required to define the same predicate in multiple files
         String prologContent = ":- multifile implements/2." + newline;
         prologContent += ":- multifile requiredSdk/2." + newline;
-        prologContent += ":- multifile " + getNameOfPredicate(selectionRule) + "/" + getNumberOfParameters(selectionRule) + "." + newline;
+        prologContent += ":- multifile " + getNameOfPredicate(selectionRule) + "/" + PrologUtility.getNumberOfParameters(selectionRule) + "." + newline;
 
         prologContent += createImplementsFact(implId, implementedAlgoId) + newline;
         prologContent += createRequiredSdkFact(implId, usedSdk) + newline;
@@ -224,24 +224,5 @@ public class PrologFactUpdater {
      */
     private static String getNameOfPredicate(String rule) {
         return rule.split("\\(")[0];
-    }
-
-    /**
-     * Get the number of parameters that are used for a given rule.
-     *
-     * @param rule the rule to get the parameter count from
-     * @return the number of available parameters
-     */
-    private static int getNumberOfParameters(String rule) {
-        // get String part between the brackets
-        String[] ruleParts = rule.split("\\(");
-
-        // rule is invalid as it does not contain brackets for the parameters
-        if (ruleParts.length < 2) {
-            return 0;
-        }
-
-        String parametersPart = rule.split("\\)")[0];
-        return parametersPart.split(",").length;
     }
 }

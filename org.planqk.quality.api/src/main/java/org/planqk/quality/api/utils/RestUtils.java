@@ -21,13 +21,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.planqk.quality.api.controller.AlgorithmController;
 import org.planqk.quality.api.dtos.entities.ParameterDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Utility class for the REST API functionality
+ */
 public class RestUtils {
 
     final private static Logger LOG = LoggerFactory.getLogger(AlgorithmController.class);
