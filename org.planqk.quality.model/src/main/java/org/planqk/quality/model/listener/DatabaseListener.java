@@ -47,7 +47,7 @@ public class DatabaseListener {
         if (hasId.getClass().equals(Qpu.class)) {
             Qpu qpu = (Qpu) hasId;
             List<String> sdkNames = qpu.getSupportedSdks().stream().map(Sdk::getName).collect(Collectors.toList());
-            PrologFactUpdater.handleQpuInsertion(qpu.getId(), qpu.getQubitCount(), sdkNames);
+            PrologFactUpdater.handleQpuInsertion(qpu.getId(), qpu.getQubitCount(), sdkNames, qpu.getT1(), qpu.getMaxGateTime());
         }
     }
 
@@ -64,7 +64,7 @@ public class DatabaseListener {
         if (hasId.getClass().equals(Qpu.class)) {
             Qpu qpu = (Qpu) hasId;
             List<String> sdkNames = qpu.getSupportedSdks().stream().map(Sdk::getName).collect(Collectors.toList());
-            PrologFactUpdater.handleQpuUpdate(qpu.getId(), qpu.getQubitCount(), sdkNames);
+            PrologFactUpdater.handleQpuUpdate(qpu.getId(), qpu.getQubitCount(), sdkNames, qpu.getT1(), qpu.getMaxGateTime());
         }
     }
 

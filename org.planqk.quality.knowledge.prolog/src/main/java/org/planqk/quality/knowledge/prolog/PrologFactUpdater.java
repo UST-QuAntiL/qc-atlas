@@ -58,12 +58,14 @@ public class PrologFactUpdater {
      *
      * @param id            the id of the QPU that is added to the repository
      * @param qubitCount    the number of provided qubits of the QPU that is added to the repository
+     * @param t1Time        the T1 time for the given QPU
+     * @param maxGateTime   the maximum gate time for the given QPU
      * @param supportedSdks the list of supported SDKs of the QPU that is added to the repository
      */
-    public static void handleQpuInsertion(Long id, int qubitCount, List<String> supportedSdks) {
+    public static void handleQpuInsertion(Long id, int qubitCount, List<String> supportedSdks, float t1Time, float maxGateTime) {
         LOG.debug("Handling insertion of QPU with Id {} in Prolog knowledge base.", id);
 
-        String prologContent = createQpuFacts(id, qubitCount, supportedSdks);
+        String prologContent = createQpuFacts(id, qubitCount, supportedSdks, t1Time, maxGateTime);
         try {
             PrologKnowledgeBaseHandler.persistPrologFile(prologContent, id.toString());
             PrologKnowledgeBaseHandler.activatePrologFile(id.toString());
@@ -102,16 +104,18 @@ public class PrologFactUpdater {
      *
      * @param id            the id of the QPU that is updated in the repository
      * @param qubitCount    the number of provided qubits of the QPU that is updated in the repository
+     * @param t1Time        the T1 time for the given QPU
+     * @param maxGateTime   the maximum gate time for the given QPU
      * @param supportedSdks the list of supported SDKs of the QPU that is updated in the repository
      */
-    public static void handleQpuUpdate(Long id, int qubitCount, List<String> supportedSdks) {
+    public static void handleQpuUpdate(Long id, int qubitCount, List<String> supportedSdks, float t1Time, float maxGateTime) {
         LOG.debug("Handling update of QPU with Id {} in Prolog knowledge base.", id);
 
         // deactivate and delete the Prolog file with the old facts
         PrologKnowledgeBaseHandler.deletePrologFile(id.toString());
 
         // create and activate the Prolog file with the new facts
-        String prologContent = createQpuFacts(id, qubitCount, supportedSdks);
+        String prologContent = createQpuFacts(id, qubitCount, supportedSdks, t1Time, maxGateTime);
         try {
             PrologKnowledgeBaseHandler.persistPrologFile(prologContent, id.toString());
             PrologKnowledgeBaseHandler.activatePrologFile(id.toString());
@@ -158,13 +162,17 @@ public class PrologFactUpdater {
     /**
      * Create a string containing all required prolog fact for an QPU.
      */
-    private static String createQpuFacts(Long qpuId, int qubitCount, List<String> supportedSdks) {
+    private static String createQpuFacts(Long qpuId, int qubitCount, List<String> supportedSdks, float t1Time, float maxGateTime) {
         // the following two lines are required to define the same predicate in multiple files
         String prologContent = ":- multifile providesQubits/2." + newline;
         prologContent += ":- multifile usesSdk/2." + newline;
+        prologContent += ":- multifile t1Time/2." + newline;
+        prologContent += ":- multifile maxGateTime/2." + newline;
 
         prologContent += createProvidesQubitFact(qpuId, qubitCount) + newline;
         prologContent += createUsesSdkFacts(qpuId, supportedSdks) + newline;
+        prologContent += createT1TimeFact(qpuId, t1Time) + newline;
+        prologContent += createMaxGateTimeFact(qpuId, maxGateTime) + newline;
         return prologContent;
     }
 
@@ -192,6 +200,28 @@ public class PrologFactUpdater {
      */
     private static String createProvidesQubitFact(Long qpuId, int qubitCount) {
         return "providesQubits(" + qpuId + "," + qubitCount + ").";
+    }
+
+    /**
+     * Create a fact that the given QPU has the given T1 time
+     *
+     * @param qpuId  the id of the QPU
+     * @param t1Time the T1 time for the given QPU
+     * @return the Prolog fact
+     */
+    private static String createT1TimeFact(Long qpuId, float t1Time) {
+        return "t1Time(" + qpuId + "," + t1Time + ").";
+    }
+
+    /**
+     * Create a fact that the given QPU has the given execution time for the slowest gate
+     *
+     * @param qpuId       the id of the QPU
+     * @param maxGateTime the time of the slowest gate of the QPU
+     * @return the Prolog fact
+     */
+    private static String createMaxGateTimeFact(Long qpuId, float maxGateTime) {
+        return "maxGateTime(" + qpuId + "," + maxGateTime + ").";
     }
 
     /**
