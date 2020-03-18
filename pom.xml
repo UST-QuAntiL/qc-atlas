@@ -1,18 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+	
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.2.4.RELEASE</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
+	
 	<groupId>org.planqk</groupId>
-	<artifactId>quality</artifactId>
+	<artifactId>atlas</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
+	
 	<modules>
-		<module>org.planqk.quality.api</module>
-		<module>org.planqk.quality.control</module>
-		<module>org.planqk.quality.execution</module>
-		<module>org.planqk.quality.execution.python</module>
-		<module>org.planqk.quality.knowledge.prolog</module>
-		<module>org.planqk.quality.model</module>
-		<module>org.planqk.quality.repository</module>
-		<module>org.planqk.quality.war</module>
+		<module>org.planqk.atlas.api</module>
+		<module>org.planqk.atlas.core</module>
+		<module>org.planqk.atlas.nisq.analyzer</module>
+		<module>org.planqk.atlas.war</module>
 	</modules>
 </project>
