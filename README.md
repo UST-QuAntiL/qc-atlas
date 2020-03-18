@@ -1,6 +1,6 @@
 # QC-Atlas
 
-[![Build Status](https://api.travis-ci.com/wederbn/quality.svg?branch=master)](https://travis-ci.com/wederbn/quality)
+[![Build Status](https://api.travis-ci.org/planqk/qc-atlas.svg?branch=master)](https://travis-ci.org/planqk/qc-atlas)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 ## Build
