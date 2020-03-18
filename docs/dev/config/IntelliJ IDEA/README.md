@@ -21,7 +21,7 @@
     1. Open the Settings (by pressing <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>S</kbd>)
     2. Go to Editor > Copyright  > Copyright Profiles
     3. Click the plus
-    4. Name "Quality"
+    4. Name "Atlas"
     5. Copyright text from [CodeHeaders](CodeHeaders.md)
 	6. Click "Apply"
     7. Go to Editor > Copyright > Formatting
@@ -30,5 +30,5 @@
        - Set `Relative Location` to `Before other comments`
        - Increase `Separator before/after Length` to `81`
     9. Go to Editor > Copyright
-    10. Set "Quality" as Default project copyright
+    10. Set "Atlas" as Default project copyright
     11. Click "Apply"
