@@ -1,6 +1,6 @@
 FROM maven:3-jdk-8 as builder
-COPY . /tmp/quality
-WORKDIR /tmp/quality
+COPY . /tmp/atlas
+WORKDIR /tmp/atlas
 RUN mvn package -DskipTests
 
 FROM ubuntu:18.04
@@ -24,7 +24,7 @@ RUN apt-get update && apt-get install -qqy swi-prolog swi-prolog-java
 ENV SWI_HOME_DIR /usr/bin/swipl
 
 RUN rm -rf /usr/local/tomcat/webapps/*
-COPY --from=builder /tmp/quality/org.planqk.quality.war/target/org.planqk.quality.war.war ${CATALINA_HOME}/webapps/quality.war
+COPY --from=builder /tmp/atlas/org.planqk.atlas.war/target/org.planqk.atlas.war.war ${CATALINA_HOME}/webapps/atlas.war
 
 EXPOSE 8080
 
