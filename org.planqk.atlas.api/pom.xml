@@ -12,10 +12,6 @@
 	<artifactId>org.planqk.atlas.api</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 
-	<properties>
-		<java.version>1.8</java.version>
-	</properties>
-
 	<dependencies>
 		<dependency>
 			<groupId>org.assertj</groupId>
