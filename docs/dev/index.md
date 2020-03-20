@@ -6,7 +6,7 @@ This document provides an index to all development guidelines and background inf
 
 ## Quick Develop
 
-1. Clone the repository `git clone https://github.com/eclipse/winery && cd winery`.
+1. Clone the repository `git clone https://github.com/PlanQK/QC-Atlas.git`.
 2. Build the repository `mvn package -DskipTests` (skiping the tests for a faster build).
 3. Continue your IDE setup:
     - [IntelliJ Ultimate](config/IntelliJ%20IDEA/)
