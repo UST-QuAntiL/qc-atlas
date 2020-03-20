@@ -7,9 +7,13 @@
     ![checkstyle](graphics/checkstyle.PNG)
   - Open the Settings (by pressing <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>S</kbd>)
   - Go to Other Settings -> CheckStyle.
-  - Click on the plus and add `checkstyle.xml`. It is located in `docs/dev/config/IntelliJ IDEA`.
+  - Click on the plus and add `checkstyle.xml`. It is located in `docs/dev/config/IntelliJ IDEA`. Confirm.
   
     ![checkstyle](graphics/checkstyle-config.PNG)
+    
+  - Activate the settings and Confirm:
+  
+   ![checkstyle](graphics/checkstyle-active.PNG)
 3. Configure the code style (Source: <https://youtrack.jetbrains.com/issue/IDEA-61520#comment=27-1292600>)
     1. Open the Settings (by pressing <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>S</kbd>)
     3. Go to "Editor > Code Style"
