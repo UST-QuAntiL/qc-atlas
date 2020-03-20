@@ -31,9 +31,12 @@
     3. Click the plus
     4. Name "Atlas"
     5. Copyright text from [CodeHeaders](CodeHeaders.md)
+    
+    ![checkstyle](graphics/copyright-profile1.PNG)
 	6. Click "Apply"
     7. Go to Editor > Copyright > Formatting
     8. Adjust copyright formatting settings
+    
         ![checkstyle](graphics/formatting-copyright.PNG)
        - Change to `Use block comments` with `Prefix each line`
        - Set `Relative Location` to `Before other comments`
