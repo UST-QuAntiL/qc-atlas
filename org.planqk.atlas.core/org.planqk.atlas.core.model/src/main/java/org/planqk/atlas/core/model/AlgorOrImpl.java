@@ -27,7 +27,7 @@ import javax.persistence.OneToMany;
 import org.springframework.lang.NonNull;
 
 @MappedSuperclass
-public abstract class Executable extends HasId {
+public abstract class AlgorOrImpl extends HasId {
 
     private String name;
 
@@ -41,7 +41,7 @@ public abstract class Executable extends HasId {
     @OneToMany(cascade = CascadeType.PERSIST)
     private List<Parameter> outputParameters;
 
-    public Executable() {
+    public AlgorOrImpl() {
     }
 
     public void setName(String name) {

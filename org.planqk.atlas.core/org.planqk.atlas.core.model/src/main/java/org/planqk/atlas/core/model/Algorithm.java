@@ -29,7 +29,7 @@ import org.springframework.lang.NonNull;
  * Entity representing a quantum algorithm, e.g., Shors factorization algorithm.
  */
 @Entity
-public class Algorithm extends Executable {
+public class Algorithm extends AlgorOrImpl {
 
     @OneToMany
     private List<Implementation> implementations;

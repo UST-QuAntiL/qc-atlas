@@ -25,7 +25,7 @@ import javax.persistence.ManyToOne;
  * Entity representing an implementation of a certain quantum {@link Algorithm}.
  */
 @Entity
-public class Implementation extends Executable {
+public class Implementation extends AlgorOrImpl {
 
     private ProgrammingLanguage programmingLanguage;
 

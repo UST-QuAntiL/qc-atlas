@@ -19,7 +19,7 @@ package org.planqk.atlas.core.model;
 import javax.persistence.Entity;
 
 /**
- * Input or output parameter for an {@link Executable}.
+ * Input or output parameter for an {@link AlgorOrImpl}.
  */
 @Entity
 public class Parameter extends HasId {
