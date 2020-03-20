@@ -63,16 +63,20 @@
     
     ![tomcat](graphics/tomcat-after-launch.PNG)
     
-    8. Add deployment artifacts: 
+    8. Add artifact: 
+    
+    ![build-artifact](graphics/tomcat-build-option.PNG)
+    
+    9. Add deployment artifacts: 
     ![tomcat-deployment](graphics/tomcat-deployment.PNG)
 
     ![tomcat-artifact1](graphics/click-artifact.png)
     
     ![tomcat-artifact2](graphics/select-artifact.PNG)
     
-    9. Confirm with Apply
+    10. Confirm with Apply
     
-    10. Add new run config: 
+    11. Add new run config: 
     
      ![run-config](graphics/add-run-config.PNG)
      
