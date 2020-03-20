@@ -7,8 +7,9 @@ This document provides an index to all development guidelines and background inf
 ## Quick Develop
 
 1. Clone the repository `git clone https://github.com/eclipse/winery && cd winery`.
-2. Build the repository `mvn package -DskipTests` (skiping the tests for a faster build).
-3. Continue your IDE setup:
+2. If you are a Mac user, [install solidity natively](https://solidity.readthedocs.io/en/latest/installing-solidity.html#binary-packages).
+3. Build the repository `mvn package -DskipTests` (skiping the tests for a faster build).
+4. Continue your IDE setup:
     - [IntelliJ Ultimate](config/IntelliJ%20IDEA/)
     - [Eclipse](config/Eclipse/)
 
