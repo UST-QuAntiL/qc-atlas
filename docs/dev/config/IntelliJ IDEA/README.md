@@ -59,7 +59,7 @@
     
     6. Choose C:\Apache\apache-tomcat-9.0.7 (or wherever you saved and extracted Tomcat) as Tomcat Home and Tomcat base directory. 
     -> Your Tomcat version is displayed, confirm with OK. 
-    7. Set no Browser Launch 
+    7. Set no Browser Launch and define url as localhost:8080/atlas
     
     ![tomcat](graphics/tomcat-after-launch.PNG)
     
@@ -73,6 +73,10 @@
     ![tomcat-artifact1](graphics/click-artifact.png)
     
     ![tomcat-artifact2](graphics/select-artifact.PNG)
+    
+    10. Define deployment context (/atlas): 
+    
+    ![tomcat-artifact2](graphics/deployment-context.PNG)
     
     10. Confirm with Apply
     
