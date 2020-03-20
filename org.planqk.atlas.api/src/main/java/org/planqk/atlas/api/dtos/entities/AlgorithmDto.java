@@ -16,10 +16,13 @@
 
 package org.planqk.atlas.api.dtos.entities;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.planqk.atlas.core.model.Algorithm;
+
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.lang.NonNull;
 
@@ -39,6 +42,8 @@ public class AlgorithmDto extends RepresentationModel<AlgorithmDto> {
     private ParameterListDto inputParameters;
 
     private ParameterListDto outputParameters;
+
+    private List<TagDto> tags;
 
     public AlgorithmDto() {
     }
@@ -97,6 +102,19 @@ public class AlgorithmDto extends RepresentationModel<AlgorithmDto> {
 
     public void setOutputParameters(ParameterListDto outputParameters) {
         this.outputParameters = outputParameters;
+    }
+
+    @NonNull
+    public List<TagDto> getTags() {
+        if (Objects.isNull(tags)) {
+            return new ArrayList<TagDto>();
+        }
+        return tags;
+    }
+
+    public void setTags(List<TagDto> tags) {
+
+        this.tags = tags;
     }
 
     @Override
