@@ -22,65 +22,38 @@ import java.net.URL;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * Entity representing an implementation of a certain quantum {@link Algorithm}.
  */
 @Entity
 public class Implementation extends AlgorOrImpl {
 
+    @Getter
+    @Setter
     private ProgrammingLanguage programmingLanguage;
 
+    @Getter
+    @Setter
     private String selectionRule;
 
+    @Getter
+    @Setter
     private URL fileLocation;
 
+    @Getter
+    @Setter
     @ManyToOne
     private Algorithm implementedAlgorithm;
 
+    @Getter
+    @Setter
     @ManyToOne
     private Sdk sdk;
 
     public Implementation() {
         super();
-    }
-
-    public void setProgrammingLanguage(ProgrammingLanguage programmingLanguage) {
-        this.programmingLanguage = programmingLanguage;
-    }
-
-    public ProgrammingLanguage getProgrammingLanguage() {
-        return programmingLanguage;
-    }
-
-    public void setSelectionRule(String selectionRule) {
-        this.selectionRule = selectionRule;
-    }
-
-    public String getSelectionRule() {
-        return selectionRule;
-    }
-
-    public URL getFileLocation() {
-        return fileLocation;
-    }
-
-    public void setFileLocation(URL fileLocation) {
-        this.fileLocation = fileLocation;
-    }
-
-    public void setImplementedAlgorithm(Algorithm implementedAlgorithm) {
-        this.implementedAlgorithm = implementedAlgorithm;
-    }
-
-    public Algorithm getImplementedAlgorithm() {
-        return implementedAlgorithm;
-    }
-
-    public void setSdk(Sdk sdk) {
-        this.sdk = sdk;
-    }
-
-    public Sdk getSdk() {
-        return sdk;
     }
 }

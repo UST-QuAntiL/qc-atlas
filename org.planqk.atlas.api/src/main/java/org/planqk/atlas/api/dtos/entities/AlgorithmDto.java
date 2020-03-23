@@ -24,61 +24,44 @@ import java.util.stream.Collectors;
 
 import org.planqk.atlas.core.model.Algorithm;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.lang.NonNull;
 
 /**
  * Data transfer object for Algorithms ({@link org.planqk.atlas.core.model.Algorithm}).
  */
+@ToString(callSuper = true, includeFieldNames = true)
 public class AlgorithmDto extends RepresentationModel<AlgorithmDto> {
 
+    @Getter
+    @Setter
     private Long id;
 
+    @Getter
+    @Setter
     private String name;
 
+    @Getter
+    @Setter
     private String depthFormula;
 
+    @Getter
+    @Setter
     private String widthFormula;
 
+    @Setter
     private ParameterListDto inputParameters;
 
+    @Setter
     private ParameterListDto outputParameters;
 
+    @Setter
     private List<TagDto> tags;
 
     public AlgorithmDto() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDepthFormula() {
-        return depthFormula;
-    }
-
-    public void setDepthFormula(String depthFormula) {
-        this.depthFormula = depthFormula;
-    }
-
-    public String getWidthFormula() {
-        return widthFormula;
-    }
-
-    public void setWidthFormula(String widthFormula) {
-        this.widthFormula = widthFormula;
     }
 
     @NonNull
@@ -89,10 +72,6 @@ public class AlgorithmDto extends RepresentationModel<AlgorithmDto> {
         return inputParameters;
     }
 
-    public void setInputParameters(ParameterListDto inputParameters) {
-        this.inputParameters = inputParameters;
-    }
-
     @NonNull
     public ParameterListDto getOutputParameters() {
         if (Objects.isNull(outputParameters)) {
@@ -101,33 +80,12 @@ public class AlgorithmDto extends RepresentationModel<AlgorithmDto> {
         return outputParameters;
     }
 
-    public void setOutputParameters(ParameterListDto outputParameters) {
-        this.outputParameters = outputParameters;
-    }
-
     @NonNull
     public List<TagDto> getTags() {
         if (Objects.isNull(tags)) {
             return new ArrayList<TagDto>();
         }
         return tags;
-    }
-
-    public void setTags(List<TagDto> tags) {
-
-        this.tags = tags;
-    }
-
-    @Override
-    public String toString() {
-        return "AlgorithmDto{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", depthFormula='" + depthFormula + '\'' +
-                ", widthFormula='" + widthFormula + '\'' +
-                ", inputParameters=" + inputParameters +
-                ", outputParameters=" + outputParameters +
-                '}';
     }
 
     public static final class Converter {

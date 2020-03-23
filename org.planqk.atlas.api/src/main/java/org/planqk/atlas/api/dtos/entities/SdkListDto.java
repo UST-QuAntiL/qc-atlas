@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.planqk.atlas.core.model.Sdk;
 
+import lombok.Getter;
 import org.assertj.core.util.Lists;
 import org.springframework.hateoas.RepresentationModel;
 
@@ -30,11 +31,8 @@ import org.springframework.hateoas.RepresentationModel;
  */
 public class SdkListDto extends RepresentationModel<SdkListDto> {
 
+    @Getter
     private final List<SdkDto> sdkDtos = Lists.newArrayList();
-
-    public List<SdkDto> getSdks() {
-        return this.sdkDtos;
-    }
 
     public void add(final SdkDto... sdk) {
         this.sdkDtos.addAll(Arrays.asList(sdk));

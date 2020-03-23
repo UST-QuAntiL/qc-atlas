@@ -25,52 +25,34 @@ import javax.persistence.CascadeType;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.OneToMany;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.lang.NonNull;
 
 @MappedSuperclass
 public abstract class AlgorOrImpl extends HasId {
 
+    @Getter
+    @Setter
     private String name;
 
+    @Getter
+    @Setter
     private String depthFormula;
 
+    @Getter
+    @Setter
     private String widthFormula;
 
+    @Setter
     @OneToMany(cascade = CascadeType.PERSIST)
     private List<Parameter> inputParameters;
 
+    @Setter
     @OneToMany(cascade = CascadeType.PERSIST)
     private List<Parameter> outputParameters;
 
     public AlgorOrImpl() {
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setDepthFormula(String depthFormula) {
-        this.depthFormula = depthFormula;
-    }
-
-    public String getDepthFormula() {
-        return depthFormula;
-    }
-
-    public void setWidthFormula(String widthFormula) {
-        this.widthFormula = widthFormula;
-    }
-
-    public String getWidthFormula() {
-        return widthFormula;
-    }
-
-    public void setInputParameters(List<Parameter> inputParameters) {
-        this.inputParameters = inputParameters;
     }
 
     @NonNull
@@ -79,10 +61,6 @@ public abstract class AlgorOrImpl extends HasId {
             return new ArrayList<>();
         }
         return inputParameters;
-    }
-
-    public void setOutputParameters(List<Parameter> outputParameters) {
-        this.outputParameters = outputParameters;
     }
 
     @NonNull

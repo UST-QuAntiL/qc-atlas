@@ -23,62 +23,36 @@ import org.planqk.atlas.core.model.Provider;
 import org.planqk.atlas.core.model.Qpu;
 import org.planqk.atlas.core.model.Sdk;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.springframework.hateoas.RepresentationModel;
 
 /**
  * Data transfer object for the model class {@link Qpu}.
  */
+@ToString(callSuper = true, includeFieldNames = true)
 public class QpuDto extends RepresentationModel<ProviderDto> {
 
+    @Getter
+    @Setter
     private Long id;
 
+    @Getter
+    @Setter
     private String name;
 
+    @Getter
+    @Setter
     private int numberOfQubits;
 
+    @Getter
+    @Setter
     private float t1;
 
+    @Getter
+    @Setter
     private float maxGateTime;
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setNumberOfQubits(int numberOfQubits) {
-        this.numberOfQubits = numberOfQubits;
-    }
-
-    public int getNumberOfQubits() {
-        return numberOfQubits;
-    }
-
-    public float getT1() {
-        return t1;
-    }
-
-    public void setT1(float t1) {
-        this.t1 = t1;
-    }
-
-    public float getMaxGateTime() {
-        return maxGateTime;
-    }
-
-    public void setMaxGateTime(float maxGateTime) {
-        this.maxGateTime = maxGateTime;
-    }
 
     public static final class Converter {
 
