@@ -17,12 +17,12 @@
 
 package org.planqk.atlas.api.dtos.entities;
 
-import org.planqk.atlas.core.model.Parameter;
+import org.planqk.atlas.core.model.Tag;
 
 import org.springframework.hateoas.RepresentationModel;
 
 /**
- * Data transfer object for multiple {@link Parameter}s
+ * Data transfer object for multiple {@link Tag}s
  */
 public class TagDto extends RepresentationModel<TagDto> {
     private String description;
