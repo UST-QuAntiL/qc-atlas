@@ -22,7 +22,7 @@ This file explains how to create and maintain copyright headers in source files.
 
 See also <http://www.apache.org/licenses/LICENSE-2.0#apply>
 
-## Header for IntelliJ configuratoin
+## Header for IntelliJ configuration
 
 ```
 Copyright (c) $today.year University of Stuttgart
