@@ -15,7 +15,7 @@
     
   - Activate the settings and confirm:
   
-   ![checkstyle](graphics/checkstyle-active.PNG)  
+    ![checkstyle](graphics/checkstyle-active.PNG)  
    
 3. Configure the code style (Source: <https://youtrack.jetbrains.com/issue/IDEA-61520#comment=27-1292600>)  
   - Open the Settings (by pressing <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>S</kbd>; **Mac**: <kbd>command</kbd> + <kbd>,</kbd>)  
@@ -94,3 +94,10 @@
      ![run-config2](graphics/run-config.png)
      
   - Confirm with "Apply" and "OK"
+  
+6. Configure Git to handle line endings
+  - Insert the following commands in your console:  
+  **For Windows**: `git config --global core.autocrlf true`  
+  **For Mac/Linux**: `git config --global core.autocrlf input`
+
+     
