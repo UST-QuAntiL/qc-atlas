@@ -30,6 +30,7 @@ public class Constants {
     public static final String EXECUTION = "execution";
     public static final String SELECTION = "selection";
     public static final String SELECTION_PARAMS = "selectionparams";
+    public static final String TAGS = "tags";
 
     // link names
     public static final String ALGORITHM_LINK = "implementedAlgorithm";
@@ -39,4 +40,5 @@ public class Constants {
     public static final String OUTPUT_PARAMS = "outputParameters";
     public static final String PROVIDER = "provider";
     public static final String ALGORITHM = "algorithm";
+    public static final String TAGS_LINK = "tags";
 }
