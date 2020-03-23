@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.planqk.atlas.core.model.Parameter;
 
+import lombok.Getter;
 import org.assertj.core.util.Lists;
 import org.springframework.hateoas.RepresentationModel;
 
@@ -29,13 +30,10 @@ import org.springframework.hateoas.RepresentationModel;
  */
 public class ParameterListDto extends RepresentationModel<ParameterListDto> {
 
-    private List<ParameterDto> parameterDtos = Lists.newArrayList();
-
-    public List<ParameterDto> getParameters() {
-        return this.parameterDtos;
-    }
+    @Getter
+    private List<ParameterDto> parameters = Lists.newArrayList();
 
     public void add(final List<ParameterDto> parameters) {
-        this.parameterDtos.addAll(parameters);
+        this.parameters.addAll(parameters);
     }
 }

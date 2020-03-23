@@ -22,18 +22,15 @@ import java.util.List;
 import org.planqk.atlas.api.dtos.entities.QpuDto;
 import org.planqk.atlas.core.model.Qpu;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * Request object which is passed to create a new {@link Qpu}.
  */
 public class CreateQpuRequest extends QpuDto {
 
+    @Getter
+    @Setter
     private List<Long> supportedSdkIds;
-
-    public List<Long> getSupportedSdkIds() {
-        return supportedSdkIds;
-    }
-
-    public void setSupportedSdkIds(List<Long> supportedSdkIds) {
-        this.supportedSdkIds = supportedSdkIds;
-    }
 }

@@ -20,6 +20,7 @@ package org.planqk.atlas.api.dtos.entities;
 import java.util.Arrays;
 import java.util.List;
 
+import lombok.Getter;
 import org.assertj.core.util.Lists;
 import org.springframework.hateoas.RepresentationModel;
 
@@ -28,11 +29,8 @@ import org.springframework.hateoas.RepresentationModel;
  */
 public class AlgorithmListDto extends RepresentationModel<AlgorithmListDto> {
 
+    @Getter
     private final List<AlgorithmDto> algorithmDtos = Lists.newArrayList();
-
-    public List<AlgorithmDto> getAlgorithms() {
-        return this.algorithmDtos;
-    }
 
     public void add(final AlgorithmDto... algorithms) {
         this.algorithmDtos.addAll(Arrays.asList(algorithms));

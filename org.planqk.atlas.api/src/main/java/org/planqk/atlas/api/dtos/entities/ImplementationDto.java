@@ -26,99 +26,57 @@ import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.ProgrammingLanguage;
 import org.planqk.atlas.core.model.Sdk;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.lang.NonNull;
 
 /**
  * Data transfer object for the model class Implementation ({@link org.planqk.atlas.core.model.Implementation}).
  */
+@ToString(callSuper = true, includeFieldNames = true)
 public class ImplementationDto extends RepresentationModel<ImplementationDto> {
 
+    @Getter
+    @Setter
     private Long id;
 
+    @Getter
+    @Setter
     private String name;
 
+    @Getter
+    @Setter
     private ProgrammingLanguage programmingLanguage;
 
+    @Getter
+    @Setter
     private String selectionRule;
 
+    @Getter
+    @Setter
     private String depthFormula;
 
+    @Getter
+    @Setter
     private String widthFormula;
 
+    @Getter
+    @Setter
     private String sdk;
 
+    @Getter
+    @Setter
     private URL fileLocation;
 
+    @Setter
     private ParameterListDto inputParameters;
 
+    @Setter
     private ParameterListDto outputParameters;
 
     public ImplementationDto() {
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setProgrammingLanguage(ProgrammingLanguage programmingLanguage) {
-        this.programmingLanguage = programmingLanguage;
-    }
-
-    public ProgrammingLanguage getProgrammingLanguage() {
-        return programmingLanguage;
-    }
-
-    public void setSelectionRule(String selectionRule) {
-        this.selectionRule = selectionRule;
-    }
-
-    public String getSelectionRule() {
-        return selectionRule;
-    }
-
-    public String getDepthFormula() {
-        return depthFormula;
-    }
-
-    public void setDepthFormula(String depthFormula) {
-        this.depthFormula = depthFormula;
-    }
-
-    public String getWidthFormula() {
-        return widthFormula;
-    }
-
-    public void setWidthFormula(String widthFormula) {
-        this.widthFormula = widthFormula;
-    }
-
-    public String getSdk() {
-        return sdk;
-    }
-
-    public void setSdk(String sdk) {
-        this.sdk = sdk;
-    }
-
-    public URL getFileLocation() {
-        return fileLocation;
-    }
-
-    public void setFileLocation(URL fileLocation) {
-        this.fileLocation = fileLocation;
     }
 
     @NonNull
@@ -129,36 +87,12 @@ public class ImplementationDto extends RepresentationModel<ImplementationDto> {
         return inputParameters;
     }
 
-    public void setInputParameters(ParameterListDto inputParameters) {
-        this.inputParameters = inputParameters;
-    }
-
     @NonNull
     public ParameterListDto getOutputParameters() {
         if (Objects.isNull(outputParameters)) {
             return new ParameterListDto();
         }
         return outputParameters;
-    }
-
-    public void setOutputParameters(ParameterListDto outputParameters) {
-        this.outputParameters = outputParameters;
-    }
-
-    @Override
-    public String toString() {
-        return "ImplementationDto{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", programmingLanguage='" + programmingLanguage + '\'' +
-                ", selectionRule='" + selectionRule + '\'' +
-                ", depthFormula='" + depthFormula + '\'' +
-                ", widthFormula='" + widthFormula + '\'' +
-                ", sdk='" + sdk + '\'' +
-                ", fileLocation='" + fileLocation + '\'' +
-                ", inputParameters=" + inputParameters +
-                ", outputParameters=" + outputParameters +
-                '}';
     }
 
     public static final class Converter {

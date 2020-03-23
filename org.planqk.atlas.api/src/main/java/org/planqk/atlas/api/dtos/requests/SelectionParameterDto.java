@@ -19,6 +19,8 @@ package org.planqk.atlas.api.dtos.requests;
 
 import java.util.List;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.hateoas.RepresentationModel;
 
 /**
@@ -26,13 +28,7 @@ import org.springframework.hateoas.RepresentationModel;
  */
 public class SelectionParameterDto extends RepresentationModel<SelectionParameterDto> {
 
+    @Getter
+    @Setter
     private List<String> parameters;
-
-    public List<String> getParameters() {
-        return parameters;
-    }
-
-    public void setParameters(List<String> parameters) {
-        this.parameters = parameters;
-    }
 }
