@@ -15,19 +15,32 @@
  * the License.
  *******************************************************************************/
 
-package org.planqk.atlas.nisq.analyzer.knowledge.prolog;
+package org.planqk.atlas.api.dtos.entities;
 
-import java.io.File;
+import org.planqk.atlas.core.model.Tag;
+
+import org.springframework.hateoas.RepresentationModel;
 
 /**
- * Constants for the prolog knowledge handling.
+ * Data transfer object for multiple {@link Tag}s
  */
-public class Constants {
+public class TagDto extends RepresentationModel<TagDto> {
+    private String description;
+    private String name;
 
-    // basic rule to check the executability of an implementation on the available QPUs
-    public static final String CPU_RULE_NAME = "executableOnQpuRule";
-    public static final String CPU_RULE_CONTENT = "executableOnQpu(RequiredQubits, CircuitDepth, Impl, Qpu) :- requiredSdk(Impl, ReqSdk), usedSdk(Qpu, ReqSdk), providesQubits(Qpu, ProvidedQubit), ProvidedQubit >= RequiredQubits, CircuitDepth =< t1(Qpu)/tg(Qpu).";
+    public String getDescription() {
+        return description;
+    }
 
-    // path to store the files for the local knowledge base
-    public static final String basePath = System.getProperty("java.io.tmpdir") + File.separator + "quality";
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }

@@ -11,6 +11,14 @@ This document provides an index to all development guidelines and background inf
 3. Continue your IDE setup:
     - [IntelliJ Ultimate](config/IntelliJ%20IDEA/)
     - [Eclipse](config/Eclipse/)
+4. Start the application (via the runconfig that you configured in step 3) 
+
+## Main API Enpoints
+API-Root: /atlas
+
+Swagger-Documentation: /atlas/swagger-ui.html
+
+Hal-Browser: /atlas/browser 
 
 ## License
 
