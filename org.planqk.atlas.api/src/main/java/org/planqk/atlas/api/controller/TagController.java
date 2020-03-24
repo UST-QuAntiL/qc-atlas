@@ -19,15 +19,54 @@
 
 package org.planqk.atlas.api.controller;
 
-import org.planqk.atlas.api.Constants;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
+import org.planqk.atlas.api.Constants;
+import org.planqk.atlas.api.services.TagService;
+import org.planqk.atlas.core.model.Tag;
+
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * Controller to access and manipulate tags
- */
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
+//
 @RestController
 @RequestMapping("/" + Constants.TAGS)
 public class TagController {
+
+    private TagService tagService;
+
+    public TagController(TagService tagService) {
+        this.tagService = tagService;
+    }
+
+    @GetMapping(value = "/")
+    HttpEntity<List<Tag>> getTags() {
+        List<Tag> tags = new ArrayList<Tag>();
+        this.tagService.findAll().iterator().forEachRemaining(tags::add);
+        return new ResponseEntity<>(tags, HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/")
+    HttpEntity<Tag> createTag(@RequestBody Tag tag) {
+        Tag savedTag = this.tagService.save(tag);
+        return ResponseEntity.created(linkTo(methodOn(TagController.class).getTagById(savedTag.getId())).toUri()).build();
+    }
+
+    @GetMapping(value = "/{tagId}")
+    HttpEntity<Optional<Tag>> getTagById(@PathVariable Long tagId) {
+        Optional<Tag> tag = this.tagService.getTagById(tagId);
+        return new ResponseEntity<>(tag, HttpStatus.OK);
+    }
 }

@@ -52,6 +52,10 @@ public abstract class AlgorOrImpl extends HasId {
     @OneToMany(cascade = CascadeType.PERSIST)
     private List<Parameter> outputParameters;
 
+    @OneToMany
+    @Setter
+    private List<Tag> tags;
+
     public AlgorOrImpl() {
     }
 
@@ -69,5 +73,13 @@ public abstract class AlgorOrImpl extends HasId {
             return new ArrayList<>();
         }
         return outputParameters;
+    }
+
+    @NonNull
+    public List<Tag> getTags() {
+        if (Objects.isNull(tags)) {
+            return new ArrayList<>();
+        }
+        return tags;
     }
 }
