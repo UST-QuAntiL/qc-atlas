@@ -44,14 +44,6 @@ public class AlgorithmDto extends RepresentationModel<AlgorithmDto> {
     @Setter
     private String name;
 
-    @Getter
-    @Setter
-    private String depthFormula;
-
-    @Getter
-    @Setter
-    private String widthFormula;
-
     @Setter
     private ParameterListDto inputParameters;
 
@@ -94,8 +86,6 @@ public class AlgorithmDto extends RepresentationModel<AlgorithmDto> {
             final AlgorithmDto dto = new AlgorithmDto();
             dto.setId(object.getId());
             dto.setName(object.getName());
-            dto.setDepthFormula(object.getDepthFormula());
-            dto.setWidthFormula(object.getWidthFormula());
 
             ParameterListDto inputParams = new ParameterListDto();
             inputParams.add(object.getInputParameters().stream().map(ParameterDto.Converter::convert)
@@ -113,8 +103,6 @@ public class AlgorithmDto extends RepresentationModel<AlgorithmDto> {
         public static Algorithm convert(final AlgorithmDto object) {
             final Algorithm algo = new Algorithm();
             algo.setName(object.getName());
-            algo.setDepthFormula(object.getDepthFormula());
-            algo.setWidthFormula(object.getWidthFormula());
             algo.setInputParameters(object.getInputParameters().getParameters().stream()
                     .map(ParameterDto.Converter::convert)
                     .collect(Collectors.toList()));

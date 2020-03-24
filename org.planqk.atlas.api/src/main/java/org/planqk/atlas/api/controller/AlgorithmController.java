@@ -93,7 +93,7 @@ public class AlgorithmController {
     public HttpEntity<AlgorithmDto> createAlgorithm(@RequestBody AlgorithmDto algo) {
         LOG.debug("Post to create new algorithm received.");
 
-        if (Objects.isNull(algo.getName()) || Objects.isNull(algo.getWidthFormula()) || Objects.isNull(algo.getDepthFormula())) {
+        if (Objects.isNull(algo.getName())) {
             LOG.error("Received invalid algorithm object for post request: {}", algo.toString());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }

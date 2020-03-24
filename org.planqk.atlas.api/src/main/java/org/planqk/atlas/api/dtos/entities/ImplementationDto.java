@@ -56,14 +56,6 @@ public class ImplementationDto extends RepresentationModel<ImplementationDto> {
 
     @Getter
     @Setter
-    private String depthFormula;
-
-    @Getter
-    @Setter
-    private String widthFormula;
-
-    @Getter
-    @Setter
     private String sdk;
 
     @Getter
@@ -103,8 +95,6 @@ public class ImplementationDto extends RepresentationModel<ImplementationDto> {
             dto.setName(object.getName());
             dto.setProgrammingLanguage(object.getProgrammingLanguage());
             dto.setSelectionRule(object.getSelectionRule());
-            dto.setDepthFormula(object.getDepthFormula());
-            dto.setWidthFormula(object.getWidthFormula());
             dto.setFileLocation(object.getFileLocation());
             dto.setSdk(object.getSdk().getName());
 
@@ -124,8 +114,6 @@ public class ImplementationDto extends RepresentationModel<ImplementationDto> {
         public static Implementation convert(final ImplementationDto object, final Sdk sdk, final Algorithm algo) {
             Implementation implementation = new Implementation();
             implementation.setName(object.getName());
-            implementation.setDepthFormula(object.getDepthFormula());
-            implementation.setWidthFormula(object.getWidthFormula());
             implementation.setProgrammingLanguage(object.getProgrammingLanguage());
             implementation.setSelectionRule(object.getSelectionRule());
             implementation.setFileLocation(object.getFileLocation());
