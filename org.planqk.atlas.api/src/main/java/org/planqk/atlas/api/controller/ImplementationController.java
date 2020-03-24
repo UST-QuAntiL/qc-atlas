@@ -121,7 +121,7 @@ public class ImplementationController {
         }
 
         // check consistency of the implementation object
-        if (Objects.isNull(impl.getName()) || Objects.isNull(impl.getWidthFormula()) || Objects.isNull(impl.getDepthFormula())
+        if (Objects.isNull(impl.getName())
                 || Objects.isNull(impl.getProgrammingLanguage()) || Objects.isNull(impl.getSelectionRule())
                 || Objects.isNull(impl.getSdk()) || Objects.isNull(impl.getFileLocation())) {
             LOG.error("Received invalid implementation object for post request: {}", impl.toString());
