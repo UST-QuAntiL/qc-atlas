@@ -7,6 +7,7 @@
     ![checkstyle](graphics/checkstyle.PNG)
     
   - Install the CheckStyle-IDEA Plugin, click "Apply" and restart the project upon request.
+  - Repeat the previous steps for the Lombok Plugin
   - Open the Settings (by pressing <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>S</kbd>; **Mac**: <kbd>command</kbd> + <kbd>,</kbd>)
   - Go to "Other Settings > Checkstyle".
   - Click on "+" under Configuration File and add `checkstyle.xml`. It is located in `docs/dev/config/IntelliJ IDEA`. Confirm.
