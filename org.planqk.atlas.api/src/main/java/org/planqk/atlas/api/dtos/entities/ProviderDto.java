@@ -19,52 +19,32 @@ package org.planqk.atlas.api.dtos.entities;
 
 import org.planqk.atlas.core.model.Provider;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.springframework.hateoas.RepresentationModel;
 
 /**
  * Data transfer object for the model class {@link Provider}.
  */
+@ToString(callSuper = true, includeFieldNames = true)
 public class ProviderDto extends RepresentationModel<ProviderDto> {
 
+    @Getter
+    @Setter
     private Long id;
 
+    @Getter
+    @Setter
     private String name;
 
+    @Getter
+    @Setter
     private String accessKey;
 
+    @Getter
+    @Setter
     private String secretKey;
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getAccessKey() {
-        return accessKey;
-    }
-
-    public void setAccessKey(String accessKey) {
-        this.accessKey = accessKey;
-    }
-
-    public String getSecretKey() {
-        return secretKey;
-    }
-
-    public void setSecretKey(String secretKey) {
-        this.secretKey = secretKey;
-    }
 
     public static final class Converter {
 

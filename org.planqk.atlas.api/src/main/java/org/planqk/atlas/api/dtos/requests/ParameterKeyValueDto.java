@@ -19,18 +19,15 @@ package org.planqk.atlas.api.dtos.requests;
 
 import java.util.Map;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * Dto to exchange input and output parameters as key value pairs.
  */
 public class ParameterKeyValueDto {
 
+    @Getter
+    @Setter
     private Map<String, String> parameters;
-
-    public Map<String, String> getParameters() {
-        return parameters;
-    }
-
-    public void setParameters(Map<String, String> parameters) {
-        this.parameters = parameters;
-    }
 }

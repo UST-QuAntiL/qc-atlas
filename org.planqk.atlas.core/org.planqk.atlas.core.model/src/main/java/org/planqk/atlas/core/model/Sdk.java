@@ -25,6 +25,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.lang.NonNull;
 
 /**
@@ -33,21 +35,16 @@ import org.springframework.lang.NonNull;
 @Entity
 public class Sdk extends HasId {
 
+    @Getter
+    @Setter
     @Column(unique = true)
     private String name;
 
+    @Setter
     @ManyToMany
     private List<Qpu> supportedQpus;
 
     public Sdk() {
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     @NonNull
@@ -56,9 +53,5 @@ public class Sdk extends HasId {
             return new ArrayList<>();
         }
         return supportedQpus;
-    }
-
-    public void setSupportedQpus(List<Qpu> supportedQpus) {
-        this.supportedQpus = supportedQpus;
     }
 }

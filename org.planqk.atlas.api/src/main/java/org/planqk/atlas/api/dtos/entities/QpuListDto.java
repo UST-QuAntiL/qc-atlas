@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.planqk.atlas.core.model.Qpu;
 
+import lombok.Getter;
 import org.assertj.core.util.Lists;
 import org.springframework.hateoas.RepresentationModel;
 
@@ -30,11 +31,8 @@ import org.springframework.hateoas.RepresentationModel;
  */
 public class QpuListDto extends RepresentationModel<QpuListDto> {
 
+    @Getter
     private final List<QpuDto> qpuDtoList = Lists.newArrayList();
-
-    public List<QpuDto> getQpus() {
-        return this.qpuDtoList;
-    }
 
     public void add(final QpuDto... qpu) {
         this.qpuDtoList.addAll(Arrays.asList(qpu));

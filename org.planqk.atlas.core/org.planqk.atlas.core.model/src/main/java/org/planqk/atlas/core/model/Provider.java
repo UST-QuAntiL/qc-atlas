@@ -24,56 +24,40 @@ import java.util.Objects;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
+
 /**
  * Entity representing a quantum hardware provider.
  */
 @Entity
 public class Provider extends HasId {
 
+    @Getter
+    @Setter
     private String name;
 
+    @Getter
+    @Setter
     private String accessKey;
 
+    @Getter
+    @Setter
     private String secretKey;
 
+    @Setter
     @OneToMany
     private List<Qpu> supportedQpus;
 
     public Provider() {
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getAccessKey() {
-        return accessKey;
-    }
-
-    public void setAccessKey(String accessKey) {
-        this.accessKey = accessKey;
-    }
-
-    public String getSecretKey() {
-        return secretKey;
-    }
-
-    public void setSecretKey(String secretKey) {
-        this.secretKey = secretKey;
-    }
-
+    @NonNull
     public List<Qpu> getSupportedQpus() {
         if (Objects.isNull(supportedQpus)) {
             return new ArrayList<>();
         }
         return supportedQpus;
-    }
-
-    public void setSupportedQpus(List<Qpu> supportedQpus) {
-        this.supportedQpus = supportedQpus;
     }
 }

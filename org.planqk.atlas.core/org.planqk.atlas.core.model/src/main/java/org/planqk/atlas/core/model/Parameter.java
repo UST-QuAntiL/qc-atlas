@@ -19,52 +19,31 @@ package org.planqk.atlas.core.model;
 
 import javax.persistence.Entity;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * Input or output parameter for an {@link AlgorOrImpl}.
  */
 @Entity
 public class Parameter extends HasId {
 
+    @Getter
+    @Setter
     String name;
 
+    @Getter
+    @Setter
     DataType type;
 
+    @Getter
+    @Setter
     String restriction;
 
+    @Getter
+    @Setter
     String description;
 
     public Parameter() {
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public DataType getType() {
-        return type;
-    }
-
-    public void setType(DataType type) {
-        this.type = type;
-    }
-
-    public String getRestriction() {
-        return restriction;
-    }
-
-    public void setRestriction(String restriction) {
-        this.restriction = restriction;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 }

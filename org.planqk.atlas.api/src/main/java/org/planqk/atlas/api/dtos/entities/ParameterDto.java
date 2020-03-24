@@ -20,62 +20,33 @@ package org.planqk.atlas.api.dtos.entities;
 import org.planqk.atlas.core.model.DataType;
 import org.planqk.atlas.core.model.Parameter;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
 /**
  * Data transfer object for {@link Parameter}.
  */
+@ToString(callSuper = true, includeFieldNames = true)
 public class ParameterDto {
 
+    @Getter
+    @Setter
     String name;
 
+    @Getter
+    @Setter
     DataType type;
 
+    @Getter
+    @Setter
     String restriction;
 
+    @Getter
+    @Setter
     String description;
 
     public ParameterDto() {
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public DataType getType() {
-        return type;
-    }
-
-    public void setType(DataType type) {
-        this.type = type;
-    }
-
-    public String getRestriction() {
-        return restriction;
-    }
-
-    public void setRestriction(String restriction) {
-        this.restriction = restriction;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    @Override
-    public String toString() {
-        return "ParameterDto{" +
-                "name='" + name + '\'' +
-                ", type=" + type +
-                ", restriction='" + restriction + '\'' +
-                ", description='" + description + '\'' +
-                '}';
     }
 
     public static final class Converter {

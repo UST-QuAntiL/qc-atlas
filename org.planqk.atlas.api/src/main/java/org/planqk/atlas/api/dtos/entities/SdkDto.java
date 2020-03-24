@@ -19,29 +19,21 @@ package org.planqk.atlas.api.dtos.entities;
 
 import org.planqk.atlas.core.model.Sdk;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.springframework.hateoas.RepresentationModel;
 
+@ToString(callSuper = true, includeFieldNames = true)
 public class SdkDto extends RepresentationModel<SdkDto> {
 
+    @Getter
+    @Setter
     private Long id;
 
+    @Getter
+    @Setter
     private String name;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public static final class Converter {
 

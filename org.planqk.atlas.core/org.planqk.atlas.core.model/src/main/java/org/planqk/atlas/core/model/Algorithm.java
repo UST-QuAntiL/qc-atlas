@@ -24,6 +24,7 @@ import java.util.Objects;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 
+import lombok.Setter;
 import org.springframework.lang.NonNull;
 
 /**
@@ -33,14 +34,11 @@ import org.springframework.lang.NonNull;
 public class Algorithm extends AlgorOrImpl {
 
     @OneToMany
+    @Setter
     private List<Implementation> implementations;
 
     public Algorithm() {
         super();
-    }
-
-    public void setImplementations(List<Implementation> implementations) {
-        this.implementations = implementations;
     }
 
     @NonNull

@@ -25,6 +25,8 @@ import javax.persistence.MappedSuperclass;
 
 import org.planqk.atlas.core.model.listener.DatabaseListener;
 
+import lombok.Getter;
+
 /**
  * Base class defining the Id property for all JPA entity classes.
  */
@@ -33,10 +35,7 @@ import org.planqk.atlas.core.model.listener.DatabaseListener;
 public abstract class HasId {
 
     @Id
+    @Getter
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-
-    public Long getId() {
-        return id;
-    }
 }
