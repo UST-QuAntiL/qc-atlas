@@ -30,6 +30,8 @@ import org.planqk.atlas.core.repository.TagRepository;
 
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -52,8 +54,8 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public Iterable<Tag> findAll() {
-        return tagRepository.findAll();
+    public Page<Tag> findAll(Pageable pageable) {
+        return tagRepository.findAll(pageable);
     }
 
     @Override
