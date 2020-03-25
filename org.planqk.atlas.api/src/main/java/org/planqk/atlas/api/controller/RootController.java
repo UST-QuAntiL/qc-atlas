@@ -45,6 +45,7 @@ public class RootController {
         responseEntity.add(linkTo(methodOn(AlgorithmController.class).getAlgorithms()).withRel(Constants.ALGORITHMS));
         responseEntity.add(linkTo(methodOn(ProviderController.class).getProviders()).withRel(Constants.PROVIDERS));
         responseEntity.add(linkTo(methodOn(SdkController.class).getSdks()).withRel(Constants.SDKS));
+        responseEntity.add(linkTo(methodOn(TagController.class).getTags(0, 20)).withRel(Constants.TAGS));
 
         return new ResponseEntity<>(responseEntity, HttpStatus.OK);
     }
