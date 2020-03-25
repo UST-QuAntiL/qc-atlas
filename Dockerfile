@@ -1,12 +1,19 @@
 FROM maven:3-jdk-8 as builder
 COPY . /tmp/atlas
 WORKDIR /tmp/atlas
-RUN mvn package -DskipTests
+RUN mvn package -DskipTests && mkdir /build && unzip /tmp/atlas/org.planqk.atlas.war/target/org.planqk.atlas.war.war -d /build/atlas
 
 FROM ubuntu:18.04
 LABEL maintainer = "Benjamin Weder <benjamin.weder@iaas.uni-stuttgart.de>"
 
-ENV TOMCAT_VERSION 9.0.8
+ARG DOCKERIZE_VERSION=v0.3.0
+ARG TOMCAT_VERSION=9.0.8
+
+ENV POSTGRES_HOSTNAME localhost
+ENV POSTGRES_PORT 5432
+ENV POSTGRES_USER postgres
+ENV POSTGRES_PASSWORD postgres
+ENV POSTGRES_DB postgres
 
 RUN apt-get -qq update && apt-get install -qqy software-properties-common openjdk-8-jdk wget
 
@@ -23,9 +30,18 @@ ENV PATH $PATH:$CATALINA_HOME/bin
 RUN apt-get update && apt-get install -qqy swi-prolog swi-prolog-java
 ENV SWI_HOME_DIR /usr/bin/swipl
 
-RUN rm -rf /usr/local/tomcat/webapps/*
-COPY --from=builder /tmp/atlas/org.planqk.atlas.war/target/org.planqk.atlas.war.war ${CATALINA_HOME}/webapps/atlas.war
+# install dockerize for configuration templating
+RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
+    && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
+    && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+
+RUN rm -rf ${CATALINA_HOME}/webapps/*
+COPY --from=builder /build/atlas ${CATALINA_HOME}/webapps/atlas
 
 EXPOSE 8080
 
-CMD ["/opt/tomcat/bin/catalina.sh", "run"]
+# configure application with template and docker environment variables
+ADD .docker/application.properties.tpl ${CATALINA_HOME}/webapps/application.properties.tpl
+
+CMD dockerize -template ${CATALINA_HOME}/webapps/application.properties.tpl:${CATALINA_HOME}/webapps/atlas/WEB-INF/classes/application.properties \
+    ${CATALINA_HOME}/bin/catalina.sh run
