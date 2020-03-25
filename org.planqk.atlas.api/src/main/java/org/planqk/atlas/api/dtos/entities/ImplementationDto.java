@@ -60,6 +60,10 @@ public class ImplementationDto extends RepresentationModel<ImplementationDto> {
 
     @Getter
     @Setter
+    private Object content;
+
+    @Getter
+    @Setter
     private URL fileLocation;
 
     @Setter
@@ -97,6 +101,7 @@ public class ImplementationDto extends RepresentationModel<ImplementationDto> {
             dto.setSelectionRule(object.getSelectionRule());
             dto.setFileLocation(object.getFileLocation());
             dto.setSdk(object.getSdk().getName());
+            dto.setContent(object.getSdk().getName());
 
             ParameterListDto inputParams = new ParameterListDto();
             inputParams.add(object.getInputParameters().stream().map(ParameterDto.Converter::convert)
@@ -118,6 +123,7 @@ public class ImplementationDto extends RepresentationModel<ImplementationDto> {
             implementation.setSelectionRule(object.getSelectionRule());
             implementation.setFileLocation(object.getFileLocation());
             implementation.setSdk(sdk);
+            implementation.setContent(object.getContent());
             implementation.setImplementedAlgorithm(algo);
             return implementation;
         }
