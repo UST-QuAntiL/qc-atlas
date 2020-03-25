@@ -24,6 +24,8 @@ You can also use the pre-built image:
 
 Build the project and deploy the WAR file located at `org.planqk.atlas.war/target` to Tomcat.
 
+Make sure you have an accessibly Postgres database and configure the application correspondingly.
+
 Prerequisites for the NISQ Analazer components:
 
 - [SWI Prolog](https://www.swi-prolog.org/) is installed on the machine where the Tomcat runs and the Path is configured correspondingly
