@@ -87,5 +87,10 @@
             <artifactId>hibernate-types-52</artifactId>
             <version>2.7.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
     </dependencies>
 </project>

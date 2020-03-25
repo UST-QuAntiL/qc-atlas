@@ -44,14 +44,6 @@ public abstract class AlgorOrImpl extends HasId {
     @Setter
     private String name;
 
-    @Getter
-    @Setter
-    private String depthFormula;
-
-    @Getter
-    @Setter
-    private String widthFormula;
-
     @Setter
     @OneToMany(cascade = CascadeType.PERSIST)
     private List<Parameter> inputParameters;

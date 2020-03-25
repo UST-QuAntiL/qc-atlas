@@ -128,8 +128,8 @@ public class NisqAnalyzerControlService {
 
         // determine all suitable QPUs for the executable implementations
         for (Implementation execImplementation : executableImplementations) {
-            int requiredQubits = (int) Math.ceil(formulaEvaluator.evaluateFormula(execImplementation.getWidthFormula(), inputParameters));
-            int circuitDepth = (int) Math.ceil(formulaEvaluator.evaluateFormula(execImplementation.getDepthFormula(), inputParameters));
+            int requiredQubits = 10; //FIXME
+            int circuitDepth = 64;   //FIXME
             try {
                 List<Long> suitableQpuIds = PrologQueryEngine.getSuitableQpus(execImplementation.getId(), requiredQubits, circuitDepth);
                 LOG.debug("Found {} suitable QPUs for implementation with Id: {}", suitableQpuIds.size(), execImplementation.getId());
@@ -164,8 +164,6 @@ public class NisqAnalyzerControlService {
 
         // add implementation parameters from formulas and selection rules
         for (Implementation impl : implementations) {
-            requiredParameters.addAll(formulaEvaluator.getRequiredParameters(impl.getDepthFormula()));
-            requiredParameters.addAll(formulaEvaluator.getRequiredParameters(impl.getWidthFormula()));
             requiredParameters.addAll(PrologUtility.getVariablesForRule(impl.getSelectionRule()));
         }
 
