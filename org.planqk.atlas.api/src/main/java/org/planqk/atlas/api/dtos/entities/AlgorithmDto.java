@@ -23,6 +23,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.Tag;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -51,7 +52,7 @@ public class AlgorithmDto extends RepresentationModel<AlgorithmDto> {
     private ParameterListDto outputParameters;
 
     @Setter
-    private List<TagDto> tags;
+    private List<Tag> tags;
 
     @Setter
     @Getter
@@ -77,9 +78,9 @@ public class AlgorithmDto extends RepresentationModel<AlgorithmDto> {
     }
 
     @NonNull
-    public List<TagDto> getTags() {
+    public List<Tag> getTags() {
         if (Objects.isNull(tags)) {
-            return new ArrayList<TagDto>();
+            return new ArrayList<Tag>();
         }
         return tags;
     }
@@ -91,6 +92,7 @@ public class AlgorithmDto extends RepresentationModel<AlgorithmDto> {
             dto.setId(object.getId());
             dto.setName(object.getName());
             dto.setContent(object.getContent());
+            dto.setTags(object.getTags());
 
             ParameterListDto inputParams = new ParameterListDto();
             inputParams.add(object.getInputParameters().stream().map(ParameterDto.Converter::convert)
@@ -109,6 +111,7 @@ public class AlgorithmDto extends RepresentationModel<AlgorithmDto> {
             final Algorithm algo = new Algorithm();
             algo.setName(object.getName());
             algo.setContent(object.getContent());
+            algo.setTags(object.getTags());
             algo.setInputParameters(object.getInputParameters().getParameters().stream()
                     .map(ParameterDto.Converter::convert)
                     .collect(Collectors.toList()));
