@@ -90,6 +90,7 @@ public class AlgorithmDto extends RepresentationModel<AlgorithmDto> {
             final AlgorithmDto dto = new AlgorithmDto();
             dto.setId(object.getId());
             dto.setName(object.getName());
+            dto.setContent(object.getContent());
 
             ParameterListDto inputParams = new ParameterListDto();
             inputParams.add(object.getInputParameters().stream().map(ParameterDto.Converter::convert)
@@ -107,6 +108,7 @@ public class AlgorithmDto extends RepresentationModel<AlgorithmDto> {
         public static Algorithm convert(final AlgorithmDto object) {
             final Algorithm algo = new Algorithm();
             algo.setName(object.getName());
+            algo.setContent(object.getContent());
             algo.setInputParameters(object.getInputParameters().getParameters().stream()
                     .map(ParameterDto.Converter::convert)
                     .collect(Collectors.toList()));
