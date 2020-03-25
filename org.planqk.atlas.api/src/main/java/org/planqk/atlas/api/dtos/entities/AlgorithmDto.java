@@ -61,6 +61,10 @@ public class AlgorithmDto extends RepresentationModel<AlgorithmDto> {
     @Setter
     private List<TagDto> tags;
 
+    @Setter
+    @Getter
+    private Object content;
+
     public AlgorithmDto() {
     }
 
@@ -96,6 +100,7 @@ public class AlgorithmDto extends RepresentationModel<AlgorithmDto> {
             dto.setName(object.getName());
             dto.setDepthFormula(object.getDepthFormula());
             dto.setWidthFormula(object.getWidthFormula());
+            dto.setContent(object.getContent());
 
             ParameterListDto inputParams = new ParameterListDto();
             inputParams.add(object.getInputParameters().stream().map(ParameterDto.Converter::convert)
@@ -115,6 +120,7 @@ public class AlgorithmDto extends RepresentationModel<AlgorithmDto> {
             algo.setName(object.getName());
             algo.setDepthFormula(object.getDepthFormula());
             algo.setWidthFormula(object.getWidthFormula());
+            algo.setContent(object.getContent());
             algo.setInputParameters(object.getInputParameters().getParameters().stream()
                     .map(ParameterDto.Converter::convert)
                     .collect(Collectors.toList()));
