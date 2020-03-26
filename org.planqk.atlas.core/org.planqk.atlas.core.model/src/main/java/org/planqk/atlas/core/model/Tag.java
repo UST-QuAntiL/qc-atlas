@@ -2,11 +2,11 @@ package org.planqk.atlas.core.model;
 
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToMany;
-import javax.persistence.MapsId;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -21,15 +21,21 @@ public class Tag extends HasId {
     @Setter
     String value;
 
-    @ManyToMany
+    @ManyToMany(mappedBy = "tags", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     @Setter
-    @MapsId("algorithm_id")
-    @EqualsAndHashCode.Include
     private List<Algorithm> algorithms;
 
-    @ManyToMany
+    @ManyToMany(mappedBy = "tags", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     @Setter
-    @MapsId("implementation_id")
-    @EqualsAndHashCode.Include
     private List<Implementation> implementations;
+
+    public void addImplementation(Implementation implementation) {
+        implementations.add(implementation);
+        implementation.getTags().add(this);
+    }
+
+    public void addAlgorithm(Algorithm algorithm) {
+        algorithms.add(algorithm);
+        algorithm.getTags().add(this);
+    }
 }

@@ -22,7 +22,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 
@@ -58,7 +62,11 @@ public class Implementation extends AlgorOrImpl {
     @ManyToOne
     private Sdk sdk;
 
-    @ManyToMany(mappedBy = "implementations")
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @JoinTable(
+            name = "implementation_tag",
+            joinColumns = @JoinColumn(name = "implementation_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id"))
     @Setter
     private List<Tag> tags;
 

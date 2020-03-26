@@ -21,7 +21,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 
@@ -38,7 +42,11 @@ public class Algorithm extends AlgorOrImpl {
     @Setter
     private List<Implementation> implementations;
 
-    @ManyToMany(mappedBy = "algorithms")
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @JoinTable(
+            name = "algorithm_tag",
+            joinColumns = @JoinColumn(name = "algorithm_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id"))
     @Setter
     private List<Tag> tags;
 
