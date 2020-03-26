@@ -86,9 +86,11 @@ public class ImplementationController {
 
         // add all available implementations to the response
         for (Implementation impl : implementationRepository.findAll()) {
-            dtoList.add(createImplementationDto(algoId, impl));
-            dtoList.add(linkTo(methodOn(ImplementationController.class).getImplementation(algoId, impl.getId()))
-                    .withRel(impl.getId().toString()));
+            if (impl.getImplementedAlgorithm().getId().equals(algoId)) {
+                dtoList.add(createImplementationDto(algoId, impl));
+                dtoList.add(linkTo(methodOn(ImplementationController.class).getImplementation(algoId, impl.getId()))
+                        .withRel(impl.getId().toString()));
+            }
         }
 
         // add links and status code
