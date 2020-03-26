@@ -70,15 +70,15 @@ public class Implementation extends AlgorOrImpl {
     @Setter
     private List<Tag> tags;
 
+    public Implementation() {
+        super();
+    }
+
     @NonNull
     public List<Tag> getTags() {
         if (Objects.isNull(tags)) {
             return new ArrayList<>();
         }
         return tags;
-    }
-
-    public Implementation() {
-        super();
     }
 }

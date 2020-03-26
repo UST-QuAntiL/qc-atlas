@@ -38,7 +38,7 @@ import org.springframework.lang.NonNull;
 @Entity
 public class Algorithm extends AlgorOrImpl {
 
-    @OneToMany
+    @OneToMany(mappedBy = "implementedAlgorithm", fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @Setter
     private List<Implementation> implementations;
 
