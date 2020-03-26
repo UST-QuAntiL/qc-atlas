@@ -44,8 +44,8 @@ public class TagServiceImpl implements TagService {
     private EntityManager em;
 
     @Override
-    public List<Tag> findByName(String name) {
-        return tagRepository.findByName(name);
+    public List<Tag> findByName(String key) {
+        return tagRepository.findByKey(key);
     }
 
     @Override

@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Objects;
 
 import javax.persistence.Entity;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 
 import lombok.Setter;
@@ -37,6 +38,10 @@ public class Algorithm extends AlgorOrImpl {
     @Setter
     private List<Implementation> implementations;
 
+    @ManyToMany(mappedBy = "algorithms")
+    @Setter
+    private List<Tag> tags;
+
     public Algorithm() {
         super();
     }
@@ -47,5 +52,13 @@ public class Algorithm extends AlgorOrImpl {
             return new ArrayList<>();
         }
         return implementations;
+    }
+
+    @NonNull
+    public List<Tag> getTags() {
+        if (Objects.isNull(tags)) {
+            return new ArrayList<>();
+        }
+        return tags;
     }
 }

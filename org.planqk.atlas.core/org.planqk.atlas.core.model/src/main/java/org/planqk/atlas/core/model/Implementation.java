@@ -18,12 +18,17 @@
 package org.planqk.atlas.core.model;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 import javax.persistence.Entity;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.lang.NonNull;
 
 /**
  * Entity representing an implementation of a certain quantum {@link Algorithm}.
@@ -52,6 +57,18 @@ public class Implementation extends AlgorOrImpl {
     @Setter
     @ManyToOne
     private Sdk sdk;
+
+    @ManyToMany(mappedBy = "implementations")
+    @Setter
+    private List<Tag> tags;
+
+    @NonNull
+    public List<Tag> getTags() {
+        if (Objects.isNull(tags)) {
+            return new ArrayList<>();
+        }
+        return tags;
+    }
 
     public Implementation() {
         super();
