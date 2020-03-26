@@ -119,6 +119,12 @@ public class ImplementationDto extends RepresentationModel<ImplementationDto> {
             implementation.setFileLocation(object.getFileLocation());
             implementation.setSdk(sdk);
             implementation.setImplementedAlgorithm(algo);
+            implementation.setInputParameters(object.getInputParameters().getParameters().stream()
+                    .map(ParameterDto.Converter::convert)
+                    .collect(Collectors.toList()));
+            implementation.setOutputParameters(object.getOutputParameters().getParameters().stream()
+                    .map(ParameterDto.Converter::convert)
+                    .collect(Collectors.toList()));
             return implementation;
         }
     }
