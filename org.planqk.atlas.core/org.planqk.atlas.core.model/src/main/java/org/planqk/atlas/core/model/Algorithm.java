@@ -42,7 +42,7 @@ public class Algorithm extends AlgorOrImpl {
     @Setter
     private List<Implementation> implementations;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinTable(
             name = "algorithm_tag",
             joinColumns = @JoinColumn(name = "algorithm_id"),
