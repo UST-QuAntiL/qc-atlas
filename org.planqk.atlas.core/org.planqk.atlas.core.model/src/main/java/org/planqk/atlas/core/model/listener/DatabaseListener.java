@@ -41,14 +41,14 @@ public class DatabaseListener {
         // forward insertions of implementations and qpus, ad these have to be reflected in the knowledge base
         if (hasId.getClass().equals(Implementation.class)) {
             Implementation impl = (Implementation) hasId;
-            PrologFactUpdater.handleImplementationInsertion(impl.getId(), impl.getSdk().getName(),
-                    impl.getImplementedAlgorithm().getId(), impl.getSelectionRule());
+            //PrologFactUpdater.handleImplementationInsertion(impl.getId(), impl.getSdk().getName(),
+                    //impl.getImplementedAlgorithm().getId(), impl.getSelectionRule());
         }
 
         if (hasId.getClass().equals(Qpu.class)) {
             Qpu qpu = (Qpu) hasId;
             List<String> sdkNames = qpu.getSupportedSdks().stream().map(Sdk::getName).collect(Collectors.toList());
-            PrologFactUpdater.handleQpuInsertion(qpu.getId(), qpu.getQubitCount(), sdkNames, qpu.getT1(), qpu.getMaxGateTime());
+            //PrologFactUpdater.handleQpuInsertion(qpu.getId(), qpu.getQubitCount(), sdkNames, qpu.getT1(), qpu.getMaxGateTime());
         }
     }
 
@@ -58,14 +58,14 @@ public class DatabaseListener {
         // forward updates of implementations and qpus, ad these have to be reflected in the knowledge base
         if (hasId.getClass().equals(Implementation.class)) {
             Implementation impl = (Implementation) hasId;
-            PrologFactUpdater.handleImplementationUpdate(impl.getId(), impl.getSdk().getName(),
-                    impl.getImplementedAlgorithm().getId(), impl.getSelectionRule());
+            //PrologFactUpdater.handleImplementationUpdate(impl.getId(), impl.getSdk().getName(),
+                    //impl.getImplementedAlgorithm().getId(), impl.getSelectionRule());
         }
 
         if (hasId.getClass().equals(Qpu.class)) {
             Qpu qpu = (Qpu) hasId;
             List<String> sdkNames = qpu.getSupportedSdks().stream().map(Sdk::getName).collect(Collectors.toList());
-            PrologFactUpdater.handleQpuUpdate(qpu.getId(), qpu.getQubitCount(), sdkNames, qpu.getT1(), qpu.getMaxGateTime());
+            //PrologFactUpdater.handleQpuUpdate(qpu.getId(), qpu.getQubitCount(), sdkNames, qpu.getT1(), qpu.getMaxGateTime());
         }
     }
 
@@ -74,11 +74,11 @@ public class DatabaseListener {
 
         // forward deletions of implementations and qpus, ad these have to be reflected in the knowledge base
         if (hasId.getClass().equals(Implementation.class)) {
-            PrologFactUpdater.handleImplementationDeletion(hasId.getId());
+           // PrologFactUpdater.handleImplementationDeletion(hasId.getId());
         }
 
         if (hasId.getClass().equals(Qpu.class)) {
-            PrologFactUpdater.handleQpuDeletion(hasId.getId());
+            //PrologFactUpdater.handleQpuDeletion(hasId.getId());
         }
     }
 }
