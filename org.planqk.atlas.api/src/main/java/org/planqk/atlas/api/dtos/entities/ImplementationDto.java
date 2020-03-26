@@ -141,6 +141,12 @@ public class ImplementationDto extends RepresentationModel<ImplementationDto> {
             implementation.setContent(object.getContent());
             implementation.setTags(object.getTags());
             implementation.setImplementedAlgorithm(algo);
+            implementation.setInputParameters(object.getInputParameters().getParameters().stream()
+                    .map(ParameterDto.Converter::convert)
+                    .collect(Collectors.toList()));
+            implementation.setOutputParameters(object.getOutputParameters().getParameters().stream()
+                    .map(ParameterDto.Converter::convert)
+                    .collect(Collectors.toList()));
             return implementation;
         }
     }
