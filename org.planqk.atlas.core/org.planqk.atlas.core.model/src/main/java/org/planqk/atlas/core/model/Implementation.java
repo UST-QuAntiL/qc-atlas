@@ -62,7 +62,7 @@ public class Implementation extends AlgorOrImpl {
     @ManyToOne
     private Sdk sdk;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinTable(
             name = "implementation_tag",
             joinColumns = @JoinColumn(name = "implementation_id"),
