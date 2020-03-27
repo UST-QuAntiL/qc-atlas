@@ -28,6 +28,8 @@ import org.planqk.atlas.api.dtos.entities.ParameterDto;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 /**
  * Utility class for the REST API functionality
@@ -69,5 +71,23 @@ public class RestUtils {
      */
     public static boolean parametersAvailable(Set<String> requiredParameters, Map<String, String> providedParameters) {
         return requiredParameters.stream().filter(param -> !providedParameters.containsKey(param)).count() == 0;
+    }
+
+    /**
+     * Return a (default) pageable from the provided Requestparams for an endpoint that can be used with pagination
+     *
+     * @param size the size of a page
+     * @param page the number of the page that should be returned
+     * @return construct the <code>Pageable</code> if suitable parameters are given, <code>Pageable.unpaged()</code> (no
+     * Pagination) otherwise
+     */
+    public static Pageable getPageableFromRequestParams(Integer page, Integer size) {
+        if (size != null && page != null) {
+            return PageRequest.of(page, size);
+        }
+        if (size != null) { // default start page to 0
+            return PageRequest.of(0, size);
+        } // default if no pagination params are set:
+        return Pageable.unpaged();
     }
 }

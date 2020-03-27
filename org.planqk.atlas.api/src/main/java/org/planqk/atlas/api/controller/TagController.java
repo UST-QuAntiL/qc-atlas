@@ -23,11 +23,10 @@ import java.util.Optional;
 
 import org.planqk.atlas.api.Constants;
 import org.planqk.atlas.api.services.TagService;
+import org.planqk.atlas.api.utils.RestUtils;
 import org.planqk.atlas.core.model.Tag;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -54,9 +53,10 @@ public class TagController {
     }
 
     @GetMapping(value = "/")
-    HttpEntity<Page<Tag>> getTags(@RequestParam Integer page, @RequestParam Integer size) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Tag> tags = this.tagService.findAll(pageable);
+    HttpEntity<Page<Tag>> getTags(@RequestParam(required = false) Integer page,
+                                  @RequestParam(required = false) Integer size) {
+
+        Page<Tag> tags = this.tagService.findAll(RestUtils.getPageableFromRequestParams(page, size));
         return new ResponseEntity<>(tags, HttpStatus.OK);
     }
 
