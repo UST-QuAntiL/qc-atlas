@@ -21,7 +21,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 
 import lombok.Setter;
@@ -33,9 +38,17 @@ import org.springframework.lang.NonNull;
 @Entity
 public class Algorithm extends AlgorOrImpl {
 
-    @OneToMany
+    @OneToMany(mappedBy = "implementedAlgorithm", fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @Setter
     private List<Implementation> implementations;
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @JoinTable(
+            name = "algorithm_tag",
+            joinColumns = @JoinColumn(name = "algorithm_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id"))
+    @Setter
+    private List<Tag> tags;
 
     public Algorithm() {
         super();
@@ -47,5 +60,13 @@ public class Algorithm extends AlgorOrImpl {
             return new ArrayList<>();
         }
         return implementations;
+    }
+
+    @NonNull
+    public List<Tag> getTags() {
+        if (Objects.isNull(tags)) {
+            return new ArrayList<>();
+        }
+        return tags;
     }
 }

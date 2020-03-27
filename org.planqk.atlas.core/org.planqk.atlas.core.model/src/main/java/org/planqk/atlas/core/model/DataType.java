@@ -23,5 +23,8 @@ package org.planqk.atlas.core.model;
 public enum DataType {
 
     Integer,
+    Float,
+    IntegerArray,
+    FloatArray,
     String;
 }

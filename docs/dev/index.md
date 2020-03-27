@@ -16,7 +16,7 @@ This document provides an index to all development guidelines and background inf
 ## Main API Enpoints
 API-Root: /atlas
 
-Swagger-Documentation: /atlas/swagger-ui.html
+Swagger-Documentation: /atlas/swagger-ui
 
 Hal-Browser: /atlas/browser 
 

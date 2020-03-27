@@ -21,8 +21,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToMany;
 
 import lombok.Getter;
@@ -41,10 +43,15 @@ public class Sdk extends HasId {
     private String name;
 
     @Setter
-    @ManyToMany
+    @ManyToMany(mappedBy = "supportedSdks", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     private List<Qpu> supportedQpus;
 
     public Sdk() {
+    }
+
+    public void addSupportedQpu(Qpu qpu) {
+        supportedQpus.add(qpu);
+        qpu.getSupportedSdks().add(this);
     }
 
     @NonNull
