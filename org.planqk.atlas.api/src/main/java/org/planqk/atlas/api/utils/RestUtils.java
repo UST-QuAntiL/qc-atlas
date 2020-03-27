@@ -90,4 +90,11 @@ public class RestUtils {
         } // default if no pagination params are set:
         return Pageable.unpaged();
     }
+
+    /**
+     * Return a (default) pageable (mirrors not using the optional pagination params)
+     */
+    public static Pageable getDefaultPageable() {
+        return getPageableFromRequestParams(null, null);
+    }
 }
