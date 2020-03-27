@@ -11,7 +11,14 @@ This document provides an index to all development guidelines and background inf
 3. Continue your IDE setup:
     - [IntelliJ Ultimate](config/IntelliJ%20IDEA/)
     - [Eclipse](config/Eclipse/)
-4. Start the application (via the runconfig that you configured in step 3) 
+4. Start Postgres Database:
+    - Clone the repository `git clone https://github.com/PlanQK/planqk-docker.git`.
+    - Startup in this directory via the [Compose Dev File](https://github.com/PlanQK/planqk-docker/blob/master/docker-compose.dev.yml):
+        ```
+        $ docker-compose -f docker-compose.dev.yml pull
+        $ docker-compose -f docker-compose.dev.yml up
+        ``` 
+5. Start the application (via the runconfig that you configured in step 3) 
 
 ## Main API Enpoints
 API-Root: /atlas

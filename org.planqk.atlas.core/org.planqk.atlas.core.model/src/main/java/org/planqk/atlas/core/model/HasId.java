@@ -26,13 +26,14 @@ import javax.persistence.MappedSuperclass;
 import org.planqk.atlas.core.model.listener.DatabaseListener;
 
 import lombok.Getter;
+import org.springframework.hateoas.RepresentationModel;
 
 /**
  * Base class defining the Id property for all JPA entity classes.
  */
 @MappedSuperclass
 @EntityListeners(DatabaseListener.class)
-public abstract class HasId {
+public abstract class HasId extends RepresentationModel {
 
     @Id
     @Getter
