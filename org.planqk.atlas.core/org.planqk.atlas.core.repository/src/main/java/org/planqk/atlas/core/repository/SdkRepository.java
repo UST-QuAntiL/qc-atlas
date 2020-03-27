@@ -21,12 +21,12 @@ import java.util.Optional;
 
 import org.planqk.atlas.core.model.Sdk;
 
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
  * Repository to access {@link Sdk}s available in the data base with different queries.
  */
-public interface SdkRepository extends CrudRepository<Sdk, Long> {
+public interface SdkRepository extends JpaRepository<Sdk, Long> {
 
     Optional<Sdk> findByName(String name);
 }

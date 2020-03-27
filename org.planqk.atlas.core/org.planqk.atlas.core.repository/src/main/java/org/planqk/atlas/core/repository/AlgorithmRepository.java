@@ -21,12 +21,12 @@ import java.util.Optional;
 
 import org.planqk.atlas.core.model.Algorithm;
 
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
  * Repository to access {@link Algorithm}s available in the data base with different queries.
  */
-public interface AlgorithmRepository extends CrudRepository<Algorithm, Long> {
+public interface AlgorithmRepository extends JpaRepository<Algorithm, Long> {
 
     Optional<Algorithm> findByName(String name);
 }

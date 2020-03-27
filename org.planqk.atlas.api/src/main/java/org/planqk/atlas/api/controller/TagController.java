@@ -55,7 +55,6 @@ public class TagController {
     @GetMapping(value = "/")
     HttpEntity<Page<Tag>> getTags(@RequestParam(required = false) Integer page,
                                   @RequestParam(required = false) Integer size) {
-
         Page<Tag> tags = this.tagService.findAll(RestUtils.getPageableFromRequestParams(page, size));
         return new ResponseEntity<>(tags, HttpStatus.OK);
     }

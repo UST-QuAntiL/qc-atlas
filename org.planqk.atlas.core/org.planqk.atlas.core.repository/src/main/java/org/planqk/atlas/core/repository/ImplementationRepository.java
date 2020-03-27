@@ -23,12 +23,12 @@ import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Sdk;
 
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
  * Repository to access {@link Implementation}s available in the data base with different queries.
  */
-public interface ImplementationRepository extends CrudRepository<Implementation, Long> {
+public interface ImplementationRepository extends JpaRepository<Implementation, Long> {
 
     List<Implementation> findByImplementedAlgorithm(Algorithm implementedAlgorithm);
 
