@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import org.planqk.atlas.api.Constants;
 import org.planqk.atlas.api.controller.AlgorithmController;
 import org.planqk.atlas.api.dtos.entities.ParameterDto;
 
@@ -92,9 +93,16 @@ public class RestUtils {
     }
 
     /**
-     * Return a (default) pageable (mirrors not using the optional pagination params)
+     * Returns unpaged Paginationparams
+     */
+    public static Pageable getAllPageable() {
+        return Pageable.unpaged();
+    }
+
+    /**
+     * Returns default Paginationparams
      */
     public static Pageable getDefaultPageable() {
-        return getPageableFromRequestParams(null, null);
+        return PageRequest.of(Constants.DEFAULT_PAGE_NUMBER, Constants.DEFAULT_PAGE_SIZE);
     }
 }
