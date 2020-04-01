@@ -4,9 +4,9 @@ This lists the architectural decisions for the QC-Atlas.
 
 <!-- adrlog -->
 
-- [ADR-0000](../adr0000-use-architectural-decision-records.md) - Use Markdown Architectural Decision Records
-- [ADR-0001](../adr0001-use-URI-for-entities.md) - Use URI to enable links to entities of the Pattern/QC Atlas
-- [ADR-0002](../adr0002-monorepo.md) - Go Monolith First
+- [ADR-0000](0000-use-architectural-decision-records) - Use Markdown Architectural Decision Records
+- [ADR-0001](0001-use-URI-for-entities) - Use URI to enable links to entities of the Pattern/QC Atlas
+- [ADR-0002](0002-monorepo) - Go Monolith First
 
 <!-- adrlogstop -->
 
