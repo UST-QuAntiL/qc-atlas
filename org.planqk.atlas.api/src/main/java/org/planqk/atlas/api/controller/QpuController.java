@@ -26,12 +26,13 @@ import org.planqk.atlas.api.Constants;
 import org.planqk.atlas.api.dtos.entities.QpuDto;
 import org.planqk.atlas.api.dtos.entities.QpuListDto;
 import org.planqk.atlas.api.dtos.requests.CreateQpuRequest;
+import org.planqk.atlas.api.services.ProviderService;
+import org.planqk.atlas.api.services.QpuService;
+import org.planqk.atlas.api.services.SdkService;
+import org.planqk.atlas.api.utils.RestUtils;
 import org.planqk.atlas.core.model.Provider;
 import org.planqk.atlas.core.model.Qpu;
 import org.planqk.atlas.core.model.Sdk;
-import org.planqk.atlas.core.repository.ProviderRepository;
-import org.planqk.atlas.core.repository.QpuRepository;
-import org.planqk.atlas.core.repository.SdkRepository;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +44,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -56,28 +58,29 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class QpuController {
 
     private final static Logger LOG = LoggerFactory.getLogger(QpuController.class);
-    private final ProviderRepository providerRepository;
-    private final QpuRepository qpuRepository;
-    private final SdkRepository sdkRepository;
+    private final QpuService qpuService;
+    private final ProviderService providerService;
+    private final SdkService sdkService;
 
-    public QpuController(QpuRepository qpuRepository, ProviderRepository providerRepository, SdkRepository sdkRepository) {
-        this.qpuRepository = qpuRepository;
-        this.providerRepository = providerRepository;
-        this.sdkRepository = sdkRepository;
+    public QpuController(QpuService qpuService, ProviderService providerService, SdkService sdkService) {
+        this.qpuService = qpuService;
+        this.providerService = providerService;
+        this.sdkService = sdkService;
     }
 
     @GetMapping("/")
-    public HttpEntity<QpuListDto> getQpus(@PathVariable Long providerId) {
+    public HttpEntity<QpuListDto> getQpus(@PathVariable Long providerId, @RequestParam(required = false) Integer page,
+                                          @RequestParam(required = false) Integer size) {
         LOG.debug("Get to retrieve all QPUs received.");
         QpuListDto qpuListDto = new QpuListDto();
 
         // add all available algorithms to the response
-        for (Qpu qpu : qpuRepository.findAll()) {
+        for (Qpu qpu : qpuService.findAll(RestUtils.getAllPageable())) {
             qpuListDto.add(createQpuDto(providerId, qpu));
             qpuListDto.add(linkTo(methodOn(QpuController.class).getQpu(providerId, qpu.getId())).withRel(qpu.getId().toString()));
         }
 
-        qpuListDto.add(linkTo(methodOn(QpuController.class).getQpus(providerId)).withSelfRel());
+        qpuListDto.add(linkTo(methodOn(QpuController.class).getQpus(providerId, Constants.DEFAULT_PAGE_NUMBER, Constants.DEFAULT_PAGE_SIZE)).withSelfRel());
         return new ResponseEntity<>(qpuListDto, HttpStatus.OK);
     }
 
@@ -85,7 +88,7 @@ public class QpuController {
     public HttpEntity<QpuDto> getQpu(@PathVariable Long providerId, @PathVariable Long qpuId) {
         LOG.debug("Get to retrieve QPU with id: {}.", qpuId);
 
-        Optional<Qpu> qpuOptional = qpuRepository.findById(qpuId);
+        Optional<Qpu> qpuOptional = qpuService.findById(qpuId);
         if (!qpuOptional.isPresent()) {
             LOG.error("Unable to retrieve QPU with id {} from the repository.", qpuId);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -98,7 +101,7 @@ public class QpuController {
     public HttpEntity<QpuDto> createQpu(@PathVariable Long providerId, @RequestBody CreateQpuRequest qpuRequest) {
         LOG.debug("Post to create new QPU received.");
 
-        Optional<Provider> providerOptional = providerRepository.findById(providerId);
+        Optional<Provider> providerOptional = providerService.findById(providerId);
         if (!providerOptional.isPresent()) {
             LOG.error("Unable to retrieve provider with id {} from the repository.", providerId);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -115,7 +118,7 @@ public class QpuController {
         if (Objects.nonNull(qpuRequest.getSupportedSdkIds())) {
             LOG.debug("Supported SDKs are defined for the QPU.");
             for (Long sdkId : qpuRequest.getSupportedSdkIds()) {
-                Optional<Sdk> sdkOptional = sdkRepository.findById(sdkId);
+                Optional<Sdk> sdkOptional = sdkService.findById(sdkId);
                 if (!sdkOptional.isPresent()) {
                     LOG.error("Unable to retrieve SDK with id {} from the repository.", sdkId);
                     return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -125,7 +128,7 @@ public class QpuController {
         }
 
         // store and return QPU
-        Qpu qpu = qpuRepository.save(QpuDto.Converter.convert(qpuRequest, providerOptional.get(), supportedSdks));
+        Qpu qpu = qpuService.save(QpuDto.Converter.convert(qpuRequest, providerOptional.get(), supportedSdks));
         return new ResponseEntity<>(createQpuDto(providerId, qpu), HttpStatus.OK);
     }
 

@@ -42,4 +42,8 @@ public class Constants {
     public static final String PROVIDER = "provider";
     public static final String ALGORITHM = "algorithm";
     public static final String TAGS_LINK = "tags";
+
+    // default Pagination params that are exposed in HATEOAS links
+    public static final Integer DEFAULT_PAGE_NUMBER = 0;
+    public static final Integer DEFAULT_PAGE_SIZE = 50;
 }

@@ -21,9 +21,11 @@ import java.util.Optional;
 
 import org.planqk.atlas.core.model.Qpu;
 
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
-public interface QpuRepository extends CrudRepository<Qpu, Long> {
+@RepositoryRestResource(exported = false)
+public interface QpuRepository extends JpaRepository<Qpu, Long> {
 
     Optional<Qpu> findByName(String name);
 }

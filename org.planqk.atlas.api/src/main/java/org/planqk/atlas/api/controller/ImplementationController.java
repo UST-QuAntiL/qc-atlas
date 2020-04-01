@@ -28,12 +28,13 @@ import org.planqk.atlas.api.dtos.entities.ImplementationListDto;
 import org.planqk.atlas.api.dtos.entities.ParameterDto;
 import org.planqk.atlas.api.dtos.entities.ParameterListDto;
 import org.planqk.atlas.api.dtos.requests.ParameterKeyValueDto;
+import org.planqk.atlas.api.services.AlgorithmService;
+import org.planqk.atlas.api.services.ImplementationService;
+import org.planqk.atlas.api.services.SdkService;
+import org.planqk.atlas.api.utils.RestUtils;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Sdk;
-import org.planqk.atlas.core.repository.AlgorithmRepository;
-import org.planqk.atlas.core.repository.ImplementationRepository;
-import org.planqk.atlas.core.repository.SdkRepository;
 import org.planqk.atlas.nisq.analyzer.control.NisqAnalyzerControlService;
 
 import org.slf4j.Logger;
@@ -62,20 +63,18 @@ public class ImplementationController {
 
     final private static Logger LOG = LoggerFactory.getLogger(ImplementationController.class);
 
-    private final ImplementationRepository implementationRepository;
-
-    private final AlgorithmRepository algorithmRepository;
-
-    private final SdkRepository sdkRepository;
-
+    private SdkService sdkService;
     private final NisqAnalyzerControlService controlService;
+    private final ImplementationService implementationService;
+    private final AlgorithmService algorithmService;
 
-    public ImplementationController(ImplementationRepository implementationRepository,
-                                    AlgorithmRepository algorithmRepository, SdkRepository sdkRepository,
+    public ImplementationController(ImplementationService implementationService,
+                                    AlgorithmService algorithmService,
+                                    SdkService sdkService,
                                     NisqAnalyzerControlService controlService) {
-        this.implementationRepository = implementationRepository;
-        this.algorithmRepository = algorithmRepository;
-        this.sdkRepository = sdkRepository;
+        this.implementationService = implementationService;
+        this.algorithmService = algorithmService;
+        this.sdkService = sdkService;
         this.controlService = controlService;
     }
 
@@ -85,7 +84,7 @@ public class ImplementationController {
         ImplementationListDto dtoList = new ImplementationListDto();
 
         // add all available implementations to the response
-        for (Implementation impl : implementationRepository.findAll()) {
+        for (Implementation impl : implementationService.findAll(RestUtils.getAllPageable())) {
             if (impl.getImplementedAlgorithm().getId().equals(algoId)) {
                 dtoList.add(createImplementationDto(algoId, impl));
                 dtoList.add(linkTo(methodOn(ImplementationController.class).getImplementation(algoId, impl.getId()))
@@ -103,7 +102,7 @@ public class ImplementationController {
     public HttpEntity<ImplementationDto> getImplementation(@PathVariable Long algoId, @PathVariable Long implId) {
         LOG.debug("Get to retrieve implementation with id: {}.", implId);
 
-        Optional<Implementation> implementationOptional = implementationRepository.findById(implId);
+        Optional<Implementation> implementationOptional = implementationService.findById(implId);
         if (!implementationOptional.isPresent()) {
             LOG.error("Unable to retrieve implementation with id {} form the repository.", implId);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -116,7 +115,7 @@ public class ImplementationController {
     public HttpEntity<ImplementationDto> createImplementation(@PathVariable Long algoId, @RequestBody ImplementationDto impl) {
         LOG.debug("Post to create new implementation received.");
 
-        Optional<Algorithm> algorithmOptional = algorithmRepository.findById(algoId);
+        Optional<Algorithm> algorithmOptional = algorithmService.findById(algoId);
         if (!algorithmOptional.isPresent()) {
             LOG.error("Unable to retrieve algorithm with id {} from the repository.", algoId);
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -131,7 +130,7 @@ public class ImplementationController {
         }
 
         // retrieve referenced Sdk and abort if not present
-        Optional<Sdk> sdkOptional = sdkRepository.findByName(impl.getSdk());
+        Optional<Sdk> sdkOptional = sdkService.findByName(impl.getSdk());
         if (!sdkOptional.isPresent()) {
             LOG.error("Unable to retrieve Sdk with name {} from the repository.", impl.getSdk());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -146,7 +145,7 @@ public class ImplementationController {
 
         // store and return implementation
         Implementation implementation =
-                implementationRepository.save(ImplementationDto.Converter.convert(impl, sdkOptional.get(), algorithmOptional.get()));
+                implementationService.save(ImplementationDto.Converter.convert(impl, sdkOptional.get(), algorithmOptional.get()));
         return new ResponseEntity<>(createImplementationDto(algoId, implementation), HttpStatus.OK);
     }
 
@@ -154,7 +153,7 @@ public class ImplementationController {
     public HttpEntity<ParameterListDto> getInputParameters(@PathVariable Long id) {
         LOG.debug("Get to retrieve input parameters for implementation with id: {}.", id);
 
-        Optional<Implementation> implementationOptional = implementationRepository.findById(id);
+        Optional<Implementation> implementationOptional = implementationService.findById(id);
         if (!implementationOptional.isPresent()) {
             LOG.error("Unable to retrieve implementation with id {} form the repository.", id);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -174,7 +173,7 @@ public class ImplementationController {
     public HttpEntity<ParameterListDto> getOutputParameters(@PathVariable Long id) {
         LOG.debug("Get to retrieve output parameters for implementation with id: {}.", id);
 
-        Optional<Implementation> implementationOptional = implementationRepository.findById(id);
+        Optional<Implementation> implementationOptional = implementationService.findById(id);
         if (!implementationOptional.isPresent()) {
             LOG.error("Unable to retrieve implementation with id {} form the repository.", id);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -195,7 +194,7 @@ public class ImplementationController {
                                             @RequestBody ParameterKeyValueDto executionRequest) {
         LOG.debug("Post to execute implementation with Id: {}", implId);
 
-        Optional<Implementation> implementationOptional = implementationRepository.findById(implId);
+        Optional<Implementation> implementationOptional = implementationService.findById(implId);
         if (!implementationOptional.isPresent()) {
             LOG.error("Unable to retrieve implementation with id {} form the repository.", implId);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

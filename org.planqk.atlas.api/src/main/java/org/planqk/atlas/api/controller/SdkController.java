@@ -23,8 +23,9 @@ import java.util.Optional;
 import org.planqk.atlas.api.Constants;
 import org.planqk.atlas.api.dtos.entities.SdkDto;
 import org.planqk.atlas.api.dtos.entities.SdkListDto;
+import org.planqk.atlas.api.services.SdkService;
+import org.planqk.atlas.api.utils.RestUtils;
 import org.planqk.atlas.core.model.Sdk;
-import org.planqk.atlas.core.repository.SdkRepository;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +37,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -50,24 +52,25 @@ public class SdkController {
 
     final private static Logger LOG = LoggerFactory.getLogger(SdkController.class);
 
-    private final SdkRepository sdkRepository;
+    private SdkService sdkService;
 
-    public SdkController(SdkRepository sdkRepository) {
-        this.sdkRepository = sdkRepository;
+    public SdkController(SdkService sdkService) {
+        this.sdkService = sdkService;
     }
 
     @GetMapping("/")
-    public HttpEntity<SdkListDto> getSdks() {
+    public HttpEntity<SdkListDto> getSdks(@RequestParam(required = false) Integer page,
+                                          @RequestParam(required = false) Integer size) {
         LOG.debug("Get to retrieve all SDKs received.");
         SdkListDto sdkListDto = new SdkListDto();
 
         // add all available Sdks to the response
-        for (Sdk sdk : sdkRepository.findAll()) {
+        for (Sdk sdk : sdkService.findAll(RestUtils.getPageableFromRequestParams(page, size))) {
             sdkListDto.add(createSdkDto(sdk));
             sdkListDto.add(linkTo(methodOn(SdkController.class).getSdk(sdk.getId())).withRel(sdk.getName()));
         }
 
-        sdkListDto.add(linkTo(methodOn(SdkController.class).getSdks()).withSelfRel());
+        sdkListDto.add(linkTo(methodOn(SdkController.class).getSdks(Constants.DEFAULT_PAGE_NUMBER, Constants.DEFAULT_PAGE_SIZE)).withSelfRel());
         return new ResponseEntity<>(sdkListDto, HttpStatus.OK);
     }
 
@@ -75,7 +78,7 @@ public class SdkController {
     public HttpEntity<SdkDto> getSdk(@PathVariable Long id) {
         LOG.debug("Get to retrieve SDK with id: {}.", id);
 
-        Optional<Sdk> sdkOptional = sdkRepository.findById(id);
+        Optional<Sdk> sdkOptional = sdkService.findById(id);
         if (!sdkOptional.isPresent()) {
             LOG.error("Unable to retrieve Sdk with id {} from the repository.", id);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -94,7 +97,7 @@ public class SdkController {
         }
 
         // store and return implementation
-        Sdk sdk = sdkRepository.save(SdkDto.Converter.convert(sdkDto));
+        Sdk sdk = sdkService.save(SdkDto.Converter.convert(sdkDto));
         return new ResponseEntity<>(createSdkDto(sdk), HttpStatus.OK);
     }
 

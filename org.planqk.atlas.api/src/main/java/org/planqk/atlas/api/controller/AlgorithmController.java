@@ -32,11 +32,11 @@ import org.planqk.atlas.api.dtos.entities.ParameterDto;
 import org.planqk.atlas.api.dtos.entities.ParameterListDto;
 import org.planqk.atlas.api.dtos.requests.ParameterKeyValueDto;
 import org.planqk.atlas.api.dtos.requests.SelectionParameterDto;
+import org.planqk.atlas.api.services.AlgorithmService;
 import org.planqk.atlas.api.utils.RestUtils;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Qpu;
-import org.planqk.atlas.core.repository.AlgorithmRepository;
 import org.planqk.atlas.nisq.analyzer.control.NisqAnalyzerControlService;
 
 import org.slf4j.Logger;
@@ -49,6 +49,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import static org.planqk.atlas.api.utils.RestUtils.parameterConsistent;
@@ -64,28 +65,28 @@ public class AlgorithmController {
 
     final private static Logger LOG = LoggerFactory.getLogger(AlgorithmController.class);
 
-    private final AlgorithmRepository algorithmRepository;
-
     private final NisqAnalyzerControlService controlService;
+    private AlgorithmService algorithmService;
 
-    public AlgorithmController(AlgorithmRepository algorithmRepository, NisqAnalyzerControlService controlService) {
-        this.algorithmRepository = algorithmRepository;
+    public AlgorithmController(NisqAnalyzerControlService controlService, AlgorithmService algorithmService) {
         this.controlService = controlService;
+        this.algorithmService = algorithmService;
     }
 
     @GetMapping("/")
-    public HttpEntity<AlgorithmListDto> getAlgorithms() {
+    public HttpEntity<AlgorithmListDto> getAlgorithms(@RequestParam(required = false) Integer page,
+                                                      @RequestParam(required = false) Integer size) {
         LOG.debug("Get to retrieve all algorithms received.");
         AlgorithmListDto dtoList = new AlgorithmListDto();
 
         // add all available algorithms to the response
-        for (Algorithm algo : algorithmRepository.findAll()) {
+        for (Algorithm algo : algorithmService.findAll(RestUtils.getPageableFromRequestParams(page, size))) {
             dtoList.add(createAlgorithmDto(algo));
             dtoList.add(linkTo(methodOn(AlgorithmController.class).getAlgorithm(algo.getId())).withRel(algo.getId().toString()));
         }
 
         // add self link and status code
-        dtoList.add(linkTo(methodOn(AlgorithmController.class).getAlgorithms()).withSelfRel());
+        dtoList.add(linkTo(methodOn(AlgorithmController.class).getAlgorithms(null, null)).withSelfRel());
         return new ResponseEntity<>(dtoList, HttpStatus.OK);
     }
 
@@ -105,7 +106,7 @@ public class AlgorithmController {
         }
 
         // store and return algorithm
-        Algorithm algorithm = algorithmRepository.save(AlgorithmDto.Converter.convert(algo));
+        Algorithm algorithm = algorithmService.save(AlgorithmDto.Converter.convert(algo));
         return new ResponseEntity<>(createAlgorithmDto(algorithm), HttpStatus.OK);
     }
 
@@ -113,7 +114,7 @@ public class AlgorithmController {
     public HttpEntity<AlgorithmDto> getAlgorithm(@PathVariable Long id) {
         LOG.debug("Get to retrieve algorithm with id: {}.", id);
 
-        Optional<Algorithm> algorithmOptional = algorithmRepository.findById(id);
+        Optional<Algorithm> algorithmOptional = algorithmService.findById(id);
         if (!algorithmOptional.isPresent()) {
             LOG.error("Unable to retrieve algorithm with id {} from the repository.", id);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -126,7 +127,7 @@ public class AlgorithmController {
     public HttpEntity<SelectionParameterDto> getSelectionParams(@PathVariable Long id) {
         LOG.debug("Get to retrieve selection parameters for algorithm with Id {} received.", id);
 
-        Optional<Algorithm> algorithmOptional = algorithmRepository.findById(id);
+        Optional<Algorithm> algorithmOptional = algorithmService.findById(id);
         if (!algorithmOptional.isPresent()) {
             LOG.error("Unable to retrieve algorithm with id {} from the repository.", id);
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -145,7 +146,7 @@ public class AlgorithmController {
     public HttpEntity<AlgorithmDto> selectImplementations(@PathVariable Long id, @RequestBody ParameterKeyValueDto params) {
         LOG.debug("Post to select implementations for algorithm with Id {} received.", id);
 
-        Optional<Algorithm> algorithmOptional = algorithmRepository.findById(id);
+        Optional<Algorithm> algorithmOptional = algorithmService.findById(id);
         if (!algorithmOptional.isPresent()) {
             LOG.error("Unable to retrieve algorithm with id {} from the repository.", id);
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -173,7 +174,7 @@ public class AlgorithmController {
     public HttpEntity<ParameterListDto> getInputParameters(@PathVariable Long id) {
         LOG.debug("Get to retrieve input parameters for algorithm with id: {}.", id);
 
-        Optional<Algorithm> algorithmOptional = algorithmRepository.findById(id);
+        Optional<Algorithm> algorithmOptional = algorithmService.findById(id);
         if (!algorithmOptional.isPresent()) {
             LOG.error("Unable to retrieve algorithm with id {} form the repository.", id);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -193,7 +194,7 @@ public class AlgorithmController {
     public HttpEntity<ParameterListDto> getOutputParameters(@PathVariable Long id) {
         LOG.debug("Get to retrieve output parameters for algorithm with id: {}.", id);
 
-        Optional<Algorithm> algorithmOptional = algorithmRepository.findById(id);
+        Optional<Algorithm> algorithmOptional = algorithmService.findById(id);
         if (!algorithmOptional.isPresent()) {
             LOG.error("Unable to retrieve algorithm with id {} form the repository.", id);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
