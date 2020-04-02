@@ -6,7 +6,7 @@
 ## Build
 
 1. Run `mvn package -DskipTests` inside the root folder.
-2. When completed, the built product can be found in `org.planqk.atlas.war/target`.
+2. When completed, the built product can be found in `org.planqk.atlas.web/target`.
 
 ## Running via Docker
 
@@ -22,7 +22,7 @@ You can also use the pre-built image:
 	
 ## Running on Tomcat
 
-Build the project and deploy the WAR file located at `org.planqk.atlas.war/target` to Tomcat.
+Build the project and deploy the WAR file located at `org.planqk.atlas.web/target` to Tomcat.
 
 Make sure you have an accessibly Postgres database and configure the application correspondingly.
 
