@@ -17,7 +17,7 @@
  *  ******************************************************************************
  *******************************************************************************/
 
-package org.planqk.atlas.core.model.listener;
+package org.planqk.atlas.nisq.analyzer.listener;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,7 +30,7 @@ import org.planqk.atlas.core.model.HasId;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Qpu;
 import org.planqk.atlas.core.model.Sdk;
-import org.planqk.atlas.nisq.analyzer.knowledge.prolog.PrologFactUpdater;
+//import org.planqk.atlas.nisq.analyzer.knowledge.prolog.PrologFactUpdater;
 
 /**
  * Listener to react to changes in the Quality repositories by updating corresponding prolog facts.

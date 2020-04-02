@@ -17,24 +17,19 @@
  *  ******************************************************************************
  *******************************************************************************/
 
-package org.planqk.atlas.core.model;
+package org.planqk.atlas.nisq.analyzer.knowledge.prolog;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
-
-import lombok.Getter;
-import org.springframework.hateoas.RepresentationModel;
+import java.io.File;
 
 /**
- * Base class defining the Id property for all JPA entity classes.
+ * Constants for the prolog knowledge handling.
  */
-@MappedSuperclass
-public abstract class HasId extends RepresentationModel {
+public class Constants {
 
-    @Id
-    @Getter
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    // basic rule to check the executability of an implementation on the available QPUs
+    public static final String CPU_RULE_NAME = "executableOnQpuRule";
+    public static final String CPU_RULE_CONTENT = "executableOnQpu(RequiredQubits, CircuitDepth, Impl, Qpu) :- requiredSdk(Impl, ReqSdk), usedSdk(Qpu, ReqSdk), providesQubits(Qpu, ProvidedQubit), ProvidedQubit >= RequiredQubits, CircuitDepth =< t1(Qpu)/tg(Qpu).";
+
+    // path to store the files for the local knowledge base
+    public static final String basePath = System.getProperty("java.io.tmpdir") + File.separator + "quality";
 }
