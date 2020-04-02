@@ -53,7 +53,7 @@
 5. Setup Apache Tomcat
   - Download Tomcat 9.0 from https://tomcat.apache.org/download-90.cgi. Choose "zip" under "Core".
   - Extract it to C:\Apache. Result: C:\Apache\apache-tomcat-9.0.7.
-  - Click "Edit Configuration"
+  - Click "Add Configuration"
     
     ![configuration](graphics/add-config.PNG)
     
