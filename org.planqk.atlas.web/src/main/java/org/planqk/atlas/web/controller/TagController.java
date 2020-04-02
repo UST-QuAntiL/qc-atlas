@@ -22,7 +22,7 @@ package org.planqk.atlas.web.controller;
 import java.util.Optional;
 
 import org.planqk.atlas.web.Constants;
-import org.planqk.atlas.web.services.TagService;
+import org.planqk.atlas.core.services.TagService;
 import org.planqk.atlas.web.utils.RestUtils;
 import org.planqk.atlas.core.model.Tag;
 

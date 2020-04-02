@@ -23,7 +23,7 @@ import java.util.Optional;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.entities.ProviderDto;
 import org.planqk.atlas.web.dtos.entities.ProviderListDto;
-import org.planqk.atlas.web.services.ProviderService;
+import org.planqk.atlas.core.services.ProviderService;
 import org.planqk.atlas.web.utils.RestUtils;
 import org.planqk.atlas.core.model.Provider;
 

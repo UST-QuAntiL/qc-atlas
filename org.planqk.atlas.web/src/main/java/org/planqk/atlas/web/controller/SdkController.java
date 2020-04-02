@@ -23,7 +23,7 @@ import java.util.Optional;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.entities.SdkDto;
 import org.planqk.atlas.web.dtos.entities.SdkListDto;
-import org.planqk.atlas.web.services.SdkService;
+import org.planqk.atlas.core.services.SdkService;
 import org.planqk.atlas.web.utils.RestUtils;
 import org.planqk.atlas.core.model.Sdk;
 

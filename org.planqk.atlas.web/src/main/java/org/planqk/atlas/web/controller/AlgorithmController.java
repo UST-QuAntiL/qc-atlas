@@ -32,7 +32,7 @@ import org.planqk.atlas.web.dtos.entities.ParameterDto;
 import org.planqk.atlas.web.dtos.entities.ParameterListDto;
 import org.planqk.atlas.web.dtos.requests.ParameterKeyValueDto;
 import org.planqk.atlas.web.dtos.requests.SelectionParameterDto;
-import org.planqk.atlas.web.services.AlgorithmService;
+import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.web.utils.RestUtils;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Implementation;
