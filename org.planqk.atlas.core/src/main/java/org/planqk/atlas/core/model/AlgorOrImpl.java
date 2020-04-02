@@ -63,6 +63,10 @@ public abstract class AlgorOrImpl extends HasId {
     public AlgorOrImpl() {
     }
 
+    public AlgorOrImpl(Long id) {
+        super(id);
+    }
+
     @NonNull
     public List<Parameter> getInputParameters() {
         if (Objects.isNull(inputParameters)) {
