@@ -9,7 +9,7 @@
     </parent>
 	
 	<artifactId>org.planqk.atlas.core</artifactId>
-	<packaging>pom</packaging>
+	<version>1.0.0-SNAPSHOT</version>
 
 	<dependencies>
 		<dependency>

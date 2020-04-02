@@ -9,7 +9,7 @@
     </parent>
 	
 	<artifactId>org.planqk.atlas.nisq.analyzer</artifactId>
-	<packaging>pom</packaging>
+	<version>1.0.0-SNAPSHOT</version>
 
 	<dependencies>
 		<!-- https://mvnrepository.com/artifact/jpl/jpl -->
@@ -21,7 +21,7 @@
 		<dependency>
 			<groupId>org.planqk</groupId>
 			<artifactId>org.planqk.atlas.core</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
+			<version>${project.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
