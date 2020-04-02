@@ -30,19 +30,17 @@
   - Click "Close"  
   
 4. Setup code headers to be inserted automatically  
-    ![copyright-profile](graphics/copyright-profile.PNG)  
+    ![copyright-profile](graphics/copyright-profile-new.png)  
   - Open the Settings (by pressing <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>S</kbd>; **Mac**: <kbd>command</kbd> + <kbd>,</kbd>)  
   - Go to "Editor > Copyright > Copyright Profiles"  
   - Click the "+"  
   - Name "Atlas"  
   - Copyright text from [CodeHeaders](CodeHeaders.md)  
-    
-    ![checkstyle](graphics/copyright-profile1.PNG)
   - Click "Apply"
   - Go to "Editor > Copyright > Formatting"
   - Adjust copyright formatting settings
     
-     ![checkstyle](graphics/formatting-copyright.PNG)
+     ![checkstyle](graphics/formatting-copyright-new.png)
        - Change to `Use block comments` with `Prefix each line`
        - Set `Relative Location` to `Before other comments`
        - Set `Separator before`to `80` and `Separator after` to `81`
@@ -76,7 +74,7 @@
 
     ![tomcat-artifact1](graphics/click-artifact.png)
     
-    ![tomcat-artifact2](graphics/select-artifact.PNG)
+    ![tomcat-artifact2](graphics/select-artifact-new.png)
     
   - Define deployment context (/atlas): 
     
@@ -84,7 +82,7 @@
     
   - Add artifact under "Server": 
     
-    ![build-artifact](graphics/tomcat-build-option.PNG)
+    ![build-artifact](graphics/tomcat-build-option-new.png)
     
   - Confirm with "Apply"
     
