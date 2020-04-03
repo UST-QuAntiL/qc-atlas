@@ -126,7 +126,7 @@ public class SdkControllerTest {
     }
 
     @Test
-    public void testPostTag() throws Exception {
+    public void testPostSdk() throws Exception {
         Sdk sdk = getTestSdk();
         when(sdkService.save(any(Sdk.class))).thenReturn(sdk);
 

@@ -99,7 +99,7 @@ public class TagControllerTest {
     }
 
     @Test
-    public void getTags_withEmptyAlgorithmList() throws Exception {
+    public void getTags_withEmptyTagList() throws Exception {
         when(tagService.findAll(any(Pageable.class))).thenReturn(Page.empty());
         MvcResult result = mockMvc.perform(get("/" + Constants.TAGS + "/")
                 .queryParam(Constants.PAGE, Integer.toString(0))
