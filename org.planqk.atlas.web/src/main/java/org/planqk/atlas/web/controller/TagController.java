@@ -63,6 +63,7 @@ public class TagController {
             dtoList.add(createTagDto(tag));
             dtoList.add(linkTo(methodOn(TagController.class).getTagById(tag.getId())).withSelfRel());
         }
+        dtoList.add(linkTo(methodOn(TagController.class).getTags(null, null)).withSelfRel());
         return new ResponseEntity<>(dtoList, HttpStatus.OK);
     }
 
@@ -91,7 +92,7 @@ public class TagController {
      */
     private TagDto createTagDto(Tag tag) {
         TagDto dto = TagDto.Converter.convert(tag);
-        dto.add(linkTo(methodOn(AlgorithmController.class).getAlgorithm(tag.getId())).withSelfRel());
+        dto.add(linkTo(methodOn(TagController.class).getTagById(tag.getId())).withSelfRel());
         return dto;
     }
 }
