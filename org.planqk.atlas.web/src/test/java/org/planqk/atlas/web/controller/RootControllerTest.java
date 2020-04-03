@@ -21,21 +21,22 @@ package org.planqk.atlas.web.controller;
 
 import org.planqk.atlas.web.Constants;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -60,14 +61,17 @@ public class RootControllerTest {
     @Test
     public void testGetHateoasLinks() throws Exception {
 
-        mockMvc.perform(get("/").accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andDo(print())
-                .andExpect(jsonPath("$.links[0].rel", is("self")))
-                .andExpect(jsonPath("$.links[1].rel", is(Constants.ALGORITHMS)))
-                .andExpect(jsonPath("$.links[2].rel", is(Constants.PROVIDERS)))
-                .andExpect(jsonPath("$.links[3].rel", is(Constants.SDKS)))
-                .andExpect(jsonPath("$.links[4].rel", is(Constants.TAGS)))
-                .andExpect(jsonPath("$.links", hasSize(5)));
+        MvcResult result = mockMvc.perform(get("/").accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
+
+        RepresentationModel response = new ObjectMapper().readValue(result.getResponse().getContentAsString(), RepresentationModel.class);
+        assertTrue(response.getLinks().hasSize(5L));
+
+        assertTrue(response.getLinks().hasLink("self"));
+        assertTrue(response.getLinks().hasLink(Constants.ALGORITHMS));
+        assertTrue(response.getLinks().hasLink(Constants.PROVIDERS));
+        assertTrue(response.getLinks().hasLink(Constants.SDKS));
+        assertTrue(response.getLinks().hasLink(Constants.TAGS));
+        assertFalse(response.getLinks().hasLink("randomLink"));
     }
 }
