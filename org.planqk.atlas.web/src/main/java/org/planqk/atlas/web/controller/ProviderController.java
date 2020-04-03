@@ -101,7 +101,7 @@ public class ProviderController {
         }
 
         Provider provider = providerService.save(ProviderDto.Converter.convert(providerDto));
-        return new ResponseEntity<>(createProviderDto(provider), HttpStatus.OK);
+        return new ResponseEntity<>(createProviderDto(provider), HttpStatus.CREATED);
     }
 
     /**

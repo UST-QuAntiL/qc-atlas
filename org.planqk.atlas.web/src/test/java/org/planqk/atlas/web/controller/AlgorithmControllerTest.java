@@ -98,7 +98,7 @@ public class AlgorithmControllerTest {
                 .queryParam(Constants.SIZE, Integer.toString(size))
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
 
-        AlgorithmListDto algorithmListDto =  new ObjectMapper().readValue(result.getResponse().getContentAsString(), AlgorithmListDto.class);
+        AlgorithmListDto algorithmListDto = new ObjectMapper().readValue(result.getResponse().getContentAsString(), AlgorithmListDto.class);
         assertEquals(algorithmListDto.getAlgorithmDtos().size(), 0);
     }
 
@@ -123,7 +123,7 @@ public class AlgorithmControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON)).andReturn();
 
-        AlgorithmListDto algorithmListDto =  new ObjectMapper().readValue(result.getResponse().getContentAsString(), AlgorithmListDto.class);
+        AlgorithmListDto algorithmListDto = new ObjectMapper().readValue(result.getResponse().getContentAsString(), AlgorithmListDto.class);
         assertEquals(algorithmListDto.getAlgorithmDtos().size(), 2);
     }
 
