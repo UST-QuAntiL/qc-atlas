@@ -25,7 +25,10 @@ import java.util.List;
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.services.TagService;
 import org.planqk.atlas.web.Constants;
+import org.planqk.atlas.web.dtos.entities.TagDto;
+import org.planqk.atlas.web.dtos.entities.TagListDto;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -38,17 +41,15 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(TagController.class)
@@ -91,11 +92,10 @@ public class TagControllerTest {
         Page<Tag> page = new PageImpl<Tag>(tags, pageable, tags.size());
         when(tagService.findAll(any(Pageable.class))).thenReturn(page);
 
-        mockMvc.perform(get("/" + Constants.TAGS + "/").accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content", hasSize(2)))
-                .andExpect(jsonPath("$.content[0].key", is(tag1.getKey())))
-                .andDo(print());
+        MvcResult mvcResult = mockMvc.perform(get("/" + Constants.TAGS + "/").accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
+        TagListDto tagList = new ObjectMapper().readValue(mvcResult.getResponse().getContentAsString(), TagListDto.class);
+        assertEquals(tagList.getTagsDtos().size(), 2);
     }
 
     @Test
@@ -103,11 +103,12 @@ public class TagControllerTest {
         Tag tag1 = getTestTag();
         when(tagService.getTagById(any(Long.class))).thenReturn(java.util.Optional.of(tag1));
 
-        mockMvc.perform(get("/" + Constants.TAGS + "/" + 1 + "/").accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.key", is(tag1.getKey())))
-                .andExpect(jsonPath("$.value", is(tag1.getValue())))
-                .andDo(print());
+        MvcResult mvcResult = mockMvc.perform(get("/" + Constants.TAGS + "/" + 1 + "/").accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
+
+        TagDto createdTag = new ObjectMapper().readValue(mvcResult.getResponse().getContentAsString(), TagDto.class);
+        assertEquals(createdTag.getKey(), tag1.getKey());
+        assertEquals(createdTag.getValue(), tag1.getValue());
     }
 
     @Test
@@ -115,14 +116,15 @@ public class TagControllerTest {
         Tag tag1 = getTestTag();
         when(tagService.save(tag1)).thenReturn(tag1);
 
-        mockMvc.perform(MockMvcRequestBuilders
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders
                 .post("/" + Constants.TAGS + "/")
                 .content(TestControllerUtils.asJsonString(tag1))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.key", is(tag1.getKey())))
-                .andExpect(jsonPath("$.value", is(tag1.getValue())))
-                .andDo(print());
+                .andExpect(status().isCreated()).andReturn();
+
+        TagDto createdTag = new ObjectMapper().readValue(result.getResponse().getContentAsString(), TagDto.class);
+        assertEquals(createdTag.getKey(), tag1.getKey());
+        assertEquals(createdTag.getValue(), tag1.getValue());
     }
 }

@@ -24,6 +24,8 @@ import java.util.Optional;
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.services.TagService;
 import org.planqk.atlas.web.Constants;
+import org.planqk.atlas.web.dtos.entities.TagDto;
+import org.planqk.atlas.web.dtos.entities.TagListDto;
 import org.planqk.atlas.web.utils.RestUtils;
 
 import org.springframework.data.domain.Page;
@@ -53,22 +55,43 @@ public class TagController {
     }
 
     @GetMapping(value = "/")
-    HttpEntity<Page<Tag>> getTags(@RequestParam(required = false) Integer page,
-                                  @RequestParam(required = false) Integer size) {
+    HttpEntity<TagListDto> getTags(@RequestParam(required = false) Integer page,
+                                   @RequestParam(required = false) Integer size) {
         Page<Tag> tags = this.tagService.findAll(RestUtils.getPageableFromRequestParams(page, size));
-        return new ResponseEntity<>(tags, HttpStatus.OK);
+        TagListDto dtoList = new TagListDto();
+        for (Tag tag : tags) {
+            dtoList.add(createTagDto(tag));
+            dtoList.add(linkTo(methodOn(TagController.class).getTagById(tag.getId())).withSelfRel());
+        }
+        return new ResponseEntity<>(dtoList, HttpStatus.OK);
     }
 
     @PostMapping(value = "/")
-    HttpEntity<Tag> createTag(@RequestBody Tag tag) {
-        Tag savedTag = this.tagService.save(tag);
+    HttpEntity<TagDto> createTag(@RequestBody Tag tag) {
+        TagDto savedTag = TagDto.Converter.convert(this.tagService.save(tag));
+
         savedTag.add(linkTo(methodOn(TagController.class).getTagById(savedTag.getId())).withSelfRel());
         return new ResponseEntity<>(savedTag, HttpStatus.CREATED);
     }
 
     @GetMapping(value = "/{tagId}")
-    HttpEntity<Optional<Tag>> getTagById(@PathVariable Long tagId) {
-        Optional<Tag> tag = this.tagService.getTagById(tagId);
-        return new ResponseEntity<>(tag, HttpStatus.OK);
+    HttpEntity<TagDto> getTagById(@PathVariable Long tagId) {
+        Optional<Tag> tagOptional = this.tagService.getTagById(tagId);
+        if (!tagOptional.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(createTagDto(tagOptional.get()), HttpStatus.OK);
+    }
+
+    /**
+     * Create a DTO object for a given {@link Tag} with the contained data and the links to related objects.
+     *
+     * @param tag the {@link Tag} to create the DTO for
+     * @return the created DTO
+     */
+    private TagDto createTagDto(Tag tag) {
+        TagDto dto = TagDto.Converter.convert(tag);
+        dto.add(linkTo(methodOn(AlgorithmController.class).getAlgorithm(tag.getId())).withSelfRel());
+        return dto;
     }
 }
