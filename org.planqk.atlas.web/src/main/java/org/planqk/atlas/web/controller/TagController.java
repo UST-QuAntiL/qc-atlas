@@ -61,7 +61,6 @@ public class TagController {
         TagListDto dtoList = new TagListDto();
         for (Tag tag : tags) {
             dtoList.add(createTagDto(tag));
-            dtoList.add(linkTo(methodOn(TagController.class).getTagById(tag.getId())).withSelfRel());
         }
         return new ResponseEntity<>(dtoList, HttpStatus.OK);
     }
