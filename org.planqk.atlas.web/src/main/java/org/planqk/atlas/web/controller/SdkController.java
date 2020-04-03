@@ -22,12 +22,12 @@ package org.planqk.atlas.web.controller;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.planqk.atlas.core.model.Sdk;
+import org.planqk.atlas.core.services.SdkService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.entities.SdkDto;
 import org.planqk.atlas.web.dtos.entities.SdkListDto;
-import org.planqk.atlas.core.services.SdkService;
 import org.planqk.atlas.web.utils.RestUtils;
-import org.planqk.atlas.core.model.Sdk;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,7 +100,7 @@ public class SdkController {
 
         // store and return implementation
         Sdk sdk = sdkService.save(SdkDto.Converter.convert(sdkDto));
-        return new ResponseEntity<>(createSdkDto(sdk), HttpStatus.OK);
+        return new ResponseEntity<>(createSdkDto(sdk), HttpStatus.CREATED);
     }
 
     /**
