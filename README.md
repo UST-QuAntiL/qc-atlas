@@ -10,7 +10,9 @@
 
 ## Running via Docker
 
-The easiest way to get started is using Docker:
+The easiest way to get started is using Docker-Compose: [planqk-docker](https://github.com/PlanQK/planqk-docker)
+
+Alternatively you can build and run the QC-Atlas Docker image by your own:
 
 1. `docker build -t atlas .`
    In case, there are issues, you can also try `docker build --no-cache -t atlas .`
