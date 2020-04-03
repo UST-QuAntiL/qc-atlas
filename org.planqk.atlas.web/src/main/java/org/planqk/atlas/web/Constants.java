@@ -48,4 +48,8 @@ public class Constants {
     // default Pagination params that are exposed in HATEOAS links
     public static final Integer DEFAULT_PAGE_NUMBER = 0;
     public static final Integer DEFAULT_PAGE_SIZE = 50;
+
+    // query parameter names
+    public static final String PAGE = "page";
+    public static final String SIZE = "size";
 }

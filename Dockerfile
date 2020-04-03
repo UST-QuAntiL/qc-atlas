@@ -1,7 +1,7 @@
 FROM maven:3-jdk-8 as builder
 COPY . /tmp/atlas
 WORKDIR /tmp/atlas
-RUN mvn package -DskipTests && mkdir /build && unzip /tmp/atlas/org.planqk.atlas.war/target/org.planqk.atlas.war.war -d /build/atlas
+RUN mvn package -DskipTests && mkdir /build && unzip /tmp/atlas/org.planqk.atlas.web/target/org.planqk.atlas.web.war -d /build/atlas
 
 FROM ubuntu:18.04
 LABEL maintainer = "Benjamin Weder <benjamin.weder@iaas.uni-stuttgart.de>"
