@@ -120,7 +120,7 @@ public class TagControllerTest {
                 .content(TestControllerUtils.asJsonString(tag1))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.key", is(tag1.getKey())))
                 .andExpect(jsonPath("$.value", is(tag1.getValue())))
                 .andDo(print());

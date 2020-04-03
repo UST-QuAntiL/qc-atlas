@@ -21,10 +21,10 @@ package org.planqk.atlas.web.controller;
 
 import java.util.Optional;
 
-import org.planqk.atlas.web.Constants;
-import org.planqk.atlas.core.services.TagService;
-import org.planqk.atlas.web.utils.RestUtils;
 import org.planqk.atlas.core.model.Tag;
+import org.planqk.atlas.core.services.TagService;
+import org.planqk.atlas.web.Constants;
+import org.planqk.atlas.web.utils.RestUtils;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpEntity;
@@ -63,7 +63,7 @@ public class TagController {
     HttpEntity<Tag> createTag(@RequestBody Tag tag) {
         Tag savedTag = this.tagService.save(tag);
         savedTag.add(linkTo(methodOn(TagController.class).getTagById(savedTag.getId())).withSelfRel());
-        return new ResponseEntity<>(savedTag, HttpStatus.OK);
+        return new ResponseEntity<>(savedTag, HttpStatus.CREATED);
     }
 
     @GetMapping(value = "/{tagId}")
