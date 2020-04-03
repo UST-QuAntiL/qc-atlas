@@ -28,7 +28,6 @@ import org.planqk.atlas.web.Constants;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -38,8 +37,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -52,9 +51,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith(SpringExtension.class)
 @WebMvcTest(TagController.class)
 public class TagControllerTest {
+
     @Mock
     private TagService tagService;
 
@@ -74,12 +73,17 @@ public class TagControllerTest {
         assertThat(tagController).isNotNull();
     }
 
-    @Test
-    public void testList() throws Exception {
-        List<Tag> tags = new ArrayList<>();
+    private Tag getTestTag() {
         Tag tag1 = new Tag();
         tag1.setKey("testkey");
         tag1.setValue("testvalue");
+        return tag1;
+    }
+
+    @Test
+    public void testGetAllTags() throws Exception {
+        List<Tag> tags = new ArrayList<>();
+        Tag tag1 = getTestTag();
         tags.add(tag1);
         tags.add(new Tag());
         Pageable pageable = PageRequest.of(0, 2);
@@ -91,6 +95,34 @@ public class TagControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content", hasSize(2)))
                 .andExpect(jsonPath("$.content[0].key", is(tag1.getKey())))
+                .andDo(print());
+    }
+
+    @Test
+    public void testGetId() throws Exception {
+        Tag tag1 = getTestTag();
+        when(tagService.getTagById(any(Long.class))).thenReturn(java.util.Optional.of(tag1));
+
+        mockMvc.perform(get("/" + Constants.TAGS + "/" + 1 + "/").accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.key", is(tag1.getKey())))
+                .andExpect(jsonPath("$.value", is(tag1.getValue())))
+                .andDo(print());
+    }
+
+    @Test
+    public void testPostTag() throws Exception {
+        Tag tag1 = getTestTag();
+        when(tagService.save(tag1)).thenReturn(tag1);
+
+        mockMvc.perform(MockMvcRequestBuilders
+                .post("/" + Constants.TAGS + "/")
+                .content(TestControllerUtils.asJsonString(tag1))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.key", is(tag1.getKey())))
+                .andExpect(jsonPath("$.value", is(tag1.getValue())))
                 .andDo(print());
     }
 }
