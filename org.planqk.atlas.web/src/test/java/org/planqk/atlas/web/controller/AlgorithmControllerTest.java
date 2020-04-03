@@ -21,11 +21,17 @@ package org.planqk.atlas.web.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.DataType;
+import org.planqk.atlas.core.model.Parameter;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.web.Constants;
+import org.planqk.atlas.web.dtos.entities.AlgorithmDto;
+import org.planqk.atlas.web.dtos.entities.ParameterListDto;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -38,11 +44,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -102,5 +111,95 @@ public class AlgorithmControllerTest {
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    }
+
+    @Test
+    public void getAlgorithm_returnNotFound() throws Exception {
+        mockMvc.perform(get("/" + Constants.ALGORITHMS + "/5")
+                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void getAlgorithm_returnAlgorithm() throws Exception {
+        when(algorithmService.findById(5L)).thenReturn(Optional.of(new Algorithm(5L)));
+        MvcResult result = mockMvc.perform(get("/" + Constants.ALGORITHMS + "/5")
+                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
+
+        AlgorithmDto response = new ObjectMapper().readValue(result.getResponse().getContentAsString(), AlgorithmDto.class);
+        assertEquals(response.getId(), Long.valueOf(5L));
+    }
+
+    @Test
+    public void getInputParameters_returnNotFound() throws Exception {
+        mockMvc.perform(get("/" + Constants.ALGORITHMS + "/5/" + Constants.INPUT_PARAMS)
+                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void getInputParameters_returnParameters() throws Exception {
+        List<Parameter> parameterList = new ArrayList<>();
+        parameterList.add(new Parameter("param1", DataType.String, null, "First parameter"));
+        parameterList.add(new Parameter("param2", DataType.String, null, "Second parameter"));
+
+        Algorithm algorithm = new Algorithm(5L);
+        algorithm.setInputParameters(parameterList);
+
+        when(algorithmService.findById(5L)).thenReturn(Optional.of(algorithm));
+
+        MvcResult result = mockMvc.perform(get("/" + Constants.ALGORITHMS + "/5/" + Constants.INPUT_PARAMS)
+                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
+
+        ParameterListDto response = new ObjectMapper().readValue(result.getResponse().getContentAsString(), ParameterListDto.class);
+        assertEquals(response.getParameters().size(), 2);
+    }
+
+    @Test
+    public void getOutputParameters_returnNotFound() throws Exception {
+        mockMvc.perform(get("/" + Constants.ALGORITHMS + "/5/" + Constants.OUTPUT_PARAMS)
+                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void getOutputParameters_returnParameters() throws Exception {
+        List<Parameter> parameterList = new ArrayList<>();
+        parameterList.add(new Parameter("param1", DataType.String, null, "First parameter"));
+        parameterList.add(new Parameter("param2", DataType.String, null, "Second parameter"));
+        parameterList.add(new Parameter("param3", DataType.String, null, "Third parameter"));
+
+        Algorithm algorithm = new Algorithm(5L);
+        algorithm.setInputParameters(parameterList);
+
+        when(algorithmService.findById(5L)).thenReturn(Optional.of(algorithm));
+
+        MvcResult result = mockMvc.perform(get("/" + Constants.ALGORITHMS + "/5/" + Constants.INPUT_PARAMS)
+                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
+
+        ParameterListDto response = new ObjectMapper().readValue(result.getResponse().getContentAsString(), ParameterListDto.class);
+        assertEquals(response.getParameters().size(), 3);
+    }
+
+    @Test
+    public void createAlgorithm_returnBadRequest() throws Exception {
+        AlgorithmDto algorithmDto = new AlgorithmDto();
+        mockMvc.perform(post("/" + Constants.ALGORITHMS + "/")
+                .content(new ObjectMapper().writeValueAsString(algorithmDto))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void createAlgorithm_returnAlgorithm() throws Exception {
+        AlgorithmDto algorithmDto = new AlgorithmDto();
+        algorithmDto.setName("Shor");
+        Algorithm algorithm = AlgorithmDto.Converter.convert(algorithmDto);
+        when(algorithmService.save(algorithm)).thenReturn(algorithm);
+
+        MvcResult result = mockMvc.perform(post("/" + Constants.ALGORITHMS + "/")
+                .content(new ObjectMapper().writeValueAsString(algorithmDto))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
+
+        AlgorithmDto response = new ObjectMapper().readValue(result.getResponse().getContentAsString(), AlgorithmDto.class);
+        assertEquals(response.getName(), algorithmDto.getName());
     }
 }
