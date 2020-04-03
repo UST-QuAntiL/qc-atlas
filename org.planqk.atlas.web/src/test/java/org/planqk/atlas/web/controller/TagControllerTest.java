@@ -99,6 +99,18 @@ public class TagControllerTest {
     }
 
     @Test
+    public void getTags_withEmptyAlgorithmList() throws Exception {
+        when(tagService.findAll(any(Pageable.class))).thenReturn(Page.empty());
+        MvcResult result = mockMvc.perform(get("/" + Constants.TAGS + "/")
+                .queryParam(Constants.PAGE, Integer.toString(0))
+                .queryParam(Constants.SIZE, Integer.toString(4))
+                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
+
+        TagListDto tagListDto = new ObjectMapper().readValue(result.getResponse().getContentAsString(), TagListDto.class);
+        assertEquals(tagListDto.getTagsDtos().size(), 0);
+    }
+
+    @Test
     public void testGetId() throws Exception {
         Tag tag1 = getTestTag();
         when(tagService.getTagById(any(Long.class))).thenReturn(java.util.Optional.of(tag1));
