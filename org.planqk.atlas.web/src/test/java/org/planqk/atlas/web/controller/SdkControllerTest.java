@@ -102,7 +102,7 @@ public class SdkControllerTest {
     }
 
     @Test
-    public void getTags_withEmptyAlgorithmList() throws Exception {
+    public void getSdks_withEmptySdkList() throws Exception {
         when(sdkService.findAll(any(Pageable.class))).thenReturn(Page.empty());
         MvcResult result = mockMvc.perform(get("/" + Constants.SDKS + "/")
                 .queryParam(Constants.PAGE, Integer.toString(0))
