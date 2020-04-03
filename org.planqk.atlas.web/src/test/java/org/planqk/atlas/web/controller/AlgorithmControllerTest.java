@@ -216,7 +216,7 @@ public class AlgorithmControllerTest {
         MvcResult result = mockMvc.perform(post("/" + Constants.ALGORITHMS + "/")
                 .content(new ObjectMapper().writeValueAsString(algorithmDto))
                 .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
+                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isCreated()).andReturn();
 
         AlgorithmDto response = new ObjectMapper().readValue(result.getResponse().getContentAsString(), AlgorithmDto.class);
         assertEquals(response.getName(), algorithmDto.getName());
