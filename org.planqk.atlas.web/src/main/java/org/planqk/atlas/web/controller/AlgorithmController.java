@@ -27,6 +27,11 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.Implementation;
+import org.planqk.atlas.core.model.Qpu;
+import org.planqk.atlas.core.services.AlgorithmService;
+import org.planqk.atlas.nisq.analyzer.control.NisqAnalyzerControlService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.entities.AlgorithmDto;
 import org.planqk.atlas.web.dtos.entities.AlgorithmListDto;
@@ -34,12 +39,7 @@ import org.planqk.atlas.web.dtos.entities.ParameterDto;
 import org.planqk.atlas.web.dtos.entities.ParameterListDto;
 import org.planqk.atlas.web.dtos.requests.ParameterKeyValueDto;
 import org.planqk.atlas.web.dtos.requests.SelectionParameterDto;
-import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.web.utils.RestUtils;
-import org.planqk.atlas.core.model.Algorithm;
-import org.planqk.atlas.core.model.Implementation;
-import org.planqk.atlas.core.model.Qpu;
-import org.planqk.atlas.nisq.analyzer.control.NisqAnalyzerControlService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -109,7 +109,7 @@ public class AlgorithmController {
 
         // store and return algorithm
         Algorithm algorithm = algorithmService.save(AlgorithmDto.Converter.convert(algo));
-        return new ResponseEntity<>(createAlgorithmDto(algorithm), HttpStatus.OK);
+        return new ResponseEntity<>(createAlgorithmDto(algorithm), HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
