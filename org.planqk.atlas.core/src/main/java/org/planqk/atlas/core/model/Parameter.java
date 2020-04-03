@@ -21,6 +21,7 @@ package org.planqk.atlas.core.model;
 
 import javax.persistence.Entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -28,6 +29,7 @@ import lombok.Setter;
  * Input or output parameter for an {@link AlgorOrImpl}.
  */
 @Entity
+@AllArgsConstructor
 public class Parameter extends HasId {
 
     @Getter
