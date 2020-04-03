@@ -37,11 +37,4 @@ public abstract class HasId extends RepresentationModel {
     @Getter
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-
-    public HasId() {
-    }
-
-    public HasId(Long id) {
-        this.id = id;
-    }
 }

@@ -29,6 +29,7 @@ import org.planqk.atlas.core.model.Parameter;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.entities.AlgorithmDto;
+import org.planqk.atlas.web.dtos.entities.AlgorithmListDto;
 import org.planqk.atlas.web.dtos.entities.ParameterListDto;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -43,6 +44,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -91,26 +93,38 @@ public class AlgorithmControllerTest {
     @Test
     public void getAlgorithms_withEmptyAlgorithmList() throws Exception {
         when(algorithmService.findAll(pageable)).thenReturn(Page.empty());
-        mockMvc.perform(get("/" + Constants.ALGORITHMS + "/")
+        MvcResult result = mockMvc.perform(get("/" + Constants.ALGORITHMS + "/")
                 .queryParam(Constants.PAGE, Integer.toString(page))
                 .queryParam(Constants.SIZE, Integer.toString(size))
-                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
+                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
+
+        AlgorithmListDto algorithmListDto =  new ObjectMapper().readValue(result.getResponse().getContentAsString(), AlgorithmListDto.class);
+        assertEquals(algorithmListDto.getAlgorithmDtos().size(), 0);
     }
 
     @Test
     public void getAlgorithms_withTwoAlgorithmList() throws Exception {
         List<Algorithm> algorithmList = new ArrayList<>();
-        algorithmList.add(new Algorithm(1L));
-        algorithmList.add(new Algorithm(2L));
+
+        Algorithm algorithm1 = new Algorithm();
+        ReflectionTestUtils.setField(algorithm1, "id", 1L);
+        algorithmList.add(algorithm1);
+
+        Algorithm algorithm2 = new Algorithm();
+        ReflectionTestUtils.setField(algorithm2, "id", 2L);
+        algorithmList.add(algorithm2);
 
         when(algorithmService.findAll(pageable)).thenReturn(new PageImpl<>(algorithmList));
 
-        mockMvc.perform(get("/" + Constants.ALGORITHMS + "/")
+        MvcResult result = mockMvc.perform(get("/" + Constants.ALGORITHMS + "/")
                 .queryParam(Constants.PAGE, Integer.toString(page))
                 .queryParam(Constants.SIZE, Integer.toString(size))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON)).andReturn();
+
+        AlgorithmListDto algorithmListDto =  new ObjectMapper().readValue(result.getResponse().getContentAsString(), AlgorithmListDto.class);
+        assertEquals(algorithmListDto.getAlgorithmDtos().size(), 2);
     }
 
     @Test
@@ -121,7 +135,10 @@ public class AlgorithmControllerTest {
 
     @Test
     public void getAlgorithm_returnAlgorithm() throws Exception {
-        when(algorithmService.findById(5L)).thenReturn(Optional.of(new Algorithm(5L)));
+        Algorithm algorithm = new Algorithm();
+        ReflectionTestUtils.setField(algorithm, "id", 5L);
+        when(algorithmService.findById(5L)).thenReturn(Optional.of(algorithm));
+
         MvcResult result = mockMvc.perform(get("/" + Constants.ALGORITHMS + "/5")
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
 
@@ -141,7 +158,8 @@ public class AlgorithmControllerTest {
         parameterList.add(new Parameter("param1", DataType.String, null, "First parameter"));
         parameterList.add(new Parameter("param2", DataType.String, null, "Second parameter"));
 
-        Algorithm algorithm = new Algorithm(5L);
+        Algorithm algorithm = new Algorithm();
+        ReflectionTestUtils.setField(algorithm, "id", 5L);
         algorithm.setInputParameters(parameterList);
 
         when(algorithmService.findById(5L)).thenReturn(Optional.of(algorithm));
@@ -166,7 +184,8 @@ public class AlgorithmControllerTest {
         parameterList.add(new Parameter("param2", DataType.String, null, "Second parameter"));
         parameterList.add(new Parameter("param3", DataType.String, null, "Third parameter"));
 
-        Algorithm algorithm = new Algorithm(5L);
+        Algorithm algorithm = new Algorithm();
+        ReflectionTestUtils.setField(algorithm, "id", 5L);
         algorithm.setInputParameters(parameterList);
 
         when(algorithmService.findById(5L)).thenReturn(Optional.of(algorithm));

@@ -56,10 +56,6 @@ public class Algorithm extends AlgorOrImpl {
         super();
     }
 
-    public Algorithm(Long id) {
-        super(id);
-    }
-
     @NonNull
     public List<Implementation> getImplementations() {
         if (Objects.isNull(implementations)) {
