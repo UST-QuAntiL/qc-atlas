@@ -37,6 +37,8 @@ import org.planqk.atlas.web.dtos.entities.AlgorithmDto;
 import org.planqk.atlas.web.dtos.entities.AlgorithmListDto;
 import org.planqk.atlas.web.dtos.entities.ParameterDto;
 import org.planqk.atlas.web.dtos.entities.ParameterListDto;
+import org.planqk.atlas.web.dtos.entities.TagDto;
+import org.planqk.atlas.web.dtos.entities.TagListDto;
 import org.planqk.atlas.web.dtos.requests.ParameterKeyValueDto;
 import org.planqk.atlas.web.dtos.requests.SelectionParameterDto;
 import org.planqk.atlas.web.utils.RestUtils;
@@ -210,6 +212,23 @@ public class AlgorithmController {
 
         parameterListDto.add(linkTo(methodOn(AlgorithmController.class).getOutputParameters(id)).withSelfRel());
         return new ResponseEntity<>(parameterListDto, HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}/" + Constants.TAGS)
+    public HttpEntity<TagListDto> getTags(@PathVariable Long id) {
+        Optional<Algorithm> algorithmOptional = algorithmService.findById(id);
+        if (!algorithmOptional.isPresent()) {
+            LOG.error("Unable to retrieve algorithm with id {} form the repository.", id);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        // convert all input parameters to corresponding dtos
+        TagListDto tagListDto = new TagListDto();
+        tagListDto.add(algorithmOptional.get().getTags().stream()
+                .map(TagDto.Converter::convert)
+                .collect(Collectors.toList()));
+        tagListDto.add(linkTo(methodOn(TagController.class).getTags(null, null)).withRel(Constants.TAGS));
+        return new ResponseEntity<>(tagListDto, HttpStatus.OK);
     }
 
     /**
