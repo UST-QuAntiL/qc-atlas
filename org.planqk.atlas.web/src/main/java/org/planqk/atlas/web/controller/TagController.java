@@ -131,7 +131,7 @@ public class TagController {
         List<Implementation> implementations = tagOptional.get().getImplementations();
         ImplementationListDto implementationListDto = new ImplementationListDto();
         implementationListDto.add(implementations.stream().map(ImplementationController::createImplementationDto).collect(Collectors.toList()));
-        implementationListDto.add(linkTo(methodOn(TagController.class).getAlgorithmsOfTag(tagId)).withSelfRel());
+        implementationListDto.add(linkTo(methodOn(TagController.class).getImplementationsOfTag(tagId)).withSelfRel());
         return new ResponseEntity<>(implementationListDto, HttpStatus.OK);
     }
 }
