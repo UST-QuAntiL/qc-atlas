@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Qpu;
+import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.nisq.analyzer.control.NisqAnalyzerControlService;
 import org.planqk.atlas.web.Constants;
@@ -222,11 +223,15 @@ public class AlgorithmController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        // convert all input parameters to corresponding dtos
+        // convert all tags to corresponding dtos
         TagListDto tagListDto = new TagListDto();
-        tagListDto.add(algorithmOptional.get().getTags().stream()
-                .map(TagDto.Converter::convert)
-                .collect(Collectors.toList()));
+        for (Tag tag : algorithmOptional.get().getTags()) {
+            TagDto dto = TagDto.Converter.convert(tag);
+            dto.add(linkTo(methodOn(TagController.class).getTagById(tag.getId())).withSelfRel());
+            dto.add(linkTo(methodOn(TagController.class).getAlgorithmsOfTag(tag.getId())).withRel(Constants.ALGORITHMS));
+            dto.add(linkTo(methodOn(TagController.class).getImplementationsOfTag(tag.getId())).withRel(Constants.IMPLEMENTATIONS));
+            tagListDto.add(dto);
+        }
         tagListDto.add(linkTo(methodOn(TagController.class).getTags(null, null)).withRel(Constants.TAGS));
         return new ResponseEntity<>(tagListDto, HttpStatus.OK);
     }
