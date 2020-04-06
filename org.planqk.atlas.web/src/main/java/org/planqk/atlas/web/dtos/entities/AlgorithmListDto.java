@@ -19,7 +19,6 @@
 
 package org.planqk.atlas.web.dtos.entities;
 
-import java.util.Arrays;
 import java.util.List;
 
 import lombok.Getter;
@@ -34,7 +33,11 @@ public class AlgorithmListDto extends RepresentationModel<AlgorithmListDto> {
     @Getter
     private final List<AlgorithmDto> algorithmDtos = Lists.newArrayList();
 
-    public void add(final AlgorithmDto... algorithms) {
-        this.algorithmDtos.addAll(Arrays.asList(algorithms));
+    public void add(final List<AlgorithmDto> algorithms) {
+        this.algorithmDtos.addAll(algorithms);
+    }
+
+    public void add(final AlgorithmDto algorithm) {
+        this.algorithmDtos.add(algorithm);
     }
 }

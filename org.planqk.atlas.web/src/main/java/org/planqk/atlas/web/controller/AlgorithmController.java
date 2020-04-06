@@ -38,7 +38,6 @@ import org.planqk.atlas.web.dtos.entities.AlgorithmDto;
 import org.planqk.atlas.web.dtos.entities.AlgorithmListDto;
 import org.planqk.atlas.web.dtos.entities.ParameterDto;
 import org.planqk.atlas.web.dtos.entities.ParameterListDto;
-import org.planqk.atlas.web.dtos.entities.TagDto;
 import org.planqk.atlas.web.dtos.entities.TagListDto;
 import org.planqk.atlas.web.dtos.requests.ParameterKeyValueDto;
 import org.planqk.atlas.web.dtos.requests.SelectionParameterDto;
@@ -76,6 +75,23 @@ public class AlgorithmController {
     public AlgorithmController(NisqAnalyzerControlService controlService, AlgorithmService algorithmService) {
         this.controlService = controlService;
         this.algorithmService = algorithmService;
+    }
+
+    /**
+     * Create a DTO object for a given {@link Algorithm} with the contained data and the links to related objects.
+     *
+     * @param algorithm the {@link Algorithm} to create the DTO for
+     * @return the created DTO
+     */
+    public static AlgorithmDto createAlgorithmDto(Algorithm algorithm) {
+        AlgorithmDto dto = AlgorithmDto.Converter.convert(algorithm);
+        dto.add(linkTo(methodOn(AlgorithmController.class).getAlgorithm(algorithm.getId())).withSelfRel());
+        dto.add(linkTo(methodOn(AlgorithmController.class).getInputParameters(algorithm.getId())).withRel(Constants.INPUT_PARAMS));
+        dto.add(linkTo(methodOn(AlgorithmController.class).getOutputParameters(algorithm.getId())).withRel(Constants.OUTPUT_PARAMS));
+        dto.add(linkTo(methodOn(AlgorithmController.class).getSelectionParams(algorithm.getId())).withRel(Constants.SELECTION_PARAMS));
+        dto.add(linkTo(methodOn(AlgorithmController.class).getTags(algorithm.getId())).withRel(Constants.TAGS));
+        dto.add(linkTo(methodOn(ImplementationController.class).getImplementations(algorithm.getId())).withRel(Constants.IMPLEMENTATIONS));
+        return dto;
     }
 
     @GetMapping("/")
@@ -222,34 +238,8 @@ public class AlgorithmController {
             LOG.error("Unable to retrieve algorithm with id {} form the repository.", id);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-
-        // convert all tags to corresponding dtos
-        TagListDto tagListDto = new TagListDto();
-        for (Tag tag : algorithmOptional.get().getTags()) {
-            TagDto dto = TagDto.Converter.convert(tag);
-            dto.add(linkTo(methodOn(TagController.class).getTagById(tag.getId())).withSelfRel());
-            dto.add(linkTo(methodOn(TagController.class).getAlgorithmsOfTag(tag.getId())).withRel(Constants.ALGORITHMS));
-            dto.add(linkTo(methodOn(TagController.class).getImplementationsOfTag(tag.getId())).withRel(Constants.IMPLEMENTATIONS));
-            tagListDto.add(dto);
-        }
-        tagListDto.add(linkTo(methodOn(TagController.class).getTags(null, null)).withRel(Constants.TAGS));
+        List<Tag> tags = algorithmOptional.get().getTags();
+        TagListDto tagListDto = TagController.createTagDtoList(tags.stream());
         return new ResponseEntity<>(tagListDto, HttpStatus.OK);
-    }
-
-    /**
-     * Create a DTO object for a given {@link Algorithm} with the contained data and the links to related objects.
-     *
-     * @param algorithm the {@link Algorithm} to create the DTO for
-     * @return the created DTO
-     */
-    private AlgorithmDto createAlgorithmDto(Algorithm algorithm) {
-        AlgorithmDto dto = AlgorithmDto.Converter.convert(algorithm);
-        dto.add(linkTo(methodOn(AlgorithmController.class).getAlgorithm(algorithm.getId())).withSelfRel());
-        dto.add(linkTo(methodOn(AlgorithmController.class).getInputParameters(algorithm.getId())).withRel(Constants.INPUT_PARAMS));
-        dto.add(linkTo(methodOn(AlgorithmController.class).getOutputParameters(algorithm.getId())).withRel(Constants.OUTPUT_PARAMS));
-        dto.add(linkTo(methodOn(AlgorithmController.class).getSelectionParams(algorithm.getId())).withRel(Constants.SELECTION_PARAMS));
-        dto.add(linkTo(methodOn(AlgorithmController.class).getTags(algorithm.getId())).withRel(Constants.TAGS));
-        dto.add(linkTo(methodOn(ImplementationController.class).getImplementations(algorithm.getId())).withRel(Constants.IMPLEMENTATIONS));
-        return dto;
     }
 }

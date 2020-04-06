@@ -19,7 +19,6 @@
 
 package org.planqk.atlas.web.dtos.entities;
 
-import java.util.Arrays;
 import java.util.List;
 
 import lombok.Getter;
@@ -34,7 +33,11 @@ public class ImplementationListDto extends RepresentationModel<ImplementationLis
     @Getter
     private final List<ImplementationDto> implementationDtos = Lists.newArrayList();
 
-    public void add(final ImplementationDto... implementations) {
-        this.implementationDtos.addAll(Arrays.asList(implementations));
+    public void add(final List<ImplementationDto> implementations) {
+        this.implementationDtos.addAll(implementations);
+    }
+
+    public void add(final ImplementationDto implementation) {
+        this.implementationDtos.add(implementation);
     }
 }

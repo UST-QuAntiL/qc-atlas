@@ -20,18 +20,17 @@
 package org.planqk.atlas.web.controller;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Implementation;
-import org.planqk.atlas.core.model.Sdk;
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.services.TagService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.entities.AlgorithmDto;
 import org.planqk.atlas.web.dtos.entities.AlgorithmListDto;
-import org.planqk.atlas.web.dtos.entities.ImplementationDto;
 import org.planqk.atlas.web.dtos.entities.ImplementationListDto;
 import org.planqk.atlas.web.dtos.entities.TagDto;
 import org.planqk.atlas.web.dtos.entities.TagListDto;
@@ -63,16 +62,32 @@ public class TagController {
         this.tagService = tagService;
     }
 
+    public static TagListDto createTagDtoList(Stream<Tag> tagStream) {
+        TagListDto tagListDto = new TagListDto();
+        tagListDto.add(tagStream.map(tag -> createTagDto(tag)).collect(Collectors.toList()));
+        tagListDto.add(linkTo(methodOn(TagController.class).getTags(null, null)).withRel(Constants.TAGS));
+        return tagListDto;
+    }
+
+    /**
+     * Create a DTO object for a given {@link Tag} with the contained data and the links to related objects.
+     *
+     * @param tag the {@link Tag} to create the DTO for
+     * @return the created DTO
+     */
+    public static TagDto createTagDto(Tag tag) {
+        TagDto dto = TagDto.Converter.convert(tag);
+        dto.add(linkTo(methodOn(TagController.class).getTagById(tag.getId())).withSelfRel());
+        dto.add(linkTo(methodOn(TagController.class).getAlgorithmsOfTag(tag.getId())).withRel(Constants.ALGORITHMS));
+        dto.add(linkTo(methodOn(TagController.class).getImplementationsOfTag(tag.getId())).withRel(Constants.IMPLEMENTATIONS));
+        return dto;
+    }
+
     @GetMapping(value = "/")
     HttpEntity<TagListDto> getTags(@RequestParam(required = false) Integer page,
                                    @RequestParam(required = false) Integer size) {
         Page<Tag> tags = this.tagService.findAll(RestUtils.getPageableFromRequestParams(page, size));
-        TagListDto dtoList = new TagListDto();
-        for (Tag tag : tags) {
-            dtoList.add(createTagDto(tag));
-            dtoList.add(linkTo(methodOn(TagController.class).getTagById(tag.getId())).withSelfRel());
-        }
-        dtoList.add(linkTo(methodOn(TagController.class).getTags(null, null)).withSelfRel());
+        TagListDto dtoList = createTagDtoList(tags.stream());
         return new ResponseEntity<>(dtoList, HttpStatus.OK);
     }
 
@@ -101,17 +116,8 @@ public class TagController {
         }
         List<Algorithm> algorithms = tagOptional.get().getAlgorithms();
         AlgorithmListDto algorithmListDto = new AlgorithmListDto();
-        for (Algorithm algo : algorithms) {
-            AlgorithmDto dto = AlgorithmDto.Converter.convert(algo);
-            dto.add(linkTo(methodOn(AlgorithmController.class).getAlgorithm(algo.getId())).withSelfRel());
-            dto.add(linkTo(methodOn(AlgorithmController.class).getInputParameters(algo.getId())).withRel(Constants.INPUT_PARAMS));
-            dto.add(linkTo(methodOn(AlgorithmController.class).getOutputParameters(algo.getId())).withRel(Constants.OUTPUT_PARAMS));
-            dto.add(linkTo(methodOn(AlgorithmController.class).getSelectionParams(algo.getId())).withRel(Constants.SELECTION_PARAMS));
-            dto.add(linkTo(methodOn(AlgorithmController.class).getTags(algo.getId())).withRel(Constants.TAGS));
-            dto.add(linkTo(methodOn(ImplementationController.class).getImplementations(algo.getId())).withRel(Constants.IMPLEMENTATIONS));
-
-            algorithmListDto.add(dto);
-        }
+        List<AlgorithmDto> algorithmsDto = algorithms.stream().map(AlgorithmController::createAlgorithmDto).collect(Collectors.toList());
+        algorithmListDto.add(algorithmsDto);
         algorithmListDto.add(linkTo(methodOn(TagController.class).getAlgorithmsOfTag(tagId)).withSelfRel());
         return new ResponseEntity<>(algorithmListDto, HttpStatus.OK);
     }
@@ -124,34 +130,8 @@ public class TagController {
         }
         List<Implementation> implementations = tagOptional.get().getImplementations();
         ImplementationListDto implementationListDto = new ImplementationListDto();
-        for (Implementation implementation : implementations) {
-            ImplementationDto dto = ImplementationDto.Converter.convert(implementation);
-            dto.add(linkTo(methodOn(ImplementationController.class).getImplementation(
-                    implementation.getImplementedAlgorithm().getId(), implementation.getId())).withSelfRel());
-            dto.add(linkTo(methodOn(AlgorithmController.class).getAlgorithm(implementation.getImplementedAlgorithm().getId())).withRel(Constants.ALGORITHM_LINK));
-            dto.add(linkTo(methodOn(ImplementationController.class).getInputParameters(implementation.getId())).withRel(Constants.INPUT_PARAMS));
-            dto.add(linkTo(methodOn(ImplementationController.class).getOutputParameters(implementation.getId())).withRel(Constants.OUTPUT_PARAMS));
-            dto.add(linkTo(methodOn(AlgorithmController.class).getTags(implementation.getId())).withRel(Constants.TAGS));
-            Sdk usedSdk = implementation.getSdk();
-            if (Objects.nonNull(usedSdk)) {
-                dto.add(linkTo(methodOn(SdkController.class).getSdk(usedSdk.getId())).withRel(Constants.USED_SDK));
-            }
-
-            implementationListDto.add(dto);
-        }
+        implementationListDto.add(implementations.stream().map(ImplementationController::createImplementationDto).collect(Collectors.toList()));
         implementationListDto.add(linkTo(methodOn(TagController.class).getAlgorithmsOfTag(tagId)).withSelfRel());
         return new ResponseEntity<>(implementationListDto, HttpStatus.OK);
-    }
-
-    /**
-     * Create a DTO object for a given {@link Tag} with the contained data and the links to related objects.
-     *
-     * @param tag the {@link Tag} to create the DTO for
-     * @return the created DTO
-     */
-    private TagDto createTagDto(Tag tag) {
-        TagDto dto = TagDto.Converter.convert(tag);
-        dto.add(linkTo(methodOn(TagController.class).getTagById(tag.getId())).withSelfRel());
-        return dto;
     }
 }
