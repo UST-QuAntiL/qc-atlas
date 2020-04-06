@@ -19,11 +19,20 @@
 
 package org.planqk.atlas.web.controller;
 
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
+import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.Implementation;
+import org.planqk.atlas.core.model.Sdk;
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.services.TagService;
 import org.planqk.atlas.web.Constants;
+import org.planqk.atlas.web.dtos.entities.AlgorithmDto;
+import org.planqk.atlas.web.dtos.entities.AlgorithmListDto;
+import org.planqk.atlas.web.dtos.entities.ImplementationDto;
+import org.planqk.atlas.web.dtos.entities.ImplementationListDto;
 import org.planqk.atlas.web.dtos.entities.TagDto;
 import org.planqk.atlas.web.dtos.entities.TagListDto;
 import org.planqk.atlas.web.utils.RestUtils;
@@ -82,6 +91,56 @@ public class TagController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(createTagDto(tagOptional.get()), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/{tagId}/" + Constants.ALGORITHMS)
+    HttpEntity<AlgorithmListDto> getAlgorithmsOfTag(@PathVariable Long tagId) {
+        Optional<Tag> tagOptional = this.tagService.getTagById(tagId);
+        if (!tagOptional.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        List<Algorithm> algorithms = tagOptional.get().getAlgorithms();
+        AlgorithmListDto algorithmListDto = new AlgorithmListDto();
+        for (Algorithm algo : algorithms) {
+            AlgorithmDto dto = AlgorithmDto.Converter.convert(algo);
+            dto.add(linkTo(methodOn(AlgorithmController.class).getAlgorithm(algo.getId())).withSelfRel());
+            dto.add(linkTo(methodOn(AlgorithmController.class).getInputParameters(algo.getId())).withRel(Constants.INPUT_PARAMS));
+            dto.add(linkTo(methodOn(AlgorithmController.class).getOutputParameters(algo.getId())).withRel(Constants.OUTPUT_PARAMS));
+            dto.add(linkTo(methodOn(AlgorithmController.class).getSelectionParams(algo.getId())).withRel(Constants.SELECTION_PARAMS));
+            dto.add(linkTo(methodOn(AlgorithmController.class).getTags(algo.getId())).withRel(Constants.TAGS));
+            dto.add(linkTo(methodOn(ImplementationController.class).getImplementations(algo.getId())).withRel(Constants.IMPLEMENTATIONS));
+
+            algorithmListDto.add(dto);
+        }
+        algorithmListDto.add(linkTo(methodOn(TagController.class).getAlgorithmsOfTag(tagId)).withSelfRel());
+        return new ResponseEntity<>(algorithmListDto, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/{tagId}/" + Constants.IMPLEMENTATIONS)
+    HttpEntity<ImplementationListDto> getImplementationsOfTag(@PathVariable Long tagId) {
+        Optional<Tag> tagOptional = this.tagService.getTagById(tagId);
+        if (!tagOptional.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        List<Implementation> implementations = tagOptional.get().getImplementations();
+        ImplementationListDto implementationListDto = new ImplementationListDto();
+        for (Implementation implementation : implementations) {
+            ImplementationDto dto = ImplementationDto.Converter.convert(implementation);
+            dto.add(linkTo(methodOn(ImplementationController.class).getImplementation(
+                    implementation.getImplementedAlgorithm().getId(), implementation.getId())).withSelfRel());
+            dto.add(linkTo(methodOn(AlgorithmController.class).getAlgorithm(implementation.getImplementedAlgorithm().getId())).withRel(Constants.ALGORITHM_LINK));
+            dto.add(linkTo(methodOn(ImplementationController.class).getInputParameters(implementation.getId())).withRel(Constants.INPUT_PARAMS));
+            dto.add(linkTo(methodOn(ImplementationController.class).getOutputParameters(implementation.getId())).withRel(Constants.OUTPUT_PARAMS));
+            dto.add(linkTo(methodOn(AlgorithmController.class).getTags(implementation.getId())).withRel(Constants.TAGS));
+            Sdk usedSdk = implementation.getSdk();
+            if (Objects.nonNull(usedSdk)) {
+                dto.add(linkTo(methodOn(SdkController.class).getSdk(usedSdk.getId())).withRel(Constants.USED_SDK));
+            }
+
+            implementationListDto.add(dto);
+        }
+        implementationListDto.add(linkTo(methodOn(TagController.class).getAlgorithmsOfTag(tagId)).withSelfRel());
+        return new ResponseEntity<>(implementationListDto, HttpStatus.OK);
     }
 
     /**
