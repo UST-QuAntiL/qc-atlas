@@ -111,7 +111,9 @@ public class AlgorithmDto extends RepresentationModel<AlgorithmDto> {
             final Algorithm algo = new Algorithm();
             algo.setName(object.getName());
             algo.setContent(object.getContent());
-            algo.setTags(object.getTags().stream().map(TagDto.Converter::convert).collect(Collectors.toSet()));
+            if (Objects.nonNull(object.getTags())) {
+                algo.setTags(object.getTags().stream().map(TagDto.Converter::convert).collect(Collectors.toSet()));
+            }
             algo.setInputParameters(object.getInputParameters().getParameters().stream()
                     .map(ParameterDto.Converter::convert)
                     .collect(Collectors.toList()));
