@@ -20,9 +20,11 @@
 package org.planqk.atlas.web.dtos.entities;
 
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.Tag;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -50,6 +52,8 @@ public class AlgorithmDto extends RepresentationModel<AlgorithmDto> {
     @Setter
     private ParameterListDto outputParameters;
 
+    @Setter
+    private Set<Tag> tags;
 
     @Setter
     @Getter
@@ -81,6 +85,7 @@ public class AlgorithmDto extends RepresentationModel<AlgorithmDto> {
             dto.setId(object.getId());
             dto.setName(object.getName());
             dto.setContent(object.getContent());
+            dto.setTags(object.getTags());
 
             ParameterListDto inputParams = new ParameterListDto();
             inputParams.add(object.getInputParameters().stream().map(ParameterDto.Converter::convert)

@@ -238,7 +238,7 @@ public class AlgorithmController {
             LOG.error("Unable to retrieve algorithm with id {} form the repository.", id);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        List<Tag> tags = algorithmOptional.get().getTags();
+        Set<Tag> tags = algorithmOptional.get().getTags();
         TagListDto tagListDto = TagController.createTagDtoList(tags.stream());
         return new ResponseEntity<>(tagListDto, HttpStatus.OK);
     }

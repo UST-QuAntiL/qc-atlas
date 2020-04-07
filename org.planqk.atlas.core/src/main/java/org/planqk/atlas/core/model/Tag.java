@@ -19,9 +19,9 @@
 
 package org.planqk.atlas.core.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -44,22 +44,22 @@ public class Tag extends HasId {
 
     @ManyToMany(mappedBy = "tags", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     @Setter
-    private List<Algorithm> algorithms;
+    private Set<Algorithm> algorithms;
 
     @ManyToMany(mappedBy = "tags", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     @Setter
-    private List<Implementation> implementations;
+    private Set<Implementation> implementations;
 
-    public List<Algorithm> getAlgorithms() {
+    public Set<Algorithm> getAlgorithms() {
         if (Objects.isNull(algorithms)) {
-            return new ArrayList<>();
+            return new HashSet<>();
         }
         return algorithms;
     }
 
-    public List<Implementation> getImplementations() {
+    public Set<Implementation> getImplementations() {
         if (Objects.isNull(implementations)) {
-            return new ArrayList<>();
+            return new HashSet<>();
         }
         return implementations;
     }

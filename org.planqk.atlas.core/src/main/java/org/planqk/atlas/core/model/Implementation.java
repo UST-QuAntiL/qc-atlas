@@ -20,9 +20,9 @@
 package org.planqk.atlas.core.model;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -70,16 +70,16 @@ public class Implementation extends AlgorOrImpl {
             joinColumns = @JoinColumn(name = "implementation_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
     @Setter
-    private List<Tag> tags;
+    private Set<Tag> tags;
 
     public Implementation() {
         super();
     }
 
     @NonNull
-    public List<Tag> getTags() {
+    public Set<Tag> getTags() {
         if (Objects.isNull(tags)) {
-            return new ArrayList<>();
+            return new HashSet<>();
         }
         return tags;
     }

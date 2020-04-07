@@ -21,6 +21,7 @@ package org.planqk.atlas.web.controller;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -114,7 +115,7 @@ public class TagController {
         if (!tagOptional.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        List<Algorithm> algorithms = tagOptional.get().getAlgorithms();
+        Set<Algorithm> algorithms = tagOptional.get().getAlgorithms();
         AlgorithmListDto algorithmListDto = new AlgorithmListDto();
         List<AlgorithmDto> algorithmsDto = algorithms.stream().map(AlgorithmController::createAlgorithmDto).collect(Collectors.toList());
         algorithmListDto.add(algorithmsDto);
@@ -128,7 +129,7 @@ public class TagController {
         if (!tagOptional.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        List<Implementation> implementations = tagOptional.get().getImplementations();
+        Set<Implementation> implementations = tagOptional.get().getImplementations();
         ImplementationListDto implementationListDto = new ImplementationListDto();
         implementationListDto.add(implementations.stream().map(ImplementationController::createImplementationDto).collect(Collectors.toList()));
         implementationListDto.add(linkTo(methodOn(TagController.class).getImplementationsOfTag(tagId)).withSelfRel());
