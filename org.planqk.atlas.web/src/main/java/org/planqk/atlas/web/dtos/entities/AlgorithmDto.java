@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Tag;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -52,7 +53,9 @@ public class AlgorithmDto extends RepresentationModel<AlgorithmDto> {
     @Setter
     private ParameterListDto outputParameters;
 
+    @Getter
     @Setter
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Set<Tag> tags;
 
     @Setter
@@ -85,8 +88,8 @@ public class AlgorithmDto extends RepresentationModel<AlgorithmDto> {
             dto.setId(object.getId());
             dto.setName(object.getName());
             dto.setContent(object.getContent());
-            dto.setTags(object.getTags());
-
+            // we deliberately don't set the tags here, so they are not embedded into the object (via @jsonInclude)
+            // instead, we add a hateoas link to the associated tags
             ParameterListDto inputParams = new ParameterListDto();
             inputParams.add(object.getInputParameters().stream().map(ParameterDto.Converter::convert)
                     .collect(Collectors.toList()));
@@ -104,6 +107,7 @@ public class AlgorithmDto extends RepresentationModel<AlgorithmDto> {
             final Algorithm algo = new Algorithm();
             algo.setName(object.getName());
             algo.setContent(object.getContent());
+            algo.setTags(object.getTags());
             algo.setInputParameters(object.getInputParameters().getParameters().stream()
                     .map(ParameterDto.Converter::convert)
                     .collect(Collectors.toList()));
