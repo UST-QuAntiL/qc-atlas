@@ -44,7 +44,7 @@ public class Algorithm extends AlgorOrImpl {
     private Set<Implementation> implementations;
 
     @ManyToMany(cascade =
-            {CascadeType.PERSIST, CascadeType.MERGE})
+            {CascadeType.MERGE})
     @JoinTable(
             name = "algorithm_tag",
             joinColumns = @JoinColumn(name = "algorithm_id"),
