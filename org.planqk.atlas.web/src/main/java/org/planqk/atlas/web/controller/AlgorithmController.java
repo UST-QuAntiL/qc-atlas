@@ -240,6 +240,7 @@ public class AlgorithmController {
         }
         Set<Tag> tags = algorithmOptional.get().getTags();
         TagListDto tagListDto = TagController.createTagDtoList(tags.stream());
+        tagListDto.add(linkTo(methodOn(AlgorithmController.class).getTags(id)).withSelfRel());
         return new ResponseEntity<>(tagListDto, HttpStatus.OK);
     }
 }
