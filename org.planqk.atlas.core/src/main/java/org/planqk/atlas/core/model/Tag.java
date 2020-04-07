@@ -65,13 +65,4 @@ public class Tag extends HasId {
         return implementations;
     }
 
-    public void addImplementation(Implementation implementation) {
-        implementations.add(implementation);
-        implementation.getTags().add(this);
-    }
-
-    public void addAlgorithm(Algorithm algorithm) {
-        algorithms.add(algorithm);
-        algorithm.getTags().add(this);
-    }
 }

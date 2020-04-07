@@ -67,7 +67,7 @@ public class Algorithm extends AlgorOrImpl {
     @NonNull
     public Set<Tag> getTags() {
         if (Objects.isNull(tags)) {
-            return new HashSet<Tag>();
+            return new HashSet<>();
         }
         return tags;
     }
