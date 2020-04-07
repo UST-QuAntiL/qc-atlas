@@ -39,12 +39,12 @@ import org.springframework.lang.NonNull;
 public class Algorithm extends AlgorOrImpl {
 
     @ManyToMany(mappedBy = "implementedAlgorithm", cascade =
-            {CascadeType.PERSIST, CascadeType.MERGE})
+            {CascadeType.MERGE})
     @Setter
     private Set<Implementation> implementations;
 
     @ManyToMany(cascade =
-            {CascadeType.MERGE})
+            {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "algorithm_tag",
             joinColumns = @JoinColumn(name = "algorithm_id"),

@@ -42,12 +42,12 @@ public class Tag extends HasId {
     String value;
 
     @ManyToMany(mappedBy = "tags", cascade =
-            {CascadeType.MERGE})
+            {CascadeType.MERGE, CascadeType.PERSIST})
     @Setter
     private Set<Algorithm> algorithms;
 
     @ManyToMany(mappedBy = "tags", cascade =
-            {CascadeType.MERGE})
+            {CascadeType.MERGE, CascadeType.PERSIST})
     @Setter
     private Set<Implementation> implementations;
 
