@@ -26,7 +26,6 @@ import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -64,7 +63,8 @@ public class Implementation extends AlgorOrImpl {
     @ManyToOne
     private Sdk sdk;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @ManyToMany(cascade =
+            {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "implementation_tag",
             joinColumns = @JoinColumn(name = "implementation_id"),

@@ -25,7 +25,6 @@ import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.ManyToMany;
 
 import lombok.Getter;
@@ -42,11 +41,13 @@ public class Tag extends HasId {
     @Setter
     String value;
 
-    @ManyToMany(mappedBy = "tags", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "tags", cascade =
+            {CascadeType.PERSIST, CascadeType.MERGE})
     @Setter
     private Set<Algorithm> algorithms;
 
-    @ManyToMany(mappedBy = "tags", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "tags", cascade =
+            {CascadeType.PERSIST, CascadeType.MERGE})
     @Setter
     private Set<Implementation> implementations;
 
