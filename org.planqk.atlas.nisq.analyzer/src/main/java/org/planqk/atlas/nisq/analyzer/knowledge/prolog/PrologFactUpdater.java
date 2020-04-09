@@ -148,7 +148,7 @@ public class PrologFactUpdater {
     }
 
     /**
-     * Create a string containing all required prolog fact for an implementation.
+     * Create a string containing all required prolog facts for an implementation.
      */
     private static String createImplementationFacts(Long implId, String usedSdk, Long implementedAlgoId, String selectionRule) {
         // the following three lines are required to define the same predicate in multiple files

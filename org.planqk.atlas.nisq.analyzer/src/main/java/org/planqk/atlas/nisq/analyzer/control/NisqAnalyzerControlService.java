@@ -76,7 +76,7 @@ public class NisqAnalyzerControlService {
      * @return the output parameters of the execution as key/value pairs
      * @throws RuntimeException is thrown in case the execution of the algorithm implementation fails
      */
-    public Map<String, String> executeQuantumAlgorithm(Implementation implementation, Map<String, String> inputParameters) throws RuntimeException {
+    public Map<String, String> executeQuantumAlgorithmImplementation(Implementation implementation, Map<String, String> inputParameters) throws RuntimeException {
         LOG.debug("Executing quantum algorithm implementation with Id: {} and name: {}", implementation.getId(), implementation.getName());
 
         // get suited executor plugin
@@ -98,7 +98,7 @@ public class NisqAnalyzerControlService {
             FileUtils.copyURLToFile(implementation.getFileLocation(), file);
 
             // execute implementation
-            Map<String, String> result = selectedExecutor.executeQuantumAlgorithm(file, inputParameters);
+            Map<String, String> result = selectedExecutor.executeQuantumAlgorithmImplementation(file, inputParameters);
             LOG.debug("Deletion of the temporary file returned: {} ", file.delete());
             return result;
         } catch (IOException e) {
