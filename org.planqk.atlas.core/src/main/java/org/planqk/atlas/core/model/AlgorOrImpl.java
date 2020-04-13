@@ -47,11 +47,11 @@ public abstract class AlgorOrImpl extends HasId {
     private String name;
 
     @Setter
-    @OneToMany(cascade = CascadeType.PERSIST)
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Parameter> inputParameters;
 
     @Setter
-    @OneToMany(cascade = CascadeType.PERSIST)
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Parameter> outputParameters;
 
     @Getter
