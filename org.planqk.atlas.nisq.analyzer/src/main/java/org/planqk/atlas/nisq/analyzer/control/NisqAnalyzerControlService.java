@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Implementation;
+import org.planqk.atlas.core.model.Parameter;
 import org.planqk.atlas.core.model.Qpu;
 import org.planqk.atlas.core.repository.ImplementationRepository;
 import org.planqk.atlas.core.repository.QpuRepository;
@@ -159,14 +160,18 @@ public class NisqAnalyzerControlService {
      * @param algorithm the algorithm to select an implementation for
      * @return the set of required parameters
      */
-    public Set<String> getRequiredSelectionParameters(Algorithm algorithm) {
-        Set<String> requiredParameters = new HashSet<>();
+    public Set<Parameter> getRequiredSelectionParameters(Algorithm algorithm) {
+        // add parameters from the algorithm
+        Set<Parameter> requiredParameters = new HashSet<>(algorithm.getInputParameters());
+
         List<Implementation> implementations = implementationRepository.findByImplementedAlgorithm(algorithm);
         LOG.debug("Retrieving required selection parameters based on {} corresponding implementations.", implementations.size());
-
-        // add implementation parameters from formulas and selection rules
         for (Implementation impl : implementations) {
-            requiredParameters.addAll(PrologUtility.getVariablesForRule(impl.getSelectionRule()));
+            // add parameters from the implementation
+            requiredParameters.addAll(impl.getInputParameters());
+
+            // add parameters from selection rules
+            requiredParameters.addAll(PrologUtility.getParametersForRule(impl.getSelectionRule()));
         }
 
         return requiredParameters;

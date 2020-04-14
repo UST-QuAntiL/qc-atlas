@@ -32,8 +32,9 @@ public class Constants {
     public static final String SDKS = "sdks";
     public static final String EXECUTION = "execution";
     public static final String SELECTION = "selection";
-    public static final String SELECTION_PARAMS = "selectionparams";
+    public static final String SELECTION_PARAMS = "selection-params";
     public static final String TAGS = "tags";
+    public static final String NISQ = "nisq";
 
     // link names
     public static final String ALGORITHM_LINK = "implementedAlgorithm";

@@ -100,7 +100,7 @@ public class PrologQueryEngine {
         String parameterPart = signatureParts[1];
 
         // replace the variables in the signature with the given parameters
-        for (String variable : PrologUtility.getVariablesForRule(selectionRule)) {
+        for (String variable : PrologUtility.getParametersForPrologRule(selectionRule)) {
             if (!params.containsKey(variable)) {
                 LOG.error("Given parameter set to check executability does not contain required parameter: {}", variable);
                 return false;

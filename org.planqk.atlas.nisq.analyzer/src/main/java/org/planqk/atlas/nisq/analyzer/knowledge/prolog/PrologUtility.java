@@ -24,6 +24,9 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.planqk.atlas.core.model.DataType;
+import org.planqk.atlas.core.model.Parameter;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,13 +38,17 @@ public class PrologUtility {
     final private static Logger LOG = LoggerFactory.getLogger(PrologUtility.class);
 
     /**
-     * Get the set of variables that are required to evaluate the given rule
+     * Get the set of parameters that are required to evaluate the given rule
      *
-     * @param rule the rule to retrieve the variables from
-     * @return the set of required variables to evaluate the rule
+     * @param rule the rule to retrieve the parameters from
+     * @return the set of required parameters to evaluate the rule
      */
-    public static Set<String> getVariablesForRule(String rule) {
-        return getParametersForRule(rule).stream().filter(PrologUtility::isVariable).collect(Collectors.toSet());
+    public static Set<Parameter> getParametersForRule(String rule) {
+        return getParametersForPrologRule(rule)
+                .stream()
+                .filter(PrologUtility::isVariable)
+                .map(param -> new Parameter(param, DataType.String, null, "Parameter of selection rule."))
+                .collect(Collectors.toSet());
     }
 
     /**
@@ -64,7 +71,7 @@ public class PrologUtility {
      * @param rule the rule to retrieve the parameters from
      * @return the set of parameters
      */
-    public static Set<String> getParametersForRule(String rule) {
+    public static Set<String> getParametersForPrologRule(String rule) {
         LOG.debug("Getting parameters for rule: {}", rule);
 
         // get String part between the brackets

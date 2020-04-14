@@ -19,12 +19,10 @@
 
 package org.planqk.atlas.web.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.planqk.atlas.core.model.Algorithm;
@@ -38,7 +36,6 @@ import org.planqk.atlas.web.dtos.entities.AlgorithmListDto;
 import org.planqk.atlas.web.dtos.entities.ParameterDto;
 import org.planqk.atlas.web.dtos.entities.ParameterListDto;
 import org.planqk.atlas.web.dtos.requests.ParameterKeyValueDto;
-import org.planqk.atlas.web.dtos.requests.SelectionParameterDto;
 import org.planqk.atlas.web.utils.RestUtils;
 
 import org.slf4j.Logger;
@@ -67,11 +64,11 @@ public class AlgorithmController {
 
     final private static Logger LOG = LoggerFactory.getLogger(AlgorithmController.class);
 
-    private final NisqAnalyzerControlService controlService;
+    private final NisqAnalyzerControlService nisqAnalyzerService;
     private AlgorithmService algorithmService;
 
-    public AlgorithmController(NisqAnalyzerControlService controlService, AlgorithmService algorithmService) {
-        this.controlService = controlService;
+    public AlgorithmController(NisqAnalyzerControlService nisqAnalyzerService, AlgorithmService algorithmService) {
+        this.nisqAnalyzerService = nisqAnalyzerService;
         this.algorithmService = algorithmService;
     }
 
@@ -125,53 +122,6 @@ public class AlgorithmController {
         return new ResponseEntity<>(createAlgorithmDto(algorithmOptional.get()), HttpStatus.OK);
     }
 
-    @GetMapping("/{id}/" + Constants.SELECTION_PARAMS)
-    public HttpEntity<SelectionParameterDto> getSelectionParams(@PathVariable Long id) {
-        LOG.debug("Get to retrieve selection parameters for algorithm with Id {} received.", id);
-
-        Optional<Algorithm> algorithmOptional = algorithmService.findById(id);
-        if (!algorithmOptional.isPresent()) {
-            LOG.error("Unable to retrieve algorithm with id {} from the repository.", id);
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-
-        // determine and return required selection parameters
-        Set<String> requiredParams = controlService.getRequiredSelectionParameters(algorithmOptional.get());
-        SelectionParameterDto dto = new SelectionParameterDto();
-        dto.setParameters(new ArrayList<>(requiredParams));
-        dto.add(linkTo(methodOn(AlgorithmController.class).getSelectionParams(id)).withSelfRel());
-        dto.add(linkTo(methodOn(AlgorithmController.class).getAlgorithm(id)).withRel(Constants.ALGORITHM));
-        return new ResponseEntity<>(dto, HttpStatus.OK);
-    }
-
-    @PostMapping("/{id}/" + Constants.SELECTION) // TODO: change return type
-    public HttpEntity<AlgorithmDto> selectImplementations(@PathVariable Long id, @RequestBody ParameterKeyValueDto params) {
-        LOG.debug("Post to select implementations for algorithm with Id {} received.", id);
-
-        Optional<Algorithm> algorithmOptional = algorithmService.findById(id);
-        if (!algorithmOptional.isPresent()) {
-            LOG.error("Unable to retrieve algorithm with id {} from the repository.", id);
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        Algorithm algorithm = algorithmOptional.get();
-
-        if (Objects.isNull(params.getParameters())) {
-            LOG.error("Parameter set for the selection is null.");
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        LOG.debug("Received {} parameters for the selection.", params.getParameters().size());
-
-        if (RestUtils.parametersAvailable(controlService.getRequiredSelectionParameters(algorithm), params.getParameters())) {
-            LOG.error("Parameter set for the selection is not valid.");
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-
-        Map<Implementation, List<Qpu>> selectedPairs = controlService.performSelection(algorithm, params.getParameters());
-
-        // TODO: parse selected pairs to http response
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
     @GetMapping("/{id}/" + Constants.INPUT_PARAMS)
     public HttpEntity<ParameterListDto> getInputParameters(@PathVariable Long id) {
         LOG.debug("Get to retrieve input parameters for algorithm with id: {}.", id);
@@ -210,6 +160,57 @@ public class AlgorithmController {
 
         parameterListDto.add(linkTo(methodOn(AlgorithmController.class).getOutputParameters(id)).withSelfRel());
         return new ResponseEntity<>(parameterListDto, HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}/" + Constants.NISQ + "/" + Constants.SELECTION_PARAMS)
+    public HttpEntity<ParameterListDto> getSelectionParams(@PathVariable Long id) {
+        LOG.debug("Get to retrieve selection parameters for algorithm with Id {} received.", id);
+
+        Optional<Algorithm> algorithmOptional = algorithmService.findById(id);
+        if (!algorithmOptional.isPresent()) {
+            LOG.error("Unable to retrieve algorithm with id {} from the repository.", id);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        // determine and return required selection parameters
+        List<ParameterDto> requiredParamsDto = nisqAnalyzerService.getRequiredSelectionParameters(algorithmOptional.get())
+                .stream()
+                .map(ParameterDto.Converter::convert)
+                .collect(Collectors.toList());
+        ParameterListDto dto = new ParameterListDto(requiredParamsDto);
+
+        // add required links
+        dto.add(linkTo(methodOn(AlgorithmController.class).getSelectionParams(id)).withSelfRel());
+        dto.add(linkTo(methodOn(AlgorithmController.class).getAlgorithm(id)).withRel(Constants.ALGORITHM));
+        return new ResponseEntity<>(dto, HttpStatus.OK);
+    }
+
+    @PostMapping("/{id}/" + Constants.NISQ + "/" + Constants.SELECTION) // TODO: change return type
+    public HttpEntity<AlgorithmDto> selectImplementations(@PathVariable Long id, @RequestBody ParameterKeyValueDto params) {
+        LOG.debug("Post to select implementations for algorithm with Id {} received.", id);
+
+        Optional<Algorithm> algorithmOptional = algorithmService.findById(id);
+        if (!algorithmOptional.isPresent()) {
+            LOG.error("Unable to retrieve algorithm with id {} from the repository.", id);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        Algorithm algorithm = algorithmOptional.get();
+
+        if (Objects.isNull(params.getParameters())) {
+            LOG.error("Parameter set for the selection is null.");
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        LOG.debug("Received {} parameters for the selection.", params.getParameters().size());
+
+        if (RestUtils.parametersAvailable(nisqAnalyzerService.getRequiredSelectionParameters(algorithm), params.getParameters())) {
+            LOG.error("Parameter set for the selection is not valid.");
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        Map<Implementation, List<Qpu>> selectedPairs = nisqAnalyzerService.performSelection(algorithm, params.getParameters());
+
+        // TODO: parse selected pairs to http response
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     /**

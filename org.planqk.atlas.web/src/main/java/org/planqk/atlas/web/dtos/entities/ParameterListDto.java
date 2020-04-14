@@ -23,13 +23,17 @@ import java.util.List;
 
 import org.planqk.atlas.core.model.Parameter;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.assertj.core.util.Lists;
 import org.springframework.hateoas.RepresentationModel;
 
 /**
  * Data transfer object for multiple {@link Parameter}s
  */
+@NoArgsConstructor
+@AllArgsConstructor
 public class ParameterListDto extends RepresentationModel<ParameterListDto> {
 
     @Getter

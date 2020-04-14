@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import org.planqk.atlas.core.model.Parameter;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.AlgorithmController;
 import org.planqk.atlas.web.dtos.entities.ParameterDto;
@@ -72,8 +73,8 @@ public class RestUtils {
      * @return <code>true</code> if all required parameters are contained in the provided parameters, <code>false</code>
      * otherwise
      */
-    public static boolean parametersAvailable(Set<String> requiredParameters, Map<String, String> providedParameters) {
-        return requiredParameters.stream().filter(param -> !providedParameters.containsKey(param)).count() == 0;
+    public static boolean parametersAvailable(Set<Parameter> requiredParameters, Map<String, String> providedParameters) {
+        return requiredParameters.stream().allMatch(param -> providedParameters.containsKey(param.getName()));
     }
 
     /**
