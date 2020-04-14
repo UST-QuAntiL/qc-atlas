@@ -20,13 +20,16 @@
 package org.planqk.atlas.web.controller;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.DataType;
 import org.planqk.atlas.core.model.Parameter;
 import org.planqk.atlas.core.services.AlgorithmService;
+import org.planqk.atlas.nisq.analyzer.control.NisqAnalyzerControlService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.entities.AlgorithmDto;
 import org.planqk.atlas.web.dtos.entities.AlgorithmListDto;
@@ -51,6 +54,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -59,6 +63,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 public class AlgorithmControllerTest {
+
+    @Mock
+    private NisqAnalyzerControlService nisqService;
 
     @Mock
     private AlgorithmService algorithmService;
@@ -99,7 +106,7 @@ public class AlgorithmControllerTest {
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
 
         AlgorithmListDto algorithmListDto = new ObjectMapper().readValue(result.getResponse().getContentAsString(), AlgorithmListDto.class);
-        assertEquals(algorithmListDto.getAlgorithmDtos().size(), 0);
+        assertEquals(0, algorithmListDto.getAlgorithmDtos().size());
     }
 
     @Test
@@ -124,7 +131,7 @@ public class AlgorithmControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON)).andReturn();
 
         AlgorithmListDto algorithmListDto = new ObjectMapper().readValue(result.getResponse().getContentAsString(), AlgorithmListDto.class);
-        assertEquals(algorithmListDto.getAlgorithmDtos().size(), 2);
+        assertEquals(2, algorithmListDto.getAlgorithmDtos().size());
     }
 
     @Test
@@ -168,7 +175,7 @@ public class AlgorithmControllerTest {
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
 
         ParameterListDto response = new ObjectMapper().readValue(result.getResponse().getContentAsString(), ParameterListDto.class);
-        assertEquals(response.getParameters().size(), 2);
+        assertEquals(2, response.getParameters().size());
     }
 
     @Test
@@ -194,7 +201,7 @@ public class AlgorithmControllerTest {
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
 
         ParameterListDto response = new ObjectMapper().readValue(result.getResponse().getContentAsString(), ParameterListDto.class);
-        assertEquals(response.getParameters().size(), 3);
+        assertEquals(3, response.getParameters().size());
     }
 
     @Test
@@ -220,5 +227,31 @@ public class AlgorithmControllerTest {
 
         AlgorithmDto response = new ObjectMapper().readValue(result.getResponse().getContentAsString(), AlgorithmDto.class);
         assertEquals(response.getName(), algorithmDto.getName());
+    }
+
+    @Test
+    public void getSelectionParameters_returnNotFound() throws Exception {
+        mockMvc.perform(get("/" + Constants.ALGORITHMS + "/5/" + Constants.NISQ + "/" + Constants.SELECTION_PARAMS)
+                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void getSelectionParameters_returnParameters() throws Exception {
+        Set<Parameter> parameterSet = new HashSet<>();
+        parameterSet.add(new Parameter("param1", DataType.String, null, "First parameter"));
+        parameterSet.add(new Parameter("param2", DataType.String, null, "Second parameter"));
+        parameterSet.add(new Parameter("param3", DataType.String, null, "Third parameter"));
+        when(nisqService.getRequiredSelectionParameters(any(Algorithm.class))).thenReturn(parameterSet);
+
+        Algorithm algorithm = new Algorithm();
+        ReflectionTestUtils.setField(algorithm, "id", 5L);
+        algorithm.setInputParameters(new ArrayList<>(parameterSet));
+        when(algorithmService.findById(any(Long.class))).thenReturn(Optional.of(algorithm));
+
+        MvcResult result = mockMvc.perform(get("/" + Constants.ALGORITHMS + "/5/" + Constants.NISQ + "/" + Constants.SELECTION_PARAMS)
+                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
+
+        ParameterListDto response = new ObjectMapper().readValue(result.getResponse().getContentAsString(), ParameterListDto.class);
+        assertEquals(3, response.getParameters().size());
     }
 }

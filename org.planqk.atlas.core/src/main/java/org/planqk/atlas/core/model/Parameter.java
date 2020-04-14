@@ -22,6 +22,7 @@ package org.planqk.atlas.core.model;
 import javax.persistence.Entity;
 
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -30,6 +31,7 @@ import lombok.Setter;
  */
 @Entity
 @AllArgsConstructor
+@EqualsAndHashCode
 public class Parameter extends HasId {
 
     @Getter

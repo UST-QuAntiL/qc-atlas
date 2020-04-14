@@ -169,7 +169,7 @@ public class AlgorithmController {
         Optional<Algorithm> algorithmOptional = algorithmService.findById(id);
         if (!algorithmOptional.isPresent()) {
             LOG.error("Unable to retrieve algorithm with id {} from the repository.", id);
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         // determine and return required selection parameters
@@ -192,7 +192,7 @@ public class AlgorithmController {
         Optional<Algorithm> algorithmOptional = algorithmService.findById(id);
         if (!algorithmOptional.isPresent()) {
             LOG.error("Unable to retrieve algorithm with id {} from the repository.", id);
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         Algorithm algorithm = algorithmOptional.get();
 
@@ -202,6 +202,7 @@ public class AlgorithmController {
         }
         LOG.debug("Received {} parameters for the selection.", params.getParameters().size());
 
+        // TODO: not all parameters from selection rules and implementations are required, but then the set of possible implementations is reduced
         if (RestUtils.parametersAvailable(nisqAnalyzerService.getRequiredSelectionParameters(algorithm), params.getParameters())) {
             LOG.error("Parameter set for the selection is not valid.");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
