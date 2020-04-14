@@ -19,6 +19,7 @@
 
 package org.planqk.atlas.web.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -33,9 +34,12 @@ import org.planqk.atlas.nisq.analyzer.control.NisqAnalyzerControlService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.entities.AlgorithmDto;
 import org.planqk.atlas.web.dtos.entities.AlgorithmListDto;
+import org.planqk.atlas.web.dtos.entities.ImplementationDto;
 import org.planqk.atlas.web.dtos.entities.ParameterDto;
 import org.planqk.atlas.web.dtos.entities.ParameterListDto;
+import org.planqk.atlas.web.dtos.entities.QpuDto;
 import org.planqk.atlas.web.dtos.requests.ParameterKeyValueDto;
+import org.planqk.atlas.web.dtos.requests.SuitableImplQpuPairsDto;
 import org.planqk.atlas.web.utils.RestUtils;
 
 import org.slf4j.Logger;
@@ -185,8 +189,8 @@ public class AlgorithmController {
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
-    @PostMapping("/{id}/" + Constants.NISQ + "/" + Constants.SELECTION) // TODO: change return type
-    public HttpEntity<AlgorithmDto> selectImplementations(@PathVariable Long id, @RequestBody ParameterKeyValueDto params) {
+    @PostMapping("/{id}/" + Constants.NISQ + "/" + Constants.SELECTION)
+    public HttpEntity<SuitableImplQpuPairsDto> selectImplementations(@PathVariable Long id, @RequestBody ParameterKeyValueDto params) {
         LOG.debug("Post to select implementations for algorithm with Id {} received.", id);
 
         Optional<Algorithm> algorithmOptional = algorithmService.findById(id);
@@ -208,10 +212,25 @@ public class AlgorithmController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        Map<Implementation, List<Qpu>> selectedPairs = nisqAnalyzerService.performSelection(algorithm, params.getParameters());
+        // parse suited impl/qpu pairs to dto
+        List<SuitableImplQpuPairsDto.ImplQpuPair> implQpuPairs = new ArrayList<>();
+        for (Map.Entry<Implementation, List<Qpu>> suitablePair : nisqAnalyzerService.performSelection(algorithm, params.getParameters()).entrySet()) {
+            Implementation implementation = suitablePair.getKey();
+            ImplementationDto implementationDto = ImplementationDto.Converter.convert(implementation);
+            implementationDto.add(linkTo(methodOn(ImplementationController.class).getImplementation(implementation.getImplementedAlgorithm().getId(), implementation.getId())).withSelfRel());
 
-        // TODO: parse selected pairs to http response
-        return new ResponseEntity<>(HttpStatus.OK);
+            List<QpuDto> qpuDtos = new ArrayList<>();
+            for (Qpu qpu : suitablePair.getValue()) {
+                QpuDto qpuDto = QpuDto.Converter.convert(qpu);
+                qpuDto.add(linkTo(methodOn(QpuController.class).getQpu(qpu.getProvider().getId(), qpu.getId())).withSelfRel());
+                qpuDtos.add(qpuDto);
+            }
+
+            implQpuPairs.add(new SuitableImplQpuPairsDto.ImplQpuPair(implementationDto, qpuDtos));
+        }
+        SuitableImplQpuPairsDto dto = new SuitableImplQpuPairsDto(implQpuPairs);
+
+        return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
     /**
