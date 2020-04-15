@@ -1,4 +1,4 @@
-/********************************************************************************
+/*******************************************************************************
  * Copyright (c) 2020 University of Stuttgart
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -19,17 +19,15 @@
 
 package org.planqk.atlas.web.dtos.requests;
 
-import java.util.Map;
-
 import lombok.Getter;
 import lombok.Setter;
 
 /**
  * Dto to exchange input and output parameters as key value pairs.
  */
-public class ParameterKeyValueDto {
+public class ExecutionRequest extends ParameterKeyValueDto {
 
     @Getter
     @Setter
-    private Map<String, String> parameters;
+    private Long qpuId;
 }

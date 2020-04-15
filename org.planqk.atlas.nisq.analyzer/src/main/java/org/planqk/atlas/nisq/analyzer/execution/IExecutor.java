@@ -19,11 +19,13 @@
 
 package org.planqk.atlas.nisq.analyzer.execution;
 
-import java.io.File;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
+import org.planqk.atlas.core.model.ExecutionResult;
 import org.planqk.atlas.core.model.ProgrammingLanguage;
+import org.planqk.atlas.core.model.Qpu;
 
 /**
  * Interface for all plug-ins that can execute quantum algorithms defined with a certain programming language and using
@@ -34,11 +36,14 @@ public interface IExecutor {
     /**
      * Execute the given quantum algorithm implementation with the given input parameters.
      *
-     * @param algorithmImplementation the file containing the quantum algorithm implementation that should be executed
-     * @param parameters              the input parameters for the quantum algorithm execution
-     * @return the output parameters for the quantum algorithm execution
+     * @param algorithmImplementationURL the URL to the file containing the quantum algorithm implementation that should
+     *                                   be executed
+     * @param qpu                        the QPU to execute the implementation on
+     * @param parameters                 the input parameters for the quantum algorithm execution
+     * @param executionResult            the object to update the current state of the long running task and to add the
+     *                                   results after completion
      */
-    Map<String, String> executeQuantumAlgorithmImplementation(File algorithmImplementation, Map<String, String> parameters);
+    void executeQuantumAlgorithmImplementation(URL algorithmImplementationURL, Qpu qpu, Map<String, String> parameters, ExecutionResult executionResult);
 
     /**
      * Returns a list of Sdk names that are supported by the executor

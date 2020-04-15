@@ -19,25 +19,27 @@
 
 package org.planqk.atlas.web.controller;
 
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.ExecutionResult;
+import org.planqk.atlas.core.model.Implementation;
+import org.planqk.atlas.core.model.Qpu;
+import org.planqk.atlas.core.model.Sdk;
+import org.planqk.atlas.core.services.AlgorithmService;
+import org.planqk.atlas.core.services.ImplementationService;
+import org.planqk.atlas.core.services.QpuService;
+import org.planqk.atlas.core.services.SdkService;
+import org.planqk.atlas.nisq.analyzer.control.NisqAnalyzerControlService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.entities.ImplementationDto;
 import org.planqk.atlas.web.dtos.entities.ImplementationListDto;
 import org.planqk.atlas.web.dtos.entities.ParameterDto;
 import org.planqk.atlas.web.dtos.entities.ParameterListDto;
-import org.planqk.atlas.web.dtos.requests.ParameterKeyValueDto;
-import org.planqk.atlas.core.services.AlgorithmService;
-import org.planqk.atlas.core.services.ImplementationService;
-import org.planqk.atlas.core.services.SdkService;
+import org.planqk.atlas.web.dtos.requests.ExecutionRequest;
 import org.planqk.atlas.web.utils.RestUtils;
-import org.planqk.atlas.core.model.Algorithm;
-import org.planqk.atlas.core.model.Implementation;
-import org.planqk.atlas.core.model.Sdk;
-import org.planqk.atlas.nisq.analyzer.control.NisqAnalyzerControlService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,18 +66,20 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class ImplementationController {
 
     final private static Logger LOG = LoggerFactory.getLogger(ImplementationController.class);
-
-    private SdkService sdkService;
     private final NisqAnalyzerControlService controlService;
     private final ImplementationService implementationService;
     private final AlgorithmService algorithmService;
+    private final QpuService qpuService;
+    private final SdkService sdkService;
 
     public ImplementationController(ImplementationService implementationService,
                                     AlgorithmService algorithmService,
+                                    QpuService qpuService,
                                     SdkService sdkService,
                                     NisqAnalyzerControlService controlService) {
         this.implementationService = implementationService;
         this.algorithmService = algorithmService;
+        this.qpuService = qpuService;
         this.sdkService = sdkService;
         this.controlService = controlService;
     }
@@ -193,7 +197,7 @@ public class ImplementationController {
 
     @PostMapping("/{implId}/" + Constants.EXECUTION)
     public HttpEntity executeImplementation(@PathVariable Long algoId, @PathVariable Long implId,
-                                            @RequestBody ParameterKeyValueDto executionRequest) {
+                                            @RequestBody ExecutionRequest executionRequest) {
         LOG.debug("Post to execute implementation with Id: {}", implId);
 
         Optional<Implementation> implementationOptional = implementationService.findById(implId);
@@ -202,19 +206,21 @@ public class ImplementationController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        Map<String, String> outputParams;
+        Optional<Qpu> qpuOptional = qpuService.findById(implId);
+        if (!qpuOptional.isPresent()) {
+            LOG.error("Unable to retrieve qpu with id {} form the repository.", implId);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
         try {
-            outputParams = controlService.executeQuantumAlgorithmImplementation(implementationOptional.get(), executionRequest.getParameters());
+            ExecutionResult result = controlService.executeQuantumAlgorithmImplementation(implementationOptional.get(), qpuOptional.get(), executionRequest.getParameters());
+            // TODO: return dto for long running task, adapt status code, add method to poll for results
+            ExecutionRequest dto = new ExecutionRequest();
+            return new ResponseEntity<>(dto, HttpStatus.OK);
         } catch (RuntimeException e) {
             LOG.error("Error while executing implementation: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error Message: " + e.getMessage());
         }
-
-        // TODO: handle via long running resource
-
-        ParameterKeyValueDto dto = new ParameterKeyValueDto();
-        dto.setParameters(outputParams);
-        return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
     /**

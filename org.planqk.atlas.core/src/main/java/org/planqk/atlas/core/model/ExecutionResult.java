@@ -17,19 +17,38 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.planqk.atlas.web.dtos.requests;
+package org.planqk.atlas.core.model;
 
-import java.util.Map;
+import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Dto to exchange input and output parameters as key value pairs.
+ * Entity representing the result of an execution of a quantum algorithm implementation on a certain QPU.
  */
-public class ParameterKeyValueDto {
+@Entity
+@AllArgsConstructor
+public class ExecutionResult extends HasId {
 
     @Getter
     @Setter
-    private Map<String, String> parameters;
+    private ExecutionResultStatus status;
+
+    @Getter
+    @Setter
+    private String statusCode;
+
+    @Getter
+    @Setter
+    @ManyToOne
+    private Qpu executingQpu;
+
+    @Getter
+    @Setter
+    private Object result;
+
+    // TODO: add input parameters that were used for the execution
 }

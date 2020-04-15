@@ -17,19 +17,11 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.planqk.atlas.web.dtos.requests;
-
-import java.util.Map;
-
-import lombok.Getter;
-import lombok.Setter;
+package org.planqk.atlas.core.model;
 
 /**
- * Dto to exchange input and output parameters as key value pairs.
+ * Enum containing all states that a quantum algorithm execution can be in.
  */
-public class ParameterKeyValueDto {
-
-    @Getter
-    @Setter
-    private Map<String, String> parameters;
+public enum ExecutionResultStatus {
+    INITIALIZED, RUNNING, FAILED, FINISHED
 }

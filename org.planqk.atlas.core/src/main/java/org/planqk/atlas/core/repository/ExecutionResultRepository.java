@@ -17,19 +17,12 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.planqk.atlas.web.dtos.requests;
-
-import java.util.Map;
-
-import lombok.Getter;
-import lombok.Setter;
+package org.planqk.atlas.core.repository;
 
 /**
- * Dto to exchange input and output parameters as key value pairs.
+ * Repository to access {@link org.planqk.atlas.core.model.ExecutionResult}s available in the data base with different
+ * queries.
  */
-public class ParameterKeyValueDto {
+public interface ExecutionResultRepository {
 
-    @Getter
-    @Setter
-    private Map<String, String> parameters;
 }

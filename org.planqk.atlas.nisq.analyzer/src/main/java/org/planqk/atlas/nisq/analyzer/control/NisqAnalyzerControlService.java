@@ -19,7 +19,6 @@
 
 package org.planqk.atlas.nisq.analyzer.control;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -31,6 +30,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.ExecutionResult;
+import org.planqk.atlas.core.model.ExecutionResultStatus;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Parameter;
 import org.planqk.atlas.core.model.Qpu;
@@ -40,7 +41,6 @@ import org.planqk.atlas.nisq.analyzer.execution.IExecutor;
 import org.planqk.atlas.nisq.analyzer.knowledge.prolog.PrologQueryEngine;
 import org.planqk.atlas.nisq.analyzer.knowledge.prolog.PrologUtility;
 
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -55,15 +55,12 @@ public class NisqAnalyzerControlService {
 
     final private List<IExecutor> executorList;
 
-    final private FormulaEvaluator formulaEvaluator;
-
     final private ImplementationRepository implementationRepository;
 
     final private QpuRepository qpuRepository;
 
-    public NisqAnalyzerControlService(List<IExecutor> executorList, FormulaEvaluator formulaEvaluator, ImplementationRepository implementationRepository, QpuRepository qpuRepository) {
+    public NisqAnalyzerControlService(List<IExecutor> executorList, ImplementationRepository implementationRepository, QpuRepository qpuRepository) {
         this.executorList = executorList;
-        this.formulaEvaluator = formulaEvaluator;
         this.implementationRepository = implementationRepository;
         this.qpuRepository = qpuRepository;
     }
@@ -73,11 +70,12 @@ public class NisqAnalyzerControlService {
      * output of the execution.
      *
      * @param implementation  the quantum algorithm implementation that shall be executed
+     * @param qpu             the quantum processing unit to execute the implementation
      * @param inputParameters the input parameters for the execution as key/value pairs
-     * @return the output parameters of the execution as key/value pairs
+     * @return the ExecutionResult to track the current status and store the result
      * @throws RuntimeException is thrown in case the execution of the algorithm implementation fails
      */
-    public Map<String, String> executeQuantumAlgorithmImplementation(Implementation implementation, Map<String, String> inputParameters) throws RuntimeException {
+    public ExecutionResult executeQuantumAlgorithmImplementation(Implementation implementation, Qpu qpu, Map<String, String> inputParameters) throws RuntimeException {
         LOG.debug("Executing quantum algorithm implementation with Id: {} and name: {}", implementation.getId(), implementation.getName());
 
         // get suited executor plugin
@@ -92,20 +90,16 @@ public class NisqAnalyzerControlService {
                     + implementation.getProgrammingLanguage() + " and sdk name " + implementation.getSdk().getName());
         }
 
-        try {
-            // copy the implementation file from the URL
-            File file = File.createTempFile("temp", null);
-            file.deleteOnExit();
-            FileUtils.copyURLToFile(implementation.getFileLocation(), file);
+        // create a object to store the execution results
+        ExecutionResult executionResult = new ExecutionResult(ExecutionResultStatus.INITIALIZED, "Passing execution to executor plugin.", qpu, null);
+        // TODO: store in repository
 
-            // execute implementation
-            Map<String, String> result = selectedExecutor.executeQuantumAlgorithmImplementation(file, inputParameters);
-            LOG.debug("Deletion of the temporary file returned: {} ", file.delete());
-            return result;
-        } catch (IOException e) {
-            LOG.error("Unable to copy implementation from URL: {}", implementation.getFileLocation());
-            throw new RuntimeException("Unable to copy implementation from URL: " + implementation.getFileLocation());
-        }
+        // execute implementation
+        new Thread(() -> {
+            selectedExecutor.executeQuantumAlgorithmImplementation(implementation.getFileLocation(), qpu, inputParameters, executionResult);
+        }).start();
+
+        return executionResult;
     }
 
     /**
