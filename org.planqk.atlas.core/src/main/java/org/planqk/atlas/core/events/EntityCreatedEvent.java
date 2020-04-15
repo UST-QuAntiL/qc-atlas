@@ -17,19 +17,22 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.planqk.atlas.nisq.analyzer.knowledge.prolog;
+package org.planqk.atlas.core.events;
 
-import java.io.File;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.springframework.core.ResolvableType;
+import org.springframework.core.ResolvableTypeProvider;
 
-/**
- * Constants for the prolog knowledge handling.
- */
-public class Constants {
+@Getter
+@RequiredArgsConstructor
+public class EntityCreatedEvent<T> implements ResolvableTypeProvider {
+    private final T entity;
 
-    // basic rule to check the executability of an implementation on the available QPUs
-    public static final String QPU_RULE_NAME = "executableOnQpuRule";
-    public static final String QPU_RULE_CONTENT = "executableOnQpu(RequiredQubits, CircuitDepth, Impl, Qpu) :- requiredSdk(Impl, ReqSdk), usedSdk(Qpu, ReqSdk), providesQubits(Qpu, ProvidedQubit), ProvidedQubit >= RequiredQubits, CircuitDepth =< t1(Qpu)/tg(Qpu).";
-
-    // path to store the files for the local knowledge base
-    public static final String basePath = System.getProperty("java.io.tmpdir") + File.separator + "quality";
+    //required to invoke the listeners when generics are used
+    @Override
+    public ResolvableType getResolvableType() {
+        return ResolvableType.forClassWithGenerics(getClass(),
+                ResolvableType.forInstance(entity));
+    }
 }

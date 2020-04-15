@@ -21,25 +21,31 @@ package org.planqk.atlas.core.services;
 
 import java.util.Optional;
 
+import org.planqk.atlas.core.events.EntityCreatedEvent;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.repository.ImplementationRepository;
 
-import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 @Repository
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ImplementationServiceImpl implements ImplementationService {
 
-    @Autowired
-    private ImplementationRepository repository;
+    private final ApplicationEventPublisher applicationEventPublisher;
+
+    private final ImplementationRepository repository;
 
     @Override
     public Implementation save(Implementation implementation) {
-        return repository.save(implementation);
+        Implementation savedImplementation = repository.save(implementation);
+
+        applicationEventPublisher.publishEvent(new EntityCreatedEvent<>(savedImplementation));
+
+        return savedImplementation;
     }
 
     @Override

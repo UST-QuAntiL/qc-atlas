@@ -130,10 +130,10 @@ public class PrologQueryEngine {
      */
     public static List<Long> getSuitableQpus(Long implementationId, int requiredQubits, int circuitDepth) throws IOException {
         // check if file with required rule exists and create otherwise
-        if (!doesPrologFileExist(Constants.CPU_RULE_NAME)) {
-            persistPrologFile(Constants.CPU_RULE_CONTENT, Constants.CPU_RULE_NAME);
+        if (!doesPrologFileExist(Constants.QPU_RULE_NAME)) {
+            persistPrologFile(Constants.QPU_RULE_CONTENT, Constants.QPU_RULE_NAME);
         }
-        activatePrologFile(Constants.CPU_RULE_NAME);
+        activatePrologFile(Constants.QPU_RULE_NAME);
 
         List<Long> suitableQPUs = new ArrayList<>();
 

@@ -25,7 +25,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.scheduling.annotation.EnableAsync;
 
+@EnableAsync
 @SpringBootApplication(scanBasePackages = "org.planqk.atlas.*")
 @EnableJpaRepositories("org.planqk.atlas.*")
 @EntityScan("org.planqk.atlas.*")

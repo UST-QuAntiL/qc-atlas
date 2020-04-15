@@ -45,7 +45,7 @@ public class PrologKnowledgeBaseHandler {
     protected static void activatePrologFile(String fileName) {
         String activateQuery = "consult('" + basePath + File.separator + fileName + ".pl').";
 
-        // replace backslashs if running on windows as JPL cannot handle this
+        // replace backslashes if running on windows as JPL cannot handle this
         activateQuery = activateQuery.replace("\\", "/");
 
         // deactivate file in knowledge base
@@ -80,7 +80,7 @@ public class PrologKnowledgeBaseHandler {
     protected static void deletePrologFile(String fileName) {
         String deactivateQuery = "unload_file('" + basePath + File.separator + fileName + ".pl').";
 
-        // replace backslashs if running on windows as JPL cannot handle this
+        // replace backslashes if running on windows as JPL cannot handle this
         deactivateQuery = deactivateQuery.replace("\\", "/");
 
         // deactivate file in knowledge base
