@@ -20,6 +20,7 @@
 package org.planqk.atlas.core.services;
 
 import java.util.Optional;
+import java.util.Set;
 
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Tag;
@@ -41,12 +42,15 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     @Override
     public Algorithm save(Algorithm algorithm) {
 
+        Set<Tag> tags = algorithm.getTags();
         for (Tag algorithmTag : algorithm.getTags()) {
             Optional<Tag> storedTagOptional = tagService.getTagById(algorithmTag.getId());
             if (!storedTagOptional.isPresent()) {
-                tagService.save(algorithmTag);
+                tags.remove(algorithmTag);
+                tags.add(tagService.save(algorithmTag));
             }
         }
+        algorithm.setTags(tags);
 
         return algorithmRepository.save(algorithm);
     }
