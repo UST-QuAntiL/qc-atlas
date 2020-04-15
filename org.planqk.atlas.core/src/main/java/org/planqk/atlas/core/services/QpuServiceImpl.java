@@ -21,25 +21,31 @@ package org.planqk.atlas.core.services;
 
 import java.util.Optional;
 
+import org.planqk.atlas.core.events.EntityCreatedEvent;
 import org.planqk.atlas.core.model.Qpu;
 import org.planqk.atlas.core.repository.QpuRepository;
 
-import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 @Repository
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class QpuServiceImpl implements QpuService {
 
-    @Autowired
-    private QpuRepository repository;
+    private final ApplicationEventPublisher applicationEventPublisher;
+
+    private final QpuRepository repository;
 
     @Override
     public Qpu save(Qpu qpu) {
-        return repository.save(qpu);
+        Qpu savedQpu = repository.save(qpu);
+
+        applicationEventPublisher.publishEvent(new EntityCreatedEvent<>(savedQpu));
+
+        return savedQpu;
     }
 
     @Override

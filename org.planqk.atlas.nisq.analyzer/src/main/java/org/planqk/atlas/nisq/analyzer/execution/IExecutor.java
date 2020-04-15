@@ -38,7 +38,7 @@ public interface IExecutor {
      * @param parameters              the input parameters for the quantum algorithm execution
      * @return the output parameters for the quantum algorithm execution
      */
-    Map<String, String> executeQuantumAlgorithm(File algorithmImplementation, Map<String, String> parameters);
+    Map<String, String> executeQuantumAlgorithmImplementation(File algorithmImplementation, Map<String, String> parameters);
 
     /**
      * Returns a list of Sdk names that are supported by the executor

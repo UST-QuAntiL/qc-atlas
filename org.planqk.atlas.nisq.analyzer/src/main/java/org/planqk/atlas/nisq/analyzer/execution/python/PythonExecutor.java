@@ -47,7 +47,7 @@ public class PythonExecutor implements IExecutor {
     }};
 
     @Override
-    public Map<String, String> executeQuantumAlgorithm(File algorithmImplementation, Map<String, String> parameters) throws RuntimeException {
+    public Map<String, String> executeQuantumAlgorithmImplementation(File algorithmImplementation, Map<String, String> parameters) throws RuntimeException {
 
         // TODO: delete
         try (BufferedReader br = new BufferedReader(new FileReader(algorithmImplementation))) {
