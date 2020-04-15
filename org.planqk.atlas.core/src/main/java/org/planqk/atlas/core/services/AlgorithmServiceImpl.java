@@ -22,10 +22,10 @@ package org.planqk.atlas.core.services;
 import java.util.Optional;
 
 import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.repository.AlgorithmRepository;
 
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -34,21 +34,30 @@ import org.springframework.stereotype.Repository;
 @AllArgsConstructor
 public class AlgorithmServiceImpl implements AlgorithmService {
 
-    @Autowired
-    private AlgorithmRepository repository;
+    private AlgorithmRepository algorithmRepository;
+
+    private TagService tagService;
 
     @Override
     public Algorithm save(Algorithm algorithm) {
-        return repository.save(algorithm);
+
+        for (Tag algorithmTag : algorithm.getTags()) {
+            Optional<Tag> storedTagOptional = tagService.getTagById(algorithmTag.getId());
+            if (!storedTagOptional.isPresent()) {
+                tagService.save(algorithmTag);
+            }
+        }
+
+        return algorithmRepository.save(algorithm);
     }
 
     @Override
     public Page<Algorithm> findAll(Pageable pageable) {
-        return repository.findAll(pageable);
+        return algorithmRepository.findAll(pageable);
     }
 
     @Override
     public Optional<Algorithm> findById(Long algoId) {
-        return repository.findById(algoId);
+        return algorithmRepository.findById(algoId);
     }
 }

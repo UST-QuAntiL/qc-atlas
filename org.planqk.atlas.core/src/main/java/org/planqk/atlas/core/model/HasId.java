@@ -25,6 +25,7 @@ import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.hateoas.RepresentationModel;
 
 /**
@@ -35,6 +36,7 @@ public abstract class HasId extends RepresentationModel {
 
     @Id
     @Getter
+    @Setter
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 }
