@@ -19,6 +19,7 @@
 
 package org.planqk.atlas.core.services;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.planqk.atlas.core.events.EntityCreatedEvent;
@@ -51,6 +52,11 @@ public class QpuServiceImpl implements QpuService {
     @Override
     public Page<Qpu> findAll(Pageable pageable) {
         return repository.findAll(pageable);
+    }
+
+    @Override
+    public List<Qpu> findAll() {
+        return repository.findAll();
     }
 
     @Override

@@ -1,4 +1,4 @@
-/*******************************************************************************
+/********************************************************************************
  * Copyright (c) 2020 University of Stuttgart
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -19,22 +19,13 @@
 
 package org.planqk.atlas.core.services;
 
-import java.util.List;
 import java.util.Optional;
 
-import org.planqk.atlas.core.model.Algorithm;
-import org.planqk.atlas.core.model.Implementation;
+import org.planqk.atlas.core.model.ExecutionResult;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+public interface ExecutionResultService {
 
-public interface ImplementationService {
+    ExecutionResult save(ExecutionResult executionResult);
 
-    Implementation save(Implementation tag);
-
-    Page<Implementation> findAll(Pageable pageable);
-
-    Optional<Implementation> findById(Long algoId);
-
-    List<Implementation> findByImplementedAlgorithm(Algorithm algorithm);
+    Optional<ExecutionResult> findById(Long id);
 }

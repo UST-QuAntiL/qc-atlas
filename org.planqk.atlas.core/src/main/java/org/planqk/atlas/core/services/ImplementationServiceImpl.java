@@ -19,9 +19,11 @@
 
 package org.planqk.atlas.core.services;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.planqk.atlas.core.events.EntityCreatedEvent;
+import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.repository.ImplementationRepository;
 
@@ -37,11 +39,11 @@ public class ImplementationServiceImpl implements ImplementationService {
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
-    private final ImplementationRepository repository;
+    private final ImplementationRepository implementationRepository;
 
     @Override
     public Implementation save(Implementation implementation) {
-        Implementation savedImplementation = repository.save(implementation);
+        Implementation savedImplementation = implementationRepository.save(implementation);
 
         applicationEventPublisher.publishEvent(new EntityCreatedEvent<>(savedImplementation));
 
@@ -50,11 +52,16 @@ public class ImplementationServiceImpl implements ImplementationService {
 
     @Override
     public Page<Implementation> findAll(Pageable pageable) {
-        return repository.findAll(pageable);
+        return implementationRepository.findAll(pageable);
     }
 
     @Override
     public Optional<Implementation> findById(Long implId) {
-        return repository.findById(implId);
+        return implementationRepository.findById(implId);
+    }
+
+    @Override
+    public List<Implementation> findByImplementedAlgorithm(Algorithm algorithm) {
+        return implementationRepository.findByImplementedAlgorithm(algorithm);
     }
 }

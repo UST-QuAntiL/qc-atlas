@@ -19,6 +19,7 @@
 
 package org.planqk.atlas.core.services;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.planqk.atlas.core.model.Qpu;
@@ -31,6 +32,8 @@ public interface QpuService {
     Qpu save(Qpu qpu);
 
     Page<Qpu> findAll(Pageable pageable);
+
+    List<Qpu> findAll();
 
     Optional<Qpu> findById(Long qpuId);
 }

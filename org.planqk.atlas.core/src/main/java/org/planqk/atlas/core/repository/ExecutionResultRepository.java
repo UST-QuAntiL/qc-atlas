@@ -19,10 +19,16 @@
 
 package org.planqk.atlas.core.repository;
 
+import org.planqk.atlas.core.model.ExecutionResult;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+
 /**
  * Repository to access {@link org.planqk.atlas.core.model.ExecutionResult}s available in the data base with different
  * queries.
  */
-public interface ExecutionResultRepository {
+@RepositoryRestResource(exported = false)
+public interface ExecutionResultRepository extends JpaRepository<ExecutionResult, Long> {
 
 }

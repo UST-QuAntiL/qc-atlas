@@ -1,4 +1,4 @@
-/*******************************************************************************
+/********************************************************************************
  * Copyright (c) 2020 University of Stuttgart
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -17,24 +17,25 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.planqk.atlas.core.services;
+package org.planqk.atlas.nisq.analyzer.connector;
 
-import java.util.List;
-import java.util.Optional;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
-import org.planqk.atlas.core.model.Algorithm;
-import org.planqk.atlas.core.model.Implementation;
+/**
+ * Object to encapsulate all information that is retrieved during the analysis of a quantum circuit.
+ */
+@AllArgsConstructor
+public class CircuitInformation {
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+    @Getter
+    @Setter
+    private int circuitDepth;
 
-public interface ImplementationService {
+    @Getter
+    @Setter
+    private int circuitWidth;
 
-    Implementation save(Implementation tag);
-
-    Page<Implementation> findAll(Pageable pageable);
-
-    Optional<Implementation> findById(Long algoId);
-
-    List<Implementation> findByImplementedAlgorithm(Algorithm algorithm);
+    // TODO: add further important circuit properites
 }

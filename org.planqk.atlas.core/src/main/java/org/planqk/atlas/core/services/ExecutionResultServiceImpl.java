@@ -1,4 +1,4 @@
-/*******************************************************************************
+/********************************************************************************
  * Copyright (c) 2020 University of Stuttgart
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -21,34 +21,27 @@ package org.planqk.atlas.core.services;
 
 import java.util.Optional;
 
-import org.planqk.atlas.core.model.Algorithm;
-import org.planqk.atlas.core.repository.AlgorithmRepository;
+import org.planqk.atlas.core.model.ExecutionResult;
+import org.planqk.atlas.core.repository.ExecutionResultRepository;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class AlgorithmServiceImpl implements AlgorithmService {
+public class ExecutionResultServiceImpl implements ExecutionResultService {
 
-    private AlgorithmRepository algorithmRepository;
+    private ExecutionResultRepository executionResultRepository;
 
-    public AlgorithmServiceImpl(AlgorithmRepository algorithmRepository) {
-        this.algorithmRepository = algorithmRepository;
+    public ExecutionResultServiceImpl(ExecutionResultRepository executionResultRepository) {
+        this.executionResultRepository = executionResultRepository;
     }
 
     @Override
-    public Algorithm save(Algorithm algorithm) {
-        return algorithmRepository.save(algorithm);
+    public ExecutionResult save(ExecutionResult executionResult) {
+        return executionResultRepository.save(executionResult);
     }
 
     @Override
-    public Page<Algorithm> findAll(Pageable pageable) {
-        return algorithmRepository.findAll(pageable);
-    }
-
-    @Override
-    public Optional<Algorithm> findById(Long algoId) {
-        return algorithmRepository.findById(algoId);
+    public Optional<ExecutionResult> findById(Long id) {
+        return executionResultRepository.findById(id);
     }
 }

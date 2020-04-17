@@ -19,13 +19,12 @@
 
 package org.planqk.atlas.nisq.analyzer.control;
 
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -35,9 +34,11 @@ import org.planqk.atlas.core.model.ExecutionResultStatus;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Parameter;
 import org.planqk.atlas.core.model.Qpu;
-import org.planqk.atlas.core.repository.ImplementationRepository;
-import org.planqk.atlas.core.repository.QpuRepository;
-import org.planqk.atlas.nisq.analyzer.execution.IExecutor;
+import org.planqk.atlas.core.services.ExecutionResultService;
+import org.planqk.atlas.core.services.ImplementationService;
+import org.planqk.atlas.core.services.QpuService;
+import org.planqk.atlas.nisq.analyzer.connector.CircuitInformation;
+import org.planqk.atlas.nisq.analyzer.connector.SdkConnector;
 import org.planqk.atlas.nisq.analyzer.knowledge.prolog.PrologQueryEngine;
 import org.planqk.atlas.nisq.analyzer.knowledge.prolog.PrologUtility;
 
@@ -53,16 +54,19 @@ public class NisqAnalyzerControlService {
 
     final private static Logger LOG = LoggerFactory.getLogger(NisqAnalyzerControlService.class);
 
-    final private List<IExecutor> executorList;
+    final private List<SdkConnector> connectorList;
 
-    final private ImplementationRepository implementationRepository;
+    final private ImplementationService implementationService;
 
-    final private QpuRepository qpuRepository;
+    final private ExecutionResultService executionResultService;
 
-    public NisqAnalyzerControlService(List<IExecutor> executorList, ImplementationRepository implementationRepository, QpuRepository qpuRepository) {
-        this.executorList = executorList;
-        this.implementationRepository = implementationRepository;
-        this.qpuRepository = qpuRepository;
+    final private QpuService qpuService;
+
+    public NisqAnalyzerControlService(List<SdkConnector> connectorList, ImplementationService implementationService, ExecutionResultService executionResultService, QpuService qpuService) {
+        this.connectorList = connectorList;
+        this.implementationService = implementationService;
+        this.executionResultService = executionResultService;
+        this.qpuService = qpuService;
     }
 
     /**
@@ -78,26 +82,21 @@ public class NisqAnalyzerControlService {
     public ExecutionResult executeQuantumAlgorithmImplementation(Implementation implementation, Qpu qpu, Map<String, String> inputParameters) throws RuntimeException {
         LOG.debug("Executing quantum algorithm implementation with Id: {} and name: {}", implementation.getId(), implementation.getName());
 
-        // get suited executor plugin
-        IExecutor selectedExecutor = executorList.stream()
-                .filter(executor -> executor.supportedProgrammingLanguages().contains(implementation.getProgrammingLanguage()))
-                .filter(executor -> executor.supportedSdks().contains(implementation.getSdk().getName()))
+        // get suited Sdk connector plugin
+        SdkConnector selectedSdkConnector = connectorList.stream()
+                .filter(executor -> executor.supportedSdk().equals(implementation.getSdk().getName()))
                 .findFirst().orElse(null);
-        if (Objects.isNull(selectedExecutor)) {
-            LOG.error("Unable to find executor plugin for programming language {} and sdk name {}.",
-                    implementation.getProgrammingLanguage(), implementation.getSdk().getName());
-            throw new RuntimeException("Unable to find executor plugin for programming language "
-                    + implementation.getProgrammingLanguage() + " and sdk name " + implementation.getSdk().getName());
+        if (Objects.isNull(selectedSdkConnector)) {
+            LOG.error("Unable to find connector plugin for sdk name {}.", implementation.getSdk().getName());
+            throw new RuntimeException("Unable to find connector plugin for sdk name " + implementation.getSdk().getName());
         }
 
         // create a object to store the execution results
-        ExecutionResult executionResult = new ExecutionResult(ExecutionResultStatus.INITIALIZED, "Passing execution to executor plugin.", qpu, null);
-        // TODO: store in repository
+        ExecutionResult executionResult =
+                executionResultService.save(new ExecutionResult(ExecutionResultStatus.INITIALIZED, "Passing execution to executor plugin.", qpu, null));
 
         // execute implementation
-        new Thread(() -> {
-            selectedExecutor.executeQuantumAlgorithmImplementation(implementation.getFileLocation(), qpu, inputParameters, executionResult);
-        }).start();
+        new Thread(() -> selectedSdkConnector.executeQuantumAlgorithmImplementation(implementation.getFileLocation(), qpu, inputParameters, executionResult)).start();
 
         return executionResult;
     }
@@ -116,32 +115,61 @@ public class NisqAnalyzerControlService {
         Map<Implementation, List<Qpu>> resultPairs = new HashMap<>();
 
         // check all implementation if they can handle the given set of input parameters
-        List<Implementation> implementations = implementationRepository.findByImplementedAlgorithm(algorithm);
+        List<Implementation> implementations = implementationService.findByImplementedAlgorithm(algorithm);
         LOG.debug("Found {} implementations for the algorithm.", implementations.size());
         List<Implementation> executableImplementations = implementations.stream()
                 .filter(implementation -> PrologQueryEngine.checkExecutability(implementation.getSelectionRule(), inputParameters))
                 .collect(Collectors.toList());
-        LOG.debug("{} implementations are executable for the given input parameters.", executableImplementations.size());
+        LOG.debug("{} implementations are executable for the given input parameters after applying the selection rules.", executableImplementations.size());
 
         // determine all suitable QPUs for the executable implementations
         for (Implementation execImplementation : executableImplementations) {
-            int requiredQubits = 10; //FIXME
-            int circuitDepth = 64;   //FIXME
-            try {
-                List<Long> suitableQpuIds = PrologQueryEngine.getSuitableQpus(execImplementation.getId(), requiredQubits, circuitDepth);
-                LOG.debug("Found {} suitable QPUs for implementation with Id: {}", suitableQpuIds.size(), execImplementation.getId());
+            LOG.debug("Searching for suitable Qpu for implementation {} which requires Sdk {}", execImplementation.getName(), execImplementation.getSdk());
 
-                List<Qpu> suitableQpus = suitableQpuIds.stream().map(qpuRepository::findById)
-                        .filter(Optional::isPresent)
-                        .map(Optional::get)
-                        .collect(Collectors.toList());
+            // get suited Sdk connector plugin for the Sdk of the implementation
+            SdkConnector selectedSdkConnector = connectorList.stream()
+                    .filter(executor -> executor.supportedSdk().equals(execImplementation.getSdk().getName()))
+                    .findFirst().orElse(null);
 
-                // add to result map if at least one suitable QPU is available
-                if (!suitableQpus.isEmpty()) {
-                    resultPairs.put(execImplementation, suitableQpus);
+            if (Objects.isNull(selectedSdkConnector)) {
+                LOG.warn("Unable to find Sdk connector for Sdk: {}. Skipping implementation for selection!", execImplementation.getSdk());
+                continue;
+            }
+
+            // retrieve all candidate Qpus which support the Sdk of the implementation
+            List<Qpu> qpuCandidates = qpuService.findAll().stream()
+                    .filter(qpu -> qpu.getSupportedSdks().contains(execImplementation.getSdk()))
+                    .collect(Collectors.toList());
+
+            List<Qpu> suitableQpus = new ArrayList<>();
+            for (Qpu qpu : qpuCandidates) {
+                LOG.debug("Checking if qpu {} is suitable for implementation {}.", qpu.getName(), execImplementation.getName());
+
+                // analyze the quantum circuit by utilizing the capabilities of the suited plugin and retrieve important circuit properties
+                CircuitInformation circuitInformation = selectedSdkConnector.getCircuitProperties(execImplementation.getFileLocation(), qpu, inputParameters);
+
+                // skip qpu if the number of required qubits is greater than the provided
+                if (circuitInformation.getCircuitWidth() > qpu.getQubitCount()) {
+                    LOG.debug("Required qubit numer ({}) is greater than provided number ({}). Skipping Qpu.",
+                            circuitInformation.getCircuitWidth(), qpu.getQubitCount());
+                    continue;
                 }
-            } catch (IOException e) {
-                LOG.error("IOException while evaluating suitable QPUs: {}", e.getMessage());
+
+                // skip qpu if the maximum circuit depth is greater than the required circuit depth
+                double maxCircuitDepth = Math.floor(qpu.getT1() / qpu.getMaxGateTime());
+                if (circuitInformation.getCircuitDepth() > maxCircuitDepth) {
+                    LOG.debug("Required circuit depth ({}) is greater than estimated maximum circuit depth ({}). Skipping Qpu.",
+                            circuitInformation.getCircuitDepth(), maxCircuitDepth);
+                    continue;
+                }
+
+                // qpu is suited candidate to execute the implementation
+                suitableQpus.add(qpu);
+            }
+
+            // add to result map if at least one suitable QPU is available
+            if (!suitableQpus.isEmpty()) {
+                resultPairs.put(execImplementation, suitableQpus);
             }
         }
 
@@ -158,7 +186,7 @@ public class NisqAnalyzerControlService {
         // add parameters from the algorithm
         Set<Parameter> requiredParameters = new HashSet<>(algorithm.getInputParameters());
 
-        List<Implementation> implementations = implementationRepository.findByImplementedAlgorithm(algorithm);
+        List<Implementation> implementations = implementationService.findByImplementedAlgorithm(algorithm);
         LOG.debug("Retrieving required selection parameters based on {} corresponding implementations.", implementations.size());
         for (Implementation impl : implementations) {
             // add parameters from the implementation

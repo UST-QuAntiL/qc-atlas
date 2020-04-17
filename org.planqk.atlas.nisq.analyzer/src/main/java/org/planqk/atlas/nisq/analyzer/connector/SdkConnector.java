@@ -17,21 +17,18 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.planqk.atlas.nisq.analyzer.execution;
+package org.planqk.atlas.nisq.analyzer.connector;
 
 import java.net.URL;
-import java.util.List;
 import java.util.Map;
 
 import org.planqk.atlas.core.model.ExecutionResult;
-import org.planqk.atlas.core.model.ProgrammingLanguage;
 import org.planqk.atlas.core.model.Qpu;
 
 /**
- * Interface for all plug-ins that can execute quantum algorithms defined with a certain programming language and using
- * certain SDKs.
+ * Interface for the interaction with a certain SDK.
  */
-public interface IExecutor {
+public interface SdkConnector {
 
     /**
      * Execute the given quantum algorithm implementation with the given input parameters.
@@ -46,16 +43,21 @@ public interface IExecutor {
     void executeQuantumAlgorithmImplementation(URL algorithmImplementationURL, Qpu qpu, Map<String, String> parameters, ExecutionResult executionResult);
 
     /**
-     * Returns a list of Sdk names that are supported by the executor
+     * Analyse the quantum algorithm implementation located at the given URL after transpiling it for the given QPU and
+     * with the given input parameters.
      *
-     * @return the list of names of supported SDK
+     * @param algorithmImplementationURL the URL to the file containing the quantum algorithm implementation that should
+     *                                   be analyzed
+     * @param qpu                        the QPU to analyze the implementation for
+     * @param parameters                 he input parameters for the quantum algorithm implementation
+     * @return the object containing all analysed properties of the quantum circuit
      */
-    List<String> supportedSdks();
+    CircuitInformation getCircuitProperties(URL algorithmImplementationURL, Qpu qpu, Map<String, String> parameters);
 
     /**
-     * Returns a list of programming languages that are supported by the executor
+     * Returns the name of the Sdk that is supported by the connector
      *
-     * @return the list of supported programming languages
+     * @return the name of the supported SDK
      */
-    List<ProgrammingLanguage> supportedProgrammingLanguages();
+    String supportedSdk();
 }

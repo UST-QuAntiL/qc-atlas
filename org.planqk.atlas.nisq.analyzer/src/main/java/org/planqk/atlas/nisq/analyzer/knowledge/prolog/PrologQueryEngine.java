@@ -19,9 +19,6 @@
 
 package org.planqk.atlas.nisq.analyzer.knowledge.prolog;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import org.jpl7.PrologException;
@@ -30,10 +27,6 @@ import org.jpl7.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
-import static org.planqk.atlas.nisq.analyzer.knowledge.prolog.PrologKnowledgeBaseHandler.activatePrologFile;
-import static org.planqk.atlas.nisq.analyzer.knowledge.prolog.PrologKnowledgeBaseHandler.doesPrologFileExist;
-import static org.planqk.atlas.nisq.analyzer.knowledge.prolog.PrologKnowledgeBaseHandler.persistPrologFile;
 
 /**
  * Class to execute different kinds of required prolog queries.
@@ -117,30 +110,5 @@ public class PrologQueryEngine {
         boolean evaluationResult = hasSolution(query);
         LOG.debug("Evaluated selection rule {} with result: {}", query, evaluationResult);
         return evaluationResult;
-    }
-
-    /**
-     * Check the prolog knowledge base for QPUs that can handle the given implementation and return them
-     *
-     * @param implementationId the id of the implementation for which
-     * @param requiredQubits   the number of qubits that are required for the execution
-     * @param circuitDepth     the depth of the circuit representation of the implementation
-     * @return a list with an Id for each QPU that can execute the given implementation
-     * @throws IOException is thrown if the required prolog files can not be created
-     */
-    public static List<Long> getSuitableQpus(Long implementationId, int requiredQubits, int circuitDepth) throws IOException {
-        // check if file with required rule exists and create otherwise
-        if (!doesPrologFileExist(Constants.QPU_RULE_NAME)) {
-            persistPrologFile(Constants.QPU_RULE_CONTENT, Constants.QPU_RULE_NAME);
-        }
-        activatePrologFile(Constants.QPU_RULE_NAME);
-
-        List<Long> suitableQPUs = new ArrayList<>();
-
-        // TODO: perform query and add results to the list
-        String query = "executableOnQpu(" + implementationId + "," + "TODO" + ")";
-        Map<String, Term>[] solutions = getSolutions(query);
-
-        return suitableQPUs;
     }
 }
