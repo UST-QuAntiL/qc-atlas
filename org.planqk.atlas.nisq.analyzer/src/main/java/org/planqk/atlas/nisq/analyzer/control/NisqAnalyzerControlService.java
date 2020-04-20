@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -114,8 +115,6 @@ public class NisqAnalyzerControlService {
         LOG.debug("Performing implementation and QPU selection for algorithm with Id: {}", algorithm.getId());
         Map<Implementation, List<Qpu>> resultPairs = new HashMap<>();
 
-        // TODO: get all impl, qpu pairs which are possible based on estimates; filtering with prolog
-
         // check all implementation if they can handle the given set of input parameters
         List<Implementation> implementations = implementationService.findByImplementedAlgorithm(algorithm);
         LOG.debug("Found {} implementations for the algorithm.", implementations.size());
@@ -126,7 +125,24 @@ public class NisqAnalyzerControlService {
 
         // determine all suitable QPUs for the executable implementations
         for (Implementation execImplementation : executableImplementations) {
-            LOG.debug("Searching for suitable Qpu for implementation {} which requires Sdk {}", execImplementation.getName(), execImplementation.getSdk());
+            LOG.debug("Searching for suitable Qpu for implementation {} (Id: {}) which requires Sdk {}", execImplementation.getName(), execImplementation.getId(), execImplementation.getSdk().getName());
+
+            // TODO: estimate number of required qubits and depth
+            int estimatedQubitCount = 0;
+            int estimatedCircuitDepth = 0;
+
+            // get all suitable QPUs for the implementation based on the width and depth estimates
+            List<Long> suitableQpuIds = PrologQueryEngine.getSuitableQpus(execImplementation.getId(), estimatedQubitCount, estimatedCircuitDepth);
+            if (suitableQpuIds.isEmpty()) {
+                LOG.debug("Prolog query returns no suited QPUs. Skipping implementation {} for the selection!", execImplementation.getName());
+                continue;
+            }
+
+            List<Qpu> qpuCandidates = suitableQpuIds.stream()
+                    .map(qpuService::findById)
+                    .filter(optional -> !optional.isPresent())
+                    .map(Optional::get).collect(Collectors.toList());
+            LOG.debug("Filtering based on estimates returned {} QPU candidates.", qpuCandidates.size());
 
             // get suited Sdk connector plugin for the Sdk of the implementation
             SdkConnector selectedSdkConnector = connectorList.stream()
@@ -135,13 +151,9 @@ public class NisqAnalyzerControlService {
 
             if (Objects.isNull(selectedSdkConnector)) {
                 LOG.warn("Unable to find Sdk connector for Sdk: {}. Skipping implementation for selection!", execImplementation.getSdk());
+                // TODO: set flag that the selection is based on estimates; add impl to result map
                 continue;
             }
-
-            // retrieve all candidate Qpus which support the Sdk of the implementation
-            List<Qpu> qpuCandidates = qpuService.findAll().stream()
-                    .filter(qpu -> qpu.getSupportedSdks().contains(execImplementation.getSdk()))
-                    .collect(Collectors.toList());
 
             List<Qpu> suitableQpus = new ArrayList<>();
             for (Qpu qpu : qpuCandidates) {

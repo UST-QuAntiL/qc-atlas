@@ -168,7 +168,7 @@ public class PrologFactUpdater {
     private static String createQpuFacts(Long qpuId, int qubitCount, List<String> supportedSdks, float t1Time, float maxGateTime) {
         // the following two lines are required to define the same predicate in multiple files
         String prologContent = ":- multifile providesQubits/2." + newline;
-        prologContent += ":- multifile usesSdk/2." + newline;
+        prologContent += ":- multifile usedSdk/2." + newline;
         prologContent += ":- multifile t1Time/2." + newline;
         prologContent += ":- multifile maxGateTime/2." + newline;
 

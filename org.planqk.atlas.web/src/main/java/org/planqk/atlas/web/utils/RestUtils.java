@@ -74,6 +74,7 @@ public class RestUtils {
      * otherwise
      */
     public static boolean parametersAvailable(Set<Parameter> requiredParameters, Map<String, String> providedParameters) {
+        LOG.debug("Checking if {} required parameters are available in the input map with {} provided parameters!", requiredParameters.size(), providedParameters.size());
         return requiredParameters.stream().allMatch(param -> providedParameters.containsKey(param.getName()));
     }
 

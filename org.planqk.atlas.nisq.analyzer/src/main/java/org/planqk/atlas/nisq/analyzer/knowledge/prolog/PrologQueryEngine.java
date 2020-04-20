@@ -19,7 +19,11 @@
 
 package org.planqk.atlas.nisq.analyzer.knowledge.prolog;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.jpl7.PrologException;
 import org.jpl7.Query;
@@ -27,6 +31,10 @@ import org.jpl7.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import static org.planqk.atlas.nisq.analyzer.knowledge.prolog.PrologKnowledgeBaseHandler.activatePrologFile;
+import static org.planqk.atlas.nisq.analyzer.knowledge.prolog.PrologKnowledgeBaseHandler.doesPrologFileExist;
+import static org.planqk.atlas.nisq.analyzer.knowledge.prolog.PrologKnowledgeBaseHandler.persistPrologFile;
 
 /**
  * Class to execute different kinds of required prolog queries.
@@ -93,7 +101,7 @@ public class PrologQueryEngine {
         String parameterPart = signatureParts[1];
 
         // replace the variables in the signature with the given parameters
-        for (String variable : PrologUtility.getParametersForPrologRule(selectionRule)) {
+        for (String variable : PrologUtility.getVariablesForPrologRule(selectionRule)) {
             if (!params.containsKey(variable)) {
                 LOG.error("Given parameter set to check executability does not contain required parameter: {}", variable);
                 return false;
@@ -104,11 +112,47 @@ public class PrologQueryEngine {
         }
 
         // add point to instruct prolog to evaluate the rule
-        String query = ruleName + parameterPart + ".";
+        String query = ruleName + "(" + parameterPart + ".";
 
         // evaluate the rule in the knowledge base
         boolean evaluationResult = hasSolution(query);
-        LOG.debug("Evaluated selection rule {} with result: {}", query, evaluationResult);
+        LOG.debug("Evaluated selection rule '{}' with result: {}", query, evaluationResult);
         return evaluationResult;
+    }
+
+    /**
+     * Check the prolog knowledge base for QPUs that can handle the given implementation and return them
+     *
+     * @param implementationId the id of the implementation for which
+     * @param requiredQubits   the number of qubits that are required for the execution
+     * @param circuitDepth     the depth of the circuit representation of the implementation
+     * @return a list with an Id for each QPU that can execute the given implementation
+     */
+    public static List<Long> getSuitableQpus(Long implementationId, int requiredQubits, int circuitDepth) {
+        // check if file with required rule exists and create otherwise
+        if (!doesPrologFileExist(Constants.QPU_RULE_NAME)) {
+            try {
+                persistPrologFile(Constants.QPU_RULE_CONTENT, Constants.QPU_RULE_NAME);
+            } catch (IOException e) {
+                LOG.error("Unable to persist prolog file with QPU selection rule. Unable to determine suitable QPUs!");
+                return new ArrayList<>();
+            }
+        }
+        activatePrologFile(Constants.QPU_RULE_NAME);
+
+        List<Long> suitableQPUs = new ArrayList<>();
+
+        // determine the suited QPUs for the implementation and the width/depth through the Prolog knowledge base
+        String query = "executableOnQpu(" + requiredQubits + "," + circuitDepth + "," + implementationId + "," + "Qpu" + ").";
+        LOG.debug("Executing the following query to determine the suitable QPUs: {}", query);
+        Map<String, Term>[] solutions = getSolutions(query);
+
+        // parse Ids of suitable QPUs from response
+        if (Objects.nonNull(solutions)) {
+            LOG.debug("Retrieved {} solutions for the query.", solutions.length);
+            // TODO: parse results
+        }
+
+        return suitableQPUs;
     }
 }

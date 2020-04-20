@@ -31,12 +31,14 @@ import javax.persistence.ManyToMany;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.springframework.lang.NonNull;
 
 /**
  * Entity representing a Sdk to define quantum algorithm {@link Implementation}s.
  */
 @Entity
+@ToString
 public class Sdk extends HasId {
 
     @Getter

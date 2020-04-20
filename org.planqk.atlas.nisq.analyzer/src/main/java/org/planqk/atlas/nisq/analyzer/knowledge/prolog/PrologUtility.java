@@ -48,9 +48,8 @@ public class PrologUtility {
         if (Objects.isNull(rule)) {
             return new HashSet<>();
         }
-        return getParametersForPrologRule(rule)
+        return getVariablesForPrologRule(rule)
                 .stream()
-                .filter(PrologUtility::isVariable)
                 .map(param -> new Parameter(param, DataType.String, null, "Parameter of selection rule."))
                 .collect(Collectors.toSet());
     }
@@ -62,30 +61,27 @@ public class PrologUtility {
      * @return <code>true</code> if the parameter is a variable, <code>false</code> otherwise
      */
     public static boolean isVariable(String parameter) {
-        String paramName = parameter.replaceAll("\\s", "");
-        LOG.debug("Checking if param {} is variable.", paramName);
+        LOG.debug("Checking if param {} is variable.", parameter);
 
         // variables have to start with an uppercase letter or an underscore
-        return Character.isUpperCase(paramName.charAt(0)) || paramName.startsWith("_");
+        return Character.isUpperCase(parameter.charAt(0)) || parameter.startsWith("_");
     }
 
     /**
-     * Get the set of parameters of the given rule
+     * Get the set of variables of the given rule
      *
      * @param rule the rule to retrieve the parameters from
      * @return the set of parameters
      */
-    public static Set<String> getParametersForPrologRule(String rule) {
+    public static Set<String> getVariablesForPrologRule(String rule) {
         LOG.debug("Getting parameters for rule: {}", rule);
 
         // get String part between the brackets
         String[] ruleParts = rule.split("\\(");
 
-        HashSet<String> parameterSet = new HashSet<>();
-
         // rule is invalid as it does not contain brackets for the parameters
         if (ruleParts.length < 2) {
-            return parameterSet;
+            return new HashSet<>();
         }
 
         // get the set of parameters
@@ -93,7 +89,10 @@ public class PrologUtility {
         String[] params = parametersPart.split(",");
         LOG.debug("Rule contains {} parameters.", params.length);
 
-        return new HashSet<>(Arrays.asList(params));
+        return Arrays.stream(params)
+                .map(parameter -> parameter.replaceAll("\\s", ""))
+                .filter(PrologUtility::isVariable)
+                .collect(Collectors.toSet());
     }
 
     /**

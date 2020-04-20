@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 import org.planqk.atlas.core.events.EntityCreatedEvent;
 import org.planqk.atlas.core.model.Qpu;
 import org.planqk.atlas.core.model.Sdk;
+import org.planqk.atlas.nisq.analyzer.knowledge.prolog.PrologFactUpdater;
 
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
@@ -37,9 +38,8 @@ public class QpuEntityEventListener {
     @EventListener
     public void onQpuCreatedEvent(EntityCreatedEvent<Qpu> event) {
         Qpu qpu = event.getEntity();
-
         List<String> sdkNames = qpu.getSupportedSdks().stream().map(Sdk::getName).collect(Collectors.toList());
-        //PrologFactUpdater.handleQpuInsertion(qpu.getId(), qpu.getQubitCount(), sdkNames, qpu.getT1(), qpu.getMaxGateTime());
+        PrologFactUpdater.handleQpuInsertion(qpu.getId(), qpu.getQubitCount(), sdkNames, qpu.getT1(), qpu.getMaxGateTime());
     }
 
 //    @Async

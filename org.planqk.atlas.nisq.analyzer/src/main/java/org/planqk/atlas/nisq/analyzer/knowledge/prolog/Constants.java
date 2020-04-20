@@ -28,7 +28,7 @@ public class Constants {
 
     // basic rule to check the executability of an implementation on the available QPUs
     public static final String QPU_RULE_NAME = "executableOnQpuRule";
-    public static final String QPU_RULE_CONTENT = "executableOnQpu(RequiredQubits, CircuitDepth, Impl, Qpu) :- requiredSdk(Impl, ReqSdk), usedSdk(Qpu, ReqSdk), providesQubits(Qpu, ProvidedQubit), ProvidedQubit >= RequiredQubits, CircuitDepth =< t1(Qpu)/tg(Qpu).";
+    public static final String QPU_RULE_CONTENT = "executableOnQpu(RequiredQubits, CircuitDepth, Impl, Qpu) :- requiredSdk(Impl, ReqSdk), usedSdk(Qpu, ReqSdk), providesQubits(Qpu, ProvidedQubit), ProvidedQubit >= RequiredQubits, t1Time(Qpu,T1Time), maxGateTime(Qpu,GateTime), CircuitDepth =< T1Time/GateTime.";
 
     // path to store the files for the local knowledge base
     public static final String basePath = System.getProperty("java.io.tmpdir") + File.separator + "quality";
