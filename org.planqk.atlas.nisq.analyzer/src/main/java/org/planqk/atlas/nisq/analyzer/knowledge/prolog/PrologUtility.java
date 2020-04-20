@@ -21,6 +21,7 @@ package org.planqk.atlas.nisq.analyzer.knowledge.prolog;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -44,6 +45,9 @@ public class PrologUtility {
      * @return the set of required parameters to evaluate the rule
      */
     public static Set<Parameter> getParametersForRule(String rule) {
+        if (Objects.isNull(rule)) {
+            return new HashSet<>();
+        }
         return getParametersForPrologRule(rule)
                 .stream()
                 .filter(PrologUtility::isVariable)

@@ -19,9 +19,11 @@
 
 package org.planqk.atlas.core.services;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.planqk.atlas.core.model.ExecutionResult;
+import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.repository.ExecutionResultRepository;
 
 import org.springframework.stereotype.Repository;
@@ -43,5 +45,15 @@ public class ExecutionResultServiceImpl implements ExecutionResultService {
     @Override
     public Optional<ExecutionResult> findById(Long id) {
         return executionResultRepository.findById(id);
+    }
+
+    @Override
+    public List<ExecutionResult> findByImplementation(Implementation implementation) {
+        return executionResultRepository.findByExecutedImplementation(implementation);
+    }
+
+    @Override
+    public List<ExecutionResult> findAll() {
+        return executionResultRepository.findAll();
     }
 }

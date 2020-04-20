@@ -31,6 +31,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -49,6 +50,14 @@ public class Implementation extends AlgorOrImpl {
     @Getter
     @Setter
     private String selectionRule;
+
+    @Getter
+    @Setter
+    private String widthRule;
+
+    @Getter
+    @Setter
+    private String depthRule;
 
     @Getter
     @Setter
@@ -72,6 +81,10 @@ public class Implementation extends AlgorOrImpl {
     @Setter
     private List<Tag> tags;
 
+    @Setter
+    @OneToMany(cascade = CascadeType.PERSIST)
+    private List<ExecutionResult> executionResults;
+
     public Implementation() {
         super();
     }
@@ -82,5 +95,13 @@ public class Implementation extends AlgorOrImpl {
             return new ArrayList<>();
         }
         return tags;
+    }
+
+    @NonNull
+    public List<ExecutionResult> getExecutionResults() {
+        if (Objects.isNull(executionResults)) {
+            return new ArrayList<>();
+        }
+        return executionResults;
     }
 }

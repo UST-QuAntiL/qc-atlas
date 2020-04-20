@@ -34,6 +34,7 @@ import org.planqk.atlas.core.services.QpuService;
 import org.planqk.atlas.core.services.SdkService;
 import org.planqk.atlas.nisq.analyzer.control.NisqAnalyzerControlService;
 import org.planqk.atlas.web.Constants;
+import org.planqk.atlas.web.dtos.entities.ExecutionResultDto;
 import org.planqk.atlas.web.dtos.entities.ImplementationDto;
 import org.planqk.atlas.web.dtos.entities.ImplementationListDto;
 import org.planqk.atlas.web.dtos.entities.ParameterDto;
@@ -152,7 +153,7 @@ public class ImplementationController {
         // store and return implementation
         Implementation implementation =
                 implementationService.save(ImplementationDto.Converter.convert(impl, sdkOptional.get(), algorithmOptional.get()));
-        return new ResponseEntity<>(createImplementationDto(algoId, implementation), HttpStatus.OK);
+        return new ResponseEntity<>(createImplementationDto(algoId, implementation), HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}/" + Constants.INPUT_PARAMS)
@@ -196,8 +197,8 @@ public class ImplementationController {
     }
 
     @PostMapping("/{implId}/" + Constants.EXECUTION)
-    public HttpEntity executeImplementation(@PathVariable Long algoId, @PathVariable Long implId,
-                                            @RequestBody ExecutionRequest executionRequest) {
+    public HttpEntity<ExecutionResultDto> executeImplementation(@PathVariable Long algoId, @PathVariable Long implId,
+                                                                @RequestBody ExecutionRequest executionRequest) {
         LOG.debug("Post to execute implementation with Id: {}", implId);
 
         Optional<Implementation> implementationOptional = implementationService.findById(implId);
@@ -206,20 +207,20 @@ public class ImplementationController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        Optional<Qpu> qpuOptional = qpuService.findById(implId);
+        Optional<Qpu> qpuOptional = qpuService.findById(executionRequest.getQpuId());
         if (!qpuOptional.isPresent()) {
-            LOG.error("Unable to retrieve qpu with id {} form the repository.", implId);
+            LOG.error("Unable to retrieve qpu with id {} form the repository.", executionRequest.getQpuId());
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         try {
             ExecutionResult result = controlService.executeQuantumAlgorithmImplementation(implementationOptional.get(), qpuOptional.get(), executionRequest.getParameters());
-            // TODO: return dto for long running task, adapt status code, add method to poll for results
-            ExecutionRequest dto = new ExecutionRequest();
-            return new ResponseEntity<>(dto, HttpStatus.OK);
+            ExecutionResultDto dto = ExecutionResultDto.Converter.convert(result);
+            dto.add(linkTo(methodOn(ExecutionResultController.class).getExecutionResult(algoId, implId, result.getId())).withSelfRel());
+            return new ResponseEntity<>(dto, HttpStatus.ACCEPTED);
         } catch (RuntimeException e) {
             LOG.error("Error while executing implementation: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error Message: " + e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -234,6 +235,7 @@ public class ImplementationController {
         ImplementationDto dto = ImplementationDto.Converter.convert(implementation);
         dto.add(linkTo(methodOn(ImplementationController.class).getImplementation(algoId, implementation.getId())).withSelfRel());
         dto.add(linkTo(methodOn(AlgorithmController.class).getAlgorithm(algoId)).withRel(Constants.ALGORITHM_LINK));
+        dto.add(linkTo(methodOn(ExecutionResultController.class).getExecutionResults(algoId, implementation.getId())).withRel(Constants.RESULTS_LINK));
 
         Sdk usedSdk = implementation.getSdk();
         if (Objects.nonNull(usedSdk)) {

@@ -17,22 +17,24 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.planqk.atlas.core.repository;
+package org.planqk.atlas.web.dtos.entities;
 
+import java.util.Arrays;
 import java.util.List;
 
-import org.planqk.atlas.core.model.ExecutionResult;
-import org.planqk.atlas.core.model.Implementation;
-
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import lombok.Getter;
+import org.assertj.core.util.Lists;
+import org.springframework.hateoas.RepresentationModel;
 
 /**
- * Repository to access {@link org.planqk.atlas.core.model.ExecutionResult}s available in the data base with different
- * queries.
+ * Data transfer object for multiple ExecutionResults ({@link org.planqk.atlas.core.model.ExecutionResult}).
  */
-@RepositoryRestResource(exported = false)
-public interface ExecutionResultRepository extends JpaRepository<ExecutionResult, Long> {
+public class ExecutionResultListDto extends RepresentationModel<ExecutionResultListDto> {
 
-    List<ExecutionResult> findByExecutedImplementation(Implementation implementation);
+    @Getter
+    private final List<ExecutionResultDto> executionResultDtos = Lists.newArrayList();
+
+    public void add(final ExecutionResultDto... executionResults) {
+        this.executionResultDtos.addAll(Arrays.asList(executionResults));
+    }
 }

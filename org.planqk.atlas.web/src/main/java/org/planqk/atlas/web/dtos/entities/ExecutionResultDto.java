@@ -17,23 +17,23 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.planqk.atlas.core.model;
+package org.planqk.atlas.web.dtos.entities;
 
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
+import org.planqk.atlas.core.model.ExecutionResult;
+import org.planqk.atlas.core.model.ExecutionResultStatus;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.hateoas.RepresentationModel;
 
 /**
- * Entity representing the result of an execution of a quantum algorithm implementation on a certain QPU.
+ * Data transfer object for ExecutionResults ({@link org.planqk.atlas.core.model.ExecutionResult}).
  */
-@Entity
-@AllArgsConstructor
-@NoArgsConstructor
-public class ExecutionResult extends HasId {
+public class ExecutionResultDto extends RepresentationModel<ExecutionResultDto> {
+
+    @Getter
+    @Setter
+    private Long id;
 
     @Getter
     @Setter
@@ -45,17 +45,19 @@ public class ExecutionResult extends HasId {
 
     @Getter
     @Setter
-    @ManyToOne
-    private Qpu executingQpu;
-
-    @Getter
-    @Setter
     private String result;
 
-    @Getter
-    @Setter
-    @ManyToOne
-    private Implementation executedImplementation;
-
     // TODO: add input parameters that were used for the execution
+
+    public static final class Converter {
+
+        public static ExecutionResultDto convert(final ExecutionResult object) {
+            final ExecutionResultDto dto = new ExecutionResultDto();
+            dto.setId(object.getId());
+            dto.setStatus(object.getStatus());
+            dto.setStatusCode(object.getStatusCode());
+            dto.setResult(object.getResult());
+            return dto;
+        }
+    }
 }

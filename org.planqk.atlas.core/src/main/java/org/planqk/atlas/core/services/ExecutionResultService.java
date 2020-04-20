@@ -19,13 +19,19 @@
 
 package org.planqk.atlas.core.services;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.planqk.atlas.core.model.ExecutionResult;
+import org.planqk.atlas.core.model.Implementation;
 
 public interface ExecutionResultService {
 
     ExecutionResult save(ExecutionResult executionResult);
 
     Optional<ExecutionResult> findById(Long id);
+
+    List<ExecutionResult> findByImplementation(Implementation implementation);
+
+    List<ExecutionResult> findAll();
 }

@@ -93,7 +93,7 @@ public class NisqAnalyzerControlService {
 
         // create a object to store the execution results
         ExecutionResult executionResult =
-                executionResultService.save(new ExecutionResult(ExecutionResultStatus.INITIALIZED, "Passing execution to executor plugin.", qpu, null));
+                executionResultService.save(new ExecutionResult(ExecutionResultStatus.INITIALIZED, "Passing execution to executor plugin.", qpu, null, implementation));
 
         // execute implementation
         new Thread(() -> selectedSdkConnector.executeQuantumAlgorithmImplementation(implementation.getFileLocation(), qpu, inputParameters, executionResult)).start();
@@ -113,6 +113,8 @@ public class NisqAnalyzerControlService {
     public Map<Implementation, List<Qpu>> performSelection(Algorithm algorithm, Map<String, String> inputParameters) {
         LOG.debug("Performing implementation and QPU selection for algorithm with Id: {}", algorithm.getId());
         Map<Implementation, List<Qpu>> resultPairs = new HashMap<>();
+
+        // TODO: get all impl, qpu pairs which are possible based on estimates; filtering with prolog
 
         // check all implementation if they can handle the given set of input parameters
         List<Implementation> implementations = implementationService.findByImplementedAlgorithm(algorithm);
@@ -192,8 +194,10 @@ public class NisqAnalyzerControlService {
             // add parameters from the implementation
             requiredParameters.addAll(impl.getInputParameters());
 
-            // add parameters from selection rules
+            // add parameters from rules
             requiredParameters.addAll(PrologUtility.getParametersForRule(impl.getSelectionRule()));
+            requiredParameters.addAll(PrologUtility.getParametersForRule(impl.getWidthRule()));
+            requiredParameters.addAll(PrologUtility.getParametersForRule(impl.getDepthRule()));
         }
 
         return requiredParameters;
