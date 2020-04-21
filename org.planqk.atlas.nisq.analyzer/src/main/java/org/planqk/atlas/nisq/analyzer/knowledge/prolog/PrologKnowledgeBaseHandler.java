@@ -25,6 +25,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 
+import org.jpl7.PrologException;
+import org.jpl7.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -36,10 +38,6 @@ import org.springframework.stereotype.Service;
 public class PrologKnowledgeBaseHandler {
 
     final private static Logger LOG = LoggerFactory.getLogger(PrologKnowledgeBaseHandler.class);
-
-    public PrologKnowledgeBaseHandler() {
-        LOG.debug("PrologKnowledgeBaseHandler created to handle prolog files located at: {}", Constants.basePath);
-    }
 
     /**
      * Activate the prolog facts and rules contained in the given file
@@ -53,7 +51,7 @@ public class PrologKnowledgeBaseHandler {
         activateQuery = activateQuery.replace("\\", "/");
 
         // deactivate file in knowledge base
-        LOG.debug("Activation of file {} in knowledge base returned: {}", fileName, PrologQueryEngine.hasSolution(activateQuery));
+        LOG.debug("Activation of file {} in knowledge base returned: {}", fileName, hasSolution(activateQuery));
     }
 
     /**
@@ -65,13 +63,13 @@ public class PrologKnowledgeBaseHandler {
      */
     public void persistPrologFile(String content, String fileName) throws IOException {
         File file = new File(Constants.basePath + File.separator + fileName + ".pl");
+        file.deleteOnExit();
         try {
             File dir = new File(Constants.basePath);
             if (!dir.exists()) dir.mkdirs();
             Writer writer = new BufferedWriter(new FileWriter(file));
             writer.write(content);
             writer.close();
-            // TODO: delete file on exit
         } catch (IOException e) {
             throw new IOException("Could not write facts to prolog file: " + e.getMessage(), e);
         }
@@ -89,7 +87,7 @@ public class PrologKnowledgeBaseHandler {
         deactivateQuery = deactivateQuery.replace("\\", "/");
 
         // deactivate file in knowledge base
-        LOG.debug("Deactivation of file {} in knowledge base returned: {}", fileName, PrologQueryEngine.hasSolution(deactivateQuery));
+        LOG.debug("Deactivation of file {} in knowledge base returned: {}", fileName, hasSolution(deactivateQuery));
 
         // delete the file
         File file = new File(Constants.basePath + File.separator + fileName + ".pl");
@@ -105,5 +103,21 @@ public class PrologKnowledgeBaseHandler {
     public boolean doesPrologFileExist(String fileName) {
         File ruleFile = new File(Constants.basePath + File.separator + fileName + ".pl");
         return ruleFile.exists();
+    }
+
+    /**
+     * Execute a prolog query and return the evaluation result as boolean
+     *
+     * @param queryContent the content of the query
+     * @return <code>true</code> if there is a solution for the query, <code>false</code> otherwise
+     */
+    public boolean hasSolution(String queryContent) {
+        LOG.debug("Checking if solution for query with the following content exists: {}", queryContent);
+        try {
+            return Query.hasSolution(queryContent);
+        } catch (PrologException e) {
+            LOG.warn("Prolog error while executing query. Procedure may not exist in knowledge base...");
+            return false;
+        }
     }
 }

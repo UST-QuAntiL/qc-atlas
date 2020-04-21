@@ -59,6 +59,14 @@ public class ImplementationDto extends RepresentationModel<ImplementationDto> {
     @Setter
     private String selectionRule;
 
+    @Getter
+    @Setter
+    private String widthRule;
+
+    @Getter
+    @Setter
+    private String depthRule;
+
     @Setter
     private List<Tag> tags;
 
@@ -115,6 +123,8 @@ public class ImplementationDto extends RepresentationModel<ImplementationDto> {
             dto.setName(object.getName());
             dto.setProgrammingLanguage(object.getProgrammingLanguage());
             dto.setSelectionRule(object.getSelectionRule());
+            dto.setWidthRule(object.getWidthRule());
+            dto.setDepthRule(object.getDepthRule());
             dto.setFileLocation(object.getFileLocation());
             dto.setSdk(object.getSdk().getName());
             dto.setContent(object.getSdk().getName());
@@ -138,6 +148,8 @@ public class ImplementationDto extends RepresentationModel<ImplementationDto> {
             implementation.setName(object.getName());
             implementation.setProgrammingLanguage(object.getProgrammingLanguage());
             implementation.setSelectionRule(object.getSelectionRule());
+            implementation.setWidthRule(object.getWidthRule());
+            implementation.setDepthRule(object.getDepthRule());
             implementation.setFileLocation(object.getFileLocation());
             implementation.setSdk(sdk);
             implementation.setContent(object.getContent());

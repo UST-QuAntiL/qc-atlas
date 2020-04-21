@@ -49,7 +49,7 @@ public class QiskitSdkConnector implements SdkConnector {
         LOG.debug("Analysing quantum algorithm implementation with Qiskit Sdk connector plugin!");
 
         // TODO: call Qiskit service to analyse given circuit
-        return new CircuitInformation(10, 60);
+        return new CircuitInformation(1, 1);
     }
 
     @Override

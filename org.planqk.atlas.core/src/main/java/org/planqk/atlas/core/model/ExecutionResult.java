@@ -19,6 +19,9 @@
 
 package org.planqk.atlas.core.model;
 
+import java.util.Map;
+
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 
@@ -57,5 +60,8 @@ public class ExecutionResult extends HasId {
     @ManyToOne
     private Implementation executedImplementation;
 
-    // TODO: add input parameters that were used for the execution
+    @Getter
+    @Setter
+    @ElementCollection
+    private Map<String, String> inputParameters;
 }

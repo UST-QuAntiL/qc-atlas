@@ -25,11 +25,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import org.jpl7.Atom;
 import org.jpl7.PrologException;
 import org.jpl7.Query;
 import org.jpl7.Term;
-import org.jpl7.Variable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -68,19 +66,27 @@ public class PrologQueryEngine {
     }
 
     /**
-     * Execute a prolog query and return the evaluation result as boolean
+     * Evaluate the given prolog width rule with the given set of parameters to estimate the circuit width
      *
-     * @param queryContent the content of the query
-     * @return <code>true</code> if there is a solution for the query, <code>false</code> otherwise
+     * @param widthRule the prolog width rule to evaluate to get the estimated circuit width
+     * @param params    the set of parameters to use for the evaluation
+     * @return the estimated circuit width, or zero if an error occurs
      */
-    protected static boolean hasSolution(String queryContent) {
-        LOG.debug("Checking if solution for query with the following content exists: {}", queryContent);
-        try {
-            return Query.hasSolution(queryContent);
-        } catch (PrologException e) {
-            LOG.warn("Prolog error while executing query. Procedure may not exist in knowledge base...");
-            return false;
-        }
+    public int checkWidth(String widthRule, Map<String, String> params) {
+        // TODO
+        return 0;
+    }
+
+    /**
+     * Evaluate the given prolog depth rule with the given set of parameters to estimate the circuit depth
+     *
+     * @param depthRule the prolog depth rule to evaluate to get the estimated circuit depth
+     * @param params    the set of parameters to use for the evaluation
+     * @return the estimated circuit depth, or zero if an error occurs
+     */
+    public int checkDepth(String depthRule, Map<String, String> params) {
+        // TODO
+        return 0;
     }
 
     /**
@@ -90,7 +96,7 @@ public class PrologQueryEngine {
      * @param params        the set of parameters to use for the evaluation
      * @return the evaluation result of the prolog rule
      */
-    public static boolean checkExecutability(String selectionRule, Map<String, String> params) {
+    public boolean checkExecutability(String selectionRule, Map<String, String> params) {
         // retrieve signature of the defined selection rule
         String signature = PrologUtility.getSignatureOfRule(selectionRule);
         String[] signatureParts = signature.split("\\(");
@@ -119,7 +125,7 @@ public class PrologQueryEngine {
         String query = ruleName + "(" + parameterPart + ".";
 
         // evaluate the rule in the knowledge base
-        boolean evaluationResult = hasSolution(query);
+        boolean evaluationResult = prologKnowledgeBaseHandler.hasSolution(query);
         LOG.debug("Evaluated selection rule '{}' with result: {}", query, evaluationResult);
         return evaluationResult;
     }
@@ -147,17 +153,20 @@ public class PrologQueryEngine {
         List<Long> suitableQPUs = new ArrayList<>();
 
         // determine the suited QPUs for the implementation and the width/depth through the Prolog knowledge base
-        String query = "executableOnQpu(" + requiredQubits + "," + circuitDepth + "," + implementationId + "," + "Qpu" + ").";
+        String qpuVariable = "Qpu";
+        String query = "executableOnQpu(" + requiredQubits + "," + circuitDepth + "," + implementationId + "," + qpuVariable + ").";
         LOG.debug("Executing the following query to determine the suitable QPUs: {}", query);
-        for (Map m : new Query("executableOnQpu", new Term[] {new Atom(Integer.toString(requiredQubits)), new Atom(Integer.toString(circuitDepth)), new Atom(Long.toString(implementationId)), new Variable("Q")})) {
-            System.out.println(m.get("Q")); // TODO
-        }
         Map<String, Term>[] solutions = getSolutions(query);
 
         // parse Ids of suitable QPUs from response
         if (Objects.nonNull(solutions)) {
-            LOG.debug("Retrieved {} solutions for the query.", solutions.length);
-            // TODO: parse results
+            LOG.debug("Retrieved {} possible qpu candidates for the query.", solutions.length);
+            for (Map<String, Term> solution : solutions) {
+                if (Objects.nonNull(solution.get(qpuVariable))) {
+                    LOG.debug("Found solution: {}", solution.get(qpuVariable));
+                    suitableQPUs.add(solution.get(qpuVariable).longValue());
+                }
+            }
         }
 
         return suitableQPUs;

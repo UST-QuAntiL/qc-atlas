@@ -21,6 +21,7 @@ package org.planqk.atlas.nisq.analyzer.knowledge.prolog;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,12 +49,14 @@ public class PrologFactUpdater {
      * @param id                the id of the implementation that is updated in the repository
      * @param usedSdk           the used SDK in the updated implementation
      * @param implementedAlgoId the id of the implemented algorithm
-     * @param selectionRule     the selection rule defined in the updated implementation
+     * @param selectionRule     the selection rule defined in the inserted implementation
+     * @param widthRule         the width rule defined in the inserted implementation
+     * @param depthRule         the depth rule defined in the inserted implementation
      */
-    public void handleImplementationInsertion(Long id, String usedSdk, Long implementedAlgoId, String selectionRule) {
+    public void handleImplementationInsertion(Long id, String usedSdk, Long implementedAlgoId, String selectionRule, String widthRule, String depthRule) {
         LOG.debug("Handling insertion of implementation with Id {} in Prolog knowledge base.", id);
 
-        String prologContent = createImplementationFacts(id, usedSdk.toLowerCase(), implementedAlgoId, selectionRule);
+        String prologContent = createImplementationFacts(id, usedSdk.toLowerCase(), implementedAlgoId, selectionRule, widthRule, depthRule);
         try {
             prologKnowledgeBaseHandler.persistPrologFile(prologContent, id.toString());
             prologKnowledgeBaseHandler.activatePrologFile(id.toString());
@@ -91,15 +94,17 @@ public class PrologFactUpdater {
      * @param usedSdk           the used SDK in the updated implementation
      * @param implementedAlgoId the id of the implemented algorithm
      * @param selectionRule     the selection rule defined in the updated implementation
+     * @param widthRule         the width rule defined in the updated implementation
+     * @param depthRule         the depth rule defined in the updated implementation
      */
-    public void handleImplementationUpdate(Long id, String usedSdk, Long implementedAlgoId, String selectionRule) {
+    public void handleImplementationUpdate(Long id, String usedSdk, Long implementedAlgoId, String selectionRule, String widthRule, String depthRule) {
         LOG.debug("Handling update of implementation with Id {} in Prolog knowledge base.", id);
 
         // deactivate and delete the Prolog file with the old facts
         prologKnowledgeBaseHandler.deletePrologFile(id.toString());
 
         // create and activate the Prolog file with the new facts
-        String prologContent = createImplementationFacts(id, usedSdk.toLowerCase(), implementedAlgoId, selectionRule);
+        String prologContent = createImplementationFacts(id, usedSdk.toLowerCase(), implementedAlgoId, selectionRule, widthRule, depthRule);
         try {
             prologKnowledgeBaseHandler.persistPrologFile(prologContent, id.toString());
             prologKnowledgeBaseHandler.activatePrologFile(id.toString());
@@ -156,15 +161,27 @@ public class PrologFactUpdater {
     /**
      * Create a string containing all required prolog facts for an implementation.
      */
-    private String createImplementationFacts(Long implId, String usedSdk, Long implementedAlgoId, String selectionRule) {
+    private String createImplementationFacts(Long implId, String usedSdk, Long implementedAlgoId, String selectionRule, String widthRule, String depthRule) {
         // the following three lines are required to define the same predicate in multiple files
         String prologContent = ":- multifile implements/2." + newline;
         prologContent += ":- multifile requiredSdk/2." + newline;
         prologContent += ":- multifile " + getNameOfPredicate(selectionRule) + "/" + PrologUtility.getNumberOfParameters(selectionRule) + "." + newline;
+        if (Objects.nonNull(widthRule)) {
+            prologContent += ":- multifile " + getNameOfPredicate(widthRule) + "/" + PrologUtility.getNumberOfParameters(widthRule) + "." + newline;
+        }
+        if (Objects.nonNull(depthRule)) {
+            prologContent += ":- multifile " + getNameOfPredicate(depthRule) + "/" + PrologUtility.getNumberOfParameters(depthRule) + "." + newline;
+        }
 
         prologContent += createImplementsFact(implId, implementedAlgoId) + newline;
         prologContent += createRequiredSdkFact(implId, usedSdk) + newline;
         prologContent += selectionRule + newline;
+        if (Objects.nonNull(widthRule)) {
+            prologContent += widthRule + newline;
+        }
+        if (Objects.nonNull(depthRule)) {
+            prologContent += depthRule + newline;
+        }
         return prologContent;
     }
 
@@ -195,7 +212,7 @@ public class PrologFactUpdater {
     private String createUsesSdkFacts(Long qpuId, List<String> supportedSdks) {
         String prologContent = "";
         for (String supportedSdk : supportedSdks) {
-            prologContent += "usesSdk(" + qpuId + "," + supportedSdk.toLowerCase() + ")." + newline;
+            prologContent += "usedSdk(" + qpuId + "," + supportedSdk.toLowerCase() + ")." + newline;
         }
         return prologContent;
     }

@@ -19,6 +19,8 @@
 
 package org.planqk.atlas.web.dtos.entities;
 
+import java.util.Map;
+
 import org.planqk.atlas.core.model.ExecutionResult;
 import org.planqk.atlas.core.model.ExecutionResultStatus;
 
@@ -47,7 +49,9 @@ public class ExecutionResultDto extends RepresentationModel<ExecutionResultDto> 
     @Setter
     private String result;
 
-    // TODO: add input parameters that were used for the execution
+    @Getter
+    @Setter
+    private Map<String, String> inputParameters;
 
     public static final class Converter {
 
@@ -57,6 +61,7 @@ public class ExecutionResultDto extends RepresentationModel<ExecutionResultDto> 
             dto.setStatus(object.getStatus());
             dto.setStatusCode(object.getStatusCode());
             dto.setResult(object.getResult());
+            dto.setInputParameters(object.getInputParameters());
             return dto;
         }
     }

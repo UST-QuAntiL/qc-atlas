@@ -97,7 +97,7 @@ public class NisqAnalyzerControlService {
 
         // create a object to store the execution results
         ExecutionResult executionResult =
-                executionResultService.save(new ExecutionResult(ExecutionResultStatus.INITIALIZED, "Passing execution to executor plugin.", qpu, null, implementation));
+                executionResultService.save(new ExecutionResult(ExecutionResultStatus.INITIALIZED, "Passing execution to executor plugin.", qpu, null, implementation, inputParameters));
 
         // execute implementation
         new Thread(() -> selectedSdkConnector.executeQuantumAlgorithmImplementation(implementation.getFileLocation(), qpu, inputParameters, executionResult)).start();
@@ -122,7 +122,7 @@ public class NisqAnalyzerControlService {
         List<Implementation> implementations = implementationService.findByImplementedAlgorithm(algorithm);
         LOG.debug("Found {} implementations for the algorithm.", implementations.size());
         List<Implementation> executableImplementations = implementations.stream()
-                .filter(implementation -> PrologQueryEngine.checkExecutability(implementation.getSelectionRule(), inputParameters))
+                .filter(implementation -> prologQueryEngine.checkExecutability(implementation.getSelectionRule(), inputParameters))
                 .collect(Collectors.toList());
         LOG.debug("{} implementations are executable for the given input parameters after applying the selection rules.", executableImplementations.size());
 
@@ -130,9 +130,9 @@ public class NisqAnalyzerControlService {
         for (Implementation execImplementation : executableImplementations) {
             LOG.debug("Searching for suitable Qpu for implementation {} (Id: {}) which requires Sdk {}", execImplementation.getName(), execImplementation.getId(), execImplementation.getSdk().getName());
 
-            // TODO: estimate number of required qubits and depth
-            int estimatedQubitCount = 0;
-            int estimatedCircuitDepth = 0;
+            // estimate the number of required qubits and the circuit depth by using the corresponding rules if set
+            int estimatedQubitCount = Objects.isNull(execImplementation.getWidthRule()) ? 0 : prologQueryEngine.checkWidth(execImplementation.getWidthRule(), inputParameters);
+            int estimatedCircuitDepth = Objects.isNull(execImplementation.getDepthRule()) ? 0 : prologQueryEngine.checkDepth(execImplementation.getDepthRule(), inputParameters);
 
             // get all suitable QPUs for the implementation based on the width and depth estimates
             List<Long> suitableQpuIds = prologQueryEngine.getSuitableQpus(execImplementation.getId(), estimatedQubitCount, estimatedCircuitDepth);
@@ -143,9 +143,9 @@ public class NisqAnalyzerControlService {
 
             List<Qpu> qpuCandidates = suitableQpuIds.stream()
                     .map(qpuService::findById)
-                    .filter(optional -> !optional.isPresent())
+                    .filter(Optional::isPresent)
                     .map(Optional::get).collect(Collectors.toList());
-            LOG.debug("Filtering based on estimates returned {} QPU candidates.", qpuCandidates.size());
+            LOG.debug("Filtering based on estimates returned {} QPU candidate(s).", qpuCandidates.size());
 
             // get suited Sdk connector plugin for the Sdk of the implementation
             SdkConnector selectedSdkConnector = connectorList.stream()
@@ -153,21 +153,22 @@ public class NisqAnalyzerControlService {
                     .findFirst().orElse(null);
 
             if (Objects.isNull(selectedSdkConnector)) {
-                LOG.warn("Unable to find Sdk connector for Sdk: {}. Skipping implementation for selection!", execImplementation.getSdk());
-                // TODO: set flag that the selection is based on estimates; add impl to result map
+                LOG.warn("Unable to find Sdk connector for Sdk: {}. Adding implementation and possibly suited QPUs to the result based on the estimates!", execImplementation.getSdk());
+                // TODO: set flag that the selection is based on estimates
+                resultPairs.put(execImplementation, qpuCandidates);
                 continue;
             }
 
             List<Qpu> suitableQpus = new ArrayList<>();
             for (Qpu qpu : qpuCandidates) {
-                LOG.debug("Checking if qpu {} is suitable for implementation {}.", qpu.getName(), execImplementation.getName());
+                LOG.debug("Checking if QPU {} is suitable for implementation {}.", qpu.getName(), execImplementation.getName());
 
                 // analyze the quantum circuit by utilizing the capabilities of the suited plugin and retrieve important circuit properties
                 CircuitInformation circuitInformation = selectedSdkConnector.getCircuitProperties(execImplementation.getFileLocation(), qpu, inputParameters);
 
                 // skip qpu if the number of required qubits is greater than the provided
                 if (circuitInformation.getCircuitWidth() > qpu.getQubitCount()) {
-                    LOG.debug("Required qubit numer ({}) is greater than provided number ({}). Skipping Qpu.",
+                    LOG.debug("Required qubit number ({}) is greater than provided number ({}). Skipping Qpu.",
                             circuitInformation.getCircuitWidth(), qpu.getQubitCount());
                     continue;
                 }
