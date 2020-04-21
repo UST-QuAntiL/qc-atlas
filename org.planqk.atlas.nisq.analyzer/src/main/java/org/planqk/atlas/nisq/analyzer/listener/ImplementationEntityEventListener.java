@@ -30,12 +30,18 @@ import org.springframework.stereotype.Component;
 @Component
 public class ImplementationEntityEventListener {
 
+    private final PrologFactUpdater prologFactUpdater;
+
+    public ImplementationEntityEventListener(PrologFactUpdater prologFactUpdater) {
+        this.prologFactUpdater = prologFactUpdater;
+    }
+
     @Async
     @EventListener
     public void onImplementationCreatedEvent(EntityCreatedEvent<Implementation> event) {
         Implementation impl = event.getEntity();
 
-        PrologFactUpdater.handleImplementationInsertion(impl.getId(), impl.getSdk().getName(), impl.getImplementedAlgorithm().getId(), impl.getSelectionRule());
+        prologFactUpdater.handleImplementationInsertion(impl.getId(), impl.getSdk().getName(), impl.getImplementedAlgorithm().getId(), impl.getSelectionRule());
     }
 
 //    @Async

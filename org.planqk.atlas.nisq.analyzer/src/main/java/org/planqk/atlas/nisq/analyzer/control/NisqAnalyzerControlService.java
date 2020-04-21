@@ -63,11 +63,14 @@ public class NisqAnalyzerControlService {
 
     final private QpuService qpuService;
 
-    public NisqAnalyzerControlService(List<SdkConnector> connectorList, ImplementationService implementationService, ExecutionResultService executionResultService, QpuService qpuService) {
+    final private PrologQueryEngine prologQueryEngine;
+
+    public NisqAnalyzerControlService(List<SdkConnector> connectorList, ImplementationService implementationService, ExecutionResultService executionResultService, QpuService qpuService, PrologQueryEngine prologQueryEngine) {
         this.connectorList = connectorList;
         this.implementationService = implementationService;
         this.executionResultService = executionResultService;
         this.qpuService = qpuService;
+        this.prologQueryEngine = prologQueryEngine;
     }
 
     /**
@@ -132,7 +135,7 @@ public class NisqAnalyzerControlService {
             int estimatedCircuitDepth = 0;
 
             // get all suitable QPUs for the implementation based on the width and depth estimates
-            List<Long> suitableQpuIds = PrologQueryEngine.getSuitableQpus(execImplementation.getId(), estimatedQubitCount, estimatedCircuitDepth);
+            List<Long> suitableQpuIds = prologQueryEngine.getSuitableQpus(execImplementation.getId(), estimatedQubitCount, estimatedCircuitDepth);
             if (suitableQpuIds.isEmpty()) {
                 LOG.debug("Prolog query returns no suited QPUs. Skipping implementation {} for the selection!", execImplementation.getName());
                 continue;

@@ -34,12 +34,18 @@ import org.springframework.stereotype.Component;
 @Component
 public class QpuEntityEventListener {
 
+    private final PrologFactUpdater prologFactUpdater;
+
+    public QpuEntityEventListener(PrologFactUpdater prologFactUpdater) {
+        this.prologFactUpdater = prologFactUpdater;
+    }
+
     @Async
     @EventListener
     public void onQpuCreatedEvent(EntityCreatedEvent<Qpu> event) {
         Qpu qpu = event.getEntity();
         List<String> sdkNames = qpu.getSupportedSdks().stream().map(Sdk::getName).collect(Collectors.toList());
-        PrologFactUpdater.handleQpuInsertion(qpu.getId(), qpu.getQubitCount(), sdkNames, qpu.getT1(), qpu.getMaxGateTime());
+        prologFactUpdater.handleQpuInsertion(qpu.getId(), qpu.getQubitCount(), sdkNames, qpu.getT1(), qpu.getMaxGateTime());
     }
 
 //    @Async

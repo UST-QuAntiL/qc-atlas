@@ -27,23 +27,27 @@ import java.io.Writer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.planqk.atlas.nisq.analyzer.knowledge.prolog.Constants.basePath;
+import org.springframework.stereotype.Service;
 
 /**
  * Class to access and change the local Prolog knowledge base.
  */
+@Service
 public class PrologKnowledgeBaseHandler {
 
     final private static Logger LOG = LoggerFactory.getLogger(PrologKnowledgeBaseHandler.class);
+
+    public PrologKnowledgeBaseHandler() {
+        LOG.debug("PrologKnowledgeBaseHandler created to handle prolog files located at: {}", Constants.basePath);
+    }
 
     /**
      * Activate the prolog facts and rules contained in the given file
      *
      * @param fileName the name of the file containing the prolog facts and rules
      */
-    protected static void activatePrologFile(String fileName) {
-        String activateQuery = "consult('" + basePath + File.separator + fileName + ".pl').";
+    public void activatePrologFile(String fileName) {
+        String activateQuery = "consult('" + Constants.basePath + File.separator + fileName + ".pl').";
 
         // replace backslashes if running on windows as JPL cannot handle this
         activateQuery = activateQuery.replace("\\", "/");
@@ -59,14 +63,15 @@ public class PrologKnowledgeBaseHandler {
      * @param fileName the name of the file to create
      * @throws IOException is thrown in case the writing fails
      */
-    protected static void persistPrologFile(String content, String fileName) throws IOException {
-        File file = new File(basePath + File.separator + fileName + ".pl");
+    public void persistPrologFile(String content, String fileName) throws IOException {
+        File file = new File(Constants.basePath + File.separator + fileName + ".pl");
         try {
-            File dir = new File(basePath);
+            File dir = new File(Constants.basePath);
             if (!dir.exists()) dir.mkdirs();
             Writer writer = new BufferedWriter(new FileWriter(file));
             writer.write(content);
             writer.close();
+            // TODO: delete file on exit
         } catch (IOException e) {
             throw new IOException("Could not write facts to prolog file: " + e.getMessage(), e);
         }
@@ -77,8 +82,8 @@ public class PrologKnowledgeBaseHandler {
      *
      * @param fileName the name of the Prolog file
      */
-    protected static void deletePrologFile(String fileName) {
-        String deactivateQuery = "unload_file('" + basePath + File.separator + fileName + ".pl').";
+    public void deletePrologFile(String fileName) {
+        String deactivateQuery = "unload_file('" + Constants.basePath + File.separator + fileName + ".pl').";
 
         // replace backslashes if running on windows as JPL cannot handle this
         deactivateQuery = deactivateQuery.replace("\\", "/");
@@ -87,7 +92,7 @@ public class PrologKnowledgeBaseHandler {
         LOG.debug("Deactivation of file {} in knowledge base returned: {}", fileName, PrologQueryEngine.hasSolution(deactivateQuery));
 
         // delete the file
-        File file = new File(basePath + File.separator + fileName + ".pl");
+        File file = new File(Constants.basePath + File.separator + fileName + ".pl");
         LOG.debug("Deleting prolog file successful: {}", file.delete());
     }
 
@@ -97,8 +102,8 @@ public class PrologKnowledgeBaseHandler {
      * @param fileName the name of the file
      * @return <code>true</code> if the file exists, <code>false</code> otherwise
      */
-    protected static boolean doesPrologFileExist(String fileName) {
-        File ruleFile = new File(basePath + File.separator + fileName + ".pl");
+    public boolean doesPrologFileExist(String fileName) {
+        File ruleFile = new File(Constants.basePath + File.separator + fileName + ".pl");
         return ruleFile.exists();
     }
 }

@@ -25,16 +25,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.jpl7.Atom;
 import org.jpl7.PrologException;
 import org.jpl7.Query;
 import org.jpl7.Term;
+import org.jpl7.Variable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
-import static org.planqk.atlas.nisq.analyzer.knowledge.prolog.PrologKnowledgeBaseHandler.activatePrologFile;
-import static org.planqk.atlas.nisq.analyzer.knowledge.prolog.PrologKnowledgeBaseHandler.doesPrologFileExist;
-import static org.planqk.atlas.nisq.analyzer.knowledge.prolog.PrologKnowledgeBaseHandler.persistPrologFile;
 
 /**
  * Class to execute different kinds of required prolog queries.
@@ -43,6 +41,12 @@ import static org.planqk.atlas.nisq.analyzer.knowledge.prolog.PrologKnowledgeBas
 public class PrologQueryEngine {
 
     final private static Logger LOG = LoggerFactory.getLogger(PrologQueryEngine.class);
+
+    final private PrologKnowledgeBaseHandler prologKnowledgeBaseHandler;
+
+    public PrologQueryEngine(PrologKnowledgeBaseHandler prologKnowledgeBaseHandler) {
+        this.prologKnowledgeBaseHandler = prologKnowledgeBaseHandler;
+    }
 
     /**
      * Execute a prolog query with variables and return all possible solutions
@@ -128,23 +132,26 @@ public class PrologQueryEngine {
      * @param circuitDepth     the depth of the circuit representation of the implementation
      * @return a list with an Id for each QPU that can execute the given implementation
      */
-    public static List<Long> getSuitableQpus(Long implementationId, int requiredQubits, int circuitDepth) {
+    public List<Long> getSuitableQpus(Long implementationId, int requiredQubits, int circuitDepth) {
         // check if file with required rule exists and create otherwise
-        if (!doesPrologFileExist(Constants.QPU_RULE_NAME)) {
+        if (!prologKnowledgeBaseHandler.doesPrologFileExist(Constants.QPU_RULE_NAME)) {
             try {
-                persistPrologFile(Constants.QPU_RULE_CONTENT, Constants.QPU_RULE_NAME);
+                prologKnowledgeBaseHandler.persistPrologFile(Constants.QPU_RULE_CONTENT, Constants.QPU_RULE_NAME);
             } catch (IOException e) {
                 LOG.error("Unable to persist prolog file with QPU selection rule. Unable to determine suitable QPUs!");
                 return new ArrayList<>();
             }
         }
-        activatePrologFile(Constants.QPU_RULE_NAME);
+        prologKnowledgeBaseHandler.activatePrologFile(Constants.QPU_RULE_NAME);
 
         List<Long> suitableQPUs = new ArrayList<>();
 
         // determine the suited QPUs for the implementation and the width/depth through the Prolog knowledge base
         String query = "executableOnQpu(" + requiredQubits + "," + circuitDepth + "," + implementationId + "," + "Qpu" + ").";
         LOG.debug("Executing the following query to determine the suitable QPUs: {}", query);
+        for (Map m : new Query("executableOnQpu", new Term[] {new Atom(Integer.toString(requiredQubits)), new Atom(Integer.toString(circuitDepth)), new Atom(Long.toString(implementationId)), new Variable("Q")})) {
+            System.out.println(m.get("Q")); // TODO
+        }
         Map<String, Term>[] solutions = getSolutions(query);
 
         // parse Ids of suitable QPUs from response

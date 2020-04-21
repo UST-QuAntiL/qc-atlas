@@ -36,6 +36,12 @@ public class PrologFactUpdater {
 
     final private static String newline = System.getProperty("line.separator");
 
+    final private PrologKnowledgeBaseHandler prologKnowledgeBaseHandler;
+
+    public PrologFactUpdater(PrologKnowledgeBaseHandler prologKnowledgeBaseHandler) {
+        this.prologKnowledgeBaseHandler = prologKnowledgeBaseHandler;
+    }
+
     /**
      * Update the Prolog knowledge base with the required facts for a newly added implementation.
      *
@@ -44,13 +50,13 @@ public class PrologFactUpdater {
      * @param implementedAlgoId the id of the implemented algorithm
      * @param selectionRule     the selection rule defined in the updated implementation
      */
-    public static void handleImplementationInsertion(Long id, String usedSdk, Long implementedAlgoId, String selectionRule) {
+    public void handleImplementationInsertion(Long id, String usedSdk, Long implementedAlgoId, String selectionRule) {
         LOG.debug("Handling insertion of implementation with Id {} in Prolog knowledge base.", id);
 
         String prologContent = createImplementationFacts(id, usedSdk.toLowerCase(), implementedAlgoId, selectionRule);
         try {
-            PrologKnowledgeBaseHandler.persistPrologFile(prologContent, id.toString());
-            PrologKnowledgeBaseHandler.activatePrologFile(id.toString());
+            prologKnowledgeBaseHandler.persistPrologFile(prologContent, id.toString());
+            prologKnowledgeBaseHandler.activatePrologFile(id.toString());
         } catch (IOException e) {
             LOG.error("Unable to store prolog file to add new facts after implementation insertion: {}", e.getMessage());
         }
@@ -65,13 +71,13 @@ public class PrologFactUpdater {
      * @param maxGateTime   the maximum gate time for the given QPU
      * @param supportedSdks the list of supported SDKs of the QPU that is added to the repository
      */
-    public static void handleQpuInsertion(Long id, int qubitCount, List<String> supportedSdks, float t1Time, float maxGateTime) {
+    public void handleQpuInsertion(Long id, int qubitCount, List<String> supportedSdks, float t1Time, float maxGateTime) {
         LOG.debug("Handling insertion of QPU with Id {} in Prolog knowledge base.", id);
 
         String prologContent = createQpuFacts(id, qubitCount, supportedSdks, t1Time, maxGateTime);
         try {
-            PrologKnowledgeBaseHandler.persistPrologFile(prologContent, id.toString());
-            PrologKnowledgeBaseHandler.activatePrologFile(id.toString());
+            prologKnowledgeBaseHandler.persistPrologFile(prologContent, id.toString());
+            prologKnowledgeBaseHandler.activatePrologFile(id.toString());
         } catch (IOException e) {
             LOG.error("Unable to store prolog file to add new facts after QPU insertion: {}", e.getMessage());
         }
@@ -86,17 +92,17 @@ public class PrologFactUpdater {
      * @param implementedAlgoId the id of the implemented algorithm
      * @param selectionRule     the selection rule defined in the updated implementation
      */
-    public static void handleImplementationUpdate(Long id, String usedSdk, Long implementedAlgoId, String selectionRule) {
+    public void handleImplementationUpdate(Long id, String usedSdk, Long implementedAlgoId, String selectionRule) {
         LOG.debug("Handling update of implementation with Id {} in Prolog knowledge base.", id);
 
         // deactivate and delete the Prolog file with the old facts
-        PrologKnowledgeBaseHandler.deletePrologFile(id.toString());
+        prologKnowledgeBaseHandler.deletePrologFile(id.toString());
 
         // create and activate the Prolog file with the new facts
         String prologContent = createImplementationFacts(id, usedSdk.toLowerCase(), implementedAlgoId, selectionRule);
         try {
-            PrologKnowledgeBaseHandler.persistPrologFile(prologContent, id.toString());
-            PrologKnowledgeBaseHandler.activatePrologFile(id.toString());
+            prologKnowledgeBaseHandler.persistPrologFile(prologContent, id.toString());
+            prologKnowledgeBaseHandler.activatePrologFile(id.toString());
         } catch (IOException e) {
             LOG.error("Unable to store prolog file to add new facts after implementation update: {}", e.getMessage());
         }
@@ -111,17 +117,17 @@ public class PrologFactUpdater {
      * @param maxGateTime   the maximum gate time for the given QPU
      * @param supportedSdks the list of supported SDKs of the QPU that is updated in the repository
      */
-    public static void handleQpuUpdate(Long id, int qubitCount, List<String> supportedSdks, float t1Time, float maxGateTime) {
+    public void handleQpuUpdate(Long id, int qubitCount, List<String> supportedSdks, float t1Time, float maxGateTime) {
         LOG.debug("Handling update of QPU with Id {} in Prolog knowledge base.", id);
 
         // deactivate and delete the Prolog file with the old facts
-        PrologKnowledgeBaseHandler.deletePrologFile(id.toString());
+        prologKnowledgeBaseHandler.deletePrologFile(id.toString());
 
         // create and activate the Prolog file with the new facts
         String prologContent = createQpuFacts(id, qubitCount, supportedSdks, t1Time, maxGateTime);
         try {
-            PrologKnowledgeBaseHandler.persistPrologFile(prologContent, id.toString());
-            PrologKnowledgeBaseHandler.activatePrologFile(id.toString());
+            prologKnowledgeBaseHandler.persistPrologFile(prologContent, id.toString());
+            prologKnowledgeBaseHandler.activatePrologFile(id.toString());
         } catch (IOException e) {
             LOG.error("Unable to store prolog file to add new facts after QPU update: {}", e.getMessage());
         }
@@ -132,9 +138,9 @@ public class PrologFactUpdater {
      *
      * @param id the id of the implementation that is deleted from the repository
      */
-    public static void handleImplementationDeletion(Long id) {
+    public void handleImplementationDeletion(Long id) {
         LOG.debug("Handling deletion of implementation with Id {} in Prolog knowledge base.", id);
-        PrologKnowledgeBaseHandler.deletePrologFile(id.toString());
+        prologKnowledgeBaseHandler.deletePrologFile(id.toString());
     }
 
     /**
@@ -142,15 +148,15 @@ public class PrologFactUpdater {
      *
      * @param id the id of the QPU that is deleted from the repository
      */
-    public static void handleQpuDeletion(Long id) {
+    public void handleQpuDeletion(Long id) {
         LOG.debug("Handling deletion of QPU with Id {} in Prolog knowledge base.", id);
-        PrologKnowledgeBaseHandler.deletePrologFile(id.toString());
+        prologKnowledgeBaseHandler.deletePrologFile(id.toString());
     }
 
     /**
      * Create a string containing all required prolog facts for an implementation.
      */
-    private static String createImplementationFacts(Long implId, String usedSdk, Long implementedAlgoId, String selectionRule) {
+    private String createImplementationFacts(Long implId, String usedSdk, Long implementedAlgoId, String selectionRule) {
         // the following three lines are required to define the same predicate in multiple files
         String prologContent = ":- multifile implements/2." + newline;
         prologContent += ":- multifile requiredSdk/2." + newline;
@@ -165,7 +171,7 @@ public class PrologFactUpdater {
     /**
      * Create a string containing all required prolog fact for an QPU.
      */
-    private static String createQpuFacts(Long qpuId, int qubitCount, List<String> supportedSdks, float t1Time, float maxGateTime) {
+    private String createQpuFacts(Long qpuId, int qubitCount, List<String> supportedSdks, float t1Time, float maxGateTime) {
         // the following two lines are required to define the same predicate in multiple files
         String prologContent = ":- multifile providesQubits/2." + newline;
         prologContent += ":- multifile usedSdk/2." + newline;
@@ -186,7 +192,7 @@ public class PrologFactUpdater {
      * @param supportedSdks the list of SDKs that are supported by the QPU
      * @return the Prolog facts
      */
-    private static String createUsesSdkFacts(Long qpuId, List<String> supportedSdks) {
+    private String createUsesSdkFacts(Long qpuId, List<String> supportedSdks) {
         String prologContent = "";
         for (String supportedSdk : supportedSdks) {
             prologContent += "usesSdk(" + qpuId + "," + supportedSdk.toLowerCase() + ")." + newline;
@@ -201,7 +207,7 @@ public class PrologFactUpdater {
      * @param qubitCount the number of Qubits that are provided by the QPU
      * @return the Prolog fact
      */
-    private static String createProvidesQubitFact(Long qpuId, int qubitCount) {
+    private String createProvidesQubitFact(Long qpuId, int qubitCount) {
         return "providesQubits(" + qpuId + "," + qubitCount + ").";
     }
 
@@ -212,7 +218,7 @@ public class PrologFactUpdater {
      * @param t1Time the T1 time for the given QPU
      * @return the Prolog fact
      */
-    private static String createT1TimeFact(Long qpuId, float t1Time) {
+    private String createT1TimeFact(Long qpuId, float t1Time) {
         return "t1Time(" + qpuId + "," + t1Time + ").";
     }
 
@@ -223,7 +229,7 @@ public class PrologFactUpdater {
      * @param maxGateTime the time of the slowest gate of the QPU
      * @return the Prolog fact
      */
-    private static String createMaxGateTimeFact(Long qpuId, float maxGateTime) {
+    private String createMaxGateTimeFact(Long qpuId, float maxGateTime) {
         return "maxGateTime(" + qpuId + "," + maxGateTime + ").";
     }
 
@@ -234,7 +240,7 @@ public class PrologFactUpdater {
      * @param algoId the id of the algorithm
      * @return the Prolog fact
      */
-    private static String createImplementsFact(Long implId, Long algoId) {
+    private String createImplementsFact(Long implId, Long algoId) {
         return "implements(" + implId + "," + algoId + ").";
     }
 
@@ -245,7 +251,7 @@ public class PrologFactUpdater {
      * @param sdkName the name of the SDK
      * @return the Prolog fact
      */
-    private static String createRequiredSdkFact(Long implId, String sdkName) {
+    private String createRequiredSdkFact(Long implId, String sdkName) {
         return "requiredSdk(" + implId + "," + sdkName + ").";
     }
 
@@ -255,7 +261,7 @@ public class PrologFactUpdater {
      * @param rule the rule to retrieve the predicate name from
      * @return the name of the predicate
      */
-    private static String getNameOfPredicate(String rule) {
+    private String getNameOfPredicate(String rule) {
         return rule.split("\\(")[0];
     }
 }
