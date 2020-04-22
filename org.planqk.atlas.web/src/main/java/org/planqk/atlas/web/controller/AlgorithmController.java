@@ -31,6 +31,7 @@ import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Qpu;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.nisq.analyzer.control.NisqAnalyzerControlService;
+import org.planqk.atlas.web.AtlasProperties;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.entities.AlgorithmDto;
 import org.planqk.atlas.web.dtos.entities.AlgorithmListDto;
@@ -69,11 +70,13 @@ public class AlgorithmController {
     final private static Logger LOG = LoggerFactory.getLogger(AlgorithmController.class);
 
     private final NisqAnalyzerControlService nisqAnalyzerService;
-    private AlgorithmService algorithmService;
+    private final AlgorithmService algorithmService;
+    private final AtlasProperties atlasProperties;
 
-    public AlgorithmController(NisqAnalyzerControlService nisqAnalyzerService, AlgorithmService algorithmService) {
+    public AlgorithmController(NisqAnalyzerControlService nisqAnalyzerService, AlgorithmService algorithmService, AtlasProperties atlasProperties) {
         this.nisqAnalyzerService = nisqAnalyzerService;
         this.algorithmService = algorithmService;
+        this.atlasProperties = atlasProperties;
     }
 
     @GetMapping("/")
@@ -167,8 +170,13 @@ public class AlgorithmController {
     }
 
     @GetMapping("/{id}/" + Constants.NISQ + "/" + Constants.SELECTION_PARAMS)
-    public HttpEntity<ParameterListDto> getSelectionParams(@PathVariable Long id) {
+    public ResponseEntity getSelectionParams(@PathVariable Long id) {
         LOG.debug("Get to retrieve selection parameters for algorithm with Id {} received.", id);
+
+        if (!atlasProperties.isProlog()) {
+            LOG.warn("Received selection parameter request but prolog handling is deactivated in the Atlas configuration!");
+            return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body("Prolog handling is deactivated in the server configuration. Selection not possible!");
+        }
 
         Optional<Algorithm> algorithmOptional = algorithmService.findById(id);
         if (!algorithmOptional.isPresent()) {
@@ -190,8 +198,13 @@ public class AlgorithmController {
     }
 
     @PostMapping("/{id}/" + Constants.NISQ + "/" + Constants.SELECTION)
-    public HttpEntity<SuitableImplQpuPairsDto> selectImplementations(@PathVariable Long id, @RequestBody ParameterKeyValueDto params) {
+    public ResponseEntity selectImplementations(@PathVariable Long id, @RequestBody ParameterKeyValueDto params) {
         LOG.debug("Post to select implementations for algorithm with Id {} received.", id);
+
+        if (!atlasProperties.isProlog()) {
+            LOG.warn("Received selection request but prolog handling is deactivated in the Atlas configuration!");
+            return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body("Prolog handling is deactivated in the server configuration. Selection not possible!");
+        }
 
         Optional<Algorithm> algorithmOptional = algorithmService.findById(id);
         if (!algorithmOptional.isPresent()) {
