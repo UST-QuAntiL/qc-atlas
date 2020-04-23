@@ -117,7 +117,7 @@ public class ImplementationDto extends RepresentationModel<ImplementationDto> {
             dto.setSelectionRule(object.getSelectionRule());
             dto.setFileLocation(object.getFileLocation());
             dto.setSdk(object.getSdk().getName());
-            dto.setContent(object.getSdk().getName());
+            dto.setContent(object.getContent());
             dto.setTags(object.getTags());
 
             ParameterListDto inputParams = new ParameterListDto();
