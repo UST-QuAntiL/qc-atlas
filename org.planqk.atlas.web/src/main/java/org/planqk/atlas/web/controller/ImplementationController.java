@@ -45,6 +45,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -61,6 +62,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
  * Controller to access and manipulate implementations of quantum algorithms.
  */
 @RestController
+@CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/" + Constants.ALGORITHMS + "/{algoId}/" + Constants.IMPLEMENTATIONS)
 public class ImplementationController {
 
@@ -210,6 +212,42 @@ public class ImplementationController {
 
         parameterListDto.add(linkTo(methodOn(AlgorithmController.class).getOutputParameters(id)).withSelfRel());
         return new ResponseEntity<>(parameterListDto, HttpStatus.OK);
+    }
+
+    @PostMapping("/{id}/" + Constants.INPUT_PARAMS)
+    public HttpEntity<ParameterDto> addInputParameter(@PathVariable Long id, @RequestBody ParameterDto parameterDto) {
+        LOG.debug("Post to retrieve implementation with id: {}.", id);
+        Optional<Implementation> implementationOptional = implementationService.findById(id);
+        if (!implementationOptional.isPresent()) {
+            LOG.error("Unable to retrieve implementation with id {} from the repository.", id);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        if (Objects.isNull(parameterDto.getName())) {
+            LOG.error("Received invalid parameter object for post request: {}", parameterDto.toString());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        Implementation implementation = implementationOptional.get();
+        implementation.getInputParameters().add(ParameterDto.Converter.convert(parameterDto));
+        implementationService.save(implementation);
+        return new ResponseEntity<>(parameterDto, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/{id}/" + Constants.OUTPUT_PARAMS)
+    public HttpEntity<ParameterDto> addOutputParameter(@PathVariable Long id, @RequestBody ParameterDto parameterDto) {
+        LOG.debug("Post to retrieve implementation with id: {}.", id);
+        Optional<Implementation> implementationOptional = implementationService.findById(id);
+        if (!implementationOptional.isPresent()) {
+            LOG.error("Unable to retrieve implementation with id {} from the repository.", id);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        if (Objects.isNull(parameterDto.getName())) {
+            LOG.error("Received invalid parameter object for post request: {}", parameterDto.toString());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        Implementation implementation = implementationOptional.get();
+        implementation.getOutputParameters().add(ParameterDto.Converter.convert(parameterDto));
+        implementationService.save(implementation);
+        return new ResponseEntity<>(parameterDto, HttpStatus.CREATED);
     }
 
     @PostMapping("/{implId}/" + Constants.EXECUTION)

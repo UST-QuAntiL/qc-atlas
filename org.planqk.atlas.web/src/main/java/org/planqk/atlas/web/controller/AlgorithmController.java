@@ -48,6 +48,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -64,6 +65,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
  * Controller to access and manipulate quantum algorithms.
  */
 @RestController
+@CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/" + Constants.ALGORITHMS)
 public class AlgorithmController {
 
@@ -129,6 +131,42 @@ public class AlgorithmController {
         // store and return algorithm
         Algorithm algorithm = algorithmService.save(AlgorithmDto.Converter.convert(algo));
         return new ResponseEntity<>(createAlgorithmDto(algorithm), HttpStatus.CREATED);
+    }
+
+    @PostMapping("/{id}/" + Constants.INPUT_PARAMS)
+    public HttpEntity<ParameterDto> addInputParameter(@PathVariable Long id, @RequestBody ParameterDto parameterDto) {
+        LOG.debug("Post to retrieve algorithm with id: {}.", id);
+        Optional<Algorithm> algorithmOptional = algorithmService.findById(id);
+        if (!algorithmOptional.isPresent()) {
+            LOG.error("Unable to retrieve algorithm with id {} from the repository.", id);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        if (Objects.isNull(parameterDto.getName())) {
+            LOG.error("Received invalid parameter object for post request: {}", parameterDto.toString());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        Algorithm algorithm = algorithmOptional.get();
+        algorithm.getInputParameters().add(ParameterDto.Converter.convert(parameterDto));
+        algorithmService.save(algorithm);
+        return new ResponseEntity<>(parameterDto, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/{id}/" + Constants.OUTPUT_PARAMS)
+    public HttpEntity<ParameterDto> addOutputParameter(@PathVariable Long id, @RequestBody ParameterDto parameterDto) {
+        LOG.debug("Post to retrieve algorithm with id: {}.", id);
+        Optional<Algorithm> algorithmOptional = algorithmService.findById(id);
+        if (!algorithmOptional.isPresent()) {
+            LOG.error("Unable to retrieve algorithm with id {} from the repository.", id);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        if (Objects.isNull(parameterDto.getName())) {
+            LOG.error("Received invalid parameter object for post request: {}", parameterDto.toString());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        Algorithm algorithm = algorithmOptional.get();
+        algorithm.getOutputParameters().add(ParameterDto.Converter.convert(parameterDto));
+        algorithmService.save(algorithm);
+        return new ResponseEntity<>(parameterDto, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")

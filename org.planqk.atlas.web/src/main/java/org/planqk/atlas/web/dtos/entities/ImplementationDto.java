@@ -93,7 +93,6 @@ public class ImplementationDto extends RepresentationModel<ImplementationDto> {
         return outputParameters;
     }
 
-
     public static final class Converter {
 
         public static ImplementationDto convert(final Implementation object) {
@@ -104,7 +103,7 @@ public class ImplementationDto extends RepresentationModel<ImplementationDto> {
             dto.setSelectionRule(object.getSelectionRule());
             dto.setFileLocation(object.getFileLocation());
             dto.setSdk(object.getSdk().getName());
-            dto.setContent(object.getSdk().getName());
+            dto.setContent(object.getContent());
 
             ParameterListDto inputParams = new ParameterListDto();
             inputParams.add(object.getInputParameters().stream().map(ParameterDto.Converter::convert)
