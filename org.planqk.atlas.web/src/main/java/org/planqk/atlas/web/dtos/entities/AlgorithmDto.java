@@ -19,19 +19,21 @@
 
 package org.planqk.atlas.web.dtos.entities;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.planqk.atlas.core.model.Algorithm;
-import org.planqk.atlas.core.model.Tag;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.lang.NonNull;
+
+import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.WRITE_ONLY;
 
 /**
  * Data transfer object for Algorithms ({@link org.planqk.atlas.core.model.Algorithm}).
@@ -53,8 +55,13 @@ public class AlgorithmDto extends RepresentationModel<AlgorithmDto> {
     @Setter
     private ParameterListDto outputParameters;
 
+    @Getter
     @Setter
-    private List<Tag> tags;
+    // we do not embedded tags into the object (via @jsonInclude) - instead, we add a hateoas link to the associated tags
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    // annotate this for swagger as well, because swagger doesn't recognize the json property annotation
+    @Schema(accessMode = WRITE_ONLY)
+    private Set<TagDto> tags;
 
     @Setter
     @Getter
@@ -79,14 +86,6 @@ public class AlgorithmDto extends RepresentationModel<AlgorithmDto> {
         return outputParameters;
     }
 
-    @NonNull
-    public List<Tag> getTags() {
-        if (Objects.isNull(tags)) {
-            return new ArrayList<Tag>();
-        }
-        return tags;
-    }
-
     public static final class Converter {
 
         public static AlgorithmDto convert(final Algorithm object) {
@@ -94,8 +93,7 @@ public class AlgorithmDto extends RepresentationModel<AlgorithmDto> {
             dto.setId(object.getId());
             dto.setName(object.getName());
             dto.setContent(object.getContent());
-            dto.setTags(object.getTags());
-
+            dto.setTags(object.getTags().stream().map(TagDto.Converter::convert).collect(Collectors.toSet()));
             ParameterListDto inputParams = new ParameterListDto();
             inputParams.add(object.getInputParameters().stream().map(ParameterDto.Converter::convert)
                     .collect(Collectors.toList()));
@@ -113,7 +111,9 @@ public class AlgorithmDto extends RepresentationModel<AlgorithmDto> {
             final Algorithm algo = new Algorithm();
             algo.setName(object.getName());
             algo.setContent(object.getContent());
-            algo.setTags(object.getTags());
+            if (Objects.nonNull(object.getTags())) {
+                algo.setTags(object.getTags().stream().map(TagDto.Converter::convert).collect(Collectors.toSet()));
+            }
             algo.setInputParameters(object.getInputParameters().getParameters().stream()
                     .map(ParameterDto.Converter::convert)
                     .collect(Collectors.toList()));

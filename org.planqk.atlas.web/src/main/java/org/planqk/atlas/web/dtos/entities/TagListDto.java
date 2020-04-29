@@ -19,7 +19,6 @@
 
 package org.planqk.atlas.web.dtos.entities;
 
-import java.util.Arrays;
 import java.util.List;
 
 import lombok.Getter;
@@ -31,7 +30,11 @@ public class TagListDto extends RepresentationModel<TagListDto> {
     @Getter
     private final List<TagDto> tagsDtos = Lists.newArrayList();
 
-    public void add(final TagDto... tags) {
-        this.tagsDtos.addAll(Arrays.asList(tags));
+    public void add(final List<TagDto> tags) {
+        this.tagsDtos.addAll(tags);
+    }
+
+    public void add(final TagDto tag) {
+        this.tagsDtos.add(tag);
     }
 }

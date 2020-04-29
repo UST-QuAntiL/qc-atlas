@@ -20,8 +20,6 @@
 package org.planqk.atlas.web.dtos.entities;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -29,7 +27,6 @@ import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.ProgrammingLanguage;
 import org.planqk.atlas.core.model.Sdk;
-import org.planqk.atlas.core.model.Tag;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -58,9 +55,6 @@ public class ImplementationDto extends RepresentationModel<ImplementationDto> {
     @Getter
     @Setter
     private String selectionRule;
-
-    @Setter
-    private List<Tag> tags;
 
     @Getter
     @Setter
@@ -99,13 +93,6 @@ public class ImplementationDto extends RepresentationModel<ImplementationDto> {
         return outputParameters;
     }
 
-    @NonNull
-    public List<Tag> getTags() {
-        if (Objects.isNull(tags)) {
-            return new ArrayList<Tag>();
-        }
-        return tags;
-    }
 
     public static final class Converter {
 
@@ -118,7 +105,6 @@ public class ImplementationDto extends RepresentationModel<ImplementationDto> {
             dto.setFileLocation(object.getFileLocation());
             dto.setSdk(object.getSdk().getName());
             dto.setContent(object.getSdk().getName());
-            dto.setTags(object.getTags());
 
             ParameterListDto inputParams = new ParameterListDto();
             inputParams.add(object.getInputParameters().stream().map(ParameterDto.Converter::convert)
@@ -141,7 +127,6 @@ public class ImplementationDto extends RepresentationModel<ImplementationDto> {
             implementation.setFileLocation(object.getFileLocation());
             implementation.setSdk(sdk);
             implementation.setContent(object.getContent());
-            implementation.setTags(object.getTags());
             implementation.setImplementedAlgorithm(algo);
             implementation.setInputParameters(object.getInputParameters().getParameters().stream()
                     .map(ParameterDto.Converter::convert)

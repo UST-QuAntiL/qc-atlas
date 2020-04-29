@@ -19,17 +19,15 @@
 
 package org.planqk.atlas.core.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
 
 import lombok.Setter;
 import org.springframework.lang.NonNull;
@@ -40,34 +38,35 @@ import org.springframework.lang.NonNull;
 @Entity
 public class Algorithm extends AlgorOrImpl {
 
-    @OneToMany(mappedBy = "implementedAlgorithm", fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @ManyToMany(mappedBy = "implementedAlgorithm", cascade =
+            {CascadeType.MERGE})
     @Setter
-    private List<Implementation> implementations;
+    private Set<Implementation> implementations;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @ManyToMany(cascade = {CascadeType.MERGE})
     @JoinTable(
             name = "algorithm_tag",
             joinColumns = @JoinColumn(name = "algorithm_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
     @Setter
-    private List<Tag> tags;
+    private Set<Tag> tags;
 
     public Algorithm() {
         super();
     }
 
     @NonNull
-    public List<Implementation> getImplementations() {
+    public Set<Implementation> getImplementations() {
         if (Objects.isNull(implementations)) {
-            return new ArrayList<>();
+            return new HashSet<>();
         }
         return implementations;
     }
 
     @NonNull
-    public List<Tag> getTags() {
+    public Set<Tag> getTags() {
         if (Objects.isNull(tags)) {
-            return new ArrayList<>();
+            return new HashSet<>();
         }
         return tags;
     }
