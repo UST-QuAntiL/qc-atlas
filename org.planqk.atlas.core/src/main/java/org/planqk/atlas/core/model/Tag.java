@@ -19,11 +19,12 @@
 
 package org.planqk.atlas.core.model;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.ManyToMany;
 
 import lombok.Getter;
@@ -40,21 +41,28 @@ public class Tag extends HasId {
     @Setter
     String value;
 
-    @ManyToMany(mappedBy = "tags", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "tags", cascade =
+            {CascadeType.MERGE, CascadeType.PERSIST})
     @Setter
-    private List<Algorithm> algorithms;
+    private Set<Algorithm> algorithms;
 
-    @ManyToMany(mappedBy = "tags", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "tags", cascade =
+            {CascadeType.MERGE, CascadeType.PERSIST})
     @Setter
-    private List<Implementation> implementations;
+    private Set<Implementation> implementations;
 
-    public void addImplementation(Implementation implementation) {
-        implementations.add(implementation);
-        implementation.getTags().add(this);
+    public Set<Algorithm> getAlgorithms() {
+        if (Objects.isNull(algorithms)) {
+            return new HashSet<>();
+        }
+        return algorithms;
     }
 
-    public void addAlgorithm(Algorithm algorithm) {
-        algorithms.add(algorithm);
-        algorithm.getTags().add(this);
+    public Set<Implementation> getImplementations() {
+        if (Objects.isNull(implementations)) {
+            return new HashSet<>();
+        }
+        return implementations;
     }
+
 }

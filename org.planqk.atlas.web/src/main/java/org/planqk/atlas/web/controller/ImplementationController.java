@@ -36,6 +36,7 @@ import org.planqk.atlas.web.dtos.entities.ImplementationDto;
 import org.planqk.atlas.web.dtos.entities.ImplementationListDto;
 import org.planqk.atlas.web.dtos.entities.ParameterDto;
 import org.planqk.atlas.web.dtos.entities.ParameterListDto;
+import org.planqk.atlas.web.dtos.entities.TagListDto;
 import org.planqk.atlas.web.dtos.requests.ParameterKeyValueDto;
 import org.planqk.atlas.web.utils.RestUtils;
 
@@ -66,11 +67,10 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class ImplementationController {
 
     final private static Logger LOG = LoggerFactory.getLogger(ImplementationController.class);
-
-    private SdkService sdkService;
     private final NisqAnalyzerControlService controlService;
     private final ImplementationService implementationService;
     private final AlgorithmService algorithmService;
+    private SdkService sdkService;
 
     public ImplementationController(ImplementationService implementationService,
                                     AlgorithmService algorithmService,
@@ -82,6 +82,27 @@ public class ImplementationController {
         this.controlService = controlService;
     }
 
+    /**
+     * Create a DTO object for a given {@link Implementation} with the contained data and the links to related objects.
+     *
+     * @param implementation the {@link Implementation} to create the DTO for
+     * @return the created DTO
+     */
+    public static ImplementationDto createImplementationDto(Implementation implementation) {
+        Long algoId = implementation.getImplementedAlgorithm().getId();
+        ImplementationDto dto = ImplementationDto.Converter.convert(implementation);
+        dto.add(linkTo(methodOn(ImplementationController.class).getImplementation(algoId, implementation.getId())).withSelfRel());
+        dto.add(linkTo(methodOn(AlgorithmController.class).getAlgorithm(algoId)).withRel(Constants.ALGORITHM_LINK));
+        dto.add(linkTo(methodOn(ImplementationController.class).getTags(algoId, implementation.getId())).withRel(Constants.TAGS));
+
+        Sdk usedSdk = implementation.getSdk();
+        if (Objects.nonNull(usedSdk)) {
+            dto.add(linkTo(methodOn(SdkController.class).getSdk(usedSdk.getId())).withRel(Constants.USED_SDK));
+        }
+
+        return dto;
+    }
+
     @GetMapping("/")
     public HttpEntity<ImplementationListDto> getImplementations(@PathVariable Long algoId) {
         LOG.debug("Get to retrieve all implementations received.");
@@ -90,7 +111,7 @@ public class ImplementationController {
         // add all available implementations to the response
         for (Implementation impl : implementationService.findAll(RestUtils.getAllPageable())) {
             if (impl.getImplementedAlgorithm().getId().equals(algoId)) {
-                dtoList.add(createImplementationDto(algoId, impl));
+                dtoList.add(createImplementationDto(impl));
                 dtoList.add(linkTo(methodOn(ImplementationController.class).getImplementation(algoId, impl.getId()))
                         .withRel(impl.getId().toString()));
             }
@@ -112,7 +133,7 @@ public class ImplementationController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        return new ResponseEntity<>(createImplementationDto(algoId, implementationOptional.get()), HttpStatus.OK);
+        return new ResponseEntity<>(createImplementationDto(implementationOptional.get()), HttpStatus.OK);
     }
 
     @PostMapping("/")
@@ -150,16 +171,16 @@ public class ImplementationController {
         // store and return implementation
         Implementation implementation =
                 implementationService.save(ImplementationDto.Converter.convert(impl, sdkOptional.get(), algorithmOptional.get()));
-        return new ResponseEntity<>(createImplementationDto(algoId, implementation), HttpStatus.OK);
+        return new ResponseEntity<>(createImplementationDto(implementation), HttpStatus.OK);
     }
 
     @GetMapping("/{id}/" + Constants.INPUT_PARAMS)
-    public HttpEntity<ParameterListDto> getInputParameters(@PathVariable Long id) {
+    public HttpEntity<ParameterListDto> getInputParameters(@PathVariable Long algoId, @PathVariable Long id) {
         LOG.debug("Get to retrieve input parameters for implementation with id: {}.", id);
 
         Optional<Implementation> implementationOptional = implementationService.findById(id);
         if (!implementationOptional.isPresent()) {
-            LOG.error("Unable to retrieve implementation with id {} form the repository.", id);
+            LOG.error("Unable to retrieve implementation with id {} from the repository.", id);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
@@ -174,12 +195,12 @@ public class ImplementationController {
     }
 
     @GetMapping("/{id}/" + Constants.OUTPUT_PARAMS)
-    public HttpEntity<ParameterListDto> getOutputParameters(@PathVariable Long id) {
+    public HttpEntity<ParameterListDto> getOutputParameters(@PathVariable Long algoId, @PathVariable Long id) {
         LOG.debug("Get to retrieve output parameters for implementation with id: {}.", id);
 
         Optional<Implementation> implementationOptional = implementationService.findById(id);
         if (!implementationOptional.isPresent()) {
-            LOG.error("Unable to retrieve implementation with id {} form the repository.", id);
+            LOG.error("Unable to retrieve implementation with id {} from the repository.", id);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
@@ -236,7 +257,7 @@ public class ImplementationController {
 
         Optional<Implementation> implementationOptional = implementationService.findById(implId);
         if (!implementationOptional.isPresent()) {
-            LOG.error("Unable to retrieve implementation with id {} form the repository.", implId);
+            LOG.error("Unable to retrieve implementation with id {} from the repository.", implId);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
@@ -255,23 +276,17 @@ public class ImplementationController {
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
-    /**
-     * Create a DTO object for a given {@link Implementation} with the contained data and the links to related objects.
-     *
-     * @param algoId         the Id of the Algorithm this Implementation belongs to
-     * @param implementation the {@link Implementation} to create the DTO for
-     * @return the created DTO
-     */
-    private ImplementationDto createImplementationDto(Long algoId, Implementation implementation) {
-        ImplementationDto dto = ImplementationDto.Converter.convert(implementation);
-        dto.add(linkTo(methodOn(ImplementationController.class).getImplementation(algoId, implementation.getId())).withSelfRel());
-        dto.add(linkTo(methodOn(AlgorithmController.class).getAlgorithm(algoId)).withRel(Constants.ALGORITHM_LINK));
-
-        Sdk usedSdk = implementation.getSdk();
-        if (Objects.nonNull(usedSdk)) {
-            dto.add(linkTo(methodOn(SdkController.class).getSdk(usedSdk.getId())).withRel(Constants.USED_SDK));
+    @GetMapping("/{implId}/" + Constants.TAGS)
+    public HttpEntity<TagListDto> getTags(@PathVariable Long algoId, @PathVariable Long implId) {
+        Optional<Implementation> implementationOptional = implementationService.findById(implId);
+        if (!implementationOptional.isPresent()) {
+            LOG.error("Unable to find implementation with id {} from the repository.", implId);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-
-        return dto;
+        TagListDto tagListDto = TagController.createTagDtoList(implementationOptional.get().getTags().stream());
+        tagListDto.add(linkTo(methodOn(ImplementationController.class).getTags(algoId, implId)).withSelfRel());
+        return new ResponseEntity<>(tagListDto, HttpStatus.OK);
     }
+
+
 }
