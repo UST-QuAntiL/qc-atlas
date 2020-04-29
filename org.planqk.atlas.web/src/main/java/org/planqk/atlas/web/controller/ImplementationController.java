@@ -242,7 +242,7 @@ public class ImplementationController {
 
         Map<String, String> outputParams;
         try {
-            outputParams = controlService.executeQuantumAlgorithm(implementationOptional.get(), executionRequest.getParameters());
+            outputParams = controlService.executeQuantumAlgorithmImplementation(implementationOptional.get(), executionRequest.getParameters());
         } catch (RuntimeException e) {
             LOG.error("Error while executing implementation: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error Message: " + e.getMessage());
