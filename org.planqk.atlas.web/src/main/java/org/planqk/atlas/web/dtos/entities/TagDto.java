@@ -51,6 +51,7 @@ public class TagDto extends RepresentationModel<TagDto> {
 
         public static Tag convert(final TagDto object) {
             final Tag tag = new Tag();
+            tag.setId(object.getId());
             tag.setKey(object.getKey());
             tag.setValue(object.getValue());
             return tag;
