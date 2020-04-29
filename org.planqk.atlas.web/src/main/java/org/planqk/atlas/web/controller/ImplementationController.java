@@ -193,9 +193,9 @@ public class ImplementationController {
         return new ResponseEntity<>(parameterListDto, HttpStatus.OK);
     }
 
-    @PostMapping("/{id}/inputparameters")
+    @PostMapping("/{id}/" + Constants.INPUT_PARAMS)
     public HttpEntity<ParameterDto> addInputParameter(@PathVariable Long id, @RequestBody ParameterDto parameterDto) {
-        LOG.debug("Get to retrieve implementation with id: {}.", id);
+        LOG.debug("Post to retrieve implementation with id: {}.", id);
         Optional<Implementation> implementationOptional = implementationService.findById(id);
         if (!implementationOptional.isPresent()) {
             LOG.error("Unable to retrieve implementation with id {} from the repository.", id);
@@ -211,9 +211,9 @@ public class ImplementationController {
         return new ResponseEntity<>(parameterDto, HttpStatus.CREATED);
     }
 
-    @PostMapping("/{id}/outputparameters")
+    @PostMapping("/{id}/" + Constants.OUTPUT_PARAMS)
     public HttpEntity<ParameterDto> addOutputParameter(@PathVariable Long id, @RequestBody ParameterDto parameterDto) {
-        LOG.debug("Get to retrieve implementation with id: {}.", id);
+        LOG.debug("Post to retrieve implementation with id: {}.", id);
         Optional<Implementation> implementationOptional = implementationService.findById(id);
         if (!implementationOptional.isPresent()) {
             LOG.error("Unable to retrieve implementation with id {} from the repository.", id);

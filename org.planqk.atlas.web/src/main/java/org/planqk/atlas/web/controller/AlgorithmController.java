@@ -114,9 +114,9 @@ public class AlgorithmController {
         return new ResponseEntity<>(createAlgorithmDto(algorithm), HttpStatus.CREATED);
     }
 
-    @PostMapping("/{id}/inputparameters")
+    @PostMapping("/{id}/" + Constants.INPUT_PARAMS)
     public HttpEntity<ParameterDto> addInputParameter(@PathVariable Long id, @RequestBody ParameterDto parameterDto) {
-        LOG.debug("Get to retrieve algorithm with id: {}.", id);
+        LOG.debug("Post to retrieve algorithm with id: {}.", id);
         Optional<Algorithm> algorithmOptional = algorithmService.findById(id);
         if (!algorithmOptional.isPresent()) {
             LOG.error("Unable to retrieve algorithm with id {} from the repository.", id);
@@ -132,9 +132,9 @@ public class AlgorithmController {
         return new ResponseEntity<>(parameterDto, HttpStatus.CREATED);
     }
 
-    @PostMapping("/{id}/outputparameters")
+    @PostMapping("/{id}/" + Constants.OUTPUT_PARAMS)
     public HttpEntity<ParameterDto> addOutputParameter(@PathVariable Long id, @RequestBody ParameterDto parameterDto) {
-        LOG.debug("Get to retrieve algorithm with id: {}.", id);
+        LOG.debug("Post to retrieve algorithm with id: {}.", id);
         Optional<Algorithm> algorithmOptional = algorithmService.findById(id);
         if (!algorithmOptional.isPresent()) {
             LOG.error("Unable to retrieve algorithm with id {} from the repository.", id);
