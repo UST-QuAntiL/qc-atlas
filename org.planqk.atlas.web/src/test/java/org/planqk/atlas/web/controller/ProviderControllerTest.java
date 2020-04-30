@@ -23,12 +23,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Provider;
 import org.planqk.atlas.core.services.ProviderService;
 import org.planqk.atlas.web.Constants;
-import org.planqk.atlas.web.dtos.entities.AlgorithmDto;
-import org.planqk.atlas.web.dtos.entities.AlgorithmListDto;
 import org.planqk.atlas.web.dtos.entities.ProviderDto;
 import org.planqk.atlas.web.dtos.entities.ProviderListDto;
 
@@ -51,7 +48,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -154,7 +150,7 @@ public class ProviderControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
     }
-    
+
     @Test
     public void createProvider_returnProvider() throws Exception {
         ProviderDto providerDto = new ProviderDto();
