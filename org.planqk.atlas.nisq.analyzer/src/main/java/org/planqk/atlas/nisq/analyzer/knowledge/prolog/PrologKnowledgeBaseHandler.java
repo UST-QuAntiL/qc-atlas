@@ -43,8 +43,9 @@ public class PrologKnowledgeBaseHandler {
      * Activate the prolog facts and rules contained in the given file
      *
      * @param fileName the name of the file containing the prolog facts and rules
+     * @throws UnsatisfiedLinkError Is thrown if the jpl driver is not on the java class path
      */
-    public void activatePrologFile(String fileName) {
+    public void activatePrologFile(String fileName) throws UnsatisfiedLinkError {
         String activateQuery = "consult('" + Constants.basePath + File.separator + fileName + ".pl').";
 
         // replace backslashes if running on windows as JPL cannot handle this
@@ -110,8 +111,9 @@ public class PrologKnowledgeBaseHandler {
      *
      * @param queryContent the content of the query
      * @return <code>true</code> if there is a solution for the query, <code>false</code> otherwise
+     * @throws UnsatisfiedLinkError Is thrown if the jpl driver is not on the java class path
      */
-    public boolean hasSolution(String queryContent) {
+    public boolean hasSolution(String queryContent) throws UnsatisfiedLinkError {
         LOG.debug("Checking if solution for query with the following content exists: {}", queryContent);
         try {
             return Query.hasSolution(queryContent);

@@ -33,7 +33,6 @@ import org.planqk.atlas.core.model.Qpu;
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.nisq.analyzer.control.NisqAnalyzerControlService;
-import org.planqk.atlas.web.AtlasProperties;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.entities.AlgorithmDto;
 import org.planqk.atlas.web.dtos.entities.AlgorithmListDto;
@@ -76,12 +75,27 @@ public class AlgorithmController {
 
     private final NisqAnalyzerControlService nisqAnalyzerService;
     private final AlgorithmService algorithmService;
-    private final AtlasProperties atlasProperties;
 
-    public AlgorithmController(NisqAnalyzerControlService nisqAnalyzerService, AlgorithmService algorithmService, AtlasProperties atlasProperties) {
+    public AlgorithmController(NisqAnalyzerControlService nisqAnalyzerService, AlgorithmService algorithmService) {
         this.nisqAnalyzerService = nisqAnalyzerService;
         this.algorithmService = algorithmService;
-        this.atlasProperties = atlasProperties;
+    }
+
+    /**
+     * Create a DTO object for a given {@link Algorithm} with the contained data and the links to related objects.
+     *
+     * @param algorithm the {@link Algorithm} to create the DTO for
+     * @return the created DTO
+     */
+    public static AlgorithmDto createAlgorithmDto(Algorithm algorithm) {
+        AlgorithmDto dto = AlgorithmDto.Converter.convert(algorithm);
+        dto.add(linkTo(methodOn(AlgorithmController.class).getAlgorithm(algorithm.getId())).withSelfRel());
+        dto.add(linkTo(methodOn(AlgorithmController.class).getInputParameters(algorithm.getId())).withRel(Constants.INPUT_PARAMS));
+        dto.add(linkTo(methodOn(AlgorithmController.class).getOutputParameters(algorithm.getId())).withRel(Constants.OUTPUT_PARAMS));
+        dto.add(linkTo(methodOn(AlgorithmController.class).getSelectionParams(algorithm.getId())).withRel(Constants.SELECTION_PARAMS));
+        dto.add(linkTo(methodOn(AlgorithmController.class).getTags(algorithm.getId())).withRel(Constants.TAGS));
+        dto.add(linkTo(methodOn(ImplementationController.class).getImplementations(algorithm.getId())).withRel(Constants.IMPLEMENTATIONS));
+        return dto;
     }
 
     @GetMapping("/")
@@ -214,11 +228,6 @@ public class AlgorithmController {
     public ResponseEntity getSelectionParams(@PathVariable Long id) {
         LOG.debug("Get to retrieve selection parameters for algorithm with Id {} received.", id);
 
-        if (!atlasProperties.isProlog()) {
-            LOG.warn("Received selection parameter request but prolog handling is deactivated in the Atlas configuration!");
-            return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body("Prolog handling is deactivated in the server configuration. Selection not possible!");
-        }
-
         Optional<Algorithm> algorithmOptional = algorithmService.findById(id);
         if (!algorithmOptional.isPresent()) {
             LOG.error("Unable to retrieve algorithm with id {} from the repository.", id);
@@ -242,11 +251,6 @@ public class AlgorithmController {
     public ResponseEntity selectImplementations(@PathVariable Long id, @RequestBody ParameterKeyValueDto params) {
         LOG.debug("Post to select implementations for algorithm with Id {} received.", id);
 
-        if (!atlasProperties.isProlog()) {
-            LOG.warn("Received selection request but prolog handling is deactivated in the Atlas configuration!");
-            return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body("Prolog handling is deactivated in the server configuration. Selection not possible!");
-        }
-
         Optional<Algorithm> algorithmOptional = algorithmService.findById(id);
         if (!algorithmOptional.isPresent()) {
             LOG.error("Unable to retrieve algorithm with id {} from the repository.", id);
@@ -266,9 +270,17 @@ public class AlgorithmController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
+        Map<Implementation, List<Qpu>> selectionResults;
+        try {
+            selectionResults = nisqAnalyzerService.performSelection(algorithm, params.getParameters());
+        } catch (UnsatisfiedLinkError e) {
+            LOG.error("UnsatisfiedLinkError while activating prolog rule. Please make sure prolog is installed and configured correctly to use the NISQ analyzer functionality!");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("No prolog engine accessible from the server. Selection not possible!");
+        }
+
         // parse suited impl/qpu pairs to dto
         List<SuitableImplQpuPairsDto.ImplQpuPair> implQpuPairs = new ArrayList<>();
-        for (Map.Entry<Implementation, List<Qpu>> suitablePair : nisqAnalyzerService.performSelection(algorithm, params.getParameters()).entrySet()) {
+        for (Map.Entry<Implementation, List<Qpu>> suitablePair : selectionResults.entrySet()) {
             Implementation implementation = suitablePair.getKey();
             ImplementationDto implementationDto = ImplementationDto.Converter.convert(implementation);
             implementationDto.add(linkTo(methodOn(ImplementationController.class).getImplementation(implementation.getImplementedAlgorithm().getId(), implementation.getId())).withSelfRel());
@@ -298,22 +310,5 @@ public class AlgorithmController {
         TagListDto tagListDto = TagController.createTagDtoList(tags.stream());
         tagListDto.add(linkTo(methodOn(AlgorithmController.class).getTags(id)).withSelfRel());
         return new ResponseEntity<>(tagListDto, HttpStatus.OK);
-    }
-
-    /**
-     * Create a DTO object for a given {@link Algorithm} with the contained data and the links to related objects.
-     *
-     * @param algorithm the {@link Algorithm} to create the DTO for
-     * @return the created DTO
-     */
-    public static AlgorithmDto createAlgorithmDto(Algorithm algorithm) {
-        AlgorithmDto dto = AlgorithmDto.Converter.convert(algorithm);
-        dto.add(linkTo(methodOn(AlgorithmController.class).getAlgorithm(algorithm.getId())).withSelfRel());
-        dto.add(linkTo(methodOn(AlgorithmController.class).getInputParameters(algorithm.getId())).withRel(Constants.INPUT_PARAMS));
-        dto.add(linkTo(methodOn(AlgorithmController.class).getOutputParameters(algorithm.getId())).withRel(Constants.OUTPUT_PARAMS));
-        dto.add(linkTo(methodOn(AlgorithmController.class).getSelectionParams(algorithm.getId())).withRel(Constants.SELECTION_PARAMS));
-        dto.add(linkTo(methodOn(AlgorithmController.class).getTags(algorithm.getId())).withRel(Constants.TAGS));
-        dto.add(linkTo(methodOn(ImplementationController.class).getImplementations(algorithm.getId())).withRel(Constants.IMPLEMENTATIONS));
-        return dto;
     }
 }

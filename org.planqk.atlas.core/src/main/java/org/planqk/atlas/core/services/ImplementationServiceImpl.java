@@ -51,6 +51,11 @@ public class ImplementationServiceImpl implements ImplementationService {
     }
 
     @Override
+    public List<Implementation> findAll() {
+        return implementationRepository.findAll();
+    }
+
+    @Override
     public Page<Implementation> findAll(Pageable pageable) {
         return implementationRepository.findAll(pageable);
     }

@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.ExecutionResult;
 import org.planqk.atlas.core.model.ExecutionResultStatus;
+import org.planqk.atlas.core.model.HasId;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Parameter;
 import org.planqk.atlas.core.model.Qpu;
@@ -40,6 +41,7 @@ import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.core.services.QpuService;
 import org.planqk.atlas.nisq.analyzer.connector.CircuitInformation;
 import org.planqk.atlas.nisq.analyzer.connector.SdkConnector;
+import org.planqk.atlas.nisq.analyzer.knowledge.prolog.PrologKnowledgeBaseHandler;
 import org.planqk.atlas.nisq.analyzer.knowledge.prolog.PrologQueryEngine;
 import org.planqk.atlas.nisq.analyzer.knowledge.prolog.PrologUtility;
 
@@ -65,12 +67,15 @@ public class NisqAnalyzerControlService {
 
     final private PrologQueryEngine prologQueryEngine;
 
-    public NisqAnalyzerControlService(List<SdkConnector> connectorList, ImplementationService implementationService, ExecutionResultService executionResultService, QpuService qpuService, PrologQueryEngine prologQueryEngine) {
+    final private PrologKnowledgeBaseHandler prologKnowledgeBaseHandler;
+
+    public NisqAnalyzerControlService(List<SdkConnector> connectorList, ImplementationService implementationService, ExecutionResultService executionResultService, QpuService qpuService, PrologQueryEngine prologQueryEngine, PrologKnowledgeBaseHandler prologKnowledgeBaseHandler) {
         this.connectorList = connectorList;
         this.implementationService = implementationService;
         this.executionResultService = executionResultService;
         this.qpuService = qpuService;
         this.prologQueryEngine = prologQueryEngine;
+        this.prologKnowledgeBaseHandler = prologKnowledgeBaseHandler;
     }
 
     /**
@@ -113,10 +118,15 @@ public class NisqAnalyzerControlService {
      * @param inputParameters the set of input parameters required for the selection
      * @return a map with all possible implementations and the corresponding list of QPUs that are suitable to execute
      * them
+     * @throws UnsatisfiedLinkError Is thrown if the jpl driver is not on the java class path
      */
-    public Map<Implementation, List<Qpu>> performSelection(Algorithm algorithm, Map<String, String> inputParameters) {
+    public Map<Implementation, List<Qpu>> performSelection(Algorithm algorithm, Map<String, String> inputParameters) throws UnsatisfiedLinkError {
         LOG.debug("Performing implementation and QPU selection for algorithm with Id: {}", algorithm.getId());
         Map<Implementation, List<Qpu>> resultPairs = new HashMap<>();
+
+        // activate the current prolog files
+        implementationService.findAll().stream().map(HasId::getId).forEach(id -> prologKnowledgeBaseHandler.activatePrologFile(id.toString()));
+        qpuService.findAll().stream().map(HasId::getId).forEach(id -> prologKnowledgeBaseHandler.activatePrologFile(id.toString()));
 
         // check all implementation if they can handle the given set of input parameters
         List<Implementation> implementations = implementationService.findByImplementedAlgorithm(algorithm);

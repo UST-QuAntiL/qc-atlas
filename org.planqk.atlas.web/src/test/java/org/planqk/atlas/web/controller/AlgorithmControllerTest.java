@@ -30,7 +30,6 @@ import org.planqk.atlas.core.model.DataType;
 import org.planqk.atlas.core.model.Parameter;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.nisq.analyzer.control.NisqAnalyzerControlService;
-import org.planqk.atlas.web.AtlasProperties;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.entities.AlgorithmDto;
 import org.planqk.atlas.web.dtos.entities.AlgorithmListDto;
@@ -70,9 +69,6 @@ public class AlgorithmControllerTest {
 
     @Mock
     private AlgorithmService algorithmService;
-
-    @Mock
-    private AtlasProperties atlasProperties;
 
     @InjectMocks
     private AlgorithmController algorithmController;
@@ -234,23 +230,13 @@ public class AlgorithmControllerTest {
     }
 
     @Test
-    public void getSelectionParameters_prologDeactivated() throws Exception {
-        when(atlasProperties.isProlog()).thenReturn(false);
-        mockMvc.perform(get("/" + Constants.ALGORITHMS + "/5/" + Constants.NISQ + "/" + Constants.SELECTION_PARAMS)
-                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotImplemented());
-    }
-
-    @Test
     public void getSelectionParameters_returnNotFound() throws Exception {
-        when(atlasProperties.isProlog()).thenReturn(true);
         mockMvc.perform(get("/" + Constants.ALGORITHMS + "/5/" + Constants.NISQ + "/" + Constants.SELECTION_PARAMS)
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
     }
 
     @Test
     public void getSelectionParameters_returnParameters() throws Exception {
-        when(atlasProperties.isProlog()).thenReturn(true);
-
         Set<Parameter> parameterSet = new HashSet<>();
         parameterSet.add(new Parameter("param1", DataType.String, null, "First parameter"));
         parameterSet.add(new Parameter("param2", DataType.String, null, "Second parameter"));

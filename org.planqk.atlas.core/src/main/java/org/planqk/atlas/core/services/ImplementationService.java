@@ -32,6 +32,8 @@ public interface ImplementationService {
 
     Implementation save(Implementation tag);
 
+    List<Implementation> findAll();
+
     Page<Implementation> findAll(Pageable pageable);
 
     Optional<Implementation> findById(Long algoId);

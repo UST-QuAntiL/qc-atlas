@@ -59,7 +59,6 @@ public class PrologFactUpdater {
         String prologContent = createImplementationFacts(id, usedSdk.toLowerCase(), implementedAlgoId, selectionRule, widthRule, depthRule);
         try {
             prologKnowledgeBaseHandler.persistPrologFile(prologContent, id.toString());
-            prologKnowledgeBaseHandler.activatePrologFile(id.toString());
         } catch (IOException e) {
             LOG.error("Unable to store prolog file to add new facts after implementation insertion: {}", e.getMessage());
         }
@@ -80,7 +79,6 @@ public class PrologFactUpdater {
         String prologContent = createQpuFacts(id, qubitCount, supportedSdks, t1Time, maxGateTime);
         try {
             prologKnowledgeBaseHandler.persistPrologFile(prologContent, id.toString());
-            prologKnowledgeBaseHandler.activatePrologFile(id.toString());
         } catch (IOException e) {
             LOG.error("Unable to store prolog file to add new facts after QPU insertion: {}", e.getMessage());
         }
@@ -107,7 +105,6 @@ public class PrologFactUpdater {
         String prologContent = createImplementationFacts(id, usedSdk.toLowerCase(), implementedAlgoId, selectionRule, widthRule, depthRule);
         try {
             prologKnowledgeBaseHandler.persistPrologFile(prologContent, id.toString());
-            prologKnowledgeBaseHandler.activatePrologFile(id.toString());
         } catch (IOException e) {
             LOG.error("Unable to store prolog file to add new facts after implementation update: {}", e.getMessage());
         }
@@ -132,7 +129,6 @@ public class PrologFactUpdater {
         String prologContent = createQpuFacts(id, qubitCount, supportedSdks, t1Time, maxGateTime);
         try {
             prologKnowledgeBaseHandler.persistPrologFile(prologContent, id.toString());
-            prologKnowledgeBaseHandler.activatePrologFile(id.toString());
         } catch (IOException e) {
             LOG.error("Unable to store prolog file to add new facts after QPU update: {}", e.getMessage());
         }
