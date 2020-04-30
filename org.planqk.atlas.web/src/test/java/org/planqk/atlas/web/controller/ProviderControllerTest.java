@@ -162,7 +162,7 @@ public class ProviderControllerTest {
         providerDto.setAccessKey("123");
         providerDto.setSecretKey("456");
         Provider provider = ProviderDto.Converter.convert(providerDto);
-        when(providerService.save(any(Provider.class))).thenReturn(provider);
+        when(providerService.save(provider)).thenReturn(provider);
 
         MvcResult result = mockMvc.perform(post("/" + Constants.PROVIDERS + "/")
                 .content(new ObjectMapper().writeValueAsString(providerDto))

@@ -24,6 +24,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -31,6 +32,7 @@ import lombok.Setter;
  * Base class defining the Id property for all JPA entity classes.
  */
 @MappedSuperclass
+@EqualsAndHashCode
 public abstract class HasId {
 
     @Id

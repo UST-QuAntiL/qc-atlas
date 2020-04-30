@@ -212,7 +212,7 @@ public class AlgorithmControllerTest {
         AlgorithmDto algorithmDto = new AlgorithmDto();
         algorithmDto.setName("Shor");
         Algorithm algorithm = AlgorithmDto.Converter.convert(algorithmDto);
-        when(algorithmService.save(any(Algorithm.class))).thenReturn(algorithm);
+        when(algorithmService.save(algorithm)).thenReturn(algorithm);
 
         MvcResult result = mockMvc.perform(post("/" + Constants.ALGORITHMS + "/")
                 .content(new ObjectMapper().writeValueAsString(algorithmDto))
