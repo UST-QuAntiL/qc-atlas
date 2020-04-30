@@ -26,13 +26,12 @@ import javax.persistence.MappedSuperclass;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.hateoas.RepresentationModel;
 
 /**
  * Base class defining the Id property for all JPA entity classes.
  */
 @MappedSuperclass
-public abstract class HasId extends RepresentationModel {
+public abstract class HasId {
 
     @Id
     @Getter

@@ -126,7 +126,7 @@ public class TagControllerTest {
     @Test
     public void testPostTag() throws Exception {
         Tag tag1 = getTestTag();
-        when(tagService.save(tag1)).thenReturn(tag1);
+        when(tagService.save(any(Tag.class))).thenReturn(tag1);
 
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders
                 .post("/" + Constants.TAGS + "/")
