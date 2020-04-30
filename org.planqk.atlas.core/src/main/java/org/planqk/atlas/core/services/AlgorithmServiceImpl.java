@@ -20,8 +20,10 @@
 package org.planqk.atlas.core.services;
 
 import java.util.Optional;
+import java.util.Set;
 
 import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.repository.AlgorithmRepository;
 
 import org.springframework.data.domain.Page;
@@ -33,12 +35,26 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 
     private AlgorithmRepository algorithmRepository;
 
-    public AlgorithmServiceImpl(AlgorithmRepository algorithmRepository) {
+    private TagService tagService;
+
+    public AlgorithmServiceImpl(AlgorithmRepository algorithmRepository, TagService tagService) {
         this.algorithmRepository = algorithmRepository;
+        this.tagService = tagService;
     }
 
     @Override
     public Algorithm save(Algorithm algorithm) {
+
+        Set<Tag> tags = algorithm.getTags();
+        for (Tag algorithmTag : algorithm.getTags()) {
+            Optional<Tag> storedTagOptional = tagService.getTagById(algorithmTag.getId());
+            if (!storedTagOptional.isPresent()) {
+                tags.remove(algorithmTag);
+                tags.add(tagService.save(algorithmTag));
+            }
+        }
+        algorithm.setTags(tags);
+
         return algorithmRepository.save(algorithm);
     }
 

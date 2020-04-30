@@ -24,11 +24,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Qpu;
+import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.nisq.analyzer.control.NisqAnalyzerControlService;
 import org.planqk.atlas.web.AtlasProperties;
@@ -39,6 +41,7 @@ import org.planqk.atlas.web.dtos.entities.ImplementationDto;
 import org.planqk.atlas.web.dtos.entities.ParameterDto;
 import org.planqk.atlas.web.dtos.entities.ParameterListDto;
 import org.planqk.atlas.web.dtos.entities.QpuDto;
+import org.planqk.atlas.web.dtos.entities.TagListDto;
 import org.planqk.atlas.web.dtos.requests.ParameterKeyValueDto;
 import org.planqk.atlas.web.dtos.requests.SuitableImplQpuPairsDto;
 import org.planqk.atlas.web.utils.RestUtils;
@@ -48,6 +51,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -64,6 +68,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
  * Controller to access and manipulate quantum algorithms.
  */
 @RestController
+@CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/" + Constants.ALGORITHMS)
 public class AlgorithmController {
 
@@ -114,6 +119,42 @@ public class AlgorithmController {
         // store and return algorithm
         Algorithm algorithm = algorithmService.save(AlgorithmDto.Converter.convert(algo));
         return new ResponseEntity<>(createAlgorithmDto(algorithm), HttpStatus.CREATED);
+    }
+
+    @PostMapping("/{id}/" + Constants.INPUT_PARAMS)
+    public HttpEntity<ParameterDto> addInputParameter(@PathVariable Long id, @RequestBody ParameterDto parameterDto) {
+        LOG.debug("Post to retrieve algorithm with id: {}.", id);
+        Optional<Algorithm> algorithmOptional = algorithmService.findById(id);
+        if (!algorithmOptional.isPresent()) {
+            LOG.error("Unable to retrieve algorithm with id {} from the repository.", id);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        if (Objects.isNull(parameterDto.getName())) {
+            LOG.error("Received invalid parameter object for post request: {}", parameterDto.toString());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        Algorithm algorithm = algorithmOptional.get();
+        algorithm.getInputParameters().add(ParameterDto.Converter.convert(parameterDto));
+        algorithmService.save(algorithm);
+        return new ResponseEntity<>(parameterDto, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/{id}/" + Constants.OUTPUT_PARAMS)
+    public HttpEntity<ParameterDto> addOutputParameter(@PathVariable Long id, @RequestBody ParameterDto parameterDto) {
+        LOG.debug("Post to retrieve algorithm with id: {}.", id);
+        Optional<Algorithm> algorithmOptional = algorithmService.findById(id);
+        if (!algorithmOptional.isPresent()) {
+            LOG.error("Unable to retrieve algorithm with id {} from the repository.", id);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        if (Objects.isNull(parameterDto.getName())) {
+            LOG.error("Received invalid parameter object for post request: {}", parameterDto.toString());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        Algorithm algorithm = algorithmOptional.get();
+        algorithm.getOutputParameters().add(ParameterDto.Converter.convert(parameterDto));
+        algorithmService.save(algorithm);
+        return new ResponseEntity<>(parameterDto, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
@@ -246,18 +287,32 @@ public class AlgorithmController {
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
+    @GetMapping("/{id}/" + Constants.TAGS)
+    public HttpEntity<TagListDto> getTags(@PathVariable Long id) {
+        Optional<Algorithm> algorithmOptional = algorithmService.findById(id);
+        if (!algorithmOptional.isPresent()) {
+            LOG.error("Unable to retrieve algorithm with id {} form the repository.", id);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        Set<Tag> tags = algorithmOptional.get().getTags();
+        TagListDto tagListDto = TagController.createTagDtoList(tags.stream());
+        tagListDto.add(linkTo(methodOn(AlgorithmController.class).getTags(id)).withSelfRel());
+        return new ResponseEntity<>(tagListDto, HttpStatus.OK);
+    }
+
     /**
      * Create a DTO object for a given {@link Algorithm} with the contained data and the links to related objects.
      *
      * @param algorithm the {@link Algorithm} to create the DTO for
      * @return the created DTO
      */
-    private AlgorithmDto createAlgorithmDto(Algorithm algorithm) {
+    public static AlgorithmDto createAlgorithmDto(Algorithm algorithm) {
         AlgorithmDto dto = AlgorithmDto.Converter.convert(algorithm);
         dto.add(linkTo(methodOn(AlgorithmController.class).getAlgorithm(algorithm.getId())).withSelfRel());
         dto.add(linkTo(methodOn(AlgorithmController.class).getInputParameters(algorithm.getId())).withRel(Constants.INPUT_PARAMS));
         dto.add(linkTo(methodOn(AlgorithmController.class).getOutputParameters(algorithm.getId())).withRel(Constants.OUTPUT_PARAMS));
         dto.add(linkTo(methodOn(AlgorithmController.class).getSelectionParams(algorithm.getId())).withRel(Constants.SELECTION_PARAMS));
+        dto.add(linkTo(methodOn(AlgorithmController.class).getTags(algorithm.getId())).withRel(Constants.TAGS));
         dto.add(linkTo(methodOn(ImplementationController.class).getImplementations(algorithm.getId())).withRel(Constants.IMPLEMENTATIONS));
         return dto;
     }

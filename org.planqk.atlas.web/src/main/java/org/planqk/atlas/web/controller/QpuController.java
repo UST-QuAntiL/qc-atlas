@@ -24,23 +24,24 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.planqk.atlas.core.model.Provider;
+import org.planqk.atlas.core.model.Qpu;
+import org.planqk.atlas.core.model.Sdk;
+import org.planqk.atlas.core.services.ProviderService;
+import org.planqk.atlas.core.services.QpuService;
+import org.planqk.atlas.core.services.SdkService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.entities.QpuDto;
 import org.planqk.atlas.web.dtos.entities.QpuListDto;
 import org.planqk.atlas.web.dtos.requests.CreateQpuRequest;
-import org.planqk.atlas.core.services.ProviderService;
-import org.planqk.atlas.core.services.QpuService;
-import org.planqk.atlas.core.services.SdkService;
 import org.planqk.atlas.web.utils.RestUtils;
-import org.planqk.atlas.core.model.Provider;
-import org.planqk.atlas.core.model.Qpu;
-import org.planqk.atlas.core.model.Sdk;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -56,6 +57,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
  * Controller to access and manipulate quantum processing units (QPUs).
  */
 @RestController
+@CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/" + Constants.PROVIDERS + "/{providerId}/" + Constants.QPUS)
 public class QpuController {
 
@@ -78,8 +80,10 @@ public class QpuController {
 
         // add all available algorithms to the response
         for (Qpu qpu : qpuService.findAll(RestUtils.getAllPageable())) {
-            qpuListDto.add(createQpuDto(providerId, qpu));
-            qpuListDto.add(linkTo(methodOn(QpuController.class).getQpu(providerId, qpu.getId())).withRel(qpu.getId().toString()));
+            if (qpu.getProvider().getId().equals(providerId)) {
+                qpuListDto.add(createQpuDto(providerId, qpu));
+                qpuListDto.add(linkTo(methodOn(QpuController.class).getQpu(providerId, qpu.getId())).withRel(qpu.getId().toString()));
+            }
         }
 
         qpuListDto.add(linkTo(methodOn(QpuController.class).getQpus(providerId, Constants.DEFAULT_PAGE_NUMBER, Constants.DEFAULT_PAGE_SIZE)).withSelfRel());

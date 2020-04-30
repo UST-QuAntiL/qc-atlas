@@ -19,11 +19,11 @@
 
 package org.planqk.atlas.web.dtos.entities;
 
-import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import lombok.Getter;
-import org.assertj.core.util.Lists;
 import org.springframework.hateoas.RepresentationModel;
 
 /**
@@ -32,9 +32,13 @@ import org.springframework.hateoas.RepresentationModel;
 public class ImplementationListDto extends RepresentationModel<ImplementationListDto> {
 
     @Getter
-    private final List<ImplementationDto> implementationDtos = Lists.newArrayList();
+    private final Set<ImplementationDto> implementationDtos = new HashSet<>();
 
-    public void add(final ImplementationDto... implementations) {
-        this.implementationDtos.addAll(Arrays.asList(implementations));
+    public void add(final List<ImplementationDto> implementations) {
+        this.implementationDtos.addAll(implementations);
+    }
+
+    public void add(final ImplementationDto implementation) {
+        this.implementationDtos.add(implementation);
     }
 }

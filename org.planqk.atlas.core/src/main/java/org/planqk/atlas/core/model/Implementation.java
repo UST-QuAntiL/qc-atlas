@@ -21,12 +21,13 @@ package org.planqk.atlas.core.model;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -73,13 +74,14 @@ public class Implementation extends AlgorOrImpl {
     @ManyToOne
     private Sdk sdk;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @ManyToMany(cascade =
+            {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "implementation_tag",
             joinColumns = @JoinColumn(name = "implementation_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
     @Setter
-    private List<Tag> tags;
+    private Set<Tag> tags;
 
     @Setter
     @OneToMany(cascade = CascadeType.PERSIST)
@@ -90,9 +92,9 @@ public class Implementation extends AlgorOrImpl {
     }
 
     @NonNull
-    public List<Tag> getTags() {
+    public Set<Tag> getTags() {
         if (Objects.isNull(tags)) {
-            return new ArrayList<>();
+            return new HashSet<>();
         }
         return tags;
     }
