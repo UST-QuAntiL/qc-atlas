@@ -51,6 +51,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -211,7 +212,7 @@ public class AlgorithmControllerTest {
         AlgorithmDto algorithmDto = new AlgorithmDto();
         algorithmDto.setName("Shor");
         Algorithm algorithm = AlgorithmDto.Converter.convert(algorithmDto);
-        when(algorithmService.save(algorithm)).thenReturn(algorithm);
+        when(algorithmService.save(any(Algorithm.class))).thenReturn(algorithm);
 
         MvcResult result = mockMvc.perform(post("/" + Constants.ALGORITHMS + "/")
                 .content(new ObjectMapper().writeValueAsString(algorithmDto))

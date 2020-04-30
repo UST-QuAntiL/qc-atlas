@@ -51,6 +51,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -161,7 +162,7 @@ public class ProviderControllerTest {
         providerDto.setAccessKey("123");
         providerDto.setSecretKey("456");
         Provider provider = ProviderDto.Converter.convert(providerDto);
-        when(providerService.save(provider)).thenReturn(provider);
+        when(providerService.save(any(Provider.class))).thenReturn(provider);
 
         MvcResult result = mockMvc.perform(post("/" + Constants.PROVIDERS + "/")
                 .content(new ObjectMapper().writeValueAsString(providerDto))
