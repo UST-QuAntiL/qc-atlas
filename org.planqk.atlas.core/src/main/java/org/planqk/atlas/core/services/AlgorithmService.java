@@ -28,9 +28,11 @@ import org.springframework.data.domain.Pageable;
 
 public interface AlgorithmService {
 
-    Algorithm save(Algorithm tag);
+    Algorithm save(Algorithm algorithm);
 
     Page<Algorithm> findAll(Pageable pageable);
 
     Optional<Algorithm> findById(Long algoId);
+
+    void deleteAlgorithm(Algorithm algorithm);
 }

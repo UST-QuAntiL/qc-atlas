@@ -51,4 +51,9 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     public Optional<Algorithm> findById(Long algoId) {
         return algorithmRepository.findById(algoId);
     }
+
+    @Override
+    public void deleteAlgorithm(Algorithm algorithm) {
+        algorithmRepository.delete(algorithm);
+    }
 }
