@@ -1,4 +1,4 @@
-/*******************************************************************************
+/********************************************************************************
  * Copyright (c) 2020 University of Stuttgart
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -17,43 +17,32 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.planqk.atlas.web.dtos.entities;
-
-import java.util.List;
+package org.planqk.atlas.web.dtos;
 
 import org.planqk.atlas.core.model.Provider;
 import org.planqk.atlas.core.model.Qpu;
-import org.planqk.atlas.core.model.Sdk;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.springframework.hateoas.RepresentationModel;
 
 /**
  * Data transfer object for the model class {@link Qpu}.
  */
-@ToString(callSuper = true, includeFieldNames = true)
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
+@Data
 public class QpuDto extends RepresentationModel<ProviderDto> {
 
-    @Getter
-    @Setter
     private Long id;
 
-    @Getter
-    @Setter
     private String name;
 
-    @Getter
-    @Setter
     private int numberOfQubits;
 
-    @Getter
-    @Setter
     private float t1;
 
-    @Getter
-    @Setter
     private float maxGateTime;
 
     public static final class Converter {
@@ -68,14 +57,13 @@ public class QpuDto extends RepresentationModel<ProviderDto> {
             return dto;
         }
 
-        public static Qpu convert(final QpuDto object, final Provider provider, final List<Sdk> supportedSdks) {
+        public static Qpu convert(final QpuDto object, final Provider provider) {
             Qpu qpu = new Qpu();
             qpu.setName(object.getName());
             qpu.setQubitCount(object.getNumberOfQubits());
             qpu.setT1(object.getT1());
             qpu.setMaxGateTime(object.getMaxGateTime());
             qpu.setProvider(provider);
-            qpu.setSupportedSdks(supportedSdks);
             return qpu;
         }
     }

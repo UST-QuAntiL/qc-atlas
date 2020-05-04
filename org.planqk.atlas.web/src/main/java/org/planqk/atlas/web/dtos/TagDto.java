@@ -1,4 +1,4 @@
-/*******************************************************************************
+/********************************************************************************
  * Copyright (c) 2020 University of Stuttgart
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -17,39 +17,40 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.planqk.atlas.web.dtos.entities;
+package org.planqk.atlas.web.dtos;
 
-import org.planqk.atlas.core.model.Sdk;
+import org.planqk.atlas.core.model.Tag;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.springframework.hateoas.RepresentationModel;
 
-@ToString(callSuper = true, includeFieldNames = true)
-public class SdkDto extends RepresentationModel<SdkDto> {
+@EqualsAndHashCode(callSuper = true)
+@Data
+public class TagDto extends RepresentationModel<TagDto> {
 
-    @Getter
-    @Setter
+    private String key;
+
+    private String value;
+
     private Long id;
-
-    @Getter
-    @Setter
-    private String name;
 
     public static final class Converter {
 
-        public static SdkDto convert(final Sdk object) {
-            final SdkDto dto = new SdkDto();
+        public static TagDto convert(final Tag object) {
+            final TagDto dto = new TagDto();
             dto.setId(object.getId());
-            dto.setName(object.getName());
+            dto.setKey(object.getKey());
+            dto.setValue(object.getValue());
             return dto;
         }
 
-        public static Sdk convert(final SdkDto object) {
-            final Sdk sdk = new Sdk();
-            sdk.setName(object.getName());
-            return sdk;
+        public static Tag convert(final TagDto object) {
+            final Tag tag = new Tag();
+            tag.setId(object.getId());
+            tag.setKey(object.getKey());
+            tag.setValue(object.getValue());
+            return tag;
         }
     }
 }

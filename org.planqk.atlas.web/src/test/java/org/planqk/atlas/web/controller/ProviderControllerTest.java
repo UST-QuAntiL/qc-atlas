@@ -26,8 +26,8 @@ import java.util.Optional;
 import org.planqk.atlas.core.model.Provider;
 import org.planqk.atlas.core.services.ProviderService;
 import org.planqk.atlas.web.Constants;
-import org.planqk.atlas.web.dtos.entities.ProviderDto;
-import org.planqk.atlas.web.dtos.entities.ProviderListDto;
+import org.planqk.atlas.web.dtos.ProviderDto;
+import org.planqk.atlas.web.dtos.ProviderListDto;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;

@@ -65,12 +65,11 @@ public class RootControllerTest {
                 .andExpect(status().isOk()).andReturn();
 
         RepresentationModel response = new ObjectMapper().readValue(result.getResponse().getContentAsString(), RepresentationModel.class);
-        assertTrue(response.getLinks().hasSize(5L));
+        assertTrue(response.getLinks().hasSize(4L));
 
         assertTrue(response.getLinks().hasLink("self"));
         assertTrue(response.getLinks().hasLink(Constants.ALGORITHMS));
         assertTrue(response.getLinks().hasLink(Constants.PROVIDERS));
-        assertTrue(response.getLinks().hasLink(Constants.SDKS));
         assertTrue(response.getLinks().hasLink(Constants.TAGS));
         assertFalse(response.getLinks().hasLink("randomLink"));
     }

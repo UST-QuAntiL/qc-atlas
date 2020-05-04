@@ -27,28 +27,26 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
+@EqualsAndHashCode(callSuper = true)
+@NoArgsConstructor
 @Entity
+@Data
 public class Tag extends HasId {
 
-    @Getter
-    @Setter
     String key;
 
-    @Getter
-    @Setter
     String value;
 
     @ManyToMany(mappedBy = "tags", cascade =
             {CascadeType.MERGE, CascadeType.PERSIST})
-    @Setter
     private Set<Algorithm> algorithms;
 
     @ManyToMany(mappedBy = "tags", cascade =
             {CascadeType.MERGE, CascadeType.PERSIST})
-    @Setter
     private Set<Implementation> implementations;
 
     public Set<Algorithm> getAlgorithms() {
@@ -64,5 +62,4 @@ public class Tag extends HasId {
         }
         return implementations;
     }
-
 }

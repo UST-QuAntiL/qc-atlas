@@ -1,4 +1,4 @@
-/*******************************************************************************
+/********************************************************************************
  * Copyright (c) 2020 University of Stuttgart
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -17,7 +17,7 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.planqk.atlas.web.dtos.entities;
+package org.planqk.atlas.web.dtos;
 
 import java.util.Objects;
 import java.util.Set;
@@ -27,64 +27,38 @@ import org.planqk.atlas.core.model.Algorithm;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.springframework.hateoas.RepresentationModel;
-import org.springframework.lang.NonNull;
 
 import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.WRITE_ONLY;
 
 /**
  * Data transfer object for Algorithms ({@link org.planqk.atlas.core.model.Algorithm}).
  */
-@ToString(callSuper = true, includeFieldNames = true)
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
+@Data
+@NoArgsConstructor
 public class AlgorithmDto extends RepresentationModel<AlgorithmDto> {
 
-    @Getter
-    @Setter
     private Long id;
 
-    @Getter
-    @Setter
     private String name;
 
-    @Setter
-    private ParameterListDto inputParameters;
+    private String inputFormat;
 
-    @Setter
-    private ParameterListDto outputParameters;
+    private String outputFormat;
 
-    @Getter
-    @Setter
     // we do not embedded tags into the object (via @jsonInclude) - instead, we add a hateoas link to the associated tags
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     // annotate this for swagger as well, because swagger doesn't recognize the json property annotation
     @Schema(accessMode = WRITE_ONLY)
     private Set<TagDto> tags;
 
-    @Setter
-    @Getter
     private Object content;
-
-    public AlgorithmDto() {
-    }
-
-    @NonNull
-    public ParameterListDto getInputParameters() {
-        if (Objects.isNull(inputParameters)) {
-            return new ParameterListDto();
-        }
-        return inputParameters;
-    }
-
-    @NonNull
-    public ParameterListDto getOutputParameters() {
-        if (Objects.isNull(outputParameters)) {
-            return new ParameterListDto();
-        }
-        return outputParameters;
-    }
 
     public static final class Converter {
 
@@ -94,16 +68,8 @@ public class AlgorithmDto extends RepresentationModel<AlgorithmDto> {
             dto.setName(object.getName());
             dto.setContent(object.getContent());
             dto.setTags(object.getTags().stream().map(TagDto.Converter::convert).collect(Collectors.toSet()));
-            ParameterListDto inputParams = new ParameterListDto();
-            inputParams.add(object.getInputParameters().stream().map(ParameterDto.Converter::convert)
-                    .collect(Collectors.toList()));
-            dto.setInputParameters(inputParams);
-
-            ParameterListDto outputParams = new ParameterListDto();
-            outputParams.add(object.getOutputParameters().stream().map(ParameterDto.Converter::convert)
-                    .collect(Collectors.toList()));
-            dto.setOutputParameters(outputParams);
-
+            dto.setInputFormat(object.getInputFormat());
+            dto.setOutputFormat(object.getInputFormat());
             return dto;
         }
 
@@ -114,12 +80,8 @@ public class AlgorithmDto extends RepresentationModel<AlgorithmDto> {
             if (Objects.nonNull(object.getTags())) {
                 algo.setTags(object.getTags().stream().map(TagDto.Converter::convert).collect(Collectors.toSet()));
             }
-            algo.setInputParameters(object.getInputParameters().getParameters().stream()
-                    .map(ParameterDto.Converter::convert)
-                    .collect(Collectors.toList()));
-            algo.setOutputParameters(object.getOutputParameters().getParameters().stream()
-                    .map(ParameterDto.Converter::convert)
-                    .collect(Collectors.toList()));
+            algo.setInputFormat(object.getInputFormat());
+            algo.setOutputFormat(object.getInputFormat());
             return algo;
         }
     }

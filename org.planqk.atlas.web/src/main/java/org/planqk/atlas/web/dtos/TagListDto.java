@@ -1,4 +1,4 @@
-/*******************************************************************************
+/********************************************************************************
  * Copyright (c) 2020 University of Stuttgart
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -17,22 +17,24 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.planqk.atlas.core.services;
+package org.planqk.atlas.web.dtos;
 
-import java.util.Optional;
+import java.util.List;
 
-import org.planqk.atlas.core.model.Sdk;
+import lombok.Getter;
+import org.assertj.core.util.Lists;
+import org.springframework.hateoas.RepresentationModel;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+public class TagListDto extends RepresentationModel<TagListDto> {
 
-public interface SdkService {
+    @Getter
+    private final List<TagDto> tagsDtos = Lists.newArrayList();
 
-    Sdk save(Sdk sdk);
+    public void add(final List<TagDto> tags) {
+        this.tagsDtos.addAll(tags);
+    }
 
-    Page<Sdk> findAll(Pageable pageable);
-
-    Optional<Sdk> findById(Long algoId);
-
-    Optional<Sdk> findByName(String name);
+    public void add(final TagDto tag) {
+        this.tagsDtos.add(tag);
+    }
 }

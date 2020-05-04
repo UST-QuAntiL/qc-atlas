@@ -28,6 +28,7 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 
 import lombok.Setter;
 import org.springframework.lang.NonNull;
@@ -38,8 +39,7 @@ import org.springframework.lang.NonNull;
 @Entity
 public class Algorithm extends AlgorOrImpl {
 
-    @ManyToMany(mappedBy = "implementedAlgorithm", cascade =
-            {CascadeType.MERGE})
+    @OneToMany(mappedBy = "implementedAlgorithm", cascade = {CascadeType.MERGE})
     @Setter
     private Set<Implementation> implementations;
 
