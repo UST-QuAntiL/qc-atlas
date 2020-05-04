@@ -23,12 +23,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Provider;
 import org.planqk.atlas.core.services.ProviderService;
 import org.planqk.atlas.web.Constants;
-import org.planqk.atlas.web.dtos.entities.AlgorithmDto;
-import org.planqk.atlas.web.dtos.entities.AlgorithmListDto;
 import org.planqk.atlas.web.dtos.entities.ProviderDto;
 import org.planqk.atlas.web.dtos.entities.ProviderListDto;
 
@@ -153,7 +150,7 @@ public class ProviderControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
     }
-    
+
     @Test
     public void createProvider_returnProvider() throws Exception {
         ProviderDto providerDto = new ProviderDto();

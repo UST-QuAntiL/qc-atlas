@@ -24,15 +24,16 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.hateoas.RepresentationModel;
 
 /**
  * Base class defining the Id property for all JPA entity classes.
  */
 @MappedSuperclass
-public abstract class HasId extends RepresentationModel {
+@EqualsAndHashCode
+public abstract class HasId {
 
     @Id
     @Getter
