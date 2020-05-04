@@ -26,10 +26,6 @@ rm /tmp/tomcat.tgz
 ENV CATALINA_HOME /opt/tomcat
 ENV PATH $PATH:$CATALINA_HOME/bin
 
-# setup SWI prolog
-RUN apt-get update && apt-get install -qqy swi-prolog swi-prolog-java
-ENV SWI_HOME_DIR /usr/bin/swipl
-
 # install dockerize for configuration templating
 RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
     && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \

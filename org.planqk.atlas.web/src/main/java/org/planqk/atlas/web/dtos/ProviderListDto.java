@@ -1,4 +1,4 @@
-/*******************************************************************************
+/********************************************************************************
  * Copyright (c) 2020 University of Stuttgart
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -17,37 +17,26 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.planqk.atlas.core.model;
+package org.planqk.atlas.web.dtos;
 
-import javax.persistence.Entity;
+import java.util.Arrays;
+import java.util.List;
 
-import lombok.AllArgsConstructor;
+import org.planqk.atlas.core.model.Provider;
+
 import lombok.Getter;
-import lombok.Setter;
+import org.assertj.core.util.Lists;
+import org.springframework.hateoas.RepresentationModel;
 
 /**
- * Input or output parameter for an {@link AlgorOrImpl}.
+ * Data transfer object for multiple {@link Provider}s.
  */
-@Entity
-@AllArgsConstructor
-public class Parameter extends HasId {
+public class ProviderListDto extends RepresentationModel<ProviderListDto> {
 
     @Getter
-    @Setter
-    String name;
+    private final List<ProviderDto> providerDtoList = Lists.newArrayList();
 
-    @Getter
-    @Setter
-    DataType type;
-
-    @Getter
-    @Setter
-    String restriction;
-
-    @Getter
-    @Setter
-    String description;
-
-    public Parameter() {
+    public void add(final ProviderDto... provider) {
+        this.providerDtoList.addAll(Arrays.asList(provider));
     }
 }

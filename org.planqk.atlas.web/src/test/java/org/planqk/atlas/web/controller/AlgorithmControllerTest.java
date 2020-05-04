@@ -24,13 +24,10 @@ import java.util.List;
 import java.util.Optional;
 
 import org.planqk.atlas.core.model.Algorithm;
-import org.planqk.atlas.core.model.DataType;
-import org.planqk.atlas.core.model.Parameter;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.web.Constants;
-import org.planqk.atlas.web.dtos.entities.AlgorithmDto;
-import org.planqk.atlas.web.dtos.entities.AlgorithmListDto;
-import org.planqk.atlas.web.dtos.entities.ParameterListDto;
+import org.planqk.atlas.web.dtos.AlgorithmDto;
+import org.planqk.atlas.web.dtos.AlgorithmListDto;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
@@ -144,57 +141,6 @@ public class AlgorithmControllerTest {
 
         AlgorithmDto response = new ObjectMapper().readValue(result.getResponse().getContentAsString(), AlgorithmDto.class);
         assertEquals(response.getId(), Long.valueOf(5L));
-    }
-
-    @Test
-    public void getInputParameters_returnNotFound() throws Exception {
-        mockMvc.perform(get("/" + Constants.ALGORITHMS + "/5/" + Constants.INPUT_PARAMS)
-                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
-    }
-
-    @Test
-    public void getInputParameters_returnParameters() throws Exception {
-        List<Parameter> parameterList = new ArrayList<>();
-        parameterList.add(new Parameter("param1", DataType.String, null, "First parameter"));
-        parameterList.add(new Parameter("param2", DataType.String, null, "Second parameter"));
-
-        Algorithm algorithm = new Algorithm();
-        ReflectionTestUtils.setField(algorithm, "id", 5L);
-        algorithm.setInputParameters(parameterList);
-
-        when(algorithmService.findById(5L)).thenReturn(Optional.of(algorithm));
-
-        MvcResult result = mockMvc.perform(get("/" + Constants.ALGORITHMS + "/5/" + Constants.INPUT_PARAMS)
-                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
-
-        ParameterListDto response = new ObjectMapper().readValue(result.getResponse().getContentAsString(), ParameterListDto.class);
-        assertEquals(response.getParameters().size(), 2);
-    }
-
-    @Test
-    public void getOutputParameters_returnNotFound() throws Exception {
-        mockMvc.perform(get("/" + Constants.ALGORITHMS + "/5/" + Constants.OUTPUT_PARAMS)
-                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
-    }
-
-    @Test
-    public void getOutputParameters_returnParameters() throws Exception {
-        List<Parameter> parameterList = new ArrayList<>();
-        parameterList.add(new Parameter("param1", DataType.String, null, "First parameter"));
-        parameterList.add(new Parameter("param2", DataType.String, null, "Second parameter"));
-        parameterList.add(new Parameter("param3", DataType.String, null, "Third parameter"));
-
-        Algorithm algorithm = new Algorithm();
-        ReflectionTestUtils.setField(algorithm, "id", 5L);
-        algorithm.setInputParameters(parameterList);
-
-        when(algorithmService.findById(5L)).thenReturn(Optional.of(algorithm));
-
-        MvcResult result = mockMvc.perform(get("/" + Constants.ALGORITHMS + "/5/" + Constants.INPUT_PARAMS)
-                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
-
-        ParameterListDto response = new ObjectMapper().readValue(result.getResponse().getContentAsString(), ParameterListDto.class);
-        assertEquals(response.getParameters().size(), 3);
     }
 
     @Test

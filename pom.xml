@@ -21,7 +21,6 @@
 
     <modules>
         <module>org.planqk.atlas.core</module>
-        <module>org.planqk.atlas.nisq.analyzer</module>
         <module>org.planqk.atlas.web</module>
     </modules>
 

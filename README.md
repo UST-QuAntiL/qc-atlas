@@ -28,12 +28,6 @@ Build the project and deploy the WAR file located at `org.planqk.atlas.web/targe
 
 Make sure you have an accessibly Postgres database and configure the application correspondingly.
 
-Prerequisites for the NISQ Analazer components:
-
-- [SWI Prolog](https://www.swi-prolog.org/) is installed on the machine where the Tomcat runs and the Path is configured correspondingly
-- [Qiskit](https://qiskit.org/) is installed locally and accessible
-
-
 ## Haftungsausschluss
 
 Dies ist ein Forschungsprototyp.

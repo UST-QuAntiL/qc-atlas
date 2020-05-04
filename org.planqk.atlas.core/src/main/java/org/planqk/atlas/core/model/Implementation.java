@@ -31,45 +31,28 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.springframework.lang.NonNull;
 
 /**
  * Entity representing an implementation of a certain quantum {@link Algorithm}.
  */
+@EqualsAndHashCode(callSuper = true)
 @Entity
+@Data
 public class Implementation extends AlgorOrImpl {
 
-    @Getter
-    @Setter
-    private ProgrammingLanguage programmingLanguage;
-
-    @Getter
-    @Setter
-    private String selectionRule;
-
-    @Getter
-    @Setter
     private URL fileLocation;
 
-    @Getter
-    @Setter
     @ManyToOne
     private Algorithm implementedAlgorithm;
 
-    @Getter
-    @Setter
-    @ManyToOne
-    private Sdk sdk;
-
-    @ManyToMany(cascade =
-            {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "implementation_tag",
             joinColumns = @JoinColumn(name = "implementation_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
-    @Setter
     private Set<Tag> tags;
 
     public Implementation() {

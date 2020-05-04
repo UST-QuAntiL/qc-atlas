@@ -23,7 +23,6 @@ import java.util.List;
 
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Implementation;
-import org.planqk.atlas.core.model.Sdk;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
@@ -35,6 +34,4 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 public interface ImplementationRepository extends JpaRepository<Implementation, Long> {
 
     List<Implementation> findByImplementedAlgorithm(Algorithm implementedAlgorithm);
-
-    List<Implementation> findBySdk(Sdk sdk);
 }

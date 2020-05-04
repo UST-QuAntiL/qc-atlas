@@ -19,21 +19,16 @@
 
 package org.planqk.atlas.web.controller;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 import org.planqk.atlas.core.model.Provider;
 import org.planqk.atlas.core.model.Qpu;
-import org.planqk.atlas.core.model.Sdk;
 import org.planqk.atlas.core.services.ProviderService;
 import org.planqk.atlas.core.services.QpuService;
-import org.planqk.atlas.core.services.SdkService;
 import org.planqk.atlas.web.Constants;
-import org.planqk.atlas.web.dtos.entities.QpuDto;
-import org.planqk.atlas.web.dtos.entities.QpuListDto;
-import org.planqk.atlas.web.dtos.requests.CreateQpuRequest;
+import org.planqk.atlas.web.dtos.QpuDto;
+import org.planqk.atlas.web.dtos.QpuListDto;
 import org.planqk.atlas.web.utils.RestUtils;
 
 import org.slf4j.Logger;
@@ -64,12 +59,10 @@ public class QpuController {
     private final static Logger LOG = LoggerFactory.getLogger(QpuController.class);
     private final QpuService qpuService;
     private final ProviderService providerService;
-    private final SdkService sdkService;
 
-    public QpuController(QpuService qpuService, ProviderService providerService, SdkService sdkService) {
+    public QpuController(QpuService qpuService, ProviderService providerService) {
         this.qpuService = qpuService;
         this.providerService = providerService;
-        this.sdkService = sdkService;
     }
 
     @GetMapping("/")
@@ -104,7 +97,7 @@ public class QpuController {
     }
 
     @PostMapping("/")
-    public HttpEntity<QpuDto> createQpu(@PathVariable Long providerId, @RequestBody CreateQpuRequest qpuRequest) {
+    public HttpEntity<QpuDto> createQpu(@PathVariable Long providerId, @RequestBody QpuDto qpuRequest) {
         LOG.debug("Post to create new QPU received.");
 
         Optional<Provider> providerOptional = providerService.findById(providerId);
@@ -119,22 +112,8 @@ public class QpuController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        // add supported Sdks in case there are some defined
-        List<Sdk> supportedSdks = new ArrayList<>();
-        if (Objects.nonNull(qpuRequest.getSupportedSdkIds())) {
-            LOG.debug("Supported SDKs are defined for the QPU.");
-            for (Long sdkId : qpuRequest.getSupportedSdkIds()) {
-                Optional<Sdk> sdkOptional = sdkService.findById(sdkId);
-                if (!sdkOptional.isPresent()) {
-                    LOG.error("Unable to retrieve SDK with id {} from the repository.", sdkId);
-                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-                }
-                supportedSdks.add(sdkOptional.get());
-            }
-        }
-
         // store and return QPU
-        Qpu qpu = qpuService.save(QpuDto.Converter.convert(qpuRequest, providerOptional.get(), supportedSdks));
+        Qpu qpu = qpuService.save(QpuDto.Converter.convert(qpuRequest, providerOptional.get()));
         return new ResponseEntity<>(createQpuDto(providerId, qpu), HttpStatus.OK);
     }
 
@@ -149,9 +128,6 @@ public class QpuController {
         QpuDto qpuDto = QpuDto.Converter.convert(qpu);
         qpuDto.add(linkTo(methodOn(QpuController.class).getQpu(providerId, qpu.getId())).withSelfRel());
         qpuDto.add(linkTo(methodOn(ProviderController.class).getProvider(providerId)).withRel(Constants.PROVIDER));
-        for (Sdk sdk : qpu.getSupportedSdks()) {
-            qpuDto.add(linkTo(methodOn(SdkController.class).getSdk(sdk.getId())).withRel(Constants.SUPPORTED_SDK + "-" + sdk.getId()));
-        }
         return qpuDto;
     }
 }

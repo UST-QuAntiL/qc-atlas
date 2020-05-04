@@ -1,4 +1,4 @@
-/*******************************************************************************
+/********************************************************************************
  * Copyright (c) 2020 University of Stuttgart
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -17,19 +17,28 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.planqk.atlas.web.dtos.requests;
+package org.planqk.atlas.web.dtos;
 
-import java.util.Map;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import lombok.Getter;
-import lombok.Setter;
+import org.springframework.hateoas.RepresentationModel;
 
 /**
- * Dto to exchange input and output parameters as key value pairs.
+ * Data transfer object for multiple Implementations ({@link org.planqk.atlas.core.model.Implementation}).
  */
-public class ParameterKeyValueDto {
+public class ImplementationListDto extends RepresentationModel<ImplementationListDto> {
 
     @Getter
-    @Setter
-    private Map<String, String> parameters;
+    private final Set<ImplementationDto> implementationDtos = new HashSet<>();
+
+    public void add(final List<ImplementationDto> implementations) {
+        this.implementationDtos.addAll(implementations);
+    }
+
+    public void add(final ImplementationDto implementation) {
+        this.implementationDtos.add(implementation);
+    }
 }

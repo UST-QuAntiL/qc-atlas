@@ -1,4 +1,4 @@
-/*******************************************************************************
+/********************************************************************************
  * Copyright (c) 2020 University of Stuttgart
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -17,35 +17,29 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.planqk.atlas.web.dtos.entities;
+package org.planqk.atlas.web.dtos;
 
 import org.planqk.atlas.core.model.Provider;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.springframework.hateoas.RepresentationModel;
 
 /**
  * Data transfer object for the model class {@link Provider}.
  */
-@ToString(callSuper = true, includeFieldNames = true)
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
+@Data
 public class ProviderDto extends RepresentationModel<ProviderDto> {
 
-    @Getter
-    @Setter
     private Long id;
 
-    @Getter
-    @Setter
     private String name;
 
-    @Getter
-    @Setter
     private String accessKey;
 
-    @Getter
-    @Setter
     private String secretKey;
 
     public static final class Converter {

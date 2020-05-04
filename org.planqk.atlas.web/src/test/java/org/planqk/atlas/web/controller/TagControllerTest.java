@@ -25,8 +25,8 @@ import java.util.List;
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.services.TagService;
 import org.planqk.atlas.web.Constants;
-import org.planqk.atlas.web.dtos.entities.TagDto;
-import org.planqk.atlas.web.dtos.entities.TagListDto;
+import org.planqk.atlas.web.dtos.TagDto;
+import org.planqk.atlas.web.dtos.TagListDto;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;

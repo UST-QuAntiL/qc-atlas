@@ -19,28 +19,17 @@
 
 package org.planqk.atlas.web.controller;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.planqk.atlas.core.model.Algorithm;
-import org.planqk.atlas.core.model.Implementation;
-import org.planqk.atlas.core.model.Qpu;
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.services.AlgorithmService;
-import org.planqk.atlas.nisq.analyzer.control.NisqAnalyzerControlService;
 import org.planqk.atlas.web.Constants;
-import org.planqk.atlas.web.dtos.entities.AlgorithmDto;
-import org.planqk.atlas.web.dtos.entities.AlgorithmListDto;
-import org.planqk.atlas.web.dtos.entities.ParameterDto;
-import org.planqk.atlas.web.dtos.entities.ParameterListDto;
-import org.planqk.atlas.web.dtos.entities.TagListDto;
-import org.planqk.atlas.web.dtos.requests.ParameterKeyValueDto;
-import org.planqk.atlas.web.dtos.requests.SelectionParameterDto;
+import org.planqk.atlas.web.dtos.AlgorithmDto;
+import org.planqk.atlas.web.dtos.AlgorithmListDto;
+import org.planqk.atlas.web.dtos.TagListDto;
 import org.planqk.atlas.web.utils.RestUtils;
 
 import org.slf4j.Logger;
@@ -57,7 +46,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import static org.planqk.atlas.web.utils.RestUtils.parameterConsistent;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -71,11 +59,9 @@ public class AlgorithmController {
 
     final private static Logger LOG = LoggerFactory.getLogger(AlgorithmController.class);
 
-    private final NisqAnalyzerControlService controlService;
     private AlgorithmService algorithmService;
 
-    public AlgorithmController(NisqAnalyzerControlService controlService, AlgorithmService algorithmService) {
-        this.controlService = controlService;
+    public AlgorithmController(AlgorithmService algorithmService) {
         this.algorithmService = algorithmService;
     }
 
@@ -88,9 +74,6 @@ public class AlgorithmController {
     public static AlgorithmDto createAlgorithmDto(Algorithm algorithm) {
         AlgorithmDto dto = AlgorithmDto.Converter.convert(algorithm);
         dto.add(linkTo(methodOn(AlgorithmController.class).getAlgorithm(algorithm.getId())).withSelfRel());
-        dto.add(linkTo(methodOn(AlgorithmController.class).getInputParameters(algorithm.getId())).withRel(Constants.INPUT_PARAMS));
-        dto.add(linkTo(methodOn(AlgorithmController.class).getOutputParameters(algorithm.getId())).withRel(Constants.OUTPUT_PARAMS));
-        dto.add(linkTo(methodOn(AlgorithmController.class).getSelectionParams(algorithm.getId())).withRel(Constants.SELECTION_PARAMS));
         dto.add(linkTo(methodOn(AlgorithmController.class).getTags(algorithm.getId())).withRel(Constants.TAGS));
         dto.add(linkTo(methodOn(ImplementationController.class).getImplementations(algorithm.getId())).withRel(Constants.IMPLEMENTATIONS));
         return dto;
@@ -122,51 +105,9 @@ public class AlgorithmController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        // check consistency of passed parameters
-        if (!parameterConsistent(algo.getInputParameters().getParameters(), algo.getOutputParameters().getParameters())) {
-            LOG.error("Received invalid parameter dto for post request.");
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-
         // store and return algorithm
         Algorithm algorithm = algorithmService.save(AlgorithmDto.Converter.convert(algo));
         return new ResponseEntity<>(createAlgorithmDto(algorithm), HttpStatus.CREATED);
-    }
-
-    @PostMapping("/{id}/" + Constants.INPUT_PARAMS)
-    public HttpEntity<ParameterDto> addInputParameter(@PathVariable Long id, @RequestBody ParameterDto parameterDto) {
-        LOG.debug("Post to retrieve algorithm with id: {}.", id);
-        Optional<Algorithm> algorithmOptional = algorithmService.findById(id);
-        if (!algorithmOptional.isPresent()) {
-            LOG.error("Unable to retrieve algorithm with id {} from the repository.", id);
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        if (Objects.isNull(parameterDto.getName())) {
-            LOG.error("Received invalid parameter object for post request: {}", parameterDto.toString());
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        Algorithm algorithm = algorithmOptional.get();
-        algorithm.getInputParameters().add(ParameterDto.Converter.convert(parameterDto));
-        algorithmService.save(algorithm);
-        return new ResponseEntity<>(parameterDto, HttpStatus.CREATED);
-    }
-
-    @PostMapping("/{id}/" + Constants.OUTPUT_PARAMS)
-    public HttpEntity<ParameterDto> addOutputParameter(@PathVariable Long id, @RequestBody ParameterDto parameterDto) {
-        LOG.debug("Post to retrieve algorithm with id: {}.", id);
-        Optional<Algorithm> algorithmOptional = algorithmService.findById(id);
-        if (!algorithmOptional.isPresent()) {
-            LOG.error("Unable to retrieve algorithm with id {} from the repository.", id);
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        if (Objects.isNull(parameterDto.getName())) {
-            LOG.error("Received invalid parameter object for post request: {}", parameterDto.toString());
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        Algorithm algorithm = algorithmOptional.get();
-        algorithm.getOutputParameters().add(ParameterDto.Converter.convert(parameterDto));
-        algorithmService.save(algorithm);
-        return new ResponseEntity<>(parameterDto, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
@@ -180,93 +121,6 @@ public class AlgorithmController {
         }
 
         return new ResponseEntity<>(createAlgorithmDto(algorithmOptional.get()), HttpStatus.OK);
-    }
-
-    @GetMapping("/{id}/" + Constants.SELECTION_PARAMS)
-    public HttpEntity<SelectionParameterDto> getSelectionParams(@PathVariable Long id) {
-        LOG.debug("Get to retrieve selection parameters for algorithm with Id {} received.", id);
-
-        Optional<Algorithm> algorithmOptional = algorithmService.findById(id);
-        if (!algorithmOptional.isPresent()) {
-            LOG.error("Unable to retrieve algorithm with id {} from the repository.", id);
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-
-        // determine and return required selection parameters
-        Set<String> requiredParams = controlService.getRequiredSelectionParameters(algorithmOptional.get());
-        SelectionParameterDto dto = new SelectionParameterDto();
-        dto.setParameters(new ArrayList<>(requiredParams));
-        dto.add(linkTo(methodOn(AlgorithmController.class).getSelectionParams(id)).withSelfRel());
-        dto.add(linkTo(methodOn(AlgorithmController.class).getAlgorithm(id)).withRel(Constants.ALGORITHM));
-        return new ResponseEntity<>(dto, HttpStatus.OK);
-    }
-
-    @PostMapping("/{id}/" + Constants.SELECTION) // TODO: change return type
-    public HttpEntity<AlgorithmDto> selectImplementations(@PathVariable Long id, @RequestBody ParameterKeyValueDto params) {
-        LOG.debug("Post to select implementations for algorithm with Id {} received.", id);
-
-        Optional<Algorithm> algorithmOptional = algorithmService.findById(id);
-        if (!algorithmOptional.isPresent()) {
-            LOG.error("Unable to retrieve algorithm with id {} from the repository.", id);
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        Algorithm algorithm = algorithmOptional.get();
-
-        if (Objects.isNull(params.getParameters())) {
-            LOG.error("Parameter set for the selection is null.");
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        LOG.debug("Received {} parameters for the selection.", params.getParameters().size());
-
-        if (RestUtils.parametersAvailable(controlService.getRequiredSelectionParameters(algorithm), params.getParameters())) {
-            LOG.error("Parameter set for the selection is not valid.");
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-
-        Map<Implementation, List<Qpu>> selectedPairs = controlService.performSelection(algorithm, params.getParameters());
-
-        // TODO: parse selected pairs to http response
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    @GetMapping("/{id}/" + Constants.INPUT_PARAMS)
-    public HttpEntity<ParameterListDto> getInputParameters(@PathVariable Long id) {
-        LOG.debug("Get to retrieve input parameters for algorithm with id: {}.", id);
-
-        Optional<Algorithm> algorithmOptional = algorithmService.findById(id);
-        if (!algorithmOptional.isPresent()) {
-            LOG.error("Unable to retrieve algorithm with id {} form the repository.", id);
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
-        // convert all output parameters to corresponding dtos
-        ParameterListDto parameterListDto = new ParameterListDto();
-        parameterListDto.add(algorithmOptional.get().getInputParameters().stream()
-                .map(ParameterDto.Converter::convert)
-                .collect(Collectors.toList()));
-
-        parameterListDto.add(linkTo(methodOn(AlgorithmController.class).getInputParameters(id)).withSelfRel());
-        return new ResponseEntity<>(parameterListDto, HttpStatus.OK);
-    }
-
-    @GetMapping("/{id}/" + Constants.OUTPUT_PARAMS)
-    public HttpEntity<ParameterListDto> getOutputParameters(@PathVariable Long id) {
-        LOG.debug("Get to retrieve output parameters for algorithm with id: {}.", id);
-
-        Optional<Algorithm> algorithmOptional = algorithmService.findById(id);
-        if (!algorithmOptional.isPresent()) {
-            LOG.error("Unable to retrieve algorithm with id {} form the repository.", id);
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
-        // convert all input parameters to corresponding dtos
-        ParameterListDto parameterListDto = new ParameterListDto();
-        parameterListDto.add(algorithmOptional.get().getOutputParameters().stream()
-                .map(ParameterDto.Converter::convert)
-                .collect(Collectors.toList()));
-
-        parameterListDto.add(linkTo(methodOn(AlgorithmController.class).getOutputParameters(id)).withSelfRel());
-        return new ResponseEntity<>(parameterListDto, HttpStatus.OK);
     }
 
     @GetMapping("/{id}/" + Constants.TAGS)

@@ -1,4 +1,4 @@
-/*******************************************************************************
+/********************************************************************************
  * Copyright (c) 2020 University of Stuttgart
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -17,7 +17,7 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.planqk.atlas.web.dtos.entities;
+package org.planqk.atlas.web.dtos;
 
 import java.util.Arrays;
 import java.util.List;

@@ -1,4 +1,4 @@
-/*******************************************************************************
+/********************************************************************************
  * Copyright (c) 2020 University of Stuttgart
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -17,7 +17,7 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.planqk.atlas.web.dtos.entities;
+package org.planqk.atlas.web.dtos;
 
 import java.util.List;
 
@@ -25,16 +25,19 @@ import lombok.Getter;
 import org.assertj.core.util.Lists;
 import org.springframework.hateoas.RepresentationModel;
 
-public class TagListDto extends RepresentationModel<TagListDto> {
+/**
+ * Data transfer object for multiple Algorithms ({@link org.planqk.atlas.core.model.Algorithm}).
+ */
+public class AlgorithmListDto extends RepresentationModel<AlgorithmListDto> {
 
     @Getter
-    private final List<TagDto> tagsDtos = Lists.newArrayList();
+    private final List<AlgorithmDto> algorithmDtos = Lists.newArrayList();
 
-    public void add(final List<TagDto> tags) {
-        this.tagsDtos.addAll(tags);
+    public void add(final List<AlgorithmDto> algorithms) {
+        this.algorithmDtos.addAll(algorithms);
     }
 
-    public void add(final TagDto tag) {
-        this.tagsDtos.add(tag);
+    public void add(final AlgorithmDto algorithm) {
+        this.algorithmDtos.add(algorithm);
     }
 }

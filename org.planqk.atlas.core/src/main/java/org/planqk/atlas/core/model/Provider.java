@@ -28,34 +28,28 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 
-import lombok.Getter;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import lombok.Setter;
 
 /**
  * Entity representing a quantum hardware provider.
  */
+@EqualsAndHashCode(callSuper = true)
+@NoArgsConstructor
 @Entity
+@Data
 public class Provider extends HasId {
 
-    @Getter
-    @Setter
     private String name;
 
-    @Getter
-    @Setter
     private String accessKey;
 
-    @Getter
-    @Setter
     private String secretKey;
 
-    @Setter
     @OneToMany(mappedBy = "provider", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Qpu> supportedQpus;
-
-    public Provider() {
-    }
 
     @NonNull
     public List<Qpu> getSupportedQpus() {
