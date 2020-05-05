@@ -1,4 +1,4 @@
-FROM maven:3-jdk-8 as builder
+FROM maven:3-jdk-11 as builder
 COPY . /tmp/atlas
 WORKDIR /tmp/atlas
 RUN mvn package -DskipTests && mkdir /build && unzip /tmp/atlas/org.planqk.atlas.web/target/org.planqk.atlas.web.war -d /build/atlas
@@ -15,7 +15,7 @@ ENV POSTGRES_USER postgres
 ENV POSTGRES_PASSWORD postgres
 ENV POSTGRES_DB postgres
 
-RUN apt-get -qq update && apt-get install -qqy software-properties-common openjdk-8-jdk wget
+RUN apt-get -qq update && apt-get install -qqy software-properties-common openjdk-11-jdk wget
 
 # setup tomcat
 RUN mkdir /usr/local/tomcat
