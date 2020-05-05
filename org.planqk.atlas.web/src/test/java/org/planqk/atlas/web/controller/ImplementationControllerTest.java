@@ -50,6 +50,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -88,7 +89,6 @@ public class ImplementationControllerTest {
         Algorithm algorithm = mockValidAlgorithmForImplCreation(algoId);
         Implementation implementation = mockValidMinimalImpl(implId);
         implementation.setImplementedAlgorithm(algorithm);
-        //implementation.setId(implId);
         List<Implementation> implementationList = new ArrayList<Implementation>();
         implementationList.add(implementation);
 
@@ -108,6 +108,39 @@ public class ImplementationControllerTest {
         ImplementationListDto implementationListResult = new ObjectMapper().readValue(mvcResult.getResponse().getContentAsString(), ImplementationListDto.class);
         assertEquals(implementationListResult.getImplementationDtos().stream().findFirst().get().getId(), implementation.getId());
         assertEquals(implementationListResult.getImplementationDtos().size(), 1);
+    }
+
+    @Test
+    public void getMultipleImplForAlgo() throws Exception {
+        Long algoId = 1L;
+        Long implId1 = 2L;
+        Long implId2 = 3L;
+        Algorithm algorithm = mockValidAlgorithmForImplCreation(algoId);
+        Implementation implementation1 = mockValidMinimalImpl(implId1);
+        Implementation implementation2 = mockValidMinimalImpl(implId2);
+        implementation1.setImplementedAlgorithm(algorithm);
+        implementation2.setImplementedAlgorithm(algorithm);
+        List<Implementation> implementationList = new ArrayList<Implementation>();
+        implementationList.add(implementation1);
+        implementationList.add(implementation2);
+
+        ImplementationListDto implementationListDto = new ImplementationListDto();
+        implementationListDto.add(ImplementationDto.Converter.convert(implementation1));
+        implementationListDto.add(ImplementationDto.Converter.convert(implementation2));
+        Pageable pageable = PageRequest.of(0, 2);
+
+        Page<Implementation> page = new PageImpl<Implementation>(implementationList, pageable, implementationList.size());
+        when(implementationService.findAll(any(Pageable.class))).thenReturn(page);
+
+        when(implementationService.save(any(Implementation.class))).thenReturn(implementation1);
+
+        MvcResult mvcResult = mockMvc.perform(get("/" + Constants.ALGORITHMS + "/" + algoId + "/"
+                + Constants.IMPLEMENTATIONS + "/")
+                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
+
+        ImplementationListDto implementationListResult = new ObjectMapper().readValue(mvcResult.getResponse().getContentAsString(), ImplementationListDto.class);
+        assertTrue(implementationListResult.getImplementationDtos().stream().mapToLong(impl -> impl.getId()).allMatch(id -> id == implId1 || id == implId2));
+        assertEquals(implementationListResult.getImplementationDtos().size(), implementationList.size());
     }
 
     @Test
