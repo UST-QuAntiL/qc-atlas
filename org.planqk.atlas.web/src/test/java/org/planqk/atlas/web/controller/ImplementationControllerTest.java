@@ -88,7 +88,7 @@ public class ImplementationControllerTest {
         Algorithm algorithm = mockValidAlgorithmForImplCreation(algoId);
         Implementation implementation = mockValidMinimalImpl(implId);
         implementation.setImplementedAlgorithm(algorithm);
-        implementation.setId(implId);
+        //implementation.setId(implId);
         List<Implementation> implementationList = new ArrayList<Implementation>();
         implementationList.add(implementation);
 
@@ -107,6 +107,7 @@ public class ImplementationControllerTest {
 
         ImplementationListDto implementationListResult = new ObjectMapper().readValue(mvcResult.getResponse().getContentAsString(), ImplementationListDto.class);
         assertEquals(implementationListResult.getImplementationDtos().stream().findFirst().get().getId(), implementation.getId());
+        assertEquals(implementationListResult.getImplementationDtos().size(), 1);
     }
 
     @Test
@@ -116,7 +117,6 @@ public class ImplementationControllerTest {
         Algorithm algorithm = mockValidAlgorithmForImplCreation(algoId);
 
         Implementation implementation = mockValidMinimalImpl(implId);
-        implementation.setId(implId);
         implementation.setImplementedAlgorithm(algorithm);
 
         when(implementationService.save(any(Implementation.class))).thenReturn(implementation);
@@ -135,7 +135,6 @@ public class ImplementationControllerTest {
         Algorithm algorithm = mockValidAlgorithmForImplCreation(algoId);
 
         Implementation implementation = mockValidMinimalImpl(implId);
-        implementation.setId(implId);
         implementation.setImplementedAlgorithm(algorithm);
         MvcResult mvcResult = mockMvc.perform(post("/" + Constants.ALGORITHMS + "/" + algoId + "/"
                 + Constants.IMPLEMENTATIONS + "/")
@@ -150,11 +149,10 @@ public class ImplementationControllerTest {
     private Implementation mockValidMinimalImpl(Long implId) throws MalformedURLException {
         Implementation implementation = new Implementation();
         implementation.setName("implementation for Shor");
+        implementation.setId(implId);
 
         // set everything we need to set for a valid request:
         implementation.setFileLocation(new URL("https://wwww.uri/for/test/"));
-        implementation.setId(implId);
-        Long sdkId = 3L;
         when(implementationService.save(any(Implementation.class))).thenReturn(implementation);
         return implementation;
     }
@@ -165,7 +163,7 @@ public class ImplementationControllerTest {
         Long implId = 2L;
         mockValidAlgorithmForImplCreation(algoId);
 
-        // specify an implementation without an sdk:
+        // specify an implementation:
         Implementation implementation = new Implementation();
         implementation.setName("implementation for Shor");
 
@@ -185,7 +183,7 @@ public class ImplementationControllerTest {
         Long implId = 2L;
         Implementation implementation = mockValidMinimalImpl(implId);
         // pretend algo is not found:
-        when(algorithmService.findById(any(Long.class))).thenReturn(null);
+        when(algorithmService.findById(nonExistentAlgoId)).thenReturn(null);
         when(implementationService.save(any(Implementation.class))).thenReturn(implementation);
 
         mockMvc.perform(post("/" + Constants.ALGORITHMS + "/" + nonExistentAlgoId + "/"
@@ -198,7 +196,7 @@ public class ImplementationControllerTest {
     private Algorithm mockValidAlgorithmForImplCreation(Long algoId) {
         Algorithm algorithm = new Algorithm();
         algorithm.setId(algoId);
-        when(algorithmService.findById(any(Long.class))).thenReturn(java.util.Optional.of(algorithm));
+        when(algorithmService.findById(algoId)).thenReturn(java.util.Optional.of(algorithm));
         return algorithm;
     }
 }
