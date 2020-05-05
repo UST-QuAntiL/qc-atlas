@@ -41,7 +41,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -104,11 +103,11 @@ public class AlgorithmControllerTest {
         List<Algorithm> algorithmList = new ArrayList<>();
 
         Algorithm algorithm1 = new Algorithm();
-        ReflectionTestUtils.setField(algorithm1, "id", 1L);
+        algorithm1.setId(1L);
         algorithmList.add(algorithm1);
 
         Algorithm algorithm2 = new Algorithm();
-        ReflectionTestUtils.setField(algorithm2, "id", 2L);
+        algorithm2.setId(2L);
         algorithmList.add(algorithm2);
 
         when(algorithmService.findAll(pageable)).thenReturn(new PageImpl<>(algorithmList));
@@ -133,7 +132,7 @@ public class AlgorithmControllerTest {
     @Test
     public void getAlgorithm_returnAlgorithm() throws Exception {
         Algorithm algorithm = new Algorithm();
-        ReflectionTestUtils.setField(algorithm, "id", 5L);
+        algorithm.setId(5L);
         when(algorithmService.findById(5L)).thenReturn(Optional.of(algorithm));
 
         MvcResult result = mockMvc.perform(get("/" + Constants.ALGORITHMS + "/5")

@@ -28,7 +28,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface ProviderService {
 
-    Provider save(Provider sdk);
+    Provider save(Provider provider);
 
     Page<Provider> findAll(Pageable pageable);
 
