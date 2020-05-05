@@ -41,7 +41,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -104,7 +103,7 @@ public class ProviderControllerTest {
         List<Provider> providerList = new ArrayList<>();
 
         Provider provider = new Provider();
-        ReflectionTestUtils.setField(provider, "id", 5L);
+        provider.setId(5L);
         providerList.add(provider);
 
         when(providerService.findAll(pageable)).thenReturn(new PageImpl<>(providerList));
@@ -130,7 +129,7 @@ public class ProviderControllerTest {
     @Test
     public void getProvider_returnProvider() throws Exception {
         Provider provider = new Provider();
-        ReflectionTestUtils.setField(provider, "id", 5L);
+        provider.setId(5L);
         when(providerService.findById(5L)).thenReturn(Optional.of(provider));
 
         MvcResult result = mockMvc.perform(get("/" + Constants.PROVIDERS + "/5")

@@ -44,7 +44,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -89,7 +88,7 @@ public class ImplementationControllerTest {
         Algorithm algorithm = mockValidAlgorithmForImplCreation(algoId);
         Implementation implementation = mockValidMinimalImpl(implId);
         implementation.setImplementedAlgorithm(algorithm);
-        ReflectionTestUtils.setField(implementation, "id", implId);
+        implementation.setId(implId);
         List<Implementation> implementationList = new ArrayList<Implementation>();
         implementationList.add(implementation);
 
@@ -154,7 +153,7 @@ public class ImplementationControllerTest {
 
         // set everything we need to set for a valid request:
         implementation.setFileLocation(new URL("https://wwww.uri/for/test/"));
-        ReflectionTestUtils.setField(implementation, "id", implId);
+        implementation.setId(implId);
         Long sdkId = 3L;
         when(implementationService.save(any(Implementation.class))).thenReturn(implementation);
         return implementation;
@@ -170,7 +169,7 @@ public class ImplementationControllerTest {
         Implementation implementation = new Implementation();
         implementation.setName("implementation for Shor");
 
-        ReflectionTestUtils.setField(implementation, "id", implId);
+        implementation.setId(implId);
 
         when(implementationService.save(any(Implementation.class))).thenReturn(implementation);
 
@@ -198,7 +197,7 @@ public class ImplementationControllerTest {
 
     private Algorithm mockValidAlgorithmForImplCreation(Long algoId) {
         Algorithm algorithm = new Algorithm();
-        ReflectionTestUtils.setField(algorithm, "id", algoId);
+        algorithm.setId(algoId);
         when(algorithmService.findById(any(Long.class))).thenReturn(java.util.Optional.of(algorithm));
         return algorithm;
     }
