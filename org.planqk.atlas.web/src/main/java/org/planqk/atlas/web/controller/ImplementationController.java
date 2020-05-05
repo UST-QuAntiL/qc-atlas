@@ -135,7 +135,7 @@ public class ImplementationController {
         // store and return implementation
         Implementation implementation =
                 implementationService.save(ImplementationDto.Converter.convert(impl, algorithmOptional.get()));
-        return new ResponseEntity<>(createImplementationDto(implementation), HttpStatus.OK);
+        return new ResponseEntity<>(createImplementationDto(implementation), HttpStatus.CREATED);
     }
 
     @GetMapping("/{implId}/" + Constants.TAGS)
