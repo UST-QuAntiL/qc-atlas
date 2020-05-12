@@ -58,19 +58,4 @@ public class AlgorithmDto extends RepresentationModel<AlgorithmDto> {
     private Set<TagDto> tags;
 
     private Object content;
-
-    public static final class Converter {
-    	
-        public static AlgorithmDto convert(final Algorithm object) {
-        	ModelMapper mapper = new ModelMapper();
-            final AlgorithmDto dto = mapper.map(object, AlgorithmDto.class);
-        	return dto;
-        }
-
-        public static Algorithm convert(final AlgorithmDto object) {
-        	ModelMapper mapper = new ModelMapper();
-            final Algorithm algo = mapper.map(object, Algorithm.class);
-            return algo;
-        }
-    }
 }
