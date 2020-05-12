@@ -14,15 +14,15 @@ import lombok.EqualsAndHashCode;
 public class AlgorithmRelation extends HasId {
 
 	@OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "algorithm_id", referencedColumnName = "id")
+    @JoinColumn(name = "sourceAlgorithm_id", referencedColumnName = "id")
 	private Algorithm sourceAlgorithm;
 	
 	@OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "algorithm_id", referencedColumnName = "id")
+    @JoinColumn(name = "targetAlgorithm_id", referencedColumnName = "id")
 	private Algorithm targetAlgorithm;
 	
 	@OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "algorithm_relation_type_id", referencedColumnName = "id")
+    @JoinColumn(name = "algoRelationType_id", referencedColumnName = "id")
 	private AlgoRelationType algoRelationType;
 	
 	private String description;
