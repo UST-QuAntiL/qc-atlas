@@ -21,6 +21,7 @@ package org.planqk.atlas.web;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
@@ -34,6 +35,14 @@ import org.springframework.scheduling.annotation.EnableAsync;
 public class Application extends SpringBootServletInitializer {
 
     final private static Logger LOG = LoggerFactory.getLogger(Application.class);
+    
+    /**
+	 * This method allows to run the Application within the embedded tomcat.
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		SpringApplication.run(Application.class, args);
+	}
 
     public Application() {
         logReadyMessage();
