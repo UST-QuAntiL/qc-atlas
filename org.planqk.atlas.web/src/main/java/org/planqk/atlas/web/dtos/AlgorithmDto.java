@@ -19,9 +19,7 @@
 
 package org.planqk.atlas.web.dtos;
 
-import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.planqk.atlas.core.model.Algorithm;
 
@@ -32,6 +30,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.springframework.hateoas.RepresentationModel;
+import org.modelmapper.ModelMapper;
 
 import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.WRITE_ONLY;
 
@@ -61,27 +60,16 @@ public class AlgorithmDto extends RepresentationModel<AlgorithmDto> {
     private Object content;
 
     public static final class Converter {
-
+    	
         public static AlgorithmDto convert(final Algorithm object) {
-            final AlgorithmDto dto = new AlgorithmDto();
-            dto.setId(object.getId());
-            dto.setName(object.getName());
-            dto.setContent(object.getContent());
-            dto.setTags(object.getTags().stream().map(TagDto.Converter::convert).collect(Collectors.toSet()));
-            dto.setInputFormat(object.getInputFormat());
-            dto.setOutputFormat(object.getInputFormat());
-            return dto;
+        	ModelMapper mapper = new ModelMapper();
+            final AlgorithmDto dto = mapper.map(object, AlgorithmDto.class);
+        	return dto;
         }
 
         public static Algorithm convert(final AlgorithmDto object) {
-            final Algorithm algo = new Algorithm();
-            algo.setName(object.getName());
-            algo.setContent(object.getContent());
-            if (Objects.nonNull(object.getTags())) {
-                algo.setTags(object.getTags().stream().map(TagDto.Converter::convert).collect(Collectors.toSet()));
-            }
-            algo.setInputFormat(object.getInputFormat());
-            algo.setOutputFormat(object.getInputFormat());
+        	ModelMapper mapper = new ModelMapper();
+            final Algorithm algo = mapper.map(object, Algorithm.class);
             return algo;
         }
     }
