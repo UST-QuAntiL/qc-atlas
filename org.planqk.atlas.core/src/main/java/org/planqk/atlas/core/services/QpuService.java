@@ -20,6 +20,7 @@
 package org.planqk.atlas.core.services;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import org.planqk.atlas.core.model.Qpu;
 
@@ -32,5 +33,5 @@ public interface QpuService {
 
     Page<Qpu> findAll(Pageable pageable);
 
-    Optional<Qpu> findById(Long qpuId);
+    Optional<Qpu> findById(UUID qpuId);
 }

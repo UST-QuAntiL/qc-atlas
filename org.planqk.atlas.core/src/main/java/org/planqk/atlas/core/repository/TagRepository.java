@@ -20,6 +20,7 @@
 package org.planqk.atlas.core.repository;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.planqk.atlas.core.model.Tag;
 
@@ -27,6 +28,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 @RepositoryRestResource(exported = false)
-public interface TagRepository extends JpaRepository<Tag, Long> {
+public interface TagRepository extends JpaRepository<Tag, UUID> {
     List<Tag> findByKey(String key);
 }

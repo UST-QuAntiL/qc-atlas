@@ -21,6 +21,7 @@ package org.planqk.atlas.web.dtos;
 
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.planqk.atlas.core.model.Algorithm;
@@ -44,7 +45,7 @@ import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.WRITE_ONLY;
 @NoArgsConstructor
 public class AlgorithmDto extends RepresentationModel<AlgorithmDto> {
 
-    private Long id;
+    private UUID id;
 
     private String name;
 
