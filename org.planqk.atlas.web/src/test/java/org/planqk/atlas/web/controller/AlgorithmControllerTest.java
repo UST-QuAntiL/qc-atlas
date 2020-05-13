@@ -35,6 +35,7 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -62,6 +63,9 @@ public class AlgorithmControllerTest {
 
     @InjectMocks
     private AlgorithmController algorithmController;
+    
+    @InjectMocks
+    private ModelMapper modelMapper;
 
     private MockMvc mockMvc;
 
@@ -156,7 +160,8 @@ public class AlgorithmControllerTest {
     public void createAlgorithm_returnAlgorithm() throws Exception {
         AlgorithmDto algorithmDto = new AlgorithmDto();
         algorithmDto.setName("Shor");
-        Algorithm algorithm = AlgorithmDto.Converter.convert(algorithmDto);
+        // Algorithm algorithm = AlgorithmDto.Converter.convert(algorithmDto);
+        Algorithm algorithm = modelMapper.map(algorithmDto, Algorithm.class);
         when(algorithmService.save(algorithm)).thenReturn(algorithm);
 
         MvcResult result = mockMvc.perform(post("/" + Constants.ALGORITHMS + "/")

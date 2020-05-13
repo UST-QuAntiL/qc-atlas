@@ -19,7 +19,9 @@
 
 package org.planqk.atlas.web.dtos;
 
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.planqk.atlas.core.model.Algorithm;
 
@@ -35,7 +37,8 @@ import org.modelmapper.ModelMapper;
 import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.WRITE_ONLY;
 
 /**
- * Data transfer object for Algorithms ({@link org.planqk.atlas.core.model.Algorithm}).
+ * Data transfer object for Algorithms
+ * ({@link org.planqk.atlas.core.model.Algorithm}).
  */
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
@@ -43,19 +46,47 @@ import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.WRITE_ONLY;
 @NoArgsConstructor
 public class AlgorithmDto extends RepresentationModel<AlgorithmDto> {
 
-    private Long id;
+	private Long id;
 
-    private String name;
+	private String name;
 
-    private String inputFormat;
+	private String inputFormat;
 
-    private String outputFormat;
+	private String outputFormat;
 
-    // we do not embedded tags into the object (via @jsonInclude) - instead, we add a hateoas link to the associated tags
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    // annotate this for swagger as well, because swagger doesn't recognize the json property annotation
-    @Schema(accessMode = WRITE_ONLY)
-    private Set<TagDto> tags;
+	// we do not embedded tags into the object (via @jsonInclude) - instead, we add
+	// a hateoas link to the associated tags
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	// annotate this for swagger as well, because swagger doesn't recognize the json
+	// property annotation
+	@Schema(accessMode = WRITE_ONLY)
+	private Set<TagDto> tags;
 
-    private Object content;
+	private Object content;
+
+	public static final class Converter {
+
+		public static AlgorithmDto convert(final Algorithm object) {
+			final AlgorithmDto dto = new AlgorithmDto();
+            dto.setId(object.getId());
+            dto.setName(object.getName());
+            dto.setContent(object.getContent());
+            dto.setTags(object.getTags().stream().map(TagDto.Converter::convert).collect(Collectors.toSet()));
+            dto.setInputFormat(object.getInputFormat());
+            dto.setOutputFormat(object.getInputFormat());
+            return dto;
+		}
+
+		public static Algorithm convert(final AlgorithmDto object) {
+			final Algorithm algo = new Algorithm();
+            algo.setName(object.getName());
+            algo.setContent(object.getContent());
+            if (Objects.nonNull(object.getTags())) {
+                algo.setTags(object.getTags().stream().map(TagDto.Converter::convert).collect(Collectors.toSet()));
+            }
+            algo.setInputFormat(object.getInputFormat());
+            algo.setOutputFormat(object.getInputFormat());
+			return algo;
+		}
+	}
 }
