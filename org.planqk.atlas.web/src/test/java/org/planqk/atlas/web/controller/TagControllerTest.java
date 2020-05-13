@@ -21,6 +21,7 @@ package org.planqk.atlas.web.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.services.TagService;
@@ -113,7 +114,7 @@ public class TagControllerTest {
     @Test
     public void testGetId() throws Exception {
         Tag tag1 = getTestTag();
-        when(tagService.getTagById(any(Long.class))).thenReturn(java.util.Optional.of(tag1));
+        when(tagService.getTagById(any(UUID.class))).thenReturn(java.util.Optional.of(tag1));
 
         MvcResult mvcResult = mockMvc.perform(get("/" + Constants.TAGS + "/" + 1 + "/").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
