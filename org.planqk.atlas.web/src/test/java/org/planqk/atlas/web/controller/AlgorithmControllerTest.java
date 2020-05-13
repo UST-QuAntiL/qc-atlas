@@ -126,7 +126,7 @@ public class AlgorithmControllerTest {
 
     @Test
     public void getAlgorithm_returnNotFound() throws Exception {
-        mockMvc.perform(get("/" + Constants.ALGORITHMS + "/5")
+        mockMvc.perform(get("/" + Constants.ALGORITHMS + "/" + UUID.randomUUID())
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
     }
 
@@ -137,7 +137,7 @@ public class AlgorithmControllerTest {
         algorithm.setId(algoId);
         when(algorithmService.findById(algoId)).thenReturn(Optional.of(algorithm));
 
-        MvcResult result = mockMvc.perform(get("/" + Constants.ALGORITHMS + "/5")
+        MvcResult result = mockMvc.perform(get("/" + Constants.ALGORITHMS + "/" + algoId)
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
 
         AlgorithmDto response = new ObjectMapper().readValue(result.getResponse().getContentAsString(), AlgorithmDto.class);

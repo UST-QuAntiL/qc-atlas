@@ -140,7 +140,7 @@ public class ImplementationControllerTest {
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
 
         ImplementationListDto implementationListResult = new ObjectMapper().readValue(mvcResult.getResponse().getContentAsString(), ImplementationListDto.class);
-        assertTrue(implementationListResult.getImplementationDtos().stream().map(impl -> impl.getId()).allMatch(id -> id == implId1 || id == implId2));
+        assertTrue(implementationListResult.getImplementationDtos().stream().map(impl -> impl.getId()).allMatch(id -> id.equals(implId1) || id.equals(implId2)));
         assertEquals(implementationListResult.getImplementationDtos().size(), implementationList.size());
     }
 

@@ -125,7 +125,7 @@ public class ProviderControllerTest {
 
     @Test
     public void getProvider_returnNotFound() throws Exception {
-        mockMvc.perform(get("/" + Constants.PROVIDERS + "/5")
+        mockMvc.perform(get("/" + Constants.PROVIDERS + "/" + UUID.randomUUID())
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
     }
 
@@ -136,7 +136,7 @@ public class ProviderControllerTest {
         provider.setId(provId);
         when(providerService.findById(provId)).thenReturn(Optional.of(provider));
 
-        MvcResult result = mockMvc.perform(get("/" + Constants.PROVIDERS + "/5")
+        MvcResult result = mockMvc.perform(get("/" + Constants.PROVIDERS + "/" + provId)
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
 
         ProviderDto response = new ObjectMapper().readValue(result.getResponse().getContentAsString(), ProviderDto.class);
