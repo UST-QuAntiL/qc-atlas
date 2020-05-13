@@ -30,6 +30,7 @@ public class Constants {
     public static final String PROVIDERS = "providers";
     public static final String QPUS = "qpus";
     public static final String TAGS = "tags";
+    public static final String PROBLEM_TYPES = "problemtypes";
 
     // link names
     public static final String ALGORITHM_LINK = "implementedAlgorithm";

@@ -24,11 +24,13 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.AlgorithmListDto;
+import org.planqk.atlas.web.dtos.ProblemTypeListDto;
 import org.planqk.atlas.web.dtos.TagListDto;
 import org.planqk.atlas.web.utils.RestUtils;
 
@@ -76,6 +78,7 @@ public class AlgorithmController {
         dto.add(linkTo(methodOn(AlgorithmController.class).getAlgorithm(algorithm.getId())).withSelfRel());
         dto.add(linkTo(methodOn(AlgorithmController.class).getTags(algorithm.getId())).withRel(Constants.TAGS));
         dto.add(linkTo(methodOn(ImplementationController.class).getImplementations(algorithm.getId())).withRel(Constants.IMPLEMENTATIONS));
+        dto.add(linkTo(methodOn(AlgorithmController.class).getProblemTypes(algorithm.getId())).withRel(Constants.PROBLEM_TYPES));
         return dto;
     }
 
@@ -134,5 +137,18 @@ public class AlgorithmController {
         TagListDto tagListDto = TagController.createTagDtoList(tags.stream());
         tagListDto.add(linkTo(methodOn(AlgorithmController.class).getTags(id)).withSelfRel());
         return new ResponseEntity<>(tagListDto, HttpStatus.OK);
+    }
+    
+    @GetMapping("/{id}/" + Constants.PROBLEM_TYPES)
+    public HttpEntity<ProblemTypeListDto> getProblemTypes(@PathVariable Long id) {
+        Optional<Algorithm> algorithmOptional = algorithmService.findById(id);
+        if (!algorithmOptional.isPresent()) {
+            LOG.error("Unable to retrieve algorithm with id {} form the repository.", id);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        Set<ProblemType> problemTypes = algorithmOptional.get().getProblemTypes();
+        ProblemTypeListDto problemTypesListDto = ProblemTypeController.createProblemTypeDtoList(problemTypes.stream());
+        problemTypesListDto.add(linkTo(methodOn(AlgorithmController.class).getProblemTypes(id)).withSelfRel());
+        return new ResponseEntity<>(problemTypesListDto, HttpStatus.OK);
     }
 }
