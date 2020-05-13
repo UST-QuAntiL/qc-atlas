@@ -119,6 +119,8 @@ public class AlgorithmController {
             LOG.error("Unable to retrieve algorithm with id {} from the repository.", id);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+        
+        LOG.info("Amount TAGS: " + algorithmOptional.get().getTags().size());
 
         return new ResponseEntity<>(createAlgorithmDto(algorithmOptional.get()), HttpStatus.OK);
     }

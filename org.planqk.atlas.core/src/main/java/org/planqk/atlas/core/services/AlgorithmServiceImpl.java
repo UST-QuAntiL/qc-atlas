@@ -23,6 +23,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.repository.AlgorithmRepository;
 
@@ -36,12 +37,14 @@ import org.springframework.stereotype.Repository;
 public class AlgorithmServiceImpl implements AlgorithmService {
 
     private AlgorithmRepository algorithmRepository;
-
+    
     private TagService tagService;
+    private ProblemTypeService problemTypeService;
 
     @Override
     public Algorithm save(Algorithm algorithm) {
 
+    	// Persist Tags separately
         Set<Tag> tags = algorithm.getTags();
         for (Tag algorithmTag : algorithm.getTags()) {
             Optional<Tag> storedTagOptional = tagService.getTagById(algorithmTag.getId());
@@ -51,6 +54,17 @@ public class AlgorithmServiceImpl implements AlgorithmService {
             }
         }
         algorithm.setTags(tags);
+        
+        // Persist ProblemTypes
+        Set<ProblemType> problemTypes = algorithm.getProblemTypes();
+        for (ProblemType problemType: algorithm.getProblemTypes()) {
+        	Optional<ProblemType> storedProblemTypeOptional = problemTypeService.getById(problemType.getId());
+        	if (!storedProblemTypeOptional.isPresent()) {
+        		problemTypes.remove(problemType);
+        		problemTypes.add(problemTypeService.save(problemType));
+        	}
+        }
+        algorithm.setProblemTypes(problemTypes);
 
         return algorithmRepository.save(algorithm);
     }
