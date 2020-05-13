@@ -14,15 +14,5 @@ import java.util.UUID;
 @EqualsAndHashCode
 @MappedSuperclass
 @NoArgsConstructor
-public class KnowledgeArtifact {
-
-    @Id
-    @Getter
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(
-            name = "UUID",
-            strategy = "org.hibernate.id.UUIDGenerator"
-    )
-    @Column(name = "id", updatable = false, nullable = false)
-    private UUID id;
+public class KnowledgeArtifact extends HasId{
 }
