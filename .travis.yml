@@ -8,3 +8,5 @@ dist: trusty
 
 script:
   - mvn package --fail-at-end
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
