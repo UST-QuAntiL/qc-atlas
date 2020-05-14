@@ -43,6 +43,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -110,6 +111,20 @@ public class AlgorithmController {
 
         // store and return algorithm
         Algorithm algorithm = algorithmService.save(AlgorithmDto.Converter.convert(algo));
+        return new ResponseEntity<>(createAlgorithmDto(algorithm), HttpStatus.CREATED);
+    }
+    
+    @PutMapping("/{id}")
+    public HttpEntity<AlgorithmDto> updateAlgorithm(@PathVariable Long id, @RequestBody AlgorithmDto algo) {
+        LOG.debug("Put to update algorith with id '" + id + "' received");
+
+        if (Objects.isNull(algo.getName())) {
+            LOG.error("Received invalid algorithm object for post request: {}", algo.toString());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        // store and return algorithm
+        Algorithm algorithm = algorithmService.update(id, AlgorithmDto.Converter.convert(algo));
         return new ResponseEntity<>(createAlgorithmDto(algorithm), HttpStatus.CREATED);
     }
 

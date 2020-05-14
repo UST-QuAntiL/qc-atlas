@@ -23,11 +23,11 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.planqk.atlas.core.model.Algorithm;
-import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.repository.AlgorithmRepository;
 
 import lombok.AllArgsConstructor;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -39,7 +39,6 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     private AlgorithmRepository algorithmRepository;
     
     private TagService tagService;
-    private ProblemTypeService problemTypeService;
 
     @Override
     public Algorithm save(Algorithm algorithm) {
@@ -54,19 +53,24 @@ public class AlgorithmServiceImpl implements AlgorithmService {
             }
         }
         algorithm.setTags(tags);
-        
-        // Persist ProblemTypes
-        Set<ProblemType> problemTypes = algorithm.getProblemTypes();
-        for (ProblemType problemType: algorithm.getProblemTypes()) {
-        	Optional<ProblemType> storedProblemTypeOptional = problemTypeService.getById(problemType.getId());
-        	if (!storedProblemTypeOptional.isPresent()) {
-        		problemTypes.remove(problemType);
-        		problemTypes.add(problemTypeService.save(problemType));
-        	}
-        }
-        algorithm.setProblemTypes(problemTypes);
 
         return algorithmRepository.save(algorithm);
+    }
+    
+    @Override
+    public Algorithm update(Long id, Algorithm algorithm) {
+    	Optional<Algorithm> persistedAlgOpt = algorithmRepository.findById(id);
+    	if (persistedAlgOpt.isPresent()) {
+    		Algorithm persistedAlg = persistedAlgOpt.get();
+    		// TODO: Find easy way to copy all properties
+    		persistedAlg.setName(algorithm.getName());
+    		if (algorithm.getProblemTypes() != null) {
+    			persistedAlg.setProblemTypes(algorithm.getProblemTypes());
+    		}
+    		return algorithmRepository.save(persistedAlg);
+    	}
+    	// TODO: Impl exception handling
+    	return null;
     }
 
     @Override

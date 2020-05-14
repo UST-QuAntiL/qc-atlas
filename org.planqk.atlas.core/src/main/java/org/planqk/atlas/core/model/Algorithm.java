@@ -82,7 +82,7 @@ public class Algorithm extends AlgorOrImpl {
 	@Getter
 	private String assumptions;
 	
-	@ManyToMany(cascade = {CascadeType.MERGE})
+	@ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "algorithm_problem_type",
             joinColumns = @JoinColumn(name = "algorithm_id"),
