@@ -1,6 +1,8 @@
 package org.planqk.atlas.core.services;
 
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.repository.ProblemTypeRepository;
@@ -11,7 +13,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class ProblemTypeServiceImpl implements ProblemTypeService {
-	
+
 	@Autowired
 	private ProblemTypeRepository repo;
 
@@ -21,18 +23,60 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
 	}
 
 	@Override
-	public Optional<ProblemType> getById(Long id) {
-		return repo.findById(id);
+	public ProblemType update(Long id, ProblemType problemType) {
+		// Check for type in database
+		Optional<ProblemType> typeOpt = findById(id);
+		// If Type exists
+		if (typeOpt.isPresent()) {
+			// Update fileds
+			ProblemType persistedType = typeOpt.get();
+			persistedType.setName(problemType.getName());
+			persistedType.setParentProblemType(problemType.getParentProblemType());
+			// Reference database type to set
+			return save(persistedType);
+		}
+		// TODO: Exception handling
+		return null;
 	}
 	
 	@Override
-	public Optional<ProblemType> getByName(String name) {
-		return repo.findByName(name);
+	public void delete(Long id) {
+        repo.deleteById(id);
 	}
 
 	@Override
-	public Page<ProblemType> getAll(Pageable pageable) {
+	public Optional<ProblemType> findById(Long id) {
+		return Objects.isNull(id) ? Optional.empty() : repo.findById(id);
+	}
+
+	@Override
+	public Optional<ProblemType> findByName(String name) {
+		return Objects.isNull(name) ? Optional.empty() : repo.findByName(name);
+	}
+
+	@Override
+	public Page<ProblemType> findAll(Pageable pageable) {
 		return repo.findAll(pageable);
 	}
 
+	@Override
+	public void createOrUpdateAll(Set<ProblemType> types) {
+		// Go Iterate all types
+		for (ProblemType type : types) {
+			// Check for type in database
+			Optional<ProblemType> typeOpt = findById(type.getId());
+			// If Type exists
+			if (typeOpt.isPresent()) {
+				// Update fileds
+				ProblemType persistedType = typeOpt.get();
+				persistedType.setName(type.getName());
+				persistedType.setParentProblemType(type.getParentProblemType());
+				// Reference database type to set
+				type = save(persistedType);
+			} else {
+				save(type);
+			}
+		}
+	}
+	
 }

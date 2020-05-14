@@ -31,8 +31,11 @@ public interface AlgorithmService {
     Algorithm save(Algorithm algorithm);
     
     Algorithm update(Long id, Algorithm algorithm);
+    
+    void delete(Long id);
 
     Page<Algorithm> findAll(Pageable pageable);
 
     Optional<Algorithm> findById(Long algoId);
+    
 }

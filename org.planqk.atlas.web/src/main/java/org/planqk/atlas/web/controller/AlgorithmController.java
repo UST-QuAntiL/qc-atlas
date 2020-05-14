@@ -40,6 +40,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -116,7 +117,7 @@ public class AlgorithmController {
     
     @PutMapping("/{id}")
     public HttpEntity<AlgorithmDto> updateAlgorithm(@PathVariable Long id, @RequestBody AlgorithmDto algo) {
-        LOG.debug("Put to update algorith with id '" + id + "' received");
+        LOG.debug("Put to update algorithm with id '" + id + "' received");
 
         if (Objects.isNull(algo.getName())) {
             LOG.error("Received invalid algorithm object for post request: {}", algo.toString());
@@ -126,6 +127,18 @@ public class AlgorithmController {
         // store and return algorithm
         Algorithm algorithm = algorithmService.update(id, AlgorithmDto.Converter.convert(algo));
         return new ResponseEntity<>(createAlgorithmDto(algorithm), HttpStatus.CREATED);
+    }
+    
+    @DeleteMapping("/{id}")
+    public HttpEntity<AlgorithmDto> deleteAlgorithm(@PathVariable Long id) {
+        LOG.debug("Delete to remove algorithm with id '" + id + "' received");
+
+        if (algorithmService.findById(id).isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
+        algorithmService.delete(id);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/{id}")

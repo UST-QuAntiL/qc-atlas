@@ -1,6 +1,7 @@
 package org.planqk.atlas.core.services;
 
 import java.util.Optional;
+import java.util.Set;
 
 import org.planqk.atlas.core.model.ProblemType;
 import org.springframework.data.domain.Page;
@@ -10,10 +11,16 @@ public interface ProblemTypeService {
 
 	ProblemType save(ProblemType problemType);
 	
-	Optional<ProblemType> getById(Long id);
+	ProblemType update(Long id, ProblemType problemType);
 	
-	Optional<ProblemType> getByName(String name);
+	void delete(Long id);
 	
-	Page<ProblemType> getAll(Pageable pageable);
+	Optional<ProblemType> findById(Long id);
+	
+	Optional<ProblemType> findByName(String name);
+	
+	Page<ProblemType> findAll(Pageable pageable);
+	
+	void createOrUpdateAll(Set<ProblemType> problemTypes);
 	
 }

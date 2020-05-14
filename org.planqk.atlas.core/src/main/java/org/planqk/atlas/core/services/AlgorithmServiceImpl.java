@@ -19,6 +19,7 @@
 
 package org.planqk.atlas.core.services;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -36,50 +37,59 @@ import org.springframework.stereotype.Repository;
 @AllArgsConstructor
 public class AlgorithmServiceImpl implements AlgorithmService {
 
-    private AlgorithmRepository algorithmRepository;
-    
-    private TagService tagService;
+	private AlgorithmRepository algorithmRepository;
 
-    @Override
-    public Algorithm save(Algorithm algorithm) {
+	private TagService tagService;
+	private ProblemTypeService problemTypeService;
 
-    	// Persist Tags separately
-        Set<Tag> tags = algorithm.getTags();
-        for (Tag algorithmTag : algorithm.getTags()) {
-            Optional<Tag> storedTagOptional = tagService.getTagById(algorithmTag.getId());
-            if (!storedTagOptional.isPresent()) {
-                tags.remove(algorithmTag);
-                tags.add(tagService.save(algorithmTag));
-            }
-        }
-        algorithm.setTags(tags);
+	@Override
+	public Algorithm save(Algorithm algorithm) {
 
-        return algorithmRepository.save(algorithm);
-    }
-    
-    @Override
-    public Algorithm update(Long id, Algorithm algorithm) {
-    	Optional<Algorithm> persistedAlgOpt = algorithmRepository.findById(id);
-    	if (persistedAlgOpt.isPresent()) {
-    		Algorithm persistedAlg = persistedAlgOpt.get();
-    		// TODO: Find easy way to copy all properties
-    		persistedAlg.setName(algorithm.getName());
-    		if (algorithm.getProblemTypes() != null) {
-    			persistedAlg.setProblemTypes(algorithm.getProblemTypes());
-    		}
-    		return algorithmRepository.save(persistedAlg);
-    	}
-    	// TODO: Impl exception handling
-    	return null;
-    }
+		// Persist Tags separately
+		Set<Tag> tags = algorithm.getTags();
+		for (Tag algorithmTag : algorithm.getTags()) {
+			Optional<Tag> storedTagOptional = tagService.getTagById(algorithmTag.getId());
+			if (!storedTagOptional.isPresent()) {
+				tags.remove(algorithmTag);
+				tags.add(tagService.save(algorithmTag));
+			}
+		}
+		// Persist ProblemTypes separately
+		problemTypeService.createOrUpdateAll(algorithm.getProblemTypes());
 
-    @Override
-    public Page<Algorithm> findAll(Pageable pageable) {
-        return algorithmRepository.findAll(pageable);
-    }
+		algorithm.setTags(tags);
 
-    @Override
-    public Optional<Algorithm> findById(Long algoId) {
-        return algorithmRepository.findById(algoId);
-    }
+		return algorithmRepository.save(algorithm);
+	}
+
+	@Override
+	public Algorithm update(Long id, Algorithm algorithm) {
+		Optional<Algorithm> persistedAlgOpt = findById(id);
+		if (persistedAlgOpt.isPresent()) {
+			Algorithm persistedAlg = persistedAlgOpt.get();
+			persistedAlg.setName(algorithm.getName());
+			persistedAlg.setInputFormat(algorithm.getInputFormat());
+			persistedAlg.setOutputFormat(algorithm.getOutputFormat());
+			persistedAlg.setProblemTypes(algorithm.getProblemTypes());
+			persistedAlg.setTags(algorithm.getTags());
+			return algorithmRepository.save(persistedAlg);
+		}
+		// TODO: Impl exception handling
+		return null;
+	}
+
+	@Override
+	public void delete(Long id) {
+		algorithmRepository.deleteById(id);
+	}
+
+	@Override
+	public Page<Algorithm> findAll(Pageable pageable) {
+		return algorithmRepository.findAll(pageable);
+	}
+
+	@Override
+	public Optional<Algorithm> findById(Long algoId) {
+		return Objects.isNull(algoId) ? Optional.empty() : algorithmRepository.findById(algoId);
+	}
 }
