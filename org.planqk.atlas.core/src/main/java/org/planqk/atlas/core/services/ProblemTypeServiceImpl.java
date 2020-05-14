@@ -60,9 +60,11 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
 	}
 
 	@Override
-	public void createOrUpdateAll(Set<ProblemType> types) {
+	public Set<ProblemType> createOrUpdateAll(Set<ProblemType> algorithmTypes) {
+		Set<ProblemType> types = algorithmTypes;
 		// Go Iterate all types
-		for (ProblemType type : types) {
+		for (ProblemType type : algorithmTypes) {
+			types.remove(type);
 			// Check for type in database
 			Optional<ProblemType> typeOpt = findById(type.getId());
 			// If Type exists
@@ -74,9 +76,12 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
 				// Reference database type to set
 				type = save(persistedType);
 			} else {
-				save(type);
+				type = save(type);
 			}
+			types.add(type);
 		}
+		
+		return types;
 	}
 	
 }

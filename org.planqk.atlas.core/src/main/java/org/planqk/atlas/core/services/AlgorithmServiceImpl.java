@@ -55,7 +55,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 			}
 		}
 		// Persist ProblemTypes separately
-		problemTypeService.createOrUpdateAll(algorithm.getProblemTypes());
+		algorithm.setProblemTypes(problemTypeService.createOrUpdateAll(algorithm.getProblemTypes()));
 
 		algorithm.setTags(tags);
 

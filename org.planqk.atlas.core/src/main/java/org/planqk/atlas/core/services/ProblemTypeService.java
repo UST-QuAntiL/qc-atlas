@@ -21,6 +21,6 @@ public interface ProblemTypeService {
 	
 	Page<ProblemType> findAll(Pageable pageable);
 	
-	void createOrUpdateAll(Set<ProblemType> problemTypes);
+	Set<ProblemType> createOrUpdateAll(Set<ProblemType> problemTypes);
 	
 }
