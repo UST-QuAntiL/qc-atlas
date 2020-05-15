@@ -60,7 +60,7 @@ public class Algorithm extends AlgorOrImpl {
 	
 	@OneToMany(mappedBy = "sourceAlgorithm", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	@Setter
-	private Set<AlgorithmRelation> algorithmRelations;
+	private Set<AlgorithmRelation> relations;
 	
 	@Setter
 	@Getter
@@ -131,11 +131,11 @@ public class Algorithm extends AlgorOrImpl {
     }
     
     @NonNull
-    public Set<AlgorithmRelation> getAlgorithmRelations() {
-        if (Objects.isNull(algorithmRelations)) {
+    public Set<AlgorithmRelation> getRelations() {
+        if (Objects.isNull(relations)) {
             return new HashSet<>();
         }
-        return algorithmRelations;
+        return relations;
     }
     
     @NonNull

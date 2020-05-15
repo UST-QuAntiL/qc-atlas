@@ -28,7 +28,7 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
 		Optional<ProblemType> typeOpt = findById(id);
 		// If Type exists
 		if (typeOpt.isPresent()) {
-			// Update fileds
+			// Update fields
 			ProblemType persistedType = typeOpt.get();
 			persistedType.setName(problemType.getName());
 			persistedType.setParentProblemType(problemType.getParentProblemType());
@@ -69,7 +69,7 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
 			Optional<ProblemType> typeOpt = findById(type.getId());
 			// If Type exists
 			if (typeOpt.isPresent()) {
-				// Update fileds
+				// Update fields
 				ProblemType persistedType = typeOpt.get();
 				persistedType.setName(type.getName());
 				persistedType.setParentProblemType(type.getParentProblemType());
