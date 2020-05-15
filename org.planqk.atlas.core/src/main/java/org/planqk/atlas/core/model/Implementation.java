@@ -33,6 +33,9 @@ import javax.persistence.ManyToOne;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+
 import org.springframework.lang.NonNull;
 
 /**
@@ -49,21 +52,19 @@ public class Implementation extends AlgorOrImpl {
     private Algorithm implementedAlgorithm;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinTable(
-            name = "implementation_tag",
-            joinColumns = @JoinColumn(name = "implementation_id"),
-            inverseJoinColumns = @JoinColumn(name = "tag_id"))
+    @Setter
+    @Getter
     private Set<Tag> tags;
 
     public Implementation() {
         super();
     }
 
-    @NonNull
-    public Set<Tag> getTags() {
-        if (Objects.isNull(tags)) {
-            return new HashSet<>();
-        }
-        return tags;
-    }
+//    @NonNull
+//    public Set<Tag> getTags() {
+//        if (Objects.isNull(tags)) {
+//            return new HashSet<>();
+//        }
+//        return tags;
+//    }
 }

@@ -48,7 +48,7 @@ public class Provider extends HasId {
 
     private String secretKey;
 
-    @OneToMany(mappedBy = "provider", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Qpu> supportedQpus;
 
     @NonNull
