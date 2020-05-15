@@ -31,6 +31,7 @@ public class Constants {
     public static final String QPUS = "qpus";
     public static final String TAGS = "tags";
     public static final String PROBLEM_TYPES = "problemtypes";
+    public static final String ALGO_RELATION_TYPES = "algorelationtypes";
 
     // link names
     public static final String ALGORITHM_LINK = "implementedAlgorithm";
