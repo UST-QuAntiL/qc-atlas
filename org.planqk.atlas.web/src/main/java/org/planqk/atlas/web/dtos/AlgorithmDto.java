@@ -62,6 +62,10 @@ public class AlgorithmDto extends RepresentationModel<AlgorithmDto> {
 
 	private String outputFormat;
 	
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	@Schema(accessMode = WRITE_ONLY)
+	private Set<AlgorithmRelationDto> algorithmRelations;
+	
 	private ComputationModel computationModel;
 	
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
@@ -88,6 +92,7 @@ public class AlgorithmDto extends RepresentationModel<AlgorithmDto> {
             dto.setTags(object.getTags().stream().map(TagDto.Converter::convert).collect(Collectors.toSet()));
             dto.setInputFormat(object.getInputFormat());
             dto.setOutputFormat(object.getInputFormat());
+            dto.setAlgorithmRelations(object.getAlgorithmRelations().stream().map(AlgorithmRelationDto.Converter::convert).collect(Collectors.toSet()));
             dto.setComputationModel(object.getComputationModel());
             dto.setProblemTypes(object.getProblemTypes().stream().map(ProblemTypeDto.Converter::convert).collect(Collectors.toSet()));
             return dto;
@@ -102,6 +107,9 @@ public class AlgorithmDto extends RepresentationModel<AlgorithmDto> {
             }
             algo.setInputFormat(object.getInputFormat());
             algo.setOutputFormat(object.getInputFormat());
+            if (Objects.nonNull(object.getAlgorithmRelations())) {
+            	algo.setAlgorithmRelations(object.getAlgorithmRelations().stream().map(AlgorithmRelationDto.Converter::convert).collect(Collectors.toSet()));
+            }
             algo.setComputationModel(object.getComputationModel());
             if (Objects.nonNull(object.getProblemTypes())) {
             	algo.setProblemTypes(object.getProblemTypes().stream().map(ProblemTypeDto.Converter::convert).collect(Collectors.toSet()));
