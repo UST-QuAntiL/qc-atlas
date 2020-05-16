@@ -90,9 +90,9 @@ public class ProblemTypeController {
 	public HttpEntity<ProblemTypeDto> getProblemTypeById(@PathVariable Long id) {
 		Optional<ProblemType> problemTypeOpt = problemTypeService.findById(id);
 		if (problemTypeOpt.isPresent()) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>(createProblemTypeDto(problemTypeOpt.get()), HttpStatus.OK);
 		}
-		return new ResponseEntity<>(createProblemTypeDto(problemTypeOpt.get()), HttpStatus.OK);
+		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}
 
 }
