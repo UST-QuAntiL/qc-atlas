@@ -26,6 +26,7 @@ import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -48,23 +49,25 @@ public class Implementation extends AlgorOrImpl {
 
     private URL fileLocation;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Algorithm implementedAlgorithm;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @Setter
-    @Getter
+    @JoinTable(
+            name = "implementation_tag",
+            joinColumns = @JoinColumn(name = "implementation_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private Set<Tag> tags;
 
     public Implementation() {
         super();
     }
 
-//    @NonNull
-//    public Set<Tag> getTags() {
-//        if (Objects.isNull(tags)) {
-//            return new HashSet<>();
-//        }
-//        return tags;
-//    }
+    @NonNull
+    public Set<Tag> getTags() {
+        if (Objects.isNull(tags)) {
+            return new HashSet<>();
+        }
+        return tags;
+    }
 }

@@ -24,9 +24,7 @@ import javax.persistence.ManyToOne;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 /**
  * Entity representing a quantum processing unit (Qpu).
@@ -46,7 +44,5 @@ public class Qpu extends HasId {
     private float maxGateTime;
 
     @ManyToOne
-    @Setter
-    @Getter
     private Provider provider;
 }
