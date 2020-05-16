@@ -26,6 +26,8 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -49,7 +51,7 @@ public class Algorithm extends AlgorOrImpl {
 	@Getter
 	private String acronym;
 	
-//	@ManyToMany(cascade = {CascadeType.MERGE})
+//	@ManyToMany(cascade = {CascadeType.ALL})
 //	@Setter
 //	@Getter
 //	private Set<Publication> publications;
@@ -62,11 +64,7 @@ public class Algorithm extends AlgorOrImpl {
 	@Getter
 	private String problem;
 	
-	@OneToMany(cascade = CascadeType.MERGE)
-	@JoinTable(
-//			name = "algorithm_relations",
-			joinColumns = @JoinColumn(name = "sourceAlgorithm_id"),
-			inverseJoinColumns = @JoinColumn(name = "targetAlgorithm_id"))
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
 	private Set<AlgorithmRelation> relations;
 	
 	@Setter
@@ -97,18 +95,10 @@ public class Algorithm extends AlgorOrImpl {
 	@Getter
 	private ComputationModel computationModel;
 	
-	@OneToMany(cascade = CascadeType.ALL)
-    @JoinTable(
-//            name = "pattern_relations",
-            joinColumns = @JoinColumn(name = "algorithm_id"),
-            inverseJoinColumns = @JoinColumn(name = "pattern_relation_id"))
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private Set<PatternRelation> relatedPatterns;
 	
-	@OneToMany(cascade = {CascadeType.MERGE})
-    @JoinTable(
-//            name = "algorithm_problem_type",
-            joinColumns = @JoinColumn(name = "algorithm_id"),
-            inverseJoinColumns = @JoinColumn(name = "problem_type_id"))
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@Setter
 	private Set<ProblemType> problemTypes;
 	
@@ -116,18 +106,10 @@ public class Algorithm extends AlgorOrImpl {
 	@Setter
     private Set<String> applicationAreas;
 
-    @OneToMany(cascade = {CascadeType.MERGE})
-    @JoinTable(
-//    		name = "implementations",
-    		joinColumns = @JoinColumn(name = "algorithm_id"),
-    		inverseJoinColumns = @JoinColumn(name = "implementation_id"))
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<Implementation> implementations;
 
-    @ManyToMany(cascade = {CascadeType.MERGE})
-    @JoinTable(
-//            name = "algorithm_tag",
-            joinColumns = @JoinColumn(name = "algorithm_id"),
-            inverseJoinColumns = @JoinColumn(name = "tag_id"))
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @Setter
     private Set<Tag> tags;
 

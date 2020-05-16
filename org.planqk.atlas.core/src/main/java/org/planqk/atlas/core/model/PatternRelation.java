@@ -4,6 +4,7 @@ import java.net.URI;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
@@ -19,18 +20,14 @@ import lombok.Setter;
 @Entity
 public class PatternRelation extends HasId {
 
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private Algorithm algorithm;
 
 	@Setter
 	@Getter
 	private URI pattern;
 
-	@OneToOne(cascade = CascadeType.ALL)
-	@JoinTable(
-			name = "type_of_pattern_relation",
-			joinColumns = @JoinColumn(name = "patternRelation_id"),
-			inverseJoinColumns = @JoinColumn(name = "patternRelationType_id"))
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private PatternRelationType patternRelationType;
 
 	@Setter
