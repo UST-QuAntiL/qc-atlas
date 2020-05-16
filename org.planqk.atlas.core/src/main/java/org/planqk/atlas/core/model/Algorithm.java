@@ -27,10 +27,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 
 import lombok.Getter;
@@ -65,7 +61,8 @@ public class Algorithm extends AlgorOrImpl {
 	private String problem;
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
-	private Set<AlgorithmRelation> relations;
+	@Setter
+	private Set<AlgorithmRelation> algorithmRelations;
 
 	@Setter
 	@Getter
@@ -96,6 +93,7 @@ public class Algorithm extends AlgorOrImpl {
 	private ComputationModel computationModel;
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@Setter
 	private Set<PatternRelation> relatedPatterns;
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
@@ -134,11 +132,11 @@ public class Algorithm extends AlgorOrImpl {
     }
 
     @NonNull
-    public Set<AlgorithmRelation> getRelations() {
-        if (Objects.isNull(relations)) {
+    public Set<AlgorithmRelation> getAlgorithmRelations() {
+        if (Objects.isNull(algorithmRelations)) {
             return new HashSet<>();
         }
-        return relations;
+        return algorithmRelations;
     }
 
     @NonNull
