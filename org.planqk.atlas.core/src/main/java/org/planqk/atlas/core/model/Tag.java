@@ -25,6 +25,7 @@ import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToMany;
 
 import lombok.Data;
@@ -42,11 +43,11 @@ public class Tag extends HasId {
     String value;
 
     @ManyToMany(mappedBy = "tags", cascade =
-            {CascadeType.MERGE, CascadeType.PERSIST})
+        {CascadeType.MERGE, CascadeType.PERSIST})
     private Set<Algorithm> algorithms;
 
     @ManyToMany(mappedBy = "tags", cascade =
-            {CascadeType.MERGE, CascadeType.PERSIST})
+        {CascadeType.MERGE, CascadeType.PERSIST})
     private Set<Implementation> implementations;
 
     public Set<Algorithm> getAlgorithms() {
