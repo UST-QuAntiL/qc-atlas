@@ -31,7 +31,6 @@ import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.AlgorithmListDto;
 import org.planqk.atlas.web.dtos.ProblemTypeListDto;
-import org.planqk.atlas.web.dtos.QuantumAlgorithmDto;
 import org.planqk.atlas.web.dtos.TagListDto;
 import org.planqk.atlas.web.utils.RestUtils;
 
@@ -114,17 +113,6 @@ public class AlgorithmController {
         // store and return algorithm
         Algorithm algorithm = algorithmService.save(AlgorithmDto.Converter.convert(algo));
         return new ResponseEntity<>(createAlgorithmDto(algorithm), HttpStatus.CREATED);
-    }
-    
-    @PostMapping("/testCreate")
-    public HttpEntity<?> testCreateAlgorithm(@RequestBody AlgorithmDto algo) {
-        LOG.info("Post to create new quantum algorithm received. (TEST)");
-        if (algo instanceof QuantumAlgorithmDto) {
-        	QuantumAlgorithmDto testDto = (QuantumAlgorithmDto) algo;
-            LOG.info("SpeedUp: " + testDto.getSpeedUp());
-        }
-        
-        return new ResponseEntity<>(HttpStatus.OK);
     }
     
     @PutMapping("/{id}")
