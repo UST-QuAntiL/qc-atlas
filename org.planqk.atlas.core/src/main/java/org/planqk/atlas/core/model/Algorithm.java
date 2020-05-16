@@ -82,6 +82,10 @@ public class Algorithm extends AlgorOrImpl {
 	@Getter
 	private String assumptions;
 	
+	@Setter
+	@Getter
+	private ComputationModel computationalModel;
+	
 	@ManyToMany(cascade = {CascadeType.MERGE})
     @JoinTable(
             name = "algorithm_problem_type",

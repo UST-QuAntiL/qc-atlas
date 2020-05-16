@@ -26,6 +26,9 @@ import java.util.stream.Collectors;
 import org.planqk.atlas.core.model.Algorithm;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -43,6 +46,11 @@ import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.WRITE_ONLY;
 @ToString(callSuper = true)
 @Data
 @NoArgsConstructor
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "computationModel", visible = true)
+@JsonSubTypes({
+    @JsonSubTypes.Type(value = QuantumAlgorithmDto.class, name = "QUANTUM"),
+    @JsonSubTypes.Type(value = ClassicAlgorithmDto.class, name = "CLASSIC") }
+)
 public class AlgorithmDto extends RepresentationModel<AlgorithmDto> {
 
 	private Long id;
@@ -52,6 +60,8 @@ public class AlgorithmDto extends RepresentationModel<AlgorithmDto> {
 	private String inputFormat;
 
 	private String outputFormat;
+	
+	private ComputationModelDto computationModel;
 	
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	@Schema(accessMode = WRITE_ONLY)
