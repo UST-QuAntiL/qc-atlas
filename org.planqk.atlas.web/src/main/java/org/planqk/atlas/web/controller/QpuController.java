@@ -32,6 +32,9 @@ import org.planqk.atlas.web.dtos.QpuDto;
 import org.planqk.atlas.web.dtos.QpuListDto;
 import org.planqk.atlas.web.utils.RestUtils;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
@@ -52,6 +55,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 /**
  * Controller to access and manipulate quantum processing units (QPUs).
  */
+@io.swagger.v3.oas.annotations.tags.Tag(name = "qpu")
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/" + Constants.PROVIDERS + "/{providerId}/" + Constants.QPUS)
@@ -84,6 +88,10 @@ public class QpuController {
         return new ResponseEntity<>(qpuListDto, HttpStatus.OK);
     }
 
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", content = @Content)
+    })
     @GetMapping("/{qpuId}")
     public HttpEntity<QpuDto> getQpu(@PathVariable UUID providerId, @PathVariable UUID qpuId) {
         LOG.debug("Get to retrieve QPU with id: {}.", qpuId);
@@ -97,6 +105,11 @@ public class QpuController {
         return new ResponseEntity<>(createQpuDto(providerId, qpuOptional.get()), HttpStatus.OK);
     }
 
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400", content = @Content),
+            @ApiResponse(responseCode = "404", content = @Content)
+    })
     @PostMapping("/")
     public HttpEntity<QpuDto> createQpu(@PathVariable UUID providerId, @RequestBody QpuDto qpuRequest) {
         LOG.debug("Post to create new QPU received.");

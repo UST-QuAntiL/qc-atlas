@@ -33,6 +33,9 @@ import org.planqk.atlas.web.dtos.AlgorithmListDto;
 import org.planqk.atlas.web.dtos.TagListDto;
 import org.planqk.atlas.web.utils.RestUtils;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
@@ -53,6 +56,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 /**
  * Controller to access and manipulate quantum algorithms.
  */
+@io.swagger.v3.oas.annotations.tags.Tag(name = "algorithm")
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/" + Constants.ALGORITHMS)
@@ -80,6 +84,7 @@ public class AlgorithmController {
         return dto;
     }
 
+    @Operation()
     @GetMapping("/")
     public HttpEntity<AlgorithmListDto> getAlgorithms(@RequestParam(required = false) Integer page,
                                                       @RequestParam(required = false) Integer size) {
@@ -97,6 +102,10 @@ public class AlgorithmController {
         return new ResponseEntity<>(dtoList, HttpStatus.OK);
     }
 
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400", content = @Content)
+    })
     @PostMapping("/")
     public HttpEntity<AlgorithmDto> createAlgorithm(@RequestBody AlgorithmDto algo) {
         LOG.debug("Post to create new algorithm received.");
@@ -111,6 +120,10 @@ public class AlgorithmController {
         return new ResponseEntity<>(createAlgorithmDto(algorithm), HttpStatus.CREATED);
     }
 
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", content = @Content)
+    })
     @GetMapping("/{id}")
     public HttpEntity<AlgorithmDto> getAlgorithm(@PathVariable UUID id) {
         LOG.debug("Get to retrieve algorithm with id: {}.", id);
@@ -124,6 +137,10 @@ public class AlgorithmController {
         return new ResponseEntity<>(createAlgorithmDto(algorithmOptional.get()), HttpStatus.OK);
     }
 
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", content = @Content)
+    })
     @GetMapping("/{id}/" + Constants.TAGS)
     public HttpEntity<TagListDto> getTags(@PathVariable UUID id) {
         Optional<Algorithm> algorithmOptional = algorithmService.findById(id);
