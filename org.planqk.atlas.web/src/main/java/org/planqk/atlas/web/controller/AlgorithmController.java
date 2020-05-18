@@ -32,6 +32,7 @@ import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.AlgorithmListDto;
 import org.planqk.atlas.web.dtos.ProblemTypeListDto;
 import org.planqk.atlas.web.dtos.TagListDto;
+import org.planqk.atlas.web.utils.DtoEntityConverter;
 import org.planqk.atlas.web.utils.RestUtils;
 
 import org.slf4j.Logger;
@@ -64,9 +65,11 @@ public class AlgorithmController {
     final private static Logger LOG = LoggerFactory.getLogger(AlgorithmController.class);
 
     private AlgorithmService algorithmService;
+    private DtoEntityConverter modelConverter;
 
-    public AlgorithmController(AlgorithmService algorithmService) {
+    public AlgorithmController(AlgorithmService algorithmService, DtoEntityConverter modelConverter) {
         this.algorithmService = algorithmService;
+        this.modelConverter = modelConverter;
     }
 
     /**
@@ -111,8 +114,8 @@ public class AlgorithmController {
         }
 
         // store and return algorithm
-        Algorithm algorithm = algorithmService.save(AlgorithmDto.Converter.convert(algo));
-        return new ResponseEntity<>(createAlgorithmDto(algorithm), HttpStatus.CREATED);
+        Algorithm algorithm = algorithmService.save(modelConverter.convert(algo));
+        return new ResponseEntity<>(modelConverter.convert(algorithm), HttpStatus.CREATED);
     }
     
     @PutMapping("/{id}")

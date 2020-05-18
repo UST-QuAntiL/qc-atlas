@@ -57,6 +57,8 @@ public class AlgorithmDto extends RepresentationModel<AlgorithmDto> {
 	private Long id;
 
 	private String name;
+	
+	private String problem;
 
 	private String inputFormat;
 

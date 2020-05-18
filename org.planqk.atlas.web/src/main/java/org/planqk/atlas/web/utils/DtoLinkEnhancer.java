@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class DtoLinkEnhancer {
 
-	public void enhance(AlgorithmDto dto) {
+	public void addLinks(AlgorithmDto dto) {
 		dto.add(linkTo(methodOn(AlgorithmController.class).getAlgorithm(dto.getId())).withSelfRel());
         dto.add(linkTo(methodOn(AlgorithmController.class).getTags(dto.getId())).withRel(Constants.TAGS));
         dto.add(linkTo(methodOn(ImplementationController.class).getImplementations(dto.getId())).withRel(Constants.IMPLEMENTATIONS));

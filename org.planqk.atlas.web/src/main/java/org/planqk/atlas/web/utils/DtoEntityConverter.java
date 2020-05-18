@@ -15,6 +15,8 @@ public class DtoEntityConverter {
 
 	@Autowired
 	private ModelMapper modelMapper;
+	@Autowired
+	DtoLinkEnhancer linkEnhancer;
 	
 	public Algorithm convert(AlgorithmDto dto) {
 		if (dto instanceof QuantumAlgorithmDto) {
@@ -29,14 +31,19 @@ public class DtoEntityConverter {
 	}
 	
 	public AlgorithmDto convert(Algorithm entity) {
+		AlgorithmDto dto;
 		if (entity instanceof QuantumAlgorithm) {
-			QuantumAlgorithm qEntity = (QuantumAlgorithm) entity;
-			return modelMapper.map(qEntity, QuantumAlgorithmDto.class);
+			dto = modelMapper.map((QuantumAlgorithm) entity, QuantumAlgorithmDto.class);
+			linkEnhancer.addLinks(dto);
+			return dto;
 		} else if (entity instanceof ClassicAlgorithm) {
-			ClassicAlgorithm cEntity = (ClassicAlgorithm) entity;
-			return modelMapper.map(cEntity, ClassicAlgorithmDto.class);
+			dto = modelMapper.map((ClassicAlgorithm) entity, ClassicAlgorithmDto.class);
+			linkEnhancer.addLinks(dto);
+			return dto;
 		} else {
-			return modelMapper.map(entity, AlgorithmDto.class);
+			dto = modelMapper.map(entity, AlgorithmDto.class);
+			linkEnhancer.addLinks(dto);
+			return dto;
 		}
 	}
 }
