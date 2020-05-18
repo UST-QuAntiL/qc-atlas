@@ -1,13 +1,18 @@
 package org.planqk.atlas.web.utils;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.modelmapper.ModelMapper;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
 import org.planqk.atlas.core.model.QuantumAlgorithm;
+import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.AlgorithmListDto;
 import org.planqk.atlas.web.dtos.ClassicAlgorithmDto;
 import org.planqk.atlas.web.dtos.QuantumAlgorithmDto;
+import org.planqk.atlas.web.dtos.TagDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
@@ -19,7 +24,7 @@ public class DtoEntityConverter {
 	private ModelMapper modelMapper;
 	@Autowired
 	DtoLinkEnhancer linkEnhancer;
-	
+
 	public Algorithm convert(AlgorithmDto dto) {
 		if (dto instanceof QuantumAlgorithmDto) {
 			QuantumAlgorithmDto qDto = (QuantumAlgorithmDto) dto;
@@ -31,7 +36,7 @@ public class DtoEntityConverter {
 			return modelMapper.map(dto, Algorithm.class);
 		}
 	}
-	
+
 	public AlgorithmDto convert(Algorithm entity) {
 		AlgorithmDto dto;
 		if (entity instanceof QuantumAlgorithm) {
@@ -48,15 +53,30 @@ public class DtoEntityConverter {
 			return dto;
 		}
 	}
-	
+
 	public AlgorithmListDto convert(Page<Algorithm> entities) {
+		return convert(new HashSet<Algorithm>(entities.getContent()));
+	}
+
+	public AlgorithmListDto convert(Set<Algorithm> entities) {
 		AlgorithmListDto dtoList = new AlgorithmListDto();
-		
-		for (Algorithm entity: entities) {
+
+		for (Algorithm entity : entities) {
 			dtoList.add(convert(entity));
 			linkEnhancer.addLinks(dtoList, entity);
 		}
-		
+
 		return dtoList;
+	}
+
+	public Tag convert(TagDto dto) {
+		return modelMapper.map(dto, Tag.class);
+	}
+
+	public TagDto convert(Tag entity) {
+		TagDto dto;
+		dto = modelMapper.map(entity, TagDto.class);
+		linkEnhancer.addLinks(dto);
+		return dto;
 	}
 }

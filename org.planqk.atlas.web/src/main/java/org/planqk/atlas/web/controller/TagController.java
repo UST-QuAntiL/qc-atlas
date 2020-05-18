@@ -35,8 +35,9 @@ import org.planqk.atlas.web.dtos.AlgorithmListDto;
 import org.planqk.atlas.web.dtos.ImplementationListDto;
 import org.planqk.atlas.web.dtos.TagDto;
 import org.planqk.atlas.web.dtos.TagListDto;
+import org.planqk.atlas.web.utils.DtoEntityConverter;
 import org.planqk.atlas.web.utils.RestUtils;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
@@ -50,6 +51,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.core.converter.ModelConverter;
+
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -60,9 +63,12 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class TagController {
 
     private TagService tagService;
+    private DtoEntityConverter modelConverter;
 
-    public TagController(TagService tagService) {
+    @Autowired
+    public TagController(TagService tagService, DtoEntityConverter modelConverter) {
         this.tagService = tagService;
+        this.modelConverter = modelConverter;
     }
 
     public static TagListDto createTagDtoList(Stream<Tag> tagStream) {
@@ -87,7 +93,7 @@ public class TagController {
     }
 
     @GetMapping(value = "/")
-    HttpEntity<TagListDto> getTags(@RequestParam(required = false) Integer page,
+    public HttpEntity<TagListDto> getTags(@RequestParam(required = false) Integer page,
                                    @RequestParam(required = false) Integer size) {
         Page<Tag> tags = this.tagService.findAll(RestUtils.getPageableFromRequestParams(page, size));
         TagListDto dtoList = createTagDtoList(tags.stream());
@@ -95,24 +101,21 @@ public class TagController {
     }
 
     @PostMapping(value = "/")
-    HttpEntity<TagDto> createTag(@RequestBody Tag tag) {
-        TagDto savedTag = TagDto.Converter.convert(this.tagService.save(tag));
-
-        savedTag.add(linkTo(methodOn(TagController.class).getTagById(savedTag.getId())).withSelfRel());
-        return new ResponseEntity<>(savedTag, HttpStatus.CREATED);
+    public HttpEntity<TagDto> createTag(@RequestBody Tag tag) {
+        return new ResponseEntity<>(modelConverter.convert(this.tagService.save(tag)), HttpStatus.CREATED);
     }
 
     @GetMapping(value = "/{tagId}")
-    HttpEntity<TagDto> getTagById(@PathVariable Long tagId) {
+    public HttpEntity<TagDto> getTagById(@PathVariable Long tagId) {
         Optional<Tag> tagOptional = this.tagService.getTagById(tagId);
         if (!tagOptional.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(createTagDto(tagOptional.get()), HttpStatus.OK);
+        return new ResponseEntity<>(modelConverter.convert(tagOptional.get()), HttpStatus.OK);
     }
 
     @GetMapping(value = "/{tagId}/" + Constants.ALGORITHMS)
-    HttpEntity<AlgorithmListDto> getAlgorithmsOfTag(@PathVariable Long tagId) {
+    public HttpEntity<AlgorithmListDto> getAlgorithmsOfTag(@PathVariable Long tagId) {
         Optional<Tag> tagOptional = this.tagService.getTagById(tagId);
         if (!tagOptional.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -126,7 +129,7 @@ public class TagController {
     }
 
     @GetMapping(value = "/{tagId}/" + Constants.IMPLEMENTATIONS)
-    HttpEntity<ImplementationListDto> getImplementationsOfTag(@PathVariable Long tagId) {
+    public HttpEntity<ImplementationListDto> getImplementationsOfTag(@PathVariable Long tagId) {
         Optional<Tag> tagOptional = this.tagService.getTagById(tagId);
         if (!tagOptional.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
