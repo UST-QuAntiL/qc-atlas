@@ -5,8 +5,6 @@ import java.net.URI;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
@@ -20,7 +18,7 @@ import lombok.Setter;
 @Entity
 public class PatternRelation extends HasId {
 
-	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@ManyToOne
 	private Algorithm algorithm;
 
 	@Setter

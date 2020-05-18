@@ -27,6 +27,9 @@ import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.JoinTable;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 
 import lombok.Getter;
@@ -60,7 +63,7 @@ public class Algorithm extends AlgorOrImpl {
 	@Getter
 	private String problem;
 
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+	@OneToMany(mappedBy = "sourceAlgorithm", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	@Setter
 	private Set<AlgorithmRelation> algorithmRelations;
 
@@ -92,74 +95,77 @@ public class Algorithm extends AlgorOrImpl {
 	@Getter
 	private ComputationModel computationModel;
 
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "algorithm", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	@Setter
 	private Set<PatternRelation> relatedPatterns;
 
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@ManyToMany(cascade = { CascadeType.MERGE })
+	@JoinTable(name = "algorithm_problem_type", joinColumns = @JoinColumn(name = "algorithm_id"), inverseJoinColumns = @JoinColumn(name = "problem_type_id"))
 	@Setter
 	private Set<ProblemType> problemTypes;
 
 	@ElementCollection
 	@Setter
-    private Set<String> applicationAreas;
+	private Set<String> applicationAreas;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private Set<Implementation> implementations;
+	@OneToMany(mappedBy = "implementedAlgorithm", cascade = { CascadeType.MERGE })
+	@Setter
+	private Set<Implementation> implementations;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @Setter
-    private Set<Tag> tags;
+	@ManyToMany(cascade = { CascadeType.MERGE })
+	@JoinTable(name = "algorithm_tag", joinColumns = @JoinColumn(name = "algorithm_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
+	@Setter
+	private Set<Tag> tags;
 
-    public Algorithm() {
-        super();
-    }
+	public Algorithm() {
+		super();
+	}
 
-    @NonNull
-    public Set<Implementation> getImplementations() {
-        if (Objects.isNull(implementations)) {
-            return new HashSet<>();
-        }
-        return implementations;
-    }
+	@NonNull
+	public Set<Implementation> getImplementations() {
+		if (Objects.isNull(implementations)) {
+			return new HashSet<>();
+		}
+		return implementations;
+	}
 
-    @NonNull
-    public Set<Tag> getTags() {
-        if (Objects.isNull(tags)) {
-            return new HashSet<>();
-        }
-        return tags;
-    }
+	@NonNull
+	public Set<Tag> getTags() {
+		if (Objects.isNull(tags)) {
+			return new HashSet<>();
+		}
+		return tags;
+	}
 
-    @NonNull
-    public Set<AlgorithmRelation> getAlgorithmRelations() {
-        if (Objects.isNull(algorithmRelations)) {
-            return new HashSet<>();
-        }
-        return algorithmRelations;
-    }
+	@NonNull
+	public Set<AlgorithmRelation> getAlgorithmRelations() {
+		if (Objects.isNull(algorithmRelations)) {
+			return new HashSet<>();
+		}
+		return algorithmRelations;
+	}
 
-    @NonNull
-    public Set<PatternRelation> getRelatedPatterns() {
-        if (Objects.isNull(relatedPatterns)) {
-            return new HashSet<>();
-        }
-        return relatedPatterns;
-    }
+	@NonNull
+	public Set<PatternRelation> getRelatedPatterns() {
+		if (Objects.isNull(relatedPatterns)) {
+			return new HashSet<>();
+		}
+		return relatedPatterns;
+	}
 
-    @NonNull
-    public Set<String> getApplicationAreas() {
-        if (Objects.isNull(applicationAreas)) {
-            return new HashSet<>();
-        }
-        return applicationAreas;
-    }
+	@NonNull
+	public Set<String> getApplicationAreas() {
+		if (Objects.isNull(applicationAreas)) {
+			return new HashSet<>();
+		}
+		return applicationAreas;
+	}
 
-    @NonNull
-    public Set<ProblemType> getProblemTypes() {
-        if (Objects.isNull(problemTypes)) {
-            return new HashSet<>();
-        }
-        return problemTypes;
-    }
+	@NonNull
+	public Set<ProblemType> getProblemTypes() {
+		if (Objects.isNull(problemTypes)) {
+			return new HashSet<>();
+		}
+		return problemTypes;
+	}
 }

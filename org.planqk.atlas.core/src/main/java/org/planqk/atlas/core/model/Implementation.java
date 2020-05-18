@@ -49,7 +49,7 @@ public class Implementation extends AlgorOrImpl {
 
     private URL fileLocation;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToOne
     private Algorithm implementedAlgorithm;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})

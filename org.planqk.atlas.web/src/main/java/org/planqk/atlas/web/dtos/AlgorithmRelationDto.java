@@ -20,6 +20,7 @@
 package org.planqk.atlas.web.dtos;
 
 
+import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
 
 import lombok.Data;
@@ -35,8 +36,8 @@ import org.springframework.hateoas.RepresentationModel;
 public class AlgorithmRelationDto extends RepresentationModel<AlgorithmRelationDto> {
 
 	private Long id;
-	private Long sourceAlgorithm;
-	private Long targetAlgorithm;
+	private Algorithm sourceAlgorithm;
+	private Algorithm targetAlgorithm;
 	private AlgoRelationTypeDto algoRelationType;
 	private String description;
 	
