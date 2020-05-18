@@ -91,17 +91,7 @@ public class AlgorithmController {
     public HttpEntity<AlgorithmListDto> getAlgorithms(@RequestParam(required = false) Integer page,
                                                       @RequestParam(required = false) Integer size) {
         LOG.debug("Get to retrieve all algorithms received.");
-        AlgorithmListDto dtoList = new AlgorithmListDto();
-
-        // add all available algorithms to the response
-        for (Algorithm algo : algorithmService.findAll(RestUtils.getPageableFromRequestParams(page, size))) {
-            dtoList.add(createAlgorithmDto(algo));
-            dtoList.add(linkTo(methodOn(AlgorithmController.class).getAlgorithm(algo.getId())).withRel(algo.getId().toString()));
-        }
-
-        // add self link and status code
-        dtoList.add(linkTo(methodOn(AlgorithmController.class).getAlgorithms(null, null)).withSelfRel());
-        return new ResponseEntity<>(dtoList, HttpStatus.OK);
+        return new ResponseEntity<>(modelConverter.convert(algorithmService.findAll(RestUtils.getPageableFromRequestParams(page, size))), HttpStatus.OK);
     }
 
     @PostMapping("/")
@@ -128,8 +118,8 @@ public class AlgorithmController {
         }
 
         // store and return algorithm
-        Algorithm algorithm = algorithmService.update(id, AlgorithmDto.Converter.convert(algo));
-        return new ResponseEntity<>(createAlgorithmDto(algorithm), HttpStatus.CREATED);
+        Algorithm algorithm = algorithmService.update(id, modelConverter.convert(algo));
+        return new ResponseEntity<>(modelConverter.convert(algorithm), HttpStatus.OK);
     }
     
     @DeleteMapping("/{id}")
@@ -154,7 +144,7 @@ public class AlgorithmController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        return new ResponseEntity<>(createAlgorithmDto(algorithmOptional.get()), HttpStatus.OK);
+        return new ResponseEntity<>(modelConverter.convert(algorithmOptional.get()), HttpStatus.OK);
     }
 
     @GetMapping("/{id}/" + Constants.TAGS)

@@ -5,9 +5,11 @@ import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
 import org.planqk.atlas.core.model.QuantumAlgorithm;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
+import org.planqk.atlas.web.dtos.AlgorithmListDto;
 import org.planqk.atlas.web.dtos.ClassicAlgorithmDto;
 import org.planqk.atlas.web.dtos.QuantumAlgorithmDto;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -45,5 +47,16 @@ public class DtoEntityConverter {
 			linkEnhancer.addLinks(dto);
 			return dto;
 		}
+	}
+	
+	public AlgorithmListDto convert(Page<Algorithm> entities) {
+		AlgorithmListDto dtoList = new AlgorithmListDto();
+		
+		for (Algorithm entity: entities) {
+			dtoList.add(convert(entity));
+			linkEnhancer.addLinks(dtoList, entity);
+		}
+		
+		return dtoList;
 	}
 }
