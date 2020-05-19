@@ -122,6 +122,7 @@ public class AlgorithmController {
 
         // store and return algorithm
         Algorithm algorithm = algorithmService.save(modelConverter.convert(algo));
+        
         return new ResponseEntity<>(modelConverter.convert(algorithm), HttpStatus.CREATED);
     }
     
