@@ -21,6 +21,7 @@ package org.planqk.atlas.web.controller;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Implementation;
@@ -75,7 +76,7 @@ public class ImplementationController {
      * @return the created DTO
      */
     public static ImplementationDto createImplementationDto(Implementation implementation) {
-        Long algoId = implementation.getImplementedAlgorithm().getId();
+        UUID algoId = implementation.getImplementedAlgorithm().getId();
         ImplementationDto dto = ImplementationDto.Converter.convert(implementation);
         dto.add(linkTo(methodOn(ImplementationController.class).getImplementation(algoId, implementation.getId())).withSelfRel());
         dto.add(linkTo(methodOn(AlgorithmController.class).getAlgorithm(algoId)).withRel(Constants.ALGORITHM_LINK));
@@ -84,7 +85,7 @@ public class ImplementationController {
     }
 
     @GetMapping("/")
-    public HttpEntity<ImplementationListDto> getImplementations(@PathVariable Long algoId) {
+    public HttpEntity<ImplementationListDto> getImplementations(@PathVariable UUID algoId) {
         LOG.debug("Get to retrieve all implementations received.");
         ImplementationListDto dtoList = new ImplementationListDto();
 
@@ -104,7 +105,7 @@ public class ImplementationController {
     }
 
     @GetMapping("/{implId}")
-    public HttpEntity<ImplementationDto> getImplementation(@PathVariable Long algoId, @PathVariable Long implId) {
+    public HttpEntity<ImplementationDto> getImplementation(@PathVariable UUID algoId, @PathVariable UUID implId) {
         LOG.debug("Get to retrieve implementation with id: {}.", implId);
 
         Optional<Implementation> implementationOptional = implementationService.findById(implId);
@@ -117,7 +118,7 @@ public class ImplementationController {
     }
 
     @PostMapping("/")
-    public HttpEntity<ImplementationDto> createImplementation(@PathVariable Long algoId, @RequestBody ImplementationDto impl) {
+    public HttpEntity<ImplementationDto> createImplementation(@PathVariable UUID algoId, @RequestBody ImplementationDto impl) {
         LOG.debug("Post to create new implementation received.");
 
         Optional<Algorithm> algorithmOptional = algorithmService.findById(algoId);
@@ -139,7 +140,7 @@ public class ImplementationController {
     }
 
     @GetMapping("/{implId}/" + Constants.TAGS)
-    public HttpEntity<TagListDto> getTags(@PathVariable Long algoId, @PathVariable Long implId) {
+    public HttpEntity<TagListDto> getTags(@PathVariable UUID algoId, @PathVariable UUID implId) {
         Optional<Implementation> implementationOptional = implementationService.findById(implId);
         if (!implementationOptional.isPresent()) {
             LOG.error("Unable to find implementation with id {} from the repository.", implId);

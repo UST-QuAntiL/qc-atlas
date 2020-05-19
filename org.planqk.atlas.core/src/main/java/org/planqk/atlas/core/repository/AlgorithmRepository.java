@@ -20,6 +20,7 @@
 package org.planqk.atlas.core.repository;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
 
@@ -30,7 +31,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
  * Repository to access {@link Algorithm}s available in the data base with different queries.
  */
 @RepositoryRestResource(exported = false)
-public interface AlgorithmRepository extends JpaRepository<Algorithm, Long> {
+public interface AlgorithmRepository extends JpaRepository<Algorithm, UUID> {
 
     Optional<Algorithm> findByName(String name);
 }

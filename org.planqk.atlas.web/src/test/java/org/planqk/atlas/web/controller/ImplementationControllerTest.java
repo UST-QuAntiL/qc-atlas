@@ -23,6 +23,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Implementation;
@@ -84,8 +85,8 @@ public class ImplementationControllerTest {
 
     @Test
     public void getOneImplForAlgo() throws Exception {
-        Long algoId = 1L;
-        Long implId = 2L;
+        UUID algoId = UUID.randomUUID();
+        UUID implId = UUID.randomUUID();
         Algorithm algorithm = mockValidAlgorithmForImplCreation(algoId);
         Implementation implementation = mockValidMinimalImpl(implId);
         implementation.setImplementedAlgorithm(algorithm);
@@ -112,9 +113,9 @@ public class ImplementationControllerTest {
 
     @Test
     public void getMultipleImplForAlgo() throws Exception {
-        Long algoId = 1L;
-        Long implId1 = 2L;
-        Long implId2 = 3L;
+        UUID algoId = UUID.randomUUID();
+        UUID implId1 = UUID.randomUUID();
+        UUID implId2 = UUID.randomUUID();
         Algorithm algorithm = mockValidAlgorithmForImplCreation(algoId);
         Implementation implementation1 = mockValidMinimalImpl(implId1);
         Implementation implementation2 = mockValidMinimalImpl(implId2);
@@ -139,14 +140,14 @@ public class ImplementationControllerTest {
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
 
         ImplementationListDto implementationListResult = new ObjectMapper().readValue(mvcResult.getResponse().getContentAsString(), ImplementationListDto.class);
-        assertTrue(implementationListResult.getImplementationDtos().stream().mapToLong(impl -> impl.getId()).allMatch(id -> id == implId1 || id == implId2));
+        assertTrue(implementationListResult.getImplementationDtos().stream().map(impl -> impl.getId()).allMatch(id -> id.equals(implId1) || id.equals(implId2)));
         assertEquals(implementationListResult.getImplementationDtos().size(), implementationList.size());
     }
 
     @Test
     public void createImplWithCompleteInfosForAlgo() throws Exception {
-        Long algoId = 1L;
-        Long implId = 2L;
+        UUID algoId = UUID.randomUUID();
+        UUID implId = UUID.randomUUID();
         Algorithm algorithm = mockValidAlgorithmForImplCreation(algoId);
 
         Implementation implementation = mockValidMinimalImpl(implId);
@@ -163,8 +164,8 @@ public class ImplementationControllerTest {
 
     @Test
     public void createImplWithMinimalInfosForAlgo() throws Exception {
-        Long algoId = 1L;
-        Long implId = 2L;
+        UUID algoId = UUID.randomUUID();
+        UUID implId = UUID.randomUUID();
         Algorithm algorithm = mockValidAlgorithmForImplCreation(algoId);
 
         Implementation implementation = mockValidMinimalImpl(implId);
@@ -179,7 +180,7 @@ public class ImplementationControllerTest {
         assertEquals(createdImpl.getId(), implId);
     }
 
-    private Implementation mockValidMinimalImpl(Long implId) throws MalformedURLException {
+    private Implementation mockValidMinimalImpl(UUID implId) throws MalformedURLException {
         Implementation implementation = new Implementation();
         implementation.setName("implementation for Shor");
         implementation.setId(implId);
@@ -192,8 +193,8 @@ public class ImplementationControllerTest {
 
     @Test
     public void createImplWithInvalidInfo() throws Exception {
-        Long algoId = 1L;
-        Long implId = 2L;
+        UUID algoId = UUID.randomUUID();
+        UUID implId = UUID.randomUUID();
         mockValidAlgorithmForImplCreation(algoId);
 
         // specify an implementation:
@@ -212,8 +213,8 @@ public class ImplementationControllerTest {
     }
 
     public void createImplForNonExistentAlgo() throws Exception {
-        Long nonExistentAlgoId = 1L;
-        Long implId = 2L;
+        UUID nonExistentAlgoId = UUID.randomUUID();
+        UUID implId = UUID.randomUUID();
         Implementation implementation = mockValidMinimalImpl(implId);
         // pretend algo is not found:
         when(algorithmService.findById(nonExistentAlgoId)).thenReturn(null);
@@ -226,7 +227,7 @@ public class ImplementationControllerTest {
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
     }
 
-    private Algorithm mockValidAlgorithmForImplCreation(Long algoId) {
+    private Algorithm mockValidAlgorithmForImplCreation(UUID algoId) {
         Algorithm algorithm = new Algorithm();
         algorithm.setId(algoId);
         when(algorithmService.findById(algoId)).thenReturn(java.util.Optional.of(algorithm));

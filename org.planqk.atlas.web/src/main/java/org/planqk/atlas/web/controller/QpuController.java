@@ -21,6 +21,7 @@ package org.planqk.atlas.web.controller;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.planqk.atlas.core.model.Provider;
 import org.planqk.atlas.core.model.Qpu;
@@ -66,7 +67,7 @@ public class QpuController {
     }
 
     @GetMapping("/")
-    public HttpEntity<QpuListDto> getQpus(@PathVariable Long providerId, @RequestParam(required = false) Integer page,
+    public HttpEntity<QpuListDto> getQpus(@PathVariable UUID providerId, @RequestParam(required = false) Integer page,
                                           @RequestParam(required = false) Integer size) {
         LOG.debug("Get to retrieve all QPUs received.");
         QpuListDto qpuListDto = new QpuListDto();
@@ -84,7 +85,7 @@ public class QpuController {
     }
 
     @GetMapping("/{qpuId}")
-    public HttpEntity<QpuDto> getQpu(@PathVariable Long providerId, @PathVariable Long qpuId) {
+    public HttpEntity<QpuDto> getQpu(@PathVariable UUID providerId, @PathVariable UUID qpuId) {
         LOG.debug("Get to retrieve QPU with id: {}.", qpuId);
 
         Optional<Qpu> qpuOptional = qpuService.findById(qpuId);
@@ -97,7 +98,7 @@ public class QpuController {
     }
 
     @PostMapping("/")
-    public HttpEntity<QpuDto> createQpu(@PathVariable Long providerId, @RequestBody QpuDto qpuRequest) {
+    public HttpEntity<QpuDto> createQpu(@PathVariable UUID providerId, @RequestBody QpuDto qpuRequest) {
         LOG.debug("Post to create new QPU received.");
 
         Optional<Provider> providerOptional = providerService.findById(providerId);
@@ -124,7 +125,7 @@ public class QpuController {
      * @param qpu        the {@link Qpu} to create the DTO for
      * @return the created DTO
      */
-    private QpuDto createQpuDto(Long providerId, Qpu qpu) {
+    private QpuDto createQpuDto(UUID providerId, Qpu qpu) {
         QpuDto qpuDto = QpuDto.Converter.convert(qpu);
         qpuDto.add(linkTo(methodOn(QpuController.class).getQpu(providerId, qpu.getId())).withSelfRel());
         qpuDto.add(linkTo(methodOn(ProviderController.class).getProvider(providerId)).withRel(Constants.PROVIDER));

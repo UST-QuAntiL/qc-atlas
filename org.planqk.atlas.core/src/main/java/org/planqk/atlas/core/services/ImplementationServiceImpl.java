@@ -20,6 +20,7 @@
 package org.planqk.atlas.core.services;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.repository.ImplementationRepository;
@@ -46,7 +47,7 @@ public class ImplementationServiceImpl implements ImplementationService {
     }
 
     @Override
-    public Optional<Implementation> findById(Long implId) {
+    public Optional<Implementation> findById(UUID implId) {
         return repository.findById(implId);
     }
 }

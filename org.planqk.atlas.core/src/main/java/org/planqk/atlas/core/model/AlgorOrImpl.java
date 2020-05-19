@@ -37,7 +37,7 @@ import org.hibernate.annotations.TypeDef;
         name = "jsonb",
         typeClass = JsonBinaryType.class
 )
-public abstract class AlgorOrImpl extends HasId {
+public abstract class AlgorOrImpl extends KnowledgeArtifact {
 
     private String name;
 
