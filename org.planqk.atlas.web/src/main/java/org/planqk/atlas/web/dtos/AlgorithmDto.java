@@ -64,6 +64,8 @@ public class AlgorithmDto extends RepresentationModel<AlgorithmDto> {
 	private String inputFormat;
 
 	private String outputFormat;
+
+	private Set<AlgorithmRelationDto> algorithmRelations;
 	
 //	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 //	@Schema(accessMode = WRITE_ONLY)

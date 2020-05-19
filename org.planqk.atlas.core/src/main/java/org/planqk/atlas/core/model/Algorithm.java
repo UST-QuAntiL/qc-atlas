@@ -63,7 +63,8 @@ public class Algorithm extends AlgorOrImpl {
 	@Getter
 	private String problem;
 
-	@OneToMany(mappedBy = "sourceAlgorithm", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	@JoinColumn(name = "sourceAlgorithm", referencedColumnName = "id")
 	@Setter
 	private Set<AlgorithmRelation> algorithmRelations;
 
@@ -95,7 +96,7 @@ public class Algorithm extends AlgorOrImpl {
 	@Getter
 	private ComputationModel computationModel;
 
-	@OneToMany(mappedBy = "algorithm", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "algorithm", fetch = FetchType.LAZY, cascade = CascadeType.MERGE, orphanRemoval = true)
 	@Setter
 	private Set<PatternRelation> relatedPatterns;
 
@@ -135,6 +136,16 @@ public class Algorithm extends AlgorOrImpl {
 			return new HashSet<>();
 		}
 		return tags;
+	}
+	
+	public void addAlgorithmRelation(AlgorithmRelation relation) {
+		algorithmRelations.add(relation);
+		relation.setSourceAlgorithm(this);
+	}
+	
+	public void removeAlgorithmRelation(AlgorithmRelation relation) {
+		algorithmRelations.remove(relation);
+		relation.setSourceAlgorithm(null);
 	}
 
 	@NonNull
