@@ -41,14 +41,15 @@ import org.springframework.hateoas.RepresentationModel;
 public class ImplementationDto extends RepresentationModel<ImplementationDto> {
 
     private UUID id;
-
     private String name;
-
     private URL fileLocation;
-
     private String inputFormat;
-
     private String outputFormat;
+    private String description;
+    private String contributors;
+    private String assumptions;
+    private String parameter;
+    private String dependencies;
 
     public static final class Converter {
 
@@ -59,6 +60,11 @@ public class ImplementationDto extends RepresentationModel<ImplementationDto> {
             dto.setFileLocation(object.getFileLocation());
             dto.setInputFormat(object.getInputFormat());
             dto.setOutputFormat(object.getOutputFormat());
+            dto.setDescription(object.getDescription());
+            dto.setContributors(object.getContributors());
+            dto.setAssumptions(object.getAssumptions());
+            dto.setParameter(object.getParameter());
+            dto.setDependencies(object.getDependencies());
             return dto;
         }
 
@@ -69,6 +75,11 @@ public class ImplementationDto extends RepresentationModel<ImplementationDto> {
             implementation.setImplementedAlgorithm(algo);
             implementation.setInputFormat(object.getInputFormat());
             implementation.setOutputFormat(object.getOutputFormat());
+            implementation.setDependencies(object.getDescription());
+            implementation.setContributors(object.getContributors());
+            implementation.setAssumptions(object.getAssumptions());
+            implementation.setParameter(object.getParameter());
+            implementation.setDependencies(object.getDependencies());
             return implementation;
         }
     }
