@@ -12,7 +12,6 @@ import org.planqk.atlas.web.utils.RestUtils;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -43,17 +42,30 @@ public class QuantumResourceTypeController {
         return ResponseEntity.ok(listDto);
     }
 
+    @PostMapping("/")
+    public HttpEntity<QuantumResourceTypeDto> addResource(
+            @RequestBody QuantumResourceTypeDto dto
+    ) {
+        var storedObj = this.typeService.save(QuantumResourceTypeDto.Converter.convert(dto));
+
+        return ResponseEntity.ok(createResourceTypeDto(storedObj, true));
+    }
+
     @GetMapping("/{id}")
     public HttpEntity<QuantumResourceTypeDto> getResource(
-            UUID id
+            @PathVariable UUID id
     ) {
-        var dto = createResourceTypeDto(typeService.findById(id).get(), false);
+        var optionalObject = typeService.findById(id);
+        if (optionalObject.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        var dto = createResourceTypeDto(optionalObject.get(), false);
         dto.add(
                 linkTo(methodOn(QuantumResourceTypeController.class).getResource(null))
                         .withSelfRel()
         );
-
         return ResponseEntity.ok(dto);
+
     }
 
     private QuantumResourceTypeDto createResourceTypeDto(QuantumResourceType type, boolean addAlgoLink) {

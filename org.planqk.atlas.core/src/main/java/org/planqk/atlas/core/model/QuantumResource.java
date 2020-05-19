@@ -14,12 +14,12 @@ import lombok.NoArgsConstructor;
 @Data
 public class QuantumResource extends HasId {
 
-    @Column
+
     @ManyToOne(optional = false)
     private QuantumResourceType type;
 
     @Lob
     @Column
     //TODO Change to proper datatype
-    private String value;
+    private Object value;
 }
