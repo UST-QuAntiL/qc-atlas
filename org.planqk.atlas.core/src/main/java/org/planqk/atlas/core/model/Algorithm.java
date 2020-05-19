@@ -34,6 +34,9 @@ import javax.persistence.OneToMany;
 
 import lombok.Getter;
 import lombok.Setter;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 
 /**
@@ -63,7 +66,7 @@ public class Algorithm extends AlgorOrImpl {
 	@Getter
 	private String problem;
 
-	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, orphanRemoval = true)
 	@JoinColumn(name = "sourceAlgorithm", referencedColumnName = "id")
 	@Setter
 	private Set<AlgorithmRelation> algorithmRelations;
@@ -138,14 +141,27 @@ public class Algorithm extends AlgorOrImpl {
 		return tags;
 	}
 	
-	public void addAlgorithmRelation(AlgorithmRelation relation) {
-		algorithmRelations.add(relation);
-		relation.setSourceAlgorithm(this);
+	@NonNull
+	public boolean addAlgorithmRelation(AlgorithmRelation relation) {
+		if (algorithmRelations.add(relation)) {
+			relation.setSourceAlgorithm(this);
+			return true;
+		}
+		return false;
 	}
 	
-	public void removeAlgorithmRelation(AlgorithmRelation relation) {
-		algorithmRelations.remove(relation);
-		relation.setSourceAlgorithm(null);
+	@NonNull
+	public boolean updateAlgorithmRelation(AlgorithmRelation relation) {
+		for (AlgorithmRelation persistantRelation : algorithmRelations) {
+			if (persistantRelation.getId().equals(relation.getId())) {
+				persistantRelation.setSourceAlgorithm(relation.getSourceAlgorithm());
+				persistantRelation.setTargetAlgorithm(relation.getTargetAlgorithm());
+				persistantRelation.setAlgoRelationType(relation.getAlgoRelationType());
+				persistantRelation.setDescription(relation.getDescription());
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@NonNull
