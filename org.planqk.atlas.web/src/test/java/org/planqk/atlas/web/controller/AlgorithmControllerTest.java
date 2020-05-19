@@ -178,7 +178,7 @@ public class AlgorithmControllerTest {
         ReflectionTestUtils.setField(algorithmDto, "computationModel", ComputationModel.CLASSIC);
         Algorithm algorithm = AlgorithmDto.Converter.convert(algorithmDto);
         
-        when(modelConverter.convert(any(AlgorithmDto.class))).thenReturn(AlgorithmDto.Converter.convert(algorithmDto));
+        when(modelConverter.convert(any(AlgorithmDto.class))).thenReturn(algorithm);
         when(algorithmService.save(any(Algorithm.class))).thenReturn(algorithm);
         when(modelConverter.convert(any(Algorithm.class))).thenReturn(algorithmDto);
         
