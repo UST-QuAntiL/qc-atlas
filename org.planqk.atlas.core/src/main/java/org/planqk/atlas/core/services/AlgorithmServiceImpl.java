@@ -24,6 +24,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.repository.AlgorithmRepository;
 
@@ -91,5 +92,40 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 	@Override
 	public Optional<Algorithm> findById(Long algoId) {
 		return Objects.isNull(algoId) ? Optional.empty() : algorithmRepository.findById(algoId);
+	}
+
+	@Override
+	public AlgorithmRelation addUpdateAlgorithmRelation(Long algoId, AlgorithmRelation relation) {
+		Optional<Algorithm> optAlgorithm = algorithmRepository.findById(algoId);
+		if (optAlgorithm.isPresent()) {
+			Algorithm persistedAlgorithm = optAlgorithm.get();
+			if (!persistedAlgorithm.addAlgorithmRelation(relation)) {
+				if (!persistedAlgorithm.updateAlgorithmRelation(relation)) {
+					return null;
+				}
+			}
+			algorithmRepository.save(persistedAlgorithm);
+			return relation;
+		}
+		return null;
+	}
+
+	@Override
+	public boolean deleteAlgorithmRelation(Long algoId, Long relationId) {
+		Optional<Algorithm> optAlgorithm = algorithmRepository.findById(algoId);
+		if (optAlgorithm.isPresent()) {
+			Algorithm persistedAlgorithm = optAlgorithm.get();
+			Set<AlgorithmRelation> algorithmRelations = persistedAlgorithm.getAlgorithmRelations();
+			for (AlgorithmRelation relation : algorithmRelations) {
+				if (relation.getId().equals(relationId)) {
+					if (algorithmRelations.remove(relation)) {
+						relation.setSourceAlgorithm(null);
+						algorithmRepository.save(persistedAlgorithm);
+						return true;
+					}
+				}
+			}
+		}
+		return false;
 	}
 }
