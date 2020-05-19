@@ -45,7 +45,4 @@ public abstract class AlgorOrImpl extends KnowledgeArtifact {
 
     private String outputFormat;
 
-    @Type(type = "jsonb")
-    @Column(columnDefinition = "jsonb")
-    private Object content;
 }
