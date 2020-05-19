@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 public class QuantumResource extends HasId {
 
     @Column
-    @ManyToOne
+    @ManyToOne(optional = false)
     private QuantumResourceType type;
 
     @Lob
