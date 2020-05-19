@@ -96,11 +96,9 @@ public class TagController {
     }
 
     @PostMapping(value = "/")
-    HttpEntity<TagDto> createTag(@RequestBody Tag tag) {
-        TagDto savedTag = TagDto.Converter.convert(this.tagService.save(tag));
-
-        savedTag.add(linkTo(methodOn(TagController.class).getTagById(savedTag.getId())).withSelfRel());
-        return new ResponseEntity<>(savedTag, HttpStatus.CREATED);
+    HttpEntity<TagDto> createTag(@RequestBody TagDto tag) {
+        tag.add(linkTo(methodOn(TagController.class).getTagById(tag.getId())).withSelfRel());
+        return new ResponseEntity<>(tag, HttpStatus.CREATED);
     }
 
     @GetMapping(value = "/{tagId}")
