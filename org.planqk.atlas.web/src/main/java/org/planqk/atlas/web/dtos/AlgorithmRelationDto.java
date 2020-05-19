@@ -36,9 +36,13 @@ import org.springframework.hateoas.RepresentationModel;
 public class AlgorithmRelationDto extends RepresentationModel<AlgorithmRelationDto> {
 
 	private Long id;
-	private Algorithm sourceAlgorithm;
-	private Algorithm targetAlgorithm;
+	
+	private AlgorithmDto sourceAlgorithm;
+	
+	private AlgorithmDto targetAlgorithm;
+	
 	private AlgoRelationTypeDto algoRelationType;
+	
 	private String description;
 	
 	public static final class Converter {
@@ -46,8 +50,8 @@ public class AlgorithmRelationDto extends RepresentationModel<AlgorithmRelationD
 		public static AlgorithmRelationDto convert(final AlgorithmRelation object) {
 			final AlgorithmRelationDto dto = new AlgorithmRelationDto();
             dto.setId(object.getId());
-            dto.setSourceAlgorithm(object.getSourceAlgorithm());
-            dto.setTargetAlgorithm(object.getTargetAlgorithm());
+            dto.setSourceAlgorithm(AlgorithmDto.Converter.convert(object.getSourceAlgorithm()));
+            dto.setTargetAlgorithm(AlgorithmDto.Converter.convert(object.getTargetAlgorithm()));
             dto.setAlgoRelationType(AlgoRelationTypeDto.Converter.convert(object.getAlgoRelationType()));
             dto.setDescription(object.getDescription());
             return dto;
@@ -55,8 +59,9 @@ public class AlgorithmRelationDto extends RepresentationModel<AlgorithmRelationD
 
 		public static AlgorithmRelation convert(final AlgorithmRelationDto object) {
 			final AlgorithmRelation algoRelation = new AlgorithmRelation();
-			algoRelation.setSourceAlgorithm(object.getSourceAlgorithm());
-			algoRelation.setTargetAlgorithm(object.getTargetAlgorithm());
+			algoRelation.setId(object.getId());
+			algoRelation.setSourceAlgorithm(AlgorithmDto.Converter.convert(object.getSourceAlgorithm()));
+			algoRelation.setTargetAlgorithm(AlgorithmDto.Converter.convert(object.getTargetAlgorithm()));
 			algoRelation.setAlgoRelationType(AlgoRelationTypeDto.Converter.convert(object.getAlgoRelationType()));
 			algoRelation.setDescription(object.getDescription());
             
