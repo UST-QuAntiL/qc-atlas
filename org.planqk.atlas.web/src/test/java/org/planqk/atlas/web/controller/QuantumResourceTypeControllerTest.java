@@ -104,7 +104,7 @@ public class QuantumResourceTypeControllerTest {
         var id = UUID.randomUUID();
         when(typeService.findById(any())).thenReturn(Optional.empty());
         mockMvc.perform(get("/" + Constants.QUANTUM_RESOURCE_TYPES + "/" + id.toString()))
-                .andExpect(status().isOk());
+                .andExpect(status().isNotFound());
     }
 
     @Test
