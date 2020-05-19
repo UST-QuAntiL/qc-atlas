@@ -52,6 +52,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -165,7 +166,7 @@ public class AlgorithmControllerTest {
     public void createAlgorithm_returnBadRequest() throws Exception {
         AlgorithmDto algorithmDto = new AlgorithmDto();
         mockMvc.perform(post("/" + Constants.ALGORITHMS + "/")
-                .content(new ObjectMapper().writeValueAsString(algorithmDto))
+                .content(mapper.writeValueAsString(algorithmDto))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
     }
@@ -175,13 +176,11 @@ public class AlgorithmControllerTest {
         AlgorithmDto algorithmDto = new AlgorithmDto();
         ReflectionTestUtils.setField(algorithmDto, "name", "Shor");
         ReflectionTestUtils.setField(algorithmDto, "computationModel", ComputationModel.CLASSIC);
-        Algorithm algorithm = new Algorithm();
-        ReflectionTestUtils.setField(algorithm, "name", "Shor");
-        ReflectionTestUtils.setField(algorithm, "computationModel", ComputationModel.CLASSIC);
+        Algorithm algorithm = AlgorithmDto.Converter.convert(algorithmDto);
         
-        when(modelConverter.convert(algorithmDto)).thenReturn(algorithm);
-        when(algorithmService.save(algorithm)).thenReturn(algorithm);
-        when(modelConverter.convert(algorithm)).thenReturn(algorithmDto);
+        when(modelConverter.convert(any(AlgorithmDto.class))).thenReturn(AlgorithmDto.Converter.convert(algorithmDto));
+        when(algorithmService.save(any(Algorithm.class))).thenReturn(algorithm);
+        when(modelConverter.convert(any(Algorithm.class))).thenReturn(algorithmDto);
         
         System.out.println(mapper.writeValueAsString(algorithmDto));
 
