@@ -2,6 +2,7 @@ package org.planqk.atlas.web.controller;
 
 import java.util.UUID;
 import java.util.stream.Collectors;
+import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.planqk.atlas.core.model.QuantumResourceType;
 import org.planqk.atlas.core.services.QuantumResourceTypeService;
@@ -44,7 +45,7 @@ public class QuantumResourceTypeController {
 
     @PostMapping("/")
     public HttpEntity<QuantumResourceTypeDto> addResource(
-            @RequestBody QuantumResourceTypeDto dto
+            @RequestBody @Valid QuantumResourceTypeDto dto
     ) {
         var storedObj = this.typeService.save(QuantumResourceTypeDto.Converter.convert(dto));
 
@@ -69,7 +70,7 @@ public class QuantumResourceTypeController {
     }
 
     private QuantumResourceTypeDto createResourceTypeDto(QuantumResourceType type, boolean addAlgoLink) {
-        var dto = new QuantumResourceTypeDto();
+        var dto = QuantumResourceTypeDto.Converter.convert(type);
         if (addAlgoLink) {
             dto.add(
                     linkTo(methodOn(QuantumResourceTypeController.class).getResource(null))

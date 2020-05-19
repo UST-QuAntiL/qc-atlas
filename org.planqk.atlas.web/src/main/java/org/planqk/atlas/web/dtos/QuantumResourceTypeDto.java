@@ -1,6 +1,8 @@
 package org.planqk.atlas.web.dtos;
 
 import java.util.UUID;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -16,9 +18,13 @@ import org.springframework.hateoas.RepresentationModel;
 @NoArgsConstructor
 public class QuantumResourceTypeDto extends RepresentationModel<QuantumResourceTypeDto> {
 
+    // Id is not included for validation, since it is not required for the creation of a QuantumResourceType
     private UUID id;
+    @NotEmpty
     private String name;
+    @NotEmpty
     private String description;
+    @NotNull
     private QuantumResourceDataType dataType;
 
     public static final class Converter {
