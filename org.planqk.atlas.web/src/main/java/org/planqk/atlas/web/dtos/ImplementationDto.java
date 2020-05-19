@@ -44,8 +44,6 @@ public class ImplementationDto extends RepresentationModel<ImplementationDto> {
 
     private String name;
 
-    private Object content;
-
     private URL fileLocation;
 
     private String inputFormat;
@@ -59,7 +57,6 @@ public class ImplementationDto extends RepresentationModel<ImplementationDto> {
             dto.setId(object.getId());
             dto.setName(object.getName());
             dto.setFileLocation(object.getFileLocation());
-            dto.setContent(object.getContent());
             dto.setInputFormat(object.getInputFormat());
             dto.setOutputFormat(object.getOutputFormat());
             return dto;
@@ -69,7 +66,6 @@ public class ImplementationDto extends RepresentationModel<ImplementationDto> {
             Implementation implementation = new Implementation();
             implementation.setName(object.getName());
             implementation.setFileLocation(object.getFileLocation());
-            implementation.setContent(object.getContent());
             implementation.setImplementedAlgorithm(algo);
             implementation.setInputFormat(object.getInputFormat());
             implementation.setOutputFormat(object.getOutputFormat());

@@ -59,15 +59,12 @@ public class AlgorithmDto extends RepresentationModel<AlgorithmDto> {
     @Schema(accessMode = WRITE_ONLY)
     private Set<TagDto> tags;
 
-    private Object content;
-
     public static final class Converter {
 
         public static AlgorithmDto convert(final Algorithm object) {
             final AlgorithmDto dto = new AlgorithmDto();
             dto.setId(object.getId());
             dto.setName(object.getName());
-            dto.setContent(object.getContent());
             dto.setTags(object.getTags().stream().map(TagDto.Converter::convert).collect(Collectors.toSet()));
             dto.setInputFormat(object.getInputFormat());
             dto.setOutputFormat(object.getInputFormat());
@@ -77,7 +74,6 @@ public class AlgorithmDto extends RepresentationModel<AlgorithmDto> {
         public static Algorithm convert(final AlgorithmDto object) {
             final Algorithm algo = new Algorithm();
             algo.setName(object.getName());
-            algo.setContent(object.getContent());
             if (Objects.nonNull(object.getTags())) {
                 algo.setTags(object.getTags().stream().map(TagDto.Converter::convert).collect(Collectors.toSet()));
             }
