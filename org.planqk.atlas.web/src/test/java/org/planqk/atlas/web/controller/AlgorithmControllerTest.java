@@ -22,6 +22,7 @@ package org.planqk.atlas.web.controller;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.services.AlgorithmService;
@@ -103,11 +104,11 @@ public class AlgorithmControllerTest {
         List<Algorithm> algorithmList = new ArrayList<>();
 
         Algorithm algorithm1 = new Algorithm();
-        algorithm1.setId(1L);
+        algorithm1.setId(UUID.randomUUID());
         algorithmList.add(algorithm1);
 
         Algorithm algorithm2 = new Algorithm();
-        algorithm2.setId(2L);
+        algorithm2.setId(UUID.randomUUID());
         algorithmList.add(algorithm2);
 
         when(algorithmService.findAll(pageable)).thenReturn(new PageImpl<>(algorithmList));
@@ -125,21 +126,22 @@ public class AlgorithmControllerTest {
 
     @Test
     public void getAlgorithm_returnNotFound() throws Exception {
-        mockMvc.perform(get("/" + Constants.ALGORITHMS + "/5")
+        mockMvc.perform(get("/" + Constants.ALGORITHMS + "/" + UUID.randomUUID())
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
     }
 
     @Test
     public void getAlgorithm_returnAlgorithm() throws Exception {
         Algorithm algorithm = new Algorithm();
-        algorithm.setId(5L);
-        when(algorithmService.findById(5L)).thenReturn(Optional.of(algorithm));
+        UUID algoId = UUID.randomUUID();
+        algorithm.setId(algoId);
+        when(algorithmService.findById(algoId)).thenReturn(Optional.of(algorithm));
 
-        MvcResult result = mockMvc.perform(get("/" + Constants.ALGORITHMS + "/5")
+        MvcResult result = mockMvc.perform(get("/" + Constants.ALGORITHMS + "/" + algoId)
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
 
         AlgorithmDto response = new ObjectMapper().readValue(result.getResponse().getContentAsString(), AlgorithmDto.class);
-        assertEquals(response.getId(), Long.valueOf(5L));
+        assertEquals(response.getId(), algoId);
     }
 
     @Test

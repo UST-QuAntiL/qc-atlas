@@ -22,6 +22,7 @@ package org.planqk.atlas.web.controller;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Tag;
@@ -111,7 +112,7 @@ public class AlgorithmController {
     }
 
     @GetMapping("/{id}")
-    public HttpEntity<AlgorithmDto> getAlgorithm(@PathVariable Long id) {
+    public HttpEntity<AlgorithmDto> getAlgorithm(@PathVariable UUID id) {
         LOG.debug("Get to retrieve algorithm with id: {}.", id);
 
         Optional<Algorithm> algorithmOptional = algorithmService.findById(id);
@@ -124,7 +125,7 @@ public class AlgorithmController {
     }
 
     @GetMapping("/{id}/" + Constants.TAGS)
-    public HttpEntity<TagListDto> getTags(@PathVariable Long id) {
+    public HttpEntity<TagListDto> getTags(@PathVariable UUID id) {
         Optional<Algorithm> algorithmOptional = algorithmService.findById(id);
         if (!algorithmOptional.isPresent()) {
             LOG.error("Unable to retrieve algorithm with id {} form the repository.", id);

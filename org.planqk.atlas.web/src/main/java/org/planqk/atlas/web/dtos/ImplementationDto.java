@@ -20,6 +20,7 @@
 package org.planqk.atlas.web.dtos;
 
 import java.net.URL;
+import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Implementation;
@@ -39,7 +40,7 @@ import org.springframework.hateoas.RepresentationModel;
 @NoArgsConstructor
 public class ImplementationDto extends RepresentationModel<ImplementationDto> {
 
-    private Long id;
+    private UUID id;
 
     private String name;
 

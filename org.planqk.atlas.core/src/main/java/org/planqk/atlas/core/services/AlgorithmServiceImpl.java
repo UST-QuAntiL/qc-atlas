@@ -21,6 +21,7 @@ package org.planqk.atlas.core.services;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Tag;
@@ -61,7 +62,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     }
 
     @Override
-    public Optional<Algorithm> findById(Long algoId) {
+    public Optional<Algorithm> findById(UUID algoId) {
         return algorithmRepository.findById(algoId);
     }
 }

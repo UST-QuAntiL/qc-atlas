@@ -26,6 +26,8 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.springframework.hateoas.RepresentationModel;
 
+import java.util.UUID;
+
 /**
  * Data transfer object for the model class {@link Provider}.
  */
@@ -34,7 +36,7 @@ import org.springframework.hateoas.RepresentationModel;
 @Data
 public class ProviderDto extends RepresentationModel<ProviderDto> {
 
-    private Long id;
+    private UUID id;
 
     private String name;
 

@@ -25,6 +25,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.hateoas.RepresentationModel;
 
+import java.util.UUID;
+
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class TagDto extends RepresentationModel<TagDto> {
@@ -33,7 +35,7 @@ public class TagDto extends RepresentationModel<TagDto> {
 
     private String value;
 
-    private Long id;
+    private UUID id;
 
     public static final class Converter {
 

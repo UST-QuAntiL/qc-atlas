@@ -20,6 +20,7 @@
 package org.planqk.atlas.core.services;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import org.planqk.atlas.core.model.Implementation;
 
@@ -32,5 +33,5 @@ public interface ImplementationService {
 
     Page<Implementation> findAll(Pageable pageable);
 
-    Optional<Implementation> findById(Long algoId);
+    Optional<Implementation> findById(UUID algoId);
 }

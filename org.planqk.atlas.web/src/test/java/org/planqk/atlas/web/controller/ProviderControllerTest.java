@@ -22,6 +22,7 @@ package org.planqk.atlas.web.controller;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.planqk.atlas.core.model.Provider;
 import org.planqk.atlas.core.services.ProviderService;
@@ -102,8 +103,10 @@ public class ProviderControllerTest {
     public void getProviders_withOneProvider() throws Exception {
         List<Provider> providerList = new ArrayList<>();
 
+        UUID provId = UUID.randomUUID();
+
         Provider provider = new Provider();
-        provider.setId(5L);
+        provider.setId(provId);
         providerList.add(provider);
 
         when(providerService.findAll(pageable)).thenReturn(new PageImpl<>(providerList));
@@ -117,26 +120,27 @@ public class ProviderControllerTest {
 
         ProviderListDto providerListDto = new ObjectMapper().readValue(result.getResponse().getContentAsString(), ProviderListDto.class);
         assertEquals(providerListDto.getProviderDtoList().size(), 1);
-        assertEquals(providerListDto.getProviderDtoList().get(0).getId(), Long.valueOf(5L));
+        assertEquals(providerListDto.getProviderDtoList().get(0).getId(), provId);
     }
 
     @Test
     public void getProvider_returnNotFound() throws Exception {
-        mockMvc.perform(get("/" + Constants.PROVIDERS + "/5")
+        mockMvc.perform(get("/" + Constants.PROVIDERS + "/" + UUID.randomUUID())
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
     }
 
     @Test
     public void getProvider_returnProvider() throws Exception {
+        UUID provId = UUID.randomUUID();
         Provider provider = new Provider();
-        provider.setId(5L);
-        when(providerService.findById(5L)).thenReturn(Optional.of(provider));
+        provider.setId(provId);
+        when(providerService.findById(provId)).thenReturn(Optional.of(provider));
 
-        MvcResult result = mockMvc.perform(get("/" + Constants.PROVIDERS + "/5")
+        MvcResult result = mockMvc.perform(get("/" + Constants.PROVIDERS + "/" + provId)
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
 
         ProviderDto response = new ObjectMapper().readValue(result.getResponse().getContentAsString(), ProviderDto.class);
-        assertEquals(response.getId(), Long.valueOf(5L));
+        assertEquals(response.getId(), provId);
     }
 
     @Test

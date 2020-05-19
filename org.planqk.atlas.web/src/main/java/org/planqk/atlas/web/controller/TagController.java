@@ -22,6 +22,7 @@ package org.planqk.atlas.web.controller;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -103,7 +104,7 @@ public class TagController {
     }
 
     @GetMapping(value = "/{tagId}")
-    HttpEntity<TagDto> getTagById(@PathVariable Long tagId) {
+    HttpEntity<TagDto> getTagById(@PathVariable UUID tagId) {
         Optional<Tag> tagOptional = this.tagService.getTagById(tagId);
         if (!tagOptional.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -112,7 +113,7 @@ public class TagController {
     }
 
     @GetMapping(value = "/{tagId}/" + Constants.ALGORITHMS)
-    HttpEntity<AlgorithmListDto> getAlgorithmsOfTag(@PathVariable Long tagId) {
+    HttpEntity<AlgorithmListDto> getAlgorithmsOfTag(@PathVariable UUID tagId) {
         Optional<Tag> tagOptional = this.tagService.getTagById(tagId);
         if (!tagOptional.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -126,7 +127,7 @@ public class TagController {
     }
 
     @GetMapping(value = "/{tagId}/" + Constants.IMPLEMENTATIONS)
-    HttpEntity<ImplementationListDto> getImplementationsOfTag(@PathVariable Long tagId) {
+    HttpEntity<ImplementationListDto> getImplementationsOfTag(@PathVariable UUID tagId) {
         Optional<Tag> tagOptional = this.tagService.getTagById(tagId);
         if (!tagOptional.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
