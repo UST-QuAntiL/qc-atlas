@@ -22,14 +22,19 @@ package org.planqk.atlas.web.controller;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.AlgorithmListDto;
+import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
+import org.planqk.atlas.web.dtos.AlgorithmRelationListDto;
 import org.planqk.atlas.web.dtos.ProblemTypeListDto;
 import org.planqk.atlas.web.dtos.TagListDto;
 import org.planqk.atlas.web.utils.DtoEntityConverter;
@@ -86,6 +91,18 @@ public class AlgorithmController {
         dto.add(linkTo(methodOn(AlgorithmController.class).getProblemTypes(algorithm.getId())).withRel(Constants.PROBLEM_TYPES));
         return dto;
     }
+
+	public static AlgorithmRelationListDto createAlgorithmRelationDtoList(Stream<AlgorithmRelation> stream) {
+		AlgorithmRelationListDto algorithmRelationListDto = new AlgorithmRelationListDto();
+		algorithmRelationListDto.add(stream.map(algorithmRelation -> createAlgorithmRelationDto(algorithmRelation)).collect(Collectors.toList()));
+		return algorithmRelationListDto;
+	}
+
+	public static AlgorithmRelationDto createAlgorithmRelationDto(AlgorithmRelation algorithmRelation) {
+		AlgorithmRelationDto dto = AlgorithmRelationDto.Converter.convert(algorithmRelation);
+		dto.add(linkTo(methodOn(AlgorithmController.class).getAlgorithm(algorithmRelation.getSourceAlgorithm().getId())).withSelfRel());
+		return dto;
+	}
 
     @GetMapping("/")
     public HttpEntity<AlgorithmListDto> getAlgorithms(@RequestParam(required = false) Integer page,
@@ -172,4 +189,58 @@ public class AlgorithmController {
         problemTypesListDto.add(linkTo(methodOn(AlgorithmController.class).getProblemTypes(id)).withSelfRel());
         return new ResponseEntity<>(problemTypesListDto, HttpStatus.OK);
     }
+    
+    @GetMapping("/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS)
+    public HttpEntity<AlgorithmRelationListDto> getAlgorithmRelations(@PathVariable Long sourceAlgorithm_id) {
+        Optional<Algorithm> optAlgorithm = algorithmService.findById(sourceAlgorithm_id);
+        if (!optAlgorithm.isPresent()) {
+            LOG.error("Unable to retrieve algorithm with id {} form the repository.", sourceAlgorithm_id);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        Set<AlgorithmRelation> algorithmRelations = optAlgorithm.get().getAlgorithmRelations();
+        AlgorithmRelationListDto algorithmRelationListDto = AlgorithmController.createAlgorithmRelationDtoList(algorithmRelations.stream());
+        algorithmRelationListDto.add(linkTo(methodOn(AlgorithmController.class).getAlgorithmRelations(sourceAlgorithm_id)).withSelfRel());
+        return new ResponseEntity<>(algorithmRelationListDto, HttpStatus.OK);
+    }
+
+    @PutMapping("/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS)
+    public HttpEntity<AlgorithmRelationDto> updateAlgorithmRelation(@PathVariable Long sourceAlgorithm_id, @RequestBody AlgorithmRelationDto relation) {
+        LOG.debug("Post to add algorithm relation received.");
+
+        if (Objects.isNull(relation.getTargetAlgorithm()) || Objects.isNull(relation.getAlgoRelationType())) {
+            LOG.error("Received invalid algorithmRelation object for post request: {}", relation.toString());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        // store and return algorithm
+        Optional<Algorithm> optAlgorithm = algorithmService.findById(sourceAlgorithm_id);
+        if (!optAlgorithm.isPresent()) {
+            LOG.error("Unable to retrieve algorithm with id {} from the repository.", sourceAlgorithm_id);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        AlgorithmRelation algorithmRelation = algorithmService.addUpdateAlgorithmRelation(sourceAlgorithm_id, AlgorithmRelationDto.Converter.convert(relation));
+        return new ResponseEntity<>(AlgorithmRelationDto.Converter.convert(algorithmRelation), HttpStatus.OK);
+    }
+    
+    @DeleteMapping("/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS)
+    public HttpEntity<AlgorithmDto> deleteAlgorithmRelation(@PathVariable Long sourceAlgorithm_id, @RequestBody AlgorithmRelationDto relation) {
+        if (Objects.isNull(relation.getId())) {
+            LOG.error("Received invalid algorithmRelation object for post request: {}", relation.toString());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        
+        LOG.debug("Post received to remove algorithm relation with id {}.", relation.getId());
+
+        // store and return algorithm
+        Optional<Algorithm> optAlgorithm = algorithmService.findById(sourceAlgorithm_id);
+        if (!optAlgorithm.isPresent()) {
+            LOG.error("Unable to retrieve algorithm with id {} from the repository.", sourceAlgorithm_id);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        if (!algorithmService.deleteAlgorithmRelation(sourceAlgorithm_id, relation.getId())) {
+            return new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+    
 }
