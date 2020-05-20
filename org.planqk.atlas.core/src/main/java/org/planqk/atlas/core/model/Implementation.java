@@ -43,7 +43,15 @@ import org.springframework.lang.NonNull;
 @Data
 public class Implementation extends AlgorOrImpl {
 
+    private String name;
+    private String description;
+    private String contributors;
+    private String assumptions;
+    private String inputFormat;
+    private String parameter;
+    private String outputFormat;
     private URL fileLocation;
+    private String dependencies;
 
     @ManyToOne
     private Algorithm implementedAlgorithm;

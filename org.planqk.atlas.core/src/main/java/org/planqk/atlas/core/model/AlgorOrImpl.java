@@ -19,24 +19,16 @@
 
 package org.planqk.atlas.core.model;
 
-import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 
-import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
 
 @EqualsAndHashCode(callSuper = true)
 @MappedSuperclass
 @NoArgsConstructor
 @Data
-@TypeDef(
-        name = "jsonb",
-        typeClass = JsonBinaryType.class
-)
 public abstract class AlgorOrImpl extends KnowledgeArtifact {
 
     private String name;
@@ -45,7 +37,4 @@ public abstract class AlgorOrImpl extends KnowledgeArtifact {
 
     private String outputFormat;
 
-    @Type(type = "jsonb")
-    @Column(columnDefinition = "jsonb")
-    private Object content;
 }
