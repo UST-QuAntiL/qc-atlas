@@ -21,6 +21,7 @@ package org.planqk.atlas.web.controller;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.ProviderDto;
@@ -73,7 +74,7 @@ public class ProviderController {
     }
 
     @GetMapping("/{id}")
-    public HttpEntity<ProviderDto> getProvider(@PathVariable Long id) {
+    public HttpEntity<ProviderDto> getProvider(@PathVariable UUID id) {
         LOG.debug("Get to retrieve provider with id: {}.", id);
 
         Optional<Provider> providerOptional = providerService.findById(id);

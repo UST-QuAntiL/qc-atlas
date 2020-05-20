@@ -21,6 +21,7 @@ package org.planqk.atlas.core.services;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.planqk.atlas.core.model.Tag;
 
@@ -36,5 +37,5 @@ public interface TagService {
     Page<Tag> findAll(Pageable pageable);
 
     @Transactional(readOnly = true)
-    Optional<Tag> getTagById(Long tagId);
+    Optional<Tag> getTagById(UUID tagId);
 }

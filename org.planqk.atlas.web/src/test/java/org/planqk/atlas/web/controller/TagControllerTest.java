@@ -21,6 +21,7 @@ package org.planqk.atlas.web.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.services.TagService;
@@ -78,7 +79,9 @@ public class TagControllerTest {
     }
 
     private Tag getTestTag() {
+        UUID tagId = UUID.randomUUID();
         Tag tag1 = new Tag();
+        tag1.setId(tagId);
         tag1.setKey("testkey");
         tag1.setValue("testvalue");
         return tag1;
@@ -116,10 +119,10 @@ public class TagControllerTest {
     @Test
     public void testGetId() throws Exception {
         Tag tag1 = getTestTag();
-        when(tagService.getTagById(any(Long.class))).thenReturn(java.util.Optional.of(tag1));
+        when(tagService.getTagById(any(UUID.class))).thenReturn(java.util.Optional.of(tag1));
         when(modelConverter.convert(any(Tag.class))).thenReturn(TagDto.Converter.convert(tag1));
 
-        MvcResult mvcResult = mockMvc.perform(get("/" + Constants.TAGS + "/" + 1 + "/").accept(MediaType.APPLICATION_JSON))
+        MvcResult mvcResult = mockMvc.perform(get("/" + Constants.TAGS + "/" + tag1.getId() + "/").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
         TagDto createdTag = new ObjectMapper().readValue(mvcResult.getResponse().getContentAsString(), TagDto.class);
@@ -130,6 +133,7 @@ public class TagControllerTest {
     @Test
     public void testPostTag() throws Exception {
         Tag tag1 = getTestTag();
+
         when(tagService.save(tag1)).thenReturn(tag1);
         when(modelConverter.convert(any(Tag.class))).thenReturn(TagDto.Converter.convert(tag1));
 

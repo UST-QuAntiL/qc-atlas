@@ -22,6 +22,7 @@ package org.planqk.atlas.core.services;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -60,7 +61,7 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public Optional<Tag> getTagById(Long tagId) {
+    public Optional<Tag> getTagById(UUID tagId) {
         if (Objects.isNull(tagId)) {
             return Optional.empty();
         }

@@ -22,6 +22,7 @@ package org.planqk.atlas.web.controller;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -101,12 +102,15 @@ public class TagController {
     }
 
     @PostMapping(value = "/")
-    public HttpEntity<TagDto> createTag(@RequestBody Tag tag) {
-        return new ResponseEntity<>(modelConverter.convert(this.tagService.save(tag)), HttpStatus.CREATED);
+    public HttpEntity<TagDto> createTag(@RequestBody TagDto tag) {
+        TagDto savedTag = TagDto.Converter.convert(this.tagService.save(TagDto.Converter.convert(tag)));
+
+        savedTag.add(linkTo(methodOn(TagController.class).getTagById(savedTag.getId())).withSelfRel());
+        return new ResponseEntity<>(savedTag, HttpStatus.CREATED);
     }
 
     @GetMapping(value = "/{tagId}")
-    public HttpEntity<TagDto> getTagById(@PathVariable Long tagId) {
+    HttpEntity<TagDto> getTagById(@PathVariable UUID tagId) {
         Optional<Tag> tagOptional = this.tagService.getTagById(tagId);
         if (!tagOptional.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -115,7 +119,7 @@ public class TagController {
     }
 
     @GetMapping(value = "/{tagId}/" + Constants.ALGORITHMS)
-    public HttpEntity<AlgorithmListDto> getAlgorithmsOfTag(@PathVariable Long tagId) {
+    public HttpEntity<AlgorithmListDto> getAlgorithmsOfTag(@PathVariable UUID tagId) {
         Optional<Tag> tagOptional = this.tagService.getTagById(tagId);
         if (!tagOptional.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -129,7 +133,7 @@ public class TagController {
     }
 
     @GetMapping(value = "/{tagId}/" + Constants.IMPLEMENTATIONS)
-    public HttpEntity<ImplementationListDto> getImplementationsOfTag(@PathVariable Long tagId) {
+    public HttpEntity<ImplementationListDto> getImplementationsOfTag(@PathVariable UUID tagId) {
         Optional<Tag> tagOptional = this.tagService.getTagById(tagId);
         if (!tagOptional.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

@@ -20,6 +20,7 @@
 package org.planqk.atlas.web.dtos;
 
 import java.net.URL;
+import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Implementation;
@@ -39,17 +40,16 @@ import org.springframework.hateoas.RepresentationModel;
 @NoArgsConstructor
 public class ImplementationDto extends RepresentationModel<ImplementationDto> {
 
-    private Long id;
-
+    private UUID id;
     private String name;
-
-    private Object content;
-
     private URL fileLocation;
-
     private String inputFormat;
-
     private String outputFormat;
+    private String description;
+    private String contributors;
+    private String assumptions;
+    private String parameter;
+    private String dependencies;
 
     public static final class Converter {
 
@@ -58,9 +58,13 @@ public class ImplementationDto extends RepresentationModel<ImplementationDto> {
             dto.setId(object.getId());
             dto.setName(object.getName());
             dto.setFileLocation(object.getFileLocation());
-            dto.setContent(object.getContent());
             dto.setInputFormat(object.getInputFormat());
             dto.setOutputFormat(object.getOutputFormat());
+            dto.setDescription(object.getDescription());
+            dto.setContributors(object.getContributors());
+            dto.setAssumptions(object.getAssumptions());
+            dto.setParameter(object.getParameter());
+            dto.setDependencies(object.getDependencies());
             return dto;
         }
 
@@ -68,10 +72,14 @@ public class ImplementationDto extends RepresentationModel<ImplementationDto> {
             Implementation implementation = new Implementation();
             implementation.setName(object.getName());
             implementation.setFileLocation(object.getFileLocation());
-            implementation.setContent(object.getContent());
             implementation.setImplementedAlgorithm(algo);
             implementation.setInputFormat(object.getInputFormat());
             implementation.setOutputFormat(object.getOutputFormat());
+            implementation.setDependencies(object.getDescription());
+            implementation.setContributors(object.getContributors());
+            implementation.setAssumptions(object.getAssumptions());
+            implementation.setParameter(object.getParameter());
+            implementation.setDependencies(object.getDependencies());
             return implementation;
         }
     }

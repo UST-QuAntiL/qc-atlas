@@ -21,9 +21,10 @@ package org.planqk.atlas.web.controller;
 
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
+import java.util.Set
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
@@ -122,10 +123,10 @@ public class AlgorithmController {
 
         // store and return algorithm
         Algorithm algorithm = algorithmService.save(modelConverter.convert(algo));
-        
+
         return new ResponseEntity<>(modelConverter.convert(algorithm), HttpStatus.CREATED);
     }
-    
+
     @PutMapping("/{id}")
     public HttpEntity<AlgorithmDto> updateAlgorithm(@PathVariable Long id, @RequestBody AlgorithmDto algo) {
         LOG.debug("Put to update algorithm with id '" + id + "' received");
@@ -139,7 +140,7 @@ public class AlgorithmController {
         Algorithm algorithm = algorithmService.update(id, modelConverter.convert(algo));
         return new ResponseEntity<>(modelConverter.convert(algorithm), HttpStatus.OK);
     }
-    
+
     @DeleteMapping("/{id}")
     public HttpEntity<AlgorithmDto> deleteAlgorithm(@PathVariable Long id) {
         LOG.debug("Delete to remove algorithm with id '" + id + "' received");
@@ -153,7 +154,7 @@ public class AlgorithmController {
     }
 
     @GetMapping("/{id}")
-    public HttpEntity<AlgorithmDto> getAlgorithm(@PathVariable Long id) {
+    public HttpEntity<AlgorithmDto> getAlgorithm(@PathVariable UUID id) {
         LOG.debug("Get to retrieve algorithm with id: {}.", id);
 
         Optional<Algorithm> algorithmOptional = algorithmService.findById(id);
@@ -166,7 +167,7 @@ public class AlgorithmController {
     }
 
     @GetMapping("/{id}/" + Constants.TAGS)
-    public HttpEntity<TagListDto> getTags(@PathVariable Long id) {
+    public HttpEntity<TagListDto> getTags(@PathVariable UUID id) {
         Optional<Algorithm> algorithmOptional = algorithmService.findById(id);
         if (!algorithmOptional.isPresent()) {
             LOG.error("Unable to retrieve algorithm with id {} form the repository.", id);
@@ -177,7 +178,7 @@ public class AlgorithmController {
         tagListDto.add(linkTo(methodOn(AlgorithmController.class).getTags(id)).withSelfRel());
         return new ResponseEntity<>(tagListDto, HttpStatus.OK);
     }
-    
+
     @GetMapping("/{id}/" + Constants.PROBLEM_TYPES)
     public HttpEntity<ProblemTypeListDto> getProblemTypes(@PathVariable Long id) {
         Optional<Algorithm> algorithmOptional = algorithmService.findById(id);
@@ -190,7 +191,7 @@ public class AlgorithmController {
         problemTypesListDto.add(linkTo(methodOn(AlgorithmController.class).getProblemTypes(id)).withSelfRel());
         return new ResponseEntity<>(problemTypesListDto, HttpStatus.OK);
     }
-    
+
     @GetMapping("/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS)
     public HttpEntity<AlgorithmRelationListDto> getAlgorithmRelations(@PathVariable Long sourceAlgorithm_id) {
         Optional<Algorithm> optAlgorithm = algorithmService.findById(sourceAlgorithm_id);
@@ -222,14 +223,14 @@ public class AlgorithmController {
         AlgorithmRelation algorithmRelation = algorithmService.addUpdateAlgorithmRelation(sourceAlgorithm_id, modelConverter.convert(relation));
         return new ResponseEntity<>(modelConverter.convert(algorithmRelation), HttpStatus.OK);
     }
-    
+
     @DeleteMapping("/{sourceAlgorithmId}/" + Constants.ALGORITHM_RELATIONS + "/{relationId}")
-    public HttpEntity<AlgorithmDto> deleteAlgorithmRelation(@PathVariable Long sourceAlgorithmId, @PathVariable Long relationId) {   
+    public HttpEntity<AlgorithmDto> deleteAlgorithmRelation(@PathVariable Long sourceAlgorithmId, @PathVariable Long relationId) {
         LOG.debug("Delete received to remove algorithm relation with id {}.", relationId);
         if (!algorithmService.deleteAlgorithmRelation(sourceAlgorithmId, relationId)) {
             return new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
-    
+
 }

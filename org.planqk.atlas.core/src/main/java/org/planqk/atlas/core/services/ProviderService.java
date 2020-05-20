@@ -20,6 +20,7 @@
 package org.planqk.atlas.core.services;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import org.planqk.atlas.core.model.Provider;
 
@@ -28,9 +29,9 @@ import org.springframework.data.domain.Pageable;
 
 public interface ProviderService {
 
-    Provider save(Provider sdk);
+    Provider save(Provider provider);
 
     Page<Provider> findAll(Pageable pageable);
 
-    Optional<Provider> findById(Long algoId);
+    Optional<Provider> findById(UUID algoId);
 }

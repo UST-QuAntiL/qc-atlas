@@ -22,6 +22,7 @@ package org.planqk.atlas.web.controller;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.ComputationModel;
@@ -44,7 +45,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -114,15 +114,17 @@ public class AlgorithmControllerTest {
         List<Algorithm> algorithmList = new ArrayList<>();
 
         Algorithm algorithm1 = new Algorithm();
-        ReflectionTestUtils.setField(algorithm1, "id", 1L);
+        algorithm1.setId(UUID.randomUUID());
+        ReflectionTestUtils.setField(algorithm1, "id", algorithm1.getId());
         ReflectionTestUtils.setField(algorithm1, "computationModel", ComputationModel.CLASSIC);
         algorithmList.add(algorithm1);
 
         Algorithm algorithm2 = new Algorithm();
-        ReflectionTestUtils.setField(algorithm2, "id", 2L);
+        algorithm2.setId(UUID.randomUUID());
+        ReflectionTestUtils.setField(algorithm2, "id", algorithm2.getId());
         ReflectionTestUtils.setField(algorithm2, "computationModel", ComputationModel.CLASSIC);
         algorithmList.add(algorithm2);
-        
+
         AlgorithmListDto resultList = new AlgorithmListDto();
         resultList.add(AlgorithmDto.Converter.convert(algorithm1));
         resultList.add(AlgorithmDto.Converter.convert(algorithm2));
@@ -143,23 +145,24 @@ public class AlgorithmControllerTest {
 
     @Test
     public void getAlgorithm_returnNotFound() throws Exception {
-        mockMvc.perform(get("/" + Constants.ALGORITHMS + "/5")
+        mockMvc.perform(get("/" + Constants.ALGORITHMS + "/" + UUID.randomUUID())
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
     }
 
     @Test
     public void getAlgorithm_returnAlgorithm() throws Exception {
         Algorithm algorithm = new Algorithm();
-        ReflectionTestUtils.setField(algorithm, "id", 5L);
+        UUID algoId = UUID.randomUUID();
+        algorithm.setId(algoId);
         ReflectionTestUtils.setField(algorithm, "computationModel", ComputationModel.CLASSIC);
-        when(algorithmService.findById(5L)).thenReturn(Optional.of(algorithm));
+        when(algorithmService.findById(algoId)).thenReturn(Optional.of(algorithm));
         when(modelConverter.convert(algorithm)).thenReturn(AlgorithmDto.Converter.convert(algorithm));
 
-        MvcResult result = mockMvc.perform(get("/" + Constants.ALGORITHMS + "/5")
+        MvcResult result = mockMvc.perform(get("/" + Constants.ALGORITHMS + "/" + algoId)
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
 
-        AlgorithmDto response = mapper.readValue(result.getResponse().getContentAsString(), AlgorithmDto.class);
-        assertEquals(response.getId(), Long.valueOf(5L));
+        AlgorithmDto response = new ObjectMapper().readValue(result.getResponse().getContentAsString(), AlgorithmDto.class);
+        assertEquals(response.getId(), algoId);
     }
 
     @Test
@@ -177,11 +180,11 @@ public class AlgorithmControllerTest {
         ReflectionTestUtils.setField(algorithmDto, "name", "Shor");
         ReflectionTestUtils.setField(algorithmDto, "computationModel", ComputationModel.CLASSIC);
         Algorithm algorithm = AlgorithmDto.Converter.convert(algorithmDto);
-        
+
         when(modelConverter.convert(any(AlgorithmDto.class))).thenReturn(algorithm);
         when(algorithmService.save(any(Algorithm.class))).thenReturn(algorithm);
         when(modelConverter.convert(any(Algorithm.class))).thenReturn(algorithmDto);
-        
+
         System.out.println(mapper.writeValueAsString(algorithmDto));
 
         MvcResult result = mockMvc.perform(post("/" + Constants.ALGORITHMS + "/")

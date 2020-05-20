@@ -20,6 +20,7 @@
 package org.planqk.atlas.core.services;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import org.planqk.atlas.core.model.Qpu;
 import org.planqk.atlas.core.repository.QpuRepository;
@@ -46,7 +47,7 @@ public class QpuServiceImpl implements QpuService {
     }
 
     @Override
-    public Optional<Qpu> findById(Long qpuId) {
+    public Optional<Qpu> findById(UUID qpuId) {
         return repository.findById(qpuId);
     }
 }

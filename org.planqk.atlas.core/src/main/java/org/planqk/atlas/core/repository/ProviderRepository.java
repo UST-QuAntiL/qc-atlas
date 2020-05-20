@@ -20,6 +20,7 @@
 package org.planqk.atlas.core.repository;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import org.planqk.atlas.core.model.Provider;
 
@@ -30,7 +31,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
  * Repository to access {@link Provider}s available in the data base with different queries.
  */
 @RepositoryRestResource(exported = false)
-public interface ProviderRepository extends JpaRepository<Provider, Long> {
+public interface ProviderRepository extends JpaRepository<Provider, UUID> {
 
     Optional<Provider> findByName(String name);
 }
