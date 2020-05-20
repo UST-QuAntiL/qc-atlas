@@ -123,7 +123,8 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 
 		// Check if relation with those two algorithms already exists
 		Optional<AlgorithmRelation> persistedRelationOpt = algoRelationRepository
-				.findBySourceAlgorithmIdAndTargetAlgorithmId(sourceAlgorithm.getId(), targetAlgorithm.getId());
+				.findBySourceAlgorithmIdAndTargetAlgorithmIdAndAlgoRelationTypeId(
+						sourceAlgorithm.getId(), targetAlgorithm.getId(), relationType.getId());
 
 		// If relation between the two algorithms already exists, update it
 		if (persistedRelationOpt.isPresent()) {

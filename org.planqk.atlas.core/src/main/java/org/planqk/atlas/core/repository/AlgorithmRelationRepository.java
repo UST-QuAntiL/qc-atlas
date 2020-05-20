@@ -13,6 +13,6 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 @RepositoryRestResource(exported = false)
 public interface AlgorithmRelationRepository extends JpaRepository<AlgorithmRelation, Long> {
 
-	Optional<AlgorithmRelation> findBySourceAlgorithmIdAndTargetAlgorithmId(Long sourceAlgId, Long targetAlgId);
+	Optional<AlgorithmRelation> findBySourceAlgorithmIdAndTargetAlgorithmIdAndAlgoRelationTypeId(Long sourceAlgId, Long targetAlgId, Long algoRelationTypeId);
 	
 }
