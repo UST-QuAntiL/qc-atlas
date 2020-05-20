@@ -5,11 +5,13 @@ import java.util.Set;
 
 import org.modelmapper.ModelMapper;
 import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
 import org.planqk.atlas.core.model.QuantumAlgorithm;
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.AlgorithmListDto;
+import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
 import org.planqk.atlas.web.dtos.ClassicAlgorithmDto;
 import org.planqk.atlas.web.dtos.QuantumAlgorithmDto;
 import org.planqk.atlas.web.dtos.TagDto;
@@ -78,5 +80,13 @@ public class DtoEntityConverter {
 		dto = modelMapper.map(entity, TagDto.class);
 		linkEnhancer.addLinks(dto);
 		return dto;
+	}
+	
+	public AlgorithmRelation convert(AlgorithmRelationDto dto) {
+		return modelMapper.map(dto, AlgorithmRelation.class);
+	}
+	
+	public AlgorithmRelationDto convert(AlgorithmRelation entity) {
+		return modelMapper.map(entity, AlgorithmRelationDto.class);
 	}
 }
