@@ -2,6 +2,7 @@ package org.planqk.atlas.core.services;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 import org.planqk.atlas.core.model.AlgoRelationType;
 import org.springframework.data.domain.Page;
@@ -11,11 +12,11 @@ public interface AlgoRelationTypeService {
 
 	AlgoRelationType save(AlgoRelationType algoRelationType);
 	
-	AlgoRelationType update(Long id, AlgoRelationType algoRelationType);
+	AlgoRelationType update(UUID id, AlgoRelationType algoRelationType);
 	
-	void delete(Long id);
+	void delete(UUID id);
 	
-	Optional<AlgoRelationType> findById(Long id);
+	Optional<AlgoRelationType> findById(UUID id);
 	
 	Optional<AlgoRelationType> findByName(String name);
 	

@@ -1,6 +1,7 @@
 package org.planqk.atlas.core.repository;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import org.planqk.atlas.core.model.AlgoRelationType;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,7 +12,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
  * different queries.
  */
 @RepositoryRestResource(exported = false)
-public interface AlgoRelationTypeRepository extends JpaRepository<AlgoRelationType, Long> {
+public interface AlgoRelationTypeRepository extends JpaRepository<AlgoRelationType, UUID> {
 
 	Optional<AlgoRelationType> findByName(String name);
 	

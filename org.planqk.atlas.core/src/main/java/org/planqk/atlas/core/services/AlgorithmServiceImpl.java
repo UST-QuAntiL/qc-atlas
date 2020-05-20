@@ -73,7 +73,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 	}
 
 	@Override
-	public Algorithm update(Long id, Algorithm algorithm) {
+	public Algorithm update(UUID id, Algorithm algorithm) {
 		Optional<Algorithm> persistedAlgOpt = findById(id);
 		if (persistedAlgOpt.isPresent()) {
 			Algorithm persistedAlg = persistedAlgOpt.get();
@@ -89,7 +89,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 	}
 
 	@Override
-	public void delete(Long id) {
+	public void delete(UUID id) {
 		algorithmRepository.deleteById(id);
 	}
 
@@ -104,7 +104,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
   }
 
 	@Override
-	public AlgorithmRelation addUpdateAlgorithmRelation(Long algoId, AlgorithmRelation relation) {
+	public AlgorithmRelation addUpdateAlgorithmRelation(UUID algoId, AlgorithmRelation relation) {
 		// Read involved Algorithms from database
 		Optional<Algorithm> sourceAlgorithmOpt = findById(relation.getSourceAlgorithm().getId());
 		Optional<Algorithm> targetAlgorithmOpt = findById(relation.getTargetAlgorithm().getId());
@@ -153,7 +153,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 	}
 
 	@Override
-	public boolean deleteAlgorithmRelation(Long algoId, Long relationId) {
+	public boolean deleteAlgorithmRelation(UUID algoId, UUID relationId) {
 		Optional<Algorithm> optAlgorithm = algorithmRepository.findById(algoId);
 		Optional<AlgorithmRelation> optRelation = algoRelationRepository.findById(relationId);
 

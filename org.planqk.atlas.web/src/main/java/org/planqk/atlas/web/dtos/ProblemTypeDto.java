@@ -1,5 +1,7 @@
 package org.planqk.atlas.web.dtos;
 
+import java.util.UUID;
+
 import org.planqk.atlas.core.model.ProblemType;
 import org.springframework.hateoas.RepresentationModel;
 
@@ -9,9 +11,9 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class ProblemTypeDto extends RepresentationModel<ProblemTypeDto> {
-	private Long id;
+	private UUID id;
 	private String name;
-	private Long parentProblemType;
+	private UUID parentProblemType;
 	
 	public static final class Converter {
 

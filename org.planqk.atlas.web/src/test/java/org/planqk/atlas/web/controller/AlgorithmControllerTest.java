@@ -115,14 +115,12 @@ public class AlgorithmControllerTest {
 
         Algorithm algorithm1 = new Algorithm();
         algorithm1.setId(UUID.randomUUID());
-        ReflectionTestUtils.setField(algorithm1, "id", algorithm1.getId());
-        ReflectionTestUtils.setField(algorithm1, "computationModel", ComputationModel.CLASSIC);
+        algorithm1.setComputationModel(ComputationModel.CLASSIC);
         algorithmList.add(algorithm1);
 
         Algorithm algorithm2 = new Algorithm();
         algorithm2.setId(UUID.randomUUID());
-        ReflectionTestUtils.setField(algorithm2, "id", algorithm2.getId());
-        ReflectionTestUtils.setField(algorithm2, "computationModel", ComputationModel.CLASSIC);
+        algorithm2.setComputationModel(ComputationModel.CLASSIC);
         algorithmList.add(algorithm2);
 
         AlgorithmListDto resultList = new AlgorithmListDto();
@@ -154,7 +152,7 @@ public class AlgorithmControllerTest {
         Algorithm algorithm = new Algorithm();
         UUID algoId = UUID.randomUUID();
         algorithm.setId(algoId);
-        ReflectionTestUtils.setField(algorithm, "computationModel", ComputationModel.CLASSIC);
+        algorithm.setComputationModel(ComputationModel.CLASSIC);
         when(algorithmService.findById(algoId)).thenReturn(Optional.of(algorithm));
         when(modelConverter.convert(algorithm)).thenReturn(AlgorithmDto.Converter.convert(algorithm));
 
@@ -177,8 +175,8 @@ public class AlgorithmControllerTest {
     @Test
     public void createAlgorithm_returnAlgorithm() throws Exception {
         AlgorithmDto algorithmDto = new AlgorithmDto();
-        ReflectionTestUtils.setField(algorithmDto, "name", "Shor");
-        ReflectionTestUtils.setField(algorithmDto, "computationModel", ComputationModel.CLASSIC);
+        algorithmDto.setName("Shor");
+        algorithmDto.setComputationModel(ComputationModel.CLASSIC);
         Algorithm algorithm = AlgorithmDto.Converter.convert(algorithmDto);
 
         when(modelConverter.convert(any(AlgorithmDto.class))).thenReturn(algorithm);

@@ -25,7 +25,7 @@ public class DtoEntityConverter {
 	@Autowired
 	private ModelMapper modelMapper;
 	@Autowired
-	DtoLinkEnhancer linkEnhancer;
+	private DtoLinkEnhancer linkEnhancer;
 
 	public Algorithm convert(AlgorithmDto dto) {
 		if (dto instanceof QuantumAlgorithmDto) {

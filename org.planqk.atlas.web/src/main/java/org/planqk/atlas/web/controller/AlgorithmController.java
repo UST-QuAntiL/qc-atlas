@@ -21,7 +21,7 @@ package org.planqk.atlas.web.controller;
 
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.UUID;
@@ -128,7 +128,7 @@ public class AlgorithmController {
     }
 
     @PutMapping("/{id}")
-    public HttpEntity<AlgorithmDto> updateAlgorithm(@PathVariable Long id, @RequestBody AlgorithmDto algo) {
+    public HttpEntity<AlgorithmDto> updateAlgorithm(@PathVariable UUID id, @RequestBody AlgorithmDto algo) {
         LOG.debug("Put to update algorithm with id '" + id + "' received");
 
         if (Objects.isNull(algo.getName())) {
@@ -142,7 +142,7 @@ public class AlgorithmController {
     }
 
     @DeleteMapping("/{id}")
-    public HttpEntity<AlgorithmDto> deleteAlgorithm(@PathVariable Long id) {
+    public HttpEntity<AlgorithmDto> deleteAlgorithm(@PathVariable UUID id) {
         LOG.debug("Delete to remove algorithm with id '" + id + "' received");
 
         if (algorithmService.findById(id).isEmpty()) {
@@ -180,7 +180,7 @@ public class AlgorithmController {
     }
 
     @GetMapping("/{id}/" + Constants.PROBLEM_TYPES)
-    public HttpEntity<ProblemTypeListDto> getProblemTypes(@PathVariable Long id) {
+    public HttpEntity<ProblemTypeListDto> getProblemTypes(@PathVariable UUID id) {
         Optional<Algorithm> algorithmOptional = algorithmService.findById(id);
         if (!algorithmOptional.isPresent()) {
             LOG.error("Unable to retrieve algorithm with id {} form the repository.", id);
@@ -193,7 +193,7 @@ public class AlgorithmController {
     }
 
     @GetMapping("/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS)
-    public HttpEntity<AlgorithmRelationListDto> getAlgorithmRelations(@PathVariable Long sourceAlgorithm_id) {
+    public HttpEntity<AlgorithmRelationListDto> getAlgorithmRelations(@PathVariable UUID sourceAlgorithm_id) {
         Optional<Algorithm> optAlgorithm = algorithmService.findById(sourceAlgorithm_id);
         if (!optAlgorithm.isPresent()) {
             LOG.error("Unable to retrieve algorithm with id {} form the repository.", sourceAlgorithm_id);
@@ -206,7 +206,7 @@ public class AlgorithmController {
     }
 
     @PutMapping("/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS)
-    public HttpEntity<AlgorithmRelationDto> updateAlgorithmRelation(@PathVariable Long sourceAlgorithm_id, @RequestBody AlgorithmRelationDto relation) {
+    public HttpEntity<AlgorithmRelationDto> updateAlgorithmRelation(@PathVariable UUID sourceAlgorithm_id, @RequestBody AlgorithmRelationDto relation) {
         LOG.debug("Post to add algorithm relation received.");
 
         if (Objects.isNull(relation.getTargetAlgorithm()) || Objects.isNull(relation.getAlgoRelationType())) {
@@ -225,7 +225,7 @@ public class AlgorithmController {
     }
 
     @DeleteMapping("/{sourceAlgorithmId}/" + Constants.ALGORITHM_RELATIONS + "/{relationId}")
-    public HttpEntity<AlgorithmDto> deleteAlgorithmRelation(@PathVariable Long sourceAlgorithmId, @PathVariable Long relationId) {
+    public HttpEntity<AlgorithmDto> deleteAlgorithmRelation(@PathVariable UUID sourceAlgorithmId, @PathVariable UUID relationId) {
         LOG.debug("Delete received to remove algorithm relation with id {}.", relationId);
         if (!algorithmService.deleteAlgorithmRelation(sourceAlgorithmId, relationId)) {
             return new ResponseEntity<>(HttpStatus.NOT_MODIFIED);

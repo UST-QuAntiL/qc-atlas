@@ -4,6 +4,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -59,7 +60,7 @@ public class ProblemTypeController {
 	}
 
 	@PutMapping("/{id}")
-	public HttpEntity<ProblemTypeDto> updateProblemType(@PathVariable Long id,
+	public HttpEntity<ProblemTypeDto> updateProblemType(@PathVariable UUID id,
 			@RequestBody ProblemTypeDto problemTypeDto) {
 		ProblemTypeDto savedProblemType = createProblemTypeDto(
 				problemTypeService.update(id, ProblemTypeDto.Converter.convert(problemTypeDto)));
@@ -69,7 +70,7 @@ public class ProblemTypeController {
 	}
 	
 	@DeleteMapping("/{id}")
-	public HttpEntity<ProblemTypeDto> updateProblemType(@PathVariable Long id) {
+	public HttpEntity<ProblemTypeDto> updateProblemType(@PathVariable UUID id) {
 		if (problemTypeService.findById(id).isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		}
@@ -87,7 +88,7 @@ public class ProblemTypeController {
 	}
 
 	@GetMapping("/{id}")
-	public HttpEntity<ProblemTypeDto> getProblemTypeById(@PathVariable Long id) {
+	public HttpEntity<ProblemTypeDto> getProblemTypeById(@PathVariable UUID id) {
 		Optional<ProblemType> problemTypeOpt = problemTypeService.findById(id);
 		if (problemTypeOpt.isPresent()) {
 			return new ResponseEntity<>(createProblemTypeDto(problemTypeOpt.get()), HttpStatus.OK);

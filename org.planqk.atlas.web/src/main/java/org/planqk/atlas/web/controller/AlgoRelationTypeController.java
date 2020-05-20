@@ -4,6 +4,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -59,7 +60,7 @@ public class AlgoRelationTypeController {
 	}
 
 	@PutMapping("/{id}")
-	public HttpEntity<AlgoRelationTypeDto> updateAlgoRelationType(@PathVariable Long id,
+	public HttpEntity<AlgoRelationTypeDto> updateAlgoRelationType(@PathVariable UUID id,
 			@RequestBody AlgoRelationTypeDto algoRelationTypeDto) {
 		AlgoRelationTypeDto savedAlgoRelationType = createAlgoRelationTypeDto(
 				algoRelationTypeService.update(id, AlgoRelationTypeDto.Converter.convert(algoRelationTypeDto)));
@@ -69,7 +70,7 @@ public class AlgoRelationTypeController {
 	}
 	
 	@DeleteMapping("/{id}")
-	public HttpEntity<AlgoRelationTypeDto> updateAlgoRelationType(@PathVariable Long id) {
+	public HttpEntity<AlgoRelationTypeDto> updateAlgoRelationType(@PathVariable UUID id) {
 		if (algoRelationTypeService.findById(id).isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		}
@@ -87,7 +88,7 @@ public class AlgoRelationTypeController {
 	}
 
 	@GetMapping("/{id}")
-	public HttpEntity<AlgoRelationTypeDto> getAlgoRelationTypeById(@PathVariable Long id) {
+	public HttpEntity<AlgoRelationTypeDto> getAlgoRelationTypeById(@PathVariable UUID id) {
 		Optional<AlgoRelationType> algoRelationTypeOpt = algoRelationTypeService.findById(id);
 		if (algoRelationTypeOpt.isPresent()) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);

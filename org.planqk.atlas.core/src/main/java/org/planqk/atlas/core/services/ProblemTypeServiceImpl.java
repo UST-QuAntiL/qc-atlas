@@ -3,6 +3,7 @@ package org.planqk.atlas.core.services;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.repository.ProblemTypeRepository;
@@ -23,7 +24,7 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
 	}
 
 	@Override
-	public ProblemType update(Long id, ProblemType problemType) {
+	public ProblemType update(UUID id, ProblemType problemType) {
 		// Check for type in database
 		Optional<ProblemType> typeOpt = findById(id);
 		// If Type exists
@@ -40,12 +41,12 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
 	}
 	
 	@Override
-	public void delete(Long id) {
+	public void delete(UUID id) {
         repo.deleteById(id);
 	}
 
 	@Override
-	public Optional<ProblemType> findById(Long id) {
+	public Optional<ProblemType> findById(UUID id) {
 		return Objects.isNull(id) ? Optional.empty() : repo.findById(id);
 	}
 

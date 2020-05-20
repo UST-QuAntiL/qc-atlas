@@ -3,6 +3,7 @@ package org.planqk.atlas.core.services;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 import org.planqk.atlas.core.model.AlgoRelationType;
 import org.planqk.atlas.core.repository.AlgoRelationTypeRepository;
@@ -23,7 +24,7 @@ public class AlgoRelationTypeServiceImpl implements AlgoRelationTypeService {
 	}
 
 	@Override
-	public AlgoRelationType update(Long id, AlgoRelationType algoRelationType) {
+	public AlgoRelationType update(UUID id, AlgoRelationType algoRelationType) {
 		// Check for type in database
 		Optional<AlgoRelationType> typeOpt = findById(id);
 		// If Type exists
@@ -39,12 +40,12 @@ public class AlgoRelationTypeServiceImpl implements AlgoRelationTypeService {
 	}
 
 	@Override
-	public void delete(Long id) {
+	public void delete(UUID id) {
 		repo.deleteById(id);
 	}
 
 	@Override
-	public Optional<AlgoRelationType> findById(Long id) {
+	public Optional<AlgoRelationType> findById(UUID id) {
 		return Objects.isNull(id) ? Optional.empty() : repo.findById(id);
 	}
 

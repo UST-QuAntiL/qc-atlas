@@ -31,13 +31,13 @@ public interface AlgorithmService {
 
     Algorithm save(Algorithm algorithm);
 
-    Algorithm update(Long id, Algorithm algorithm);
+    Algorithm update(UUID id, Algorithm algorithm);
 
-    void delete(Long id);
+    void delete(UUID id);
 
-    AlgorithmRelation addUpdateAlgorithmRelation(Long algoId, AlgorithmRelation relation);
+    AlgorithmRelation addUpdateAlgorithmRelation(UUID algoId, AlgorithmRelation relation);
 
-    boolean deleteAlgorithmRelation(Long algoId, Long relationId);
+    boolean deleteAlgorithmRelation(UUID algoId, UUID relationId);
 
     Page<Algorithm> findAll(Pageable pageable);
 

@@ -110,7 +110,7 @@ public class TagController {
     }
 
     @GetMapping(value = "/{tagId}")
-    HttpEntity<TagDto> getTagById(@PathVariable UUID tagId) {
+    public HttpEntity<TagDto> getTagById(@PathVariable UUID tagId) {
         Optional<Tag> tagOptional = this.tagService.getTagById(tagId);
         if (!tagOptional.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

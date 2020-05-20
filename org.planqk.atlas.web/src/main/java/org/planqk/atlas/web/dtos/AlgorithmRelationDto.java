@@ -20,6 +20,8 @@
 package org.planqk.atlas.web.dtos;
 
 
+import java.util.UUID;
+
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
 
@@ -40,7 +42,7 @@ import org.springframework.hateoas.RepresentationModel;
 @Data
 public class AlgorithmRelationDto extends RepresentationModel<AlgorithmRelationDto> {
 
-	private Long id;
+	private UUID id;
 	
 	private AlgorithmDto sourceAlgorithm;
 	
