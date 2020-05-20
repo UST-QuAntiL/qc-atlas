@@ -219,26 +219,14 @@ public class AlgorithmController {
             LOG.error("Unable to retrieve algorithm with id {} from the repository.", sourceAlgorithm_id);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        AlgorithmRelation algorithmRelation = algorithmService.addUpdateAlgorithmRelation(sourceAlgorithm_id, AlgorithmRelationDto.Converter.convert(relation));
-        return new ResponseEntity<>(AlgorithmRelationDto.Converter.convert(algorithmRelation), HttpStatus.OK);
+        AlgorithmRelation algorithmRelation = algorithmService.addUpdateAlgorithmRelation(sourceAlgorithm_id, modelConverter.convert(relation));
+        return new ResponseEntity<>(modelConverter.convert(algorithmRelation), HttpStatus.OK);
     }
     
-    @DeleteMapping("/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS)
-    public HttpEntity<AlgorithmDto> deleteAlgorithmRelation(@PathVariable Long sourceAlgorithm_id, @RequestBody AlgorithmRelationDto relation) {
-        if (Objects.isNull(relation.getId())) {
-            LOG.error("Received invalid algorithmRelation object for post request: {}", relation.toString());
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        
-        LOG.debug("Post received to remove algorithm relation with id {}.", relation.getId());
-
-        // store and return algorithm
-        Optional<Algorithm> optAlgorithm = algorithmService.findById(sourceAlgorithm_id);
-        if (!optAlgorithm.isPresent()) {
-            LOG.error("Unable to retrieve algorithm with id {} from the repository.", sourceAlgorithm_id);
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        if (!algorithmService.deleteAlgorithmRelation(sourceAlgorithm_id, relation.getId())) {
+    @DeleteMapping("/{sourceAlgorithmId}/" + Constants.ALGORITHM_RELATIONS + "/{relationId}")
+    public HttpEntity<AlgorithmDto> deleteAlgorithmRelation(@PathVariable Long sourceAlgorithmId, @PathVariable Long relationId) {   
+        LOG.debug("Delete received to remove algorithm relation with id {}.", relationId);
+        if (!algorithmService.deleteAlgorithmRelation(sourceAlgorithmId, relationId)) {
             return new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
         }
         return new ResponseEntity<>(HttpStatus.OK);

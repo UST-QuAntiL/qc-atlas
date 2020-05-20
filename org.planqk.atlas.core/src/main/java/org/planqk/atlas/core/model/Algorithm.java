@@ -144,7 +144,6 @@ public class Algorithm extends AlgorOrImpl {
 	@NonNull
 	public boolean addAlgorithmRelation(AlgorithmRelation relation) {
 		if (algorithmRelations.add(relation)) {
-			relation.setSourceAlgorithm(this);
 			return true;
 		}
 		return false;

@@ -23,10 +23,14 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
+import org.planqk.atlas.core.model.AlgoRelationType;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.model.Tag;
+import org.planqk.atlas.core.repository.AlgorithmRelationRepository;
 import org.planqk.atlas.core.repository.AlgorithmRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import lombok.AllArgsConstructor;
 
@@ -38,7 +42,11 @@ import org.springframework.stereotype.Repository;
 @AllArgsConstructor
 public class AlgorithmServiceImpl implements AlgorithmService {
 
+	private final static Logger LOG = LoggerFactory.getLogger(AlgorithmServiceImpl.class);
+
 	private AlgorithmRepository algorithmRepository;
+	private AlgorithmRelationRepository algoRelationRepository;
+	private AlgoRelationTypeService relationTypeService;
 
 	private TagService tagService;
 	private ProblemTypeService problemTypeService;
@@ -96,33 +104,72 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 
 	@Override
 	public AlgorithmRelation addUpdateAlgorithmRelation(Long algoId, AlgorithmRelation relation) {
-		Optional<Algorithm> optAlgorithm = algorithmRepository.findById(algoId);
-		if (optAlgorithm.isPresent()) {
-			Algorithm persistedAlgorithm = optAlgorithm.get();
-			if (!persistedAlgorithm.addAlgorithmRelation(relation)) {
-				if (!persistedAlgorithm.updateAlgorithmRelation(relation)) {
-					return null;
-				}
-			}
-			algorithmRepository.save(persistedAlgorithm);
-			return relation;
+		// Read involved Algorithms from database
+		Optional<Algorithm> sourceAlgorithmOpt = findById(relation.getSourceAlgorithm().getId());
+		Optional<Algorithm> targetAlgorithmOpt = findById(relation.getTargetAlgorithm().getId());
+		Optional<AlgoRelationType> relationTypeOpt = relationTypeService
+				.findById(relation.getAlgoRelationType().getId());
+
+		// If one of the algorithms does not exist
+		if (sourceAlgorithmOpt.isEmpty() || targetAlgorithmOpt.isEmpty() || relationTypeOpt.isEmpty()) {
+			// TODO: Implement exception handling
+			return null;
 		}
-		return null;
+
+		// Get Algorithms
+		Algorithm sourceAlgorithm = sourceAlgorithmOpt.get();
+		Algorithm targetAlgorithm = targetAlgorithmOpt.get();
+		AlgoRelationType relationType = relationTypeOpt.get();
+
+		// Check if relation with those two algorithms already exists
+		Optional<AlgorithmRelation> persistedRelationOpt = algoRelationRepository
+				.findBySourceAlgorithmIdAndTargetAlgorithmId(sourceAlgorithm.getId(), targetAlgorithm.getId());
+
+		// If relation between the two algorithms already exists, update it
+		if (persistedRelationOpt.isPresent()) {
+			AlgorithmRelation persistedRelation = persistedRelationOpt.get();
+			persistedRelation.setDescription(relation.getDescription());
+			// Return updated relation
+			return save(persistedRelation);
+		}
+
+		// Set Relation Objects with referenced database objects
+		relation.setId(null);
+		relation.setSourceAlgorithm(sourceAlgorithm);
+		relation.setTargetAlgorithm(targetAlgorithm);
+		relation.setAlgoRelationType(relationType);
+
+		sourceAlgorithm.addAlgorithmRelation(relation);
+		// Save updated Algorithm -> CASCADE will save Relation
+		sourceAlgorithm = save(sourceAlgorithm);
+
+		return relation;
+	}
+
+	private AlgorithmRelation save(AlgorithmRelation current) {
+		return algoRelationRepository.save(current);
 	}
 
 	@Override
 	public boolean deleteAlgorithmRelation(Long algoId, Long relationId) {
 		Optional<Algorithm> optAlgorithm = algorithmRepository.findById(algoId);
-		if (optAlgorithm.isPresent()) {
-			Algorithm persistedAlgorithm = optAlgorithm.get();
-			Set<AlgorithmRelation> algorithmRelations = persistedAlgorithm.getAlgorithmRelations();
-			for (AlgorithmRelation relation : algorithmRelations) {
-				if (relation.getId().equals(relationId)) {
-					if (algorithmRelations.remove(relation)) {
-						relation.setSourceAlgorithm(null);
-						algorithmRepository.save(persistedAlgorithm);
-						return true;
-					}
+		Optional<AlgorithmRelation> optRelation = algoRelationRepository.findById(relationId);
+
+		if (optAlgorithm.isEmpty() || optAlgorithm.isEmpty()) {
+			// TODO: Implement exception handling
+			return false;
+		}
+
+		// Get Objects from database
+		Algorithm algorithm = optAlgorithm.get();
+		AlgorithmRelation relation = optRelation.get();
+
+		Set<AlgorithmRelation> algorithmRelations = algorithm.getAlgorithmRelations();
+		for (AlgorithmRelation algRelation : algorithmRelations) {
+			if (algRelation.getId().equals(relation.getId())) {
+				if (algorithmRelations.remove(relation)) {
+					algorithmRepository.save(algorithm);
+					return true;
 				}
 			}
 		}

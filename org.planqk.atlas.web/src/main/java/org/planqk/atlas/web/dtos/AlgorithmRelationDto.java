@@ -25,6 +25,9 @@ import org.planqk.atlas.core.model.AlgorithmRelation;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+
 import org.springframework.hateoas.RepresentationModel;
 
 /**
@@ -32,6 +35,8 @@ import org.springframework.hateoas.RepresentationModel;
  * ({@link org.planqk.atlas.core.model.Algorithm}).
  */
 @EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
+@NoArgsConstructor
 @Data
 public class AlgorithmRelationDto extends RepresentationModel<AlgorithmRelationDto> {
 
