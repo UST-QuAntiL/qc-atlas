@@ -23,13 +23,13 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.core.services.ImplementationService;
-import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.ImplementationDto;
 import org.planqk.atlas.web.dtos.ImplementationListDto;
 
@@ -48,6 +48,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -57,6 +59,8 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.fromMethodCall;
+import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.on;
 
 @SpringBootTest
 public class ImplementationControllerTest {
@@ -71,11 +75,13 @@ public class ImplementationControllerTest {
 
     private ObjectMapper objectMapper = new ObjectMapper();
     private MockMvc mockMvc;
+    private UriComponentsBuilder uriBuilder;
 
     @Before
     public void initialize() {
         MockitoAnnotations.initMocks(this);
         mockMvc = MockMvcBuilders.standaloneSetup(implementationController).build();
+        uriBuilder = UriComponentsBuilder.fromPath("/");
     }
 
     @Test
@@ -102,9 +108,9 @@ public class ImplementationControllerTest {
 
         when(implementationService.save(any(Implementation.class))).thenReturn(implementation);
 
-        MvcResult mvcResult = mockMvc.perform(get("/" + Constants.ALGORITHMS + "/" + algoId + "/"
-                + Constants.IMPLEMENTATIONS + "/")
-                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
+        MvcResult mvcResult = mockMvc.perform(get(fromMethodCall(uriBuilder,
+                on(ImplementationController.class).getImplementations(algoId)).toUriString())
+                        .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
 
         ImplementationListDto implementationListResult = new ObjectMapper().readValue(mvcResult.getResponse().getContentAsString(), ImplementationListDto.class);
         assertEquals(implementationListResult.getImplementationDtos().stream().findFirst().get().getId(), implementation.getId());
@@ -135,8 +141,8 @@ public class ImplementationControllerTest {
 
         when(implementationService.save(any(Implementation.class))).thenReturn(implementation1);
 
-        MvcResult mvcResult = mockMvc.perform(get("/" + Constants.ALGORITHMS + "/" + algoId + "/"
-                + Constants.IMPLEMENTATIONS + "/")
+        MvcResult mvcResult = mockMvc.perform(get(fromMethodCall(uriBuilder,
+                on(ImplementationController.class).getImplementations(algoId)).toUriString())
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
 
         ImplementationListDto implementationListResult = new ObjectMapper().readValue(mvcResult.getResponse().getContentAsString(), ImplementationListDto.class);
@@ -155,8 +161,8 @@ public class ImplementationControllerTest {
 
         when(implementationService.save(any(Implementation.class))).thenReturn(implementation);
 
-        MvcResult mvcResult = mockMvc.perform(post("/" + Constants.ALGORITHMS + "/" + algoId + "/"
-                + Constants.IMPLEMENTATIONS + "/")
+        MvcResult mvcResult = mockMvc.perform(post(fromMethodCall(uriBuilder,
+                on(ImplementationController.class).createImplementation(algoId, null)).toUriString())
                 .content(objectMapper.writeValueAsString(ImplementationDto.Converter.convert(implementation)))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isCreated()).andReturn();
@@ -170,8 +176,8 @@ public class ImplementationControllerTest {
 
         Implementation implementation = mockValidMinimalImpl(implId);
         implementation.setImplementedAlgorithm(algorithm);
-        MvcResult mvcResult = mockMvc.perform(post("/" + Constants.ALGORITHMS + "/" + algoId + "/"
-                + Constants.IMPLEMENTATIONS + "/")
+        MvcResult mvcResult = mockMvc.perform(post(fromMethodCall(uriBuilder,
+                on(ImplementationController.class).createImplementation(algoId, null)).toUriString())
                 .content(objectMapper.writeValueAsString(ImplementationDto.Converter.convert(implementation)))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isCreated()).andReturn();
@@ -205,23 +211,24 @@ public class ImplementationControllerTest {
 
         when(implementationService.save(any(Implementation.class))).thenReturn(implementation);
 
-        mockMvc.perform(post("/" + Constants.ALGORITHMS + "/" + algoId + "/"
-                + Constants.IMPLEMENTATIONS + "/")
+        mockMvc.perform(post(fromMethodCall(uriBuilder,
+                on(ImplementationController.class).createImplementation(algoId, null)).toUriString())
                 .content(objectMapper.writeValueAsString(ImplementationDto.Converter.convert(implementation)))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
     }
 
+    @Test
     public void createImplForNonExistentAlgo() throws Exception {
         UUID nonExistentAlgoId = UUID.randomUUID();
         UUID implId = UUID.randomUUID();
         Implementation implementation = mockValidMinimalImpl(implId);
         // pretend algo is not found:
-        when(algorithmService.findById(nonExistentAlgoId)).thenReturn(null);
+        when(algorithmService.findById(nonExistentAlgoId)).thenReturn(Optional.empty());
         when(implementationService.save(any(Implementation.class))).thenReturn(implementation);
 
-        mockMvc.perform(post("/" + Constants.ALGORITHMS + "/" + nonExistentAlgoId + "/"
-                + Constants.IMPLEMENTATIONS + "/")
+        mockMvc.perform(post(fromMethodCall(uriBuilder,
+                on(ImplementationController.class).createImplementation(nonExistentAlgoId, null)).toUriString())
                 .content(objectMapper.writeValueAsString(ImplementationDto.Converter.convert(implementation)))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
