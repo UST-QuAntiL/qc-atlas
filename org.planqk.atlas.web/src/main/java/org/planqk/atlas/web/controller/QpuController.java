@@ -58,7 +58,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @io.swagger.v3.oas.annotations.tags.Tag(name = "qpu")
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
-@RequestMapping("/" + Constants.PROVIDERS + "/{providerId}/" + Constants.QPUS)
+@RequestMapping("/" + Constants.QPUS)
 public class QpuController {
 
     private final static Logger LOG = LoggerFactory.getLogger(QpuController.class);
@@ -71,7 +71,8 @@ public class QpuController {
     }
 
     @GetMapping("/")
-    public HttpEntity<QpuListDto> getQpus(@PathVariable UUID providerId, @RequestParam(required = false) Integer page,
+    public HttpEntity<QpuListDto> getQpus(@RequestParam UUID providerId,
+                                          @RequestParam(required = false) Integer page,
                                           @RequestParam(required = false) Integer size) {
         LOG.debug("Get to retrieve all QPUs received.");
         QpuListDto qpuListDto = new QpuListDto();
@@ -79,8 +80,8 @@ public class QpuController {
         // add all available algorithms to the response
         for (Qpu qpu : qpuService.findAll(RestUtils.getAllPageable())) {
             if (qpu.getProvider().getId().equals(providerId)) {
-                qpuListDto.add(createQpuDto(providerId, qpu));
-                qpuListDto.add(linkTo(methodOn(QpuController.class).getQpu(providerId, qpu.getId())).withRel(qpu.getId().toString()));
+                qpuListDto.add(createQpuDto(qpu));
+                qpuListDto.add(linkTo(methodOn(QpuController.class).getQpu(qpu.getId())).withRel(qpu.getId().toString()));
             }
         }
 
@@ -93,7 +94,7 @@ public class QpuController {
             @ApiResponse(responseCode = "404", content = @Content)
     })
     @GetMapping("/{qpuId}")
-    public HttpEntity<QpuDto> getQpu(@PathVariable UUID providerId, @PathVariable UUID qpuId) {
+    public HttpEntity<QpuDto> getQpu(@PathVariable UUID qpuId) {
         LOG.debug("Get to retrieve QPU with id: {}.", qpuId);
 
         Optional<Qpu> qpuOptional = qpuService.findById(qpuId);
@@ -102,7 +103,7 @@ public class QpuController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        return new ResponseEntity<>(createQpuDto(providerId, qpuOptional.get()), HttpStatus.OK);
+        return new ResponseEntity<>(createQpuDto(qpuOptional.get()), HttpStatus.OK);
     }
 
     @Operation(responses = {
@@ -111,7 +112,7 @@ public class QpuController {
             @ApiResponse(responseCode = "404", content = @Content)
     })
     @PostMapping("/")
-    public HttpEntity<QpuDto> createQpu(@PathVariable UUID providerId, @RequestBody QpuDto qpuRequest) {
+    public HttpEntity<QpuDto> createQpu(@RequestParam UUID providerId, @RequestBody QpuDto qpuRequest) {
         LOG.debug("Post to create new QPU received.");
 
         Optional<Provider> providerOptional = providerService.findById(providerId);
@@ -128,20 +129,19 @@ public class QpuController {
 
         // store and return QPU
         Qpu qpu = qpuService.save(QpuDto.Converter.convert(qpuRequest, providerOptional.get()));
-        return new ResponseEntity<>(createQpuDto(providerId, qpu), HttpStatus.OK);
+        return new ResponseEntity<>(createQpuDto(qpu), HttpStatus.OK);
     }
 
     /**
      * Create a DTO object for a given {@link Qpu}.
      *
-     * @param providerId the Id of the provider the QPU belongs to
      * @param qpu        the {@link Qpu} to create the DTO for
      * @return the created DTO
      */
-    private QpuDto createQpuDto(UUID providerId, Qpu qpu) {
+    private QpuDto createQpuDto(Qpu qpu) {
         QpuDto qpuDto = QpuDto.Converter.convert(qpu);
-        qpuDto.add(linkTo(methodOn(QpuController.class).getQpu(providerId, qpu.getId())).withSelfRel());
-        qpuDto.add(linkTo(methodOn(ProviderController.class).getProvider(providerId)).withRel(Constants.PROVIDER));
+        qpuDto.add(linkTo(methodOn(QpuController.class).getQpu(qpu.getId())).withSelfRel());
+        qpuDto.add(linkTo(methodOn(ProviderController.class).getProvider(qpu.getProvider().getId())).withRel(Constants.PROVIDER));
         return qpuDto;
     }
 }
