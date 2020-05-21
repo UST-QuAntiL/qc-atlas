@@ -24,6 +24,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.planqk.atlas.web.Constants;
+import org.planqk.atlas.web.annotation.ApiVersion;
 import org.planqk.atlas.web.dtos.ProviderDto;
 import org.planqk.atlas.web.dtos.ProviderListDto;
 import org.planqk.atlas.core.services.ProviderService;
@@ -50,6 +51,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/" + Constants.PROVIDERS)
+@ApiVersion("v1")
 public class ProviderController {
 
     final private static Logger LOG = LoggerFactory.getLogger(ProviderController.class);

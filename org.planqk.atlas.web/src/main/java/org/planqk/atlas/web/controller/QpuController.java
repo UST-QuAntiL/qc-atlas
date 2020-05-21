@@ -28,6 +28,7 @@ import org.planqk.atlas.core.model.Qpu;
 import org.planqk.atlas.core.services.ProviderService;
 import org.planqk.atlas.core.services.QpuService;
 import org.planqk.atlas.web.Constants;
+import org.planqk.atlas.web.annotation.ApiVersion;
 import org.planqk.atlas.web.dtos.QpuDto;
 import org.planqk.atlas.web.dtos.QpuListDto;
 import org.planqk.atlas.web.utils.RestUtils;
@@ -59,6 +60,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/" + Constants.QPUS)
+@ApiVersion("v1")
 public class QpuController {
 
     private final static Logger LOG = LoggerFactory.getLogger(QpuController.class);
