@@ -7,6 +7,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
 import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
+
+import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -14,6 +17,10 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
+@TypeDef(
+        name = "jsonb",
+        typeClass = JsonBinaryType.class
+)
 public class QuantumResource extends HasId {
 
 	@OneToOne(fetch = FetchType.LAZY)
