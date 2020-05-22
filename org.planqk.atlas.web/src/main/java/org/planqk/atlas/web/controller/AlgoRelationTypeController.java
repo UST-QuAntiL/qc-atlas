@@ -72,7 +72,7 @@ public class AlgoRelationTypeController {
 	@DeleteMapping("/{id}")
 	public HttpEntity<AlgoRelationTypeDto> updateAlgoRelationType(@PathVariable UUID id) {
 		if (algoRelationTypeService.findById(id).isEmpty()) {
-			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 		algoRelationTypeService.delete(id);
 		return new ResponseEntity<>(HttpStatus.OK);
