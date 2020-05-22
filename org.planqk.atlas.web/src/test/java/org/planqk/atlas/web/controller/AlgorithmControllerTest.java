@@ -150,17 +150,13 @@ public class AlgorithmControllerTest {
     	when(algorithmService.findById(any(UUID.class))).thenReturn(Optional.empty());
     	when(algorithmService.findById(algorithm1.getId())).thenReturn(Optional.of(algorithm1));
     	when(algorithmService.findById(algorithm2.getId())).thenReturn(Optional.of(algorithm2));
-    	when(algorithmService.save(algorithm1)).thenReturn(algorithm1);
-    	when(algorithmService.update(algorithm1.getId(), algorithm1)).thenReturn(algorithm1);
-    	when(algorithmService.addUpdateAlgorithmRelation(any(UUID.class),any(AlgorithmRelation.class))).thenReturn(algorithmRelation1);
-    	when(algorithmService.deleteAlgorithmRelation(any(UUID.class),any(UUID.class))).thenReturn(false);
-    	when(algorithmService.deleteAlgorithmRelation(algorithm1.getId(),algorithmRelation1.getId())).thenReturn(true);
-        
+    	
     }
 
     @Test
     public void setupTest() {
         assertNotNull(mockMvc);
+        assertNotNull(algorithmController);
     }
 
     @Test
@@ -235,6 +231,8 @@ public class AlgorithmControllerTest {
     @Test
     public void createAlgorithm_returnAlgorithm() throws Exception {
 
+    	when(algorithmService.save(algorithm1)).thenReturn(algorithm1);
+
         MvcResult result = mockMvc.perform(post("/" + Constants.ALGORITHMS + "/")
                 .content(mapper.writeValueAsString(this.algorithm1Dto))
                 .contentType(MediaType.APPLICATION_JSON)
@@ -246,6 +244,7 @@ public class AlgorithmControllerTest {
     
     @Test
     public void updateAlgorithm_returnBadRequest() throws Exception {
+    	
     	AlgorithmDto algoDto = new AlgorithmDto();
     	algoDto.setId(UUID.randomUUID());
     	mockMvc.perform(put("/" + Constants.ALGORITHMS + "/{id}", algoDto.getId())
@@ -256,6 +255,8 @@ public class AlgorithmControllerTest {
     
     @Test
     public void updateAlgorithm_returnAlgorithm() throws Exception {
+
+    	when(algorithmService.update(algorithm1.getId(), algorithm1)).thenReturn(algorithm1);
 
         MvcResult result = mockMvc.perform(put("/" + Constants.ALGORITHMS + "/{id}", this.algorithm1.getId())
                 .content(mapper.writeValueAsString(this.algorithm1Dto))
@@ -310,6 +311,7 @@ public class AlgorithmControllerTest {
     
     @Test
     public void updateAlgorithmRelation_returnBadRequest() throws Exception {
+    	
     	Algorithm algo = new Algorithm();
     	algo.setId(UUID.randomUUID());
     	mockMvc.perform(put("/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS, algo.getId())
@@ -320,6 +322,7 @@ public class AlgorithmControllerTest {
     
     @Test
     public void updateAlgorithmRelation_returnNotFound() throws Exception {
+    	
     	mockMvc.perform(put("/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS, UUID.randomUUID())
     			.content(mapper.writeValueAsString(this.algorithmRelation1Dto))
     			.contentType(MediaType.APPLICATION_JSON)
@@ -328,6 +331,8 @@ public class AlgorithmControllerTest {
     
     @Test
     public void updateAlgorithmRelation_returnAlgorithmRelation() throws Exception {
+
+    	when(algorithmService.addUpdateAlgorithmRelation(any(UUID.class),any(AlgorithmRelation.class))).thenReturn(algorithmRelation1);
 
         MvcResult result = mockMvc.perform(put("/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS, this.algorithm1.getId())
                 .content(mapper.writeValueAsString(this.algorithmRelation1Dto))
@@ -340,6 +345,8 @@ public class AlgorithmControllerTest {
     
     @Test
     public void deleteAlgorithmRelation_notModified() throws Exception {
+
+    	when(algorithmService.deleteAlgorithmRelation(any(UUID.class),any(UUID.class))).thenReturn(false);
     	
     	mockMvc.perform(delete("/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS +
     			"/{algorithmRelation_id}", UUID.randomUUID(), this.algorithmRelation1.getId()))
@@ -347,7 +354,9 @@ public class AlgorithmControllerTest {
     }
     
     @Test
-    public void deleteAlgorithmRelation_returnOk() throws Exception {	
+    public void deleteAlgorithmRelation_returnOk() throws Exception {
+
+    	when(algorithmService.deleteAlgorithmRelation(algorithm1.getId(),algorithmRelation1.getId())).thenReturn(true);
     	
     	mockMvc.perform(delete("/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS +
     			"/{relation_id}", this.algorithm1.getId(), this.algorithmRelation1.getId()))
