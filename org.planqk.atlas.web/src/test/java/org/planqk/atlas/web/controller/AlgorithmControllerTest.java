@@ -41,8 +41,6 @@ import org.planqk.atlas.web.utils.DtoEntityConverter;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import net.bytebuddy.asm.Advice.This;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
