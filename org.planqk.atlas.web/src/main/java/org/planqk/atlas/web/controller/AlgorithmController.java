@@ -138,6 +138,7 @@ public class AlgorithmController {
 
         // store and return algorithm
         Algorithm algorithm = algorithmService.update(id, modelConverter.convert(algo));
+        
         return new ResponseEntity<>(modelConverter.convert(algorithm), HttpStatus.OK);
     }
 
@@ -146,7 +147,7 @@ public class AlgorithmController {
         LOG.debug("Delete to remove algorithm with id '" + id + "' received");
 
         if (algorithmService.findById(id).isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         algorithmService.delete(id);
@@ -209,7 +210,9 @@ public class AlgorithmController {
     public HttpEntity<AlgorithmRelationDto> updateAlgorithmRelation(@PathVariable UUID sourceAlgorithm_id, @RequestBody AlgorithmRelationDto relation) {
         LOG.debug("Post to add algorithm relation received.");
 
-        if (Objects.isNull(relation.getTargetAlgorithm()) || Objects.isNull(relation.getAlgoRelationType())) {
+        if (!sourceAlgorithm_id.equals(relation.getSourceAlgorithm().getId()) ||
+        		Objects.isNull(relation.getTargetAlgorithm()) ||
+        		Objects.isNull(relation.getAlgoRelationType())) {
             LOG.error("Received invalid algorithmRelation object for post request: {}", relation.toString());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -220,14 +223,15 @@ public class AlgorithmController {
             LOG.error("Unable to retrieve algorithm with id {} from the repository.", sourceAlgorithm_id);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+        
         AlgorithmRelation algorithmRelation = algorithmService.addUpdateAlgorithmRelation(sourceAlgorithm_id, modelConverter.convert(relation));
         return new ResponseEntity<>(modelConverter.convert(algorithmRelation), HttpStatus.OK);
     }
 
-    @DeleteMapping("/{sourceAlgorithmId}/" + Constants.ALGORITHM_RELATIONS + "/{relationId}")
-    public HttpEntity<AlgorithmDto> deleteAlgorithmRelation(@PathVariable UUID sourceAlgorithmId, @PathVariable UUID relationId) {
-        LOG.debug("Delete received to remove algorithm relation with id {}.", relationId);
-        if (!algorithmService.deleteAlgorithmRelation(sourceAlgorithmId, relationId)) {
+    @DeleteMapping("/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS + "/{relation_id}")
+    public HttpEntity<AlgorithmDto> deleteAlgorithmRelation(@PathVariable UUID sourceAlgorithm_id, @PathVariable UUID relation_id) {
+        LOG.debug("Delete received to remove algorithm relation with id {}.", relation_id);
+        if (!algorithmService.deleteAlgorithmRelation(sourceAlgorithm_id, relation_id)) {
             return new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
         }
         return new ResponseEntity<>(HttpStatus.OK);
