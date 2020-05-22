@@ -23,8 +23,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @WebMvcTest
@@ -56,6 +58,9 @@ public class AlgoRelationTypeControllerTest {
         algoRelationTypeDto = AlgoRelationTypeDto.Converter.convert(algoRelationType);
         
         when(algoRelationTypeService.save(any(AlgoRelationType.class))).thenReturn(algoRelationType);
+        when(algoRelationTypeService.findById(any(UUID.class))).thenReturn(Optional.empty());
+        when(algoRelationTypeService.findById(algoRelationType.getId())).thenReturn(Optional.of(algoRelationType));
+        when(algoRelationTypeService.update(any(UUID.class),any(AlgoRelationType.class))).thenReturn(algoRelationType);
 	}
 	
 	public void setupTest() {
@@ -70,6 +75,18 @@ public class AlgoRelationTypeControllerTest {
 				.content(mapper.writeValueAsString(algoRelationTypeDto))
 				.contentType(MediaType.APPLICATION_JSON)
 				.accept(MediaType.APPLICATION_JSON)).andExpect(status().isCreated()).andReturn();
+		
+		AlgoRelationTypeDto type = mapper.readValue(result.getResponse().getContentAsString(), AlgoRelationTypeDto.class);
+		assertEquals(algoRelationTypeDto.getName(), type.getName());
+	}
+	
+	@Test
+	public void updateAlgoRelationType_returnOk() throws Exception {
+		
+		MvcResult result = mockMvc.perform(put("/" + Constants.ALGO_RELATION_TYPES + "/{id}",algoRelationType.getId())
+				.content(mapper.writeValueAsString(algoRelationTypeDto))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
 		
 		AlgoRelationTypeDto type = mapper.readValue(result.getResponse().getContentAsString(), AlgoRelationTypeDto.class);
 		assertEquals(algoRelationTypeDto.getName(), type.getName());
