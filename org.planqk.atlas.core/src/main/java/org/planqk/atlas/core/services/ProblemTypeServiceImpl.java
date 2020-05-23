@@ -1,5 +1,6 @@
 package org.planqk.atlas.core.services;
 
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -39,10 +40,10 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
 		// TODO: Exception handling
 		return null;
 	}
-	
+
 	@Override
 	public void delete(UUID id) {
-        repo.deleteById(id);
+		repo.deleteById(id);
 	}
 
 	@Override
@@ -62,10 +63,9 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
 
 	@Override
 	public Set<ProblemType> createOrUpdateAll(Set<ProblemType> algorithmTypes) {
-		Set<ProblemType> types = algorithmTypes;
+		Set<ProblemType> types = new HashSet<>();
 		// Go Iterate all types
 		for (ProblemType type : algorithmTypes) {
-			types.remove(type);
 			// Check for type in database
 			Optional<ProblemType> typeOpt = findById(type.getId());
 			// If Type exists
@@ -75,14 +75,13 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
 				persistedType.setName(type.getName());
 				persistedType.setParentProblemType(type.getParentProblemType());
 				// Reference database type to set
-				type = save(persistedType);
-			} else {
-				type = save(type);
+				types.add(save(persistedType));
 			}
-			types.add(type);
+			// If Type does not exist --> Create one
+			types.add(save(type));
 		}
-		
+
 		return types;
 	}
-	
+
 }

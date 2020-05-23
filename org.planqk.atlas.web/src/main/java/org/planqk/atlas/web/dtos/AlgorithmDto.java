@@ -57,7 +57,7 @@ import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.WRITE_ONLY;
 )
 public class AlgorithmDto extends RepresentationModel<AlgorithmDto> {
 
-  private UUID id;
+    private UUID id;
 
     @NotNull(message = "Algorithm-Name must not be null!")
 	private String name;
