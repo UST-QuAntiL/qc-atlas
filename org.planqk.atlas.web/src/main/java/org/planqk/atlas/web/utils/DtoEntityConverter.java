@@ -4,11 +4,14 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.modelmapper.ModelMapper;
+import org.planqk.atlas.core.model.AlgoRelationType;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
 import org.planqk.atlas.core.model.QuantumAlgorithm;
 import org.planqk.atlas.core.model.Tag;
+import org.planqk.atlas.web.dtos.AlgoRelationTypeDto;
+import org.planqk.atlas.web.dtos.AlgoRelationTypeListDto;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.AlgorithmListDto;
 import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
@@ -43,17 +46,13 @@ public class DtoEntityConverter {
 		AlgorithmDto dto;
 		if (entity instanceof QuantumAlgorithm) {
 			dto = modelMapper.map((QuantumAlgorithm) entity, QuantumAlgorithmDto.class);
-			linkEnhancer.addLinks(dto);
-			return dto;
 		} else if (entity instanceof ClassicAlgorithm) {
 			dto = modelMapper.map((ClassicAlgorithm) entity, ClassicAlgorithmDto.class);
-			linkEnhancer.addLinks(dto);
-			return dto;
 		} else {
 			dto = modelMapper.map(entity, AlgorithmDto.class);
-			linkEnhancer.addLinks(dto);
-			return dto;
 		}
+		linkEnhancer.addLinks(dto);
+		return dto;
 	}
 
 	public AlgorithmListDto convert(Page<Algorithm> entities) {
@@ -88,5 +87,15 @@ public class DtoEntityConverter {
 	
 	public AlgorithmRelationDto convert(AlgorithmRelation entity) {
 		return modelMapper.map(entity, AlgorithmRelationDto.class);
+	}
+	
+	public AlgoRelationType convert(AlgoRelationTypeDto dto) {
+		return modelMapper.map(dto, AlgoRelationType.class);
+	}
+	
+	public AlgoRelationTypeDto convert(AlgoRelationType entity) {
+		AlgoRelationTypeDto dto = modelMapper.map(entity, AlgoRelationTypeDto.class);
+		linkEnhancer.addLinks(dto);
+		return dto;
 	}
 }
