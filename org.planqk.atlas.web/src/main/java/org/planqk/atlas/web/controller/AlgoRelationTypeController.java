@@ -13,7 +13,9 @@ import org.planqk.atlas.core.services.AlgoRelationTypeService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.AlgoRelationTypeDto;
 import org.planqk.atlas.web.dtos.AlgoRelationTypeListDto;
+import org.planqk.atlas.web.utils.DtoEntityConverter;
 import org.planqk.atlas.web.utils.RestUtils;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,9 +36,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class AlgoRelationTypeController {
 	
 	private AlgoRelationTypeService algoRelationTypeService;
+    private DtoEntityConverter modelConverter;
 
-	public AlgoRelationTypeController(AlgoRelationTypeService algoRelationTypeService) {
+	public AlgoRelationTypeController(AlgoRelationTypeService algoRelationTypeService, DtoEntityConverter modelConverter) {
 		this.algoRelationTypeService = algoRelationTypeService;
+		this.modelConverter = modelConverter;
 	}
 
 	public static AlgoRelationTypeListDto createAlgoRelationTypeDtoList(Stream<AlgoRelationType> stream) {
@@ -52,25 +56,20 @@ public class AlgoRelationTypeController {
 	}
 
 	@PostMapping("/")
-	public HttpEntity<AlgoRelationTypeDto> createAlgoRelationType(@RequestBody AlgoRelationType algoRelationType) {
-		AlgoRelationTypeDto savedAlgoRelationType = AlgoRelationTypeDto.Converter.convert(algoRelationTypeService.save(algoRelationType));
-		savedAlgoRelationType.add(linkTo(methodOn(AlgoRelationTypeController.class).getAlgoRelationTypeById(savedAlgoRelationType.getId()))
-				.withSelfRel());
-		return new ResponseEntity<>(savedAlgoRelationType, HttpStatus.CREATED);
+	public HttpEntity<AlgoRelationTypeDto> createAlgoRelationType(@RequestBody AlgoRelationTypeDto algoRelationTypeDto) {
+		AlgoRelationType algoRelation = algoRelationTypeService.save(modelConverter.convert(algoRelationTypeDto));
+		return new ResponseEntity<>(modelConverter.convert(algoRelation), HttpStatus.CREATED);
 	}
 
 	@PutMapping("/{id}")
 	public HttpEntity<AlgoRelationTypeDto> updateAlgoRelationType(@PathVariable UUID id,
 			@RequestBody AlgoRelationTypeDto algoRelationTypeDto) {
-		AlgoRelationTypeDto savedAlgoRelationType = createAlgoRelationTypeDto(
-				algoRelationTypeService.update(id, AlgoRelationTypeDto.Converter.convert(algoRelationTypeDto)));
-		savedAlgoRelationType.add(linkTo(methodOn(AlgoRelationTypeController.class).getAlgoRelationTypeById(savedAlgoRelationType.getId()))
-				.withSelfRel());
-		return new ResponseEntity<>(savedAlgoRelationType, HttpStatus.OK);
+		AlgoRelationType algoRelation = algoRelationTypeService.update(id, modelConverter.convert(algoRelationTypeDto));
+		return new ResponseEntity<>(modelConverter.convert(algoRelation), HttpStatus.OK);
 	}
 	
 	@DeleteMapping("/{id}")
-	public HttpEntity<AlgoRelationTypeDto> updateAlgoRelationType(@PathVariable UUID id) {
+	public HttpEntity<AlgoRelationTypeDto> deleteAlgoRelationType(@PathVariable UUID id) {
 		if (algoRelationTypeService.findById(id).isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
@@ -81,16 +80,14 @@ public class AlgoRelationTypeController {
 	@GetMapping("/")
 	public HttpEntity<AlgoRelationTypeListDto> getAlgoRelationTypes(@RequestParam(required = false) Integer page,
 			@RequestParam(required = false) Integer size) {
-		return new ResponseEntity<>(
-				createAlgoRelationTypeDtoList(
-						algoRelationTypeService.findAll(RestUtils.getPageableFromRequestParams(page, size)).stream()),
-				HttpStatus.OK);
+		return new ResponseEntity<>(createAlgoRelationTypeDtoList(
+				algoRelationTypeService.findAll(RestUtils.getPageableFromRequestParams(page, size)).stream()), HttpStatus.OK);
 	}
 
 	@GetMapping("/{id}")
 	public HttpEntity<AlgoRelationTypeDto> getAlgoRelationTypeById(@PathVariable UUID id) {
 		Optional<AlgoRelationType> algoRelationTypeOpt = algoRelationTypeService.findById(id);
-		if (algoRelationTypeOpt.isPresent()) {
+		if (algoRelationTypeOpt.isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<>(createAlgoRelationTypeDto(algoRelationTypeOpt.get()), HttpStatus.OK);
