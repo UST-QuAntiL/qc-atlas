@@ -12,7 +12,6 @@ import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.model.QuantumAlgorithm;
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.web.dtos.AlgoRelationTypeDto;
-import org.planqk.atlas.web.dtos.AlgoRelationTypeListDto;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.AlgorithmListDto;
 import org.planqk.atlas.web.dtos.AlgorithmRelationDto;

@@ -19,7 +19,6 @@
 
 package org.planqk.atlas.web.controller;
 
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -117,11 +116,6 @@ public class AlgorithmController {
     public HttpEntity<AlgorithmDto> createAlgorithm(@Validated @RequestBody AlgorithmDto algo) {
         LOG.debug("Post to create new algorithm received.");
 
-        if (Objects.isNull(algo.getName())) {
-            LOG.error("Received invalid algorithm object for post request: {}", algo.toString());
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-
         // store and return algorithm
         Algorithm algorithm = algorithmService.save(modelConverter.convert(algo));
 
@@ -131,11 +125,6 @@ public class AlgorithmController {
     @PutMapping("/{id}")
     public HttpEntity<AlgorithmDto> updateAlgorithm(@PathVariable UUID id, @Validated @RequestBody AlgorithmDto algo) {
         LOG.debug("Put to update algorithm with id '" + id + "' received");
-
-        if (Objects.isNull(algo.getName())) {
-            LOG.error("Received invalid algorithm object for post request: {}", algo.toString());
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
 
         // store and return algorithm
         Algorithm algorithm = algorithmService.update(id, modelConverter.convert(algo));
@@ -210,13 +199,6 @@ public class AlgorithmController {
     @PutMapping("/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS)
     public HttpEntity<AlgorithmRelationDto> updateAlgorithmRelation(@PathVariable UUID sourceAlgorithm_id, @Validated @RequestBody AlgorithmRelationDto relation) {
         LOG.debug("Post to add algorithm relation received.");
-
-        if (!sourceAlgorithm_id.equals(relation.getSourceAlgorithm().getId()) ||
-        		Objects.isNull(relation.getTargetAlgorithm()) ||
-        		Objects.isNull(relation.getAlgoRelationType())) {
-            LOG.error("Received invalid algorithmRelation object for post request: {}", relation.toString());
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
 
         // store and return algorithm
         Optional<Algorithm> optAlgorithm = algorithmService.findById(sourceAlgorithm_id);
