@@ -22,7 +22,8 @@ package org.planqk.atlas.web.dtos;
 
 import java.util.UUID;
 
-import org.planqk.atlas.core.model.Algorithm;
+import javax.validation.constraints.*;
+
 import org.planqk.atlas.core.model.AlgorithmRelation;
 
 import lombok.Data;
@@ -44,10 +45,13 @@ public class AlgorithmRelationDto extends RepresentationModel<AlgorithmRelationD
 
 	private UUID id;
 	
+	@NotNull(message = "SourceAlgorithm of the AlgorithmRelation must not be null!")
 	private AlgorithmDto sourceAlgorithm;
 	
+	@NotNull(message = "TargetAlgorithm of the AlgorithmRelation must not be null!")
 	private AlgorithmDto targetAlgorithm;
 	
+	@NotNull(message = "AlgorithmRelationType must not be null!")
 	private AlgoRelationTypeDto algoRelationType;
 	
 	private String description;

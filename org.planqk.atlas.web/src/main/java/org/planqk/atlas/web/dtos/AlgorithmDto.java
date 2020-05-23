@@ -30,7 +30,6 @@ import org.planqk.atlas.core.model.ComputationModel;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -38,6 +37,8 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.springframework.hateoas.RepresentationModel;
+
+import javax.validation.constraints.*;
 
 import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.WRITE_ONLY;
 
@@ -58,6 +59,7 @@ public class AlgorithmDto extends RepresentationModel<AlgorithmDto> {
 
   private UUID id;
 
+    @NotNull(message = "Algorithm-Name must not be null!")
 	private String name;
 
 	private String problem;
@@ -66,6 +68,7 @@ public class AlgorithmDto extends RepresentationModel<AlgorithmDto> {
 
 	private String outputFormat;
 
+	@NotNull(message = "Computational-Model must not be null!")
 	private ComputationModel computationModel;
 
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)

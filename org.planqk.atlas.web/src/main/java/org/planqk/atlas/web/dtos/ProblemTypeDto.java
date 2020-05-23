@@ -8,11 +8,16 @@ import org.springframework.hateoas.RepresentationModel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import javax.validation.constraints.*;
+
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class ProblemTypeDto extends RepresentationModel<ProblemTypeDto> {
 	private UUID id;
+	
+	@NotNull(message = "ProblemType-Name must not be null!")
 	private String name;
+	
 	private UUID parentProblemType;
 	
 	public static final class Converter {

@@ -46,6 +46,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -113,7 +114,7 @@ public class AlgorithmController {
     }
 
     @PostMapping("/")
-    public HttpEntity<AlgorithmDto> createAlgorithm(@RequestBody AlgorithmDto algo) {
+    public HttpEntity<AlgorithmDto> createAlgorithm(@Validated @RequestBody AlgorithmDto algo) {
         LOG.debug("Post to create new algorithm received.");
 
         if (Objects.isNull(algo.getName())) {
@@ -128,7 +129,7 @@ public class AlgorithmController {
     }
 
     @PutMapping("/{id}")
-    public HttpEntity<AlgorithmDto> updateAlgorithm(@PathVariable UUID id, @RequestBody AlgorithmDto algo) {
+    public HttpEntity<AlgorithmDto> updateAlgorithm(@PathVariable UUID id, @Validated @RequestBody AlgorithmDto algo) {
         LOG.debug("Put to update algorithm with id '" + id + "' received");
 
         if (Objects.isNull(algo.getName())) {
@@ -207,7 +208,7 @@ public class AlgorithmController {
     }
 
     @PutMapping("/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS)
-    public HttpEntity<AlgorithmRelationDto> updateAlgorithmRelation(@PathVariable UUID sourceAlgorithm_id, @RequestBody AlgorithmRelationDto relation) {
+    public HttpEntity<AlgorithmRelationDto> updateAlgorithmRelation(@PathVariable UUID sourceAlgorithm_id, @Validated @RequestBody AlgorithmRelationDto relation) {
         LOG.debug("Post to add algorithm relation received.");
 
         if (!sourceAlgorithm_id.equals(relation.getSourceAlgorithm().getId()) ||

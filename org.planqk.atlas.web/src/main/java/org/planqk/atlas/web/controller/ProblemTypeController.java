@@ -13,10 +13,13 @@ import org.planqk.atlas.core.services.ProblemTypeService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.ProblemTypeDto;
 import org.planqk.atlas.web.dtos.ProblemTypeListDto;
+import org.planqk.atlas.web.utils.DtoEntityConverter;
 import org.planqk.atlas.web.utils.RestUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,14 +37,18 @@ import org.springframework.web.bind.annotation.RestController;
 public class ProblemTypeController {
 
 	private ProblemTypeService problemTypeService;
+	private DtoEntityConverter modelConverter;
 
-	public ProblemTypeController(ProblemTypeService problemTypeService) {
+	@Autowired
+	public ProblemTypeController(ProblemTypeService problemTypeService, DtoEntityConverter modelConverter) {
 		this.problemTypeService = problemTypeService;
+		this.modelConverter = modelConverter;
 	}
 
 	public static ProblemTypeListDto createProblemTypeDtoList(Stream<ProblemType> stream) {
 		ProblemTypeListDto problemTypeListDto = new ProblemTypeListDto();
-		problemTypeListDto.add(stream.map(problemType -> createProblemTypeDto(problemType)).collect(Collectors.toList()));
+		problemTypeListDto
+				.add(stream.map(problemType -> createProblemTypeDto(problemType)).collect(Collectors.toList()));
 		return problemTypeListDto;
 	}
 
@@ -52,8 +59,8 @@ public class ProblemTypeController {
 	}
 
 	@PostMapping("/")
-	public HttpEntity<ProblemTypeDto> createProblemType(@RequestBody ProblemType problemType) {
-		ProblemTypeDto savedProblemType = ProblemTypeDto.Converter.convert(problemTypeService.save(problemType));
+	public HttpEntity<ProblemTypeDto> createProblemType(@Validated @RequestBody ProblemTypeDto problemTypeDto) {
+		ProblemTypeDto savedProblemType = modelConverter.convert(problemTypeService.save(modelConverter.convert(problemTypeDto)));
 		savedProblemType.add(linkTo(methodOn(ProblemTypeController.class).getProblemTypeById(savedProblemType.getId()))
 				.withSelfRel());
 		return new ResponseEntity<>(savedProblemType, HttpStatus.CREATED);
@@ -61,14 +68,14 @@ public class ProblemTypeController {
 
 	@PutMapping("/{id}")
 	public HttpEntity<ProblemTypeDto> updateProblemType(@PathVariable UUID id,
-			@RequestBody ProblemTypeDto problemTypeDto) {
+			@Validated @RequestBody ProblemTypeDto problemTypeDto) {
 		ProblemTypeDto savedProblemType = createProblemTypeDto(
-				problemTypeService.update(id, ProblemTypeDto.Converter.convert(problemTypeDto)));
+				problemTypeService.update(id, modelConverter.convert(problemTypeDto)));
 		savedProblemType.add(linkTo(methodOn(ProblemTypeController.class).getProblemTypeById(savedProblemType.getId()))
 				.withSelfRel());
 		return new ResponseEntity<>(savedProblemType, HttpStatus.OK);
 	}
-	
+
 	@DeleteMapping("/{id}")
 	public HttpEntity<ProblemTypeDto> updateProblemType(@PathVariable UUID id) {
 		if (problemTypeService.findById(id).isEmpty()) {

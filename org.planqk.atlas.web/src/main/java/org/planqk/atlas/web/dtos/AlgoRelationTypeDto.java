@@ -2,6 +2,8 @@ package org.planqk.atlas.web.dtos;
 
 import java.util.UUID;
 
+import javax.validation.constraints.*;
+
 import org.planqk.atlas.core.model.AlgoRelationType;
 import org.springframework.hateoas.RepresentationModel;
 
@@ -11,7 +13,10 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class AlgoRelationTypeDto extends RepresentationModel<AlgoRelationTypeDto> {
+	
 	private UUID id;
+	
+	@NotNull(message = "RelationType-Name must not be null!")
 	private String name;
 	
 	public static final class Converter {

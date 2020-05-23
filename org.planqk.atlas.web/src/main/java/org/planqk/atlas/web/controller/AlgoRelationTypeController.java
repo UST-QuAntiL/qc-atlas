@@ -15,10 +15,10 @@ import org.planqk.atlas.web.dtos.AlgoRelationTypeDto;
 import org.planqk.atlas.web.dtos.AlgoRelationTypeListDto;
 import org.planqk.atlas.web.utils.DtoEntityConverter;
 import org.planqk.atlas.web.utils.RestUtils;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -56,14 +56,14 @@ public class AlgoRelationTypeController {
 	}
 
 	@PostMapping("/")
-	public HttpEntity<AlgoRelationTypeDto> createAlgoRelationType(@RequestBody AlgoRelationTypeDto algoRelationTypeDto) {
+	public HttpEntity<AlgoRelationTypeDto> createAlgoRelationType(@Validated @RequestBody AlgoRelationTypeDto algoRelationTypeDto) {
 		AlgoRelationType algoRelation = algoRelationTypeService.save(modelConverter.convert(algoRelationTypeDto));
 		return new ResponseEntity<>(modelConverter.convert(algoRelation), HttpStatus.CREATED);
 	}
 
 	@PutMapping("/{id}")
 	public HttpEntity<AlgoRelationTypeDto> updateAlgoRelationType(@PathVariable UUID id,
-			@RequestBody AlgoRelationTypeDto algoRelationTypeDto) {
+			@Validated @RequestBody AlgoRelationTypeDto algoRelationTypeDto) {
 		AlgoRelationType algoRelation = algoRelationTypeService.update(id, modelConverter.convert(algoRelationTypeDto));
 		return new ResponseEntity<>(modelConverter.convert(algoRelation), HttpStatus.OK);
 	}
