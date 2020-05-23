@@ -224,6 +224,12 @@ public class AlgorithmControllerTest {
                 .content(mapper.writeValueAsString(algoDto))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
+        
+        algoDto.setName("algoDto");
+        mockMvc.perform(post("/" + Constants.ALGORITHMS + "/")
+                .content(mapper.writeValueAsString(algoDto))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
     }
 
     @Test
@@ -249,6 +255,12 @@ public class AlgorithmControllerTest {
     			.content(mapper.writeValueAsString(algoDto))
     			.contentType(MediaType.APPLICATION_JSON)
     			.accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
+        
+        algoDto.setName("algoDto");
+        mockMvc.perform(post("/" + Constants.ALGORITHMS + "/")
+                .content(mapper.writeValueAsString(algoDto))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
     }
     
     @Test
@@ -311,9 +323,26 @@ public class AlgorithmControllerTest {
     public void updateAlgorithmRelation_returnBadRequest() throws Exception {
     	
     	Algorithm algo = new Algorithm();
-    	algo.setId(UUID.randomUUID());
     	mockMvc.perform(put("/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS, algo.getId())
     			.content(mapper.writeValueAsString(this.algorithmRelation1Dto))
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
+
+    	AlgorithmRelationDto algoRelationDto = new AlgorithmRelationDto();
+    	mockMvc.perform(put("/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS, algorithm1.getId())
+    			.content(mapper.writeValueAsString(algoRelationDto))
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
+    	
+    	algoRelationDto.setSourceAlgorithm(algorithm1Dto);
+    	mockMvc.perform(put("/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS, algorithm1.getId())
+    			.content(mapper.writeValueAsString(algoRelationDto))
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
+    	
+    	algoRelationDto.setTargetAlgorithm(algorithm2Dto);
+    	mockMvc.perform(put("/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS, algorithm1.getId())
+    			.content(mapper.writeValueAsString(algoRelationDto))
     			.contentType(MediaType.APPLICATION_JSON)
     			.accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
     }
@@ -324,7 +353,7 @@ public class AlgorithmControllerTest {
     	mockMvc.perform(put("/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS, UUID.randomUUID())
     			.content(mapper.writeValueAsString(this.algorithmRelation1Dto))
     			.contentType(MediaType.APPLICATION_JSON)
-    			.accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
+    			.accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
     }
     
     @Test

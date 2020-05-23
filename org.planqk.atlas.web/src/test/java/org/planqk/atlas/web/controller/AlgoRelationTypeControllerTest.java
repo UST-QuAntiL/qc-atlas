@@ -92,6 +92,17 @@ public class AlgoRelationTypeControllerTest {
 	}
 	
 	@Test
+	public void createAlgoRelationType_returnBadRequest() throws Exception {
+		
+		AlgoRelationTypeDto algoRelationTypeDto = new AlgoRelationTypeDto();
+		algoRelationTypeDto.setId(UUID.randomUUID());
+		mockMvc.perform(post("/" + Constants.ALGO_RELATION_TYPES + "/")
+				.content(mapper.writeValueAsString(algoRelationTypeDto))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
+	}
+	
+	@Test
 	public void createAlgoRelationType_returnCreate() throws Exception {
 		
 		when(algoRelationTypeService.save(algoRelationType1)).thenReturn(algoRelationType1);
@@ -103,6 +114,17 @@ public class AlgoRelationTypeControllerTest {
 		
 		AlgoRelationTypeDto type = mapper.readValue(result.getResponse().getContentAsString(), AlgoRelationTypeDto.class);
 		assertEquals(algoRelationType1Dto.getId(), type.getId());
+	}
+	
+	@Test
+	public void updateAlgoRelationType_returnBadRequest() throws Exception {
+		
+		AlgoRelationTypeDto algoRelationTypeDto = new AlgoRelationTypeDto();
+		algoRelationTypeDto.setId(UUID.randomUUID());
+		mockMvc.perform(put("/" + Constants.ALGO_RELATION_TYPES + "/{id}",algoRelationTypeDto.getId())
+				.content(mapper.writeValueAsString(algoRelationTypeDto))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
 	}
 	
 	@Test
