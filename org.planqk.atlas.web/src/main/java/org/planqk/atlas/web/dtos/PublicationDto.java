@@ -2,9 +2,9 @@ package org.planqk.atlas.web.dtos;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.planqk.atlas.core.model.Publication;
 import org.springframework.hateoas.RepresentationModel;
 
-import javax.validation.constraints.NotNull;
 import java.net.URL;
 import java.util.List;
 import java.util.UUID;
@@ -14,11 +14,31 @@ import java.util.UUID;
 public class PublicationDto extends RepresentationModel<PublicationDto> {
 
     private UUID id;
-    @NotNull(message = "Publication Name must not be null!")
     private String title;
     private String doi;
     private URL url;
-    @NotNull(message = "Authors of a publication must not be null!")
     private List<String> authors;
 
+    public static final class Converter {
+
+        public static PublicationDto convert(final Publication object) {
+            final PublicationDto dto = new PublicationDto();
+            dto.setId(object.getId());
+            dto.setTitle(object.getTitle());
+            dto.setAuthors(object.getAuthors());
+            dto.setUrl(object.getUrl());
+            dto.setDoi(object.getDoi());
+            return dto;
+        }
+
+        public static Publication convert(final PublicationDto object) {
+            final Publication publication = new Publication();
+            publication.setId(object.getId());
+            publication.setTitle(object.getTitle());
+            publication.setAuthors(object.getAuthors());
+            publication.setUrl(object.getUrl());
+            publication.setDoi(object.getDoi());
+            return publication;
+        }
+    }
 }

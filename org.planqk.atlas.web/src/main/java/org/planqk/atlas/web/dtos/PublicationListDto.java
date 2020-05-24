@@ -2,10 +2,11 @@ package org.planqk.atlas.web.dtos;
 
 import lombok.Getter;
 import org.assertj.core.util.Lists;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.util.List;
 
-public class PublicationListDto {
+public class PublicationListDto extends RepresentationModel<PublicationListDto> {
     @Getter
     private final List<PublicationDto> publicationDtos = Lists.newArrayList();
 

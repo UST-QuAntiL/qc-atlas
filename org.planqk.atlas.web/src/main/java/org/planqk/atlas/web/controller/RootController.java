@@ -19,6 +19,7 @@
 
 package org.planqk.atlas.web.controller;
 
+import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.web.Constants;
 
 import org.springframework.hateoas.RepresentationModel;
@@ -49,6 +50,7 @@ public class RootController {
         responseEntity.add(linkTo(methodOn(AlgorithmController.class).getAlgorithms(Constants.DEFAULT_PAGE_NUMBER, Constants.DEFAULT_PAGE_SIZE)).withRel(Constants.ALGORITHMS));
         responseEntity.add(linkTo(methodOn(ProviderController.class).getProviders(Constants.DEFAULT_PAGE_NUMBER, Constants.DEFAULT_PAGE_SIZE)).withRel(Constants.PROVIDERS));
         responseEntity.add(linkTo(methodOn(TagController.class).getTags(Constants.DEFAULT_PAGE_NUMBER, Constants.DEFAULT_PAGE_SIZE)).withRel(Constants.TAGS));
+        responseEntity.add(linkTo(methodOn(PublicationController.class).getPublications(Constants.DEFAULT_PAGE_NUMBER, Constants.DEFAULT_PAGE_SIZE)).withRel(Constants.PUBLICATIONS));
 
         return new ResponseEntity<>(responseEntity, HttpStatus.OK);
     }
