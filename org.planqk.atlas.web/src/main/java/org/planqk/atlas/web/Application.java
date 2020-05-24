@@ -59,10 +59,12 @@ public class Application extends SpringBootServletInitializer {
     }
 
     private static void logReadyMessage() {
-        final String readyMessage = "\n===================================================\n" +
-                "ATLAS IS READY TO USE!\n" +
-                "===================================================";
-        LOG.info(readyMessage);
+        if (LOG.isInfoEnabled()) {
+            final String readyMessage = "\n===================================================\n" +
+                    "ATLAS IS READY TO USE!\n" +
+                    "===================================================";
+            LOG.info(readyMessage);
+        }
     }
 
     /**
