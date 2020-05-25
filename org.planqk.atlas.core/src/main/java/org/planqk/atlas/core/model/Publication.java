@@ -16,7 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Data
-public class Publication extends HasId {
+public class Publication extends KnowledgeArtifact {
 
     private String doi;
     private URL url;
