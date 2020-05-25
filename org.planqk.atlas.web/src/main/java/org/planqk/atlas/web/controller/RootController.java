@@ -49,24 +49,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 public class RootController {
 
-
-    @Autowired
-    PublicationService publicationService;
-
-    @EventListener(classes = ApplicationReadyEvent.class)
-    public void init(){
-        PublicationDto dto = new PublicationDto();
-        dto.setDoi("ABCDE");
-        dto.setTitle("MyPub");
-        List<String> authors = new ArrayList<>();
-        authors.add("Valle");
-        dto.setAuthors(authors);
-
-        publicationService.save(PublicationDto.Converter.convert(dto));
-
-    }
-
-
     @GetMapping("/")
     public HttpEntity<RepresentationModel> root() {
         RepresentationModel responseEntity = new RepresentationModel<>();
