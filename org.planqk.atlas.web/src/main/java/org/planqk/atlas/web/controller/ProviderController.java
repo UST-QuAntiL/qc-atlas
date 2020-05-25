@@ -30,6 +30,9 @@ import org.planqk.atlas.core.services.ProviderService;
 import org.planqk.atlas.web.utils.RestUtils;
 import org.planqk.atlas.core.model.Provider;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
@@ -43,6 +46,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 /**
  * Controller to access and manipulate quantum computing providers.
  */
+@io.swagger.v3.oas.annotations.tags.Tag(name = "provider")
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/" + Constants.PROVIDERS)
@@ -73,6 +77,10 @@ public class ProviderController {
         return new ResponseEntity<>(providerListDto, HttpStatus.OK);
     }
 
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", content = @Content)
+    })
     @GetMapping("/{id}")
     public HttpEntity<ProviderDto> getProvider(@PathVariable UUID id) {
         LOG.debug("Get to retrieve provider with id: {}.", id);
@@ -86,6 +94,10 @@ public class ProviderController {
         return new ResponseEntity<>(createProviderDto(providerOptional.get()), HttpStatus.OK);
     }
 
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400", content = @Content)
+    })
     @PostMapping("/")
     public HttpEntity<ProviderDto> createProvider(@RequestBody ProviderDto providerDto) {
         LOG.debug("Post to create new provider received.");

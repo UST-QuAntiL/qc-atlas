@@ -36,6 +36,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
  * Root controller to access all entities within Quality, trigger the hardware selection, and execution of quantum
  * algorithms.
  */
+@io.swagger.v3.oas.annotations.tags.Tag(name = "root")
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 public class RootController {
