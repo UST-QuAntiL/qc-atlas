@@ -23,13 +23,21 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
-
+import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface AlgorithmService {
 
-    Algorithm save(Algorithm tag);
+    Algorithm save(Algorithm algorithm);
+
+    Algorithm update(UUID id, Algorithm algorithm);
+
+    void delete(UUID id);
+
+    AlgorithmRelation addUpdateAlgorithmRelation(UUID algoId, AlgorithmRelation relation);
+
+    boolean deleteAlgorithmRelation(UUID algoId, UUID relationId);
 
     Page<Algorithm> findAll(Pageable pageable);
 
