@@ -20,8 +20,13 @@
 package org.planqk.atlas.web.controller;
 
 import org.planqk.atlas.core.model.Publication;
+import org.planqk.atlas.core.services.PublicationService;
 import org.planqk.atlas.web.Constants;
 
+import org.planqk.atlas.web.dtos.PublicationDto;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
@@ -29,6 +34,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -40,6 +48,24 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 public class RootController {
+
+
+    @Autowired
+    PublicationService publicationService;
+
+    @EventListener(classes = ApplicationReadyEvent.class)
+    public void init(){
+        PublicationDto dto = new PublicationDto();
+        dto.setDoi("ABCDE");
+        dto.setTitle("MyPub");
+        List<String> authors = new ArrayList<>();
+        authors.add("Valle");
+        dto.setAuthors(authors);
+
+        publicationService.save(PublicationDto.Converter.convert(dto));
+
+    }
+
 
     @GetMapping("/")
     public HttpEntity<RepresentationModel> root() {

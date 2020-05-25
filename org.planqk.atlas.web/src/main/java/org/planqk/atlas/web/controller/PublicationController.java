@@ -1,9 +1,7 @@
 package org.planqk.atlas.web.controller;
 
 
-import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Publication;
-import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.services.PublicationService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.*;
@@ -18,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -40,6 +37,17 @@ public class PublicationController {
         this.publicationService = problemTypeService;
     }
 
+    public static PublicationListDto createPublicationDtoList(Page<Publication> publications){
+        PublicationListDto publicationListDto = new PublicationListDto();
+
+        for (Publication pub :  publications){
+            publicationListDto.add(createPublicationDto(pub));
+            publicationListDto.add(linkTo(methodOn(PublicationController.class).getPublication(pub.getId())).withRel(pub.getId().toString()));
+        }
+
+        return publicationListDto;
+    }
+
     public static PublicationDto createPublicationDto(Publication publication) {
 
         PublicationDto publicationDto = PublicationDto.Converter.convert(publication);
@@ -51,22 +59,23 @@ public class PublicationController {
     }
 
     @GetMapping("/")
-    public HttpEntity<Publication> getPublications(@RequestParam(required = false) Integer page,
+    public HttpEntity<PublicationListDto> getPublications(@RequestParam(required = false) Integer page,
                                                    @RequestParam(required = false) Integer size) {
 
-        PublicationListDto publicationListDto = new PublicationListDto();
+        PublicationListDto publicationListDto = createPublicationDtoList(publicationService.findAll(RestUtils.getPageableFromRequestParams(page,size)));
 
-        for (Publication pub :  publicationService.findAll(RestUtils.getPageableFromRequestParams(page,size))){
-            publicationListDto.add(createPublicationDto(pub));
-            publicationListDto.add(linkTo(methodOn(PublicationController.class).getPublication(pub.getId())).withRel(pub.getId().toString()));
-        }
-        return null;
+        publicationListDto.add(linkTo(methodOn(PublicationController.class).getPublications(null,null)).withSelfRel());
+        return new ResponseEntity<>(publicationListDto,HttpStatus.OK);
     }
 
     @PostMapping("/")
     public HttpEntity<PublicationDto> createPublication(@RequestBody PublicationDto publicationDto) {
 
         Publication publication = publicationService.save(PublicationDto.Converter.convert(publicationDto));
+
+        if(Objects.isNull(publicationDto.getTitle())) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
 
         return new ResponseEntity<>(createPublicationDto(publication), HttpStatus.CREATED);
     }
@@ -81,7 +90,6 @@ public class PublicationController {
         }
 
         PublicationDto publicationDto = createPublicationDto(publicationOpt.get());
-
         return new ResponseEntity<>(publicationDto, HttpStatus.OK);
     }
 
