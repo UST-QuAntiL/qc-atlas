@@ -31,6 +31,7 @@ import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.services.TagService;
 import org.planqk.atlas.web.Constants;
+import org.planqk.atlas.web.annotation.ApiVersion;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.AlgorithmListDto;
 import org.planqk.atlas.web.dtos.ImplementationListDto;
@@ -59,6 +60,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/" + Constants.TAGS)
+@ApiVersion("v1")
 public class TagController {
 
     private TagService tagService;

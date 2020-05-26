@@ -28,6 +28,7 @@ import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.web.Constants;
+import org.planqk.atlas.web.annotation.ApiVersion;
 import org.planqk.atlas.web.dtos.ImplementationDto;
 import org.planqk.atlas.web.dtos.ImplementationListDto;
 import org.planqk.atlas.web.dtos.TagListDto;
@@ -47,6 +48,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import static org.planqk.atlas.web.Constants.ALGORITHM_LINK;
@@ -59,7 +61,8 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @io.swagger.v3.oas.annotations.tags.Tag(name = "implementation")
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
-@RequestMapping("/" + Constants.ALGORITHMS + "/{algoId}/" + Constants.IMPLEMENTATIONS)
+@RequestMapping("/" + Constants.IMPLEMENTATIONS)
+@ApiVersion("v1")
 public class ImplementationController {
 
     final private static Logger LOG = LoggerFactory.getLogger(ImplementationController.class);
@@ -82,15 +85,15 @@ public class ImplementationController {
     public static ImplementationDto createImplementationDto(Implementation implementation) {
         UUID algoId = implementation.getImplementedAlgorithm().getId();
         ImplementationDto dto = ImplementationDto.Converter.convert(implementation);
-        dto.add(linkTo(methodOn(ImplementationController.class).getImplementation(algoId, implementation.getId())).withSelfRel());
+        dto.add(linkTo(methodOn(ImplementationController.class).getImplementation(implementation.getId())).withSelfRel());
         dto.add(linkTo(methodOn(AlgorithmController.class).getAlgorithm(algoId)).withRel(Constants.ALGORITHM_LINK));
-        dto.add(linkTo(methodOn(ImplementationController.class).getTags(algoId, implementation.getId())).withRel(Constants.TAGS));
+        dto.add(linkTo(methodOn(ImplementationController.class).getTags(implementation.getId())).withRel(Constants.TAGS));
         return dto;
     }
 
     @Operation()
     @GetMapping("/")
-    public HttpEntity<ImplementationListDto> getImplementations(@PathVariable UUID algoId) {
+    public HttpEntity<ImplementationListDto> getImplementations(@RequestParam UUID algoId) {
         LOG.debug("Get to retrieve all implementations received.");
         ImplementationListDto dtoList = new ImplementationListDto();
 
@@ -98,7 +101,7 @@ public class ImplementationController {
         for (Implementation impl : implementationService.findAll(RestUtils.getAllPageable())) {
             if (impl.getImplementedAlgorithm().getId().equals(algoId)) {
                 dtoList.add(createImplementationDto(impl));
-                dtoList.add(linkTo(methodOn(ImplementationController.class).getImplementation(algoId, impl.getId()))
+                dtoList.add(linkTo(methodOn(ImplementationController.class).getImplementation(impl.getId()))
                         .withRel(impl.getId().toString()));
             }
         }
@@ -114,7 +117,7 @@ public class ImplementationController {
             @ApiResponse(responseCode = "404", content = @Content)
     })
     @GetMapping("/{implId}")
-    public HttpEntity<ImplementationDto> getImplementation(@PathVariable UUID algoId, @PathVariable UUID implId) {
+    public HttpEntity<ImplementationDto> getImplementation(@PathVariable UUID implId) {
         LOG.debug("Get to retrieve implementation with id: {}.", implId);
 
         Optional<Implementation> implementationOptional = implementationService.findById(implId);
@@ -131,7 +134,7 @@ public class ImplementationController {
             @ApiResponse(responseCode = "400", content = @Content)
     })
     @PostMapping("/")
-    public HttpEntity<ImplementationDto> createImplementation(@PathVariable UUID algoId, @RequestBody ImplementationDto impl) {
+    public HttpEntity<ImplementationDto> createImplementation(@RequestParam UUID algoId, @RequestBody ImplementationDto impl) {
         LOG.debug("Post to create new implementation received.");
 
         Optional<Algorithm> algorithmOptional = algorithmService.findById(algoId);
@@ -157,14 +160,14 @@ public class ImplementationController {
             @ApiResponse(responseCode = "404", content = @Content)
     })
     @GetMapping("/{implId}/" + Constants.TAGS)
-    public HttpEntity<TagListDto> getTags(@PathVariable UUID algoId, @PathVariable UUID implId) {
+    public HttpEntity<TagListDto> getTags(@PathVariable UUID implId) {
         Optional<Implementation> implementationOptional = implementationService.findById(implId);
         if (!implementationOptional.isPresent()) {
             LOG.error("Unable to find implementation with id {} from the repository.", implId);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         TagListDto tagListDto = TagController.createTagDtoList(implementationOptional.get().getTags().stream());
-        tagListDto.add(linkTo(methodOn(ImplementationController.class).getTags(algoId, implId)).withSelfRel());
+        tagListDto.add(linkTo(methodOn(ImplementationController.class).getTags(implId)).withSelfRel());
         return new ResponseEntity<>(tagListDto, HttpStatus.OK);
     }
 }
