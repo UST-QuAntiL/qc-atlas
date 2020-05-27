@@ -78,7 +78,7 @@ public class ProblemTypeController {
 	}
 
 	@DeleteMapping("/{id}")
-	public HttpEntity<ProblemTypeDto> updateProblemType(@PathVariable UUID id) throws SqlConsistencyException {
+	public HttpEntity<ProblemTypeDto> deleteProblemType(@PathVariable UUID id) throws SqlConsistencyException {
 		if (problemTypeService.findById(id).isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		}
