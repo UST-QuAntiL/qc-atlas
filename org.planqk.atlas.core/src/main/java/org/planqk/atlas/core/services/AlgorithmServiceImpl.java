@@ -19,6 +19,7 @@
 
 package org.planqk.atlas.core.services;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -45,7 +46,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 	private final static Logger LOG = LoggerFactory.getLogger(AlgorithmServiceImpl.class);
 
 	private AlgorithmRepository algorithmRepository;
-	private AlgorithmRelationRepository algoRelationRepository;
+	private AlgorithmRelationRepository algorithmRelationRepository;
 	private AlgoRelationTypeService relationTypeService;
 
 	private TagService tagService;
@@ -89,6 +90,12 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 
 	@Override
 	public void delete(UUID id) {
+		Optional<List<AlgorithmRelation>> linkedAsTargetRelations = algorithmRelationRepository.findByTargetAlgorithmId(id);
+		if (linkedAsTargetRelations.isPresent()) {
+			for (AlgorithmRelation relation : linkedAsTargetRelations.get()) {
+				deleteAlgorithmRelation(relation.getSourceAlgorithm().getId(), relation.getId());
+			}
+		}
 		algorithmRepository.deleteById(id);
 	}
 
@@ -122,7 +129,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 		AlgoRelationType relationType = relationTypeOpt.get();
 
 		// Check if relation with those two algorithms already exists
-		Optional<AlgorithmRelation> persistedRelationOpt = algoRelationRepository
+		Optional<AlgorithmRelation> persistedRelationOpt = algorithmRelationRepository
 				.findBySourceAlgorithmIdAndTargetAlgorithmIdAndAlgoRelationTypeId(
 						sourceAlgorithm.getId(), targetAlgorithm.getId(), relationType.getId());
 
@@ -148,13 +155,13 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 	}
 
 	private AlgorithmRelation save(AlgorithmRelation current) {
-		return algoRelationRepository.save(current);
+		return algorithmRelationRepository.save(current);
 	}
 
 	@Override
 	public boolean deleteAlgorithmRelation(UUID algoId, UUID relationId) {
 		Optional<Algorithm> optAlgorithm = algorithmRepository.findById(algoId);
-		Optional<AlgorithmRelation> optRelation = algoRelationRepository.findById(relationId);
+		Optional<AlgorithmRelation> optRelation = algorithmRelationRepository.findById(relationId);
 
 		if (optAlgorithm.isEmpty() || optAlgorithm.isEmpty()) {
 			// TODO: Implement exception handling

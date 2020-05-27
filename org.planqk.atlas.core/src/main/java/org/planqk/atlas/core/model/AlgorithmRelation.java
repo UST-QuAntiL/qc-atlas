@@ -21,7 +21,7 @@ public class AlgorithmRelation extends HasId {
 	private Algorithm sourceAlgorithm;
 
 	@ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.REFRESH})
-	@JoinColumn(name = "targetAlgorithmRelation", referencedColumnName = "id")
+	@JoinColumn(name = "targetAlgorithm", referencedColumnName = "id")
 	private Algorithm targetAlgorithm;
 
 	@OneToOne(fetch = FetchType.LAZY)
