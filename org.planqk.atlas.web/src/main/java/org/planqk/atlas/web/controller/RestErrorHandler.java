@@ -1,5 +1,6 @@
 package org.planqk.atlas.web.controller;
 
+import org.planqk.atlas.core.model.exceptions.SqlConsistencyException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -25,8 +26,12 @@ public class RestErrorHandler {
 	@ExceptionHandler(HttpMessageNotReadableException.class)
 	public ResponseEntity<?> handleInvalidJson(HttpMessageNotReadableException e) {
 		LOG.error(e.getMessage(), e);
-		return new ResponseEntity<>("Jackson cannot deserialize request",
-				HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<>("Jackson cannot deserialize request", HttpStatus.BAD_REQUEST);
+	}
+
+	@ExceptionHandler(SqlConsistencyException.class)
+	public ResponseEntity<?> handleSqlConsistencyException(SqlConsistencyException e) {
+		return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
 	}
 
 }

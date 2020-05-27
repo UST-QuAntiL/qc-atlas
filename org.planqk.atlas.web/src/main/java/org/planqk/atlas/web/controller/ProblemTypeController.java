@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.planqk.atlas.core.model.ProblemType;
+import org.planqk.atlas.core.model.exceptions.SqlConsistencyException;
 import org.planqk.atlas.core.services.ProblemTypeService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.ProblemTypeDto;
@@ -77,7 +78,7 @@ public class ProblemTypeController {
 	}
 
 	@DeleteMapping("/{id}")
-	public HttpEntity<ProblemTypeDto> updateProblemType(@PathVariable UUID id) {
+	public HttpEntity<ProblemTypeDto> updateProblemType(@PathVariable UUID id) throws SqlConsistencyException {
 		if (problemTypeService.findById(id).isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		}

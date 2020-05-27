@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.ProblemType;
+import org.planqk.atlas.core.model.exceptions.SqlConsistencyException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -14,7 +15,7 @@ public interface ProblemTypeService {
 	
 	ProblemType update(UUID id, ProblemType problemType);
 	
-	void delete(UUID id);
+	void delete(UUID id) throws SqlConsistencyException;
 	
 	Optional<ProblemType> findById(UUID id);
 	

@@ -7,7 +7,11 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.ProblemType;
+import org.planqk.atlas.core.model.exceptions.SqlConsistencyException;
+import org.planqk.atlas.core.repository.AlgorithmRepository;
 import org.planqk.atlas.core.repository.ProblemTypeRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,8 +20,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class ProblemTypeServiceImpl implements ProblemTypeService {
 
+	private static final Logger LOG = LoggerFactory.getLogger(ProblemTypeServiceImpl.class);
+
 	@Autowired
 	private ProblemTypeRepository repo;
+	@Autowired
+	private AlgorithmRepository algRepo;
 
 	@Override
 	public ProblemType save(ProblemType problemType) {
@@ -42,7 +50,11 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
 	}
 
 	@Override
-	public void delete(UUID id) {
+	public void delete(UUID id) throws SqlConsistencyException {
+		if (algRepo.countAlgorithmsUsingProblemType(id) > 0) {
+			LOG.info("Trying to delete ProblemType that is used by at least 1 algorithm");
+			throw new SqlConsistencyException("Cannot delete ProbemType, since it is used by existing algorithms!");
+		}
 		repo.deleteById(id);
 	}
 
