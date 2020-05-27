@@ -3,18 +3,17 @@ package org.planqk.atlas.web.utils;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
-import org.planqk.atlas.core.model.AlgoRelationType;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.AlgoRelationTypeController;
 import org.planqk.atlas.web.controller.AlgorithmController;
 import org.planqk.atlas.web.controller.ImplementationController;
+import org.planqk.atlas.web.controller.ProblemTypeController;
 import org.planqk.atlas.web.controller.TagController;
 import org.planqk.atlas.web.dtos.AlgoRelationTypeDto;
-import org.planqk.atlas.web.dtos.AlgoRelationTypeListDto;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.AlgorithmListDto;
-import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
+import org.planqk.atlas.web.dtos.ProblemTypeDto;
 import org.planqk.atlas.web.dtos.TagDto;
 import org.springframework.stereotype.Component;
 
@@ -50,6 +49,10 @@ public class DtoLinkEnhancer {
 	
 	public void addLinks(AlgoRelationTypeDto dto) {
 		dto.add(linkTo(methodOn(AlgoRelationTypeController.class).getAlgoRelationTypeById(dto.getId())).withSelfRel());
+	}
+	
+	public void addLinks(ProblemTypeDto dto) {
+		dto.add(linkTo(methodOn(ProblemTypeController.class).getProblemTypeById(dto.getId())).withSelfRel());
 	}
 
 }

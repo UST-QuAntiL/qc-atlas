@@ -61,19 +61,16 @@ public class ProblemTypeController {
 
 	@PostMapping("/")
 	public HttpEntity<ProblemTypeDto> createProblemType(@Validated @RequestBody ProblemTypeDto problemTypeDto) {
-		ProblemTypeDto savedProblemType = modelConverter.convert(problemTypeService.save(modelConverter.convert(problemTypeDto)));
-		savedProblemType.add(linkTo(methodOn(ProblemTypeController.class).getProblemTypeById(savedProblemType.getId()))
-				.withSelfRel());
+		ProblemTypeDto savedProblemType = modelConverter
+				.convert(problemTypeService.save(modelConverter.convert(problemTypeDto)));
 		return new ResponseEntity<>(savedProblemType, HttpStatus.CREATED);
 	}
 
 	@PutMapping("/{id}")
 	public HttpEntity<ProblemTypeDto> updateProblemType(@PathVariable UUID id,
 			@Validated @RequestBody ProblemTypeDto problemTypeDto) {
-		ProblemTypeDto savedProblemType = createProblemTypeDto(
-				problemTypeService.update(id, modelConverter.convert(problemTypeDto)));
-		savedProblemType.add(linkTo(methodOn(ProblemTypeController.class).getProblemTypeById(savedProblemType.getId()))
-				.withSelfRel());
+		ProblemTypeDto savedProblemType = modelConverter
+				.convert(problemTypeService.update(id, modelConverter.convert(problemTypeDto)));
 		return new ResponseEntity<>(savedProblemType, HttpStatus.OK);
 	}
 
@@ -99,7 +96,7 @@ public class ProblemTypeController {
 	public HttpEntity<ProblemTypeDto> getProblemTypeById(@PathVariable UUID id) {
 		Optional<ProblemType> problemTypeOpt = problemTypeService.findById(id);
 		if (problemTypeOpt.isPresent()) {
-			return new ResponseEntity<>(createProblemTypeDto(problemTypeOpt.get()), HttpStatus.OK);
+			return new ResponseEntity<>(modelConverter.convert(problemTypeOpt.get()), HttpStatus.OK);
 		}
 		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}

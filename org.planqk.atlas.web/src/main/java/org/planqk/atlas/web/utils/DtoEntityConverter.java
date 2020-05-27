@@ -105,6 +105,8 @@ public class DtoEntityConverter {
 	}
 	
 	public ProblemTypeDto convert(ProblemType entity) {
-		return modelMapper.map(entity, ProblemTypeDto.class);
+		ProblemTypeDto dto = modelMapper.map(entity, ProblemTypeDto.class);
+		linkEnhancer.addLinks(dto);
+		return dto;
 	}
 }
