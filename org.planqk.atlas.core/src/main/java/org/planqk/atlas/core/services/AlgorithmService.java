@@ -34,11 +34,11 @@ public interface AlgorithmService {
 
     Algorithm update(UUID id, Algorithm algorithm);
 
-    void delete(UUID id);
+    void delete(UUID id) throws NotFoundException;
 
     AlgorithmRelation addUpdateAlgorithmRelation(UUID algoId, AlgorithmRelation relation) throws NotFoundException;
 
-    boolean deleteAlgorithmRelation(UUID algoId, UUID relationId);
+    boolean deleteAlgorithmRelation(UUID algoId, UUID relationId) throws NotFoundException;
 
     Page<Algorithm> findAll(Pageable pageable);
 

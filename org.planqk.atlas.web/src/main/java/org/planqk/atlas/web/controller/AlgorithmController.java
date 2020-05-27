@@ -134,7 +134,7 @@ public class AlgorithmController {
     }
 
     @DeleteMapping("/{id}")
-    public HttpEntity<AlgorithmDto> deleteAlgorithm(@PathVariable UUID id) {
+    public HttpEntity<AlgorithmDto> deleteAlgorithm(@PathVariable UUID id) throws NotFoundException {
         LOG.debug("Delete to remove algorithm with id '" + id + "' received");
 
         if (algorithmService.findById(id).isEmpty()) {
@@ -214,7 +214,8 @@ public class AlgorithmController {
     }
 
     @DeleteMapping("/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS + "/{relation_id}")
-    public HttpEntity<AlgorithmDto> deleteAlgorithmRelation(@PathVariable UUID sourceAlgorithm_id, @PathVariable UUID relation_id) {
+    public HttpEntity<AlgorithmDto> deleteAlgorithmRelation(@PathVariable UUID sourceAlgorithm_id, @PathVariable UUID relation_id)
+    		throws NotFoundException {
         LOG.debug("Delete received to remove algorithm relation with id {}.", relation_id);
         if (!algorithmService.deleteAlgorithmRelation(sourceAlgorithm_id, relation_id)) {
             return new ResponseEntity<>(HttpStatus.NOT_MODIFIED);

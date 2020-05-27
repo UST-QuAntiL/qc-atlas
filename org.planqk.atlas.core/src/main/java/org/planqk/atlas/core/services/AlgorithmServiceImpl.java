@@ -91,7 +91,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 	}
 
 	@Override
-	public void delete(UUID id) {
+	public void delete(UUID id) throws NotFoundException {
 		Optional<List<AlgorithmRelation>> linkedAsTargetRelations = algorithmRelationRepository.findByTargetAlgorithmId(id);
 		if (linkedAsTargetRelations.isPresent()) {
 			for (AlgorithmRelation relation : linkedAsTargetRelations.get()) {
@@ -165,13 +165,16 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 	}
 
 	@Override
-	public boolean deleteAlgorithmRelation(UUID algoId, UUID relationId) {
+	public boolean deleteAlgorithmRelation(UUID algoId, UUID relationId) throws NotFoundException {
 		Optional<Algorithm> optAlgorithm = algorithmRepository.findById(algoId);
 		Optional<AlgorithmRelation> optRelation = algorithmRelationRepository.findById(relationId);
 
-		if (optAlgorithm.isEmpty() || optAlgorithm.isEmpty()) {
-			// TODO: Implement exception handling
-			return false;
+		if (optAlgorithm.isEmpty()) {
+			LOG.info("Trying to delete algorithmRelation from non-existing source algorithm.");
+			throw new NotFoundException("Could not delete algorithmRelation from non-existing source algorithm.");
+		} else if (optAlgorithm.isEmpty()) {
+			LOG.info("Trying to delete non-existing algorithmRelation.");
+			throw new NotFoundException("Could not delete non-existing algorithmRelation.");
 		}
 
 		// Get Objects from database
@@ -179,13 +182,9 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 		AlgorithmRelation relation = optRelation.get();
 
 		Set<AlgorithmRelation> algorithmRelations = algorithm.getAlgorithmRelations();
-		for (AlgorithmRelation algRelation : algorithmRelations) {
-			if (algRelation.getId().equals(relation.getId())) {
-				if (algorithmRelations.remove(relation)) {
-					algorithmRepository.save(algorithm);
-					return true;
-				}
-			}
+		if (algorithmRelations.remove(relation)) {
+			algorithmRepository.save(algorithm);
+			return true;
 		}
 		return false;
 	}
