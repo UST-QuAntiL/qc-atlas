@@ -124,22 +124,15 @@ public class AlgorithmController {
     }
 
     @PutMapping("/{id}")
-    public HttpEntity<AlgorithmDto> updateAlgorithm(@PathVariable UUID id, @Validated @RequestBody AlgorithmDto algo) {
+    public HttpEntity<AlgorithmDto> updateAlgorithm(@PathVariable UUID id, @Validated @RequestBody AlgorithmDto algo) throws NotFoundException {
         LOG.debug("Put to update algorithm with id '" + id + "' received");
-
-        // store and return algorithm
-        Algorithm algorithm = algorithmService.update(id, modelConverter.convert(algo));
         
-        return new ResponseEntity<>(modelConverter.convert(algorithm), HttpStatus.OK);
+        return new ResponseEntity<>(modelConverter.convert(algorithmService.update(id, modelConverter.convert(algo))), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
     public HttpEntity<AlgorithmDto> deleteAlgorithm(@PathVariable UUID id) throws NotFoundException {
         LOG.debug("Delete to remove algorithm with id '" + id + "' received");
-
-        if (algorithmService.findById(id).isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
 
         algorithmService.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -201,13 +194,7 @@ public class AlgorithmController {
     public HttpEntity<AlgorithmRelationDto> updateAlgorithmRelation(@PathVariable UUID sourceAlgorithm_id,
     		@Validated @RequestBody AlgorithmRelationDto relation) throws NotFoundException {
         LOG.debug("Post to add algorithm relation received.");
-
-        // store and return algorithm
-        Optional<Algorithm> optAlgorithm = algorithmService.findById(sourceAlgorithm_id);
-        if (!optAlgorithm.isPresent()) {
-            LOG.error("Unable to retrieve algorithm with id {} from the repository.", sourceAlgorithm_id);
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        
         
         AlgorithmRelation algorithmRelation = algorithmService.addUpdateAlgorithmRelation(sourceAlgorithm_id, modelConverter.convert(relation));
         return new ResponseEntity<>(modelConverter.convert(algorithmRelation), HttpStatus.OK);

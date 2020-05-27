@@ -32,11 +32,10 @@ public interface AlgorithmService {
 
     Algorithm save(Algorithm algorithm);
 
-    Algorithm update(UUID id, Algorithm algorithm);
+    Algorithm update(UUID id, Algorithm algorithm) throws NotFoundException;
 
     void delete(UUID id) throws NotFoundException;
 
-    AlgorithmRelation addUpdateAlgorithmRelation(UUID algoId, AlgorithmRelation relation) throws NotFoundException;
 
     boolean deleteAlgorithmRelation(UUID algoId, UUID relationId) throws NotFoundException;
 

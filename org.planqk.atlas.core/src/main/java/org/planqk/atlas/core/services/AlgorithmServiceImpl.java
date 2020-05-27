@@ -75,23 +75,28 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 	}
 
 	@Override
-	public Algorithm update(UUID id, Algorithm algorithm) {
+	public Algorithm update(UUID id, Algorithm algorithm) throws NotFoundException {
 		Optional<Algorithm> persistedAlgOpt = findById(id);
-		if (persistedAlgOpt.isPresent()) {
-			Algorithm persistedAlg = persistedAlgOpt.get();
-			persistedAlg.setName(algorithm.getName());
-			persistedAlg.setInputFormat(algorithm.getInputFormat());
-			persistedAlg.setOutputFormat(algorithm.getOutputFormat());
-			persistedAlg.setProblemTypes(algorithm.getProblemTypes());
-			persistedAlg.setTags(algorithm.getTags());
-			return algorithmRepository.save(persistedAlg);
+		if (persistedAlgOpt.isEmpty()) {
+			LOG.info("Trying to update non-existing algorithm.");
+			throw new NotFoundException("Could not find algorithm to update.");
 		}
-		// TODO: Impl exception handling
-		return null;
+		Algorithm persistedAlg = persistedAlgOpt.get();
+		persistedAlg.setName(algorithm.getName());
+		persistedAlg.setInputFormat(algorithm.getInputFormat());
+		persistedAlg.setOutputFormat(algorithm.getOutputFormat());
+		persistedAlg.setProblemTypes(algorithm.getProblemTypes());
+		persistedAlg.setTags(algorithm.getTags());
+		return algorithmRepository.save(persistedAlg);
 	}
 
 	@Override
 	public void delete(UUID id) throws NotFoundException {
+		Optional<Algorithm> algorithmOpt = findById(id);
+		if (algorithmOpt.isEmpty()) {
+			LOG.info("Trying to delete non-existing algorithm.");
+			throw new NotFoundException("Could not find algorithm to delete.");
+		}
 		Optional<List<AlgorithmRelation>> linkedAsTargetRelations = algorithmRelationRepository.findByTargetAlgorithmId(id);
 		if (linkedAsTargetRelations.isPresent()) {
 			for (AlgorithmRelation relation : linkedAsTargetRelations.get()) {
@@ -112,9 +117,10 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 	}
 
 	@Override
-	public AlgorithmRelation addUpdateAlgorithmRelation(UUID algoId, AlgorithmRelation relation) throws NotFoundException {
+	public AlgorithmRelation addUpdateAlgorithmRelation(UUID sourceAlgorithm_id, AlgorithmRelation relation)
+			throws NotFoundException {
 		// Read involved Algorithms from database
-		Optional<Algorithm> sourceAlgorithmOpt = findById(relation.getSourceAlgorithm().getId());
+		Optional<Algorithm> sourceAlgorithmOpt = findById(sourceAlgorithm_id);
 		Optional<Algorithm> targetAlgorithmOpt = findById(relation.getTargetAlgorithm().getId());
 		Optional<AlgoRelationType> relationTypeOpt = relationTypeService
 				.findById(relation.getAlgoRelationType().getId());
