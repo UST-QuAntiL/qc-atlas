@@ -1,6 +1,8 @@
 package org.planqk.atlas.web.utils;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.modelmapper.ModelMapper;
@@ -21,6 +23,8 @@ import org.planqk.atlas.web.dtos.QuantumAlgorithmDto;
 import org.planqk.atlas.web.dtos.TagDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -109,4 +113,19 @@ public class DtoEntityConverter {
 		linkEnhancer.addLinks(dto);
 		return dto;
 	}
+	
+	public Page<ProblemTypeDto> convertPage(Page<ProblemType> entities, Pageable p) {
+		return new PageImpl<ProblemTypeDto>(convertPage(entities.getContent()), p, entities.getTotalElements());
+	}
+	
+	public List<ProblemTypeDto> convertPage(List<ProblemType> entities) {
+		List<ProblemTypeDto> dtos = new ArrayList<ProblemTypeDto>();
+		
+		for (ProblemType entity : entities) {
+			dtos.add(convert(entity));
+		}
+		
+		return dtos;
+	}
+
 }

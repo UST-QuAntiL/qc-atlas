@@ -17,6 +17,8 @@ import org.planqk.atlas.web.dtos.ProblemTypeListDto;
 import org.planqk.atlas.web.utils.DtoEntityConverter;
 import org.planqk.atlas.web.utils.RestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,11 +41,13 @@ public class ProblemTypeController {
 
 	private ProblemTypeService problemTypeService;
 	private DtoEntityConverter modelConverter;
+	private PagedResourcesAssembler<ProblemTypeDto> paginationAssembler;
 
 	@Autowired
-	public ProblemTypeController(ProblemTypeService problemTypeService, DtoEntityConverter modelConverter) {
+	public ProblemTypeController(ProblemTypeService problemTypeService, DtoEntityConverter modelConverter, PagedResourcesAssembler<ProblemTypeDto> paginationAssembler) {
 		this.problemTypeService = problemTypeService;
 		this.modelConverter = modelConverter;
+		this.paginationAssembler = paginationAssembler;
 	}
 
 	public static ProblemTypeListDto createProblemTypeDtoList(Stream<ProblemType> stream) {
@@ -84,12 +88,11 @@ public class ProblemTypeController {
 	}
 
 	@GetMapping("/")
-	public HttpEntity<ProblemTypeListDto> getProblemTypes(@RequestParam(required = false) Integer page,
+	public HttpEntity<?> getProblemTypes(@RequestParam(required = false) Integer page,
 			@RequestParam(required = false) Integer size) {
-		return new ResponseEntity<>(
-				createProblemTypeDtoList(
-						problemTypeService.findAll(RestUtils.getPageableFromRequestParams(page, size)).stream()),
-				HttpStatus.OK);
+		// Generate Pageable
+		Pageable p = RestUtils.getPageableFromRequestParams(page, size);
+		return new ResponseEntity<>(paginationAssembler.toModel(modelConverter.convertPage(problemTypeService.findAll(p), p)), HttpStatus.OK);
 	}
 
 	@GetMapping("/{id}")
