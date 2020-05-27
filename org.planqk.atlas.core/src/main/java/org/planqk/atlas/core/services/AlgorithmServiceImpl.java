@@ -28,6 +28,7 @@ import org.planqk.atlas.core.model.AlgoRelationType;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.model.Tag;
+import org.planqk.atlas.core.model.exceptions.NotFoundException;
 import org.planqk.atlas.core.repository.AlgorithmRelationRepository;
 import org.planqk.atlas.core.repository.AlgorithmRepository;
 import org.slf4j.Logger;
@@ -51,6 +52,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 
 	private TagService tagService;
 	private ProblemTypeService problemTypeService;
+	private AlgoRelationTypeService algoRelationTypeService;
 
 	@Override
 	public Algorithm save(Algorithm algorithm) {
@@ -104,13 +106,13 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 		return algorithmRepository.findAll(pageable);
 	}
 
-  @Override
-  public Optional<Algorithm> findById(UUID algoId) {
-      return algorithmRepository.findById(algoId);
-  }
+	@Override
+	public Optional<Algorithm> findById(UUID algoId) {
+	    return algorithmRepository.findById(algoId);
+	}
 
 	@Override
-	public AlgorithmRelation addUpdateAlgorithmRelation(UUID algoId, AlgorithmRelation relation) {
+	public AlgorithmRelation addUpdateAlgorithmRelation(UUID algoId, AlgorithmRelation relation) throws NotFoundException {
 		// Read involved Algorithms from database
 		Optional<Algorithm> sourceAlgorithmOpt = findById(relation.getSourceAlgorithm().getId());
 		Optional<Algorithm> targetAlgorithmOpt = findById(relation.getTargetAlgorithm().getId());
@@ -118,17 +120,21 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 				.findById(relation.getAlgoRelationType().getId());
 
 		// If one of the algorithms does not exist
-		if (sourceAlgorithmOpt.isEmpty() || targetAlgorithmOpt.isEmpty() || relationTypeOpt.isEmpty()) {
-			// TODO: Implement exception handling
-			return null;
+		if (sourceAlgorithmOpt.isEmpty()) {
+			LOG.info("Trying to add algorithmRelation for non-existing source algorithm.");
+			throw new NotFoundException("Could not add algorithmRelation to non-existing source algorithm.");
+		} else if (targetAlgorithmOpt.isEmpty()) {
+			LOG.info("Trying to add algorithmRelation for non-existing target algorithm.");
+			throw new NotFoundException("Could not add algorithmRelation to non-existing target algorithm.");
 		}
 
 		// Get Algorithms
 		Algorithm sourceAlgorithm = sourceAlgorithmOpt.get();
 		Algorithm targetAlgorithm = targetAlgorithmOpt.get();
-		AlgoRelationType relationType = relationTypeOpt.get();
+		AlgoRelationType relationType = relationTypeOpt.isEmpty() ? algoRelationTypeService.save(relation.getAlgoRelationType())
+				: relationTypeOpt.get();
 
-		// Check if relation with those two algorithms already exists
+		// Check if relation with those two algorithms and the relation type already exists
 		Optional<AlgorithmRelation> persistedRelationOpt = algorithmRelationRepository
 				.findBySourceAlgorithmIdAndTargetAlgorithmIdAndAlgoRelationTypeId(
 						sourceAlgorithm.getId(), targetAlgorithm.getId(), relationType.getId());

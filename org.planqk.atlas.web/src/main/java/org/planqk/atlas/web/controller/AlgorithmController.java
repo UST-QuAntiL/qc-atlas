@@ -29,6 +29,7 @@ import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.model.Tag;
+import org.planqk.atlas.core.model.exceptions.NotFoundException;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
@@ -197,7 +198,8 @@ public class AlgorithmController {
     }
 
     @PutMapping("/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS)
-    public HttpEntity<AlgorithmRelationDto> updateAlgorithmRelation(@PathVariable UUID sourceAlgorithm_id, @Validated @RequestBody AlgorithmRelationDto relation) {
+    public HttpEntity<AlgorithmRelationDto> updateAlgorithmRelation(@PathVariable UUID sourceAlgorithm_id,
+    		@Validated @RequestBody AlgorithmRelationDto relation) throws NotFoundException {
         LOG.debug("Post to add algorithm relation received.");
 
         // store and return algorithm
