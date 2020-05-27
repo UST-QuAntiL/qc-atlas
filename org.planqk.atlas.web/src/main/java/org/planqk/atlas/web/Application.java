@@ -56,4 +56,14 @@ public class Application extends SpringBootServletInitializer {
                 "===================================================";
         LOG.info(readyMessage);
     }
+
+    /**
+     * Launch the embedded Tomcat server.
+     *
+     * See `application.properties` for its configuration.
+     * @param args
+     */
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
+    }
 }

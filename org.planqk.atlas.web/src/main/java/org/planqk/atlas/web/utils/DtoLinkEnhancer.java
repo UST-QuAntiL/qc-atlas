@@ -5,10 +5,17 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import org.planqk.atlas.core.model.AlgoRelationType;
 import org.planqk.atlas.core.model.Algorithm;
-import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.web.Constants;
-import org.planqk.atlas.web.controller.*;
-import org.planqk.atlas.web.dtos.*;
+import org.planqk.atlas.web.controller.AlgoRelationTypeController;
+import org.planqk.atlas.web.controller.AlgorithmController;
+import org.planqk.atlas.web.controller.ImplementationController;
+import org.planqk.atlas.web.controller.TagController;
+import org.planqk.atlas.web.dtos.AlgoRelationTypeDto;
+import org.planqk.atlas.web.dtos.AlgoRelationTypeListDto;
+import org.planqk.atlas.web.dtos.AlgorithmDto;
+import org.planqk.atlas.web.dtos.AlgorithmListDto;
+import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
+import org.planqk.atlas.web.dtos.TagDto;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -39,11 +46,6 @@ public class DtoLinkEnhancer {
 		dto.add(linkTo(methodOn(TagController.class).getAlgorithmsOfTag(dto.getId())).withRel(Constants.ALGORITHMS));
 		dto.add(linkTo(methodOn(TagController.class).getImplementationsOfTag(dto.getId()))
 				.withRel(Constants.IMPLEMENTATIONS));
-	}
-
-	public void addLinks(PublicationDto dto) {
-		dto.add(linkTo(methodOn(PublicationController.class).getPublication(dto.getId())).withSelfRel());
-
 	}
 	
 	public void addLinks(AlgoRelationTypeDto dto) {

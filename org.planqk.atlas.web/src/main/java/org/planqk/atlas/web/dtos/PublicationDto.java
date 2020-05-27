@@ -19,4 +19,26 @@ public class PublicationDto extends RepresentationModel<PublicationDto> {
     private URL url;
     private List<String> authors;
 
+    public static final class Converter {
+
+        public static PublicationDto convert(final Publication object) {
+            final PublicationDto dto = new PublicationDto();
+            dto.setId(object.getId());
+            dto.setTitle(object.getTitle());
+            dto.setAuthors(object.getAuthors());
+            dto.setUrl(object.getUrl());
+            dto.setDoi(object.getDoi());
+            return dto;
+        }
+
+        public static Publication convert(final PublicationDto object) {
+            final Publication publication = new Publication();
+            publication.setId(object.getId());
+            publication.setTitle(object.getTitle());
+            publication.setAuthors(object.getAuthors());
+            publication.setUrl(object.getUrl());
+            publication.setDoi(object.getDoi());
+            return publication;
+        }
+    }
 }
