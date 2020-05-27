@@ -101,6 +101,10 @@ local.properties
 
 ### Maven template
 target/
+# Include child dirs target directory.
+# Seems to be mandatory in the '.dockerignore'
+*/target/
+
 pom.xml.tag
 pom.xml.releaseBackup
 pom.xml.versionsBackup
