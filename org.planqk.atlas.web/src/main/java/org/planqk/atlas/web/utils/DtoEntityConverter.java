@@ -4,21 +4,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.modelmapper.ModelMapper;
-import org.planqk.atlas.core.model.AlgoRelationType;
-import org.planqk.atlas.core.model.Algorithm;
-import org.planqk.atlas.core.model.AlgorithmRelation;
-import org.planqk.atlas.core.model.ClassicAlgorithm;
-import org.planqk.atlas.core.model.ProblemType;
-import org.planqk.atlas.core.model.QuantumAlgorithm;
-import org.planqk.atlas.core.model.Tag;
-import org.planqk.atlas.web.dtos.AlgoRelationTypeDto;
-import org.planqk.atlas.web.dtos.AlgorithmDto;
-import org.planqk.atlas.web.dtos.AlgorithmListDto;
-import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
-import org.planqk.atlas.web.dtos.ClassicAlgorithmDto;
-import org.planqk.atlas.web.dtos.ProblemTypeDto;
-import org.planqk.atlas.web.dtos.QuantumAlgorithmDto;
-import org.planqk.atlas.web.dtos.TagDto;
+import org.planqk.atlas.core.model.*;
+import org.planqk.atlas.web.dtos.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
@@ -107,4 +94,16 @@ public class DtoEntityConverter {
 	public ProblemTypeDto convert(ProblemType entity) {
 		return modelMapper.map(entity, ProblemTypeDto.class);
 	}
+
+	public Publication convert(PublicationDto dto) {
+		return modelMapper.map(dto, Publication.class);
+	}
+
+	public PublicationDto convert(Publication entity) {
+		PublicationDto dto;
+		dto = modelMapper.map(entity, PublicationDto.class);
+		linkEnhancer.addLinks(dto);
+		return dto;
+	}
+
 }
