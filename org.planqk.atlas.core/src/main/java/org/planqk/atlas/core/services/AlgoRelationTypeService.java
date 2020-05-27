@@ -1,5 +1,6 @@
 package org.planqk.atlas.core.services;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -20,9 +21,8 @@ public interface AlgoRelationTypeService {
 	
 	Optional<AlgoRelationType> findById(UUID id);
 	
-	Optional<AlgoRelationType> findByName(String name);
+	Optional<List<AlgoRelationType>> findByName(String name);
 	
 	Page<AlgoRelationType> findAll(Pageable pageable);
 	
-	Set<AlgoRelationType> createOrUpdateAll(Set<AlgoRelationType> algoRelationTypes);
 }

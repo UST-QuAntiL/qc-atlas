@@ -1,5 +1,6 @@
 package org.planqk.atlas.core.services;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -62,36 +63,13 @@ public class AlgoRelationTypeServiceImpl implements AlgoRelationTypeService {
 	}
 
 	@Override
-	public Optional<AlgoRelationType> findByName(String name) {
+	public Optional<List<AlgoRelationType>> findByName(String name) {
 		return Objects.isNull(name) ? Optional.empty() : repo.findByName(name);
 	}
 
 	@Override
 	public Page<AlgoRelationType> findAll(Pageable pageable) {
 		return repo.findAll(pageable);
-	}
-
-	@Override
-	public Set<AlgoRelationType> createOrUpdateAll(Set<AlgoRelationType> algoRelationTypes) {
-		Set<AlgoRelationType> types = algoRelationTypes;
-		// Go Iterate all types
-		for (AlgoRelationType type : algoRelationTypes) {
-			types.remove(type);
-			// Check for type in database
-			Optional<AlgoRelationType> typeOpt = findById(type.getId());
-			// If Type exists
-			if (typeOpt.isPresent()) {
-				// Update fields
-				AlgoRelationType persistedType = typeOpt.get();
-				persistedType.setName(type.getName());
-				// Reference database type to set
-				type = save(persistedType);
-			} else {
-				type = save(type);
-			}
-			types.add(type);
-		}
-		return types;
 	}
 
 }
