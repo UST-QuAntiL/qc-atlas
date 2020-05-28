@@ -1,6 +1,7 @@
 package org.planqk.atlas.core.services;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -48,7 +49,7 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
 
 	@Override
 	public void delete(UUID id) throws SqlConsistencyException, NoContentException {
-		if (repo.findById(id).isEmpty()) {
+		if (Objects.isNull(id) || repo.findById(id).isEmpty()) {
 			throw new NoContentException(NOT_FOUND_MSG);
 		}
 		if (algRepo.countAlgorithmsUsingProblemType(id) > 0) {
@@ -60,7 +61,7 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
 
 	@Override
 	public ProblemType findById(UUID id) throws NotFoundException {
-		Optional<ProblemType> problemTypeOpt = repo.findById(id);
+		Optional<ProblemType> problemTypeOpt = Objects.isNull(id) ? Optional.empty() : repo.findById(id);
 		if (problemTypeOpt.isEmpty())
 			throw new NotFoundException(NOT_FOUND_MSG);
 		return problemTypeOpt.get();
@@ -68,7 +69,7 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
 
 	@Override
 	public ProblemType findByName(String name) throws NotFoundException {
-		Optional<ProblemType> problemTypeOpt = repo.findByName(name);
+		Optional<ProblemType> problemTypeOpt = Objects.isNull(name) ? Optional.empty() : repo.findByName(name);
 		if (problemTypeOpt.isEmpty())
 			throw new NotFoundException(NOT_FOUND_MSG);
 		return problemTypeOpt.get();
