@@ -79,31 +79,39 @@ public class DtoEntityConverter {
 		linkEnhancer.addLinks(dto);
 		return dto;
 	}
-	
+
 	public AlgorithmRelation convert(AlgorithmRelationDto dto) {
 		return modelMapper.map(dto, AlgorithmRelation.class);
 	}
-	
+
 	public AlgorithmRelationDto convert(AlgorithmRelation entity) {
 		return modelMapper.map(entity, AlgorithmRelationDto.class);
 	}
-	
+
 	public AlgoRelationType convert(AlgoRelationTypeDto dto) {
 		return modelMapper.map(dto, AlgoRelationType.class);
 	}
-	
+
 	public AlgoRelationTypeDto convert(AlgoRelationType entity) {
 		AlgoRelationTypeDto dto = modelMapper.map(entity, AlgoRelationTypeDto.class);
 		linkEnhancer.addLinks(dto);
 		return dto;
 	}
 	
+	public <D, T> Set<D> convertSet(Set<T> entities, Class<D> dtoClass) {
+		Set<D> resultSet = new HashSet<D>();
+		for (T entity: entities) {
+			resultSet.add(convert(entity, dtoClass));
+		}
+		return resultSet;
+	}
+
 	public <D, T> Page<D> convertPage(Page<T> entities, Class<D> dtoClass) {
-	    return entities.map(objectEntity -> modelMapper.map(objectEntity, dtoClass));
-	} 
-	
+		return entities.map(objectEntity -> modelMapper.map(objectEntity, dtoClass));
+	}
+
 	public <D, T> D convert(final T entity, Class<D> outClass) {
-        return modelMapper.map(entity, outClass);
-    }
+		return modelMapper.map(entity, outClass);
+	}
 
 }

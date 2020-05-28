@@ -1,19 +1,13 @@
 package org.planqk.atlas.web.controller;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
-
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.model.exceptions.SqlConsistencyException;
 import org.planqk.atlas.core.services.ProblemTypeService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.ProblemTypeDto;
-import org.planqk.atlas.web.dtos.ProblemTypeListDto;
 import org.planqk.atlas.web.linkassembler.ProblemTypeAssembler;
 import org.planqk.atlas.web.utils.DtoEntityConverter;
 import org.planqk.atlas.web.utils.RestUtils;
@@ -51,19 +45,6 @@ public class ProblemTypeController {
 	private PagedResourcesAssembler<ProblemTypeDto> paginationAssembler;
 	@Autowired
 	private ProblemTypeAssembler problemTypeAssembler;
-
-	public static ProblemTypeListDto createProblemTypeDtoList(Stream<ProblemType> stream) {
-		ProblemTypeListDto problemTypeListDto = new ProblemTypeListDto();
-		problemTypeListDto
-				.add(stream.map(problemType -> createProblemTypeDto(problemType)).collect(Collectors.toList()));
-		return problemTypeListDto;
-	}
-
-	public static ProblemTypeDto createProblemTypeDto(ProblemType problemType) {
-		ProblemTypeDto dto = ProblemTypeDto.Converter.convert(problemType);
-		dto.add(linkTo(methodOn(ProblemTypeController.class).getProblemTypeById(problemType.getId())).withSelfRel());
-		return dto;
-	}
 
 	@PostMapping("/")
 	public HttpEntity<EntityModel<ProblemTypeDto>> createProblemType(@Validated @RequestBody ProblemTypeDto problemTypeDto) {

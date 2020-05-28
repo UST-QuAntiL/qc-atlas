@@ -4,7 +4,9 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.UUID;
 
 import org.planqk.atlas.web.controller.ProblemTypeController;
@@ -48,6 +50,17 @@ public class ProblemTypeAssembler implements SimpleRepresentationModelAssembler<
 		EntityModel<ProblemTypeDto> entityModel = new EntityModel<ProblemTypeDto>(dto);
 		addLinks(entityModel);
 		return entityModel;
+	}
+	
+	public CollectionModel<EntityModel<ProblemTypeDto>> generateCollectionModel(Set<ProblemTypeDto> dtos) {
+		// Create EntityModel and fill each with links
+		Collection<EntityModel<ProblemTypeDto>> dtoCollection = new HashSet<EntityModel<ProblemTypeDto>>();
+		for (ProblemTypeDto dto: dtos) {
+			dtoCollection.add(generateEntityModel(dto));
+		}
+		// Return CollectionModel
+		CollectionModel<EntityModel<ProblemTypeDto>> resources = new CollectionModel<>(dtoCollection);	
+		return resources;
 	}
 
 	private UUID getId(EntityModel<ProblemTypeDto> resource) {
