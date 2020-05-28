@@ -82,7 +82,7 @@ public class ProblemTypeController {
 		// Convert DTO to Entity
 		ProblemType entityInput = modelConverter.convert(problemTypeDto, ProblemType.class);
 		// Update Entity
-		ProblemType updatedEntity = problemTypeService.save(entityInput);
+		ProblemType updatedEntity = problemTypeService.update(id, entityInput);
 		// Convert Entity to DTO
 		ProblemTypeDto dtoOutput = modelConverter.convert(updatedEntity, ProblemTypeDto.class);
 		return new ResponseEntity<>(problemTypeAssembler.generateEntityModel(dtoOutput), HttpStatus.OK);
