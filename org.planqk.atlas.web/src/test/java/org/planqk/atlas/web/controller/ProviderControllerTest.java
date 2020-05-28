@@ -26,15 +26,21 @@ import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.planqk.atlas.core.model.Provider;
 import org.planqk.atlas.core.services.ProviderService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.ProviderDto;
 import org.planqk.atlas.web.dtos.ProviderListDto;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -51,31 +57,20 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
+@WebMvcTest(controllers = {ProviderController.class})
+@ExtendWith({MockitoExtension.class})
+@AutoConfigureMockMvc
 public class ProviderControllerTest {
 
-    @Mock
+    @MockBean
     private ProviderService providerService;
 
-    private ProviderController providerController;
-
+    @Autowired
     private MockMvc mockMvc;
 
     private int page = 0;
     private int size = 2;
     private Pageable pageable = PageRequest.of(page, size);
-
-    @BeforeEach
-    public void initialize() {
-        MockitoAnnotations.initMocks(this);
-        this.providerController = new ProviderController(providerService);
-        mockMvc = MockMvcBuilders.standaloneSetup(providerController).build();
-    }
-
-    @Test
-    public void setupTest() {
-        assertNotNull(mockMvc);
-    }
 
     @Test
     public void getProviders_withoutPagination() throws Exception {

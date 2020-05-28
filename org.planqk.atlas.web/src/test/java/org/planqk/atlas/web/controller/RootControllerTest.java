@@ -20,11 +20,16 @@
 package org.planqk.atlas.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import javax.persistence.criteria.Root;
+import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
 import org.planqk.atlas.web.Constants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.MediaType;
@@ -32,42 +37,29 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
+@WebMvcTest(RootController.class)
+@AutoConfigureMockMvc
 public class RootControllerTest {
 
-    private RootController rootController;
-
+    @Autowired
     private MockMvc mockMvc;
-
-    @BeforeEach
-    public void before() {
-        this.rootController = new RootController();
-        mockMvc = MockMvcBuilders.standaloneSetup(rootController).build();
-    }
-
-    @Test
-    public void contextLoaded() throws Exception {
-        assertThat(rootController).isNotNull();
-    }
 
     @Test
     public void testGetHateoasLinks() throws Exception {
-
         MvcResult result = mockMvc.perform(get("/").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
-        RepresentationModel response = new ObjectMapper().readValue(result.getResponse().getContentAsString(), RepresentationModel.class);
-        assertTrue(response.getLinks().hasSize(4L));
-
-        assertTrue(response.getLinks().hasLink("self"));
-        assertTrue(response.getLinks().hasLink(Constants.ALGORITHMS));
-        assertTrue(response.getLinks().hasLink(Constants.PROVIDERS));
-        assertTrue(response.getLinks().hasLink(Constants.TAGS));
-        assertFalse(response.getLinks().hasLink("randomLink"));
+        var responseObject = new JSONObject(result.getResponse().getContentAsString());
+        var linkArray = responseObject.getJSONObject("_links");
+        assertEquals(4, linkArray.length());
+        assertTrue(linkArray.has("self"));
+        assertTrue(linkArray.has(Constants.ALGORITHMS));
+        assertTrue(linkArray.has(Constants.PROVIDERS));
+        assertTrue(linkArray.has(Constants.TAGS));
+        assertFalse(linkArray.has("randomLink"));
     }
 }

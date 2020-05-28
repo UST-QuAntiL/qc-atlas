@@ -28,15 +28,20 @@ import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.web.dtos.ImplementationDto;
 import org.planqk.atlas.web.dtos.ImplementationListDto;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
@@ -57,31 +62,25 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.fromMethodCall;
 import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.on;
 
-@SpringBootTest
+@WebMvcTest(controllers = {ImplementationController.class})
+@ExtendWith({MockitoExtension.class})
+@AutoConfigureMockMvc
 public class ImplementationControllerTest {
 
-    @Mock
+    @MockBean
     private AlgorithmService algorithmService;
-    @Mock
+    @MockBean
     private ImplementationService implementationService;
 
-    private ImplementationController implementationController;
+    @Autowired
+    private MockMvc mockMvc;
 
     private ObjectMapper objectMapper = new ObjectMapper();
-    private MockMvc mockMvc;
     private UriComponentsBuilder uriBuilder;
 
     @BeforeEach
     public void initialize() {
-        MockitoAnnotations.initMocks(this);
-        this.implementationController = new ImplementationController(implementationService, algorithmService);
-        mockMvc = MockMvcBuilders.standaloneSetup(implementationController).build();
         uriBuilder = UriComponentsBuilder.fromPath("/");
-    }
-
-    @Test
-    public void setupTest() {
-        assertNotNull(mockMvc);
     }
 
     @Test

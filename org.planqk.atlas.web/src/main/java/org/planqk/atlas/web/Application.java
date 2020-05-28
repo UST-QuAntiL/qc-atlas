@@ -34,7 +34,6 @@ import org.springframework.scheduling.annotation.EnableAsync;
 
 @EnableAsync
 @SpringBootApplication(scanBasePackages = "org.planqk.atlas.*")
-@EnableJpaRepositories("org.planqk.atlas.*")
 @EntityScan("org.planqk.atlas.*")
 @OpenAPIDefinition(
         info = @Info(

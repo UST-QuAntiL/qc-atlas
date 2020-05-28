@@ -19,9 +19,13 @@
 
 package org.planqk.atlas.web.dtos;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
+import java.util.Map;
 import org.planqk.atlas.core.model.Qpu;
 
 import lombok.Getter;
@@ -38,5 +42,17 @@ public class QpuListDto extends RepresentationModel<QpuListDto> {
 
     public void add(final QpuDto... qpu) {
         this.qpuDtoList.addAll(Arrays.asList(qpu));
+    }
+
+    private Map<String, Object> otherData = new HashMap<>();
+
+    @JsonAnyGetter
+    public Map<String, Object> getOtherJsonData() {
+        return otherData;
+    }
+
+    @JsonAnySetter
+    public void setOtherJsonData(String key, Object value) {
+        otherData.put(key, value);
     }
 }

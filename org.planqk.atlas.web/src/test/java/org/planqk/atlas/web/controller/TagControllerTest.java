@@ -25,15 +25,21 @@ import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.services.TagService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.TagDto;
 import org.planqk.atlas.web.dtos.TagListDto;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -50,27 +56,17 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
+@WebMvcTest(controllers = {TagController.class})
+@ExtendWith({MockitoExtension.class})
+@AutoConfigureMockMvc
 public class TagControllerTest {
 
-    @Mock
+    @MockBean
     private TagService tagService;
 
-    private TagController tagController;
-
+    @Autowired
     private MockMvc mockMvc;
 
-    @BeforeEach
-    public void before() {
-        MockitoAnnotations.initMocks(this);
-        this.tagController = new TagController(tagService);
-        mockMvc = MockMvcBuilders.standaloneSetup(tagController).build();
-    }
-
-    @Test
-    public void contextLoaded() throws Exception {
-        assertThat(tagController).isNotNull();
-    }
 
     private Tag getTestTag() {
         UUID tagId = UUID.randomUUID();

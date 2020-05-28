@@ -19,9 +19,9 @@
 
 package org.planqk.atlas.web.dtos;
 
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.planqk.atlas.core.model.Algorithm;
@@ -58,6 +58,18 @@ public class AlgorithmDto extends RepresentationModel<AlgorithmDto> {
     // annotate this for swagger as well, because swagger doesn't recognize the json property annotation
     @Schema(accessMode = WRITE_ONLY)
     private Set<TagDto> tags;
+
+    private Map<String, Object> otherData = new HashMap<>();
+
+    @JsonAnyGetter
+    public Map<String, Object> getOtherJsonData() {
+        return otherData;
+    }
+
+    @JsonAnySetter
+    public void setOtherJsonData(String key, Object value) {
+        otherData.put(key, value);
+    }
 
     public static final class Converter {
 

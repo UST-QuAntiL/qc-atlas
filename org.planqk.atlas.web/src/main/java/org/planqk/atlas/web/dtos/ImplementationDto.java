@@ -19,7 +19,11 @@
 
 package org.planqk.atlas.web.dtos;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
@@ -50,6 +54,18 @@ public class ImplementationDto extends RepresentationModel<ImplementationDto> {
     private String assumptions;
     private String parameter;
     private String dependencies;
+
+    private Map<String, Object> otherData = new HashMap<>();
+
+    @JsonAnyGetter
+    public Map<String, Object> getOtherJsonData() {
+        return otherData;
+    }
+
+    @JsonAnySetter
+    public void setOtherJsonData(String key, Object value) {
+        otherData.put(key, value);
+    }
 
     public static final class Converter {
 
