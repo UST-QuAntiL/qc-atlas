@@ -43,4 +43,7 @@ public interface AlgorithmService {
     Page<Algorithm> findAll(Pageable pageable);
 
     Optional<Algorithm> findById(UUID algoId);
+
+	AlgorithmRelation addUpdateAlgorithmRelation(UUID sourceAlgorithm_id, AlgorithmRelation relation)
+			throws NotFoundException;
 }
