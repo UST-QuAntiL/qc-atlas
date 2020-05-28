@@ -1,12 +1,13 @@
 package org.planqk.atlas.core.services;
 
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.ProblemType;
+import org.planqk.atlas.core.model.exceptions.NoContentException;
+import org.planqk.atlas.core.model.exceptions.NotFoundException;
 import org.planqk.atlas.core.model.exceptions.SqlConsistencyException;
 import org.planqk.atlas.core.repository.AlgorithmRepository;
 import org.planqk.atlas.core.repository.ProblemTypeRepository;
@@ -22,6 +23,8 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ProblemTypeServiceImpl.class);
 
+	private static final String NOT_FOUND_MSG = "The searched problem type does not exist!";
+
 	@Autowired
 	private ProblemTypeRepository repo;
 	@Autowired
@@ -33,24 +36,21 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
 	}
 
 	@Override
-	public ProblemType update(UUID id, ProblemType problemType) {
-		// Check for type in database
-		Optional<ProblemType> typeOpt = findById(id);
-		// If Type exists
-		if (typeOpt.isPresent()) {
-			// Update fields
-			ProblemType persistedType = typeOpt.get();
-			persistedType.setName(problemType.getName());
-			persistedType.setParentProblemType(problemType.getParentProblemType());
-			// Reference database type to set
-			return save(persistedType);
-		}
-		// TODO: Exception handling
-		return null;
+	public ProblemType update(UUID id, ProblemType problemType) throws NotFoundException {
+		// Get existing ProblemType if it exists
+		ProblemType persistedType = findById(id);
+		// Update fields
+		persistedType.setName(problemType.getName());
+		persistedType.setParentProblemType(problemType.getParentProblemType());
+		// Save and return updated object
+		return save(persistedType);
 	}
 
 	@Override
-	public void delete(UUID id) throws SqlConsistencyException {
+	public void delete(UUID id) throws SqlConsistencyException, NoContentException {
+		if (repo.findById(id).isEmpty()) {
+			throw new NoContentException(NOT_FOUND_MSG);
+		}
 		if (algRepo.countAlgorithmsUsingProblemType(id) > 0) {
 			LOG.info("Trying to delete ProblemType that is used by at least 1 algorithm");
 			throw new SqlConsistencyException("Cannot delete ProbemType, since it is used by existing algorithms!");
@@ -59,13 +59,19 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
 	}
 
 	@Override
-	public Optional<ProblemType> findById(UUID id) {
-		return Objects.isNull(id) ? Optional.empty() : repo.findById(id);
+	public ProblemType findById(UUID id) throws NotFoundException {
+		Optional<ProblemType> problemTypeOpt = repo.findById(id);
+		if (problemTypeOpt.isEmpty())
+			throw new NotFoundException(NOT_FOUND_MSG);
+		return problemTypeOpt.get();
 	}
 
 	@Override
-	public Optional<ProblemType> findByName(String name) {
-		return Objects.isNull(name) ? Optional.empty() : repo.findByName(name);
+	public ProblemType findByName(String name) throws NotFoundException {
+		Optional<ProblemType> problemTypeOpt = repo.findByName(name);
+		if (problemTypeOpt.isEmpty())
+			throw new NotFoundException(NOT_FOUND_MSG);
+		return problemTypeOpt.get();
 	}
 
 	@Override
@@ -79,18 +85,16 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
 		// Go Iterate all types
 		for (ProblemType type : algorithmTypes) {
 			// Check for type in database
-			Optional<ProblemType> typeOpt = findById(type.getId());
-			// If Type exists
-			if (typeOpt.isPresent()) {
-				// Update fields
-				ProblemType persistedType = typeOpt.get();
+			try {
+				ProblemType persistedType = findById(type.getId());
 				persistedType.setName(type.getName());
 				persistedType.setParentProblemType(type.getParentProblemType());
 				// Reference database type to set
 				types.add(save(persistedType));
+			} catch (NotFoundException e) {
+				// If Type does not exist --> Create one
+				types.add(save(type));
 			}
-			// If Type does not exist --> Create one
-			types.add(save(type));
 		}
 
 		return types;

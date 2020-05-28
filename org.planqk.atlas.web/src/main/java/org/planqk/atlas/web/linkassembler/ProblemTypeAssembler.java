@@ -11,6 +11,8 @@ import java.util.UUID;
 
 import org.planqk.atlas.web.controller.ProblemTypeController;
 import org.planqk.atlas.web.dtos.ProblemTypeDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.SimpleRepresentationModelAssembler;
@@ -18,6 +20,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ProblemTypeAssembler implements SimpleRepresentationModelAssembler<ProblemTypeDto> {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(ProblemTypeAssembler.class);
 
 	@Override
 	public void addLinks(EntityModel<ProblemTypeDto> resource) {
@@ -30,7 +34,7 @@ public class ProblemTypeAssembler implements SimpleRepresentationModelAssembler<
 			resource.add(
 					linkTo(methodOn(ProblemTypeController.class).deleteProblemType(getId(resource))).withRel("delete"));
 		} catch (Exception e) {
-			// TODO: Exception handling
+			LOG.error(e.getMessage(), e);
 		}
 	}
 
