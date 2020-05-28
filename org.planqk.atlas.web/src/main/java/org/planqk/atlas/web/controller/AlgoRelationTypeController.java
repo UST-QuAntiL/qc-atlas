@@ -9,6 +9,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.planqk.atlas.core.model.AlgoRelationType;
+import org.planqk.atlas.core.model.exceptions.NotFoundException;
+import org.planqk.atlas.core.model.exceptions.SqlConsistencyException;
 import org.planqk.atlas.core.services.AlgoRelationTypeService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.AlgoRelationTypeDto;
@@ -63,13 +65,13 @@ public class AlgoRelationTypeController {
 
 	@PutMapping("/{id}")
 	public HttpEntity<AlgoRelationTypeDto> updateAlgoRelationType(@PathVariable UUID id,
-			@Validated @RequestBody AlgoRelationTypeDto algoRelationTypeDto) {
+			@Validated @RequestBody AlgoRelationTypeDto algoRelationTypeDto) throws NotFoundException {
 		AlgoRelationType algoRelation = algoRelationTypeService.update(id, modelConverter.convert(algoRelationTypeDto));
 		return new ResponseEntity<>(modelConverter.convert(algoRelation), HttpStatus.OK);
 	}
 	
 	@DeleteMapping("/{id}")
-	public HttpEntity<AlgoRelationTypeDto> deleteAlgoRelationType(@PathVariable UUID id) {
+	public HttpEntity<AlgoRelationTypeDto> deleteAlgoRelationType(@PathVariable UUID id) throws SqlConsistencyException {
 		if (algoRelationTypeService.findById(id).isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}

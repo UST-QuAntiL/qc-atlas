@@ -24,6 +24,7 @@ import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
+import org.planqk.atlas.core.model.exceptions.NotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -31,13 +32,12 @@ public interface AlgorithmService {
 
     Algorithm save(Algorithm algorithm);
 
-    Algorithm update(UUID id, Algorithm algorithm);
+    Algorithm update(UUID id, Algorithm algorithm) throws NotFoundException;
 
-    void delete(UUID id);
+    void delete(UUID id) throws NotFoundException;
 
-    AlgorithmRelation addUpdateAlgorithmRelation(UUID algoId, AlgorithmRelation relation);
 
-    boolean deleteAlgorithmRelation(UUID algoId, UUID relationId);
+    boolean deleteAlgorithmRelation(UUID algoId, UUID relationId) throws NotFoundException;
 
     Page<Algorithm> findAll(Pageable pageable);
 
