@@ -1,8 +1,6 @@
 package org.planqk.atlas.web.utils;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.modelmapper.ModelMapper;
@@ -10,7 +8,6 @@ import org.planqk.atlas.core.model.AlgoRelationType;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
-import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.model.QuantumAlgorithm;
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.web.dtos.AlgoRelationTypeDto;
@@ -18,13 +15,10 @@ import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.AlgorithmListDto;
 import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
 import org.planqk.atlas.web.dtos.ClassicAlgorithmDto;
-import org.planqk.atlas.web.dtos.ProblemTypeDto;
 import org.planqk.atlas.web.dtos.QuantumAlgorithmDto;
 import org.planqk.atlas.web.dtos.TagDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -104,28 +98,12 @@ public class DtoEntityConverter {
 		return dto;
 	}
 	
-	public ProblemType convert(ProblemTypeDto dto) {
-		return modelMapper.map(dto, ProblemType.class);
-	}
+	public <D, T> Page<D> convertPage(Page<T> entities, Class<D> dtoClass) {
+	    return entities.map(objectEntity -> modelMapper.map(objectEntity, dtoClass));
+	} 
 	
-	public ProblemTypeDto convert(ProblemType entity) {
-		ProblemTypeDto dto = modelMapper.map(entity, ProblemTypeDto.class);
-		linkEnhancer.addLinks(dto);
-		return dto;
-	}
-	
-	public Page<ProblemTypeDto> convertPage(Page<ProblemType> entities, Pageable p) {
-		return new PageImpl<ProblemTypeDto>(convertPage(entities.getContent()), p, entities.getTotalElements());
-	}
-	
-	public List<ProblemTypeDto> convertPage(List<ProblemType> entities) {
-		List<ProblemTypeDto> dtos = new ArrayList<ProblemTypeDto>();
-		
-		for (ProblemType entity : entities) {
-			dtos.add(convert(entity));
-		}
-		
-		return dtos;
+	public Object convert(Object source, Class<?> target) {
+		return modelMapper.map(source, target);
 	}
 
 }
