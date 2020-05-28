@@ -38,6 +38,7 @@ import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.web.dtos.ImplementationDto;
 import org.planqk.atlas.web.dtos.ImplementationListDto;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -64,7 +65,6 @@ public class ImplementationControllerTest {
     @Mock
     private ImplementationService implementationService;
 
-    @InjectMocks
     private ImplementationController implementationController;
 
     private ObjectMapper objectMapper = new ObjectMapper();
@@ -74,6 +74,7 @@ public class ImplementationControllerTest {
     @BeforeEach
     public void initialize() {
         MockitoAnnotations.initMocks(this);
+        this.implementationController = new ImplementationController(implementationService, algorithmService);
         mockMvc = MockMvcBuilders.standaloneSetup(implementationController).build();
         uriBuilder = UriComponentsBuilder.fromPath("/");
     }
@@ -104,7 +105,7 @@ public class ImplementationControllerTest {
 
         MvcResult mvcResult = mockMvc.perform(get(fromMethodCall(uriBuilder,
                 on(ImplementationController.class).getImplementations(algoId)).toUriString())
-                        .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
+                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
 
         ImplementationListDto implementationListResult = new ObjectMapper().readValue(mvcResult.getResponse().getContentAsString(), ImplementationListDto.class);
         assertEquals(implementationListResult.getImplementationDtos().stream().findFirst().get().getId(), implementation.getId());

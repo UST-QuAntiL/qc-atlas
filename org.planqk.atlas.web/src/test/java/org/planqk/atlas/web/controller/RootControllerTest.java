@@ -40,14 +40,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 public class RootControllerTest {
 
-    @InjectMocks
     private RootController rootController;
 
     private MockMvc mockMvc;
 
     @BeforeEach
     public void before() {
-        MockitoAnnotations.initMocks(this);
+        this.rootController = new RootController();
         mockMvc = MockMvcBuilders.standaloneSetup(rootController).build();
     }
 

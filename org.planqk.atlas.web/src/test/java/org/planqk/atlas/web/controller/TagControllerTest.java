@@ -56,7 +56,6 @@ public class TagControllerTest {
     @Mock
     private TagService tagService;
 
-    @InjectMocks
     private TagController tagController;
 
     private MockMvc mockMvc;
@@ -64,6 +63,7 @@ public class TagControllerTest {
     @BeforeEach
     public void before() {
         MockitoAnnotations.initMocks(this);
+        this.tagController = new TagController(tagService);
         mockMvc = MockMvcBuilders.standaloneSetup(tagController).build();
     }
 

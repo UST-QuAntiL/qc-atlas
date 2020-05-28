@@ -57,7 +57,6 @@ public class AlgorithmControllerTest {
     @Mock
     private AlgorithmService algorithmService;
 
-    @InjectMocks
     private AlgorithmController algorithmController;
 
     private MockMvc mockMvc;
@@ -69,6 +68,7 @@ public class AlgorithmControllerTest {
     @BeforeEach
     public void initialize() {
         MockitoAnnotations.initMocks(this);
+        this.algorithmController = new AlgorithmController(algorithmService);
         mockMvc = MockMvcBuilders.standaloneSetup(algorithmController).build();
     }
 

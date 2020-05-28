@@ -57,7 +57,6 @@ public class ProviderControllerTest {
     @Mock
     private ProviderService providerService;
 
-    @InjectMocks
     private ProviderController providerController;
 
     private MockMvc mockMvc;
@@ -69,6 +68,7 @@ public class ProviderControllerTest {
     @BeforeEach
     public void initialize() {
         MockitoAnnotations.initMocks(this);
+        this.providerController = new ProviderController(providerService);
         mockMvc = MockMvcBuilders.standaloneSetup(providerController).build();
     }
 
