@@ -14,21 +14,12 @@ import java.util.Set;
 @Data
 public class SoftwarePlatform extends HasId {
 
-    @Getter
-    @Setter
     private String name;
-
-    @Getter
-    @Setter
     private URL link;
-
-    @Getter
-    @Setter
     private String version;
 
-    @Getter
-    @Setter
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+    @ManyToMany(fetch = FetchType.LAZY,
+            cascade = {CascadeType.ALL})
     @JoinTable(
             name = "software_platforms_backends",
             joinColumns = @JoinColumn(name = "software_platform_id"),
@@ -36,9 +27,8 @@ public class SoftwarePlatform extends HasId {
     )
     private Set<Backend> supportedBackends = new HashSet<>();
 
-    @Getter
-    @Setter
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+    @ManyToMany(fetch = FetchType.LAZY,
+            cascade = {CascadeType.ALL})
     @JoinTable(
             name = "software_platform_cloud_services",
             joinColumns = @JoinColumn(name = "software_platform_id"),
@@ -46,4 +36,17 @@ public class SoftwarePlatform extends HasId {
     )
     private Set<CloudService> supportedCloudServices = new HashSet<>();
 
+}
+
+@Entity
+@Table(name = "backends")
+@Data
+public class Backend extends HasId {
+
+    private String name;
+
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, mappedBy = "backends")
+    private Set<SoftwarePlatform> softwarePlatforms = new HashSet<>();
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, mappedBy = "backends")
+    private Set<CloudService> cloudServices = new HashSet<>();
 }

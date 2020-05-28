@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public interface SoftwarePlatformService {
 
-    SoftwarePlatform save(SoftwarePlatform tag);
+    SoftwarePlatform save(SoftwarePlatform softwarePlatform);
 
     Page<SoftwarePlatform> findAll(Pageable pageable);
 
