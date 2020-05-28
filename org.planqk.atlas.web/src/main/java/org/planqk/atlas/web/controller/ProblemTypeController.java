@@ -68,11 +68,11 @@ public class ProblemTypeController {
 	@PostMapping("/")
 	public HttpEntity<EntityModel<ProblemTypeDto>> createProblemType(@Validated @RequestBody ProblemTypeDto problemTypeDto) {
 		// Convert DTO to Entity
-		ProblemType entityInput = (ProblemType) modelConverter.convert(problemTypeDto, ProblemType.class);
+		ProblemType entityInput = modelConverter.convert(problemTypeDto, ProblemType.class);
 		// Save Entity
 		ProblemType savedProblemType = (problemTypeService.save(entityInput));
 		// Convert Entity to DTO
-		ProblemTypeDto dtoOutput = (ProblemTypeDto) modelConverter.convert(savedProblemType, ProblemTypeDto.class);
+		ProblemTypeDto dtoOutput = modelConverter.convert(savedProblemType, ProblemTypeDto.class);
 		return new ResponseEntity<>(problemTypeAssembler.generateEntityModel(dtoOutput), HttpStatus.CREATED);
 	}
 
@@ -80,11 +80,11 @@ public class ProblemTypeController {
 	public HttpEntity<EntityModel<ProblemTypeDto>> updateProblemType(@PathVariable UUID id,
 			@Validated @RequestBody ProblemTypeDto problemTypeDto) {
 		// Convert DTO to Entity
-		ProblemType entityInput = (ProblemType) modelConverter.convert(problemTypeDto, ProblemType.class);
+		ProblemType entityInput = modelConverter.convert(problemTypeDto, ProblemType.class);
 		// Update Entity
 		ProblemType updatedEntity = problemTypeService.save(entityInput);
 		// Convert Entity to DTO
-		ProblemTypeDto dtoOutput = (ProblemTypeDto) modelConverter.convert(updatedEntity, ProblemTypeDto.class);
+		ProblemTypeDto dtoOutput = modelConverter.convert(updatedEntity, ProblemTypeDto.class);
 		return new ResponseEntity<>(problemTypeAssembler.generateEntityModel(dtoOutput), HttpStatus.OK);
 	}
 
@@ -118,7 +118,7 @@ public class ProblemTypeController {
 		Optional<ProblemType> problemTypeOpt = problemTypeService.findById(id);
 		if (problemTypeOpt.isPresent()) {
 			// Convert Entity to DTO
-			ProblemTypeDto dtoOutput = (ProblemTypeDto) modelConverter.convert(problemTypeOpt.get(), ProblemTypeDto.class);
+			ProblemTypeDto dtoOutput = modelConverter.convert(problemTypeOpt.get(), ProblemTypeDto.class);
 			return new ResponseEntity<>(problemTypeAssembler.generateEntityModel(dtoOutput), HttpStatus.OK);
 		}
 		return new ResponseEntity<>(HttpStatus.NOT_FOUND);

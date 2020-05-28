@@ -102,8 +102,8 @@ public class DtoEntityConverter {
 	    return entities.map(objectEntity -> modelMapper.map(objectEntity, dtoClass));
 	} 
 	
-	public Object convert(Object source, Class<?> target) {
-		return modelMapper.map(source, target);
-	}
+	public <D, T> D convert(final T entity, Class<D> outClass) {
+        return modelMapper.map(entity, outClass);
+    }
 
 }
