@@ -33,22 +33,27 @@ import org.planqk.atlas.core.model.exceptions.NotFoundException;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
-import org.planqk.atlas.web.dtos.AlgorithmListDto;
 import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
 import org.planqk.atlas.web.dtos.AlgorithmRelationListDto;
 import org.planqk.atlas.web.dtos.ProblemTypeDto;
-import org.planqk.atlas.web.dtos.TagListDto;
+import org.planqk.atlas.web.dtos.TagDto;
 import org.planqk.atlas.web.linkassembler.AlgorithmAssembler;
 import org.planqk.atlas.web.linkassembler.ProblemTypeAssembler;
+import org.planqk.atlas.web.linkassembler.TagAssembler;
 import org.planqk.atlas.web.utils.DtoEntityConverter;
 import org.planqk.atlas.web.utils.HateoasUtils;
+import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.RestUtils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -82,7 +87,11 @@ public class AlgorithmController {
     @Autowired
     private DtoEntityConverter modelConverter;
     @Autowired
+	private PagedResourcesAssembler<AlgorithmDto> paginationAssembler;
+    @Autowired
     private ProblemTypeAssembler problemTypeAssembler;
+    @Autowired
+    private TagAssembler tagAssembler;
     @Autowired
     private AlgorithmAssembler algorithmAssembler;
 
@@ -94,10 +103,6 @@ public class AlgorithmController {
      */
     public static AlgorithmDto createAlgorithmDto(Algorithm algorithm) {
     	AlgorithmDto dto = AlgorithmDto.Converter.convert(algorithm);
-        dto.add(linkTo(methodOn(AlgorithmController.class).getAlgorithm(algorithm.getId())).withSelfRel());
-        dto.add(linkTo(methodOn(AlgorithmController.class).getTags(algorithm.getId())).withRel(Constants.TAGS));
-        dto.add(linkTo(methodOn(ImplementationController.class).getImplementations(algorithm.getId())).withRel(Constants.IMPLEMENTATIONS));
-        dto.add(linkTo(methodOn(AlgorithmController.class).getProblemTypes(algorithm.getId())).withRel(Constants.PROBLEM_TYPES));
         return dto;
     }
 
@@ -114,39 +119,51 @@ public class AlgorithmController {
 	}
 
     @GetMapping("/")
-    public HttpEntity<AlgorithmListDto> getAlgorithms(@RequestParam(required = false) Integer page,
+    public HttpEntity<PagedModel<EntityModel<AlgorithmDto>>> getAlgorithms(@RequestParam(required = false) Integer page,
                                                       @RequestParam(required = false) Integer size) {
         LOG.debug("Get to retrieve all algorithms received.");
-        return new ResponseEntity<>(modelConverter.convert(algorithmService.findAll(RestUtils.getPageableFromRequestParams(page, size))), HttpStatus.OK);
+        // Generate Pageable
+        Pageable p = RestUtils.getPageableFromRequestParams(page, size);
+        // Get Page of DTOs
+        Page<AlgorithmDto> pageDto = ModelMapperUtils.convertPage(algorithmService.findAll(p), AlgorithmDto.class);
+        // Generate PagedModel
+        PagedModel<EntityModel<AlgorithmDto>> outputDto = paginationAssembler.toModel(pageDto);
+        algorithmAssembler.addLinks(outputDto.getContent());
+        return new ResponseEntity<>(outputDto, HttpStatus.OK);
     }
 
     @PostMapping("/")
-    public HttpEntity<AlgorithmDto> createAlgorithm(@Validated @RequestBody AlgorithmDto algo) {
+    public HttpEntity<EntityModel<AlgorithmDto>> createAlgorithm(@Validated @RequestBody AlgorithmDto algo) {
         LOG.debug("Post to create new algorithm received.");
-
         // store and return algorithm
-        Algorithm algorithm = algorithmService.save(modelConverter.convert(algo));
-
-        return new ResponseEntity<>(modelConverter.convert(algorithm), HttpStatus.CREATED);
+        Algorithm algorithm = algorithmService.save(ModelMapperUtils.convert(algo, Algorithm.class));
+        // Convert To EntityModel
+        EntityModel<AlgorithmDto> dtoOutput = HateoasUtils.generateEntityModel(ModelMapperUtils.convert(algorithm, AlgorithmDto.class));
+        // Fill EntityModel with links
+        algorithmAssembler.addLinks(dtoOutput);
+        return new ResponseEntity<>(dtoOutput, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public HttpEntity<AlgorithmDto> updateAlgorithm(@PathVariable UUID id, @Validated @RequestBody AlgorithmDto algo) throws NotFoundException {
+    public HttpEntity<EntityModel<AlgorithmDto>> updateAlgorithm(@PathVariable UUID id, @Validated @RequestBody AlgorithmDto algo) throws NotFoundException {
         LOG.debug("Put to update algorithm with id '" + id + "' received");
-        
-        return new ResponseEntity<>(modelConverter.convert(algorithmService.update(id, modelConverter.convert(algo))), HttpStatus.OK);
+        Algorithm updatedAlgorithm = algorithmService.update(id, ModelMapperUtils.convert(algo, Algorithm.class));
+        // Convert To EntityModel
+        EntityModel<AlgorithmDto> dtoOutput = HateoasUtils.generateEntityModel(ModelMapperUtils.convert(updatedAlgorithm, AlgorithmDto.class));
+        // Fill EntityModel with links
+        algorithmAssembler.addLinks(dtoOutput);
+        return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
     public HttpEntity<AlgorithmDto> deleteAlgorithm(@PathVariable UUID id) throws NotFoundException {
         LOG.debug("Delete to remove algorithm with id '" + id + "' received");
-
         algorithmService.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public HttpEntity<AlgorithmDto> getAlgorithm(@PathVariable UUID id) {
+    public HttpEntity<EntityModel<AlgorithmDto>> getAlgorithm(@PathVariable UUID id) {
         LOG.debug("Get to retrieve algorithm with id: {}.", id);
 
         Optional<Algorithm> algorithmOptional = algorithmService.findById(id);
@@ -154,21 +171,33 @@ public class AlgorithmController {
             LOG.error("Unable to retrieve algorithm with id {} from the repository.", id);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-
-        return new ResponseEntity<>(modelConverter.convert(algorithmOptional.get()), HttpStatus.OK);
+        
+        // Convert To EntityModel
+        EntityModel<AlgorithmDto> dtoOutput = HateoasUtils.generateEntityModel(ModelMapperUtils.convert(algorithmOptional.get(), AlgorithmDto.class));
+        // Fill EntityModel with links
+        algorithmAssembler.addLinks(dtoOutput);
+        
+        return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
     }
 
     @GetMapping("/{id}/" + Constants.TAGS)
-    public HttpEntity<TagListDto> getTags(@PathVariable UUID id) {
+    public HttpEntity<CollectionModel<EntityModel<TagDto>>> getTags(@PathVariable UUID id) {
         Optional<Algorithm> algorithmOptional = algorithmService.findById(id);
         if (!algorithmOptional.isPresent()) {
             LOG.error("Unable to retrieve algorithm with id {} form the repository.", id);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+        // Get Tags of Algorithm
         Set<Tag> tags = algorithmOptional.get().getTags();
-        TagListDto tagListDto = TagController.createTagDtoList(tags.stream());
-        tagListDto.add(linkTo(methodOn(AlgorithmController.class).getTags(id)).withSelfRel());
-        return new ResponseEntity<>(tagListDto, HttpStatus.OK);
+        // Translate Entity to DTO
+        Set<TagDto> dtoTags = ModelMapperUtils.convertSet(tags, TagDto.class);
+        // Create CollectionModel
+        CollectionModel<EntityModel<TagDto>> resultCollection = HateoasUtils.generateCollectionModel(dtoTags);
+        // Fill EntityModel Links
+        tagAssembler.addLinks(resultCollection);
+        // Fill Collection-Links
+        algorithmAssembler.addTagLink(resultCollection, id);
+        return new ResponseEntity<>(resultCollection, HttpStatus.OK);
     }
 
     @GetMapping("/{id}/" + Constants.PROBLEM_TYPES)
@@ -181,7 +210,7 @@ public class AlgorithmController {
         // Get ProblemTypes of Algorithm
         Set<ProblemType> problemTypes = algorithmOptional.get().getProblemTypes();
         // Translate Entity to DTO
-        Set<ProblemTypeDto> dtoTypes = modelConverter.convertSet(problemTypes, ProblemTypeDto.class);
+        Set<ProblemTypeDto> dtoTypes = ModelMapperUtils.convertSet(problemTypes, ProblemTypeDto.class);
         // Create CollectionModel
         CollectionModel<EntityModel<ProblemTypeDto>> resultCollection = HateoasUtils.generateCollectionModel(dtoTypes);
         // Fill EntityModel Links

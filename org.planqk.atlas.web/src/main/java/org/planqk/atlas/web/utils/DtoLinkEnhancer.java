@@ -4,11 +4,8 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import org.planqk.atlas.core.model.Algorithm;
-import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.AlgoRelationTypeController;
 import org.planqk.atlas.web.controller.AlgorithmController;
-import org.planqk.atlas.web.controller.ImplementationController;
-import org.planqk.atlas.web.controller.TagController;
 import org.planqk.atlas.web.dtos.AlgoRelationTypeDto;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.AlgorithmListDto;
@@ -19,14 +16,6 @@ import org.springframework.stereotype.Component;
 public class DtoLinkEnhancer {
 
 	public void addLinks(AlgorithmDto dto) {
-		dto.add(linkTo(methodOn(AlgorithmController.class).getAlgorithm(dto.getId())).withSelfRel());
-		dto.add(linkTo(methodOn(AlgorithmController.class).getTags(dto.getId())).withRel(Constants.TAGS));
-		dto.add(linkTo(methodOn(ImplementationController.class).getImplementations(dto.getId()))
-				.withRel(Constants.IMPLEMENTATIONS));
-		dto.add(linkTo(methodOn(AlgorithmController.class).getProblemTypes(dto.getId()))
-				.withRel(Constants.PROBLEM_TYPES));
-		dto.add(linkTo(methodOn(AlgorithmController.class).getAlgorithmRelations(dto.getId()))
-				.withRel(Constants.ALGORITHM_RELATIONS));
 	}
 
 	public void addLinks(AlgorithmListDto dtoList, Algorithm algorithm) {
@@ -39,10 +28,6 @@ public class DtoLinkEnhancer {
 	}
 
 	public void addLinks(TagDto dto) {
-		dto.add(linkTo(methodOn(TagController.class).getTagById(dto.getId())).withSelfRel());
-		dto.add(linkTo(methodOn(TagController.class).getAlgorithmsOfTag(dto.getId())).withRel(Constants.ALGORITHMS));
-		dto.add(linkTo(methodOn(TagController.class).getImplementationsOfTag(dto.getId()))
-				.withRel(Constants.IMPLEMENTATIONS));
 	}
 	
 	public void addLinks(AlgoRelationTypeDto dto) {

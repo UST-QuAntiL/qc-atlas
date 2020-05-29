@@ -36,7 +36,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.springframework.hateoas.RepresentationModel;
 
 import javax.validation.constraints.*;
 
@@ -46,7 +45,7 @@ import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.WRITE_ONLY;
  * Data transfer object for Algorithms
  * ({@link org.planqk.atlas.core.model.Algorithm}).
  */
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode
 @ToString(callSuper = true)
 @Data
 @NoArgsConstructor
@@ -55,7 +54,7 @@ import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.WRITE_ONLY;
     @JsonSubTypes.Type(value = QuantumAlgorithmDto.class, name = "QUANTUM"),
     @JsonSubTypes.Type(value = ClassicAlgorithmDto.class, name = "CLASSIC") }
 )
-public class AlgorithmDto extends RepresentationModel<AlgorithmDto> {
+public class AlgorithmDto {
 
     private UUID id;
 
@@ -90,7 +89,6 @@ public class AlgorithmDto extends RepresentationModel<AlgorithmDto> {
 			final AlgorithmDto dto = new AlgorithmDto();
             dto.setId(object.getId());
             dto.setName(object.getName());
-            dto.setTags(object.getTags().stream().map(TagDto.Converter::convert).collect(Collectors.toSet()));
             dto.setInputFormat(object.getInputFormat());
             dto.setOutputFormat(object.getInputFormat());
             dto.setComputationModel(object.getComputationModel());
@@ -101,9 +99,6 @@ public class AlgorithmDto extends RepresentationModel<AlgorithmDto> {
 		public static Algorithm convert(final AlgorithmDto object) {
 			final Algorithm algo = new Algorithm();
             algo.setName(object.getName());
-            if (Objects.nonNull(object.getTags())) {
-                algo.setTags(object.getTags().stream().map(TagDto.Converter::convert).collect(Collectors.toSet()));
-            }
             algo.setInputFormat(object.getInputFormat());
             algo.setOutputFormat(object.getInputFormat());
             algo.setComputationModel(object.getComputationModel());
