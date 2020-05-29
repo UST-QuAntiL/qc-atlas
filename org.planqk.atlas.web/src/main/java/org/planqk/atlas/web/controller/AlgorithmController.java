@@ -21,8 +21,6 @@ package org.planqk.atlas.web.controller;
 
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
@@ -34,10 +32,10 @@ import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
-import org.planqk.atlas.web.dtos.AlgorithmRelationListDto;
 import org.planqk.atlas.web.dtos.ProblemTypeDto;
 import org.planqk.atlas.web.dtos.TagDto;
 import org.planqk.atlas.web.linkassembler.AlgorithmAssembler;
+import org.planqk.atlas.web.linkassembler.AlgorithmRelationAssembler;
 import org.planqk.atlas.web.linkassembler.ProblemTypeAssembler;
 import org.planqk.atlas.web.linkassembler.TagAssembler;
 import org.planqk.atlas.web.utils.DtoEntityConverter;
@@ -69,9 +67,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
-
 /**
  * Controller to access and manipulate quantum algorithms.
  */
@@ -94,29 +89,8 @@ public class AlgorithmController {
     private TagAssembler tagAssembler;
     @Autowired
     private AlgorithmAssembler algorithmAssembler;
-
-    /**
-     * Create a DTO object for a given {@link Algorithm} with the contained data and the links to related objects.
-     *
-     * @param algorithm the {@link Algorithm} to create the DTO for
-     * @return the created DTO
-     */
-    public static AlgorithmDto createAlgorithmDto(Algorithm algorithm) {
-    	AlgorithmDto dto = AlgorithmDto.Converter.convert(algorithm);
-        return dto;
-    }
-
-	public static AlgorithmRelationListDto createAlgorithmRelationDtoList(Stream<AlgorithmRelation> stream) {
-		AlgorithmRelationListDto algorithmRelationListDto = new AlgorithmRelationListDto();
-		algorithmRelationListDto.add(stream.map(algorithmRelation -> createAlgorithmRelationDto(algorithmRelation)).collect(Collectors.toList()));
-		return algorithmRelationListDto;
-	}
-
-	public static AlgorithmRelationDto createAlgorithmRelationDto(AlgorithmRelation algorithmRelation) {
-		AlgorithmRelationDto dto = AlgorithmRelationDto.Converter.convert(algorithmRelation);
-		dto.add(linkTo(methodOn(AlgorithmController.class).getAlgorithm(algorithmRelation.getSourceAlgorithm().getId())).withSelfRel());
-		return dto;
-	}
+    @Autowired
+    private AlgorithmRelationAssembler algorithmRelationAssembler;
 
     @GetMapping("/")
     public HttpEntity<PagedModel<EntityModel<AlgorithmDto>>> getAlgorithms(@RequestParam(required = false) Integer page,
@@ -221,16 +195,21 @@ public class AlgorithmController {
     }
 
     @GetMapping("/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS)
-    public HttpEntity<AlgorithmRelationListDto> getAlgorithmRelations(@PathVariable UUID sourceAlgorithm_id) {
+    public HttpEntity<CollectionModel<EntityModel<AlgorithmRelationDto>>> getAlgorithmRelations(@PathVariable UUID sourceAlgorithm_id) {
         Optional<Algorithm> optAlgorithm = algorithmService.findById(sourceAlgorithm_id);
         if (!optAlgorithm.isPresent()) {
             LOG.error("Unable to retrieve algorithm with id {} form the repository.", sourceAlgorithm_id);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        Set<AlgorithmRelation> algorithmRelations = optAlgorithm.get().getAlgorithmRelations();
-        AlgorithmRelationListDto algorithmRelationListDto = AlgorithmController.createAlgorithmRelationDtoList(algorithmRelations.stream());
-        algorithmRelationListDto.add(linkTo(methodOn(AlgorithmController.class).getAlgorithmRelations(sourceAlgorithm_id)).withSelfRel());
-        return new ResponseEntity<>(algorithmRelationListDto, HttpStatus.OK);
+        // Get AlgorithmRelationDTOs of Algorithm
+        Set<AlgorithmRelationDto> algorithmRelations = ModelMapperUtils.convertSet(optAlgorithm.get().getAlgorithmRelations(), AlgorithmRelationDto.class);
+        // Generate CollectionModel
+        CollectionModel<EntityModel<AlgorithmRelationDto>> resultCollection = HateoasUtils.generateCollectionModel(algorithmRelations);
+        // Fill EntityModel Links
+        algorithmRelationAssembler.addLinks(resultCollection);
+        // Fill Collection-Links
+        algorithmAssembler.addAlgorithmRelationLink(resultCollection, sourceAlgorithm_id);
+        return new ResponseEntity<>(resultCollection, HttpStatus.OK);
     }
 
     @PutMapping("/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS)

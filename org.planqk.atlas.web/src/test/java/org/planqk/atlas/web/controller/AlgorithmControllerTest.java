@@ -37,6 +37,7 @@ import org.planqk.atlas.web.dtos.AlgorithmListDto;
 import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
 import org.planqk.atlas.web.dtos.AlgorithmRelationListDto;
 import org.planqk.atlas.web.utils.DtoEntityConverter;
+import org.planqk.atlas.web.utils.ModelMapperUtils;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -126,15 +127,15 @@ public class AlgorithmControllerTest {
         relations.add(algorithmRelation2);
         algorithm1.setAlgorithmRelations(relations);
 
-        algorithm1Dto = AlgorithmDto.Converter.convert(algorithm1);
+        algorithm1Dto = ModelMapperUtils.convert(algorithm1, AlgorithmDto.class);
         algorithm1Dto.setId(UUID.randomUUID());
         algorithm1Dto.setComputationModel(ComputationModel.CLASSIC);
         
-        algorithm2Dto = AlgorithmDto.Converter.convert(algorithm2);
+        algorithm2Dto = ModelMapperUtils.convert(algorithm2, AlgorithmDto.class);
         algorithm2Dto.setId(UUID.randomUUID());
         algorithm2Dto.setComputationModel(ComputationModel.CLASSIC);
         
-        algorithmRelation1Dto = AlgorithmRelationDto.Converter.convert(algorithmRelation1);
+        algorithmRelation1Dto = ModelMapperUtils.convert(algorithmRelation1, AlgorithmRelationDto.class);
 
         when(modelConverter.convert(any(Algorithm.class))).thenReturn(algorithm1Dto);
         when(modelConverter.convert(any(AlgorithmDto.class))).thenReturn(algorithm1);

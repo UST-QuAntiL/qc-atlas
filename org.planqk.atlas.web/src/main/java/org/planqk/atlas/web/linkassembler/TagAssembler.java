@@ -10,6 +10,7 @@ import java.util.UUID;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.TagController;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
+import org.planqk.atlas.web.dtos.ImplementationDto;
 import org.planqk.atlas.web.dtos.TagDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +45,10 @@ public class TagAssembler implements SimpleRepresentationModelAssembler<TagDto> 
 	
 	public void addAlgorithmLink(CollectionModel<EntityModel<AlgorithmDto>> resources, UUID id) {
 		resources.add(linkTo(methodOn(TagController.class).getAlgorithmsOfTag(id)).withSelfRel());
+	}
+	
+	public void addImplementationLink(CollectionModel<EntityModel<ImplementationDto>> resources, UUID id) {
+		resources.add(linkTo(methodOn(TagController.class).getImplementationsOfTag(id)).withSelfRel());
 	}
 	
 	private UUID getId(EntityModel<TagDto> resource) {

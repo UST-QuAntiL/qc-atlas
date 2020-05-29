@@ -19,24 +19,19 @@
 
 package org.planqk.atlas.web.controller;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.planqk.atlas.core.model.Algorithm;
-import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.services.TagService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
-import org.planqk.atlas.web.dtos.AlgorithmListDto;
-import org.planqk.atlas.web.dtos.ImplementationListDto;
+import org.planqk.atlas.web.dtos.ImplementationDto;
 import org.planqk.atlas.web.dtos.TagDto;
-import org.planqk.atlas.web.dtos.TagListDto;
 import org.planqk.atlas.web.linkassembler.AlgorithmAssembler;
+import org.planqk.atlas.web.linkassembler.ImplementationAssembler;
 import org.planqk.atlas.web.linkassembler.TagAssembler;
 import org.planqk.atlas.web.utils.HateoasUtils;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
@@ -60,9 +55,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
-
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/" + Constants.TAGS)
@@ -76,25 +68,8 @@ public class TagController {
     private TagAssembler tagAssembler;
     @Autowired
     private AlgorithmAssembler algorithmAssembler;
-
-
-    public static TagListDto createTagDtoList(Stream<Tag> tagStream) {
-        TagListDto tagListDto = new TagListDto();
-        tagListDto.add(tagStream.map(tag -> createTagDto(tag)).collect(Collectors.toList()));
-        tagListDto.add(linkTo(methodOn(TagController.class).getTags(null, null)).withRel(Constants.TAGS));
-        return tagListDto;
-    }
-
-    /**
-     * Create a DTO object for a given {@link Tag} with the contained data and the links to related objects.
-     *
-     * @param tag the {@link Tag} to create the DTO for
-     * @return the created DTO
-     */
-    public static TagDto createTagDto(Tag tag) {
-        TagDto dto = TagDto.Converter.convert(tag);
-        return dto;
-    }
+    @Autowired
+    private ImplementationAssembler implementationAssembler;
 
     @GetMapping(value = "/")
     public HttpEntity<PagedModel<EntityModel<TagDto>>> getTags(@RequestParam(required = false) Integer page,
@@ -154,15 +129,19 @@ public class TagController {
     }
 
     @GetMapping(value = "/{tagId}/" + Constants.IMPLEMENTATIONS)
-    public HttpEntity<ImplementationListDto> getImplementationsOfTag(@PathVariable UUID tagId) {
+    public HttpEntity<CollectionModel<EntityModel<ImplementationDto>>> getImplementationsOfTag(@PathVariable UUID tagId) {
         Optional<Tag> tagOptional = this.tagService.getTagById(tagId);
         if (!tagOptional.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        Set<Implementation> implementations = tagOptional.get().getImplementations();
-        ImplementationListDto implementationListDto = new ImplementationListDto();
-        implementationListDto.add(implementations.stream().map(ImplementationController::createImplementationDto).collect(Collectors.toList()));
-        implementationListDto.add(linkTo(methodOn(TagController.class).getImplementationsOfTag(tagId)).withSelfRel());
-        return new ResponseEntity<>(implementationListDto, HttpStatus.OK);
+        // Get ImplementationDTOs of Tag
+        Set<ImplementationDto> implementations = ModelMapperUtils.convertSet(tagOptional.get().getImplementations(), ImplementationDto.class);
+        // Create CollectionModel
+        CollectionModel<EntityModel<ImplementationDto>> resultCollection = HateoasUtils.generateCollectionModel(implementations);
+        // Fill EntityModels
+        implementationAssembler.addLinks(resultCollection.getContent());
+        // Fill CollectionModel
+        tagAssembler.addImplementationLink(resultCollection, tagId);
+        return new ResponseEntity<>(resultCollection, HttpStatus.OK);
     }
 }
