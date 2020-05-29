@@ -17,11 +17,13 @@ public interface AlgoRelationTypeService {
 	
 	AlgoRelationType update(UUID id, AlgoRelationType algoRelationType) throws NotFoundException;
 	
-	void delete(UUID id) throws SqlConsistencyException;
+	void delete(UUID id) throws SqlConsistencyException, NotFoundException;
+
+	Optional<AlgoRelationType> findOptionalById(UUID id);
 	
-	Optional<AlgoRelationType> findById(UUID id);
+	AlgoRelationType findById(UUID id) throws NotFoundException;
 	
-	Optional<List<AlgoRelationType>> findByName(String name);
+	List<AlgoRelationType> findByName(String name) throws NotFoundException;
 	
 	Page<AlgoRelationType> findAll(Pageable pageable);
 	

@@ -4,6 +4,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.exceptions.NotFoundException;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.AlgoRelationTypeController;
 import org.planqk.atlas.web.controller.AlgorithmController;
@@ -45,7 +46,7 @@ public class DtoLinkEnhancer {
 				.withRel(Constants.IMPLEMENTATIONS));
 	}
 	
-	public void addLinks(AlgoRelationTypeDto dto) {
+	public void addLinks(AlgoRelationTypeDto dto) throws NotFoundException {
 		dto.add(linkTo(methodOn(AlgoRelationTypeController.class).getAlgoRelationTypeById(dto.getId())).withSelfRel());
 	}
 

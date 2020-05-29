@@ -123,7 +123,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 		Optional<Algorithm> sourceAlgorithmOpt = findById(sourceAlgorithm_id);
 		Optional<Algorithm> targetAlgorithmOpt = findById(relation.getTargetAlgorithm().getId());
 		Optional<AlgoRelationType> relationTypeOpt = relationTypeService
-				.findById(relation.getAlgoRelationType().getId());
+				.findOptionalById(relation.getAlgoRelationType().getId());
 
 		// If one of the algorithms does not exist
 		if (sourceAlgorithmOpt.isEmpty()) {

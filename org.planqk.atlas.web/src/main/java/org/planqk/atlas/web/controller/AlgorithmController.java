@@ -195,6 +195,7 @@ public class AlgorithmController {
             LOG.error("Unable to retrieve algorithm with id {} form the repository.", sourceAlgorithm_id);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+        // get AlgorithmRelations of Algorithm
         Set<AlgorithmRelation> algorithmRelations = optAlgorithm.get().getAlgorithmRelations();
         AlgorithmRelationListDto algorithmRelationListDto = AlgorithmController.createAlgorithmRelationDtoList(algorithmRelations.stream());
         algorithmRelationListDto.add(linkTo(methodOn(AlgorithmController.class).getAlgorithmRelations(sourceAlgorithm_id)).withSelfRel());

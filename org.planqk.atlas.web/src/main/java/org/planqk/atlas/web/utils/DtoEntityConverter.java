@@ -87,16 +87,6 @@ public class DtoEntityConverter {
 	public AlgorithmRelationDto convert(AlgorithmRelation entity) {
 		return modelMapper.map(entity, AlgorithmRelationDto.class);
 	}
-
-	public AlgoRelationType convert(AlgoRelationTypeDto dto) {
-		return modelMapper.map(dto, AlgoRelationType.class);
-	}
-
-	public AlgoRelationTypeDto convert(AlgoRelationType entity) {
-		AlgoRelationTypeDto dto = modelMapper.map(entity, AlgoRelationTypeDto.class);
-		linkEnhancer.addLinks(dto);
-		return dto;
-	}
 	
 	public <D, T> Set<D> convertSet(Set<T> entities, Class<D> dtoClass) {
 		Set<D> resultSet = new HashSet<D>();
