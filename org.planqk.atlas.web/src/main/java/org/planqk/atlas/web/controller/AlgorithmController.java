@@ -41,6 +41,7 @@ import org.planqk.atlas.web.dtos.TagListDto;
 import org.planqk.atlas.web.linkassembler.AlgorithmAssembler;
 import org.planqk.atlas.web.linkassembler.ProblemTypeAssembler;
 import org.planqk.atlas.web.utils.DtoEntityConverter;
+import org.planqk.atlas.web.utils.HateoasUtils;
 import org.planqk.atlas.web.utils.RestUtils;
 
 import org.slf4j.Logger;
@@ -182,7 +183,9 @@ public class AlgorithmController {
         // Translate Entity to DTO
         Set<ProblemTypeDto> dtoTypes = modelConverter.convertSet(problemTypes, ProblemTypeDto.class);
         // Create CollectionModel
-        CollectionModel<EntityModel<ProblemTypeDto>> resultCollection = problemTypeAssembler.generateCollectionModel(dtoTypes);
+        CollectionModel<EntityModel<ProblemTypeDto>> resultCollection = HateoasUtils.generateCollectionModel(dtoTypes);
+        // Fill EntityModel Links
+        problemTypeAssembler.addLinks(resultCollection);
         // Fill Collection-Links
         algorithmAssembler.addProblemTypeLink(resultCollection, id);
         return new ResponseEntity<>(resultCollection, HttpStatus.OK);
