@@ -15,8 +15,9 @@ import org.planqk.atlas.core.services.AlgoRelationTypeService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.AlgoRelationTypeDto;
 import org.planqk.atlas.web.dtos.AlgoRelationTypeListDto;
-import org.planqk.atlas.web.utils.DtoEntityConverter;
+import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.RestUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,13 +38,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/" + Constants.ALGO_RELATION_TYPES)
 public class AlgoRelationTypeController {
 	
+	@Autowired
 	private AlgoRelationTypeService algoRelationTypeService;
-    private DtoEntityConverter modelConverter;
-
-	public AlgoRelationTypeController(AlgoRelationTypeService algoRelationTypeService, DtoEntityConverter modelConverter) {
-		this.algoRelationTypeService = algoRelationTypeService;
-		this.modelConverter = modelConverter;
-	}
 
 	public static AlgoRelationTypeListDto createAlgoRelationTypeDtoList(Stream<AlgoRelationType> stream) {
 		AlgoRelationTypeListDto algoRelationTypeListDto = new AlgoRelationTypeListDto();
@@ -59,15 +55,15 @@ public class AlgoRelationTypeController {
 
 	@PostMapping("/")
 	public HttpEntity<AlgoRelationTypeDto> createAlgoRelationType(@Validated @RequestBody AlgoRelationTypeDto algoRelationTypeDto) {
-		AlgoRelationType algoRelation = algoRelationTypeService.save(modelConverter.convert(algoRelationTypeDto));
-		return new ResponseEntity<>(modelConverter.convert(algoRelation), HttpStatus.CREATED);
+		AlgoRelationType algoRelation = algoRelationTypeService.save(ModelMapperUtils.convert(algoRelationTypeDto, AlgoRelationType.class));
+		return new ResponseEntity<>(ModelMapperUtils.convert(algoRelation, AlgoRelationTypeDto.class), HttpStatus.CREATED);
 	}
 
 	@PutMapping("/{id}")
 	public HttpEntity<AlgoRelationTypeDto> updateAlgoRelationType(@PathVariable UUID id,
 			@Validated @RequestBody AlgoRelationTypeDto algoRelationTypeDto) throws NotFoundException {
-		AlgoRelationType algoRelation = algoRelationTypeService.update(id, modelConverter.convert(algoRelationTypeDto));
-		return new ResponseEntity<>(modelConverter.convert(algoRelation), HttpStatus.OK);
+		AlgoRelationType algoRelation = algoRelationTypeService.update(id, ModelMapperUtils.convert(algoRelationTypeDto, AlgoRelationType.class));
+		return new ResponseEntity<>(ModelMapperUtils.convert(algoRelation, AlgoRelationTypeDto.class), HttpStatus.OK);
 	}
 	
 	@DeleteMapping("/{id}")

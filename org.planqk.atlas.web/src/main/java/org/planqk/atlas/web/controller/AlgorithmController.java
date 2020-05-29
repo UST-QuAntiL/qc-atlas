@@ -38,7 +38,6 @@ import org.planqk.atlas.web.linkassembler.AlgorithmAssembler;
 import org.planqk.atlas.web.linkassembler.AlgorithmRelationAssembler;
 import org.planqk.atlas.web.linkassembler.ProblemTypeAssembler;
 import org.planqk.atlas.web.linkassembler.TagAssembler;
-import org.planqk.atlas.web.utils.DtoEntityConverter;
 import org.planqk.atlas.web.utils.HateoasUtils;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.RestUtils;
@@ -79,8 +78,6 @@ public class AlgorithmController {
 
     @Autowired
     private AlgorithmService algorithmService;
-    @Autowired
-    private DtoEntityConverter modelConverter;
     @Autowired
 	private PagedResourcesAssembler<AlgorithmDto> paginationAssembler;
     @Autowired
@@ -130,7 +127,7 @@ public class AlgorithmController {
     }
 
     @DeleteMapping("/{id}")
-    public HttpEntity<AlgorithmDto> deleteAlgorithm(@PathVariable UUID id) throws NotFoundException {
+    public HttpEntity<?> deleteAlgorithm(@PathVariable UUID id) throws NotFoundException {
         LOG.debug("Delete to remove algorithm with id '" + id + "' received");
         algorithmService.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -175,7 +172,7 @@ public class AlgorithmController {
     }
 
     @GetMapping("/{id}/" + Constants.PROBLEM_TYPES)
-    public HttpEntity<?> getProblemTypes(@PathVariable UUID id) {
+    public HttpEntity<CollectionModel<EntityModel<ProblemTypeDto>>> getProblemTypes(@PathVariable UUID id) {
         Optional<Algorithm> algorithmOptional = algorithmService.findById(id);
         if (!algorithmOptional.isPresent()) {
             LOG.error("Unable to retrieve algorithm with id {} form the repository.", id);
@@ -213,17 +210,18 @@ public class AlgorithmController {
     }
 
     @PutMapping("/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS)
-    public HttpEntity<AlgorithmRelationDto> updateAlgorithmRelation(@PathVariable UUID sourceAlgorithm_id,
+    public HttpEntity<EntityModel<AlgorithmRelationDto>> updateAlgorithmRelation(@PathVariable UUID sourceAlgorithm_id,
     		@Validated @RequestBody AlgorithmRelationDto relation) throws NotFoundException {
         LOG.debug("Post to add algorithm relation received.");
         
         
-        AlgorithmRelation algorithmRelation = algorithmService.addUpdateAlgorithmRelation(sourceAlgorithm_id, modelConverter.convert(relation));
-        return new ResponseEntity<>(modelConverter.convert(algorithmRelation), HttpStatus.OK);
+        AlgorithmRelation algorithmRelation = algorithmService.addUpdateAlgorithmRelation(sourceAlgorithm_id, ModelMapperUtils.convert(relation, AlgorithmRelation.class));
+        EntityModel<AlgorithmRelationDto> dtoOutput = HateoasUtils.generateEntityModel(ModelMapperUtils.convert(algorithmRelation, AlgorithmRelationDto.class));
+        return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
     }
 
     @DeleteMapping("/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS + "/{relation_id}")
-    public HttpEntity<AlgorithmDto> deleteAlgorithmRelation(@PathVariable UUID sourceAlgorithm_id, @PathVariable UUID relation_id)
+    public HttpEntity<?> deleteAlgorithmRelation(@PathVariable UUID sourceAlgorithm_id, @PathVariable UUID relation_id)
     		throws NotFoundException {
         LOG.debug("Delete received to remove algorithm relation with id {}.", relation_id);
         if (!algorithmService.deleteAlgorithmRelation(sourceAlgorithm_id, relation_id)) {

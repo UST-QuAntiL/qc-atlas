@@ -36,7 +36,6 @@ import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.AlgorithmListDto;
 import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
 import org.planqk.atlas.web.dtos.AlgorithmRelationListDto;
-import org.planqk.atlas.web.utils.DtoEntityConverter;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -73,8 +72,6 @@ public class AlgorithmControllerTest {
 
     @Mock
     private AlgorithmService algorithmService;
-    @Mock
-    private DtoEntityConverter modelConverter;
 
     @InjectMocks
     private AlgorithmController algorithmController;
@@ -137,15 +134,6 @@ public class AlgorithmControllerTest {
         
         algorithmRelation1Dto = ModelMapperUtils.convert(algorithmRelation1, AlgorithmRelationDto.class);
 
-        when(modelConverter.convert(any(Algorithm.class))).thenReturn(algorithm1Dto);
-        when(modelConverter.convert(any(AlgorithmDto.class))).thenReturn(algorithm1);
-        when(modelConverter.convert(any(AlgorithmRelation.class))).thenReturn(algorithmRelation1Dto);
-        when(modelConverter.convert(any(AlgorithmRelationDto.class))).thenReturn(algorithmRelation1);
-        when(modelConverter.convert(algorithm1Dto)).thenReturn(algorithm1);
-        when(modelConverter.convert(algorithm2Dto)).thenReturn(algorithm2);
-        when(modelConverter.convert(algorithm1)).thenReturn(algorithm1Dto);
-        when(modelConverter.convert(algorithm2)).thenReturn(algorithm2Dto);
-
     	when(algorithmService.findById(any(UUID.class))).thenReturn(Optional.empty());
     	when(algorithmService.findById(algorithm1.getId())).thenReturn(Optional.of(algorithm1));
     	when(algorithmService.findById(algorithm2.getId())).thenReturn(Optional.of(algorithm2));
@@ -168,7 +156,6 @@ public class AlgorithmControllerTest {
     @Test
     public void getAlgorithms_withEmptyAlgorithmList() throws Exception {
         when(algorithmService.findAll(pageable)).thenReturn(Page.empty());
-        when(modelConverter.convert(Page.empty())).thenReturn(new AlgorithmListDto());
         MvcResult result = mockMvc.perform(get("/" + Constants.ALGORITHMS + "/")
                 .queryParam(Constants.PAGE, Integer.toString(page))
                 .queryParam(Constants.SIZE, Integer.toString(size))
@@ -187,7 +174,6 @@ public class AlgorithmControllerTest {
         resultList.add(this.algorithm2Dto);
 
         when(algorithmService.findAll(pageable)).thenReturn(new PageImpl<>(algorithmList));
-        when(modelConverter.convert(new PageImpl<>(algorithmList))).thenReturn(resultList);
 
         MvcResult result = mockMvc.perform(get("/" + Constants.ALGORITHMS + "/")
                 .queryParam(Constants.PAGE, Integer.toString(page))

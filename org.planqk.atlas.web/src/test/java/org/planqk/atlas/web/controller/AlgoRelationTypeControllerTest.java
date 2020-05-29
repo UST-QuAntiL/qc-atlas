@@ -10,9 +10,7 @@ import org.planqk.atlas.core.services.AlgoRelationTypeService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.AlgoRelationTypeDto;
 import org.planqk.atlas.web.dtos.AlgoRelationTypeListDto;
-import org.planqk.atlas.web.utils.DtoEntityConverter;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -44,9 +42,6 @@ public class AlgoRelationTypeControllerTest {
 	
 	@Mock
 	AlgoRelationTypeService algoRelationTypeService;
-	
-	@Mock
-	DtoEntityConverter modelConverter;
 	
 	@InjectMocks
 	AlgoRelationTypeController algoRelationTypeController;
@@ -80,8 +75,6 @@ public class AlgoRelationTypeControllerTest {
         algoRelationType1Dto = AlgoRelationTypeDto.Converter.convert(algoRelationType1);
         algoRelationType2Dto = AlgoRelationTypeDto.Converter.convert(algoRelationType2);
 
-		when(modelConverter.convert(algoRelationType1)).thenReturn(algoRelationType1Dto);
-		when(modelConverter.convert(algoRelationType1Dto)).thenReturn(algoRelationType1);
         when(algoRelationTypeService.findById(any(UUID.class))).thenReturn(Optional.empty());
         when(algoRelationTypeService.findById(algoRelationType1.getId())).thenReturn(Optional.of(algoRelationType1));
 	}
