@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class DtoLinkEnhancer {
 
-	public void addLinks(AlgorithmDto dto) {
+	public void addLinks(AlgorithmDto dto) throws NotFoundException {
 		dto.add(linkTo(methodOn(AlgorithmController.class).getAlgorithm(dto.getId())).withSelfRel());
 		dto.add(linkTo(methodOn(AlgorithmController.class).getTags(dto.getId())).withRel(Constants.TAGS));
 		dto.add(linkTo(methodOn(ImplementationController.class).getImplementations(dto.getId()))
@@ -30,12 +30,12 @@ public class DtoLinkEnhancer {
 				.withRel(Constants.ALGORITHM_RELATIONS));
 	}
 
-	public void addLinks(AlgorithmListDto dtoList, Algorithm algorithm) {
+	public void addLinks(AlgorithmListDto dtoList, Algorithm algorithm) throws NotFoundException {
 		dtoList.add(linkTo(methodOn(AlgorithmController.class).getAlgorithm(algorithm.getId()))
 				.withRel(algorithm.getId().toString()));
 	}
 
-	public void addLinks(AlgorithmListDto dtoList) {
+	public void addLinks(AlgorithmListDto dtoList) throws NotFoundException {
 		dtoList.add(linkTo(methodOn(AlgorithmController.class).getAlgorithms(null, null)).withSelfRel());
 	}
 
@@ -46,8 +46,8 @@ public class DtoLinkEnhancer {
 				.withRel(Constants.IMPLEMENTATIONS));
 	}
 	
-	public void addLinks(AlgoRelationTypeDto dto) throws NotFoundException {
-		dto.add(linkTo(methodOn(AlgoRelationTypeController.class).getAlgoRelationTypeById(dto.getId())).withSelfRel());
-	}
+//	public void addLinks(AlgoRelationTypeDto dto) throws NotFoundException {
+//		dto.add(linkTo(methodOn(AlgoRelationTypeController.class).getAlgoRelationTypeById(dto.getId())).withSelfRel());
+//	}
 
 }

@@ -10,6 +10,8 @@ import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.AlgoRelationTypeDto;
 import org.planqk.atlas.web.linkassembler.AlgoRelationTypeAssembler;
 import org.planqk.atlas.web.utils.DtoEntityConverter;
+import org.planqk.atlas.web.utils.HateoasUtils;
+import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.RestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -40,45 +42,37 @@ public class AlgoRelationTypeController {
 	@Autowired
 	private AlgoRelationTypeService algoRelationTypeService;
 	@Autowired
-    private DtoEntityConverter modelConverter;
-	@Autowired
 	private PagedResourcesAssembler<AlgoRelationTypeDto> paginationAssembler;
 	@Autowired
 	private AlgoRelationTypeAssembler algoRelationTypeAssembler;
 
-//	public static AlgoRelationTypeListDto createAlgoRelationTypeDtoList(Stream<AlgoRelationType> stream) {
-//		AlgoRelationTypeListDto algoRelationTypeListDto = new AlgoRelationTypeListDto();
-//		algoRelationTypeListDto.add(stream.map(algoRelationType -> createAlgoRelationTypeDto(algoRelationType)).collect(Collectors.toList()));
-//		return algoRelationTypeListDto;
-//	}
-//
-//	public static AlgoRelationTypeDto createAlgoRelationTypeDto(AlgoRelationType algoRelationType) {
-//		AlgoRelationTypeDto dto = AlgoRelationTypeDto.Converter.convert(algoRelationType);
-//		dto.add(linkTo(methodOn(AlgoRelationTypeController.class).getAlgoRelationTypeById(algoRelationType.getId())).withSelfRel());
-//		return dto;
-//	}
-
 	@PostMapping("/")
 	public HttpEntity<EntityModel<AlgoRelationTypeDto>> createAlgoRelationType(@Validated @RequestBody AlgoRelationTypeDto algoRelationTypeDto) {
 		// Convert DTO to entity
-		AlgoRelationType entityInput = modelConverter.convert(algoRelationTypeDto, AlgoRelationType.class);
+		AlgoRelationType entityInput = ModelMapperUtils.convert(algoRelationTypeDto, AlgoRelationType.class);
 		// save entity
 		AlgoRelationType savedAlgoRelationType = algoRelationTypeService.save(entityInput);
 		// convert entity to DTO
-		AlgoRelationTypeDto dtoOutput = modelConverter.convert(savedAlgoRelationType, AlgoRelationTypeDto.class);
-		return new ResponseEntity<>(algoRelationTypeAssembler.generateEntityModel(dtoOutput), HttpStatus.CREATED);
+		AlgoRelationTypeDto dtoOutput = ModelMapperUtils.convert(savedAlgoRelationType, AlgoRelationTypeDto.class);
+		// generate EntitiyModel
+		EntityModel<AlgoRelationTypeDto> entityDto = HateoasUtils.generateEntityModel(dtoOutput);
+		algoRelationTypeAssembler.addLinks(entityDto);
+		return new ResponseEntity<>(entityDto, HttpStatus.CREATED);
 	}
 
 	@PutMapping("/{id}")
 	public HttpEntity<EntityModel<AlgoRelationTypeDto>> updateAlgoRelationType(@PathVariable UUID id,
 			@Validated @RequestBody AlgoRelationTypeDto algoRelationTypeDto) throws NotFoundException {
 		// Convert DTO to entity
-		AlgoRelationType entityInput = modelConverter.convert(algoRelationTypeDto, AlgoRelationType.class);
+		AlgoRelationType entityInput = ModelMapperUtils.convert(algoRelationTypeDto, AlgoRelationType.class);
 		// update entity
 		AlgoRelationType savedAlgoRelationType = algoRelationTypeService.update(id, entityInput);
 		// convert entity to DTO
-		AlgoRelationTypeDto dtoOutput = modelConverter.convert(savedAlgoRelationType, AlgoRelationTypeDto.class);
-		return new ResponseEntity<>(algoRelationTypeAssembler.generateEntityModel(dtoOutput), HttpStatus.OK);
+		AlgoRelationTypeDto dtoOutput = ModelMapperUtils.convert(savedAlgoRelationType, AlgoRelationTypeDto.class);
+		// generate EntitiyModel
+		EntityModel<AlgoRelationTypeDto> entityDto = HateoasUtils.generateEntityModel(dtoOutput);
+		algoRelationTypeAssembler.addLinks(entityDto);
+		return new ResponseEntity<>(entityDto, HttpStatus.OK);
 	}
 	
 	@DeleteMapping("/{id}")
@@ -96,7 +90,7 @@ public class AlgoRelationTypeController {
 		// Get entities
 		Page<AlgoRelationType> entities = algoRelationTypeService.findAll(p);
 		// convert to DTO pageable
-		Page<AlgoRelationTypeDto> dtos = modelConverter.convertPage(entities, AlgoRelationTypeDto.class);
+		Page<AlgoRelationTypeDto> dtos = ModelMapperUtils.convertPage(entities, AlgoRelationTypeDto.class);
 		// generate paged model with links
 		PagedModel<EntityModel<AlgoRelationTypeDto>> pagedEntityOutput = paginationAssembler.toModel(dtos);
 		// add links
@@ -108,7 +102,10 @@ public class AlgoRelationTypeController {
 	public HttpEntity<EntityModel<AlgoRelationTypeDto>> getAlgoRelationTypeById(@PathVariable UUID id) throws NotFoundException {
 		AlgoRelationType algoRelationType = algoRelationTypeService.findById(id);
 		// convert entity to DTO
-		AlgoRelationTypeDto dtoOutput = modelConverter.convert(algoRelationType, AlgoRelationTypeDto.class);
-		return new ResponseEntity<>(algoRelationTypeAssembler.generateEntityModel(dtoOutput), HttpStatus.OK);
+		AlgoRelationTypeDto dtoOutput = ModelMapperUtils.convert(algoRelationType, AlgoRelationTypeDto.class);
+		// generate EntitiyModel
+		EntityModel<AlgoRelationTypeDto> entityDto = HateoasUtils.generateEntityModel(dtoOutput);
+		algoRelationTypeAssembler.addLinks(entityDto);
+		return new ResponseEntity<>(entityDto, HttpStatus.OK);
 	}
 }

@@ -56,27 +56,27 @@ public class AlgorithmRelationDto extends RepresentationModel<AlgorithmRelationD
 	
 	private String description;
 	
-	public static final class Converter {
-
-		public static AlgorithmRelationDto convert(final AlgorithmRelation object) {
-			final AlgorithmRelationDto dto = new AlgorithmRelationDto();
-            dto.setId(object.getId());
-            dto.setSourceAlgorithm(AlgorithmDto.Converter.convert(object.getSourceAlgorithm()));
-            dto.setTargetAlgorithm(AlgorithmDto.Converter.convert(object.getTargetAlgorithm()));
-            dto.setAlgoRelationType(AlgoRelationTypeDto.Converter.convert(object.getAlgoRelationType()));
-            dto.setDescription(object.getDescription());
-            return dto;
-		}
-
-		public static AlgorithmRelation convert(final AlgorithmRelationDto object) {
-			final AlgorithmRelation algoRelation = new AlgorithmRelation();
-			algoRelation.setId(object.getId());
-			algoRelation.setSourceAlgorithm(AlgorithmDto.Converter.convert(object.getSourceAlgorithm()));
-			algoRelation.setTargetAlgorithm(AlgorithmDto.Converter.convert(object.getTargetAlgorithm()));
-			algoRelation.setAlgoRelationType(AlgoRelationTypeDto.Converter.convert(object.getAlgoRelationType()));
-			algoRelation.setDescription(object.getDescription());
-            
-			return algoRelation;
-		}
-	}
+//	public static final class Converter {
+//
+//		public static AlgorithmRelationDto convert(final AlgorithmRelation object) {
+//			final AlgorithmRelationDto dto = new AlgorithmRelationDto();
+//            dto.setId(object.getId());
+//            dto.setSourceAlgorithm(AlgorithmDto.Converter.convert(object.getSourceAlgorithm()));
+//            dto.setTargetAlgorithm(AlgorithmDto.Converter.convert(object.getTargetAlgorithm()));
+//            dto.setAlgoRelationType(AlgoRelationTypeDto.Converter.convert(object.getAlgoRelationType()));
+//            dto.setDescription(object.getDescription());
+//            return dto;
+//		}
+//
+//		public static AlgorithmRelation convert(final AlgorithmRelationDto object) {
+//			final AlgorithmRelation algoRelation = new AlgorithmRelation();
+//			algoRelation.setId(object.getId());
+//			algoRelation.setSourceAlgorithm(AlgorithmDto.Converter.convert(object.getSourceAlgorithm()));
+//			algoRelation.setTargetAlgorithm(AlgorithmDto.Converter.convert(object.getTargetAlgorithm()));
+//			algoRelation.setAlgoRelationType(AlgoRelationTypeDto.Converter.convert(object.getAlgoRelationType()));
+//			algoRelation.setDescription(object.getDescription());
+//            
+//			return algoRelation;
+//		}
+//	}
 }

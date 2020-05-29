@@ -27,6 +27,7 @@ import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Implementation;
+import org.planqk.atlas.core.model.exceptions.NotFoundException;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.web.Constants;
@@ -227,10 +228,10 @@ public class ImplementationControllerTest {
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
     }
 
-    private Algorithm mockValidAlgorithmForImplCreation(UUID algoId) {
+    private Algorithm mockValidAlgorithmForImplCreation(UUID algoId) throws NotFoundException {
         Algorithm algorithm = new Algorithm();
         algorithm.setId(algoId);
-        when(algorithmService.findById(algoId)).thenReturn(java.util.Optional.of(algorithm));
+        when(algorithmService.findById(algoId)).thenReturn(algorithm);
         return algorithm;
     }
 }

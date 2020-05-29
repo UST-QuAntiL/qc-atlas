@@ -5,6 +5,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import java.util.UUID;
 
+import org.planqk.atlas.core.model.exceptions.NotFoundException;
 import org.planqk.atlas.web.controller.AlgorithmController;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.ProblemTypeDto;
@@ -27,7 +28,7 @@ public class AlgorithmAssembler implements SimpleRepresentationModelAssembler<Al
 		// TODO Auto-generated method stub
 	}
 	
-	public void addProblemTypeLink(CollectionModel<EntityModel<ProblemTypeDto>> resources, UUID id) {
+	public void addProblemTypeLink(CollectionModel<EntityModel<ProblemTypeDto>> resources, UUID id) throws NotFoundException {
 		resources.add(linkTo(methodOn(AlgorithmController.class).getProblemTypes(id)).withSelfRel());
 	}
 

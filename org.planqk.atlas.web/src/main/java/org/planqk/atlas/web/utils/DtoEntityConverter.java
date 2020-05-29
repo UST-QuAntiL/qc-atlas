@@ -10,6 +10,7 @@ import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
 import org.planqk.atlas.core.model.QuantumAlgorithm;
 import org.planqk.atlas.core.model.Tag;
+import org.planqk.atlas.core.model.exceptions.NotFoundException;
 import org.planqk.atlas.web.dtos.AlgoRelationTypeDto;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.AlgorithmListDto;
@@ -41,7 +42,7 @@ public class DtoEntityConverter {
 		}
 	}
 
-	public AlgorithmDto convert(Algorithm entity) {
+	public AlgorithmDto convert(Algorithm entity) throws NotFoundException {
 		AlgorithmDto dto;
 		if (entity instanceof QuantumAlgorithm) {
 			dto = modelMapper.map((QuantumAlgorithm) entity, QuantumAlgorithmDto.class);
@@ -54,11 +55,11 @@ public class DtoEntityConverter {
 		return dto;
 	}
 
-	public AlgorithmListDto convert(Page<Algorithm> entities) {
+	public AlgorithmListDto convert(Page<Algorithm> entities) throws NotFoundException {
 		return convert(new HashSet<Algorithm>(entities.getContent()));
 	}
 
-	public AlgorithmListDto convert(Set<Algorithm> entities) {
+	public AlgorithmListDto convert(Set<Algorithm> entities) throws NotFoundException {
 		AlgorithmListDto dtoList = new AlgorithmListDto();
 
 		for (Algorithm entity : entities) {

@@ -29,6 +29,7 @@ import java.util.stream.Stream;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Tag;
+import org.planqk.atlas.core.model.exceptions.NotFoundException;
 import org.planqk.atlas.core.services.TagService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
@@ -126,7 +127,15 @@ public class TagController {
         }
         Set<Algorithm> algorithms = tagOptional.get().getAlgorithms();
         AlgorithmListDto algorithmListDto = new AlgorithmListDto();
-        List<AlgorithmDto> algorithmsDto = algorithms.stream().map(AlgorithmController::createAlgorithmDto).collect(Collectors.toList());
+        List<AlgorithmDto> algorithmsDto = algorithms.stream().map(t -> {
+			try {
+				return AlgorithmController.createAlgorithmDto(t);
+			} catch (NotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return null;
+		}).collect(Collectors.toList());
         algorithmListDto.add(algorithmsDto);
         algorithmListDto.add(linkTo(methodOn(TagController.class).getAlgorithmsOfTag(tagId)).withSelfRel());
         return new ResponseEntity<>(algorithmListDto, HttpStatus.OK);
@@ -140,7 +149,15 @@ public class TagController {
         }
         Set<Implementation> implementations = tagOptional.get().getImplementations();
         ImplementationListDto implementationListDto = new ImplementationListDto();
-        implementationListDto.add(implementations.stream().map(ImplementationController::createImplementationDto).collect(Collectors.toList()));
+        implementationListDto.add(implementations.stream().map(t -> {
+			try {
+				return ImplementationController.createImplementationDto(t);
+			} catch (NotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return null;
+		}).collect(Collectors.toList()));
         implementationListDto.add(linkTo(methodOn(TagController.class).getImplementationsOfTag(tagId)).withSelfRel());
         return new ResponseEntity<>(implementationListDto, HttpStatus.OK);
     }

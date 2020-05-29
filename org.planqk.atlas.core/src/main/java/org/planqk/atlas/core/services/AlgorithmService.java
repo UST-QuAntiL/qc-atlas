@@ -20,6 +20,7 @@
 package org.planqk.atlas.core.services;
 
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
@@ -36,12 +37,16 @@ public interface AlgorithmService {
 
     void delete(UUID id) throws NotFoundException;
 
-    boolean deleteAlgorithmRelation(UUID algoId, UUID relationId) throws NotFoundException;
+    void deleteAlgorithmRelation(UUID algoId, UUID relationId) throws NotFoundException;
 
     Page<Algorithm> findAll(Pageable pageable);
 
-    Optional<Algorithm> findById(UUID algoId);
+    Algorithm findById(UUID algoId) throws NotFoundException;
+    
+    Optional<Algorithm> findOptionalById(UUID algoId);
 
 	AlgorithmRelation addUpdateAlgorithmRelation(UUID sourceAlgorithm_id, AlgorithmRelation relation)
 			throws NotFoundException;
+	
+	Page<AlgorithmRelation> getAlgorithmRelations(UUID sourceAlgorithm_id) throws NotFoundException;
 }

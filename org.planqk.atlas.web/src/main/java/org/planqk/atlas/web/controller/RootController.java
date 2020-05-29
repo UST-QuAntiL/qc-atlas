@@ -19,6 +19,7 @@
 
 package org.planqk.atlas.web.controller;
 
+import org.planqk.atlas.core.model.exceptions.NotFoundException;
 import org.planqk.atlas.web.Constants;
 
 import org.springframework.hateoas.RepresentationModel;
@@ -41,7 +42,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class RootController {
 
     @GetMapping("/")
-    public HttpEntity<RepresentationModel> root() {
+    public HttpEntity<RepresentationModel> root() throws NotFoundException {
         RepresentationModel responseEntity = new RepresentationModel<>();
 
         // add links to sub-controllers

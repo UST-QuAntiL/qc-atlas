@@ -30,6 +30,7 @@ import org.planqk.atlas.core.model.AlgoRelationType;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.model.ComputationModel;
+import org.planqk.atlas.core.model.exceptions.NotFoundException;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
@@ -37,6 +38,7 @@ import org.planqk.atlas.web.dtos.AlgorithmListDto;
 import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
 import org.planqk.atlas.web.dtos.AlgorithmRelationListDto;
 import org.planqk.atlas.web.utils.DtoEntityConverter;
+import org.planqk.atlas.web.utils.ModelMapperUtils;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -94,7 +96,7 @@ public class AlgorithmControllerTest {
 
 
     @Before
-    public void initialize() {
+    public void initialize() throws NotFoundException {
         MockitoAnnotations.initMocks(this);
         mockMvc = MockMvcBuilders.standaloneSetup(algorithmController).build();
         mapper = new ObjectMapper();
@@ -134,7 +136,7 @@ public class AlgorithmControllerTest {
         algorithm2Dto.setId(UUID.randomUUID());
         algorithm2Dto.setComputationModel(ComputationModel.CLASSIC);
         
-        algorithmRelation1Dto = AlgorithmRelationDto.Converter.convert(algorithmRelation1);
+        algorithmRelation1Dto = ModelMapperUtils.convert(algorithmRelation1, AlgorithmRelationDto.class);
 
         when(modelConverter.convert(any(Algorithm.class))).thenReturn(algorithm1Dto);
         when(modelConverter.convert(any(AlgorithmDto.class))).thenReturn(algorithm1);
@@ -145,9 +147,9 @@ public class AlgorithmControllerTest {
         when(modelConverter.convert(algorithm1)).thenReturn(algorithm1Dto);
         when(modelConverter.convert(algorithm2)).thenReturn(algorithm2Dto);
 
-    	when(algorithmService.findById(any(UUID.class))).thenReturn(Optional.empty());
-    	when(algorithmService.findById(algorithm1.getId())).thenReturn(Optional.of(algorithm1));
-    	when(algorithmService.findById(algorithm2.getId())).thenReturn(Optional.of(algorithm2));
+//    	when(algorithmService.findById(any(UUID.class))).thenReturn(Optional.empty());
+    	when(algorithmService.findById(algorithm1.getId())).thenReturn(algorithm1);
+    	when(algorithmService.findById(algorithm2.getId())).thenReturn(algorithm2);
     	
     }
 
@@ -373,7 +375,7 @@ public class AlgorithmControllerTest {
     @Test
     public void deleteAlgorithmRelation_notModified() throws Exception {
 
-    	when(algorithmService.deleteAlgorithmRelation(any(UUID.class),any(UUID.class))).thenReturn(false);
+//    	when(algorithmService.deleteAlgorithmRelation(any(UUID.class),any(UUID.class))).thenReturn(false);
     	
     	mockMvc.perform(delete("/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS +
     			"/{algorithmRelation_id}", UUID.randomUUID(), this.algorithmRelation1.getId()))
@@ -383,7 +385,7 @@ public class AlgorithmControllerTest {
     @Test
     public void deleteAlgorithmRelation_returnOk() throws Exception {
 
-    	when(algorithmService.deleteAlgorithmRelation(algorithm1.getId(),algorithmRelation1.getId())).thenReturn(true);
+//    	when(algorithmService.deleteAlgorithmRelation(algorithm1.getId(),algorithmRelation1.getId())).thenReturn(true);
     	
     	mockMvc.perform(delete("/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS +
     			"/{relation_id}", this.algorithm1.getId(), this.algorithmRelation1.getId()))

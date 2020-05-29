@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.AlgorithmRelation;
+import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,6 +19,8 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 public interface AlgorithmRelationRepository extends JpaRepository<AlgorithmRelation, UUID> {
 	
 	Optional<List<AlgorithmRelation>> findByTargetAlgorithmId(UUID targetAlgId);
+	
+	Optional<Page<AlgorithmRelation>> findBySourceAlgorithmId(UUID sourceAlgId);
 
     @Query("SELECT COUNT(algRel) FROM AlgorithmRelation algRel WHERE algRel.algoRelationType.id = :algoRelationTypeId")
     long countRelationsUsingRelationType(@Param("algoRelationTypeId") UUID algoRelationTypeId);

@@ -26,7 +26,7 @@ public class AlgoRelationTypeAssembler implements SimpleRepresentationModelAssem
 	@Override
 	public void addLinks(EntityModel<AlgoRelationTypeDto> resource) {
 		try {
-			resource.add(linkTo(methodOn(AlgoRelationTypeController.class).getAlgoRelationTypeById(resource.getContent().getId()))
+			resource.add(linkTo(methodOn(AlgoRelationTypeController.class).getAlgoRelationTypeById(getId(resource)))
 					.withSelfRel());
 			resource.add(linkTo(
 					methodOn(AlgoRelationTypeController.class).updateAlgoRelationType(getId(resource), getContent(resource)))
@@ -40,32 +40,32 @@ public class AlgoRelationTypeAssembler implements SimpleRepresentationModelAssem
 
 	@Override
 	public void addLinks(CollectionModel<EntityModel<AlgoRelationTypeDto>> resources) {
-
+		Iterator<EntityModel<AlgoRelationTypeDto>> iter = resources.getContent().iterator();
+		while(iter.hasNext()) {
+			addLinks(iter.next());
+		}
 	}
 	
 	public void addLinks(Collection<EntityModel<AlgoRelationTypeDto>> content) {
-		Iterator<EntityModel<AlgoRelationTypeDto>> iterator = content.iterator();
-		while(iterator.hasNext()) {
-			addLinks(iterator.next());
-		}
+		addLinks(new CollectionModel<EntityModel<AlgoRelationTypeDto>>(content));
 	}
 	
-	public EntityModel<AlgoRelationTypeDto> generateEntityModel(AlgoRelationTypeDto dto) {
-		EntityModel<AlgoRelationTypeDto> entityModel = new EntityModel<AlgoRelationTypeDto>(dto);
-		addLinks(entityModel);
-		return entityModel;
-	}
-	
-	public CollectionModel<EntityModel<AlgoRelationTypeDto>> generateCollectionModel(Set<AlgoRelationTypeDto> dtos) {
-		// Create EntityModel and fill each with links
-		Collection<EntityModel<AlgoRelationTypeDto>> dtoCollection = new HashSet<EntityModel<AlgoRelationTypeDto>>();
-		for (AlgoRelationTypeDto dto: dtos) {
-			dtoCollection.add(generateEntityModel(dto));
-		}
-		// Return CollectionModel
-		CollectionModel<EntityModel<AlgoRelationTypeDto>> resources = new CollectionModel<>(dtoCollection);	
-		return resources;
-	}
+//	public EntityModel<AlgoRelationTypeDto> generateEntityModel(AlgoRelationTypeDto dto) {
+//		EntityModel<AlgoRelationTypeDto> entityModel = new EntityModel<AlgoRelationTypeDto>(dto);
+//		addLinks(entityModel);
+//		return entityModel;
+//	}
+//	
+//	public CollectionModel<EntityModel<AlgoRelationTypeDto>> generateCollectionModel(Set<AlgoRelationTypeDto> dtos) {
+//		// Create EntityModel and fill each with links
+//		Collection<EntityModel<AlgoRelationTypeDto>> dtoCollection = new HashSet<EntityModel<AlgoRelationTypeDto>>();
+//		for (AlgoRelationTypeDto dto: dtos) {
+//			dtoCollection.add(generateEntityModel(dto));
+//		}
+//		// Return CollectionModel
+//		CollectionModel<EntityModel<AlgoRelationTypeDto>> resources = new CollectionModel<>(dtoCollection);	
+//		return resources;
+//	}
 
 	private UUID getId(EntityModel<AlgoRelationTypeDto> resource) {
 		return resource.getContent().getId();
