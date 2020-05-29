@@ -6,6 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.planqk.atlas.core.model.AlgoRelationType;
+import org.planqk.atlas.core.model.exceptions.NotFoundException;
 import org.planqk.atlas.core.services.AlgoRelationTypeService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.AlgoRelationTypeDto;
@@ -28,6 +29,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -80,10 +82,8 @@ public class AlgoRelationTypeControllerTest {
         algoRelationType1Dto = AlgoRelationTypeDto.Converter.convert(algoRelationType1);
         algoRelationType2Dto = AlgoRelationTypeDto.Converter.convert(algoRelationType2);
 
-		when(modelConverter.convert(algoRelationType1)).thenReturn(algoRelationType1Dto);
-		when(modelConverter.convert(algoRelationType1Dto)).thenReturn(algoRelationType1);
-        when(algoRelationTypeService.findById(any(UUID.class))).thenReturn(Optional.empty());
-        when(algoRelationTypeService.findById(algoRelationType1.getId())).thenReturn(Optional.of(algoRelationType1));
+		when(modelConverter.convert(algoRelationType1, AlgoRelationTypeDto.class)).thenReturn(algoRelationType1Dto);
+		when(modelConverter.convert(algoRelationType1Dto, AlgoRelationType.class)).thenReturn(algoRelationType1);
 	}
 	
 	public void setupTest() {
@@ -176,7 +176,7 @@ public class AlgoRelationTypeControllerTest {
 	@Test
 	public void getAlgoRelationTypeById_returnNotFound() throws Exception {
 		
-		when(algoRelationTypeService.findById(algoRelationType1.getId())).thenReturn(Optional.empty());
+		when(algoRelationTypeService.findById(algoRelationType1.getId())).thenThrow(NotFoundException.class);
 		
 		mockMvc.perform(get("/" + Constants.ALGO_RELATION_TYPES + "/{id}", this.algoRelationType1.getId())
 				.accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
@@ -185,7 +185,7 @@ public class AlgoRelationTypeControllerTest {
 	@Test
 	public void getAlgoRelationTypeById_returnAlgoRelationType() throws Exception {
 		
-		when(algoRelationTypeService.findById(algoRelationType1.getId())).thenReturn(Optional.of(algoRelationType1));
+		when(algoRelationTypeService.findById(algoRelationType1.getId())).thenReturn(algoRelationType1);
 		
 		MvcResult result = mockMvc.perform(get("/" + Constants.ALGO_RELATION_TYPES + "/{id}", this.algoRelationType1.getId())
 				.accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
@@ -197,16 +197,12 @@ public class AlgoRelationTypeControllerTest {
 	@Test
 	public void deleteAlgoRelationType_returnNotFound() throws Exception {
 		
-		when(algoRelationTypeService.findById(algoRelationType1.getId())).thenReturn(Optional.empty());
-		
 		mockMvc.perform(delete("/" + Constants.ALGO_RELATION_TYPES + "/{id}", this.algoRelationType1.getId())
 				.accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
 	}
 	
 	@Test
 	public void deleteAlgoRelationType_returnOk() throws Exception {
-		
-		when(algoRelationTypeService.findById(algoRelationType1.getId())).thenReturn(Optional.of(algoRelationType1));
 		
 		mockMvc.perform(delete("/" + Constants.ALGO_RELATION_TYPES + "/{id}", this.algoRelationType1.getId())
 				.accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
