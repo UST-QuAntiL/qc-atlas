@@ -3,16 +3,15 @@ package org.planqk.atlas.web.dtos;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.ProblemType;
-import org.springframework.hateoas.RepresentationModel;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import javax.validation.constraints.*;
 
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode
 @Data
-public class ProblemTypeDto extends RepresentationModel<ProblemTypeDto> {
+public class ProblemTypeDto {
 	private UUID id;
 	
 	@NotNull(message = "ProblemType-Name must not be null!")
