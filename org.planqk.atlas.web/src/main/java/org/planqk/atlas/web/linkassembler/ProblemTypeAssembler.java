@@ -4,11 +4,15 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.UUID;
 
 import org.planqk.atlas.web.controller.ProblemTypeController;
 import org.planqk.atlas.web.dtos.ProblemTypeDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.SimpleRepresentationModelAssembler;
@@ -16,6 +20,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ProblemTypeAssembler implements SimpleRepresentationModelAssembler<ProblemTypeDto> {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(ProblemTypeAssembler.class);
 
 	@Override
 	public void addLinks(EntityModel<ProblemTypeDto> resource) {
@@ -28,7 +34,7 @@ public class ProblemTypeAssembler implements SimpleRepresentationModelAssembler<
 			resource.add(
 					linkTo(methodOn(ProblemTypeController.class).deleteProblemType(getId(resource))).withRel("delete"));
 		} catch (Exception e) {
-			// TODO: Exception handling
+			LOG.error(e.getMessage(), e);
 		}
 	}
 
@@ -48,6 +54,17 @@ public class ProblemTypeAssembler implements SimpleRepresentationModelAssembler<
 		EntityModel<ProblemTypeDto> entityModel = new EntityModel<ProblemTypeDto>(dto);
 		addLinks(entityModel);
 		return entityModel;
+	}
+	
+	public CollectionModel<EntityModel<ProblemTypeDto>> generateCollectionModel(Set<ProblemTypeDto> dtos) {
+		// Create EntityModel and fill each with links
+		Collection<EntityModel<ProblemTypeDto>> dtoCollection = new HashSet<EntityModel<ProblemTypeDto>>();
+		for (ProblemTypeDto dto: dtos) {
+			dtoCollection.add(generateEntityModel(dto));
+		}
+		// Return CollectionModel
+		CollectionModel<EntityModel<ProblemTypeDto>> resources = new CollectionModel<>(dtoCollection);	
+		return resources;
 	}
 
 	private UUID getId(EntityModel<ProblemTypeDto> resource) {

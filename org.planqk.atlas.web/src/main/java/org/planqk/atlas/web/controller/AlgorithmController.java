@@ -36,13 +36,18 @@ import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.AlgorithmListDto;
 import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
 import org.planqk.atlas.web.dtos.AlgorithmRelationListDto;
-import org.planqk.atlas.web.dtos.ProblemTypeListDto;
+import org.planqk.atlas.web.dtos.ProblemTypeDto;
 import org.planqk.atlas.web.dtos.TagListDto;
+import org.planqk.atlas.web.linkassembler.AlgorithmAssembler;
+import org.planqk.atlas.web.linkassembler.ProblemTypeAssembler;
 import org.planqk.atlas.web.utils.DtoEntityConverter;
 import org.planqk.atlas.web.utils.RestUtils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -71,13 +76,14 @@ public class AlgorithmController {
 
     final private static Logger LOG = LoggerFactory.getLogger(AlgorithmController.class);
 
+    @Autowired
     private AlgorithmService algorithmService;
+    @Autowired
     private DtoEntityConverter modelConverter;
-
-    public AlgorithmController(AlgorithmService algorithmService, DtoEntityConverter modelConverter) {
-        this.algorithmService = algorithmService;
-        this.modelConverter = modelConverter;
-    }
+    @Autowired
+    private ProblemTypeAssembler problemTypeAssembler;
+    @Autowired
+    private AlgorithmAssembler algorithmAssembler;
 
     /**
      * Create a DTO object for a given {@link Algorithm} with the contained data and the links to related objects.
@@ -165,16 +171,21 @@ public class AlgorithmController {
     }
 
     @GetMapping("/{id}/" + Constants.PROBLEM_TYPES)
-    public HttpEntity<ProblemTypeListDto> getProblemTypes(@PathVariable UUID id) {
+    public HttpEntity<?> getProblemTypes(@PathVariable UUID id) {
         Optional<Algorithm> algorithmOptional = algorithmService.findById(id);
         if (!algorithmOptional.isPresent()) {
             LOG.error("Unable to retrieve algorithm with id {} form the repository.", id);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+        // Get ProblemTypes of Algorithm
         Set<ProblemType> problemTypes = algorithmOptional.get().getProblemTypes();
-        ProblemTypeListDto problemTypesListDto = ProblemTypeController.createProblemTypeDtoList(problemTypes.stream());
-        problemTypesListDto.add(linkTo(methodOn(AlgorithmController.class).getProblemTypes(id)).withSelfRel());
-        return new ResponseEntity<>(problemTypesListDto, HttpStatus.OK);
+        // Translate Entity to DTO
+        Set<ProblemTypeDto> dtoTypes = modelConverter.convertSet(problemTypes, ProblemTypeDto.class);
+        // Create CollectionModel
+        CollectionModel<EntityModel<ProblemTypeDto>> resultCollection = problemTypeAssembler.generateCollectionModel(dtoTypes);
+        // Fill Collection-Links
+        algorithmAssembler.addProblemTypeLink(resultCollection, id);
+        return new ResponseEntity<>(resultCollection, HttpStatus.OK);
     }
 
     @GetMapping("/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS)

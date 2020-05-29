@@ -1,19 +1,14 @@
 package org.planqk.atlas.web.controller;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
-
-import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.planqk.atlas.core.model.ProblemType;
+import org.planqk.atlas.core.model.exceptions.NoContentException;
+import org.planqk.atlas.core.model.exceptions.NotFoundException;
 import org.planqk.atlas.core.model.exceptions.SqlConsistencyException;
 import org.planqk.atlas.core.services.ProblemTypeService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.ProblemTypeDto;
-import org.planqk.atlas.web.dtos.ProblemTypeListDto;
 import org.planqk.atlas.web.linkassembler.ProblemTypeAssembler;
 import org.planqk.atlas.web.utils.DtoEntityConverter;
 import org.planqk.atlas.web.utils.RestUtils;
@@ -52,19 +47,6 @@ public class ProblemTypeController {
 	@Autowired
 	private ProblemTypeAssembler problemTypeAssembler;
 
-	public static ProblemTypeListDto createProblemTypeDtoList(Stream<ProblemType> stream) {
-		ProblemTypeListDto problemTypeListDto = new ProblemTypeListDto();
-		problemTypeListDto
-				.add(stream.map(problemType -> createProblemTypeDto(problemType)).collect(Collectors.toList()));
-		return problemTypeListDto;
-	}
-
-	public static ProblemTypeDto createProblemTypeDto(ProblemType problemType) {
-		ProblemTypeDto dto = ProblemTypeDto.Converter.convert(problemType);
-		dto.add(linkTo(methodOn(ProblemTypeController.class).getProblemTypeById(problemType.getId())).withSelfRel());
-		return dto;
-	}
-
 	@PostMapping("/")
 	public HttpEntity<EntityModel<ProblemTypeDto>> createProblemType(@Validated @RequestBody ProblemTypeDto problemTypeDto) {
 		// Convert DTO to Entity
@@ -78,7 +60,7 @@ public class ProblemTypeController {
 
 	@PutMapping("/{id}")
 	public HttpEntity<EntityModel<ProblemTypeDto>> updateProblemType(@PathVariable UUID id,
-			@Validated @RequestBody ProblemTypeDto problemTypeDto) {
+			@Validated @RequestBody ProblemTypeDto problemTypeDto) throws NotFoundException {
 		// Convert DTO to Entity
 		ProblemType entityInput = modelConverter.convert(problemTypeDto, ProblemType.class);
 		// Update Entity
@@ -89,10 +71,7 @@ public class ProblemTypeController {
 	}
 
 	@DeleteMapping("/{id}")
-	public HttpEntity<ProblemTypeDto> deleteProblemType(@PathVariable UUID id) throws SqlConsistencyException {
-		if (problemTypeService.findById(id).isEmpty()) {
-			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-		}
+	public HttpEntity<ProblemTypeDto> deleteProblemType(@PathVariable UUID id) throws SqlConsistencyException, NoContentException {
 		problemTypeService.delete(id);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
@@ -114,14 +93,11 @@ public class ProblemTypeController {
 	}
 
 	@GetMapping("/{id}")
-	public HttpEntity<EntityModel<ProblemTypeDto>> getProblemTypeById(@PathVariable UUID id) {
-		Optional<ProblemType> problemTypeOpt = problemTypeService.findById(id);
-		if (problemTypeOpt.isPresent()) {
-			// Convert Entity to DTO
-			ProblemTypeDto dtoOutput = modelConverter.convert(problemTypeOpt.get(), ProblemTypeDto.class);
-			return new ResponseEntity<>(problemTypeAssembler.generateEntityModel(dtoOutput), HttpStatus.OK);
-		}
-		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+	public HttpEntity<EntityModel<ProblemTypeDto>> getProblemTypeById(@PathVariable UUID id) throws NotFoundException {
+		ProblemType problemType = problemTypeService.findById(id);
+		// Convert Entity to DTO
+		ProblemTypeDto dtoOutput = modelConverter.convert(problemType, ProblemTypeDto.class);
+		return new ResponseEntity<>(problemTypeAssembler.generateEntityModel(dtoOutput), HttpStatus.OK);
 	}
 
 }
