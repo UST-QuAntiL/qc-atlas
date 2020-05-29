@@ -35,12 +35,12 @@ public class RestErrorHandler {
 	public ResponseEntity<?> handleSqlConsistencyException(SqlConsistencyException e) {
 		return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
 	}
-	
+
 	@ExceptionHandler(NoContentException.class)
 	public ResponseEntity<?> handleNoContentException(NoContentException e) {
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
-	
+
 	@ExceptionHandler(NotFoundException.class)
 	public ResponseEntity<?> handleNotFoundException(NotFoundException e) {
 		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
