@@ -36,8 +36,6 @@ public interface AlgorithmService {
 
     void delete(UUID id) throws NotFoundException;
 
-    AlgorithmRelation addUpdateAlgorithmRelation(UUID sourceAlgorithm_id, AlgorithmRelation relation) throws NotFoundException;
-
     boolean deleteAlgorithmRelation(UUID algoId, UUID relationId) throws NotFoundException;
 
     Page<Algorithm> findAll(Pageable pageable);
