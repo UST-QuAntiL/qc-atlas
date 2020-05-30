@@ -20,10 +20,7 @@
 package org.planqk.atlas.web.utils;
 
 import org.planqk.atlas.web.Constants;
-import org.planqk.atlas.web.controller.AlgorithmController;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
@@ -31,8 +28,6 @@ import org.springframework.data.domain.Pageable;
  * Utility class for the REST API functionality
  */
 public class RestUtils {
-
-    final private static Logger LOG = LoggerFactory.getLogger(AlgorithmController.class);
 
     /**
      * Return a (default) pageable from the provided Requestparams for an endpoint that can be used with pagination

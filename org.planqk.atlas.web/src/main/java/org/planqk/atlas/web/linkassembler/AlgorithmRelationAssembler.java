@@ -16,7 +16,7 @@ public class AlgorithmRelationAssembler implements SimpleRepresentationModelAsse
 	@Override
 	public void addLinks(EntityModel<AlgorithmRelationDto> resource) {
 		// TODO Auto-generated method stub
-
+        LOG.info("Implementation required!");
 	}
 
 	@Override
