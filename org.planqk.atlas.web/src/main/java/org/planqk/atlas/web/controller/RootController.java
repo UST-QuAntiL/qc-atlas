@@ -42,8 +42,8 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class RootController {
 
     @GetMapping("/")
-    public HttpEntity<RepresentationModel> root() throws NotFoundException {
-        RepresentationModel responseEntity = new RepresentationModel<>();
+    public HttpEntity<RepresentationModel<?>> root() throws NotFoundException {
+        RepresentationModel<?> responseEntity = new RepresentationModel<>();
 
         // add links to sub-controllers
         responseEntity.add(linkTo(methodOn(RootController.class).root()).withSelfRel());
