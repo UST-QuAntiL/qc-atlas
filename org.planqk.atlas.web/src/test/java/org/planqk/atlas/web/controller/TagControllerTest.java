@@ -20,6 +20,7 @@
 package org.planqk.atlas.web.controller;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -27,11 +28,15 @@ import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.services.TagService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.TagDto;
-import org.planqk.atlas.web.dtos.TagListDto;
+import org.planqk.atlas.web.linkassembler.TagAssembler;
+import org.planqk.atlas.web.utils.HateoasUtils;
+import org.planqk.atlas.web.utils.ModelMapperUtils;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -40,6 +45,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -49,6 +57,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -58,6 +67,10 @@ public class TagControllerTest {
 
     @Mock
     private TagService tagService;
+    @Mock
+    private TagAssembler tagAssembler;
+    @Mock
+    private PagedResourcesAssembler<TagDto> paginationAssembler;
 
     @InjectMocks
     private TagController tagController;
@@ -93,37 +106,45 @@ public class TagControllerTest {
         Pageable pageable = PageRequest.of(0, 2);
 
         Page<Tag> page = new PageImpl<Tag>(tags, pageable, tags.size());
+        Page<TagDto> pageDto = ModelMapperUtils.convertPage(page, TagDto.class);
+        
         when(tagService.findAll(any(Pageable.class))).thenReturn(page);
+        when(paginationAssembler.toModel(ArgumentMatchers.<Page<TagDto>>any())).thenReturn(HateoasUtils.generatePagedModel(pageDto));
+        doNothing().when(tagAssembler).addLinks(ArgumentMatchers.<Collection<EntityModel<TagDto>>>any());
 
-        MvcResult mvcResult = mockMvc.perform(get("/" + Constants.TAGS + "/").accept(MediaType.APPLICATION_JSON))
+        MvcResult result = mockMvc.perform(get("/" + Constants.TAGS + "/").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
-        TagListDto tagList = new ObjectMapper().readValue(mvcResult.getResponse().getContentAsString(), TagListDto.class);
-        assertEquals(tagList.getTagsDtos().size(), 2);
+        PagedModel<EntityModel<TagDto>> tagListDto = new ObjectMapper().readValue(result.getResponse().getContentAsString(), new TypeReference<PagedModel<EntityModel<TagDto>>>() {});
+        assertEquals(tagListDto.getContent().size(), 2);
     }
 
     @Test
     public void getTags_withEmptyTagList() throws Exception {
         when(tagService.findAll(any(Pageable.class))).thenReturn(Page.empty());
+        when(paginationAssembler.toModel(ArgumentMatchers.<Page<TagDto>>any())).thenReturn(HateoasUtils.generatePagedModel(Page.empty()));
+        doNothing().when(tagAssembler).addLinks(ArgumentMatchers.<Collection<EntityModel<TagDto>>>any());
+        
         MvcResult result = mockMvc.perform(get("/" + Constants.TAGS + "/")
                 .queryParam(Constants.PAGE, Integer.toString(0))
                 .queryParam(Constants.SIZE, Integer.toString(4))
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
 
-        TagListDto tagListDto = new ObjectMapper().readValue(result.getResponse().getContentAsString(), TagListDto.class);
-        assertEquals(tagListDto.getTagsDtos().size(), 0);
+        PagedModel<EntityModel<TagDto>> tagListDto = new ObjectMapper().readValue(result.getResponse().getContentAsString(), new TypeReference<PagedModel<EntityModel<TagDto>>>() {});
+        assertEquals(tagListDto.getContent().size(), 0);
     }
 
     @Test
     public void testGetId() throws Exception {
         Tag tag1 = getTestTag();
         when(tagService.getTagById(any(UUID.class))).thenReturn(tag1);
+        doNothing().when(tagAssembler).addLinks(ArgumentMatchers.<EntityModel<TagDto>>any());
 
         MvcResult mvcResult = mockMvc.perform(get("/" + Constants.TAGS + "/" + tag1.getId() + "/").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
-        TagDto createdTag = new ObjectMapper().readValue(mvcResult.getResponse().getContentAsString(), TagDto.class);
-        assertEquals(createdTag.getKey(), tag1.getKey());
-        assertEquals(createdTag.getValue(), tag1.getValue());
+        EntityModel<TagDto> createdTag = new ObjectMapper().readValue(mvcResult.getResponse().getContentAsString(), new TypeReference<EntityModel<TagDto>>() {});
+        assertEquals(createdTag.getContent().getKey(), tag1.getKey());
+        assertEquals(createdTag.getContent().getValue(), tag1.getValue());
     }
 
     @Test
@@ -131,6 +152,7 @@ public class TagControllerTest {
         Tag tag1 = getTestTag();
 
         when(tagService.save(tag1)).thenReturn(tag1);
+        doNothing().when(tagAssembler).addLinks(ArgumentMatchers.<EntityModel<TagDto>>any());
 
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders
                 .post("/" + Constants.TAGS + "/")
@@ -139,8 +161,8 @@ public class TagControllerTest {
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated()).andReturn();
 
-        TagDto createdTag = new ObjectMapper().readValue(result.getResponse().getContentAsString(), TagDto.class);
-        assertEquals(createdTag.getKey(), tag1.getKey());
-        assertEquals(createdTag.getValue(), tag1.getValue());
+        EntityModel<TagDto> createdTag = new ObjectMapper().readValue(result.getResponse().getContentAsString(), new TypeReference<EntityModel<TagDto>>() {});
+        assertEquals(createdTag.getContent().getKey(), tag1.getKey());
+        assertEquals(createdTag.getContent().getValue(), tag1.getValue());
     }
 }
