@@ -157,7 +157,9 @@ public class ImplementationControllerTest {
 
         when(implementationService.save(any(Implementation.class))).thenReturn(implementation);
 
-        MvcResult mvcResult = mockMvc.perform(post("/" + Constants.ALGORITHMS + "/" + algoId + "/"
+        // TODO: Use mvcResult to test
+        @SuppressWarnings("unused")
+		MvcResult mvcResult = mockMvc.perform(post("/" + Constants.ALGORITHMS + "/" + algoId + "/"
                 + Constants.IMPLEMENTATIONS + "/")
                 .content(objectMapper.writeValueAsString(ModelMapperUtils.convert(implementation, ImplementationDto.class)))
                 .contentType(MediaType.APPLICATION_JSON)

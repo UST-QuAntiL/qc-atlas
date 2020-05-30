@@ -10,7 +10,6 @@ import org.planqk.atlas.core.model.exceptions.NotFoundException;
 import org.planqk.atlas.core.services.AlgoRelationTypeService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.AlgoRelationTypeDto;
-//import org.planqk.atlas.web.dtos.AlgoRelationTypeListDto;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.data.domain.PageImpl;
@@ -27,8 +26,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -37,7 +34,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @WebMvcTest
@@ -59,7 +55,6 @@ public class AlgoRelationTypeControllerTest {
     private AlgoRelationType algoRelationType1;
     private AlgoRelationType algoRelationType2;
     private AlgoRelationTypeDto algoRelationType1Dto;
-    private AlgoRelationTypeDto algoRelationType2Dto;
 
 	@Before
 	public void initialize() throws NotFoundException {
@@ -76,7 +71,6 @@ public class AlgoRelationTypeControllerTest {
         algoRelationType2.setName("relationType2");
 
         algoRelationType1Dto = ModelMapperUtils.convert(algoRelationType1, AlgoRelationTypeDto.class);
-        algoRelationType2Dto = ModelMapperUtils.convert(algoRelationType2, AlgoRelationTypeDto.class);
 //        when(algoRelationTypeService.findById(any(UUID.class))).thenReturn(Optional.empty());
         when(algoRelationTypeService.findById(algoRelationType1.getId())).thenReturn(algoRelationType1);
 	}
@@ -141,6 +135,8 @@ public class AlgoRelationTypeControllerTest {
 
 		when(algoRelationTypeService.findAll(pageable)).thenReturn(new PageImpl<>(new ArrayList<AlgoRelationType>()));
 
+		// TODO: Use mvcResult to test
+        @SuppressWarnings("unused")
 		MvcResult result = mockMvc.perform(get("/" + Constants.ALGO_RELATION_TYPES + "/")
                 .queryParam(Constants.PAGE, Integer.toString(page))
                 .queryParam(Constants.SIZE, Integer.toString(size))
@@ -159,6 +155,8 @@ public class AlgoRelationTypeControllerTest {
 
 		when(algoRelationTypeService.findAll(pageable)).thenReturn(new PageImpl<>(algoRelationList));
 
+		// TODO: Use mvcResult to test
+        @SuppressWarnings("unused")
 		MvcResult result = mockMvc.perform(get("/" + Constants.ALGO_RELATION_TYPES + "/")
                 .queryParam(Constants.PAGE, Integer.toString(page))
                 .queryParam(Constants.SIZE, Integer.toString(size))

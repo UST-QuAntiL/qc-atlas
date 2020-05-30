@@ -64,7 +64,7 @@ public class RootControllerTest {
         MvcResult result = mockMvc.perform(get("/").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
-        RepresentationModel response = new ObjectMapper().readValue(result.getResponse().getContentAsString(), RepresentationModel.class);
+        RepresentationModel<?> response = new ObjectMapper().readValue(result.getResponse().getContentAsString(), RepresentationModel.class);
         assertTrue(response.getLinks().hasSize(4L));
 
         assertTrue(response.getLinks().hasLink("self"));
