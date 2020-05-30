@@ -42,35 +42,36 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 public class RootControllerTest {
 
-    @InjectMocks
-    private RootController rootController;
+	@InjectMocks
+	private RootController rootController;
 
-    private MockMvc mockMvc;
+	private MockMvc mockMvc;
 
-    @Before
-    public void before() {
-        MockitoAnnotations.initMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(rootController).build();
-    }
+	@Before
+	public void before() {
+		MockitoAnnotations.initMocks(this);
+		mockMvc = MockMvcBuilders.standaloneSetup(rootController).build();
+	}
 
-    @Test
-    public void contextLoaded() throws Exception {
-        assertThat(rootController).isNotNull();
-    }
+	@Test
+	public void contextLoaded() throws Exception {
+		assertThat(rootController).isNotNull();
+	}
 
-    @Test
-    public void testGetHateoasLinks() throws Exception {
+	@Test
+	public void testGetHateoasLinks() throws Exception {
 
-        MvcResult result = mockMvc.perform(get("/").accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk()).andReturn();
+		MvcResult result = mockMvc.perform(get("/").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+				.andReturn();
 
-        RepresentationModel<?> response = new ObjectMapper().readValue(result.getResponse().getContentAsString(), RepresentationModel.class);
-        assertTrue(response.getLinks().hasSize(4L));
+		RepresentationModel<?> response = new ObjectMapper().readValue(result.getResponse().getContentAsString(),
+				RepresentationModel.class);
+		assertTrue(response.getLinks().hasSize(4L));
 
-        assertTrue(response.getLinks().hasLink("self"));
-        assertTrue(response.getLinks().hasLink(Constants.ALGORITHMS));
-        assertTrue(response.getLinks().hasLink(Constants.PROVIDERS));
-        assertTrue(response.getLinks().hasLink(Constants.TAGS));
-        assertFalse(response.getLinks().hasLink("randomLink"));
-    }
+		assertTrue(response.getLinks().hasLink("self"));
+		assertTrue(response.getLinks().hasLink(Constants.ALGORITHMS));
+		assertTrue(response.getLinks().hasLink(Constants.PROVIDERS));
+		assertTrue(response.getLinks().hasLink(Constants.TAGS));
+		assertFalse(response.getLinks().hasLink("randomLink"));
+	}
 }
