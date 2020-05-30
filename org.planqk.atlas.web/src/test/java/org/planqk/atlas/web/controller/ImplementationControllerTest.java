@@ -33,7 +33,6 @@ import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.ImplementationDto;
-import org.planqk.atlas.web.dtos.ImplementationListDto;
 import org.planqk.atlas.web.linkassembler.ImplementationAssembler;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 
@@ -103,9 +102,7 @@ public class ImplementationControllerTest {
 		implementation.setImplementedAlgorithm(algorithm);
 		List<Implementation> implementationList = new ArrayList<Implementation>();
 		implementationList.add(implementation);
-
-		ImplementationListDto implementationListDto = new ImplementationListDto();
-		implementationListDto.add(ModelMapperUtils.convert(implementation, ImplementationDto.class));
+		
 		Pageable pageable = PageRequest.of(0, 2);
 
 		Page<Implementation> page = new PageImpl<Implementation>(implementationList, pageable,
@@ -144,9 +141,6 @@ public class ImplementationControllerTest {
 		implementationList.add(implementation1);
 		implementationList.add(implementation2);
 
-		ImplementationListDto implementationListDto = new ImplementationListDto();
-		implementationListDto.add(ModelMapperUtils.convert(implementation1, ImplementationDto.class));
-		implementationListDto.add(ModelMapperUtils.convert(implementation2, ImplementationDto.class));
 		Pageable pageable = PageRequest.of(0, 2);
 
 		Page<Implementation> page = new PageImpl<Implementation>(implementationList, pageable,

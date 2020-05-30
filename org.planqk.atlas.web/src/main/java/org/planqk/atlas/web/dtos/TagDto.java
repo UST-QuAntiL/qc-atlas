@@ -19,8 +19,6 @@
 
 package org.planqk.atlas.web.dtos;
 
-import org.planqk.atlas.core.model.Tag;
-
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -36,22 +34,4 @@ public class TagDto {
 
     private UUID id;
 
-    public static final class Converter {
-
-        public static TagDto convert(final Tag object) {
-            final TagDto dto = new TagDto();
-            dto.setId(object.getId());
-            dto.setKey(object.getKey());
-            dto.setValue(object.getValue());
-            return dto;
-        }
-
-        public static Tag convert(final TagDto object) {
-            final Tag tag = new Tag();
-            tag.setId(object.getId());
-            tag.setKey(object.getKey());
-            tag.setValue(object.getValue());
-            return tag;
-        }
-    }
 }
