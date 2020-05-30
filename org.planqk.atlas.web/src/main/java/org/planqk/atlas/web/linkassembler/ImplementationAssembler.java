@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.UUID;
 
+import org.planqk.atlas.core.model.exceptions.NotFoundException;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.AlgorithmController;
 import org.planqk.atlas.web.controller.ImplementationController;
@@ -26,9 +27,14 @@ public class ImplementationAssembler implements SimpleRepresentationModelAssembl
 
 	@Override
 	public void addLinks(EntityModel<ImplementationDto> resource) {
-		resource.add(linkTo(methodOn(ImplementationController.class).getImplementation(getAlgId(resource), getId(resource))).withSelfRel());
-		resource.add(linkTo(methodOn(AlgorithmController.class).getAlgorithm(getAlgId(resource))).withRel(Constants.ALGORITHM_LINK));
-		resource.add(linkTo(methodOn(ImplementationController.class).getTags(getAlgId(resource), getId(resource))).withRel(Constants.TAGS));
+		try {
+			resource.add(linkTo(methodOn(ImplementationController.class).getImplementation(getAlgId(resource), getId(resource))).withSelfRel());
+			resource.add(linkTo(methodOn(AlgorithmController.class).getAlgorithm(getAlgId(resource))).withRel(Constants.ALGORITHM_LINK));
+			resource.add(linkTo(methodOn(ImplementationController.class).getTags(getAlgId(resource), getId(resource))).withRel(Constants.TAGS));
+		} catch (NotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override

@@ -124,7 +124,7 @@ public class ImplementationController {
 
         // store and return implementation
         Implementation input = ModelMapperUtils.convert(impl, Implementation.class);
-        input.setImplementedAlgorithm(algorithmOptional.get());
+        input.setImplementedAlgorithm(algorithm);
         // Generate EntityModel
         EntityModel<ImplementationDto> dtoOutput = HateoasUtils.generateEntityModel(ModelMapperUtils.convert(implementationService.save(input), ImplementationDto.class));
         // Add Links

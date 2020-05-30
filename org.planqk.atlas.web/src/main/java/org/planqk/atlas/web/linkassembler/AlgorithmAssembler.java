@@ -59,12 +59,12 @@ public class AlgorithmAssembler implements SimpleRepresentationModelAssembler<Al
 		resources.add(linkTo(methodOn(AlgorithmController.class).getProblemTypes(id)).withSelfRel());
 	}
 
-	public void addTagLink(CollectionModel<EntityModel<TagDto>> resources, UUID id) {
+	public void addTagLink(CollectionModel<EntityModel<TagDto>> resources, UUID id) throws NotFoundException {
 		resources.add(linkTo(methodOn(AlgorithmController.class).getTags(id)).withSelfRel());
 	}
 
 	public void addAlgorithmRelationLink(CollectionModel<EntityModel<AlgorithmRelationDto>> resultCollection,
-			UUID sourceAlgorithm_id) {
+			UUID sourceAlgorithm_id) throws NotFoundException {
 		resultCollection.add(linkTo(methodOn(AlgorithmController.class).getAlgorithmRelations(sourceAlgorithm_id)).withSelfRel());
 	}
 

@@ -11,7 +11,6 @@ import org.planqk.atlas.core.services.AlgoRelationTypeService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.AlgoRelationTypeDto;
 //import org.planqk.atlas.web.dtos.AlgoRelationTypeListDto;
-import org.planqk.atlas.web.utils.DtoEntityConverter;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.data.domain.PageImpl;
@@ -63,7 +62,7 @@ public class AlgoRelationTypeControllerTest {
     private AlgoRelationTypeDto algoRelationType2Dto;
 
 	@Before
-	public void initialize() {
+	public void initialize() throws NotFoundException {
         MockitoAnnotations.initMocks(this);
         mockMvc = MockMvcBuilders.standaloneSetup(algoRelationTypeController).build();
         mapper = new ObjectMapper();
@@ -78,11 +77,8 @@ public class AlgoRelationTypeControllerTest {
 
         algoRelationType1Dto = ModelMapperUtils.convert(algoRelationType1, AlgoRelationTypeDto.class);
         algoRelationType2Dto = ModelMapperUtils.convert(algoRelationType2, AlgoRelationTypeDto.class);
-
-				when(modelConverter.convert(algoRelationType1, AlgoRelationTypeDto.class)).thenReturn(algoRelationType1Dto);
-				when(modelConverter.convert(algoRelationType1Dto, AlgoRelationType.class)).thenReturn(algoRelationType1);
-        when(algoRelationTypeService.findById(any(UUID.class))).thenReturn(Optional.empty());
-        when(algoRelationTypeService.findById(algoRelationType1.getId())).thenReturn(Optional.of(algoRelationType1));
+//        when(algoRelationTypeService.findById(any(UUID.class))).thenReturn(Optional.empty());
+        when(algoRelationTypeService.findById(algoRelationType1.getId())).thenReturn(algoRelationType1);
 	}
 
 	public void setupTest() {

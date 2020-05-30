@@ -152,7 +152,7 @@ public class AlgorithmController {
     }
 
     @GetMapping("/{id}/" + Constants.TAGS)
-    public HttpEntity<TagListDto> getTags(@PathVariable UUID id) throws NotFoundException {
+    public HttpEntity<CollectionModel<EntityModel<TagDto>>> getTags(@PathVariable UUID id) throws NotFoundException {
         Algorithm algorithm = algorithmService.findById(id);
         // Get Tags of Algorithm
         Set<Tag> tags = algorithm.getTags();
@@ -168,12 +168,8 @@ public class AlgorithmController {
     }
 
     @GetMapping("/{id}/" + Constants.PROBLEM_TYPES)
-    public HttpEntity<CollectionModel<EntityModel<ProblemTypeDto>>> getProblemTypes(@PathVariable UUID id) {
-        Optional<Algorithm> algorithmOptional = algorithmService.findById(id);
-        if (!algorithmOptional.isPresent()) {
-            LOG.error("Unable to retrieve algorithm with id {} form the repository.", id);
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public HttpEntity<CollectionModel<EntityModel<ProblemTypeDto>>> getProblemTypes(@PathVariable UUID id) throws NotFoundException {
+        Algorithm algorithm = algorithmService.findById(id);
         // Get ProblemTypes of Algorithm
         Set<ProblemType> problemTypes = algorithm.getProblemTypes();
         // Translate Entity to DTO
@@ -207,7 +203,8 @@ public class AlgorithmController {
     		@Validated @RequestBody AlgorithmRelationDto relation) throws NotFoundException {
         LOG.debug("Post to add algorithm relation received.");
 
-        AlgorithmRelation algorithmRelation = algorithmService.addUpdateAlgorithmRelation(sourceAlgorithm_id, modelConverter.convert(relation));
+        AlgorithmRelation algorithmRelation = algorithmService.addUpdateAlgorithmRelation(sourceAlgorithm_id, ModelMapperUtils
+        		.convert(relation, AlgorithmRelation.class));
         AlgorithmRelationDto dtoOutput = ModelMapperUtils.convert(algorithmRelation, AlgorithmRelationDto.class);
         EntityModel<AlgorithmRelationDto> entityDto = HateoasUtils.generateEntityModel(dtoOutput);
         algorithmRelationAssembler.addLinks(entityDto);
