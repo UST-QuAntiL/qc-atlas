@@ -48,5 +48,5 @@ public interface AlgorithmService {
 	AlgorithmRelation addUpdateAlgorithmRelation(UUID sourceAlgorithm_id, AlgorithmRelation relation)
 			throws NotFoundException;
 	
-	Page<AlgorithmRelation> getAlgorithmRelations(UUID sourceAlgorithm_id) throws NotFoundException;
+	Set<AlgorithmRelation> getAlgorithmRelations(UUID sourceAlgorithm_id) throws NotFoundException;
 }

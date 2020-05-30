@@ -203,8 +203,8 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 	}
 
 	@Override
-	public Page<AlgorithmRelation> getAlgorithmRelations(UUID sourceAlgorithm_id) throws NotFoundException {
-		Optional<Page<AlgorithmRelation>> algorithmRelationsOpt =  algorithmRelationRepository.findBySourceAlgorithmId(sourceAlgorithm_id);
+	public Set<AlgorithmRelation> getAlgorithmRelations(UUID sourceAlgorithm_id) throws NotFoundException {
+		Optional<Set<AlgorithmRelation>> algorithmRelationsOpt =  algorithmRelationRepository.findBySourceAlgorithmId(sourceAlgorithm_id);
 		if (algorithmRelationsOpt.isEmpty()) {
 			LOG.info("Could not find any relations with source algorithm id " + sourceAlgorithm_id + ".");
 			throw new NotFoundException("Could not find any relations with source altorithm id " + sourceAlgorithm_id + ".");
