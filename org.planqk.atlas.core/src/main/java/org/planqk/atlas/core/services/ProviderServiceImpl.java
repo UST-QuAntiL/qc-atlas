@@ -19,10 +19,12 @@
 
 package org.planqk.atlas.core.services;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Provider;
+import org.planqk.atlas.core.model.exceptions.NotFoundException;
 import org.planqk.atlas.core.repository.ProviderRepository;
 
 import lombok.AllArgsConstructor;
@@ -49,7 +51,10 @@ public class ProviderServiceImpl implements ProviderService {
     }
 
     @Override
-    public Optional<Provider> findById(UUID providerId) {
-        return repository.findById(providerId);
+    public Provider findById(UUID providerId) throws NotFoundException {
+    	Optional<Provider> providerOptional = Objects.isNull(providerId) ? Optional.empty() : repository.findById(providerId);
+    	if(providerOptional.isEmpty())
+    		throw new NotFoundException("The provider does not exist!");
+        return providerOptional.get();
     }
 }

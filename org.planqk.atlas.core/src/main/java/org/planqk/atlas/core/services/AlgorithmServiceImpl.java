@@ -27,7 +27,6 @@ import java.util.UUID;
 import org.planqk.atlas.core.model.AlgoRelationType;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
-import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.model.exceptions.NotFoundException;
 import org.planqk.atlas.core.repository.AlgorithmRelationRepository;
 import org.planqk.atlas.core.repository.AlgorithmRepository;
@@ -58,18 +57,9 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 	public Algorithm save(Algorithm algorithm) {
 
 		// Persist Tags separately
-		Set<Tag> tags = algorithm.getTags();
-		for (Tag algorithmTag : algorithm.getTags()) {
-			Optional<Tag> storedTagOptional = tagService.getTagById(algorithmTag.getId());
-			if (!storedTagOptional.isPresent()) {
-				tags.remove(algorithmTag);
-				tags.add(tagService.save(algorithmTag));
-			}
-		}
+		algorithm.setTags(tagService.createOrUpdateAll(algorithm.getTags()));
 		// Persist ProblemTypes separately
 		algorithm.setProblemTypes(problemTypeService.createOrUpdateAll(algorithm.getProblemTypes()));
-
-		algorithm.setTags(tags);
 
 		return algorithmRepository.save(algorithm);
 	}

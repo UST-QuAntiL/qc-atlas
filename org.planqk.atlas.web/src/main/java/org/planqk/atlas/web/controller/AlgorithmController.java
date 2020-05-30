@@ -19,7 +19,6 @@
 
 package org.planqk.atlas.web.controller;
 
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -30,7 +29,6 @@ import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.model.exceptions.NotFoundException;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.web.Constants;
-import org.planqk.atlas.web.dtos.AlgoRelationTypeDto;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
 import org.planqk.atlas.web.dtos.ProblemTypeDto;
@@ -81,10 +79,6 @@ public class AlgorithmController {
     private AlgorithmService algorithmService;
     @Autowired
 	private PagedResourcesAssembler<AlgorithmDto> paginationAssembler;
-    @Autowired
-	private PagedResourcesAssembler<AlgorithmDto> algorithmPaginationAssembler;
-    @Autowired
-	private PagedResourcesAssembler<AlgorithmRelationDto> algorithmRelationPaginationAssembler;
     @Autowired
     private ProblemTypeAssembler problemTypeAssembler;
     @Autowired

@@ -116,7 +116,7 @@ public class TagControllerTest {
     @Test
     public void testGetId() throws Exception {
         Tag tag1 = getTestTag();
-        when(tagService.getTagById(any(UUID.class))).thenReturn(java.util.Optional.of(tag1));
+        when(tagService.getTagById(any(UUID.class))).thenReturn(tag1);
 
         MvcResult mvcResult = mockMvc.perform(get("/" + Constants.TAGS + "/" + tag1.getId() + "/").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();

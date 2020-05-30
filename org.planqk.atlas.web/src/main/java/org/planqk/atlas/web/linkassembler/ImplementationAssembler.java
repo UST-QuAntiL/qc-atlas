@@ -32,8 +32,7 @@ public class ImplementationAssembler implements SimpleRepresentationModelAssembl
 			resource.add(linkTo(methodOn(AlgorithmController.class).getAlgorithm(getAlgId(resource))).withRel(Constants.ALGORITHM_LINK));
 			resource.add(linkTo(methodOn(ImplementationController.class).getTags(getAlgId(resource), getId(resource))).withRel(Constants.TAGS));
 		} catch (NotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOG.error(e.getMessage(), e);
 		}
 	}
 

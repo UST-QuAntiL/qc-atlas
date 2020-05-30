@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.UUID;
 
+import org.planqk.atlas.core.model.exceptions.NotFoundException;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.TagController;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
@@ -26,9 +27,13 @@ public class TagAssembler implements SimpleRepresentationModelAssembler<TagDto> 
 	
 	@Override
 	public void addLinks(EntityModel<TagDto> resource) {
-		resource.add(linkTo(methodOn(TagController.class).getTagById(getId(resource))).withSelfRel());
-		resource.add(linkTo(methodOn(TagController.class).getAlgorithmsOfTag(getId(resource))).withRel(Constants.ALGORITHMS));
-		resource.add(linkTo(methodOn(TagController.class).getImplementationsOfTag(getId(resource))).withRel(Constants.IMPLEMENTATIONS));
+		try {
+			resource.add(linkTo(methodOn(TagController.class).getTagById(getId(resource))).withSelfRel());
+			resource.add(linkTo(methodOn(TagController.class).getAlgorithmsOfTag(getId(resource))).withRel(Constants.ALGORITHMS));
+			resource.add(linkTo(methodOn(TagController.class).getImplementationsOfTag(getId(resource))).withRel(Constants.IMPLEMENTATIONS));
+		} catch (Exception e) {
+			LOG.error(e.getMessage(), e);
+		}
 	}
 
 	@Override
@@ -43,11 +48,11 @@ public class TagAssembler implements SimpleRepresentationModelAssembler<TagDto> 
 		addLinks(new CollectionModel<EntityModel<TagDto>>(content));
 	}
 	
-	public void addAlgorithmLink(CollectionModel<EntityModel<AlgorithmDto>> resources, UUID id) {
+	public void addAlgorithmLink(CollectionModel<EntityModel<AlgorithmDto>> resources, UUID id) throws NotFoundException {
 		resources.add(linkTo(methodOn(TagController.class).getAlgorithmsOfTag(id)).withSelfRel());
 	}
 	
-	public void addImplementationLink(CollectionModel<EntityModel<ImplementationDto>> resources, UUID id) {
+	public void addImplementationLink(CollectionModel<EntityModel<ImplementationDto>> resources, UUID id) throws NotFoundException {
 		resources.add(linkTo(methodOn(TagController.class).getImplementationsOfTag(id)).withSelfRel());
 	}
 	

@@ -19,26 +19,29 @@
 
 package org.planqk.atlas.web.dtos;
 
-import org.planqk.atlas.core.model.Provider;
 import org.planqk.atlas.core.model.Qpu;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import org.springframework.hateoas.RepresentationModel;
+import lombok.NoArgsConstructor;
 
 import java.util.UUID;
+
+import javax.validation.constraints.*;
 
 /**
  * Data transfer object for the model class {@link Qpu}.
  */
-@EqualsAndHashCode(callSuper = true)
-@ToString(callSuper = true)
+@EqualsAndHashCode
 @Data
-public class QpuDto extends RepresentationModel<ProviderDto> {
+@NoArgsConstructor
+public class QpuDto {
 
     private UUID id;
 
+    @NotNull(message = "Qpu-Name must not be null!")
     private String name;
 
     private int numberOfQubits;
@@ -46,27 +49,8 @@ public class QpuDto extends RepresentationModel<ProviderDto> {
     private float t1;
 
     private float maxGateTime;
-
-    public static final class Converter {
-
-        public static QpuDto convert(final Qpu object) {
-            QpuDto dto = new QpuDto();
-            dto.setId(object.getId());
-            dto.setName(object.getName());
-            dto.setNumberOfQubits(object.getQubitCount());
-            dto.setT1(object.getT1());
-            dto.setMaxGateTime(object.getMaxGateTime());
-            return dto;
-        }
-
-        public static Qpu convert(final QpuDto object, final Provider provider) {
-            Qpu qpu = new Qpu();
-            qpu.setName(object.getName());
-            qpu.setQubitCount(object.getNumberOfQubits());
-            qpu.setT1(object.getT1());
-            qpu.setMaxGateTime(object.getMaxGateTime());
-            qpu.setProvider(provider);
-            return qpu;
-        }
-    }
+    
+    @JsonIgnore
+    ProviderDto provider;
+    
 }

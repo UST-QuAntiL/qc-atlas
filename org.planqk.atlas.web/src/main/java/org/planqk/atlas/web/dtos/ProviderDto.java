@@ -23,44 +23,29 @@ import org.planqk.atlas.core.model.Provider;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import org.springframework.hateoas.RepresentationModel;
+import lombok.NoArgsConstructor;
 
 import java.util.UUID;
+
+import javax.validation.constraints.*;
 
 /**
  * Data transfer object for the model class {@link Provider}.
  */
-@EqualsAndHashCode(callSuper = true)
-@ToString(callSuper = true)
+@EqualsAndHashCode
 @Data
-public class ProviderDto extends RepresentationModel<ProviderDto> {
+@NoArgsConstructor
+public class ProviderDto {
 
     private UUID id;
 
+    @NotNull(message = "Provider-Name must not be null!")
     private String name;
 
+    @NotNull(message = "Provider-AccessKey must not be null!")
     private String accessKey;
 
+    @NotNull(message = "Provider-SecretKey must not be null!")
     private String secretKey;
 
-    public static final class Converter {
-
-        public static ProviderDto convert(final Provider object) {
-            ProviderDto dto = new ProviderDto();
-            dto.setId(object.getId());
-            dto.setName(object.getName());
-            dto.setAccessKey(object.getAccessKey());
-            dto.setSecretKey("******"); // do not show password in API
-            return dto;
-        }
-
-        public static Provider convert(final ProviderDto object) {
-            Provider provider = new Provider();
-            provider.setName(object.getName());
-            provider.setAccessKey(object.getAccessKey());
-            provider.setSecretKey(object.getSecretKey());
-            return provider;
-        }
-    }
 }

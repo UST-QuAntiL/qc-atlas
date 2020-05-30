@@ -19,7 +19,6 @@
 
 package org.planqk.atlas.web.controller;
 
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -97,27 +96,22 @@ public class TagController {
     }
 
     @GetMapping(value = "/{tagId}")
-    public HttpEntity<EntityModel<TagDto>> getTagById(@PathVariable UUID tagId) {
-        Optional<Tag> tagOptional = this.tagService.getTagById(tagId);
-        if (!tagOptional.isPresent()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
+    public HttpEntity<EntityModel<TagDto>> getTagById(@PathVariable UUID tagId) throws NotFoundException {
+    	// Get Tag
+        Tag tag = tagService.getTagById(tagId);
         // Get EntityModel of Tag-Object
-        EntityModel<TagDto> dtoOutput = HateoasUtils.generateEntityModel(ModelMapperUtils.convert(tagOptional.get(), TagDto.class));
+        EntityModel<TagDto> dtoOutput = HateoasUtils.generateEntityModel(ModelMapperUtils.convert(tag, TagDto.class));
         // Add links
         tagAssembler.addLinks(dtoOutput);
         return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
     }
 
     @GetMapping(value = "/{tagId}/" + Constants.ALGORITHMS)
-    public HttpEntity<CollectionModel<EntityModel<AlgorithmDto>>> getAlgorithmsOfTag(@PathVariable UUID tagId) {
-        Optional<Tag> tagOptional = this.tagService.getTagById(tagId);
-        if (!tagOptional.isPresent()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public HttpEntity<CollectionModel<EntityModel<AlgorithmDto>>> getAlgorithmsOfTag(@PathVariable UUID tagId) throws NotFoundException {
+    	// Get Tag
+        Tag tag = tagService.getTagById(tagId);
         // Retrieve Algorithms of Tag
-        Set<Algorithm> algorithms = tagOptional.get().getAlgorithms();
+        Set<Algorithm> algorithms = tag.getAlgorithms();
         // Translate Entity to DTO
         Set<AlgorithmDto> algorithmDtos = ModelMapperUtils.convertSet(algorithms, AlgorithmDto.class);
         // Create CollectionModel
@@ -130,13 +124,11 @@ public class TagController {
     }
 
     @GetMapping(value = "/{tagId}/" + Constants.IMPLEMENTATIONS)
-    public HttpEntity<CollectionModel<EntityModel<ImplementationDto>>> getImplementationsOfTag(@PathVariable UUID tagId) {
-        Optional<Tag> tagOptional = this.tagService.getTagById(tagId);
-        if (!tagOptional.isPresent()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public HttpEntity<CollectionModel<EntityModel<ImplementationDto>>> getImplementationsOfTag(@PathVariable UUID tagId) throws NotFoundException {
+    	// Get Tag
+        Tag tag = this.tagService.getTagById(tagId);
         // Get ImplementationDTOs of Tag
-        Set<ImplementationDto> implementations = ModelMapperUtils.convertSet(tagOptional.get().getImplementations(), ImplementationDto.class);
+        Set<ImplementationDto> implementations = ModelMapperUtils.convertSet(tag.getImplementations(), ImplementationDto.class);
         // Create CollectionModel
         CollectionModel<EntityModel<ImplementationDto>> resultCollection = HateoasUtils.generateCollectionModel(implementations);
         // Fill EntityModels

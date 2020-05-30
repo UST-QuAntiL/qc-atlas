@@ -19,15 +19,18 @@
 
 package org.planqk.atlas.core.services;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.planqk.atlas.core.model.Tag;
+import org.planqk.atlas.core.model.exceptions.NotFoundException;
 import org.planqk.atlas.core.repository.TagRepository;
 
 import lombok.AllArgsConstructor;
@@ -61,10 +64,28 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public Optional<Tag> getTagById(UUID tagId) {
-        if (Objects.isNull(tagId)) {
-            return Optional.empty();
-        }
-        return tagRepository.findById(tagId);
+    public Tag getTagById(UUID tagId) throws NotFoundException {
+        Optional<Tag> tagOptional = Objects.isNull(tagId) ? Optional.empty() : tagRepository.findById(tagId);
+        if(tagOptional.isEmpty())
+        	throw new NotFoundException("Tag does not exist!");
+        return tagOptional.get();
     }
+    
+    @Override
+	public Set<Tag> createOrUpdateAll(Set<Tag> algorithmTags) {
+		Set<Tag> tags = new HashSet<>();
+		// Go Iterate all tags
+		for (Tag tag : algorithmTags) {
+			// Check for tag in database
+			try {
+				Tag persistedTag = getTagById(tag.getId());
+				tags.add(save(persistedTag));
+			} catch (NotFoundException e) {
+				// If Tag does not exist --> Create one
+				tags.add(save(tag));
+			}
+		}
+
+		return tags;
+	}
 }

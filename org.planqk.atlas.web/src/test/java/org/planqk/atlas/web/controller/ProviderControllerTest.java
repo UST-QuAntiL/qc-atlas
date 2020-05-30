@@ -21,7 +21,6 @@ package org.planqk.atlas.web.controller;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Provider;
@@ -29,6 +28,7 @@ import org.planqk.atlas.core.services.ProviderService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.ProviderDto;
 import org.planqk.atlas.web.dtos.ProviderListDto;
+import org.planqk.atlas.web.utils.ModelMapperUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
@@ -134,7 +134,7 @@ public class ProviderControllerTest {
         UUID provId = UUID.randomUUID();
         Provider provider = new Provider();
         provider.setId(provId);
-        when(providerService.findById(provId)).thenReturn(Optional.of(provider));
+        when(providerService.findById(provId)).thenReturn(provider);
 
         MvcResult result = mockMvc.perform(get("/" + Constants.PROVIDERS + "/" + provId)
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
@@ -160,7 +160,7 @@ public class ProviderControllerTest {
         providerDto.setName("IBM");
         providerDto.setAccessKey("123");
         providerDto.setSecretKey("456");
-        Provider provider = ProviderDto.Converter.convert(providerDto);
+        Provider provider = ModelMapperUtils.convert(providerDto, Provider.class);
         when(providerService.save(provider)).thenReturn(provider);
 
         MvcResult result = mockMvc.perform(post("/" + Constants.PROVIDERS + "/")
