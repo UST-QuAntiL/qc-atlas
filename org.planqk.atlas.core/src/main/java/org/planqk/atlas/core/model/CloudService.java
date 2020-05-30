@@ -7,6 +7,7 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
+
 @Entity
 @Table(name = "cloud_services")
 @Data
@@ -18,7 +19,8 @@ public class CloudService extends HasId {
     private String costModel;
 
     @ManyToMany(fetch = FetchType.LAZY,
-            cascade = {CascadeType.ALL})
+            cascade = {CascadeType.ALL}
+    )
     @JoinTable(
             name = "cloud_services_backends",
             joinColumns = @JoinColumn(name = "cloud_service_id"),
@@ -26,6 +28,6 @@ public class CloudService extends HasId {
     )
     private Set<Backend> providedBackends = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, mappedBy = "cloud_services")
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, mappedBy = "supportedCloudServices")
     private Set<SoftwarePlatform> softwarePlatforms = new HashSet<>();
 }

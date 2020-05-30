@@ -28,25 +28,14 @@ public class SoftwarePlatform extends HasId {
     private Set<Backend> supportedBackends = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.LAZY,
-            cascade = {CascadeType.ALL})
+            cascade = {CascadeType.ALL}
+    )
     @JoinTable(
             name = "software_platform_cloud_services",
             joinColumns = @JoinColumn(name = "software_platform_id"),
-            inverseJoinColumns = @JoinColumn(name = "cloud_platform_id")
+            inverseJoinColumns = @JoinColumn(name = "cloud_service_id")
     )
     private Set<CloudService> supportedCloudServices = new HashSet<>();
 
 }
 
-@Entity
-@Table(name = "backends")
-@Data
-public class Backend extends HasId {
-
-    private String name;
-
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, mappedBy = "backends")
-    private Set<SoftwarePlatform> softwarePlatforms = new HashSet<>();
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, mappedBy = "backends")
-    private Set<CloudService> cloudServices = new HashSet<>();
-}
