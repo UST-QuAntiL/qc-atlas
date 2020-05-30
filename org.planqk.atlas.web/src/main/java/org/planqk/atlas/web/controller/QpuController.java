@@ -44,6 +44,7 @@ import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -100,7 +101,7 @@ public class QpuController {
     }
 
     @PostMapping("/")
-    public HttpEntity<EntityModel<QpuDto>> createQpu(@PathVariable UUID providerId, @RequestBody QpuDto qpuRequest) throws NotFoundException {
+    public HttpEntity<EntityModel<QpuDto>> createQpu(@PathVariable UUID providerId, @Validated @RequestBody QpuDto qpuRequest) throws NotFoundException {
         LOG.debug("Post to create new QPU received.");
         // Get provider if possible
         Provider provider = providerService.findById(providerId);

@@ -22,6 +22,8 @@ package org.planqk.atlas.web.dtos;
 import java.net.URL;
 import java.util.UUID;
 
+import javax.validation.constraints.*;
+
 import org.planqk.atlas.core.model.Algorithm;
 
 import lombok.Data;
@@ -39,8 +41,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class ImplementationDto {
 
     private UUID id;
+    
+    @NotNull(message = "Implementation-Name must not be null!")
     private String name;
+    @NotNull(message = "Implementation-FileLocation must not be null!")
     private URL fileLocation;
+    
     private String inputFormat;
     private String outputFormat;
     private String description;

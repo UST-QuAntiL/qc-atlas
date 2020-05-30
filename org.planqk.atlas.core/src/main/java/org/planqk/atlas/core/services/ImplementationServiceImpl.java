@@ -19,10 +19,12 @@
 
 package org.planqk.atlas.core.services;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Implementation;
+import org.planqk.atlas.core.model.exceptions.NotFoundException;
 import org.planqk.atlas.core.repository.ImplementationRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -47,7 +49,10 @@ public class ImplementationServiceImpl implements ImplementationService {
     }
 
     @Override
-    public Optional<Implementation> findById(UUID implId) {
-        return repository.findById(implId);
+    public Implementation findById(UUID implId) throws NotFoundException {
+    	Optional<Implementation> implOptional = Objects.isNull(implId) ? Optional.empty() : repository.findById(implId);
+    	if (implOptional.isEmpty())
+    		throw new NotFoundException("Implementation does not exist!");
+        return implOptional.get();
     }
 }

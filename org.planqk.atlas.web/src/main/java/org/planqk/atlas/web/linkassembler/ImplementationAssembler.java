@@ -48,7 +48,7 @@ public class ImplementationAssembler implements SimpleRepresentationModelAssembl
 		addLinks(new CollectionModel<EntityModel<ImplementationDto>>(content));
 	}
 	
-	public void addTagLink(CollectionModel<EntityModel<TagDto>> resultCollection, UUID implId, UUID algoId) {
+	public void addTagLink(CollectionModel<EntityModel<TagDto>> resultCollection, UUID implId, UUID algoId) throws NotFoundException {
 		resultCollection.add(linkTo(methodOn(ImplementationController.class).getTags(algoId, implId)).withSelfRel());
 	}
 	

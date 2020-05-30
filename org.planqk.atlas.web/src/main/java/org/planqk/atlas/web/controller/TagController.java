@@ -46,6 +46,7 @@ import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -85,7 +86,7 @@ public class TagController {
     }
 
     @PostMapping(value = "/")
-    public HttpEntity<EntityModel<TagDto>> createTag(@RequestBody TagDto tag) {
+    public HttpEntity<EntityModel<TagDto>> createTag(@Validated @RequestBody TagDto tag) {
     	// Persist new tag
     	Tag savedTag = tagService.save(ModelMapperUtils.convert(tag, Tag.class));
     	// Convert to EntityModel-DTO

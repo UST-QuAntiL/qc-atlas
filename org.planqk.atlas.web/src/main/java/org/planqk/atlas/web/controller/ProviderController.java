@@ -41,6 +41,7 @@ import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -88,7 +89,7 @@ public class ProviderController {
     }
 
     @PostMapping("/")
-    public HttpEntity<EntityModel<ProviderDto>> createProvider(@RequestBody ProviderDto providerDto) {
+    public HttpEntity<EntityModel<ProviderDto>> createProvider(@Validated @RequestBody ProviderDto providerDto) {
         LOG.debug("Post to create new provider received.");
         // Save incoming provider inside database
         Provider provider = providerService.save(ModelMapperUtils.convert(providerDto, Provider.class));

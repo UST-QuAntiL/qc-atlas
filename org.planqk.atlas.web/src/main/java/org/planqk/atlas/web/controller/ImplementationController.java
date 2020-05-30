@@ -20,8 +20,6 @@
 package org.planqk.atlas.web.controller;
 
 import java.util.HashSet;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -48,6 +46,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -78,10 +77,8 @@ public class ImplementationController {
     @GetMapping("/")
     public HttpEntity<CollectionModel<EntityModel<ImplementationDto>>> getImplementations(@PathVariable UUID algoId) {
         LOG.debug("Get to retrieve all implementations received.");
-
         Set<ImplementationDto> dtoList = new HashSet<ImplementationDto>();
-
-        // add all available implementations to the response
+        // Add all available implementations to the response
         for (Implementation impl : implementationService.findAll(RestUtils.getAllPageable())) {
             if (impl.getImplementedAlgorithm().getId().equals(algoId)) {
                 dtoList.add(ModelMapperUtils.convert(impl, ImplementationDto.class));
@@ -97,32 +94,21 @@ public class ImplementationController {
     @GetMapping("/{implId}")
     public HttpEntity<EntityModel<ImplementationDto>> getImplementation(@PathVariable UUID algoId, @PathVariable UUID implId) throws NotFoundException {
         LOG.debug("Get to retrieve implementation with id: {}.", implId);
-
-        Optional<Implementation> implementationOptional = implementationService.findById(implId);
-        if (!implementationOptional.isPresent()) {
-            LOG.error("Unable to retrieve implementation with id {} form the repository.", implId);
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        // Get Implementation
+        Implementation implementation = implementationService.findById(implId);
         // Generate EntityModel
-        EntityModel<ImplementationDto> dtoOutput = HateoasUtils.generateEntityModel(ModelMapperUtils.convert(implementationOptional.get(), ImplementationDto.class));
+        EntityModel<ImplementationDto> dtoOutput = HateoasUtils.generateEntityModel(ModelMapperUtils.convert(implementation, ImplementationDto.class));
         // Fill Links
         implementationAssembler.addLinks(dtoOutput);
         return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
     }
 
     @PostMapping("/")
-    public HttpEntity<EntityModel<ImplementationDto>> createImplementation(@PathVariable UUID algoId, @RequestBody ImplementationDto impl) throws NotFoundException {
+    public HttpEntity<EntityModel<ImplementationDto>> createImplementation(@PathVariable UUID algoId, @Validated @RequestBody ImplementationDto impl) throws NotFoundException {
         LOG.debug("Post to create new implementation received.");
-
+        // Get Algorithm
         Algorithm algorithm = algorithmService.findById(algoId);
-
-        // check consistency of the implementation object
-        if (Objects.isNull(impl.getName()) || Objects.isNull(impl.getFileLocation())) {
-            LOG.error("Received invalid implementation object for post request: {}", impl.toString());
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-
-        // store and return implementation
+        // Store and return implementation
         Implementation input = ModelMapperUtils.convert(impl, Implementation.class);
         input.setImplementedAlgorithm(algorithm);
         // Generate EntityModel
@@ -133,14 +119,11 @@ public class ImplementationController {
     }
 
     @GetMapping("/{implId}/" + Constants.TAGS)
-    public HttpEntity<CollectionModel<EntityModel<TagDto>>> getTags(@PathVariable UUID algoId, @PathVariable UUID implId) {
-        Optional<Implementation> implementationOptional = implementationService.findById(implId);
-        if (!implementationOptional.isPresent()) {
-            LOG.error("Unable to find implementation with id {} from the repository.", implId);
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        // Get Tags of Algorithm
-        Set<Tag> tags = implementationOptional.get().getTags();
+    public HttpEntity<CollectionModel<EntityModel<TagDto>>> getTags(@PathVariable UUID algoId, @PathVariable UUID implId) throws NotFoundException {
+    	// Get Implementation
+        Implementation implementation = implementationService.findById(implId);
+        // Get Tags of Implementation
+        Set<Tag> tags = implementation.getTags();
         // Translate Entity to DTO
         Set<TagDto> dtoTags = ModelMapperUtils.convertSet(tags, TagDto.class);
         // Create CollectionModel
