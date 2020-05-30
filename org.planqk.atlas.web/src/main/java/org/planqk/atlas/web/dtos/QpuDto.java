@@ -21,6 +21,7 @@ package org.planqk.atlas.web.dtos;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.HashMap;
 import java.util.Map;
 import org.planqk.atlas.core.model.Provider;
@@ -51,6 +52,7 @@ public class QpuDto extends RepresentationModel<ProviderDto> {
 
     private float maxGateTime;
 
+    @JsonIgnore
     private Map<String, Object> otherData = new HashMap<>();
 
     @JsonAnyGetter

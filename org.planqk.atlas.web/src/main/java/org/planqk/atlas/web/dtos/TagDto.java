@@ -21,6 +21,7 @@ package org.planqk.atlas.web.dtos;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.HashMap;
 import java.util.Map;
 import org.planqk.atlas.core.model.Tag;
@@ -41,6 +42,7 @@ public class TagDto extends RepresentationModel<TagDto> {
 
     private UUID id;
 
+    @JsonIgnore
     private Map<String, Object> otherData = new HashMap<>();
 
     @JsonAnyGetter

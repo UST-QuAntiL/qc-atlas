@@ -21,6 +21,7 @@ package org.planqk.atlas.web.dtos;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -44,6 +45,7 @@ public class ProviderListDto extends RepresentationModel<ProviderListDto> {
         this.providerDtoList.addAll(Arrays.asList(provider));
     }
 
+    @JsonIgnore
     private Map<String, Object> otherData = new HashMap<>();
 
     @JsonAnyGetter

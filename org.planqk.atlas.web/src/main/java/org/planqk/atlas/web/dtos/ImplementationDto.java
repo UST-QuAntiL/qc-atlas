@@ -21,6 +21,7 @@ package org.planqk.atlas.web.dtos;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -55,6 +56,7 @@ public class ImplementationDto extends RepresentationModel<ImplementationDto> {
     private String parameter;
     private String dependencies;
 
+    @JsonIgnore
     private Map<String, Object> otherData = new HashMap<>();
 
     @JsonAnyGetter
