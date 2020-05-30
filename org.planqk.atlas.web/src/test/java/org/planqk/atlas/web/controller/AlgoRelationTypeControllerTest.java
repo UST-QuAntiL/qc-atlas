@@ -71,7 +71,7 @@ public class AlgoRelationTypeControllerTest {
         algoRelationType2.setName("relationType2");
 
         algoRelationType1Dto = ModelMapperUtils.convert(algoRelationType1, AlgoRelationTypeDto.class);
-//        when(algoRelationTypeService.findById(any(UUID.class))).thenReturn(Optional.empty());
+        // when(algoRelationTypeService.findById(any(UUID.class))).thenReturn(Optional.empty());
         when(algoRelationTypeService.findById(algoRelationType1.getId())).thenReturn(algoRelationType1);
 	}
 
