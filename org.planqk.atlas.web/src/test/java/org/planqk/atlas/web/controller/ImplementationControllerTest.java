@@ -33,6 +33,7 @@ import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.ImplementationDto;
 import org.planqk.atlas.web.dtos.ImplementationListDto;
+import org.planqk.atlas.web.utils.ModelMapperUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
@@ -95,7 +96,7 @@ public class ImplementationControllerTest {
         implementationList.add(implementation);
 
         ImplementationListDto implementationListDto = new ImplementationListDto();
-        implementationListDto.add(ImplementationDto.Converter.convert(implementation));
+        implementationListDto.add(ModelMapperUtils.convert(implementation, ImplementationDto.class));
         Pageable pageable = PageRequest.of(0, 2);
 
         Page<Implementation> page = new PageImpl<Implementation>(implementationList, pageable, implementationList.size());
@@ -127,8 +128,8 @@ public class ImplementationControllerTest {
         implementationList.add(implementation2);
 
         ImplementationListDto implementationListDto = new ImplementationListDto();
-        implementationListDto.add(ImplementationDto.Converter.convert(implementation1));
-        implementationListDto.add(ImplementationDto.Converter.convert(implementation2));
+        implementationListDto.add(ModelMapperUtils.convert(implementation1, ImplementationDto.class));
+        implementationListDto.add(ModelMapperUtils.convert(implementation2, ImplementationDto.class));
         Pageable pageable = PageRequest.of(0, 2);
 
         Page<Implementation> page = new PageImpl<Implementation>(implementationList, pageable, implementationList.size());
@@ -158,7 +159,7 @@ public class ImplementationControllerTest {
 
         MvcResult mvcResult = mockMvc.perform(post("/" + Constants.ALGORITHMS + "/" + algoId + "/"
                 + Constants.IMPLEMENTATIONS + "/")
-                .content(objectMapper.writeValueAsString(ImplementationDto.Converter.convert(implementation)))
+                .content(objectMapper.writeValueAsString(ModelMapperUtils.convert(implementation, ImplementationDto.class)))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isCreated()).andReturn();
     }
@@ -173,7 +174,7 @@ public class ImplementationControllerTest {
         implementation.setImplementedAlgorithm(algorithm);
         MvcResult mvcResult = mockMvc.perform(post("/" + Constants.ALGORITHMS + "/" + algoId + "/"
                 + Constants.IMPLEMENTATIONS + "/")
-                .content(objectMapper.writeValueAsString(ImplementationDto.Converter.convert(implementation)))
+                .content(objectMapper.writeValueAsString(ModelMapperUtils.convert(implementation, ImplementationDto.class)))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isCreated()).andReturn();
 
@@ -208,7 +209,7 @@ public class ImplementationControllerTest {
 
         mockMvc.perform(post("/" + Constants.ALGORITHMS + "/" + algoId + "/"
                 + Constants.IMPLEMENTATIONS + "/")
-                .content(objectMapper.writeValueAsString(ImplementationDto.Converter.convert(implementation)))
+                .content(objectMapper.writeValueAsString(ModelMapperUtils.convert(implementation, ImplementationDto.class)))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
     }
@@ -223,7 +224,7 @@ public class ImplementationControllerTest {
 
         mockMvc.perform(post("/" + Constants.ALGORITHMS + "/" + nonExistentAlgoId + "/"
                 + Constants.IMPLEMENTATIONS + "/")
-                .content(objectMapper.writeValueAsString(ImplementationDto.Converter.convert(implementation)))
+                .content(objectMapper.writeValueAsString(ModelMapperUtils.convert(implementation, ImplementationDto.class)))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
     }

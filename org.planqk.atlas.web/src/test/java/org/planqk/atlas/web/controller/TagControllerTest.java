@@ -28,7 +28,6 @@ import org.planqk.atlas.core.services.TagService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.TagDto;
 import org.planqk.atlas.web.dtos.TagListDto;
-import org.planqk.atlas.web.utils.DtoEntityConverter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
@@ -59,8 +58,6 @@ public class TagControllerTest {
 
     @Mock
     private TagService tagService;
-    @Mock
-    private DtoEntityConverter modelConverter;
 
     @InjectMocks
     private TagController tagController;
@@ -120,7 +117,6 @@ public class TagControllerTest {
     public void testGetId() throws Exception {
         Tag tag1 = getTestTag();
         when(tagService.getTagById(any(UUID.class))).thenReturn(java.util.Optional.of(tag1));
-        when(modelConverter.convert(any(Tag.class))).thenReturn(TagDto.Converter.convert(tag1));
 
         MvcResult mvcResult = mockMvc.perform(get("/" + Constants.TAGS + "/" + tag1.getId() + "/").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
@@ -135,7 +131,6 @@ public class TagControllerTest {
         Tag tag1 = getTestTag();
 
         when(tagService.save(tag1)).thenReturn(tag1);
-        when(modelConverter.convert(any(Tag.class))).thenReturn(TagDto.Converter.convert(tag1));
 
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders
                 .post("/" + Constants.TAGS + "/")

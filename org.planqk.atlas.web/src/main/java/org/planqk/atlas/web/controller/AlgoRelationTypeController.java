@@ -38,7 +38,7 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/" + Constants.ALGO_RELATION_TYPES)
 public class AlgoRelationTypeController {
-	
+
 	@Autowired
 	private AlgoRelationTypeService algoRelationTypeService;
 	@Autowired
@@ -74,7 +74,7 @@ public class AlgoRelationTypeController {
 		algoRelationTypeAssembler.addLinks(entityDto);
 		return new ResponseEntity<>(entityDto, HttpStatus.OK);
 	}
-	
+
 	@DeleteMapping("/{id}")
 	public HttpEntity<AlgoRelationTypeDto> deleteAlgoRelationType(@PathVariable UUID id) throws SqlConsistencyException, NotFoundException {
 		// delete entity by id
