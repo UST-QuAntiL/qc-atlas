@@ -2,6 +2,7 @@ package org.planqk.atlas.web.utils;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -14,12 +15,23 @@ import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.ProblemTypeDto;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 @SpringBootTest
 public class ModelMapperUtilsTest {
 
 	private Algorithm algorithm;
 	private AlgorithmDto algorithmDto;
+	
+	private Set<ProblemType> problemTypes;
+	private Set<ProblemTypeDto> problemTypesDto;
+	
+	Pageable pageable = PageRequest.of(0, 2);
+	private Page<ProblemType> pagedProblemTypes;
+	private Page<ProblemTypeDto> pagedProblemTypesDto;
 
 	@Before
 	public void initialize() {
@@ -38,8 +50,8 @@ public class ModelMapperUtilsTest {
 		algorithm.setProblem("Problem1");
 		algorithm.setComputationModel(ComputationModel.CLASSIC);
 
-		Set<ProblemType> problemTypes = new HashSet<>();
-
+		problemTypes = new HashSet<>();
+		
 		ProblemType type1 = new ProblemType();
 		type1.setId(problemTypeId);
 		type1.setName("ProblemType1");
@@ -59,7 +71,7 @@ public class ModelMapperUtilsTest {
 		algorithmDto.setProblem("Problem1");
 		algorithmDto.setComputationModel(ComputationModel.CLASSIC);
 
-		Set<ProblemTypeDto> problemTypesDto = new HashSet<>();
+		problemTypesDto = new HashSet<>();
 
 		ProblemTypeDto type1Dto = new ProblemTypeDto();
 		type1Dto.setId(problemTypeId);
@@ -73,6 +85,10 @@ public class ModelMapperUtilsTest {
 		problemTypesDto.add(type2Dto);
 
 		algorithmDto.setProblemTypes(problemTypesDto);
+		
+		// Generate Page objects
+		pagedProblemTypes = new PageImpl<ProblemType>(new ArrayList<>(problemTypes), pageable, problemTypes.size());
+		pagedProblemTypesDto = new PageImpl<ProblemTypeDto>(new ArrayList<>(problemTypesDto), pageable, problemTypesDto.size());
 	}
 	
 	@Test
@@ -97,6 +113,34 @@ public class ModelMapperUtilsTest {
 		assertEquals(mappedEntity.getComputationModel(), algorithm.getComputationModel());
 		assertEquals(mappedEntity.getProblemTypes().size(), algorithm.getProblemTypes().size());
 		assertEquals(mappedEntity.getProblemTypes(),  algorithm.getProblemTypes());
+	}
+	
+	@Test
+	public void testModelMapper_entitySetToDtoSet() {
+		Set<ProblemTypeDto> mappedDtoSet = ModelMapperUtils.convertSet(problemTypes, ProblemTypeDto.class);
+		
+		assertEquals(mappedDtoSet, problemTypesDto);
+	}
+	
+	@Test
+	public void testModelMapper_dtoSetToEntitySet() {
+		Set<ProblemType> mappedSet = ModelMapperUtils.convertSet(problemTypesDto, ProblemType.class);
+		
+		assertEquals(mappedSet, problemTypes);
+	}
+	
+	@Test
+	public void testModelMapper_entityPageToDtoPage() {
+		Page<ProblemTypeDto> mappedDtoPage = ModelMapperUtils.convertPage(pagedProblemTypesDto, ProblemTypeDto.class);
+		
+		assertEquals(mappedDtoPage, pagedProblemTypesDto);
+	}
+	
+	@Test
+	public void testModelMapper_dtoPageToEntityPage() {
+		Page<ProblemType> mappedPage = ModelMapperUtils.convertPage(pagedProblemTypes, ProblemType.class);
+		
+		assertEquals(mappedPage, pagedProblemTypes);
 	}
 
 }
