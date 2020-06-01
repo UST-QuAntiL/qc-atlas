@@ -30,7 +30,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
@@ -42,7 +41,6 @@ import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.WRITE_ONLY;
  * Data transfer object for Algorithms
  * ({@link org.planqk.atlas.core.model.Algorithm}).
  */
-@EqualsAndHashCode
 @ToString(callSuper = true)
 @Data
 @NoArgsConstructor
