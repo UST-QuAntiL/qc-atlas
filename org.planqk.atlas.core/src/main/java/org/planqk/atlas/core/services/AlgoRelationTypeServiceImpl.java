@@ -23,7 +23,8 @@ public class AlgoRelationTypeServiceImpl implements AlgoRelationTypeService {
 	
 	@Autowired
 	private AlgoRelationTypeRepository repo;
-	@Autowired AlgorithmRelationRepository algorithmRelationRepository;
+	@Autowired 
+	private AlgorithmRelationRepository algorithmRelationRepository;
 
 	@Override
 	public AlgoRelationType save(AlgoRelationType algoRelationType) {

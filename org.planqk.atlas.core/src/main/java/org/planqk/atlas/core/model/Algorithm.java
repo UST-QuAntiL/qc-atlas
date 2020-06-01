@@ -33,6 +33,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import org.springframework.lang.NonNull;
@@ -40,6 +41,7 @@ import org.springframework.lang.NonNull;
 /**
  * Entity representing a quantum algorithm, e.g., Shors factorization algorithm.
  */
+@NoArgsConstructor
 @Entity
 public class Algorithm extends AlgorOrImpl {
 
@@ -119,10 +121,6 @@ public class Algorithm extends AlgorOrImpl {
 	@Setter
 	private Set<Tag> tags;
 
-	public Algorithm() {
-		super();
-	}
-
 	@NonNull
 	public Set<Implementation> getImplementations() {
 		if (Objects.isNull(implementations)) {
@@ -141,10 +139,7 @@ public class Algorithm extends AlgorOrImpl {
 	
 	@NonNull
 	public boolean addAlgorithmRelation(AlgorithmRelation relation) {
-		if (algorithmRelations.add(relation)) {
-			return true;
-		}
-		return false;
+		return algorithmRelations.add(relation);
 	}
 	
 	@NonNull

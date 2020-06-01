@@ -81,10 +81,10 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
 	}
 
 	@Override
-	public Set<ProblemType> createOrUpdateAll(Set<ProblemType> algorithmTypes) {
+	public Set<ProblemType> createOrUpdateAll(Set<ProblemType> problemTypes) {
 		Set<ProblemType> types = new HashSet<>();
 		// Go Iterate all types
-		for (ProblemType type : algorithmTypes) {
+		for (ProblemType type : problemTypes) {
 			// Check for type in database
 			try {
 				ProblemType persistedType = findById(type.getId());
