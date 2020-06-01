@@ -105,7 +105,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 	public Algorithm findById(UUID algoId) throws NotFoundException {
 		Optional<Algorithm> algorithmOpt = findOptionalById(algoId);
 		if (algorithmOpt.isEmpty()) {
-			LOG.info("Could not find algorithm with id " + algoId + ".");
+			LOG.info("Could not find algorithm with id: {}.", algoId);
 			throw new NotFoundException("Could not find algorithm with id " + algoId + ".");
 		}
 		return algorithmOpt.get();
@@ -196,7 +196,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 	public Set<AlgorithmRelation> getAlgorithmRelations(UUID sourceAlgorithm_id) throws NotFoundException {
 		Optional<Set<AlgorithmRelation>> algorithmRelationsOpt =  algorithmRelationRepository.findBySourceAlgorithmId(sourceAlgorithm_id);
 		if (algorithmRelationsOpt.isEmpty()) {
-			LOG.info("Could not find any relations with source algorithm id " + sourceAlgorithm_id + ".");
+			LOG.info("Could not find any relations with source algorithm id: {}.", sourceAlgorithm_id);
 			throw new NotFoundException("Could not find any relations with source altorithm id " + sourceAlgorithm_id + ".");
 		}
 		return algorithmRelationsOpt.get();

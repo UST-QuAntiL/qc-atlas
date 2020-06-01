@@ -116,7 +116,7 @@ public class AlgorithmController {
 
     @PutMapping("/{id}")
     public HttpEntity<EntityModel<AlgorithmDto>> updateAlgorithm(@PathVariable UUID id, @Validated @RequestBody AlgorithmDto algo) throws NotFoundException {
-        LOG.debug("Put to update algorithm with id '" + id + "' received");
+        LOG.debug("Put to update algorithm with id: {}.", id);
         Algorithm updatedAlgorithm = algorithmService.update(id, ModelMapperUtils.convert(algo, Algorithm.class));
         // Convert To EntityModel
         EntityModel<AlgorithmDto> dtoOutput = HateoasUtils.generateEntityModel(ModelMapperUtils.convert(updatedAlgorithm, AlgorithmDto.class));
@@ -127,7 +127,7 @@ public class AlgorithmController {
 
     @DeleteMapping("/{id}")
     public HttpEntity<?> deleteAlgorithm(@PathVariable UUID id) throws NotFoundException {
-        LOG.debug("Delete to remove algorithm with id '" + id + "' received");
+        LOG.debug("Delete to remove algorithm with id: {}.", id);
         algorithmService.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
