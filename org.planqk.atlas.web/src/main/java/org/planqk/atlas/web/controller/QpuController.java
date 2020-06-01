@@ -27,12 +27,16 @@ import org.planqk.atlas.core.model.exceptions.NotFoundException;
 import org.planqk.atlas.core.services.ProviderService;
 import org.planqk.atlas.core.services.QpuService;
 import org.planqk.atlas.web.Constants;
+import org.planqk.atlas.web.annotation.ApiVersion;
 import org.planqk.atlas.web.dtos.QpuDto;
 import org.planqk.atlas.web.linkassembler.QpuAssembler;
 import org.planqk.atlas.web.utils.HateoasUtils;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.RestUtils;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,9 +61,11 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * Controller to access and manipulate quantum processing units (QPUs).
  */
+@io.swagger.v3.oas.annotations.tags.Tag(name = "qpu")
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
-@RequestMapping("/" + Constants.PROVIDERS + "/{providerId}/" + Constants.QPUS)
+@RequestMapping("/" + Constants.QPUS)
+@ApiVersion("v1")
 public class QpuController {
 
     private final static Logger LOG = LoggerFactory.getLogger(QpuController.class);
@@ -88,6 +94,10 @@ public class QpuController {
         return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
     }
 
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", content = @Content)
+    })
     @GetMapping("/{qpuId}")
     public HttpEntity<EntityModel<QpuDto>> getQpu(@PathVariable UUID qpuId, @PathVariable UUID providerId) throws NotFoundException {
         LOG.debug("Get to retrieve QPU with id: {}.", qpuId);
@@ -100,6 +110,11 @@ public class QpuController {
         return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
     }
 
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400", content = @Content),
+            @ApiResponse(responseCode = "404", content = @Content)
+    })
     @PostMapping("/")
     public HttpEntity<EntityModel<QpuDto>> createQpu(@PathVariable UUID providerId, @Validated @RequestBody QpuDto qpuRequest) throws NotFoundException {
         LOG.debug("Post to create new QPU received.");
@@ -117,5 +132,4 @@ public class QpuController {
         qpuAssembler.addLinks(dtoOutput);
         return new ResponseEntity<>(dtoOutput, HttpStatus.CREATED);
     }
-
 }

@@ -29,6 +29,7 @@ import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.model.exceptions.NotFoundException;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.web.Constants;
+import org.planqk.atlas.web.annotation.ApiVersion;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
 import org.planqk.atlas.web.dtos.ProblemTypeDto;
@@ -41,6 +42,9 @@ import org.planqk.atlas.web.utils.HateoasUtils;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.RestUtils;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,9 +72,11 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * Controller to access and manipulate quantum algorithms.
  */
+@io.swagger.v3.oas.annotations.tags.Tag(name = "algorithm")
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/" + Constants.ALGORITHMS)
+@ApiVersion("v1")
 public class AlgorithmController {
 
     final private static Logger LOG = LoggerFactory.getLogger(AlgorithmController.class);
@@ -88,6 +94,7 @@ public class AlgorithmController {
     @Autowired
     private AlgorithmRelationAssembler algorithmRelationAssembler;
 
+    @Operation()
     @GetMapping("/")
     public HttpEntity<PagedModel<EntityModel<AlgorithmDto>>> getAlgorithms(@RequestParam(required = false) Integer page,
                                                       @RequestParam(required = false) Integer size) throws NotFoundException {
@@ -102,6 +109,10 @@ public class AlgorithmController {
         return new ResponseEntity<>(outputDto, HttpStatus.OK);
     }
 
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400", content = @Content)
+    })
     @PostMapping("/")
     public HttpEntity<EntityModel<AlgorithmDto>> createAlgorithm(@Validated @RequestBody AlgorithmDto algo) throws NotFoundException {
         LOG.debug("Post to create new algorithm received.");
@@ -132,6 +143,10 @@ public class AlgorithmController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", content = @Content)
+    })
     @GetMapping("/{id}")
     public HttpEntity<EntityModel<AlgorithmDto>> getAlgorithm(@PathVariable UUID id) throws NotFoundException {
         LOG.debug("Get to retrieve algorithm with id: {}.", id);
@@ -145,6 +160,10 @@ public class AlgorithmController {
         return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
     }
 
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", content = @Content)
+    })
     @GetMapping("/{id}/" + Constants.TAGS)
     public HttpEntity<CollectionModel<EntityModel<TagDto>>> getTags(@PathVariable UUID id) throws NotFoundException {
         Algorithm algorithm = algorithmService.findById(id);

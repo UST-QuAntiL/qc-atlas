@@ -22,6 +22,7 @@ package org.planqk.atlas.web.controller;
 import java.util.UUID;
 
 import org.planqk.atlas.web.Constants;
+import org.planqk.atlas.web.annotation.ApiVersion;
 import org.planqk.atlas.web.dtos.ProviderDto;
 import org.planqk.atlas.web.linkassembler.ProviderAssembler;
 import org.planqk.atlas.core.services.ProviderService;
@@ -30,6 +31,10 @@ import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.RestUtils;
 import org.planqk.atlas.core.model.Provider;
 import org.planqk.atlas.core.model.exceptions.NotFoundException;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,9 +52,11 @@ import org.springframework.web.bind.annotation.*;
 /**
  * Controller to access and manipulate quantum computing providers.
  */
+@io.swagger.v3.oas.annotations.tags.Tag(name = "provider")
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/" + Constants.PROVIDERS)
+@ApiVersion("v1")
 public class ProviderController {
 
     final private static Logger LOG = LoggerFactory.getLogger(ProviderController.class);
@@ -75,6 +82,10 @@ public class ProviderController {
         return new ResponseEntity<>(outputDto, HttpStatus.OK);
     }
 
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", content = @Content)
+    })
     @GetMapping("/{id}")
     public HttpEntity<EntityModel<ProviderDto>> getProvider(@PathVariable UUID id) throws NotFoundException {
         LOG.debug("Get to retrieve provider with id: {}.", id);
@@ -88,6 +99,10 @@ public class ProviderController {
         return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
     }
 
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400", content = @Content)
+    })
     @PostMapping("/")
     public HttpEntity<EntityModel<ProviderDto>> createProvider(@Validated @RequestBody ProviderDto providerDto) {
         LOG.debug("Post to create new provider received.");

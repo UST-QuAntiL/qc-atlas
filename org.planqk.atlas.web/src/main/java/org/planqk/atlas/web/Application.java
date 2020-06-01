@@ -19,6 +19,10 @@
 
 package org.planqk.atlas.web;
 
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.info.Contact;
+import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.info.License;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -34,26 +38,44 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @EnableJpaRepositories("org.planqk.atlas.*")
 @EntityScan("org.planqk.atlas.*")
 @Configuration
+@OpenAPIDefinition(
+        info = @Info(
+                title = "atlas", version = "1.0",
+                description = "Platform for Sharing Quantum Software",
+                license = @License(
+                        name = "Apache 2.0",
+                        url = "http://www.apache.org/licenses/LICENSE-2.0.html"
+                ),
+                contact = @Contact(
+                        url = "https://github.com/PlanQK/qc-atlas",
+                        name = "GitHub Repository"
+                )
+        )
+)
 public class Application extends SpringBootServletInitializer {
 
     final private static Logger LOG = LoggerFactory.getLogger(Application.class);
-    
-    /**
-	 * This method allows to run the Application within the embedded tomcat.
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		SpringApplication.run(Application.class, args);
-	}
 
     public Application() {
         logReadyMessage();
     }
 
     private static void logReadyMessage() {
-        final String readyMessage = "\n===================================================\n" +
-                "ATLAS IS READY TO USE!\n" +
-                "===================================================";
-        LOG.info(readyMessage);
+        if (LOG.isInfoEnabled()) {
+            final String readyMessage = "\n===================================================\n" +
+                    "ATLAS IS READY TO USE!\n" +
+                    "===================================================";
+            LOG.info(readyMessage);
+        }
+    }
+
+    /**
+     * Launch the embedded Tomcat server.
+     *
+     * See `application.properties` for its configuration.
+     * @param args
+     */
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
     }
 }
