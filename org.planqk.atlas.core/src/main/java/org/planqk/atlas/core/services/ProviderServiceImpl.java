@@ -37,24 +37,25 @@ import org.springframework.stereotype.Repository;
 @AllArgsConstructor
 public class ProviderServiceImpl implements ProviderService {
 
-    @Autowired
-    private ProviderRepository repository;
+	@Autowired
+	private ProviderRepository repository;
 
-    @Override
-    public Provider save(Provider provider) {
-        return repository.save(provider);
-    }
+	@Override
+	public Provider save(Provider provider) {
+		return repository.save(provider);
+	}
 
-    @Override
-    public Page<Provider> findAll(Pageable pageable) {
-        return repository.findAll(pageable);
-    }
+	@Override
+	public Page<Provider> findAll(Pageable pageable) {
+		return repository.findAll(pageable);
+	}
 
-    @Override
-    public Provider findById(UUID providerId) throws NotFoundException {
-    	Optional<Provider> providerOptional = Objects.isNull(providerId) ? Optional.empty() : repository.findById(providerId);
-    	if(providerOptional.isEmpty())
-    		throw new NotFoundException("The provider does not exist!");
-        return providerOptional.get();
-    }
+	@Override
+	public Provider findById(UUID providerId) throws NotFoundException {
+		Optional<Provider> providerOptional = Objects.isNull(providerId) ? Optional.empty()
+				: repository.findById(providerId);
+		if (providerOptional.isPresent())
+			return providerOptional.get();
+		throw new NotFoundException("The provider does not exist!");
+	}
 }

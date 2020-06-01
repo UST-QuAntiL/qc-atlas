@@ -62,17 +62,17 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
 	@Override
 	public ProblemType findById(UUID id) throws NotFoundException {
 		Optional<ProblemType> problemTypeOpt = Objects.isNull(id) ? Optional.empty() : repo.findById(id);
-		if (problemTypeOpt.isEmpty())
-			throw new NotFoundException(NOT_FOUND_MSG);
-		return problemTypeOpt.get();
+		if (problemTypeOpt.isPresent())
+			return problemTypeOpt.get();
+		throw new NotFoundException(NOT_FOUND_MSG);
 	}
 
 	@Override
 	public ProblemType findByName(String name) throws NotFoundException {
 		Optional<ProblemType> problemTypeOpt = Objects.isNull(name) ? Optional.empty() : repo.findByName(name);
-		if (problemTypeOpt.isEmpty())
-			throw new NotFoundException(NOT_FOUND_MSG);
-		return problemTypeOpt.get();
+		if (problemTypeOpt.isPresent())
+			return problemTypeOpt.get();
+		throw new NotFoundException(NOT_FOUND_MSG);
 	}
 
 	@Override

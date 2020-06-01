@@ -36,23 +36,23 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class QpuServiceImpl implements QpuService {
 
-    private final QpuRepository repository;
+	private final QpuRepository repository;
 
-    @Override
-    public Qpu save(Qpu qpu) {
-        return repository.save(qpu);
-    }
+	@Override
+	public Qpu save(Qpu qpu) {
+		return repository.save(qpu);
+	}
 
-    @Override
-    public Page<Qpu> findAll(Pageable pageable) {
-        return repository.findAll(pageable);
-    }
+	@Override
+	public Page<Qpu> findAll(Pageable pageable) {
+		return repository.findAll(pageable);
+	}
 
-    @Override
-    public Qpu findById(UUID qpuId) throws NotFoundException {
-    	Optional<Qpu> qpuOptional = Objects.isNull(qpuId) ? Optional.empty() : repository.findById(qpuId);
-    	if (qpuOptional.isEmpty())
-    		throw new NotFoundException("Qpu does not exist!");
-        return qpuOptional.get();
-    }
+	@Override
+	public Qpu findById(UUID qpuId) throws NotFoundException {
+		Optional<Qpu> qpuOptional = Objects.isNull(qpuId) ? Optional.empty() : repository.findById(qpuId);
+		if (qpuOptional.isPresent())
+			return qpuOptional.get();
+		throw new NotFoundException("Qpu does not exist!");
+	}
 }

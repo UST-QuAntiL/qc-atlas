@@ -36,23 +36,23 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class ImplementationServiceImpl implements ImplementationService {
 
-    private final ImplementationRepository repository;
+	private final ImplementationRepository repository;
 
-    @Override
-    public Implementation save(Implementation implementation) {
-        return repository.save(implementation);
-    }
+	@Override
+	public Implementation save(Implementation implementation) {
+		return repository.save(implementation);
+	}
 
-    @Override
-    public Page<Implementation> findAll(Pageable pageable) {
-        return repository.findAll(pageable);
-    }
+	@Override
+	public Page<Implementation> findAll(Pageable pageable) {
+		return repository.findAll(pageable);
+	}
 
-    @Override
-    public Implementation findById(UUID implId) throws NotFoundException {
-    	Optional<Implementation> implOptional = Objects.isNull(implId) ? Optional.empty() : repository.findById(implId);
-    	if (implOptional.isEmpty())
-    		throw new NotFoundException("Implementation does not exist!");
-        return implOptional.get();
-    }
+	@Override
+	public Implementation findById(UUID implId) throws NotFoundException {
+		Optional<Implementation> implOptional = Objects.isNull(implId) ? Optional.empty() : repository.findById(implId);
+		if (implOptional.isPresent())
+			return implOptional.get();
+		throw new NotFoundException("Implementation does not exist!");
+	}
 }

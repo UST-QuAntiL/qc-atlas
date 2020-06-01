@@ -43,35 +43,35 @@ import org.springframework.stereotype.Repository;
 @AllArgsConstructor
 public class TagServiceImpl implements TagService {
 
-    @Autowired
-    private TagRepository tagRepository;
-    @PersistenceContext
-    private EntityManager em;
+	@Autowired
+	private TagRepository tagRepository;
+	@PersistenceContext
+	private EntityManager em;
 
-    @Override
-    public List<Tag> findByName(String key) {
-        return tagRepository.findByKey(key);
-    }
+	@Override
+	public List<Tag> findByName(String key) {
+		return tagRepository.findByKey(key);
+	}
 
-    @Override
-    public Tag save(Tag tag) {
-        return tagRepository.save(tag);
-    }
+	@Override
+	public Tag save(Tag tag) {
+		return tagRepository.save(tag);
+	}
 
-    @Override
-    public Page<Tag> findAll(Pageable pageable) {
-        return tagRepository.findAll(pageable);
-    }
+	@Override
+	public Page<Tag> findAll(Pageable pageable) {
+		return tagRepository.findAll(pageable);
+	}
 
-    @Override
-    public Tag getTagById(UUID tagId) throws NotFoundException {
-        Optional<Tag> tagOptional = Objects.isNull(tagId) ? Optional.empty() : tagRepository.findById(tagId);
-        if(tagOptional.isEmpty())
-        	throw new NotFoundException("Tag does not exist!");
-        return tagOptional.get();
-    }
-    
-    @Override
+	@Override
+	public Tag getTagById(UUID tagId) throws NotFoundException {
+		Optional<Tag> tagOptional = Objects.isNull(tagId) ? Optional.empty() : tagRepository.findById(tagId);
+		if (tagOptional.isPresent())
+			return tagOptional.get();
+		throw new NotFoundException("Tag does not exist!");
+	}
+
+	@Override
 	public Set<Tag> createOrUpdateAll(Set<Tag> algorithmTags) {
 		Set<Tag> tags = new HashSet<>();
 		// Go Iterate all tags
