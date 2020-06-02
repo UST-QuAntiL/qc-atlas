@@ -86,13 +86,14 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
 		// Go Iterate all types
 		for (ProblemType type : problemTypes) {
 			// Check for type in database
-			try {
-				ProblemType persistedType = findById(type.getId());
-				persistedType.setName(type.getName());
-				persistedType.setParentProblemType(type.getParentProblemType());
+			Optional<ProblemType> optType = Objects.isNull(type.getId()) ? Optional.empty() : repo.findById(type.getId());
+			if (optType.isPresent()){
+				ProblemType persistedType = optType.get();
+				persistedType.setName(persistedType.getName());
+				persistedType.setParentProblemType(persistedType.getParentProblemType());
 				// Reference database type to set
 				types.add(save(persistedType));
-			} catch (NotFoundException e) {
+			} else {
 				// If Type does not exist --> Create one
 				types.add(save(type));
 			}

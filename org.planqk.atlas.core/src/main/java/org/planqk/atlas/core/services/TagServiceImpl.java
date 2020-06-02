@@ -75,10 +75,11 @@ public class TagServiceImpl implements TagService {
 		// Go Iterate all tags
 		for (Tag tag : algorithmTags) {
 			// Check for tag in database
-			try {
-				Tag persistedTag = getTagById(tag.getId());
-				tags.add(save(persistedTag));
-			} catch (NotFoundException e) {
+			Optional<Tag> optTag = Objects.isNull(tag.getId()) ? Optional.empty() : tagRepository.findById(tag.getId());
+			if (optTag.isPresent()) {
+				Tag persistedTag = optTag.get();
+				tags.add(persistedTag);
+			} else {
 				// If Tag does not exist --> Create one
 				tags.add(save(tag));
 			}
