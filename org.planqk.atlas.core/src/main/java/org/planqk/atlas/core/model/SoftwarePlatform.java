@@ -8,7 +8,6 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
-@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "software_platforms")
 @Data
