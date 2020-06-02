@@ -42,9 +42,10 @@ import org.planqk.atlas.web.utils.RestUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import lombok.AllArgsConstructor;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpEntity;
@@ -68,17 +69,14 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/" + Constants.IMPLEMENTATIONS)
 @ApiVersion("v1")
+@AllArgsConstructor
 public class ImplementationController {
 
     final private static Logger LOG = LoggerFactory.getLogger(ImplementationController.class);
 
-    @Autowired
     private ImplementationService implementationService;
-    @Autowired
     private AlgorithmService algorithmService;
-    @Autowired
     private ImplementationAssembler implementationAssembler;
-    @Autowired
     private TagAssembler tagAssembler;
 
     @Operation()

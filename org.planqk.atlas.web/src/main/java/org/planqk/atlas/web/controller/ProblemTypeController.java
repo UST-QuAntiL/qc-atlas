@@ -13,7 +13,6 @@ import org.planqk.atlas.web.linkassembler.ProblemTypeAssembler;
 import org.planqk.atlas.web.utils.HateoasUtils;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.RestUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
@@ -34,16 +33,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.AllArgsConstructor;
+
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/" + Constants.PROBLEM_TYPES)
+@AllArgsConstructor
 public class ProblemTypeController {
 
-	@Autowired
 	private ProblemTypeService problemTypeService;
-	@Autowired
 	private PagedResourcesAssembler<ProblemTypeDto> paginationAssembler;
-	@Autowired
 	private ProblemTypeAssembler problemTypeAssembler;
 
 	@PostMapping("/")

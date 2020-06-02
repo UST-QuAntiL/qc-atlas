@@ -12,7 +12,6 @@ import org.planqk.atlas.web.linkassembler.AlgoRelationTypeAssembler;
 import org.planqk.atlas.web.utils.HateoasUtils;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.RestUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
@@ -33,16 +32,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.AllArgsConstructor;
+
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/" + Constants.ALGO_RELATION_TYPES)
+@AllArgsConstructor
 public class AlgoRelationTypeController {
 
-	@Autowired
 	private AlgoRelationTypeService algoRelationTypeService;
-	@Autowired
 	private PagedResourcesAssembler<AlgoRelationTypeDto> paginationAssembler;
-	@Autowired
 	private AlgoRelationTypeAssembler algoRelationTypeAssembler;
 
 	@PostMapping("/")

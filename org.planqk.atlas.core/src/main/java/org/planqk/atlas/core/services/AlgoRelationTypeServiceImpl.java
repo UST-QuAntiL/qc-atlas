@@ -11,19 +11,19 @@ import org.planqk.atlas.core.repository.AlgoRelationTypeRepository;
 import org.planqk.atlas.core.repository.AlgorithmRelationRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import lombok.AllArgsConstructor;
+
 @Service
+@AllArgsConstructor
 public class AlgoRelationTypeServiceImpl implements AlgoRelationTypeService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(AlgoRelationType.class);
-	
-	@Autowired
+
 	private AlgoRelationTypeRepository repo;
-	@Autowired 
 	private AlgorithmRelationRepository algorithmRelationRepository;
 
 	@Override

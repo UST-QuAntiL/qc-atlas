@@ -28,7 +28,6 @@ import org.planqk.atlas.core.model.exceptions.NotFoundException;
 import org.planqk.atlas.core.repository.ProviderRepository;
 
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -37,7 +36,6 @@ import org.springframework.stereotype.Repository;
 @AllArgsConstructor
 public class ProviderServiceImpl implements ProviderService {
 
-	@Autowired
 	private ProviderRepository repository;
 
 	@Override

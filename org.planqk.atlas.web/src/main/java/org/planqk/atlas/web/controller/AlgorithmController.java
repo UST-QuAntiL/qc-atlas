@@ -45,9 +45,10 @@ import org.planqk.atlas.web.utils.RestUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import lombok.AllArgsConstructor;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
@@ -77,21 +78,16 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/" + Constants.ALGORITHMS)
 @ApiVersion("v1")
+@AllArgsConstructor
 public class AlgorithmController {
 
     final private static Logger LOG = LoggerFactory.getLogger(AlgorithmController.class);
 
-    @Autowired
     private AlgorithmService algorithmService;
-    @Autowired
 	private PagedResourcesAssembler<AlgorithmDto> paginationAssembler;
-    @Autowired
     private ProblemTypeAssembler problemTypeAssembler;
-    @Autowired
     private TagAssembler tagAssembler;
-    @Autowired
     private AlgorithmAssembler algorithmAssembler;
-    @Autowired
     private AlgorithmRelationAssembler algorithmRelationAssembler;
 
     @Operation()

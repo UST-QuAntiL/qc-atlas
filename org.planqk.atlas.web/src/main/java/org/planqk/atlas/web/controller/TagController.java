@@ -37,7 +37,6 @@ import org.planqk.atlas.web.linkassembler.TagAssembler;
 import org.planqk.atlas.web.utils.HateoasUtils;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.RestUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
@@ -57,23 +56,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.AllArgsConstructor;
+
 //
 @io.swagger.v3.oas.annotations.tags.Tag(name = "tag")
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/" + Constants.TAGS)
 @ApiVersion("v1")
+@AllArgsConstructor
 public class TagController {
 
-	@Autowired
     private TagService tagService;
-	@Autowired
 	private PagedResourcesAssembler<TagDto> paginationAssembler;
-    @Autowired
     private TagAssembler tagAssembler;
-    @Autowired
     private AlgorithmAssembler algorithmAssembler;
-    @Autowired
     private ImplementationAssembler implementationAssembler;
 
     @GetMapping(value = "/")

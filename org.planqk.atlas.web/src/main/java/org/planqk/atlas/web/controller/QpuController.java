@@ -37,9 +37,10 @@ import org.planqk.atlas.web.utils.RestUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import lombok.AllArgsConstructor;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
@@ -66,21 +67,18 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/" + Constants.QPUS)
 @ApiVersion("v1")
+@AllArgsConstructor
 public class QpuController {
 
     private final static Logger LOG = LoggerFactory.getLogger(QpuController.class);
     
-    @Autowired
     private QpuService qpuService;
-    @Autowired
     private ProviderService providerService;
-    @Autowired
     private PagedResourcesAssembler<QpuDto> paginationAssembler;
-    @Autowired
     private QpuAssembler qpuAssembler;
 
     @GetMapping("/")
-    public HttpEntity<PagedModel<EntityModel<QpuDto>>> getQpus(@PathVariable UUID providerId, @RequestParam(required = false) Integer page,
+    public HttpEntity<PagedModel<EntityModel<QpuDto>>> getQpus(@RequestParam UUID providerId, @RequestParam(required = false) Integer page,
                                           @RequestParam(required = false) Integer size) {
         LOG.debug("Get to retrieve all QPUs received.");
         // Generate Pageable
@@ -99,7 +97,7 @@ public class QpuController {
             @ApiResponse(responseCode = "404", content = @Content)
     })
     @GetMapping("/{qpuId}")
-    public HttpEntity<EntityModel<QpuDto>> getQpu(@PathVariable UUID qpuId, @PathVariable UUID providerId) throws NotFoundException {
+    public HttpEntity<EntityModel<QpuDto>> getQpu(@PathVariable UUID qpuId, @RequestParam UUID providerId) throws NotFoundException {
         LOG.debug("Get to retrieve QPU with id: {}.", qpuId);
         // Get Qpu
         Qpu qpu = qpuService.findById(qpuId);
@@ -116,7 +114,7 @@ public class QpuController {
             @ApiResponse(responseCode = "404", content = @Content)
     })
     @PostMapping("/")
-    public HttpEntity<EntityModel<QpuDto>> createQpu(@PathVariable UUID providerId, @Validated @RequestBody QpuDto qpuRequest) throws NotFoundException {
+    public HttpEntity<EntityModel<QpuDto>> createQpu(@RequestParam UUID providerId, @Validated @RequestBody QpuDto qpuRequest) throws NotFoundException {
         LOG.debug("Post to create new QPU received.");
         // Get provider if possible
         Provider provider = providerService.findById(providerId);

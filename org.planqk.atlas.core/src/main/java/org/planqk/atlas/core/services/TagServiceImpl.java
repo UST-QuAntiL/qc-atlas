@@ -34,7 +34,6 @@ import org.planqk.atlas.core.model.exceptions.NotFoundException;
 import org.planqk.atlas.core.repository.TagRepository;
 
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -43,7 +42,6 @@ import org.springframework.stereotype.Repository;
 @AllArgsConstructor
 public class TagServiceImpl implements TagService {
 
-	@Autowired
 	private TagRepository tagRepository;
 	@PersistenceContext
 	private EntityManager em;

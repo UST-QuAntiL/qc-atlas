@@ -14,21 +14,21 @@ import org.planqk.atlas.core.repository.AlgorithmRepository;
 import org.planqk.atlas.core.repository.ProblemTypeRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import lombok.AllArgsConstructor;
+
 @Service
+@AllArgsConstructor
 public class ProblemTypeServiceImpl implements ProblemTypeService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ProblemTypeServiceImpl.class);
 
 	private static final String NOT_FOUND_MSG = "The searched problem type does not exist!";
 
-	@Autowired
 	private ProblemTypeRepository repo;
-	@Autowired
 	private AlgorithmRepository algRepo;
 
 	@Override
