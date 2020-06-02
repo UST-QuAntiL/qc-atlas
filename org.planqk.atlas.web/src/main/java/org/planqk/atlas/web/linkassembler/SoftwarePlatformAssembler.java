@@ -20,6 +20,8 @@ public class SoftwarePlatformAssembler implements SimpleRepresentationModelAssem
     @Override
     public void addLinks(EntityModel<SoftwarePlatformDto> resource) {
         resource.add(linkTo(methodOn(SoftwarePlatformController.class).getSoftwarePlatform(getId(resource))).withSelfRel());
+
+        resource.add(linkTo(methodOn(SoftwarePlatformController.class).deleteSoftwarePlatform(getId(resource))).withRel("delete"));
     }
 
     @Override
@@ -31,7 +33,7 @@ public class SoftwarePlatformAssembler implements SimpleRepresentationModelAssem
     }
 
     public void addLinks(Collection<EntityModel<SoftwarePlatformDto>> content) {
-        addLinks(new CollectionModel<EntityModel<SoftwarePlatformDto>>(content));
+        addLinks(new CollectionModel<>(content));
     }
 
     private UUID getId(EntityModel<SoftwarePlatformDto> resource) {

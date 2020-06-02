@@ -31,6 +31,7 @@ public class Constants {
     public static final String QPUS = "qpus";
     public static final String TAGS = "tags";
     public static final String SOFTWARE_PLATFORMS = "software-platforms";
+    public static final String CLOUD_SERVICES = "cloud-services";
 
     // link names
     public static final String ALGORITHM_LINK = "implementedAlgorithm";

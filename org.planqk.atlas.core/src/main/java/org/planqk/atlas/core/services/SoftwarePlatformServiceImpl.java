@@ -42,5 +42,4 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
         softwarePlatformRepository.deleteById(platformId);
     }
 
-
 }
