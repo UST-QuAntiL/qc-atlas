@@ -1,22 +1,30 @@
 package org.planqk.atlas.core.services;
 
-import java.util.Objects;
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.AlgoRelationType;
+import org.planqk.atlas.core.model.exceptions.NotFoundException;
+import org.planqk.atlas.core.model.exceptions.ConsistencyException;
 import org.planqk.atlas.core.repository.AlgoRelationTypeRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.planqk.atlas.core.repository.AlgorithmRelationRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import lombok.AllArgsConstructor;
+
 @Service
+@AllArgsConstructor
 public class AlgoRelationTypeServiceImpl implements AlgoRelationTypeService {
-	
-	@Autowired
+
+	private static final Logger LOG = LoggerFactory.getLogger(AlgoRelationType.class);
+
 	private AlgoRelationTypeRepository repo;
+	private AlgorithmRelationRepository algorithmRelationRepository;
 
 	@Override
 	public AlgoRelationType save(AlgoRelationType algoRelationType) {
@@ -26,7 +34,7 @@ public class AlgoRelationTypeServiceImpl implements AlgoRelationTypeService {
 	@Override
 	public AlgoRelationType update(UUID id, AlgoRelationType algoRelationType) {
 		// Check for type in database
-		Optional<AlgoRelationType> typeOpt = findById(id);
+		Optional<AlgoRelationType> typeOpt = findOptionalById(id);
 		// If Type exists
 		if (typeOpt.isPresent()) {
 			// Update fields
@@ -35,23 +43,39 @@ public class AlgoRelationTypeServiceImpl implements AlgoRelationTypeService {
 			// Reference database type to set
 			return save(persistedType);
 		}
-		// TODO: Exception handling
-		return null;
+		LOG.info("Trying to update AlgoRelationType which does not exist.");
+		throw new NotFoundException("Cannot update AlgoRelationType since it could not be found.");
 	}
 
 	@Override
 	public void delete(UUID id) {
+		if (algorithmRelationRepository.countRelationsUsingRelationType(id) > 0) {
+			LOG.info("Trying to delete algoRelationType that is used in at least 1 algorithmRelation.");
+			throw new ConsistencyException("Cannot delete algoRelationType since it is used by existing algorithmRelations.");
+		}
+		if (repo.findById(id).isEmpty()) {
+			LOG.info("Trying to delete algoRelationType which does not exist.");
+			throw new NotFoundException("Cannot delete algoRelationTypesince it could not be found.");
+		}
 		repo.deleteById(id);
 	}
 
 	@Override
-	public Optional<AlgoRelationType> findById(UUID id) {
-		return Objects.isNull(id) ? Optional.empty() : repo.findById(id);
+	public AlgoRelationType findById(UUID id) {
+		Optional<AlgoRelationType> algoRelationTypeOpt = findOptionalById(id);
+		if (algoRelationTypeOpt.isEmpty()) {
+			throw new NotFoundException("The AlgoRelationType could not be found.");
+		}
+		return algoRelationTypeOpt.get();
 	}
 
 	@Override
-	public Optional<AlgoRelationType> findByName(String name) {
-		return Objects.isNull(name) ? Optional.empty() : repo.findByName(name);
+	public List<AlgoRelationType> findByName(String name) {
+		Optional<List<AlgoRelationType>> algoRelationTypes = repo.findByName(name);
+		if (algoRelationTypes.isEmpty()) {
+			throw new NotFoundException("No AlgoRelationType found to match name '" + name + "'");
+		}
+		return algoRelationTypes.get();
 	}
 
 	@Override
@@ -60,26 +84,8 @@ public class AlgoRelationTypeServiceImpl implements AlgoRelationTypeService {
 	}
 
 	@Override
-	public Set<AlgoRelationType> createOrUpdateAll(Set<AlgoRelationType> algoRelationTypes) {
-		Set<AlgoRelationType> types = algoRelationTypes;
-		// Go Iterate all types
-		for (AlgoRelationType type : algoRelationTypes) {
-			types.remove(type);
-			// Check for type in database
-			Optional<AlgoRelationType> typeOpt = findById(type.getId());
-			// If Type exists
-			if (typeOpt.isPresent()) {
-				// Update fields
-				AlgoRelationType persistedType = typeOpt.get();
-				persistedType.setName(type.getName());
-				// Reference database type to set
-				type = save(persistedType);
-			} else {
-				type = save(type);
-			}
-			types.add(type);
-		}
-		return types;
+	public Optional<AlgoRelationType> findOptionalById(UUID id) {
+		return repo.findById(id);
 	}
 
 }

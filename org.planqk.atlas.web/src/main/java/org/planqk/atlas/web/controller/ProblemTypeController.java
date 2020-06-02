@@ -1,21 +1,20 @@
 package org.planqk.atlas.web.controller;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
-
-import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.services.ProblemTypeService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.ProblemTypeDto;
-import org.planqk.atlas.web.dtos.ProblemTypeListDto;
-import org.planqk.atlas.web.utils.DtoEntityConverter;
+import org.planqk.atlas.web.linkassembler.ProblemTypeAssembler;
+import org.planqk.atlas.web.utils.HateoasUtils;
+import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.RestUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,76 +30,81 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.AllArgsConstructor;
+
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/" + Constants.PROBLEM_TYPES)
+@AllArgsConstructor
 public class ProblemTypeController {
 
 	private ProblemTypeService problemTypeService;
-	private DtoEntityConverter modelConverter;
-
-	@Autowired
-	public ProblemTypeController(ProblemTypeService problemTypeService, DtoEntityConverter modelConverter) {
-		this.problemTypeService = problemTypeService;
-		this.modelConverter = modelConverter;
-	}
-
-	public static ProblemTypeListDto createProblemTypeDtoList(Stream<ProblemType> stream) {
-		ProblemTypeListDto problemTypeListDto = new ProblemTypeListDto();
-		problemTypeListDto
-				.add(stream.map(problemType -> createProblemTypeDto(problemType)).collect(Collectors.toList()));
-		return problemTypeListDto;
-	}
-
-	public static ProblemTypeDto createProblemTypeDto(ProblemType problemType) {
-		ProblemTypeDto dto = ProblemTypeDto.Converter.convert(problemType);
-		dto.add(linkTo(methodOn(ProblemTypeController.class).getProblemTypeById(problemType.getId())).withSelfRel());
-		return dto;
-	}
+	private PagedResourcesAssembler<ProblemTypeDto> paginationAssembler;
+	private ProblemTypeAssembler problemTypeAssembler;
 
 	@PostMapping("/")
-	public HttpEntity<ProblemTypeDto> createProblemType(@Validated @RequestBody ProblemTypeDto problemTypeDto) {
-		ProblemTypeDto savedProblemType = modelConverter.convert(problemTypeService.save(modelConverter.convert(problemTypeDto)));
-		savedProblemType.add(linkTo(methodOn(ProblemTypeController.class).getProblemTypeById(savedProblemType.getId()))
-				.withSelfRel());
-		return new ResponseEntity<>(savedProblemType, HttpStatus.CREATED);
+	public HttpEntity<EntityModel<ProblemTypeDto>> createProblemType(@Validated @RequestBody ProblemTypeDto problemTypeDto) {
+		// Convert DTO to Entity
+		ProblemType entityInput = ModelMapperUtils.convert(problemTypeDto, ProblemType.class);
+		// Save Entity
+		ProblemType savedProblemType = problemTypeService.save(entityInput);
+		// Convert Entity to DTO
+		ProblemTypeDto dtoOutput = ModelMapperUtils.convert(savedProblemType, ProblemTypeDto.class);
+		// Generate EntityModel
+	    EntityModel<ProblemTypeDto> entityDto = HateoasUtils.generateEntityModel(dtoOutput);
+	    // Add Links
+	    problemTypeAssembler.addLinks(entityDto);
+		return new ResponseEntity<>(entityDto, HttpStatus.CREATED);
 	}
 
 	@PutMapping("/{id}")
-	public HttpEntity<ProblemTypeDto> updateProblemType(@PathVariable UUID id,
+	public HttpEntity<EntityModel<ProblemTypeDto>> updateProblemType(@PathVariable UUID id,
 			@Validated @RequestBody ProblemTypeDto problemTypeDto) {
-		ProblemTypeDto savedProblemType = createProblemTypeDto(
-				problemTypeService.update(id, modelConverter.convert(problemTypeDto)));
-		savedProblemType.add(linkTo(methodOn(ProblemTypeController.class).getProblemTypeById(savedProblemType.getId()))
-				.withSelfRel());
-		return new ResponseEntity<>(savedProblemType, HttpStatus.OK);
+		// Convert DTO to Entity
+		ProblemType entityInput = ModelMapperUtils.convert(problemTypeDto, ProblemType.class);
+		// Update Entity
+		ProblemType updatedEntity = problemTypeService.update(id, entityInput);
+		// Convert Entity to DTO
+		ProblemTypeDto dtoOutput = ModelMapperUtils.convert(updatedEntity, ProblemTypeDto.class);
+		// Generate EntityModel
+	    EntityModel<ProblemTypeDto> entityDto = HateoasUtils.generateEntityModel(dtoOutput);
+	    // Add Links
+	    problemTypeAssembler.addLinks(entityDto);
+		return new ResponseEntity<>(entityDto, HttpStatus.OK);
 	}
 
 	@DeleteMapping("/{id}")
-	public HttpEntity<ProblemTypeDto> updateProblemType(@PathVariable UUID id) {
-		if (problemTypeService.findById(id).isEmpty()) {
-			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-		}
+	public HttpEntity<ProblemTypeDto> deleteProblemType(@PathVariable UUID id) {
 		problemTypeService.delete(id);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
 	@GetMapping("/")
-	public HttpEntity<ProblemTypeListDto> getProblemTypes(@RequestParam(required = false) Integer page,
+	public HttpEntity<?> getProblemTypes(@RequestParam(required = false) Integer page,
 			@RequestParam(required = false) Integer size) {
-		return new ResponseEntity<>(
-				createProblemTypeDtoList(
-						problemTypeService.findAll(RestUtils.getPageableFromRequestParams(page, size)).stream()),
-				HttpStatus.OK);
+		// Generate Pageable
+		Pageable p = RestUtils.getPageableFromRequestParams(page, size);
+		// Get Entities using pagable
+		Page<ProblemType> entities = problemTypeService.findAll(p);
+		// Convert to DTO-Pageable
+		Page<ProblemTypeDto> dtos = ModelMapperUtils.convertPage(entities, ProblemTypeDto.class);
+		// Generate PagedModel with page links
+		PagedModel<EntityModel<ProblemTypeDto>> pagedEntityOutput = paginationAssembler.toModel(dtos);
+		// Add DTO links 
+		problemTypeAssembler.addLinks(pagedEntityOutput.getContent());
+		return new ResponseEntity<>(pagedEntityOutput, HttpStatus.OK);
 	}
 
 	@GetMapping("/{id}")
-	public HttpEntity<ProblemTypeDto> getProblemTypeById(@PathVariable UUID id) {
-		Optional<ProblemType> problemTypeOpt = problemTypeService.findById(id);
-		if (problemTypeOpt.isPresent()) {
-			return new ResponseEntity<>(createProblemTypeDto(problemTypeOpt.get()), HttpStatus.OK);
-		}
-		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+	public HttpEntity<EntityModel<ProblemTypeDto>> getProblemTypeById(@PathVariable UUID id) {
+		ProblemType problemType = problemTypeService.findById(id);
+		// Convert Entity to DTO
+		ProblemTypeDto dtoOutput = ModelMapperUtils.convert(problemType, ProblemTypeDto.class);
+		// Generate EntityModel
+	    EntityModel<ProblemTypeDto> entityDto = HateoasUtils.generateEntityModel(dtoOutput);
+	    // Add Links
+	    problemTypeAssembler.addLinks(entityDto);
+		return new ResponseEntity<>(entityDto, HttpStatus.OK);
 	}
 
 }

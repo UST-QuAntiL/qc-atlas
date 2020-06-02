@@ -9,5 +9,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @Entity
 public class ClassicAlgorithm extends Algorithm {
-
+ 
+	// TODO: Add ClassicImplementation
+	
 }

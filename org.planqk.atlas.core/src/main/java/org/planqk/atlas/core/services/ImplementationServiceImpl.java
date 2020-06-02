@@ -19,10 +19,12 @@
 
 package org.planqk.atlas.core.services;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Implementation;
+import org.planqk.atlas.core.model.exceptions.NotFoundException;
 import org.planqk.atlas.core.repository.ImplementationRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -34,20 +36,23 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class ImplementationServiceImpl implements ImplementationService {
 
-    private final ImplementationRepository repository;
+	private final ImplementationRepository repository;
 
-    @Override
-    public Implementation save(Implementation implementation) {
-        return repository.save(implementation);
-    }
+	@Override
+	public Implementation save(Implementation implementation) {
+		return repository.save(implementation);
+	}
 
-    @Override
-    public Page<Implementation> findAll(Pageable pageable) {
-        return repository.findAll(pageable);
-    }
+	@Override
+	public Page<Implementation> findAll(Pageable pageable) {
+		return repository.findAll(pageable);
+	}
 
-    @Override
-    public Optional<Implementation> findById(UUID implId) {
-        return repository.findById(implId);
-    }
+	@Override
+	public Implementation findById(UUID implId) {
+		Optional<Implementation> implOptional = Objects.isNull(implId) ? Optional.empty() : repository.findById(implId);
+		if (implOptional.isPresent())
+			return implOptional.get();
+		throw new NotFoundException("Implementation does not exist!");
+	}
 }

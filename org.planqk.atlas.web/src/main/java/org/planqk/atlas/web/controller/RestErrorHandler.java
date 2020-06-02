@@ -1,5 +1,8 @@
 package org.planqk.atlas.web.controller;
 
+import org.planqk.atlas.core.model.exceptions.NoContentException;
+import org.planqk.atlas.core.model.exceptions.NotFoundException;
+import org.planqk.atlas.core.model.exceptions.ConsistencyException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -8,9 +11,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-@EnableWebMvc
 @ControllerAdvice
 public class RestErrorHandler {
 
@@ -24,9 +25,23 @@ public class RestErrorHandler {
 
 	@ExceptionHandler(HttpMessageNotReadableException.class)
 	public ResponseEntity<?> handleInvalidJson(HttpMessageNotReadableException e) {
-		LOG.warn("Jackson cannot identify class since required identifier field is missing");
-		return new ResponseEntity<>("Request is missing important fields for Jackson deserialisation",
-				HttpStatus.BAD_REQUEST);
+		LOG.error(e.getMessage(), e);
+		return new ResponseEntity<>("Jackson cannot deserialize request", HttpStatus.BAD_REQUEST);
+	}
+
+	@ExceptionHandler(ConsistencyException.class)
+	public ResponseEntity<?> handleSqlConsistencyException(ConsistencyException e) {
+		return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+	}
+
+	@ExceptionHandler(NoContentException.class)
+	public ResponseEntity<?> handleNoContentException(NoContentException e) {
+		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+	}
+
+	@ExceptionHandler(NotFoundException.class)
+	public ResponseEntity<?> handleNotFoundException(NotFoundException e) {
+		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}
 
 }

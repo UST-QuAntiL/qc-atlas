@@ -7,17 +7,29 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.ProblemType;
+import org.planqk.atlas.core.model.exceptions.NoContentException;
+import org.planqk.atlas.core.model.exceptions.NotFoundException;
+import org.planqk.atlas.core.model.exceptions.ConsistencyException;
+import org.planqk.atlas.core.repository.AlgorithmRepository;
 import org.planqk.atlas.core.repository.ProblemTypeRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import lombok.AllArgsConstructor;
+
 @Service
+@AllArgsConstructor
 public class ProblemTypeServiceImpl implements ProblemTypeService {
 
-	@Autowired
+	private static final Logger LOG = LoggerFactory.getLogger(ProblemTypeServiceImpl.class);
+
+	private static final String NOT_FOUND_MSG = "The searched problem type does not exist!";
+
 	private ProblemTypeRepository repo;
+	private AlgorithmRepository algRepo;
 
 	@Override
 	public ProblemType save(ProblemType problemType) {
@@ -26,34 +38,41 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
 
 	@Override
 	public ProblemType update(UUID id, ProblemType problemType) {
-		// Check for type in database
-		Optional<ProblemType> typeOpt = findById(id);
-		// If Type exists
-		if (typeOpt.isPresent()) {
-			// Update fields
-			ProblemType persistedType = typeOpt.get();
-			persistedType.setName(problemType.getName());
-			persistedType.setParentProblemType(problemType.getParentProblemType());
-			// Reference database type to set
-			return save(persistedType);
-		}
-		// TODO: Exception handling
-		return null;
+		// Get existing ProblemType if it exists
+		ProblemType persistedType = findById(id);
+		// Update fields
+		persistedType.setName(problemType.getName());
+		persistedType.setParentProblemType(problemType.getParentProblemType());
+		// Save and return updated object
+		return save(persistedType);
 	}
 
 	@Override
 	public void delete(UUID id) {
+		if (Objects.isNull(id) || repo.findById(id).isEmpty()) {
+			throw new NoContentException(NOT_FOUND_MSG);
+		}
+		if (algRepo.countAlgorithmsUsingProblemType(id) > 0) {
+			LOG.info("Trying to delete ProblemType that is used by at least 1 algorithm");
+			throw new ConsistencyException("Cannot delete ProbemType, since it is used by existing algorithms!");
+		}
 		repo.deleteById(id);
 	}
 
 	@Override
-	public Optional<ProblemType> findById(UUID id) {
-		return Objects.isNull(id) ? Optional.empty() : repo.findById(id);
+	public ProblemType findById(UUID id) {
+		Optional<ProblemType> problemTypeOpt = Objects.isNull(id) ? Optional.empty() : repo.findById(id);
+		if (problemTypeOpt.isPresent())
+			return problemTypeOpt.get();
+		throw new NotFoundException(NOT_FOUND_MSG);
 	}
 
 	@Override
-	public Optional<ProblemType> findByName(String name) {
-		return Objects.isNull(name) ? Optional.empty() : repo.findByName(name);
+	public ProblemType findByName(String name) {
+		Optional<ProblemType> problemTypeOpt = Objects.isNull(name) ? Optional.empty() : repo.findByName(name);
+		if (problemTypeOpt.isPresent())
+			return problemTypeOpt.get();
+		throw new NotFoundException(NOT_FOUND_MSG);
 	}
 
 	@Override
@@ -62,23 +81,22 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
 	}
 
 	@Override
-	public Set<ProblemType> createOrUpdateAll(Set<ProblemType> algorithmTypes) {
+	public Set<ProblemType> createOrUpdateAll(Set<ProblemType> problemTypes) {
 		Set<ProblemType> types = new HashSet<>();
 		// Go Iterate all types
-		for (ProblemType type : algorithmTypes) {
+		for (ProblemType type : problemTypes) {
 			// Check for type in database
-			Optional<ProblemType> typeOpt = findById(type.getId());
-			// If Type exists
-			if (typeOpt.isPresent()) {
-				// Update fields
-				ProblemType persistedType = typeOpt.get();
-				persistedType.setName(type.getName());
-				persistedType.setParentProblemType(type.getParentProblemType());
+			Optional<ProblemType> optType = Objects.isNull(type.getId()) ? Optional.empty() : repo.findById(type.getId());
+			if (optType.isPresent()){
+				ProblemType persistedType = optType.get();
+				persistedType.setName(persistedType.getName());
+				persistedType.setParentProblemType(persistedType.getParentProblemType());
 				// Reference database type to set
 				types.add(save(persistedType));
+			} else {
+				// If Type does not exist --> Create one
+				types.add(save(type));
 			}
-			// If Type does not exist --> Create one
-			types.add(save(type));
 		}
 
 		return types;

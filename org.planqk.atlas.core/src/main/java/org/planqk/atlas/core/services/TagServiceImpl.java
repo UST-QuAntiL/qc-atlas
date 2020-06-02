@@ -19,19 +19,21 @@
 
 package org.planqk.atlas.core.services;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.planqk.atlas.core.model.Tag;
+import org.planqk.atlas.core.model.exceptions.NotFoundException;
 import org.planqk.atlas.core.repository.TagRepository;
 
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -40,31 +42,49 @@ import org.springframework.stereotype.Repository;
 @AllArgsConstructor
 public class TagServiceImpl implements TagService {
 
-    @Autowired
-    private TagRepository tagRepository;
-    @PersistenceContext
-    private EntityManager em;
+	private TagRepository tagRepository;
+	@PersistenceContext
+	private EntityManager em;
 
-    @Override
-    public List<Tag> findByName(String key) {
-        return tagRepository.findByKey(key);
-    }
+	@Override
+	public List<Tag> findByName(String key) {
+		return tagRepository.findByKey(key);
+	}
 
-    @Override
-    public Tag save(Tag tag) {
-        return tagRepository.save(tag);
-    }
+	@Override
+	public Tag save(Tag tag) {
+		return tagRepository.save(tag);
+	}
 
-    @Override
-    public Page<Tag> findAll(Pageable pageable) {
-        return tagRepository.findAll(pageable);
-    }
+	@Override
+	public Page<Tag> findAll(Pageable pageable) {
+		return tagRepository.findAll(pageable);
+	}
 
-    @Override
-    public Optional<Tag> getTagById(UUID tagId) {
-        if (Objects.isNull(tagId)) {
-            return Optional.empty();
-        }
-        return tagRepository.findById(tagId);
-    }
+	@Override
+	public Tag getTagById(UUID tagId) {
+		Optional<Tag> tagOptional = Objects.isNull(tagId) ? Optional.empty() : tagRepository.findById(tagId);
+		if (tagOptional.isPresent())
+			return tagOptional.get();
+		throw new NotFoundException("Tag does not exist!");
+	}
+
+	@Override
+	public Set<Tag> createOrUpdateAll(Set<Tag> algorithmTags) {
+		Set<Tag> tags = new HashSet<>();
+		// Go Iterate all tags
+		for (Tag tag : algorithmTags) {
+			// Check for tag in database
+			Optional<Tag> optTag = Objects.isNull(tag.getId()) ? Optional.empty() : tagRepository.findById(tag.getId());
+			if (optTag.isPresent()) {
+				Tag persistedTag = optTag.get();
+				tags.add(persistedTag);
+			} else {
+				// If Tag does not exist --> Create one
+				tags.add(save(tag));
+			}
+		}
+
+		return tags;
+	}
 }

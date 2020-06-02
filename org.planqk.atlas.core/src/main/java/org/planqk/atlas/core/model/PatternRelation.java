@@ -10,8 +10,6 @@ import javax.persistence.OneToOne;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -21,15 +19,11 @@ public class PatternRelation extends HasId {
 	@ManyToOne
 	private Algorithm algorithm;
 
-	@Setter
-	@Getter
 	private URI pattern;
 
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private PatternRelationType patternRelationType;
 
-	@Setter
-	@Getter
 	private String description;
 	
 }

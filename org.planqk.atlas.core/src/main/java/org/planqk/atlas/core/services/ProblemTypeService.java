@@ -1,6 +1,5 @@
 package org.planqk.atlas.core.services;
 
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -16,9 +15,9 @@ public interface ProblemTypeService {
 	
 	void delete(UUID id);
 	
-	Optional<ProblemType> findById(UUID id);
+	ProblemType findById(UUID id);
 	
-	Optional<ProblemType> findByName(String name);
+	ProblemType findByName(String name);
 	
 	Page<ProblemType> findAll(Pageable pageable);
 	

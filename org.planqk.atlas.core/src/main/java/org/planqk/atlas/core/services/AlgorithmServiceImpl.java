@@ -26,7 +26,7 @@ import java.util.UUID;
 import org.planqk.atlas.core.model.AlgoRelationType;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
-import org.planqk.atlas.core.model.Tag;
+import org.planqk.atlas.core.model.exceptions.NotFoundException;
 import org.planqk.atlas.core.repository.AlgorithmRelationRepository;
 import org.planqk.atlas.core.repository.AlgorithmRepository;
 import org.slf4j.Logger;
@@ -45,50 +45,53 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 	private final static Logger LOG = LoggerFactory.getLogger(AlgorithmServiceImpl.class);
 
 	private AlgorithmRepository algorithmRepository;
-	private AlgorithmRelationRepository algoRelationRepository;
+	private AlgorithmRelationRepository algorithmRelationRepository;
 	private AlgoRelationTypeService relationTypeService;
 
 	private TagService tagService;
 	private ProblemTypeService problemTypeService;
+	private AlgoRelationTypeService algoRelationTypeService;
 
 	@Override
 	public Algorithm save(Algorithm algorithm) {
 
 		// Persist Tags separately
-		Set<Tag> tags = algorithm.getTags();
-		for (Tag algorithmTag : algorithm.getTags()) {
-			Optional<Tag> storedTagOptional = tagService.getTagById(algorithmTag.getId());
-			if (!storedTagOptional.isPresent()) {
-				tags.remove(algorithmTag);
-				tags.add(tagService.save(algorithmTag));
-			}
-		}
+		algorithm.setTags(tagService.createOrUpdateAll(algorithm.getTags()));
 		// Persist ProblemTypes separately
 		algorithm.setProblemTypes(problemTypeService.createOrUpdateAll(algorithm.getProblemTypes()));
-
-		algorithm.setTags(tags);
 
 		return algorithmRepository.save(algorithm);
 	}
 
 	@Override
 	public Algorithm update(UUID id, Algorithm algorithm) {
-		Optional<Algorithm> persistedAlgOpt = findById(id);
-		if (persistedAlgOpt.isPresent()) {
-			Algorithm persistedAlg = persistedAlgOpt.get();
-			persistedAlg.setName(algorithm.getName());
-			persistedAlg.setInputFormat(algorithm.getInputFormat());
-			persistedAlg.setOutputFormat(algorithm.getOutputFormat());
-			persistedAlg.setProblemTypes(algorithm.getProblemTypes());
-			persistedAlg.setTags(algorithm.getTags());
-			return algorithmRepository.save(persistedAlg);
+		Optional<Algorithm> persistedAlgOpt = findOptionalById(id);
+		if (persistedAlgOpt.isEmpty()) {
+			LOG.info("Trying to update non-existing algorithm.");
+			throw new NotFoundException("Could not find algorithm to update.");
 		}
-		// TODO: Impl exception handling
-		return null;
+		Algorithm persistedAlg = persistedAlgOpt.get();
+		persistedAlg.setName(algorithm.getName());
+		persistedAlg.setInputFormat(algorithm.getInputFormat());
+		persistedAlg.setOutputFormat(algorithm.getOutputFormat());
+		persistedAlg.setProblemTypes(algorithm.getProblemTypes());
+		persistedAlg.setTags(algorithm.getTags());
+		return algorithmRepository.save(persistedAlg);
 	}
 
 	@Override
 	public void delete(UUID id) {
+		Optional<Algorithm> algorithmOpt = findOptionalById(id);
+		if (algorithmOpt.isEmpty()) {
+			LOG.info("Trying to delete non-existing algorithm.");
+			throw new NotFoundException("Could not find algorithm to delete.");
+		}
+		
+		Set<AlgorithmRelation> linkedAsTargetRelations = algorithmRelationRepository.findByTargetAlgorithmId(id);
+		for (AlgorithmRelation relation : linkedAsTargetRelations) {
+			deleteAlgorithmRelation(relation.getSourceAlgorithm().getId(), relation.getId());
+		}
+		
 		algorithmRepository.deleteById(id);
 	}
 
@@ -97,34 +100,47 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 		return algorithmRepository.findAll(pageable);
 	}
 
-  @Override
-  public Optional<Algorithm> findById(UUID algoId) {
-      return algorithmRepository.findById(algoId);
-  }
+	@Override
+	public Algorithm findById(UUID algoId) {
+		Optional<Algorithm> algorithmOpt = findOptionalById(algoId);
+		if (algorithmOpt.isEmpty()) {
+			LOG.info("Could not find algorithm with id: {}.", algoId);
+			throw new NotFoundException("Could not find algorithm with id " + algoId + ".");
+		}
+		return algorithmOpt.get();
+	}
 
 	@Override
-	public AlgorithmRelation addUpdateAlgorithmRelation(UUID algoId, AlgorithmRelation relation) {
+	public Optional<Algorithm> findOptionalById(UUID algoId) {
+		return algorithmRepository.findById(algoId);
+	}
+
+	@Override
+	public AlgorithmRelation addUpdateAlgorithmRelation(UUID sourceAlgorithmId, AlgorithmRelation relation) {
 		// Read involved Algorithms from database
-		Optional<Algorithm> sourceAlgorithmOpt = findById(relation.getSourceAlgorithm().getId());
-		Optional<Algorithm> targetAlgorithmOpt = findById(relation.getTargetAlgorithm().getId());
+		Optional<Algorithm> sourceAlgorithmOpt = findOptionalById(sourceAlgorithmId);
+		Optional<Algorithm> targetAlgorithmOpt = findOptionalById(relation.getTargetAlgorithm().getId());
 		Optional<AlgoRelationType> relationTypeOpt = relationTypeService
-				.findById(relation.getAlgoRelationType().getId());
+				.findOptionalById(relation.getAlgoRelationType().getId());
 
 		// If one of the algorithms does not exist
-		if (sourceAlgorithmOpt.isEmpty() || targetAlgorithmOpt.isEmpty() || relationTypeOpt.isEmpty()) {
-			// TODO: Implement exception handling
-			return null;
+		if (sourceAlgorithmOpt.isEmpty() || targetAlgorithmOpt.isEmpty()) {
+			LOG.info("Trying to add algorithmRelation for non-existing algorithm.");
+			throw new NotFoundException("Could not add algorithmRelation to non-existing algorithm.");
 		}
 
 		// Get Algorithms
 		Algorithm sourceAlgorithm = sourceAlgorithmOpt.get();
 		Algorithm targetAlgorithm = targetAlgorithmOpt.get();
-		AlgoRelationType relationType = relationTypeOpt.get();
+		AlgoRelationType relationType = relationTypeOpt.isEmpty()
+				? algoRelationTypeService.save(relation.getAlgoRelationType())
+				: relationTypeOpt.get();
 
-		// Check if relation with those two algorithms already exists
-		Optional<AlgorithmRelation> persistedRelationOpt = algoRelationRepository
-				.findBySourceAlgorithmIdAndTargetAlgorithmIdAndAlgoRelationTypeId(
-						sourceAlgorithm.getId(), targetAlgorithm.getId(), relationType.getId());
+		// Check if relation with those two algorithms and the relation type already
+		// exists
+		Optional<AlgorithmRelation> persistedRelationOpt = algorithmRelationRepository
+				.findBySourceAlgorithmIdAndTargetAlgorithmIdAndAlgoRelationTypeId(sourceAlgorithm.getId(),
+						targetAlgorithm.getId(), relationType.getId());
 
 		// If relation between the two algorithms already exists, update it
 		if (persistedRelationOpt.isPresent()) {
@@ -148,32 +164,33 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 	}
 
 	private AlgorithmRelation save(AlgorithmRelation current) {
-		return algoRelationRepository.save(current);
+		return algorithmRelationRepository.save(current);
 	}
 
 	@Override
-	public boolean deleteAlgorithmRelation(UUID algoId, UUID relationId) {
+	public void deleteAlgorithmRelation(UUID algoId, UUID relationId) {
 		Optional<Algorithm> optAlgorithm = algorithmRepository.findById(algoId);
-		Optional<AlgorithmRelation> optRelation = algoRelationRepository.findById(relationId);
+		Optional<AlgorithmRelation> optRelation = algorithmRelationRepository.findById(relationId);
 
-		if (optAlgorithm.isEmpty() || optAlgorithm.isEmpty()) {
-			// TODO: Implement exception handling
-			return false;
+		if (optAlgorithm.isEmpty()) {
+			LOG.info("Trying to delete algorithmRelation from non-existing source algorithm.");
+			throw new NotFoundException("Could not delete algorithmRelation from non-existing source algorithm.");
+		} else if (optRelation.isEmpty()) {
+			LOG.info("Trying to delete non-existing algorithmRelation.");
+			throw new NotFoundException("Could not delete non-existing algorithmRelation.");
 		}
 
 		// Get Objects from database
-		Algorithm algorithm = optAlgorithm.get();
+		Algorithm sourceAlgorithm = optAlgorithm.get();
 		AlgorithmRelation relation = optRelation.get();
 
-		Set<AlgorithmRelation> algorithmRelations = algorithm.getAlgorithmRelations();
-		for (AlgorithmRelation algRelation : algorithmRelations) {
-			if (algRelation.getId().equals(relation.getId())) {
-				if (algorithmRelations.remove(relation)) {
-					algorithmRepository.save(algorithm);
-					return true;
-				}
-			}
-		}
-		return false;
+		Set<AlgorithmRelation> algorithmRelations = sourceAlgorithm.getAlgorithmRelations();
+		algorithmRelations.remove(relation);
+		algorithmRepository.save(sourceAlgorithm);
+	}
+
+	@Override
+	public Set<AlgorithmRelation> getAlgorithmRelations(UUID sourceAlgorithmId) {
+		return algorithmRelationRepository.findBySourceAlgorithmId(sourceAlgorithmId);
 	}
 }

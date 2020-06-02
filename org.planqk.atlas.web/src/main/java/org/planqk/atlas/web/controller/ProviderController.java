@@ -19,98 +19,98 @@
 
 package org.planqk.atlas.web.controller;
 
-import java.util.Objects;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.planqk.atlas.web.Constants;
+import org.planqk.atlas.web.annotation.ApiVersion;
 import org.planqk.atlas.web.dtos.ProviderDto;
-import org.planqk.atlas.web.dtos.ProviderListDto;
+import org.planqk.atlas.web.linkassembler.ProviderAssembler;
 import org.planqk.atlas.core.services.ProviderService;
+import org.planqk.atlas.web.utils.HateoasUtils;
+import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.RestUtils;
 import org.planqk.atlas.core.model.Provider;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import lombok.AllArgsConstructor;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
  * Controller to access and manipulate quantum computing providers.
  */
+@io.swagger.v3.oas.annotations.tags.Tag(name = "provider")
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/" + Constants.PROVIDERS)
+@ApiVersion("v1")
+@AllArgsConstructor
 public class ProviderController {
 
     final private static Logger LOG = LoggerFactory.getLogger(ProviderController.class);
+    
     private ProviderService providerService;
-
-    public ProviderController(ProviderService providerService) {
-        this.providerService = providerService;
-    }
+    private PagedResourcesAssembler<ProviderDto> paginationAssembler;
+    private ProviderAssembler providerAssembler;
 
     @GetMapping("/")
-    public HttpEntity<ProviderListDto> getProviders(@RequestParam(required = false) Integer page,
+    public HttpEntity<PagedModel<EntityModel<ProviderDto>>> getProviders(@RequestParam(required = false) Integer page,
                                                     @RequestParam(required = false) Integer size) {
-        LOG.debug("Get to retrieve all providers received.");
-        ProviderListDto providerListDto = new ProviderListDto();
-
-        // add all available providers to the response
-        for (Provider provider : providerService.findAll(RestUtils.getPageableFromRequestParams(page, size))) {
-            providerListDto.add(createProviderDto(provider));
-            providerListDto.add(linkTo(methodOn(ProviderController.class).getProvider(provider.getId())).
-                    withRel(provider.getId().toString()));
-        }
-
-        providerListDto.add(linkTo(methodOn(ProviderController.class).getProviders(Constants.DEFAULT_PAGE_NUMBER,
-                Constants.DEFAULT_PAGE_SIZE)).withSelfRel());
-        return new ResponseEntity<>(providerListDto, HttpStatus.OK);
+        LOG.debug("Get to retrieve all providers received.");    
+        // Generate Pageable
+        Pageable p = RestUtils.getPageableFromRequestParams(page, size);
+        // Retrieve Page of DTOs
+        Page<ProviderDto> tags = ModelMapperUtils.convertPage(providerService.findAll(p), ProviderDto.class);
+        // Generate PagedModel
+        PagedModel<EntityModel<ProviderDto>> outputDto = paginationAssembler.toModel(tags);
+        providerAssembler.addLinks(outputDto.getContent());
+        return new ResponseEntity<>(outputDto, HttpStatus.OK);
     }
 
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", content = @Content)
+    })
     @GetMapping("/{id}")
-    public HttpEntity<ProviderDto> getProvider(@PathVariable UUID id) {
+    public HttpEntity<EntityModel<ProviderDto>> getProvider(@PathVariable UUID id) {
         LOG.debug("Get to retrieve provider with id: {}.", id);
 
-        Optional<Provider> providerOptional = providerService.findById(id);
-        if (!providerOptional.isPresent()) {
-            LOG.error("Unable to retrieve provider with id {} from the repository.", id);
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        Provider provider = providerService.findById(id);
+        
+        // Generate EntityModel
+        EntityModel<ProviderDto> dtoOutput = HateoasUtils.generateEntityModel(ModelMapperUtils.convert(provider, ProviderDto.class));
+        providerAssembler.addLinks(dtoOutput);
 
-        return new ResponseEntity<>(createProviderDto(providerOptional.get()), HttpStatus.OK);
+        return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
     }
 
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400", content = @Content)
+    })
     @PostMapping("/")
-    public HttpEntity<ProviderDto> createProvider(@RequestBody ProviderDto providerDto) {
+    public HttpEntity<EntityModel<ProviderDto>> createProvider(@Validated @RequestBody ProviderDto providerDto) {
         LOG.debug("Post to create new provider received.");
-
-        if (Objects.isNull(providerDto.getName()) || Objects.isNull(providerDto.getAccessKey())
-                || Objects.isNull(providerDto.getSecretKey())) {
-            LOG.error("Received invalid provider object for post request: {}", providerDto.toString());
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-
-        Provider provider = providerService.save(ProviderDto.Converter.convert(providerDto));
-        return new ResponseEntity<>(createProviderDto(provider), HttpStatus.CREATED);
+        // Save incoming provider inside database
+        Provider provider = providerService.save(ModelMapperUtils.convert(providerDto, Provider.class));
+        // Convert saved provider to EntityModelDTO
+        EntityModel<ProviderDto> outputDto = HateoasUtils.generateEntityModel(ModelMapperUtils.convert(provider, ProviderDto.class));
+        // Add Links
+        providerAssembler.addLinks(outputDto);
+        return new ResponseEntity<>(outputDto, HttpStatus.CREATED);
     }
 
-    /**
-     * Create a DTO object for a given {@link Provider} with the contained data and the links to related objects.
-     *
-     * @param provider the {@link Provider} to create the DTO for
-     * @return the created DTO
-     */
-    private ProviderDto createProviderDto(Provider provider) {
-        ProviderDto providerDto = ProviderDto.Converter.convert(provider);
-        providerDto.add(linkTo(methodOn(ProviderController.class).getProvider(provider.getId())).withSelfRel());
-        providerDto.add(linkTo(methodOn(QpuController.class).getQpus(provider.getId(), Constants.DEFAULT_PAGE_NUMBER,
-                Constants.DEFAULT_PAGE_SIZE)).withRel(Constants.QPUS));
-        return providerDto;
-    }
 }
