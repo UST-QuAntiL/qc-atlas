@@ -5,8 +5,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.AlgoRelationType;
-import org.planqk.atlas.core.model.exceptions.NotFoundException;
-import org.planqk.atlas.core.model.exceptions.SqlConsistencyException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -14,15 +12,15 @@ public interface AlgoRelationTypeService {
 
 	AlgoRelationType save(AlgoRelationType algoRelationType);
 	
-	AlgoRelationType update(UUID id, AlgoRelationType algoRelationType) throws NotFoundException;
+	AlgoRelationType update(UUID id, AlgoRelationType algoRelationType);
 	
-	void delete(UUID id) throws SqlConsistencyException, NotFoundException;
+	void delete(UUID id);
 
 	Optional<AlgoRelationType> findOptionalById(UUID id);
 	
-	AlgoRelationType findById(UUID id) throws NotFoundException;
+	AlgoRelationType findById(UUID id);
 	
-	List<AlgoRelationType> findByName(String name) throws NotFoundException;
+	List<AlgoRelationType> findByName(String name);
 	
 	Page<AlgoRelationType> findAll(Pageable pageable);
 	

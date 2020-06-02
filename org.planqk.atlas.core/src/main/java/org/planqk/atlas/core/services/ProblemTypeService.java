@@ -4,9 +4,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.ProblemType;
-import org.planqk.atlas.core.model.exceptions.NoContentException;
-import org.planqk.atlas.core.model.exceptions.NotFoundException;
-import org.planqk.atlas.core.model.exceptions.SqlConsistencyException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -14,13 +11,13 @@ public interface ProblemTypeService {
 
 	ProblemType save(ProblemType problemType);
 	
-	ProblemType update(UUID id, ProblemType problemType) throws NotFoundException;
+	ProblemType update(UUID id, ProblemType problemType);
 	
-	void delete(UUID id) throws SqlConsistencyException, NoContentException;
+	void delete(UUID id);
 	
-	ProblemType findById(UUID id) throws NotFoundException;
+	ProblemType findById(UUID id);
 	
-	ProblemType findByName(String name) throws NotFoundException;
+	ProblemType findByName(String name);
 	
 	Page<ProblemType> findAll(Pageable pageable);
 	

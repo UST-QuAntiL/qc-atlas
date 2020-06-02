@@ -3,9 +3,6 @@ package org.planqk.atlas.web.controller;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.ProblemType;
-import org.planqk.atlas.core.model.exceptions.NoContentException;
-import org.planqk.atlas.core.model.exceptions.NotFoundException;
-import org.planqk.atlas.core.model.exceptions.SqlConsistencyException;
 import org.planqk.atlas.core.services.ProblemTypeService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.ProblemTypeDto;
@@ -62,7 +59,7 @@ public class ProblemTypeController {
 
 	@PutMapping("/{id}")
 	public HttpEntity<EntityModel<ProblemTypeDto>> updateProblemType(@PathVariable UUID id,
-			@Validated @RequestBody ProblemTypeDto problemTypeDto) throws NotFoundException {
+			@Validated @RequestBody ProblemTypeDto problemTypeDto) {
 		// Convert DTO to Entity
 		ProblemType entityInput = ModelMapperUtils.convert(problemTypeDto, ProblemType.class);
 		// Update Entity
@@ -77,7 +74,7 @@ public class ProblemTypeController {
 	}
 
 	@DeleteMapping("/{id}")
-	public HttpEntity<ProblemTypeDto> deleteProblemType(@PathVariable UUID id) throws SqlConsistencyException, NoContentException {
+	public HttpEntity<ProblemTypeDto> deleteProblemType(@PathVariable UUID id) {
 		problemTypeService.delete(id);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
@@ -99,7 +96,7 @@ public class ProblemTypeController {
 	}
 
 	@GetMapping("/{id}")
-	public HttpEntity<EntityModel<ProblemTypeDto>> getProblemTypeById(@PathVariable UUID id) throws NotFoundException {
+	public HttpEntity<EntityModel<ProblemTypeDto>> getProblemTypeById(@PathVariable UUID id) {
 		ProblemType problemType = problemTypeService.findById(id);
 		// Convert Entity to DTO
 		ProblemTypeDto dtoOutput = ModelMapperUtils.convert(problemType, ProblemTypeDto.class);

@@ -22,7 +22,6 @@ package org.planqk.atlas.core.services;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Provider;
-import org.planqk.atlas.core.model.exceptions.NotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -32,5 +31,5 @@ public interface ProviderService {
 
     Page<Provider> findAll(Pageable pageable);
 
-    Provider findById(UUID algoId) throws NotFoundException;
+    Provider findById(UUID algoId);
 }

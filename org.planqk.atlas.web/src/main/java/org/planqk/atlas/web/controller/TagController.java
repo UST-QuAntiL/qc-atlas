@@ -24,7 +24,6 @@ import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Tag;
-import org.planqk.atlas.core.model.exceptions.NotFoundException;
 import org.planqk.atlas.core.services.TagService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.annotation.ApiVersion;
@@ -98,7 +97,7 @@ public class TagController {
     }
 
     @GetMapping(value = "/{tagId}")
-    public HttpEntity<EntityModel<TagDto>> getTagById(@PathVariable UUID tagId) throws NotFoundException {
+    public HttpEntity<EntityModel<TagDto>> getTagById(@PathVariable UUID tagId) {
     	// Get Tag
         Tag tag = tagService.getTagById(tagId);
         // Get EntityModel of Tag-Object
@@ -109,7 +108,7 @@ public class TagController {
     }
 
     @GetMapping(value = "/{tagId}/" + Constants.ALGORITHMS)
-    public HttpEntity<CollectionModel<EntityModel<AlgorithmDto>>> getAlgorithmsOfTag(@PathVariable UUID tagId) throws NotFoundException {
+    public HttpEntity<CollectionModel<EntityModel<AlgorithmDto>>> getAlgorithmsOfTag(@PathVariable UUID tagId) {
     	// Get Tag
         Tag tag = tagService.getTagById(tagId);
         // Retrieve Algorithms of Tag
@@ -126,7 +125,7 @@ public class TagController {
     }
 
     @GetMapping(value = "/{tagId}/" + Constants.IMPLEMENTATIONS)
-    public HttpEntity<CollectionModel<EntityModel<ImplementationDto>>> getImplementationsOfTag(@PathVariable UUID tagId) throws NotFoundException {
+    public HttpEntity<CollectionModel<EntityModel<ImplementationDto>>> getImplementationsOfTag(@PathVariable UUID tagId) {
     	// Get Tag
         Tag tag = this.tagService.getTagById(tagId);
         // Get ImplementationDTOs of Tag

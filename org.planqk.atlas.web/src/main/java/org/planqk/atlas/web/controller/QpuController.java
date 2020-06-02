@@ -23,7 +23,6 @@ import java.util.UUID;
 
 import org.planqk.atlas.core.model.Provider;
 import org.planqk.atlas.core.model.Qpu;
-import org.planqk.atlas.core.model.exceptions.NotFoundException;
 import org.planqk.atlas.core.services.ProviderService;
 import org.planqk.atlas.core.services.QpuService;
 import org.planqk.atlas.web.Constants;
@@ -97,7 +96,7 @@ public class QpuController {
             @ApiResponse(responseCode = "404", content = @Content)
     })
     @GetMapping("/{qpuId}")
-    public HttpEntity<EntityModel<QpuDto>> getQpu(@PathVariable UUID qpuId, @RequestParam UUID providerId) throws NotFoundException {
+    public HttpEntity<EntityModel<QpuDto>> getQpu(@PathVariable UUID qpuId, @RequestParam UUID providerId) {
         LOG.debug("Get to retrieve QPU with id: {}.", qpuId);
         // Get Qpu
         Qpu qpu = qpuService.findById(qpuId);
@@ -114,7 +113,7 @@ public class QpuController {
             @ApiResponse(responseCode = "404", content = @Content)
     })
     @PostMapping("/")
-    public HttpEntity<EntityModel<QpuDto>> createQpu(@RequestParam UUID providerId, @Validated @RequestBody QpuDto qpuRequest) throws NotFoundException {
+    public HttpEntity<EntityModel<QpuDto>> createQpu(@RequestParam UUID providerId, @Validated @RequestBody QpuDto qpuRequest) {
         LOG.debug("Post to create new QPU received.");
         // Get provider if possible
         Provider provider = providerService.findById(providerId);

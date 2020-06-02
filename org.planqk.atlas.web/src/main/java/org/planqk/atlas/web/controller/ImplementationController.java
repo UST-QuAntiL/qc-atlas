@@ -25,7 +25,6 @@ import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Implementation;
-import org.planqk.atlas.core.model.exceptions.NotFoundException;
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.core.services.ImplementationService;
@@ -102,7 +101,7 @@ public class ImplementationController {
             @ApiResponse(responseCode = "404", content = @Content)
     })
     @GetMapping("/{implId}")
-    public HttpEntity<EntityModel<ImplementationDto>> getImplementation(@RequestParam UUID algoId, @PathVariable UUID implId) throws NotFoundException {
+    public HttpEntity<EntityModel<ImplementationDto>> getImplementation(@RequestParam UUID algoId, @PathVariable UUID implId) {
         LOG.debug("Get to retrieve implementation with id: {}.", implId);
         // Get Implementation
         Implementation implementation = implementationService.findById(implId);
@@ -118,7 +117,7 @@ public class ImplementationController {
             @ApiResponse(responseCode = "400", content = @Content)
     })
     @PostMapping("/")
-    public HttpEntity<EntityModel<ImplementationDto>> createImplementation(@RequestParam UUID algoId, @Validated @RequestBody ImplementationDto impl) throws NotFoundException {
+    public HttpEntity<EntityModel<ImplementationDto>> createImplementation(@RequestParam UUID algoId, @Validated @RequestBody ImplementationDto impl) {
         LOG.debug("Post to create new implementation received.");
         // Get Algorithm
         Algorithm algorithm = algorithmService.findById(algoId);
@@ -137,7 +136,7 @@ public class ImplementationController {
             @ApiResponse(responseCode = "404", content = @Content)
     })
     @GetMapping("/{implId}/" + Constants.TAGS)
-    public HttpEntity<CollectionModel<EntityModel<TagDto>>> getTags(@RequestParam UUID algoId, @PathVariable UUID implId) throws NotFoundException {
+    public HttpEntity<CollectionModel<EntityModel<TagDto>>> getTags(@RequestParam UUID algoId, @PathVariable UUID implId) {
     	// Get Implementation
         Implementation implementation = implementationService.findById(implId);
         // Get Tags of Implementation

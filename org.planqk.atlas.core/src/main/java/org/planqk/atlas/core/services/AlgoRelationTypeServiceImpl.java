@@ -32,7 +32,7 @@ public class AlgoRelationTypeServiceImpl implements AlgoRelationTypeService {
 	}
 
 	@Override
-	public AlgoRelationType update(UUID id, AlgoRelationType algoRelationType) throws NotFoundException {
+	public AlgoRelationType update(UUID id, AlgoRelationType algoRelationType) {
 		// Check for type in database
 		Optional<AlgoRelationType> typeOpt = findOptionalById(id);
 		// If Type exists
@@ -48,7 +48,7 @@ public class AlgoRelationTypeServiceImpl implements AlgoRelationTypeService {
 	}
 
 	@Override
-	public void delete(UUID id) throws SqlConsistencyException, NotFoundException {
+	public void delete(UUID id) {
 		if (algorithmRelationRepository.countRelationsUsingRelationType(id) > 0) {
 			LOG.info("Trying to delete algoRelationType that is used in at least 1 algorithmRelation.");
 			throw new SqlConsistencyException("Cannot delete algoRelationType since it is used by existing algorithmRelations.");
@@ -61,7 +61,7 @@ public class AlgoRelationTypeServiceImpl implements AlgoRelationTypeService {
 	}
 
 	@Override
-	public AlgoRelationType findById(UUID id) throws NotFoundException {
+	public AlgoRelationType findById(UUID id) {
 		Optional<AlgoRelationType> algoRelationTypeOpt = findOptionalById(id);
 		if (algoRelationTypeOpt.isEmpty()) {
 			throw new NotFoundException("The AlgoRelationType could not be found.");
@@ -70,7 +70,7 @@ public class AlgoRelationTypeServiceImpl implements AlgoRelationTypeService {
 	}
 
 	@Override
-	public List<AlgoRelationType> findByName(String name) throws NotFoundException {
+	public List<AlgoRelationType> findByName(String name) {
 		Optional<List<AlgoRelationType>> algoRelationTypes = repo.findByName(name);
 		if (algoRelationTypes.isEmpty()) {
 			throw new NotFoundException("No AlgoRelationType found to match name '" + name + "'");

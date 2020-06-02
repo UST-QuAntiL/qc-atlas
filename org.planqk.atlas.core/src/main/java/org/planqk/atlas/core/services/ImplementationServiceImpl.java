@@ -49,7 +49,7 @@ public class ImplementationServiceImpl implements ImplementationService {
 	}
 
 	@Override
-	public Implementation findById(UUID implId) throws NotFoundException {
+	public Implementation findById(UUID implId) {
 		Optional<Implementation> implOptional = Objects.isNull(implId) ? Optional.empty() : repository.findById(implId);
 		if (implOptional.isPresent())
 			return implOptional.get();

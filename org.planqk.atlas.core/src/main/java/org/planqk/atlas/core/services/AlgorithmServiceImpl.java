@@ -65,7 +65,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 	}
 
 	@Override
-	public Algorithm update(UUID id, Algorithm algorithm) throws NotFoundException {
+	public Algorithm update(UUID id, Algorithm algorithm) {
 		Optional<Algorithm> persistedAlgOpt = findOptionalById(id);
 		if (persistedAlgOpt.isEmpty()) {
 			LOG.info("Trying to update non-existing algorithm.");
@@ -81,7 +81,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 	}
 
 	@Override
-	public void delete(UUID id) throws NotFoundException {
+	public void delete(UUID id) {
 		Optional<Algorithm> algorithmOpt = findOptionalById(id);
 		if (algorithmOpt.isEmpty()) {
 			LOG.info("Trying to delete non-existing algorithm.");
@@ -102,7 +102,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 	}
 
 	@Override
-	public Algorithm findById(UUID algoId) throws NotFoundException {
+	public Algorithm findById(UUID algoId) {
 		Optional<Algorithm> algorithmOpt = findOptionalById(algoId);
 		if (algorithmOpt.isEmpty()) {
 			LOG.info("Could not find algorithm with id: {}.", algoId);
@@ -117,8 +117,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 	}
 
 	@Override
-	public AlgorithmRelation addUpdateAlgorithmRelation(UUID sourceAlgorithm_id, AlgorithmRelation relation)
-			throws NotFoundException {
+	public AlgorithmRelation addUpdateAlgorithmRelation(UUID sourceAlgorithm_id, AlgorithmRelation relation) {
 		// Read involved Algorithms from database
 		Optional<Algorithm> sourceAlgorithmOpt = findOptionalById(sourceAlgorithm_id);
 		Optional<Algorithm> targetAlgorithmOpt = findOptionalById(relation.getTargetAlgorithm().getId());
@@ -171,7 +170,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 	}
 
 	@Override
-	public void deleteAlgorithmRelation(UUID algoId, UUID relationId) throws NotFoundException {
+	public void deleteAlgorithmRelation(UUID algoId, UUID relationId) {
 		Optional<Algorithm> optAlgorithm = algorithmRepository.findById(algoId);
 		Optional<AlgorithmRelation> optRelation = algorithmRelationRepository.findById(relationId);
 
@@ -193,7 +192,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 	}
 
 	@Override
-	public Set<AlgorithmRelation> getAlgorithmRelations(UUID sourceAlgorithm_id) throws NotFoundException {
+	public Set<AlgorithmRelation> getAlgorithmRelations(UUID sourceAlgorithm_id) {
 		Optional<Set<AlgorithmRelation>> algorithmRelationsOpt =  algorithmRelationRepository.findBySourceAlgorithmId(sourceAlgorithm_id);
 		if (algorithmRelationsOpt.isEmpty()) {
 			LOG.info("Could not find any relations with source algorithm id: {}.", sourceAlgorithm_id);

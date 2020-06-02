@@ -49,7 +49,7 @@ public class QpuServiceImpl implements QpuService {
 	}
 
 	@Override
-	public Qpu findById(UUID qpuId) throws NotFoundException {
+	public Qpu findById(UUID qpuId) {
 		Optional<Qpu> qpuOptional = Objects.isNull(qpuId) ? Optional.empty() : repository.findById(qpuId);
 		if (qpuOptional.isPresent())
 			return qpuOptional.get();

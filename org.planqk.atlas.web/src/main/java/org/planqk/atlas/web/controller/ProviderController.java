@@ -30,7 +30,6 @@ import org.planqk.atlas.web.utils.HateoasUtils;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.RestUtils;
 import org.planqk.atlas.core.model.Provider;
-import org.planqk.atlas.core.model.exceptions.NotFoundException;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -86,7 +85,7 @@ public class ProviderController {
             @ApiResponse(responseCode = "404", content = @Content)
     })
     @GetMapping("/{id}")
-    public HttpEntity<EntityModel<ProviderDto>> getProvider(@PathVariable UUID id) throws NotFoundException {
+    public HttpEntity<EntityModel<ProviderDto>> getProvider(@PathVariable UUID id) {
         LOG.debug("Get to retrieve provider with id: {}.", id);
 
         Provider provider = providerService.findById(id);

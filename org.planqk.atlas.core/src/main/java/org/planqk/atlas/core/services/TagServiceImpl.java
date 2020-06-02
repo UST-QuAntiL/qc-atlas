@@ -62,7 +62,7 @@ public class TagServiceImpl implements TagService {
 	}
 
 	@Override
-	public Tag getTagById(UUID tagId) throws NotFoundException {
+	public Tag getTagById(UUID tagId) {
 		Optional<Tag> tagOptional = Objects.isNull(tagId) ? Optional.empty() : tagRepository.findById(tagId);
 		if (tagOptional.isPresent())
 			return tagOptional.get();

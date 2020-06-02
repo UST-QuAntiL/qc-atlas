@@ -37,7 +37,7 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
 	}
 
 	@Override
-	public ProblemType update(UUID id, ProblemType problemType) throws NotFoundException {
+	public ProblemType update(UUID id, ProblemType problemType) {
 		// Get existing ProblemType if it exists
 		ProblemType persistedType = findById(id);
 		// Update fields
@@ -48,7 +48,7 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
 	}
 
 	@Override
-	public void delete(UUID id) throws SqlConsistencyException, NoContentException {
+	public void delete(UUID id) {
 		if (Objects.isNull(id) || repo.findById(id).isEmpty()) {
 			throw new NoContentException(NOT_FOUND_MSG);
 		}
@@ -60,7 +60,7 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
 	}
 
 	@Override
-	public ProblemType findById(UUID id) throws NotFoundException {
+	public ProblemType findById(UUID id) {
 		Optional<ProblemType> problemTypeOpt = Objects.isNull(id) ? Optional.empty() : repo.findById(id);
 		if (problemTypeOpt.isPresent())
 			return problemTypeOpt.get();
@@ -68,7 +68,7 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
 	}
 
 	@Override
-	public ProblemType findByName(String name) throws NotFoundException {
+	public ProblemType findByName(String name) {
 		Optional<ProblemType> problemTypeOpt = Objects.isNull(name) ? Optional.empty() : repo.findByName(name);
 		if (problemTypeOpt.isPresent())
 			return problemTypeOpt.get();

@@ -49,7 +49,7 @@ public class ProviderServiceImpl implements ProviderService {
 	}
 
 	@Override
-	public Provider findById(UUID providerId) throws NotFoundException {
+	public Provider findById(UUID providerId) {
 		Optional<Provider> providerOptional = Objects.isNull(providerId) ? Optional.empty()
 				: repository.findById(providerId);
 		if (providerOptional.isPresent())

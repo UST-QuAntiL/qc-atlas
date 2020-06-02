@@ -22,7 +22,6 @@ package org.planqk.atlas.core.services;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Qpu;
-import org.planqk.atlas.core.model.exceptions.NotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -32,5 +31,5 @@ public interface QpuService {
 
     Page<Qpu> findAll(Pageable pageable);
 
-    Qpu findById(UUID qpuId) throws NotFoundException;
+    Qpu findById(UUID qpuId);
 }

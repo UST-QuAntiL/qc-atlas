@@ -26,7 +26,6 @@ import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.model.Tag;
-import org.planqk.atlas.core.model.exceptions.NotFoundException;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.annotation.ApiVersion;
@@ -93,7 +92,7 @@ public class AlgorithmController {
     @Operation()
     @GetMapping("/")
     public HttpEntity<PagedModel<EntityModel<AlgorithmDto>>> getAlgorithms(@RequestParam(required = false) Integer page,
-                                                      @RequestParam(required = false) Integer size) throws NotFoundException {
+                                                      @RequestParam(required = false) Integer size) {
         LOG.debug("Get to retrieve all algorithms received.");
         // Generate Pageable
         Pageable p = RestUtils.getPageableFromRequestParams(page, size);
@@ -110,7 +109,7 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "400", content = @Content)
     })
     @PostMapping("/")
-    public HttpEntity<EntityModel<AlgorithmDto>> createAlgorithm(@Validated @RequestBody AlgorithmDto algo) throws NotFoundException {
+    public HttpEntity<EntityModel<AlgorithmDto>> createAlgorithm(@Validated @RequestBody AlgorithmDto algo) {
         LOG.debug("Post to create new algorithm received.");
         // store and return algorithm
         Algorithm algorithm = algorithmService.save(ModelMapperUtils.convert(algo, Algorithm.class));
@@ -122,7 +121,7 @@ public class AlgorithmController {
     }
 
     @PutMapping("/{id}")
-    public HttpEntity<EntityModel<AlgorithmDto>> updateAlgorithm(@PathVariable UUID id, @Validated @RequestBody AlgorithmDto algo) throws NotFoundException {
+    public HttpEntity<EntityModel<AlgorithmDto>> updateAlgorithm(@PathVariable UUID id, @Validated @RequestBody AlgorithmDto algo) {
         LOG.debug("Put to update algorithm with id: {}.", id);
         Algorithm updatedAlgorithm = algorithmService.update(id, ModelMapperUtils.convert(algo, Algorithm.class));
         // Convert To EntityModel
@@ -133,7 +132,7 @@ public class AlgorithmController {
     }
 
     @DeleteMapping("/{id}")
-    public HttpEntity<?> deleteAlgorithm(@PathVariable UUID id) throws NotFoundException {
+    public HttpEntity<?> deleteAlgorithm(@PathVariable UUID id) {
         LOG.debug("Delete to remove algorithm with id: {}.", id);
         algorithmService.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -144,7 +143,7 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "404", content = @Content)
     })
     @GetMapping("/{id}")
-    public HttpEntity<EntityModel<AlgorithmDto>> getAlgorithm(@PathVariable UUID id) throws NotFoundException {
+    public HttpEntity<EntityModel<AlgorithmDto>> getAlgorithm(@PathVariable UUID id) {
         LOG.debug("Get to retrieve algorithm with id: {}.", id);
 
         Algorithm algorithm = algorithmService.findById(id);
@@ -161,7 +160,7 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "404", content = @Content)
     })
     @GetMapping("/{id}/" + Constants.TAGS)
-    public HttpEntity<CollectionModel<EntityModel<TagDto>>> getTags(@PathVariable UUID id) throws NotFoundException {
+    public HttpEntity<CollectionModel<EntityModel<TagDto>>> getTags(@PathVariable UUID id) {
         Algorithm algorithm = algorithmService.findById(id);
         // Get Tags of Algorithm
         Set<Tag> tags = algorithm.getTags();
@@ -177,7 +176,7 @@ public class AlgorithmController {
     }
 
     @GetMapping("/{id}/" + Constants.PROBLEM_TYPES)
-    public HttpEntity<CollectionModel<EntityModel<ProblemTypeDto>>> getProblemTypes(@PathVariable UUID id) throws NotFoundException {
+    public HttpEntity<CollectionModel<EntityModel<ProblemTypeDto>>> getProblemTypes(@PathVariable UUID id) {
         Algorithm algorithm = algorithmService.findById(id);
         // Get ProblemTypes of Algorithm
         Set<ProblemType> problemTypes = algorithm.getProblemTypes();
@@ -193,7 +192,7 @@ public class AlgorithmController {
     }
 
     @GetMapping("/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS)
-    public HttpEntity<CollectionModel<EntityModel<AlgorithmRelationDto>>> getAlgorithmRelations(@PathVariable UUID sourceAlgorithm_id) throws NotFoundException {
+    public HttpEntity<CollectionModel<EntityModel<AlgorithmRelationDto>>> getAlgorithmRelations(@PathVariable UUID sourceAlgorithm_id) {
         // get AlgorithmRelations of Algorithm
         Set<AlgorithmRelation> algorithmRelations = algorithmService.getAlgorithmRelations(sourceAlgorithm_id);
         // Get AlgorithmRelationDTOs of Algorithm
@@ -209,7 +208,7 @@ public class AlgorithmController {
 
     @PutMapping("/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS)
     public HttpEntity<EntityModel<AlgorithmRelationDto>> updateAlgorithmRelation(@PathVariable UUID sourceAlgorithm_id,
-    		@Validated @RequestBody AlgorithmRelationDto relation) throws NotFoundException {
+    		@Validated @RequestBody AlgorithmRelationDto relation) {
         LOG.debug("Post to add algorithm relation received.");
 
         AlgorithmRelation algorithmRelation = algorithmService.addUpdateAlgorithmRelation(sourceAlgorithm_id, ModelMapperUtils
@@ -221,8 +220,7 @@ public class AlgorithmController {
     }
 
     @DeleteMapping("/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS + "/{relation_id}")
-    public HttpEntity<AlgorithmRelationDto> deleteAlgorithmRelation(@PathVariable UUID sourceAlgorithm_id, @PathVariable UUID relation_id)
-    		throws NotFoundException {
+    public HttpEntity<AlgorithmRelationDto> deleteAlgorithmRelation(@PathVariable UUID sourceAlgorithm_id, @PathVariable UUID relation_id) {
         LOG.debug("Delete received to remove algorithm relation with id {}.", relation_id);
         algorithmService.deleteAlgorithmRelation(sourceAlgorithm_id, relation_id);
         return new ResponseEntity<>(HttpStatus.OK);

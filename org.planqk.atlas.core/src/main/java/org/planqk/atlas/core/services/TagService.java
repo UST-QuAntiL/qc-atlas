@@ -24,7 +24,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Tag;
-import org.planqk.atlas.core.model.exceptions.NotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,7 +36,7 @@ public interface TagService {
     Page<Tag> findAll(Pageable pageable);
 
     @Transactional(readOnly = true)
-    Tag getTagById(UUID tagId) throws NotFoundException;
+    Tag getTagById(UUID tagId);
 
 	Set<Tag> createOrUpdateAll(Set<Tag> algorithmTags);
 }
