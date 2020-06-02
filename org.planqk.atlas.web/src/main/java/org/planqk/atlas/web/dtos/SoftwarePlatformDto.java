@@ -6,6 +6,7 @@ import org.springframework.hateoas.RepresentationModel;
 
 import javax.validation.constraints.NotNull;
 import java.net.URL;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -27,9 +28,9 @@ public class SoftwarePlatformDto extends RepresentationModel<SoftwarePlatformDto
 
     private String version;
 
-    private Set<BackendDto> supportedBackends;
+    private Set<BackendDto> supportedBackends = new HashSet<>();
 
-    private Set<CloudServiceDto> supportedCloudServices;
+    private Set<CloudServiceDto> supportedCloudServices = new HashSet<>();
 
 }
 

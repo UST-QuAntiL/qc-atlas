@@ -22,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 
@@ -56,6 +57,11 @@ public class SoftwarePlatformController {
         return new ResponseEntity<>(platformDtoEntity, HttpStatus.OK);
     }
 
+    @GetMapping("/echo")
+    public HttpEntity<?> echo () {
+        return ResponseEntity.ok("Tach");
+    }
+
     @PutMapping("/")
     public HttpEntity<EntityModel<SoftwarePlatformDto>> addSoftwarePlatform(@Valid @RequestBody SoftwarePlatformDto platformDto) {
         SoftwarePlatform savedPlatform= softwarePlatformService.save(ModelMapperUtils.convert(platformDto, SoftwarePlatform.class));
@@ -69,5 +75,10 @@ public class SoftwarePlatformController {
     public HttpEntity<SoftwarePlatformDto> deleteSoftwarePlatform(@PathVariable UUID id) {
         softwarePlatformService.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity handleNotFound() {
+        return ResponseEntity.notFound().build();
     }
 }
