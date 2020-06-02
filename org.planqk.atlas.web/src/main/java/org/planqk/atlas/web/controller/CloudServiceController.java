@@ -22,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @io.swagger.v3.oas.annotations.tags.Tag(name = "cloud_services")
@@ -68,6 +69,11 @@ public class CloudServiceController {
     public HttpEntity<CloudServiceDto> deleteCloudService(@PathVariable UUID id) {
         cloudServiceService.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity handleNotFound() {
+        return ResponseEntity.notFound().build();
     }
 
 }
