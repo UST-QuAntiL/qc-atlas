@@ -19,18 +19,11 @@
 
 package org.planqk.atlas.web.dtos;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.util.HashMap;
-import java.util.Map;
-import org.planqk.atlas.core.model.Tag;
-
+import java.util.UUID;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.planqk.atlas.core.model.Tag;
 import org.springframework.hateoas.RepresentationModel;
-
-import java.util.UUID;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -42,18 +35,6 @@ public class TagDto extends RepresentationModel<TagDto> {
 
     private UUID id;
 
-    @JsonIgnore
-    private Map<String, Object> otherData = new HashMap<>();
-
-    @JsonAnyGetter
-    public Map<String, Object> getOtherJsonData() {
-        return otherData;
-    }
-
-    @JsonAnySetter
-    public void setOtherJsonData(String key, Object value) {
-        otherData.put(key, value);
-    }
 
     public static final class Converter {
 

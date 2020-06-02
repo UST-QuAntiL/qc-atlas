@@ -24,12 +24,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.web.Constants;
+import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.AlgorithmListDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,8 +67,16 @@ public class AlgorithmControllerTest {
     private int size = 2;
     private Pageable pageable = PageRequest.of(page, size);
 
+    private ObjectMapper mapper;
+
+    @BeforeEach
+    public void init() {
+        mapper = ObjectMapperUtils.newTestMapper();
+    }
+
     @Test
     public void getAlgorithms_withoutPagination() throws Exception {
+        var element = Optional.of("Hello World").orElseThrow(() -> new RuntimeException("Bla bla"));
         when(algorithmService.findAll(Pageable.unpaged())).thenReturn(Page.empty());
         mockMvc.perform(get("/" + Constants.ALGORITHMS + "/")
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
@@ -80,7 +90,7 @@ public class AlgorithmControllerTest {
                 .queryParam(Constants.SIZE, Integer.toString(size))
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
 
-        AlgorithmListDto algorithmListDto = new ObjectMapper().readValue(result.getResponse().getContentAsString(), AlgorithmListDto.class);
+        AlgorithmListDto algorithmListDto = mapper.readValue(result.getResponse().getContentAsString(), AlgorithmListDto.class);
         assertEquals(algorithmListDto.getAlgorithmDtos().size(), 0);
     }
 
@@ -105,7 +115,7 @@ public class AlgorithmControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON)).andReturn();
 
-        AlgorithmListDto algorithmListDto = new ObjectMapper().readValue(result.getResponse().getContentAsString(), AlgorithmListDto.class);
+        AlgorithmListDto algorithmListDto = mapper.readValue(result.getResponse().getContentAsString(), AlgorithmListDto.class);
         assertEquals(algorithmListDto.getAlgorithmDtos().size(), 2);
     }
 
@@ -125,7 +135,7 @@ public class AlgorithmControllerTest {
         MvcResult result = mockMvc.perform(get("/" + Constants.ALGORITHMS + "/" + algoId)
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
 
-        AlgorithmDto response = new ObjectMapper().readValue(result.getResponse().getContentAsString(), AlgorithmDto.class);
+        AlgorithmDto response = mapper.readValue(result.getResponse().getContentAsString(), AlgorithmDto.class);
         assertEquals(response.getId(), algoId);
     }
 
@@ -150,7 +160,7 @@ public class AlgorithmControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isCreated()).andReturn();
 
-        AlgorithmDto response = new ObjectMapper().readValue(result.getResponse().getContentAsString(), AlgorithmDto.class);
+        AlgorithmDto response = mapper.readValue(result.getResponse().getContentAsString(), AlgorithmDto.class);
         assertEquals(response.getName(), algorithmDto.getName());
     }
 }

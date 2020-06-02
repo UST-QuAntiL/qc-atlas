@@ -24,12 +24,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.planqk.atlas.core.model.Provider;
 import org.planqk.atlas.core.services.ProviderService;
 import org.planqk.atlas.web.Constants;
+import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
 import org.planqk.atlas.web.dtos.ProviderDto;
 import org.planqk.atlas.web.dtos.ProviderListDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,6 +67,13 @@ public class ProviderControllerTest {
     private int size = 2;
     private Pageable pageable = PageRequest.of(page, size);
 
+    private ObjectMapper mapper;
+
+    @BeforeEach
+    public void init() {
+        mapper = ObjectMapperUtils.newTestMapper();
+    }
+
     @Test
     public void getProviders_withoutPagination() throws Exception {
         when(providerService.findAll(Pageable.unpaged())).thenReturn(Page.empty());
@@ -80,7 +89,7 @@ public class ProviderControllerTest {
                 .queryParam(Constants.SIZE, Integer.toString(size))
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
 
-        ProviderListDto providerListDto = new ObjectMapper().readValue(result.getResponse().getContentAsString(), ProviderListDto.class);
+        ProviderListDto providerListDto = mapper.readValue(result.getResponse().getContentAsString(), ProviderListDto.class);
         assertEquals(providerListDto.getProviderDtoList().size(), 0);
     }
 
@@ -103,7 +112,7 @@ public class ProviderControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON)).andReturn();
 
-        ProviderListDto providerListDto = new ObjectMapper().readValue(result.getResponse().getContentAsString(), ProviderListDto.class);
+        ProviderListDto providerListDto = mapper.readValue(result.getResponse().getContentAsString(), ProviderListDto.class);
         assertEquals(providerListDto.getProviderDtoList().size(), 1);
         assertEquals(providerListDto.getProviderDtoList().get(0).getId(), provId);
     }
@@ -124,7 +133,7 @@ public class ProviderControllerTest {
         MvcResult result = mockMvc.perform(get("/" + Constants.PROVIDERS + "/" + provId)
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
 
-        ProviderDto response = new ObjectMapper().readValue(result.getResponse().getContentAsString(), ProviderDto.class);
+        ProviderDto response = mapper.readValue(result.getResponse().getContentAsString(), ProviderDto.class);
         assertEquals(response.getId(), provId);
     }
 
@@ -153,7 +162,7 @@ public class ProviderControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isCreated()).andReturn();
 
-        ProviderDto response = new ObjectMapper().readValue(result.getResponse().getContentAsString(), ProviderDto.class);
+        ProviderDto response = mapper.readValue(result.getResponse().getContentAsString(), ProviderDto.class);
         assertEquals(response.getName(), providerDto.getName());
     }
 }

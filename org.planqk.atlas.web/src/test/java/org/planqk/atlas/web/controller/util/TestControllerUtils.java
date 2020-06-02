@@ -17,7 +17,7 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.planqk.atlas.web.controller;
+package org.planqk.atlas.web.controller.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 

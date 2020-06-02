@@ -19,21 +19,14 @@
 
 package org.planqk.atlas.web.dtos;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
-
-import org.planqk.atlas.core.model.Algorithm;
-import org.planqk.atlas.core.model.Implementation;
-
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.Implementation;
 import org.springframework.hateoas.RepresentationModel;
 
 /**
@@ -55,19 +48,6 @@ public class ImplementationDto extends RepresentationModel<ImplementationDto> {
     private String assumptions;
     private String parameter;
     private String dependencies;
-
-    @JsonIgnore
-    private Map<String, Object> otherData = new HashMap<>();
-
-    @JsonAnyGetter
-    public Map<String, Object> getOtherJsonData() {
-        return otherData;
-    }
-
-    @JsonAnySetter
-    public void setOtherJsonData(String key, Object value) {
-        otherData.put(key, value);
-    }
 
     public static final class Converter {
 

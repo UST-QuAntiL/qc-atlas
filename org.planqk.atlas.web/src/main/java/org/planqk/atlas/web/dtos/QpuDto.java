@@ -19,20 +19,13 @@
 
 package org.planqk.atlas.web.dtos;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.util.HashMap;
-import java.util.Map;
-import org.planqk.atlas.core.model.Provider;
-import org.planqk.atlas.core.model.Qpu;
-
+import java.util.UUID;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import org.planqk.atlas.core.model.Provider;
+import org.planqk.atlas.core.model.Qpu;
 import org.springframework.hateoas.RepresentationModel;
-
-import java.util.UUID;
 
 /**
  * Data transfer object for the model class {@link Qpu}.
@@ -51,19 +44,6 @@ public class QpuDto extends RepresentationModel<ProviderDto> {
     private float t1;
 
     private float maxGateTime;
-
-    @JsonIgnore
-    private Map<String, Object> otherData = new HashMap<>();
-
-    @JsonAnyGetter
-    public Map<String, Object> getOtherJsonData() {
-        return otherData;
-    }
-
-    @JsonAnySetter
-    public void setOtherJsonData(String key, Object value) {
-        otherData.put(key, value);
-    }
 
     public static final class Converter {
 

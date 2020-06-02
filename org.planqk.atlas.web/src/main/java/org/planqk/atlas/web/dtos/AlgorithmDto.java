@@ -19,22 +19,18 @@
 
 package org.planqk.atlas.web.dtos;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import org.planqk.atlas.core.model.Algorithm;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.planqk.atlas.core.model.Algorithm;
 import org.springframework.hateoas.RepresentationModel;
-
 import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.WRITE_ONLY;
 
 /**
@@ -59,19 +55,6 @@ public class AlgorithmDto extends RepresentationModel<AlgorithmDto> {
     // annotate this for swagger as well, because swagger doesn't recognize the json property annotation
     @Schema(accessMode = WRITE_ONLY)
     private Set<TagDto> tags;
-
-    @JsonIgnore
-    private Map<String, Object> otherData = new HashMap<>();
-
-    @JsonAnyGetter
-    public Map<String, Object> getOtherJsonData() {
-        return otherData;
-    }
-
-    @JsonAnySetter
-    public void setOtherJsonData(String key, Object value) {
-        otherData.put(key, value);
-    }
 
     public static final class Converter {
 

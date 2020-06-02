@@ -23,12 +23,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.services.TagService;
 import org.planqk.atlas.web.Constants;
+import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
+import org.planqk.atlas.web.controller.util.TestControllerUtils;
 import org.planqk.atlas.web.dtos.TagDto;
 import org.planqk.atlas.web.dtos.TagListDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,6 +63,12 @@ public class TagControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    private ObjectMapper mapper;
+
+    @BeforeEach
+    public void init() {
+        mapper = ObjectMapperUtils.newTestMapper();
+    }
 
     private Tag getTestTag() {
         UUID tagId = UUID.randomUUID();
@@ -83,7 +92,7 @@ public class TagControllerTest {
 
         MvcResult mvcResult = mockMvc.perform(get("/" + Constants.TAGS + "/").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
-        TagListDto tagList = new ObjectMapper().readValue(mvcResult.getResponse().getContentAsString(), TagListDto.class);
+        TagListDto tagList = mapper.readValue(mvcResult.getResponse().getContentAsString(), TagListDto.class);
         assertEquals(tagList.getTagsDtos().size(), 2);
     }
 
@@ -95,7 +104,7 @@ public class TagControllerTest {
                 .queryParam(Constants.SIZE, Integer.toString(4))
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
 
-        TagListDto tagListDto = new ObjectMapper().readValue(result.getResponse().getContentAsString(), TagListDto.class);
+        TagListDto tagListDto = mapper.readValue(result.getResponse().getContentAsString(), TagListDto.class);
         assertEquals(tagListDto.getTagsDtos().size(), 0);
     }
 
@@ -107,7 +116,7 @@ public class TagControllerTest {
         MvcResult mvcResult = mockMvc.perform(get("/" + Constants.TAGS + "/" + tag1.getId() + "/").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
-        TagDto createdTag = new ObjectMapper().readValue(mvcResult.getResponse().getContentAsString(), TagDto.class);
+        TagDto createdTag = mapper.readValue(mvcResult.getResponse().getContentAsString(), TagDto.class);
         assertEquals(createdTag.getKey(), tag1.getKey());
         assertEquals(createdTag.getValue(), tag1.getValue());
     }
@@ -125,7 +134,7 @@ public class TagControllerTest {
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated()).andReturn();
 
-        TagDto createdTag = new ObjectMapper().readValue(result.getResponse().getContentAsString(), TagDto.class);
+        TagDto createdTag = mapper.readValue(result.getResponse().getContentAsString(), TagDto.class);
         assertEquals(createdTag.getKey(), tag1.getKey());
         assertEquals(createdTag.getValue(), tag1.getValue());
     }

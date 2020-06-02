@@ -19,13 +19,7 @@
 
 package org.planqk.atlas.web.dtos;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.util.HashMap;
 import java.util.List;
-
-import java.util.Map;
 import lombok.Getter;
 import org.assertj.core.util.Lists;
 import org.springframework.hateoas.RepresentationModel;
@@ -43,16 +37,4 @@ public class TagListDto extends RepresentationModel<TagListDto> {
         this.tagsDtos.add(tag);
     }
 
-    @JsonIgnore
-    private Map<String, Object> otherData = new HashMap<>();
-
-    @JsonAnyGetter
-    public Map<String, Object> getOtherJsonData() {
-        return otherData;
-    }
-
-    @JsonAnySetter
-    public void setOtherJsonData(String key, Object value) {
-        otherData.put(key, value);
-    }
 }
