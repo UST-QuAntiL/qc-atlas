@@ -108,7 +108,8 @@ public class CloudServiceControllerTest {
                 .andExpect(status().isCreated()).andReturn();
 
         EntityModel<CloudServiceDto> resultDtoEntity = mapper.readValue(result.getResponse().getContentAsString(),
-                new TypeReference<>(){});
+                new TypeReference<>() {
+                });
 
         assertEquals(cloudServiceDto.getId(), resultDtoEntity.getContent().getId());
         assertEquals(cloudServiceDto.getName(), resultDtoEntity.getContent().getName());
@@ -125,7 +126,8 @@ public class CloudServiceControllerTest {
                 .andExpect(status().isOk()).andReturn();
 
         PagedModel<EntityModel<CloudServiceDto>> pagedDtoEntities = mapper.readValue(
-                result.getResponse().getContentAsString(), new TypeReference<>() {});
+                result.getResponse().getContentAsString(), new TypeReference<>() {
+                });
 
         assertEquals(0, pagedDtoEntities.getContent().size());
     }
@@ -207,7 +209,8 @@ public class CloudServiceControllerTest {
                 .andExpect(status().isOk()).andReturn();
 
         EntityModel<CloudServiceDto> cloudServiceDtoEntity = mapper.readValue(
-                result.getResponse().getContentAsString(), new TypeReference<>() {});
+                result.getResponse().getContentAsString(), new TypeReference<>() {
+                });
 
         assertEquals(cloudServiceDtoEntity.getContent().getId(), cloudService.getId());
         assertEquals(cloudServiceDtoEntity.getContent().getName(), cloudService.getName());

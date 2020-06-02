@@ -58,13 +58,13 @@ public class SoftwarePlatformController {
     }
 
     @GetMapping("/echo")
-    public HttpEntity<?> echo () {
+    public HttpEntity<?> echo() {
         return ResponseEntity.ok("Tach");
     }
 
     @PutMapping("/")
     public HttpEntity<EntityModel<SoftwarePlatformDto>> addSoftwarePlatform(@Valid @RequestBody SoftwarePlatformDto platformDto) {
-        SoftwarePlatform savedPlatform= softwarePlatformService.save(ModelMapperUtils.convert(platformDto, SoftwarePlatform.class));
+        SoftwarePlatform savedPlatform = softwarePlatformService.save(ModelMapperUtils.convert(platformDto, SoftwarePlatform.class));
         SoftwarePlatformDto savedPlatformDto = ModelMapperUtils.convert(savedPlatform, SoftwarePlatformDto.class);
         EntityModel<SoftwarePlatformDto> platformDtoEntity = HateoasUtils.generateEntityModel(savedPlatformDto);
         softwarePlatformAssembler.addLinks(platformDtoEntity);

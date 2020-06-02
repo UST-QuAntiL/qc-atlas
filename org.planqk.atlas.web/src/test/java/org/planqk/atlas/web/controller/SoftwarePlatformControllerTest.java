@@ -94,7 +94,7 @@ public class SoftwarePlatformControllerTest {
     }
 
     @Test
-    public void addSoftwarePlatform_returnCreate() throws Exception{
+    public void addSoftwarePlatform_returnCreate() throws Exception {
         SoftwarePlatform softwarePlatform = new SoftwarePlatform();
         softwarePlatform.setId(UUID.randomUUID());
         softwarePlatform.setName("test platform");
@@ -109,7 +109,8 @@ public class SoftwarePlatformControllerTest {
                 .andExpect(status().isCreated()).andReturn();
 
         EntityModel<SoftwarePlatformDto> resultDtoEntity = mapper.readValue(result.getResponse().getContentAsString(),
-                new TypeReference<>(){});
+                new TypeReference<>() {
+                });
 
         assertEquals(softwarePlatformDto.getId(), resultDtoEntity.getContent().getId());
         assertEquals(softwarePlatformDto.getName(), resultDtoEntity.getContent().getName());
@@ -126,7 +127,8 @@ public class SoftwarePlatformControllerTest {
                 .andExpect(status().isOk()).andReturn();
 
         PagedModel<EntityModel<SoftwarePlatformDto>> pagedDtoEntities = mapper.readValue(
-                result.getResponse().getContentAsString(), new TypeReference<>() {});
+                result.getResponse().getContentAsString(), new TypeReference<>() {
+                });
 
         assertEquals(0, pagedDtoEntities.getContent().size());
     }
@@ -212,7 +214,8 @@ public class SoftwarePlatformControllerTest {
                 .andExpect(status().isOk()).andReturn();
 
         EntityModel<SoftwarePlatformDto> softwarePlatformDtoEntity = mapper.readValue(
-                result.getResponse().getContentAsString(), new TypeReference<>() {});
+                result.getResponse().getContentAsString(), new TypeReference<>() {
+                });
 
         assertEquals(softwarePlatformDtoEntity.getContent().getId(), softwarePlatform.getId());
         assertEquals(softwarePlatformDtoEntity.getContent().getName(), softwarePlatform.getName());

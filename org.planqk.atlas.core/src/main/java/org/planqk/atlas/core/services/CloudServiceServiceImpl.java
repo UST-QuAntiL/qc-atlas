@@ -28,7 +28,7 @@ public class CloudServiceServiceImpl implements CloudServiceService {
     }
 
     @Override
-    public Set<CloudService> createOrUpdateAll(Set<CloudService> cloudServices){
+    public Set<CloudService> createOrUpdateAll(Set<CloudService> cloudServices) {
         return cloudServices.stream().map(this::createOrUpdate).collect(Collectors.toSet());
     }
 

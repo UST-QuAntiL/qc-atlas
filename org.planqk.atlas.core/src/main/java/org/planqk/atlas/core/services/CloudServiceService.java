@@ -19,6 +19,6 @@ public interface CloudServiceService {
 
     CloudService findById(UUID cloudServiceId);
 
-    void delete (UUID cloudServiceId);
+    void delete(UUID cloudServiceId);
 
 }
