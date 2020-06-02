@@ -9,7 +9,7 @@ import java.util.UUID;
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.model.exceptions.NoContentException;
 import org.planqk.atlas.core.model.exceptions.NotFoundException;
-import org.planqk.atlas.core.model.exceptions.SqlConsistencyException;
+import org.planqk.atlas.core.model.exceptions.ConsistencyException;
 import org.planqk.atlas.core.repository.AlgorithmRepository;
 import org.planqk.atlas.core.repository.ProblemTypeRepository;
 import org.slf4j.Logger;
@@ -54,7 +54,7 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
 		}
 		if (algRepo.countAlgorithmsUsingProblemType(id) > 0) {
 			LOG.info("Trying to delete ProblemType that is used by at least 1 algorithm");
-			throw new SqlConsistencyException("Cannot delete ProbemType, since it is used by existing algorithms!");
+			throw new ConsistencyException("Cannot delete ProbemType, since it is used by existing algorithms!");
 		}
 		repo.deleteById(id);
 	}

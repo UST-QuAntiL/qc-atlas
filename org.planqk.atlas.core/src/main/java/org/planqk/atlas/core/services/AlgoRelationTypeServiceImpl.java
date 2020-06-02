@@ -6,7 +6,7 @@ import java.util.UUID;
 
 import org.planqk.atlas.core.model.AlgoRelationType;
 import org.planqk.atlas.core.model.exceptions.NotFoundException;
-import org.planqk.atlas.core.model.exceptions.SqlConsistencyException;
+import org.planqk.atlas.core.model.exceptions.ConsistencyException;
 import org.planqk.atlas.core.repository.AlgoRelationTypeRepository;
 import org.planqk.atlas.core.repository.AlgorithmRelationRepository;
 import org.slf4j.Logger;
@@ -51,7 +51,7 @@ public class AlgoRelationTypeServiceImpl implements AlgoRelationTypeService {
 	public void delete(UUID id) {
 		if (algorithmRelationRepository.countRelationsUsingRelationType(id) > 0) {
 			LOG.info("Trying to delete algoRelationType that is used in at least 1 algorithmRelation.");
-			throw new SqlConsistencyException("Cannot delete algoRelationType since it is used by existing algorithmRelations.");
+			throw new ConsistencyException("Cannot delete algoRelationType since it is used by existing algorithmRelations.");
 		}
 		if (repo.findById(id).isEmpty()) {
 			LOG.info("Trying to delete algoRelationType which does not exist.");

@@ -2,7 +2,7 @@ package org.planqk.atlas.web.controller;
 
 import org.planqk.atlas.core.model.exceptions.NoContentException;
 import org.planqk.atlas.core.model.exceptions.NotFoundException;
-import org.planqk.atlas.core.model.exceptions.SqlConsistencyException;
+import org.planqk.atlas.core.model.exceptions.ConsistencyException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -31,8 +31,8 @@ public class RestErrorHandler {
 		return new ResponseEntity<>("Jackson cannot deserialize request", HttpStatus.BAD_REQUEST);
 	}
 
-	@ExceptionHandler(SqlConsistencyException.class)
-	public ResponseEntity<?> handleSqlConsistencyException(SqlConsistencyException e) {
+	@ExceptionHandler(ConsistencyException.class)
+	public ResponseEntity<?> handleSqlConsistencyException(ConsistencyException e) {
 		return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
 	}
 
