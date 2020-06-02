@@ -125,11 +125,8 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 
 		// If one of the algorithms does not exist
 		if (sourceAlgorithmOpt.isEmpty() || targetAlgorithmOpt.isEmpty()) {
-			LOG.info("Trying to add algorithmRelation for non-existing source algorithm.");
-			throw new NotFoundException("Could not add algorithmRelation to non-existing source algorithm.");
-		} else if (targetAlgorithmOpt.isEmpty()) {
-			LOG.info("Trying to add algorithmRelation for non-existing target algorithm.");
-			throw new NotFoundException("Could not add algorithmRelation to non-existing target algorithm.");
+			LOG.info("Trying to add algorithmRelation for non-existing algorithm.");
+			throw new NotFoundException("Could not add algorithmRelation to non-existing algorithm.");
 		}
 
 		// Get Algorithms
