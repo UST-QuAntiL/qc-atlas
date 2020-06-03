@@ -19,7 +19,7 @@ public class CloudService extends HasId {
     private String costModel;
 
     @ManyToMany(fetch = FetchType.LAZY,
-            cascade = {CascadeType.ALL}
+            cascade = {CascadeType.MERGE}
     )
     @JoinTable(
             name = "cloud_services_backends",
@@ -28,6 +28,6 @@ public class CloudService extends HasId {
     )
     private Set<Backend> providedBackends = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, mappedBy = "supportedCloudServices")
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE}, mappedBy = "supportedCloudServices")
     private Set<SoftwarePlatform> softwarePlatforms = new HashSet<>();
 }

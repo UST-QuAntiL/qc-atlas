@@ -18,7 +18,7 @@ public class SoftwarePlatform extends HasId {
     private String version;
 
     @ManyToMany(fetch = FetchType.LAZY,
-            cascade = {CascadeType.ALL})
+            cascade = {CascadeType.MERGE})
     @JoinTable(
             name = "software_platforms_backends",
             joinColumns = @JoinColumn(name = "software_platform_id"),
@@ -27,7 +27,7 @@ public class SoftwarePlatform extends HasId {
     private Set<Backend> supportedBackends = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.LAZY,
-            cascade = {CascadeType.ALL}
+            cascade = {CascadeType.MERGE}
     )
     @JoinTable(
             name = "software_platform_cloud_services",
