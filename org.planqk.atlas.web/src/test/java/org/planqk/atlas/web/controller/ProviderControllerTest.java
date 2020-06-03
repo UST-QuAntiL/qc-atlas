@@ -22,10 +22,10 @@ package org.planqk.atlas.web.controller;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Provider;
-import org.planqk.atlas.core.model.exceptions.NotFoundException;
 import org.planqk.atlas.core.services.ProviderService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.ProviderDto;
@@ -158,7 +158,7 @@ public class ProviderControllerTest {
 
 	@Test
 	public void getProvider_returnNotFound() throws Exception {
-		when(providerService.findById(any(UUID.class))).thenThrow(new NotFoundException());
+		when(providerService.findById(any(UUID.class))).thenThrow(new NoSuchElementException());
 		mockMvc.perform(get("/" + Constants.PROVIDERS + "/" + UUID.randomUUID()).accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound());
 	}

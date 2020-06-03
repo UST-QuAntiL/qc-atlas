@@ -21,6 +21,7 @@ package org.planqk.atlas.core.services;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -30,7 +31,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.planqk.atlas.core.model.Tag;
-import org.planqk.atlas.core.model.exceptions.NotFoundException;
 import org.planqk.atlas.core.repository.TagRepository;
 
 import lombok.AllArgsConstructor;
@@ -63,10 +63,7 @@ public class TagServiceImpl implements TagService {
 
 	@Override
 	public Tag getTagById(UUID tagId) {
-		Optional<Tag> tagOptional = Objects.isNull(tagId) ? Optional.empty() : tagRepository.findById(tagId);
-		if (tagOptional.isPresent())
-			return tagOptional.get();
-		throw new NotFoundException("Tag does not exist!");
+		return tagRepository.findById(tagId).orElseThrow(NoSuchElementException::new);
 	}
 
 	@Override
