@@ -33,12 +33,14 @@ public class Constants {
     public static final String PROBLEM_TYPES = "problem-types";
     public static final String ALGORITHM_RELATIONS = "algorithm-relations";
     public static final String ALGO_RELATION_TYPES = "algo-relation-types";
+    public static final String PUBLICATIONS = "publications";
 
     // link names
     public static final String ALGORITHM_LINK = "implementedAlgorithm";
     public static final String PROVIDER = "provider";
     public static final String ALGORITHM = "algorithm";
     public static final String TAGS_LINK = "tags";
+    public static final String PUBLICATIONS_LINK = "publications";
 
     // default Pagination params that are exposed in HATEOAS links
     public static final Integer DEFAULT_PAGE_NUMBER = 0;

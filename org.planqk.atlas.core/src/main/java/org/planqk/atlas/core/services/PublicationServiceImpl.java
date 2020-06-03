@@ -1,6 +1,7 @@
 package org.planqk.atlas.core.services;
 
 import org.planqk.atlas.core.model.Publication;
+import org.planqk.atlas.core.model.exceptions.NotFoundException;
 import org.planqk.atlas.core.repository.PublicationRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -52,10 +53,13 @@ public class PublicationServiceImpl implements PublicationService {
     }
 
     @Override
-    public Optional<Publication> findById(UUID pubId) {
-        if (Objects.isNull(pubId)) {
-            return Optional.empty();
+    public Publication findById(UUID pubId) {
+
+        Optional<Publication> publicationOptional = publicationRepository.findById(pubId);
+        if(publicationOptional.isEmpty()) {
+            throw new NotFoundException("Could not find publication with id "+pubId);
         }
-        return publicationRepository.findById(pubId);
+
+        return publicationOptional.get();
     }
 }

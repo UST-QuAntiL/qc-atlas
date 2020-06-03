@@ -20,6 +20,7 @@
 package org.planqk.atlas.core.model;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.Set;
 
@@ -53,10 +54,13 @@ public class Algorithm extends AlgorOrImpl {
 	@Getter
 	private String acronym;
 
-//	@ManyToMany(cascade = {CascadeType.ALL})
-//	@Setter
-//	@Getter
-//	private Set<Publication> publications;
+	@ManyToMany(cascade= {CascadeType.PERSIST, CascadeType.MERGE}, fetch=FetchType.EAGER)
+	@JoinTable(name = "algorithm_publication",
+			   joinColumns = @JoinColumn(name = "algorithm_id"),
+			   inverseJoinColumns = @JoinColumn(name ="publication_id"))
+	@Setter
+	@Getter
+	private Set<Publication> publications;
 
 	@Setter
 	@Getter
@@ -135,6 +139,14 @@ public class Algorithm extends AlgorOrImpl {
 			return new HashSet<>();
 		}
 		return tags;
+	}
+
+	@NonNull
+	public Set<Publication> getPublications() {
+		if (Objects.isNull(publications)) {
+			return new HashSet<>();
+		}
+		return publications;
 	}
 	
 	@NonNull

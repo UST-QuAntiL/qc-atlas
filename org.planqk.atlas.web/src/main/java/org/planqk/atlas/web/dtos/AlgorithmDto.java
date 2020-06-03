@@ -32,6 +32,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.planqk.atlas.core.model.Publication;
 
 import javax.validation.constraints.*;
 
@@ -78,4 +79,8 @@ public class AlgorithmDto {
 	@Schema(accessMode = WRITE_ONLY)
 	private Set<TagDto> tags;
 
+	@Size(min=1, message = "Algorithm must have at least 1 Publication!")
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	@Schema(accessMode = WRITE_ONLY)
+	private Set<Publication> publications;
 }

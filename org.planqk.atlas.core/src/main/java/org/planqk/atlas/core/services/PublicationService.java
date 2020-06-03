@@ -18,5 +18,5 @@ public interface PublicationService {
 
     Page<Publication> findAll(Pageable pageable);
 
-    Optional<Publication> findById(UUID pubId);
+    Publication findById(UUID pubId);
 }
