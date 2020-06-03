@@ -15,6 +15,6 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 @RepositoryRestResource(exported = false)
 public interface AlgoRelationTypeRepository extends JpaRepository<AlgoRelationType, UUID> {
 
-	Optional<List<AlgoRelationType>> findByName(String name);
+	List<AlgoRelationType> findByName(String name);
 	
 }

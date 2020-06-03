@@ -71,11 +71,7 @@ public class AlgoRelationTypeServiceImpl implements AlgoRelationTypeService {
 
 	@Override
 	public List<AlgoRelationType> findByName(String name) {
-		Optional<List<AlgoRelationType>> algoRelationTypes = repo.findByName(name);
-		if (algoRelationTypes.isEmpty()) {
-			throw new NotFoundException("No AlgoRelationType found to match name '" + name + "'");
-		}
-		return algoRelationTypes.get();
+		return repo.findByName(name);
 	}
 
 	@Override
