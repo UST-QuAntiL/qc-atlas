@@ -74,7 +74,7 @@ public class DatabaseExtension implements ExecutionCondition {
             try {
                 DriverManager.deregisterDriver(driverInstance);
             } catch (Exception e) {
-                e.printStackTrace();
+                LOG.warn("Removing db driver failed", e);
             }
         }
         return enabled("Database available");
