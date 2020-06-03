@@ -2,9 +2,12 @@ package org.planqk.atlas.web.controller;
 
 import java.util.UUID;
 
+import javax.validation.Valid;
+
 import org.planqk.atlas.core.model.AlgoRelationType;
 import org.planqk.atlas.core.services.AlgoRelationTypeService;
 import org.planqk.atlas.web.Constants;
+import org.planqk.atlas.web.annotation.ApiVersion;
 import org.planqk.atlas.web.dtos.AlgoRelationTypeDto;
 import org.planqk.atlas.web.linkassembler.AlgoRelationTypeAssembler;
 import org.planqk.atlas.web.utils.HateoasUtils;
@@ -18,7 +21,6 @@ import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,6 +37,7 @@ import lombok.AllArgsConstructor;
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/" + Constants.ALGO_RELATION_TYPES)
+@ApiVersion("v1")
 @AllArgsConstructor
 public class AlgoRelationTypeController {
 
@@ -43,7 +46,7 @@ public class AlgoRelationTypeController {
 	private AlgoRelationTypeAssembler algoRelationTypeAssembler;
 
 	@PostMapping("/")
-	public HttpEntity<EntityModel<AlgoRelationTypeDto>> createAlgoRelationType(@Validated @RequestBody AlgoRelationTypeDto algoRelationTypeDto) {
+	public HttpEntity<EntityModel<AlgoRelationTypeDto>> createAlgoRelationType(@Valid @RequestBody AlgoRelationTypeDto algoRelationTypeDto) {
 		// Convert DTO to entity
 		AlgoRelationType entityInput = ModelMapperUtils.convert(algoRelationTypeDto, AlgoRelationType.class);
 		// save entity
@@ -58,7 +61,7 @@ public class AlgoRelationTypeController {
 
 	@PutMapping("/{id}")
 	public HttpEntity<EntityModel<AlgoRelationTypeDto>> updateAlgoRelationType(@PathVariable UUID id,
-			@Validated @RequestBody AlgoRelationTypeDto algoRelationTypeDto) {
+			@Valid @RequestBody AlgoRelationTypeDto algoRelationTypeDto) {
 		// Convert DTO to entity
 		AlgoRelationType entityInput = ModelMapperUtils.convert(algoRelationTypeDto, AlgoRelationType.class);
 		// update entity

@@ -22,6 +22,8 @@ package org.planqk.atlas.web.controller;
 import java.util.Set;
 import java.util.UUID;
 
+import javax.validation.Valid;
+
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.model.ProblemType;
@@ -57,7 +59,6 @@ import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -109,7 +110,7 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "400", content = @Content)
     })
     @PostMapping("/")
-    public HttpEntity<EntityModel<AlgorithmDto>> createAlgorithm(@Validated @RequestBody AlgorithmDto algo) {
+    public HttpEntity<EntityModel<AlgorithmDto>> createAlgorithm(@Valid @RequestBody AlgorithmDto algo) {
         LOG.debug("Post to create new algorithm received.");
         // store and return algorithm
         Algorithm algorithm = algorithmService.save(ModelMapperUtils.convert(algo, Algorithm.class));
@@ -121,7 +122,7 @@ public class AlgorithmController {
     }
 
     @PutMapping("/{id}")
-    public HttpEntity<EntityModel<AlgorithmDto>> updateAlgorithm(@PathVariable UUID id, @Validated @RequestBody AlgorithmDto algo) {
+    public HttpEntity<EntityModel<AlgorithmDto>> updateAlgorithm(@PathVariable UUID id, @Valid @RequestBody AlgorithmDto algo) {
         LOG.debug("Put to update algorithm with id: {}.", id);
         Algorithm updatedAlgorithm = algorithmService.update(id, ModelMapperUtils.convert(algo, Algorithm.class));
         // Convert To EntityModel
@@ -208,7 +209,7 @@ public class AlgorithmController {
 
     @PutMapping("/{sourceAlgorithmId}/" + Constants.ALGORITHM_RELATIONS)
     public HttpEntity<EntityModel<AlgorithmRelationDto>> updateAlgorithmRelation(@PathVariable UUID sourceAlgorithmId,
-    		@Validated @RequestBody AlgorithmRelationDto relation) {
+    		@Valid @RequestBody AlgorithmRelationDto relation) {
         LOG.debug("Post to add algorithm relation received.");
 
         AlgorithmRelation algorithmRelation = algorithmService.addOrUpdateAlgorithmRelation(sourceAlgorithmId, ModelMapperUtils

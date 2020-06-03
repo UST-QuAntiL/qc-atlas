@@ -2,9 +2,12 @@ package org.planqk.atlas.web.controller;
 
 import java.util.UUID;
 
+import javax.validation.Valid;
+
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.services.ProblemTypeService;
 import org.planqk.atlas.web.Constants;
+import org.planqk.atlas.web.annotation.ApiVersion;
 import org.planqk.atlas.web.dtos.ProblemTypeDto;
 import org.planqk.atlas.web.linkassembler.ProblemTypeAssembler;
 import org.planqk.atlas.web.utils.HateoasUtils;
@@ -18,7 +21,6 @@ import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,6 +37,7 @@ import lombok.AllArgsConstructor;
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/" + Constants.PROBLEM_TYPES)
+@ApiVersion("v1")
 @AllArgsConstructor
 public class ProblemTypeController {
 
@@ -43,7 +46,7 @@ public class ProblemTypeController {
 	private ProblemTypeAssembler problemTypeAssembler;
 
 	@PostMapping("/")
-	public HttpEntity<EntityModel<ProblemTypeDto>> createProblemType(@Validated @RequestBody ProblemTypeDto problemTypeDto) {
+	public HttpEntity<EntityModel<ProblemTypeDto>> createProblemType(@Valid @RequestBody ProblemTypeDto problemTypeDto) {
 		// Convert DTO to Entity
 		ProblemType entityInput = ModelMapperUtils.convert(problemTypeDto, ProblemType.class);
 		// Save Entity
@@ -59,7 +62,7 @@ public class ProblemTypeController {
 
 	@PutMapping("/{id}")
 	public HttpEntity<EntityModel<ProblemTypeDto>> updateProblemType(@PathVariable UUID id,
-			@Validated @RequestBody ProblemTypeDto problemTypeDto) {
+			@Valid @RequestBody ProblemTypeDto problemTypeDto) {
 		// Convert DTO to Entity
 		ProblemType entityInput = ModelMapperUtils.convert(problemTypeDto, ProblemType.class);
 		// Update Entity

@@ -21,6 +21,8 @@ package org.planqk.atlas.web.controller;
 
 import java.util.UUID;
 
+import javax.validation.Valid;
+
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.annotation.ApiVersion;
 import org.planqk.atlas.web.dtos.ProviderDto;
@@ -46,7 +48,6 @@ import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -102,7 +103,7 @@ public class ProviderController {
             @ApiResponse(responseCode = "400", content = @Content)
     })
     @PostMapping("/")
-    public HttpEntity<EntityModel<ProviderDto>> createProvider(@Validated @RequestBody ProviderDto providerDto) {
+    public HttpEntity<EntityModel<ProviderDto>> createProvider(@Valid @RequestBody ProviderDto providerDto) {
         LOG.debug("Post to create new provider received.");
         // Save incoming provider inside database
         Provider provider = providerService.save(ModelMapperUtils.convert(providerDto, Provider.class));

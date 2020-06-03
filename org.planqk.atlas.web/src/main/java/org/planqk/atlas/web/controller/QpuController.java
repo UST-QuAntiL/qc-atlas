@@ -21,6 +21,8 @@ package org.planqk.atlas.web.controller;
 
 import java.util.UUID;
 
+import javax.validation.Valid;
+
 import org.planqk.atlas.core.model.Provider;
 import org.planqk.atlas.core.model.Qpu;
 import org.planqk.atlas.core.services.ProviderService;
@@ -48,7 +50,6 @@ import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -113,7 +114,7 @@ public class QpuController {
             @ApiResponse(responseCode = "404", content = @Content)
     })
     @PostMapping("/")
-    public HttpEntity<EntityModel<QpuDto>> createQpu(@RequestParam UUID providerId, @Validated @RequestBody QpuDto qpuRequest) {
+    public HttpEntity<EntityModel<QpuDto>> createQpu(@RequestParam UUID providerId, @Valid @RequestBody QpuDto qpuRequest) {
         LOG.debug("Post to create new QPU received.");
         // Get provider if possible
         Provider provider = providerService.findById(providerId);

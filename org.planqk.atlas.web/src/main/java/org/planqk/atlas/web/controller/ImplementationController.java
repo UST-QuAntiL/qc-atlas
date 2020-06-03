@@ -23,6 +23,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import javax.validation.Valid;
+
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Tag;
@@ -50,7 +52,6 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -117,7 +118,7 @@ public class ImplementationController {
             @ApiResponse(responseCode = "400", content = @Content)
     })
     @PostMapping("/")
-    public HttpEntity<EntityModel<ImplementationDto>> createImplementation(@RequestParam UUID algoId, @Validated @RequestBody ImplementationDto impl) {
+    public HttpEntity<EntityModel<ImplementationDto>> createImplementation(@RequestParam UUID algoId, @Valid @RequestBody ImplementationDto impl) {
         LOG.debug("Post to create new implementation received.");
         // Get Algorithm
         Algorithm algorithm = algorithmService.findById(algoId);
