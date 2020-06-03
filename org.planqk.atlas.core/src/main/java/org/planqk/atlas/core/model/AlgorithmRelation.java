@@ -24,7 +24,7 @@ public class AlgorithmRelation extends HasId {
 	@JoinColumn(name = "targetAlgorithm", referencedColumnName = "id")
 	private Algorithm targetAlgorithm;
 
-	@OneToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY)
 	private AlgoRelationType algoRelationType;
 
 	private String description;

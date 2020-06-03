@@ -21,7 +21,7 @@ public class PatternRelation extends HasId {
 
 	private URI pattern;
 
-	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private PatternRelationType patternRelationType;
 
 	private String description;
