@@ -23,9 +23,12 @@ import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.repository.TagRepository;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DatabaseTest extends AtlasDatabaseTestBase {
 
@@ -41,14 +44,14 @@ public class DatabaseTest extends AtlasDatabaseTestBase {
         inputTag.setKey("Test");
         inputTag.setValue("test-value");
         var t = repository.save(inputTag);
-        Assertions.assertNotNull(t.getId());
+        assertNotNull(t.getId());
         System.out.println(t.getId());
 
         var outputTag = repository.findById(t.getId());
-        Assertions.assertTrue(outputTag.isPresent());
+        assertTrue(outputTag.isPresent());
         var ot = outputTag.orElseThrow();
-        Assertions.assertEquals(t.getId(), ot.getId());
-        Assertions.assertEquals(t.getKey(), ot.getKey());
-        Assertions.assertEquals(t.getValue(), ot.getValue());
+        assertEquals(t.getId(), ot.getId());
+        assertEquals(t.getKey(), ot.getKey());
+        assertEquals(t.getValue(), ot.getValue());
     }
 }
