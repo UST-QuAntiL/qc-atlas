@@ -1,7 +1,6 @@
 package org.planqk.atlas.core.repository;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.AlgoRelationType;
