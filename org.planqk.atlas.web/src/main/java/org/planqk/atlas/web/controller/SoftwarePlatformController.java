@@ -57,11 +57,6 @@ public class SoftwarePlatformController {
         return new ResponseEntity<>(platformDtoEntity, HttpStatus.OK);
     }
 
-    @GetMapping("/echo")
-    public HttpEntity<?> echo() {
-        return ResponseEntity.ok("Tach");
-    }
-
     @PutMapping("/")
     public HttpEntity<EntityModel<SoftwarePlatformDto>> addSoftwarePlatform(@Valid @RequestBody SoftwarePlatformDto platformDto) {
         SoftwarePlatform savedPlatform = softwarePlatformService.save(ModelMapperUtils.convert(platformDto, SoftwarePlatform.class));
