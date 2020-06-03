@@ -7,7 +7,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.planqk.atlas.core.model.AlgoRelationType;
-import org.planqk.atlas.core.model.exceptions.NotFoundException;
 import org.planqk.atlas.core.services.AlgoRelationTypeService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.AlgoRelationTypeDto;
@@ -47,6 +46,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @WebMvcTest
@@ -74,7 +74,7 @@ public class AlgoRelationTypeControllerTest {
 	private AlgoRelationTypeDto algoRelationType1Dto;
 
 	@Before
-	public void initialize() throws NotFoundException {
+	public void initialize() {
 		MockitoAnnotations.initMocks(this);
 		mockMvc = MockMvcBuilders.standaloneSetup(algoRelationTypeController)
 				.setControllerAdvice(new RestErrorHandler()).build();
@@ -202,7 +202,7 @@ public class AlgoRelationTypeControllerTest {
 
 	@Test
 	public void getAlgoRelationTypeById_returnNotFound() throws Exception {
-		when(algoRelationTypeService.findById(algoRelationType1.getId())).thenThrow(NotFoundException.class);
+		when(algoRelationTypeService.findById(algoRelationType1.getId())).thenThrow(NoSuchElementException.class);
 
 		mockMvc.perform(get("/" + Constants.ALGO_RELATION_TYPES + "/{id}", algoRelationType1.getId())
 				.accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
@@ -224,7 +224,7 @@ public class AlgoRelationTypeControllerTest {
 
 	@Test
 	public void deleteAlgoRelationType_returnNotFound() throws Exception {
-		doThrow(NotFoundException.class).when(algoRelationTypeService).delete(algoRelationType1.getId());
+		doThrow(NoSuchElementException.class).when(algoRelationTypeService).delete(algoRelationType1.getId());
 
 		mockMvc.perform(delete("/" + Constants.ALGO_RELATION_TYPES + "/{id}", algoRelationType1.getId())
 				.accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());

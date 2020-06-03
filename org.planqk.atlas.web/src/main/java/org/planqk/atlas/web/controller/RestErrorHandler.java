@@ -1,8 +1,5 @@
 package org.planqk.atlas.web.controller;
 
-import org.planqk.atlas.core.model.exceptions.NoContentException;
-import org.planqk.atlas.core.model.exceptions.NotFoundException;
-
 import java.util.NoSuchElementException;
 
 import org.planqk.atlas.core.model.exceptions.ConsistencyException;
@@ -36,16 +33,6 @@ public class RestErrorHandler {
 	@ExceptionHandler(ConsistencyException.class)
 	public ResponseEntity<?> handleSqlConsistencyException(ConsistencyException e) {
 		return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-	}
-
-	@ExceptionHandler(NoContentException.class)
-	public ResponseEntity<?> handleNoContentException(NoContentException e) {
-		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-	}
-
-	@ExceptionHandler(NotFoundException.class)
-	public ResponseEntity<?> handleNotFoundException(NotFoundException e) {
-		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}
 	
 	@ExceptionHandler(NoSuchElementException.class)
