@@ -19,12 +19,10 @@
 
 package org.planqk.atlas.core.services;
 
-import java.util.Objects;
-import java.util.Optional;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Qpu;
-import org.planqk.atlas.core.model.exceptions.NotFoundException;
 import org.planqk.atlas.core.repository.QpuRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -50,9 +48,6 @@ public class QpuServiceImpl implements QpuService {
 
 	@Override
 	public Qpu findById(UUID qpuId) {
-		Optional<Qpu> qpuOptional = Objects.isNull(qpuId) ? Optional.empty() : repository.findById(qpuId);
-		if (qpuOptional.isPresent())
-			return qpuOptional.get();
-		throw new NotFoundException("Qpu does not exist!");
+		return repository.findById(qpuId).orElseThrow(NoSuchElementException::new);
 	}
 }
