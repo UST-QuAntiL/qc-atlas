@@ -31,7 +31,7 @@ public class AlgorithmAssembler implements SimpleRepresentationModelAssembler<Al
 			resource.add(linkTo(methodOn(AlgorithmController.class).getTags(getId(resource))).withRel(Constants.TAGS));
 			resource.add(linkTo(methodOn(ImplementationController.class).getImplementations(getId(resource))).withRel(Constants.IMPLEMENTATIONS));
 			resource.add(linkTo(methodOn(AlgorithmController.class).getProblemTypes(getId(resource))).withRel(Constants.PROBLEM_TYPES));
-
+			resource.add(linkTo(methodOn(AlgorithmController.class).getAlgorithmRelations(getId(resource))).withRel(Constants.ALGORITHM_RELATIONS));
 
 	}
 
