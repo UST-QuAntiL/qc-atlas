@@ -19,14 +19,36 @@
 
 package org.planqk.atlas.core;
 
+import org.planqk.atlas.core.model.Tag;
+import org.planqk.atlas.core.repository.TagRepository;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class DatabaseTest extends AtlasDatabaseTestBase {
 
+    @Autowired
+    private TagRepository repository;
+
     @Test
     void modelLoads() {
+        // This test is intended to ensure the Database test environment works properly
+        // It therefore uses tags since they are fairly simple, ignoring their attachments
+        // In case the tag class gets a major rework and this test no longer works, just comment it out!
+        var inputTag = new Tag();
+        inputTag.setKey("Test");
+        inputTag.setValue("test-value");
+        var t = repository.save(inputTag);
+        Assertions.assertNotNull(t.getId());
+        System.out.println(t.getId());
 
+        var outputTag = repository.findById(t.getId());
+        Assertions.assertTrue(outputTag.isPresent());
+        var ot = outputTag.orElseThrow();
+        Assertions.assertEquals(t.getId(), ot.getId());
+        Assertions.assertEquals(t.getKey(), ot.getKey());
+        Assertions.assertEquals(t.getValue(), ot.getValue());
     }
 }

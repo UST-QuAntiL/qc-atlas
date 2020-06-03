@@ -3,8 +3,8 @@ language: java
 jdk:
   - oraclejdk11
 
-services:
-  - postgresql
+addons:
+  postgresql: "12"
 
 sudo: required
 dist: trusty
