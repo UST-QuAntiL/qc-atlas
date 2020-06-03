@@ -1,24 +1,15 @@
+dist: bionic
+sudo: required
 language: java
-
 jdk:
   - oraclejdk11
-
-addons:
-  postgresql: "12"
-  apt:
-    packages:
-      - postgresql-12
-      - postgresql-client-12
-env:
-  global:
-    - PGPORT=5433
-
-sudo: required
-dist: bionic
+services:
+  - docker
 
 before_script:
-  - psql -c "CREATE USER planqk WITH CREATEDB CREATEUSER PASSWORD 'planqk';" -U postgres
-  - psql -c 'CREATE DATABASE planqk;' -U postgres
+  - docker pull postgres:12
+  # TODO Consider replacing with planqk/initialized-db:latest once that image becomes mandatory
+  - docker run --rm -d -p 5432:5432 -e POSTGRES_DB=planqk -e POSTGRES_PASSWORD=planqk -e POSTGRES_USER=planqk postgres:12
 script:
   - mvn package --fail-at-end
 after_success:
