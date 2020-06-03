@@ -27,8 +27,7 @@ public class SoftwarePlatform extends HasId {
     private Set<Backend> supportedBackends = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.LAZY,
-            cascade = {CascadeType.MERGE}
-    )
+            cascade = {CascadeType.MERGE})
     @JoinTable(
             name = "software_platform_cloud_services",
             joinColumns = @JoinColumn(name = "software_platform_id"),

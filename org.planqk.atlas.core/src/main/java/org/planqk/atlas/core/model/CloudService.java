@@ -19,8 +19,7 @@ public class CloudService extends HasId {
     private String costModel;
 
     @ManyToMany(fetch = FetchType.LAZY,
-            cascade = {CascadeType.MERGE}
-    )
+            cascade = {CascadeType.MERGE})
     @JoinTable(
             name = "cloud_services_backends",
             joinColumns = @JoinColumn(name = "cloud_service_id"),
