@@ -407,7 +407,7 @@ public class AlgorithmControllerTest {
 
 	@Test
 	public void updateAlgorithmRelation_returnNotFound() throws Exception {
-		when(algorithmService.addUpdateAlgorithmRelation(any(UUID.class), any(AlgorithmRelation.class)))
+		when(algorithmService.addOrUpdateAlgorithmRelation(any(UUID.class), any(AlgorithmRelation.class)))
 				.thenThrow(new NotFoundException());
 
 		mockMvc.perform(put("/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS,
@@ -418,7 +418,7 @@ public class AlgorithmControllerTest {
 
 	@Test
 	public void updateAlgorithmRelation_returnAlgorithmRelation() throws Exception {
-		when(algorithmService.addUpdateAlgorithmRelation(any(UUID.class), any(AlgorithmRelation.class)))
+		when(algorithmService.addOrUpdateAlgorithmRelation(any(UUID.class), any(AlgorithmRelation.class)))
 				.thenReturn(algorithmRelation1);
 		doNothing().when(algorithmRelationAssembler)
 				.addLinks(ArgumentMatchers.<EntityModel<AlgorithmRelationDto>>any());

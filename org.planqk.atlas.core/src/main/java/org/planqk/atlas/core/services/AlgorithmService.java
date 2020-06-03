@@ -44,7 +44,7 @@ public interface AlgorithmService {
     
     Optional<Algorithm> findOptionalById(UUID algoId);
 
-	AlgorithmRelation addUpdateAlgorithmRelation(UUID sourceAlgorithm_id, AlgorithmRelation relation);
+	AlgorithmRelation addOrUpdateAlgorithmRelation(UUID sourceAlgorithm_id, AlgorithmRelation relation);
 	
 	Set<AlgorithmRelation> getAlgorithmRelations(UUID sourceAlgorithm_id);
 }

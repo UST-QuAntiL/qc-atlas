@@ -116,7 +116,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 	}
 
 	@Override
-	public AlgorithmRelation addUpdateAlgorithmRelation(UUID sourceAlgorithmId, AlgorithmRelation relation) {
+	public AlgorithmRelation addOrUpdateAlgorithmRelation(UUID sourceAlgorithmId, AlgorithmRelation relation) {
 		// Read involved Algorithms from database
 		Optional<Algorithm> sourceAlgorithmOpt = findOptionalById(sourceAlgorithmId);
 		Optional<Algorithm> targetAlgorithmOpt = findOptionalById(relation.getTargetAlgorithm().getId());
