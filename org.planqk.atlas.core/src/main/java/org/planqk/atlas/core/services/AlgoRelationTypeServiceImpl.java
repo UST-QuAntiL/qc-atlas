@@ -1,7 +1,7 @@
 package org.planqk.atlas.core.services;
 
-import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.AlgoRelationType;
@@ -70,7 +70,7 @@ public class AlgoRelationTypeServiceImpl implements AlgoRelationTypeService {
 	}
 
 	@Override
-	public List<AlgoRelationType> findByName(String name) {
+	public Set<AlgoRelationType> findByName(String name) {
 		return repo.findByName(name);
 	}
 
