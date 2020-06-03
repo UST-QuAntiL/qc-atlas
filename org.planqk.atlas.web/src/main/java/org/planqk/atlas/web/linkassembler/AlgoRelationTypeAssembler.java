@@ -40,23 +40,6 @@ public class AlgoRelationTypeAssembler implements SimpleRepresentationModelAssem
 		addLinks(new CollectionModel<EntityModel<AlgoRelationTypeDto>>(content));
 	}
 
-//	public EntityModel<AlgoRelationTypeDto> generateEntityModel(AlgoRelationTypeDto dto) {
-//		EntityModel<AlgoRelationTypeDto> entityModel = new EntityModel<AlgoRelationTypeDto>(dto);
-//		addLinks(entityModel);
-//		return entityModel;
-//	}
-//	
-//	public CollectionModel<EntityModel<AlgoRelationTypeDto>> generateCollectionModel(Set<AlgoRelationTypeDto> dtos) {
-//		// Create EntityModel and fill each with links
-//		Collection<EntityModel<AlgoRelationTypeDto>> dtoCollection = new HashSet<EntityModel<AlgoRelationTypeDto>>();
-//		for (AlgoRelationTypeDto dto: dtos) {
-//			dtoCollection.add(generateEntityModel(dto));
-//		}
-//		// Return CollectionModel
-//		CollectionModel<EntityModel<AlgoRelationTypeDto>> resources = new CollectionModel<>(dtoCollection);	
-//		return resources;
-//	}
-
 	private UUID getId(EntityModel<AlgoRelationTypeDto> resource) {
 		return resource.getContent().getId();
 	}
