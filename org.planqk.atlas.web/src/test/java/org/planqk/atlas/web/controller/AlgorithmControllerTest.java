@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.UUID;
 
@@ -31,7 +32,6 @@ import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.model.ComputationModel;
 import org.planqk.atlas.core.model.ProblemType;
-import org.planqk.atlas.core.model.exceptions.NotFoundException;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
@@ -109,7 +109,7 @@ public class AlgorithmControllerTest {
 	Set<AlgorithmRelation> algorithmRelations;
 
 	@Before
-	public void initialize() throws NotFoundException {
+	public void initialize() {
 		MockitoAnnotations.initMocks(this);
 		mockMvc = MockMvcBuilders.standaloneSetup(algorithmController).setControllerAdvice(new RestErrorHandler())
 				.build();
@@ -230,7 +230,7 @@ public class AlgorithmControllerTest {
 
 	@Test
 	public void getAlgorithm_returnNotFound() throws Exception {
-		when(algorithmService.findById(any(UUID.class))).thenThrow(new NotFoundException());
+		when(algorithmService.findById(any(UUID.class))).thenThrow(new NoSuchElementException());
 
 		mockMvc.perform(get("/" + Constants.ALGORITHMS + "/" + UUID.randomUUID()).accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound());
@@ -315,7 +315,7 @@ public class AlgorithmControllerTest {
 
 	@Test
 	public void deleteAlgorithm_notFound() throws Exception {
-		doThrow(new NotFoundException()).when(algorithmService).delete(any(UUID.class));
+		doThrow(new NoSuchElementException()).when(algorithmService).delete(any(UUID.class));
 
 		mockMvc.perform(delete("/" + Constants.ALGORITHMS + "/{id}", UUID.randomUUID()))
 				.andExpect(status().isNotFound());
@@ -330,7 +330,7 @@ public class AlgorithmControllerTest {
 
 	@Test
 	public void getAlgorithmRelations_returnNotFound() throws Exception {
-		when(algorithmService.getAlgorithmRelations(any(UUID.class))).thenThrow(new NotFoundException());
+		when(algorithmService.getAlgorithmRelations(any(UUID.class))).thenThrow(new NoSuchElementException());
 
 		mockMvc.perform(get("/" + Constants.ALGORITHMS + "/{id}/" + Constants.ALGORITHM_RELATIONS, UUID.randomUUID()))
 				.andExpect(status().isNotFound());
@@ -408,7 +408,7 @@ public class AlgorithmControllerTest {
 	@Test
 	public void updateAlgorithmRelation_returnNotFound() throws Exception {
 		when(algorithmService.addOrUpdateAlgorithmRelation(any(UUID.class), any(AlgorithmRelation.class)))
-				.thenThrow(new NotFoundException());
+				.thenThrow(new NoSuchElementException());
 
 		mockMvc.perform(put("/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS,
 				UUID.randomUUID()).content(mapper.writeValueAsString(algorithmRelation1Dto))

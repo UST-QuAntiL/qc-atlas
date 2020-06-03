@@ -19,6 +19,7 @@
 
 package org.planqk.atlas.core.services;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -26,7 +27,6 @@ import java.util.UUID;
 import org.planqk.atlas.core.model.AlgoRelationType;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
-import org.planqk.atlas.core.model.exceptions.NotFoundException;
 import org.planqk.atlas.core.repository.AlgorithmRelationRepository;
 import org.planqk.atlas.core.repository.AlgorithmRepository;
 import org.slf4j.Logger;
@@ -54,7 +54,6 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 
 	@Override
 	public Algorithm save(Algorithm algorithm) {
-
 		// Persist Tags separately
 		algorithm.setTags(tagService.createOrUpdateAll(algorithm.getTags()));
 		// Persist ProblemTypes separately
@@ -65,12 +64,9 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 
 	@Override
 	public Algorithm update(UUID id, Algorithm algorithm) {
-		Optional<Algorithm> persistedAlgOpt = findOptionalById(id);
-		if (persistedAlgOpt.isEmpty()) {
-			LOG.info("Trying to update non-existing algorithm.");
-			throw new NotFoundException("Could not find algorithm to update.");
-		}
-		Algorithm persistedAlg = persistedAlgOpt.get();
+		LOG.info("Trying to update algorithm");
+		Algorithm persistedAlg = algorithmRepository.findById(id).orElseThrow(NoSuchElementException::new);
+
 		persistedAlg.setName(algorithm.getName());
 		persistedAlg.setInputFormat(algorithm.getInputFormat());
 		persistedAlg.setOutputFormat(algorithm.getOutputFormat());
@@ -81,12 +77,6 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 
 	@Override
 	public void delete(UUID id) {
-		Optional<Algorithm> algorithmOpt = findOptionalById(id);
-		if (algorithmOpt.isEmpty()) {
-			LOG.info("Trying to delete non-existing algorithm.");
-			throw new NotFoundException("Could not find algorithm to delete.");
-		}
-		
 		Set<AlgorithmRelation> linkedAsTargetRelations = algorithmRelationRepository.findByTargetAlgorithmId(id);
 		for (AlgorithmRelation relation : linkedAsTargetRelations) {
 			deleteAlgorithmRelation(relation.getSourceAlgorithm().getId(), relation.getId());
@@ -102,12 +92,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 
 	@Override
 	public Algorithm findById(UUID algoId) {
-		Optional<Algorithm> algorithmOpt = findOptionalById(algoId);
-		if (algorithmOpt.isEmpty()) {
-			LOG.info("Could not find algorithm with id: {}.", algoId);
-			throw new NotFoundException("Could not find algorithm with id " + algoId + ".");
-		}
-		return algorithmOpt.get();
+		return findOptionalById(algoId).orElseThrow(NoSuchElementException::new);
 	}
 
 	@Override
@@ -118,20 +103,12 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 	@Override
 	public AlgorithmRelation addOrUpdateAlgorithmRelation(UUID sourceAlgorithmId, AlgorithmRelation relation) {
 		// Read involved Algorithms from database
-		Optional<Algorithm> sourceAlgorithmOpt = findOptionalById(sourceAlgorithmId);
-		Optional<Algorithm> targetAlgorithmOpt = findOptionalById(relation.getTargetAlgorithm().getId());
+		Algorithm sourceAlgorithm = findById(sourceAlgorithmId);
+		Algorithm targetAlgorithm = findById(relation.getTargetAlgorithm().getId());
 		Optional<AlgoRelationType> relationTypeOpt = relationTypeService
 				.findOptionalById(relation.getAlgoRelationType().getId());
 
-		// If one of the algorithms does not exist
-		if (sourceAlgorithmOpt.isEmpty() || targetAlgorithmOpt.isEmpty()) {
-			LOG.info("Trying to add algorithmRelation for non-existing algorithm.");
-			throw new NotFoundException("Could not add algorithmRelation to non-existing algorithm.");
-		}
-
-		// Get Algorithms
-		Algorithm sourceAlgorithm = sourceAlgorithmOpt.get();
-		Algorithm targetAlgorithm = targetAlgorithmOpt.get();
+		// Create relation type if not exists
 		AlgoRelationType relationType = relationTypeOpt.isEmpty()
 				? algoRelationTypeService.save(relation.getAlgoRelationType())
 				: relationTypeOpt.get();
@@ -169,20 +146,9 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 
 	@Override
 	public void deleteAlgorithmRelation(UUID algoId, UUID relationId) {
-		Optional<Algorithm> optAlgorithm = algorithmRepository.findById(algoId);
-		Optional<AlgorithmRelation> optRelation = algorithmRelationRepository.findById(relationId);
-
-		if (optAlgorithm.isEmpty()) {
-			LOG.info("Trying to delete algorithmRelation from non-existing source algorithm.");
-			throw new NotFoundException("Could not delete algorithmRelation from non-existing source algorithm.");
-		} else if (optRelation.isEmpty()) {
-			LOG.info("Trying to delete non-existing algorithmRelation.");
-			throw new NotFoundException("Could not delete non-existing algorithmRelation.");
-		}
-
-		// Get Objects from database
-		Algorithm sourceAlgorithm = optAlgorithm.get();
-		AlgorithmRelation relation = optRelation.get();
+		// Get involved Objects from database
+		Algorithm sourceAlgorithm = algorithmRepository.findById(algoId).orElseThrow(() -> new NoSuchElementException("Algorithm does not exist!"));
+		AlgorithmRelation relation = algorithmRelationRepository.findById(relationId).orElseThrow(() -> new NoSuchElementException("Relation does not exist!"));
 
 		Set<AlgorithmRelation> algorithmRelations = sourceAlgorithm.getAlgorithmRelations();
 		algorithmRelations.remove(relation);
