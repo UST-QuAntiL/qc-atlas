@@ -1,5 +1,9 @@
 package org.planqk.atlas.core.model.exceptions;
 
+/**
+ * This exception is thrown when database consistency is about to be violated.
+ *
+ */
 public class ConsistencyException extends RuntimeException {
 
 	private static final long serialVersionUID = 1697519892942333680L;
@@ -18,5 +22,5 @@ public class ConsistencyException extends RuntimeException {
 	public ConsistencyException(String message, Throwable cause) {
 		super(message, cause);
 	}
-	
+
 }
