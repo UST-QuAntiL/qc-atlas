@@ -1,14 +1,13 @@
 package org.planqk.atlas.core.services;
 
 import java.util.HashSet;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.ProblemType;
-import org.planqk.atlas.core.model.exceptions.NoContentException;
-import org.planqk.atlas.core.model.exceptions.NotFoundException;
 import org.planqk.atlas.core.model.exceptions.ConsistencyException;
 import org.planqk.atlas.core.repository.AlgorithmRepository;
 import org.planqk.atlas.core.repository.ProblemTypeRepository;
@@ -25,8 +24,6 @@ import lombok.AllArgsConstructor;
 public class ProblemTypeServiceImpl implements ProblemTypeService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ProblemTypeServiceImpl.class);
-
-	private static final String NOT_FOUND_MSG = "The searched problem type does not exist!";
 
 	private ProblemTypeRepository repo;
 	private AlgorithmRepository algRepo;
@@ -49,30 +46,22 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
 
 	@Override
 	public void delete(UUID id) {
-		if (Objects.isNull(id) || repo.findById(id).isEmpty()) {
-			throw new NoContentException(NOT_FOUND_MSG);
-		}
 		if (algRepo.countAlgorithmsUsingProblemType(id) > 0) {
 			LOG.info("Trying to delete ProblemType that is used by at least 1 algorithm");
 			throw new ConsistencyException("Cannot delete ProbemType, since it is used by existing algorithms!");
 		}
+		
 		repo.deleteById(id);
 	}
 
 	@Override
 	public ProblemType findById(UUID id) {
-		Optional<ProblemType> problemTypeOpt = Objects.isNull(id) ? Optional.empty() : repo.findById(id);
-		if (problemTypeOpt.isPresent())
-			return problemTypeOpt.get();
-		throw new NotFoundException(NOT_FOUND_MSG);
+		return repo.findById(id).orElseThrow(NoSuchElementException::new);
 	}
 
 	@Override
 	public ProblemType findByName(String name) {
-		Optional<ProblemType> problemTypeOpt = Objects.isNull(name) ? Optional.empty() : repo.findByName(name);
-		if (problemTypeOpt.isPresent())
-			return problemTypeOpt.get();
-		throw new NotFoundException(NOT_FOUND_MSG);
+		return repo.findByName(name).orElseThrow(NoSuchElementException::new);
 	}
 
 	@Override

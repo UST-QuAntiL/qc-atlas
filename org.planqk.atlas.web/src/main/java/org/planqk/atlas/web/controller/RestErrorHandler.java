@@ -2,9 +2,13 @@ package org.planqk.atlas.web.controller;
 
 import org.planqk.atlas.core.model.exceptions.NoContentException;
 import org.planqk.atlas.core.model.exceptions.NotFoundException;
+
+import java.util.NoSuchElementException;
+
 import org.planqk.atlas.core.model.exceptions.ConsistencyException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -42,6 +46,16 @@ public class RestErrorHandler {
 	@ExceptionHandler(NotFoundException.class)
 	public ResponseEntity<?> handleNotFoundException(NotFoundException e) {
 		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+	}
+	
+	@ExceptionHandler(NoSuchElementException.class)
+	public ResponseEntity<?> handleNoSuchElementException(NoSuchElementException e) {
+		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+	}
+	
+	@ExceptionHandler(EmptyResultDataAccessException.class)
+	public ResponseEntity<?> handleEmptyResultDataAccessException(EmptyResultDataAccessException e) {
+		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 
 }
