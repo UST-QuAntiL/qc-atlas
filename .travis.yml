@@ -3,9 +3,15 @@ language: java
 jdk:
   - oraclejdk11
 
+services:
+  - postgresql
+
 sudo: required
 dist: trusty
 
+before_script:
+  - psql -c 'CREATE USER planqk WITH CREATEDB CREATEUSER PASSWORD \'planqk\';' -U postgres
+  - psql -c 'CREATE DATABASE planqk;' -U postgres
 script:
   - mvn package --fail-at-end
 after_success:
