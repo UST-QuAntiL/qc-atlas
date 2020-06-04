@@ -64,12 +64,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.PagedModel;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
@@ -113,9 +112,9 @@ public class AlgorithmControllerTest {
 
     private ObjectMapper mapper;
 
-    private int page = 0;
-    private int size = 2;
-    private Pageable pageable = PageRequest.of(page, size);
+    private final int page = 0;
+    private final int size = 2;
+    private final Pageable pageable = PageRequest.of(page, size);
 
     private Algorithm algorithm1;
     private Algorithm algorithm2;
@@ -183,7 +182,7 @@ public class AlgorithmControllerTest {
     @Test
     public void getAlgorithms_withoutPagination() throws Exception {
         when(algorithmService.findAll(Pageable.unpaged())).thenReturn(Page.empty());
-        when(paginationAssembler.toModel(ArgumentMatchers.<Page<AlgorithmDto>>any()))
+        when(paginationAssembler.toModel(ArgumentMatchers.any()))
                 .thenReturn(HateoasUtils.generatePagedModel(Page.empty()));
         doNothing().when(algorithmAssembler).addLinks(ArgumentMatchers.<Collection<EntityModel<AlgorithmDto>>>any());
 
@@ -194,7 +193,7 @@ public class AlgorithmControllerTest {
     @Test
     public void getAlgorithms_withEmptyAlgorithmList() throws Exception {
         when(algorithmService.findAll(pageable)).thenReturn(Page.empty());
-        when(paginationAssembler.toModel(ArgumentMatchers.<Page<AlgorithmDto>>any()))
+        when(paginationAssembler.toModel(ArgumentMatchers.any()))
                 .thenReturn(HateoasUtils.generatePagedModel(Page.empty()));
         doNothing().when(algorithmAssembler).addLinks(ArgumentMatchers.<Collection<EntityModel<AlgorithmDto>>>any());
 
@@ -203,10 +202,12 @@ public class AlgorithmControllerTest {
                         .queryParam(Constants.SIZE, Integer.toString(size)).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
-        PagedModel<EntityModel<AlgorithmDto>> algorithmListDto = mapper.readValue(
-                result.getResponse().getContentAsString(), new TypeReference<PagedModel<EntityModel<AlgorithmDto>>>() {
-                });
-        assertEquals(algorithmListDto.getContent().size(), 0);
+        var resultList = ObjectMapperUtils.mapResponseToList(
+                result.getResponse().getContentAsString(),
+                "algorithmDtoes",
+                AlgorithmDto.class
+        );
+        assertEquals(0, resultList.size());
     }
 
     @Test
@@ -219,7 +220,7 @@ public class AlgorithmControllerTest {
         Page<AlgorithmDto> pageAlgDto = ModelMapperUtils.convertPage(pageAlg, AlgorithmDto.class);
 
         when(algorithmService.findAll(pageable)).thenReturn(pageAlg);
-        when(paginationAssembler.toModel(ArgumentMatchers.<Page<AlgorithmDto>>any()))
+        when(paginationAssembler.toModel(ArgumentMatchers.any()))
                 .thenReturn(HateoasUtils.generatePagedModel(pageAlgDto));
         doNothing().when(algorithmAssembler).addLinks(ArgumentMatchers.<Collection<EntityModel<AlgorithmDto>>>any());
 
@@ -231,9 +232,9 @@ public class AlgorithmControllerTest {
         var resultList = ObjectMapperUtils.mapResponseToList(
                 result.getResponse().getContentAsString(),
                 "algorithmDtoes",
-                Algorithm.class
+                AlgorithmDto.class
         );
-        assertEquals(resultList.size(), 2);
+        assertEquals(2, resultList.size());
     }
 
     @Test
@@ -331,7 +332,6 @@ public class AlgorithmControllerTest {
 
     @Test
     public void deleteAlgorithm_returnOk() throws Exception {
-
         mockMvc.perform(delete("/" + Constants.ALGORITHMS + "/{id}", this.algorithm1.getId()))
                 .andExpect(status().isOk()).andReturn();
     }
@@ -350,7 +350,7 @@ public class AlgorithmControllerTest {
         doNothing().when(algorithmRelationAssembler)
                 .addLinks(ArgumentMatchers.<CollectionModel<EntityModel<AlgorithmRelationDto>>>any());
         doNothing().when(algorithmAssembler).addAlgorithmRelationLink(
-                ArgumentMatchers.<CollectionModel<EntityModel<AlgorithmRelationDto>>>any(), any(UUID.class));
+                ArgumentMatchers.any(), any(UUID.class));
 
         MvcResult result = mockMvc
                 .perform(get("/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS,
@@ -362,7 +362,7 @@ public class AlgorithmControllerTest {
                 "algorithmRelationDtoes",
                 AlgorithmRelationDto.class
         );
-        assertEquals(resultList.size(), 0);
+        assertEquals(0, resultList.size());
     }
 
     @Test
@@ -371,7 +371,7 @@ public class AlgorithmControllerTest {
         doNothing().when(algorithmRelationAssembler)
                 .addLinks(ArgumentMatchers.<CollectionModel<EntityModel<AlgorithmRelationDto>>>any());
         doNothing().when(algorithmAssembler).addAlgorithmRelationLink(
-                ArgumentMatchers.<CollectionModel<EntityModel<AlgorithmRelationDto>>>any(), any(UUID.class));
+                ArgumentMatchers.any(), any(UUID.class));
 
         MvcResult result = mockMvc
                 .perform(get("/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS,
@@ -383,12 +383,11 @@ public class AlgorithmControllerTest {
                 "algorithmRelationDtoes",
                 AlgorithmRelationDto.class
         );
-        assertEquals(resultList.size(), 2);
+        assertEquals(2, resultList.size());
     }
 
     @Test
     public void updateAlgorithmRelation_returnBadRequest() throws Exception {
-
         Algorithm algo = new Algorithm();
         mockMvc.perform(
                 put("/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS, algo.getId())

@@ -28,6 +28,7 @@ import java.util.UUID;
 import org.planqk.atlas.core.model.Provider;
 import org.planqk.atlas.core.services.ProviderService;
 import org.planqk.atlas.web.Constants;
+import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
 import org.planqk.atlas.web.dtos.ProviderDto;
 import org.planqk.atlas.web.linkassembler.ProviderAssembler;
 import org.planqk.atlas.web.utils.HateoasUtils;
@@ -35,27 +36,26 @@ import org.planqk.atlas.web.utils.ModelMapperUtils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.PagedModel;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
@@ -64,41 +64,36 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
+@WebMvcTest(ProviderController.class)
+@ExtendWith(MockitoExtension.class)
+@AutoConfigureMockMvc
 public class ProviderControllerTest {
 
-    @Mock
+    @MockBean
     private ProviderService providerService;
-    @Mock
+    @MockBean
     private PagedResourcesAssembler<ProviderDto> paginationAssembler;
-    @Mock
+    @MockBean
     private ProviderAssembler providerAssembler;
 
-    @InjectMocks
-    private ProviderController providerController;
-
+    @Autowired
     private MockMvc mockMvc;
 
-    private int page = 0;
-    private int size = 2;
-    private Pageable pageable = PageRequest.of(page, size);
+    private ObjectMapper mapper;
 
-    @Before
+    private final int page = 0;
+    private final int size = 2;
+    private final Pageable pageable = PageRequest.of(page, size);
+
+    @BeforeEach
     public void initialize() {
-        MockitoAnnotations.initMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(providerController).setControllerAdvice(new RestErrorHandler())
-                .build();
-    }
-
-    @Test
-    public void setupTest() {
-        assertNotNull(mockMvc);
+        this.mapper = ObjectMapperUtils.newTestMapper();
     }
 
     @Test
     public void getProviders_withoutPagination() throws Exception {
         when(providerService.findAll(Pageable.unpaged())).thenReturn(Page.empty());
-        when(paginationAssembler.toModel(ArgumentMatchers.<Page<ProviderDto>>any()))
+        when(paginationAssembler.toModel(ArgumentMatchers.any()))
                 .thenReturn(HateoasUtils.generatePagedModel(Page.empty()));
         doNothing().when(providerAssembler).addLinks(ArgumentMatchers.<Collection<EntityModel<ProviderDto>>>any());
 
@@ -109,7 +104,7 @@ public class ProviderControllerTest {
     @Test
     public void getProviders_withEmptyProviderList() throws Exception {
         when(providerService.findAll(pageable)).thenReturn(Page.empty());
-        when(paginationAssembler.toModel(ArgumentMatchers.<Page<ProviderDto>>any()))
+        when(paginationAssembler.toModel(ArgumentMatchers.any()))
                 .thenReturn(HateoasUtils.generatePagedModel(Page.empty()));
         doNothing().when(providerAssembler).addLinks(ArgumentMatchers.<Collection<EntityModel<ProviderDto>>>any());
 
@@ -118,10 +113,12 @@ public class ProviderControllerTest {
                         .queryParam(Constants.SIZE, Integer.toString(size)).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
-        PagedModel<EntityModel<ProviderDto>> providerListDto = new ObjectMapper().readValue(
-                result.getResponse().getContentAsString(), new TypeReference<PagedModel<EntityModel<ProviderDto>>>() {
-                });
-        assertEquals(providerListDto.getContent().size(), 0);
+        var resultList = ObjectMapperUtils.mapResponseToList(
+                result.getResponse().getContentAsString(),
+                "providerDtoes",
+                ProviderDto.class
+        );
+        assertEquals(0, resultList.size());
     }
 
     @Test
@@ -138,7 +135,7 @@ public class ProviderControllerTest {
         Page<ProviderDto> pageDto = ModelMapperUtils.convertPage(pageEntity, ProviderDto.class);
 
         when(providerService.findAll(pageable)).thenReturn(pageEntity);
-        when(paginationAssembler.toModel(ArgumentMatchers.<Page<ProviderDto>>any()))
+        when(paginationAssembler.toModel(ArgumentMatchers.any()))
                 .thenReturn(HateoasUtils.generatePagedModel(pageDto));
         doNothing().when(providerAssembler).addLinks(ArgumentMatchers.<Collection<EntityModel<ProviderDto>>>any());
 
@@ -147,13 +144,14 @@ public class ProviderControllerTest {
                         .queryParam(Constants.SIZE, Integer.toString(size)).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON)).andReturn();
 
-        PagedModel<EntityModel<ProviderDto>> providerListDto = new ObjectMapper().readValue(
-                result.getResponse().getContentAsString(), new TypeReference<PagedModel<EntityModel<ProviderDto>>>() {
-                });
-        List<EntityModel<ProviderDto>> resultList = new ArrayList<>(providerListDto.getContent());
+        var resultList = ObjectMapperUtils.mapResponseToList(
+                result.getResponse().getContentAsString(),
+                "providerDtoes",
+                ProviderDto.class
+        );
 
-        assertEquals(resultList.size(), 1);
-        assertEquals(resultList.get(0).getContent().getId(), provId);
+        assertEquals(1, resultList.size());
+        assertEquals(provId, resultList.get(0).getId());
     }
 
     @Test
@@ -176,7 +174,7 @@ public class ProviderControllerTest {
                 .perform(get("/" + Constants.PROVIDERS + "/" + provId).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
-        EntityModel<ProviderDto> response = new ObjectMapper().readValue(result.getResponse().getContentAsString(),
+        EntityModel<ProviderDto> response = mapper.readValue(result.getResponse().getContentAsString(),
                 new TypeReference<EntityModel<ProviderDto>>() {
                 });
         assertEquals(response.getContent().getId(), provId);
@@ -188,7 +186,7 @@ public class ProviderControllerTest {
         providerDto.setName("IBM");
 
         mockMvc.perform(
-                post("/" + Constants.PROVIDERS + "/").content(new ObjectMapper().writeValueAsString(providerDto))
+                post("/" + Constants.PROVIDERS + "/").content(mapper.writeValueAsString(providerDto))
                         .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
@@ -206,11 +204,11 @@ public class ProviderControllerTest {
 
         MvcResult result = mockMvc
                 .perform(post("/" + Constants.PROVIDERS + "/")
-                        .content(new ObjectMapper().writeValueAsString(providerDto))
+                        .content(mapper.writeValueAsString(providerDto))
                         .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated()).andReturn();
 
-        EntityModel<ProviderDto> response = new ObjectMapper().readValue(result.getResponse().getContentAsString(),
+        EntityModel<ProviderDto> response = mapper.readValue(result.getResponse().getContentAsString(),
                 new TypeReference<EntityModel<ProviderDto>>() {
                 });
         assertEquals(response.getContent().getName(), providerDto.getName());

@@ -38,7 +38,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
@@ -66,9 +66,9 @@ public class AlgoRelationTypeControllerTest {
 
     private ObjectMapper mapper;
 
-    private int page = 0;
-    private int size = 2;
-    private Pageable pageable = PageRequest.of(page, size);
+    private final int page = 0;
+    private final int size = 2;
+    private final Pageable pageable = PageRequest.of(page, size);
 
     private AlgoRelationType algoRelationType1;
     private AlgoRelationType algoRelationType2;
@@ -148,7 +148,7 @@ public class AlgoRelationTypeControllerTest {
     @Test
     public void getAlgoRelationTypes_withEmptyAlgoRelationTypeList() throws Exception {
         when(algoRelationTypeService.findAll(pageable)).thenReturn(Page.empty());
-        when(paginationAssembler.toModel(ArgumentMatchers.<Page<AlgoRelationTypeDto>>any()))
+        when(paginationAssembler.toModel(ArgumentMatchers.any()))
                 .thenReturn(HateoasUtils.generatePagedModel(Page.empty()));
         doNothing().when(algoRelationTypeAssembler)
                 .addLinks(ArgumentMatchers.<Collection<EntityModel<AlgoRelationTypeDto>>>any());
@@ -178,7 +178,7 @@ public class AlgoRelationTypeControllerTest {
                 AlgoRelationTypeDto.class);
 
         when(algoRelationTypeService.findAll(pageable)).thenReturn(algoRelationPage);
-        when(paginationAssembler.toModel(ArgumentMatchers.<Page<AlgoRelationTypeDto>>any()))
+        when(paginationAssembler.toModel(ArgumentMatchers.any()))
                 .thenReturn(HateoasUtils.generatePagedModel(algoRelationDtoPage));
         doNothing().when(algoRelationTypeAssembler)
                 .addLinks(ArgumentMatchers.<Collection<EntityModel<AlgoRelationTypeDto>>>any());
