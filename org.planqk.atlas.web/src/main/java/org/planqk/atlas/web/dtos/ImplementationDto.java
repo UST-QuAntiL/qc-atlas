@@ -22,27 +22,32 @@ package org.planqk.atlas.web.dtos;
 import java.net.URL;
 import java.util.UUID;
 
+import javax.validation.constraints.*;
+
 import org.planqk.atlas.core.model.Algorithm;
-import org.planqk.atlas.core.model.Implementation;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
-import org.springframework.hateoas.RepresentationModel;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
- * Data transfer object for the model class Implementation ({@link org.planqk.atlas.core.model.Implementation}).
+ * Data transfer object for the model class Implementation
+ * ({@link org.planqk.atlas.core.model.Implementation}).
  */
-@EqualsAndHashCode(callSuper = true)
-@ToString(callSuper = true)
+@EqualsAndHashCode
 @Data
 @NoArgsConstructor
-public class ImplementationDto extends RepresentationModel<ImplementationDto> {
+public class ImplementationDto {
 
     private UUID id;
+
+    @NotNull(message = "Implementation-Name must not be null!")
     private String name;
+    @NotNull(message = "Implementation-FileLocation must not be null!")
     private URL fileLocation;
+
     private String inputFormat;
     private String outputFormat;
     private String description;
@@ -51,36 +56,7 @@ public class ImplementationDto extends RepresentationModel<ImplementationDto> {
     private String parameter;
     private String dependencies;
 
-    public static final class Converter {
+    @JsonIgnore
+    private Algorithm implementedAlgorithm;
 
-        public static ImplementationDto convert(final Implementation object) {
-            final ImplementationDto dto = new ImplementationDto();
-            dto.setId(object.getId());
-            dto.setName(object.getName());
-            dto.setFileLocation(object.getFileLocation());
-            dto.setInputFormat(object.getInputFormat());
-            dto.setOutputFormat(object.getOutputFormat());
-            dto.setDescription(object.getDescription());
-            dto.setContributors(object.getContributors());
-            dto.setAssumptions(object.getAssumptions());
-            dto.setParameter(object.getParameter());
-            dto.setDependencies(object.getDependencies());
-            return dto;
-        }
-
-        public static Implementation convert(final ImplementationDto object, final Algorithm algo) {
-            Implementation implementation = new Implementation();
-            implementation.setName(object.getName());
-            implementation.setFileLocation(object.getFileLocation());
-            implementation.setImplementedAlgorithm(algo);
-            implementation.setInputFormat(object.getInputFormat());
-            implementation.setOutputFormat(object.getOutputFormat());
-            implementation.setDependencies(object.getDescription());
-            implementation.setContributors(object.getContributors());
-            implementation.setAssumptions(object.getAssumptions());
-            implementation.setParameter(object.getParameter());
-            implementation.setDependencies(object.getDependencies());
-            return implementation;
-        }
-    }
 }
