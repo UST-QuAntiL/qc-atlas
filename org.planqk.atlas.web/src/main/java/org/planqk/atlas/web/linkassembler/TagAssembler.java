@@ -3,8 +3,6 @@ package org.planqk.atlas.web.linkassembler;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.UUID;
 
 import org.planqk.atlas.web.Constants;
@@ -14,11 +12,10 @@ import org.planqk.atlas.web.dtos.ImplementationDto;
 import org.planqk.atlas.web.dtos.TagDto;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.server.SimpleRepresentationModelAssembler;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TagAssembler implements SimpleRepresentationModelAssembler<TagDto> {
+public class TagAssembler extends GenericLinkAssembler<TagDto> {
 
 	@Override
 	public void addLinks(EntityModel<TagDto> resource) {
@@ -27,18 +24,6 @@ public class TagAssembler implements SimpleRepresentationModelAssembler<TagDto> 
 				.withRel(Constants.ALGORITHMS));
 		resource.add(linkTo(methodOn(TagController.class).getImplementationsOfTag(getId(resource)))
 				.withRel(Constants.IMPLEMENTATIONS));
-	}
-
-	@Override
-	public void addLinks(CollectionModel<EntityModel<TagDto>> resources) {
-		Iterator<EntityModel<TagDto>> iter = resources.getContent().iterator();
-		while (iter.hasNext()) {
-			addLinks(iter.next());
-		}
-	}
-
-	public void addLinks(Collection<EntityModel<TagDto>> content) {
-		addLinks(new CollectionModel<EntityModel<TagDto>>(content));
 	}
 
 	public void addAlgorithmLink(CollectionModel<EntityModel<AlgorithmDto>> resources, UUID id) {
