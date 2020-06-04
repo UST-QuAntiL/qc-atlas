@@ -45,37 +45,35 @@ import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.WRITE_ONLY;
 @Data
 @NoArgsConstructor
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "computationModel", visible = true)
-@JsonSubTypes({
-    @JsonSubTypes.Type(value = QuantumAlgorithmDto.class, name = "QUANTUM"),
-    @JsonSubTypes.Type(value = ClassicAlgorithmDto.class, name = "CLASSIC") }
-)
+@JsonSubTypes({ @JsonSubTypes.Type(value = QuantumAlgorithmDto.class, name = "QUANTUM"),
+        @JsonSubTypes.Type(value = ClassicAlgorithmDto.class, name = "CLASSIC") })
 public class AlgorithmDto {
 
     private UUID id;
 
     @NotNull(message = "Algorithm-Name must not be null!")
-	private String name;
+    private String name;
 
-	private String problem;
+    private String problem;
 
-	private String inputFormat;
+    private String inputFormat;
 
-	private String outputFormat;
+    private String outputFormat;
 
-	@NotNull(message = "Computational-Model must not be null!")
-	private ComputationModel computationModel;
+    @NotNull(message = "Computational-Model must not be null!")
+    private ComputationModel computationModel;
 
-	@Size(min=1, message = "Algorithm must have at least 1 ProblemType!")
-	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-	@Schema(accessMode = WRITE_ONLY)
-	private Set<ProblemTypeDto> problemTypes;
+    @Size(min = 1, message = "Algorithm must have at least 1 ProblemType!")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Schema(accessMode = WRITE_ONLY)
+    private Set<ProblemTypeDto> problemTypes;
 
-	// we do not embedded tags into the object (via @jsonInclude) - instead, we add
-	// a hateoas link to the associated tags
-	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-	// annotate this for swagger as well, because swagger doesn't recognize the json
-	// property annotation
-	@Schema(accessMode = WRITE_ONLY)
-	private Set<TagDto> tags;
+    // we do not embedded tags into the object (via @jsonInclude) - instead, we add
+    // a hateoas link to the associated tags
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    // annotate this for swagger as well, because swagger doesn't recognize the json
+    // property annotation
+    @Schema(accessMode = WRITE_ONLY)
+    private Set<TagDto> tags;
 
 }

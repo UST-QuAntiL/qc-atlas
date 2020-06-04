@@ -15,14 +15,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class ProviderAssembler extends GenericLinkAssembler<ProviderDto> {
 
-	@Override
-	public void addLinks(EntityModel<ProviderDto> resource) {
-		resource.add(linkTo(methodOn(ProviderController.class).getProvider(getId(resource))).withSelfRel());
-		resource.add(linkTo(methodOn(QpuController.class).getQpus(getId(resource), Constants.DEFAULT_PAGE_NUMBER,
-				Constants.DEFAULT_PAGE_SIZE)).withRel(Constants.QPUS));
-	}
+    @Override
+    public void addLinks(EntityModel<ProviderDto> resource) {
+        resource.add(linkTo(methodOn(ProviderController.class).getProvider(getId(resource))).withSelfRel());
+        resource.add(linkTo(methodOn(QpuController.class).getQpus(getId(resource), Constants.DEFAULT_PAGE_NUMBER,
+                Constants.DEFAULT_PAGE_SIZE)).withRel(Constants.QPUS));
+    }
 
-	private UUID getId(EntityModel<ProviderDto> resource) {
-		return resource.getContent().getId();
-	}
+    private UUID getId(EntityModel<ProviderDto> resource) {
+        return resource.getContent().getId();
+    }
 }

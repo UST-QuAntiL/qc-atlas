@@ -10,18 +10,18 @@ import org.springframework.data.domain.Pageable;
 
 public interface AlgoRelationTypeService {
 
-	AlgoRelationType save(AlgoRelationType algoRelationType);
-	
-	AlgoRelationType update(UUID id, AlgoRelationType algoRelationType);
-	
-	void delete(UUID id);
+    AlgoRelationType save(AlgoRelationType algoRelationType);
 
-	Optional<AlgoRelationType> findOptionalById(UUID id);
-	
-	AlgoRelationType findById(UUID id);
-	
-	Set<AlgoRelationType> findByName(String name);
-	
-	Page<AlgoRelationType> findAll(Pageable pageable);
-	
+    AlgoRelationType update(UUID id, AlgoRelationType algoRelationType);
+
+    void delete(UUID id);
+
+    Optional<AlgoRelationType> findOptionalById(UUID id);
+
+    AlgoRelationType findById(UUID id);
+
+    Set<AlgoRelationType> findByName(String name);
+
+    Page<AlgoRelationType> findAll(Pageable pageable);
+
 }

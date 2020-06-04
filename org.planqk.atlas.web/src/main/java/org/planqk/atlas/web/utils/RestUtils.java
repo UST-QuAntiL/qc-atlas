@@ -30,12 +30,13 @@ import org.springframework.data.domain.Pageable;
 public class RestUtils {
 
     /**
-     * Return a (default) pageable from the provided Requestparams for an endpoint that can be used with pagination
+     * Return a (default) pageable from the provided Requestparams for an endpoint
+     * that can be used with pagination
      *
      * @param size the size of a page
      * @param page the number of the page that should be returned
-     * @return construct the <code>Pageable</code> if suitable parameters are given, <code>Pageable.unpaged()</code> (no
-     * Pagination) otherwise
+     * @return construct the <code>Pageable</code> if suitable parameters are given,
+     *         <code>Pageable.unpaged()</code> (no Pagination) otherwise
      */
     public static Pageable getPageableFromRequestParams(Integer page, Integer size) {
         if (size != null && page != null) {

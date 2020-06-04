@@ -10,6 +10,6 @@ import lombok.EqualsAndHashCode;
 @Entity
 public class PatternRelationType extends HasId {
 
-	private String name;
-	
+    private String name;
+
 }

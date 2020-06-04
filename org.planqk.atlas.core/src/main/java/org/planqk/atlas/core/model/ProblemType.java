@@ -12,7 +12,7 @@ import lombok.EqualsAndHashCode;
 @Entity
 public class ProblemType extends HasId {
 
-	private String name;
-	private UUID parentProblemType;
-	
+    private String name;
+    private UUID parentProblemType;
+
 }

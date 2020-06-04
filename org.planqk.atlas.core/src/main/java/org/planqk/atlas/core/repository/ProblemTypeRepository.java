@@ -14,6 +14,6 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 @RepositoryRestResource(exported = false)
 public interface ProblemTypeRepository extends JpaRepository<ProblemType, UUID> {
 
-	Optional<ProblemType> findByName(String name);
-	
+    Optional<ProblemType> findByName(String name);
+
 }

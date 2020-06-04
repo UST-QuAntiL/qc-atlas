@@ -68,15 +68,15 @@ import lombok.AllArgsConstructor;
 public class TagController {
 
     private TagService tagService;
-	private PagedResourcesAssembler<TagDto> paginationAssembler;
+    private PagedResourcesAssembler<TagDto> paginationAssembler;
     private TagAssembler tagAssembler;
     private AlgorithmAssembler algorithmAssembler;
     private ImplementationAssembler implementationAssembler;
 
     @GetMapping(value = "/")
     public HttpEntity<PagedModel<EntityModel<TagDto>>> getTags(@RequestParam(required = false) Integer page,
-                                   @RequestParam(required = false) Integer size) {
-    	// Generate Pageable
+            @RequestParam(required = false) Integer size) {
+        // Generate Pageable
         Pageable p = RestUtils.getPageableFromRequestParams(page, size);
         // Retrieve Page of DTOs
         Page<TagDto> tags = ModelMapperUtils.convertPage(tagService.findAll(p), TagDto.class);
@@ -88,10 +88,11 @@ public class TagController {
 
     @PostMapping(value = "/")
     public HttpEntity<EntityModel<TagDto>> createTag(@Valid @RequestBody TagDto tag) {
-    	// Persist new tag
-    	Tag savedTag = tagService.save(ModelMapperUtils.convert(tag, Tag.class));
-    	// Convert to EntityModel-DTO
-        EntityModel<TagDto> dtoOutput = HateoasUtils.generateEntityModel(ModelMapperUtils.convert(savedTag, TagDto.class));
+        // Persist new tag
+        Tag savedTag = tagService.save(ModelMapperUtils.convert(tag, Tag.class));
+        // Convert to EntityModel-DTO
+        EntityModel<TagDto> dtoOutput = HateoasUtils
+                .generateEntityModel(ModelMapperUtils.convert(savedTag, TagDto.class));
         // Add Links
         tagAssembler.addLinks(dtoOutput);
         return new ResponseEntity<>(dtoOutput, HttpStatus.CREATED);
@@ -99,7 +100,7 @@ public class TagController {
 
     @GetMapping(value = "/{tagId}")
     public HttpEntity<EntityModel<TagDto>> getTagById(@PathVariable UUID tagId) {
-    	// Get Tag
+        // Get Tag
         Tag tag = tagService.getTagById(tagId);
         // Get EntityModel of Tag-Object
         EntityModel<TagDto> dtoOutput = HateoasUtils.generateEntityModel(ModelMapperUtils.convert(tag, TagDto.class));
@@ -110,14 +111,15 @@ public class TagController {
 
     @GetMapping(value = "/{tagId}/" + Constants.ALGORITHMS)
     public HttpEntity<CollectionModel<EntityModel<AlgorithmDto>>> getAlgorithmsOfTag(@PathVariable UUID tagId) {
-    	// Get Tag
+        // Get Tag
         Tag tag = tagService.getTagById(tagId);
         // Retrieve Algorithms of Tag
         Set<Algorithm> algorithms = tag.getAlgorithms();
         // Translate Entity to DTO
         Set<AlgorithmDto> algorithmDtos = ModelMapperUtils.convertSet(algorithms, AlgorithmDto.class);
         // Create CollectionModel
-        CollectionModel<EntityModel<AlgorithmDto>> resultCollection = HateoasUtils.generateCollectionModel(algorithmDtos);
+        CollectionModel<EntityModel<AlgorithmDto>> resultCollection = HateoasUtils
+                .generateCollectionModel(algorithmDtos);
         // Fill EntityModels
         algorithmAssembler.addLinks(resultCollection.getContent());
         // Fill CollectionModel
@@ -126,13 +128,16 @@ public class TagController {
     }
 
     @GetMapping(value = "/{tagId}/" + Constants.IMPLEMENTATIONS)
-    public HttpEntity<CollectionModel<EntityModel<ImplementationDto>>> getImplementationsOfTag(@PathVariable UUID tagId) {
-    	// Get Tag
+    public HttpEntity<CollectionModel<EntityModel<ImplementationDto>>> getImplementationsOfTag(
+            @PathVariable UUID tagId) {
+        // Get Tag
         Tag tag = this.tagService.getTagById(tagId);
         // Get ImplementationDTOs of Tag
-        Set<ImplementationDto> implementations = ModelMapperUtils.convertSet(tag.getImplementations(), ImplementationDto.class);
+        Set<ImplementationDto> implementations = ModelMapperUtils.convertSet(tag.getImplementations(),
+                ImplementationDto.class);
         // Create CollectionModel
-        CollectionModel<EntityModel<ImplementationDto>> resultCollection = HateoasUtils.generateCollectionModel(implementations);
+        CollectionModel<EntityModel<ImplementationDto>> resultCollection = HateoasUtils
+                .generateCollectionModel(implementations);
         // Fill EntityModels
         implementationAssembler.addLinks(resultCollection.getContent());
         // Fill CollectionModel

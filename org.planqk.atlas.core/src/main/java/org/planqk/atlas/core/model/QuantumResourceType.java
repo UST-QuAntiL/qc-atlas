@@ -10,8 +10,8 @@ import lombok.EqualsAndHashCode;
 @Entity
 public class QuantumResourceType extends HasId {
 
-	private String name;
-	private Datatype datatype;
-	private String description;
-	
+    private String name;
+    private Datatype datatype;
+    private String description;
+
 }

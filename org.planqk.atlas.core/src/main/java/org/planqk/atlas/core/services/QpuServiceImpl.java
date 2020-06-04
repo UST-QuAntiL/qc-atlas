@@ -34,20 +34,20 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class QpuServiceImpl implements QpuService {
 
-	private final QpuRepository repository;
+    private final QpuRepository repository;
 
-	@Override
-	public Qpu save(Qpu qpu) {
-		return repository.save(qpu);
-	}
+    @Override
+    public Qpu save(Qpu qpu) {
+        return repository.save(qpu);
+    }
 
-	@Override
-	public Page<Qpu> findAll(Pageable pageable) {
-		return repository.findAll(pageable);
-	}
+    @Override
+    public Page<Qpu> findAll(Pageable pageable) {
+        return repository.findAll(pageable);
+    }
 
-	@Override
-	public Qpu findById(UUID qpuId) {
-		return repository.findById(qpuId).orElseThrow(NoSuchElementException::new);
-	}
+    @Override
+    public Qpu findById(UUID qpuId) {
+        return repository.findById(qpuId).orElseThrow(NoSuchElementException::new);
+    }
 }

@@ -10,10 +10,10 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class AlgoRelationTypeDto {
-	
-	private UUID id;
-	
-	@NotNull(message = "RelationType-Name must not be null!")
-	private String name;
-	
+
+    private UUID id;
+
+    @NotNull(message = "RelationType-Name must not be null!")
+    private String name;
+
 }

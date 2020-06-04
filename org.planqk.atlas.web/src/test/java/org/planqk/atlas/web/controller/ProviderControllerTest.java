@@ -67,152 +67,152 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 public class ProviderControllerTest {
 
-	@Mock
-	private ProviderService providerService;
-	@Mock
-	private PagedResourcesAssembler<ProviderDto> paginationAssembler;
-	@Mock
-	private ProviderAssembler providerAssembler;
+    @Mock
+    private ProviderService providerService;
+    @Mock
+    private PagedResourcesAssembler<ProviderDto> paginationAssembler;
+    @Mock
+    private ProviderAssembler providerAssembler;
 
-	@InjectMocks
-	private ProviderController providerController;
+    @InjectMocks
+    private ProviderController providerController;
 
-	private MockMvc mockMvc;
+    private MockMvc mockMvc;
 
-	private int page = 0;
-	private int size = 2;
-	private Pageable pageable = PageRequest.of(page, size);
+    private int page = 0;
+    private int size = 2;
+    private Pageable pageable = PageRequest.of(page, size);
 
-	@Before
-	public void initialize() {
-		MockitoAnnotations.initMocks(this);
-		mockMvc = MockMvcBuilders.standaloneSetup(providerController).setControllerAdvice(new RestErrorHandler())
-				.build();
-	}
+    @Before
+    public void initialize() {
+        MockitoAnnotations.initMocks(this);
+        mockMvc = MockMvcBuilders.standaloneSetup(providerController).setControllerAdvice(new RestErrorHandler())
+                .build();
+    }
 
-	@Test
-	public void setupTest() {
-		assertNotNull(mockMvc);
-	}
+    @Test
+    public void setupTest() {
+        assertNotNull(mockMvc);
+    }
 
-	@Test
-	public void getProviders_withoutPagination() throws Exception {
-		when(providerService.findAll(Pageable.unpaged())).thenReturn(Page.empty());
-		when(paginationAssembler.toModel(ArgumentMatchers.<Page<ProviderDto>>any()))
-				.thenReturn(HateoasUtils.generatePagedModel(Page.empty()));
-		doNothing().when(providerAssembler).addLinks(ArgumentMatchers.<Collection<EntityModel<ProviderDto>>>any());
+    @Test
+    public void getProviders_withoutPagination() throws Exception {
+        when(providerService.findAll(Pageable.unpaged())).thenReturn(Page.empty());
+        when(paginationAssembler.toModel(ArgumentMatchers.<Page<ProviderDto>>any()))
+                .thenReturn(HateoasUtils.generatePagedModel(Page.empty()));
+        doNothing().when(providerAssembler).addLinks(ArgumentMatchers.<Collection<EntityModel<ProviderDto>>>any());
 
-		mockMvc.perform(get("/" + Constants.PROVIDERS + "/").accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk());
-	}
+        mockMvc.perform(get("/" + Constants.PROVIDERS + "/").accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
 
-	@Test
-	public void getProviders_withEmptyProviderList() throws Exception {
-		when(providerService.findAll(pageable)).thenReturn(Page.empty());
-		when(paginationAssembler.toModel(ArgumentMatchers.<Page<ProviderDto>>any()))
-				.thenReturn(HateoasUtils.generatePagedModel(Page.empty()));
-		doNothing().when(providerAssembler).addLinks(ArgumentMatchers.<Collection<EntityModel<ProviderDto>>>any());
+    @Test
+    public void getProviders_withEmptyProviderList() throws Exception {
+        when(providerService.findAll(pageable)).thenReturn(Page.empty());
+        when(paginationAssembler.toModel(ArgumentMatchers.<Page<ProviderDto>>any()))
+                .thenReturn(HateoasUtils.generatePagedModel(Page.empty()));
+        doNothing().when(providerAssembler).addLinks(ArgumentMatchers.<Collection<EntityModel<ProviderDto>>>any());
 
-		MvcResult result = mockMvc
-				.perform(get("/" + Constants.PROVIDERS + "/").queryParam(Constants.PAGE, Integer.toString(page))
-						.queryParam(Constants.SIZE, Integer.toString(size)).accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk()).andReturn();
+        MvcResult result = mockMvc
+                .perform(get("/" + Constants.PROVIDERS + "/").queryParam(Constants.PAGE, Integer.toString(page))
+                        .queryParam(Constants.SIZE, Integer.toString(size)).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
 
-		PagedModel<EntityModel<ProviderDto>> providerListDto = new ObjectMapper().readValue(
-				result.getResponse().getContentAsString(), new TypeReference<PagedModel<EntityModel<ProviderDto>>>() {
-				});
-		assertEquals(providerListDto.getContent().size(), 0);
-	}
+        PagedModel<EntityModel<ProviderDto>> providerListDto = new ObjectMapper().readValue(
+                result.getResponse().getContentAsString(), new TypeReference<PagedModel<EntityModel<ProviderDto>>>() {
+                });
+        assertEquals(providerListDto.getContent().size(), 0);
+    }
 
-	@Test
-	public void getProviders_withOneProvider() throws Exception {
-		List<Provider> providerList = new ArrayList<>();
+    @Test
+    public void getProviders_withOneProvider() throws Exception {
+        List<Provider> providerList = new ArrayList<>();
 
-		UUID provId = UUID.randomUUID();
+        UUID provId = UUID.randomUUID();
 
-		Provider provider = new Provider();
-		provider.setId(provId);
-		providerList.add(provider);
+        Provider provider = new Provider();
+        provider.setId(provId);
+        providerList.add(provider);
 
-		Page<Provider> pageEntity = new PageImpl<Provider>(providerList, pageable, providerList.size());
-		Page<ProviderDto> pageDto = ModelMapperUtils.convertPage(pageEntity, ProviderDto.class);
+        Page<Provider> pageEntity = new PageImpl<Provider>(providerList, pageable, providerList.size());
+        Page<ProviderDto> pageDto = ModelMapperUtils.convertPage(pageEntity, ProviderDto.class);
 
-		when(providerService.findAll(pageable)).thenReturn(pageEntity);
-		when(paginationAssembler.toModel(ArgumentMatchers.<Page<ProviderDto>>any()))
-				.thenReturn(HateoasUtils.generatePagedModel(pageDto));
-		doNothing().when(providerAssembler).addLinks(ArgumentMatchers.<Collection<EntityModel<ProviderDto>>>any());
+        when(providerService.findAll(pageable)).thenReturn(pageEntity);
+        when(paginationAssembler.toModel(ArgumentMatchers.<Page<ProviderDto>>any()))
+                .thenReturn(HateoasUtils.generatePagedModel(pageDto));
+        doNothing().when(providerAssembler).addLinks(ArgumentMatchers.<Collection<EntityModel<ProviderDto>>>any());
 
-		MvcResult result = mockMvc
-				.perform(get("/" + Constants.PROVIDERS + "/").queryParam(Constants.PAGE, Integer.toString(page))
-						.queryParam(Constants.SIZE, Integer.toString(size)).accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON)).andReturn();
+        MvcResult result = mockMvc
+                .perform(get("/" + Constants.PROVIDERS + "/").queryParam(Constants.PAGE, Integer.toString(page))
+                        .queryParam(Constants.SIZE, Integer.toString(size)).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON)).andReturn();
 
-		PagedModel<EntityModel<ProviderDto>> providerListDto = new ObjectMapper().readValue(
-				result.getResponse().getContentAsString(), new TypeReference<PagedModel<EntityModel<ProviderDto>>>() {
-				});
-		List<EntityModel<ProviderDto>> resultList = new ArrayList<>(providerListDto.getContent());
+        PagedModel<EntityModel<ProviderDto>> providerListDto = new ObjectMapper().readValue(
+                result.getResponse().getContentAsString(), new TypeReference<PagedModel<EntityModel<ProviderDto>>>() {
+                });
+        List<EntityModel<ProviderDto>> resultList = new ArrayList<>(providerListDto.getContent());
 
-		assertEquals(resultList.size(), 1);
-		assertEquals(resultList.get(0).getContent().getId(), provId);
-	}
+        assertEquals(resultList.size(), 1);
+        assertEquals(resultList.get(0).getContent().getId(), provId);
+    }
 
-	@Test
-	public void getProvider_returnNotFound() throws Exception {
-		when(providerService.findById(any(UUID.class))).thenThrow(new NoSuchElementException());
-		mockMvc.perform(get("/" + Constants.PROVIDERS + "/" + UUID.randomUUID()).accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isNotFound());
-	}
+    @Test
+    public void getProvider_returnNotFound() throws Exception {
+        when(providerService.findById(any(UUID.class))).thenThrow(new NoSuchElementException());
+        mockMvc.perform(get("/" + Constants.PROVIDERS + "/" + UUID.randomUUID()).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
 
-	@Test
-	public void getProvider_returnProvider() throws Exception {
-		UUID provId = UUID.randomUUID();
-		Provider provider = new Provider();
-		provider.setId(provId);
+    @Test
+    public void getProvider_returnProvider() throws Exception {
+        UUID provId = UUID.randomUUID();
+        Provider provider = new Provider();
+        provider.setId(provId);
 
-		when(providerService.findById(provId)).thenReturn(provider);
-		doNothing().when(providerAssembler).addLinks(ArgumentMatchers.<EntityModel<ProviderDto>>any());
+        when(providerService.findById(provId)).thenReturn(provider);
+        doNothing().when(providerAssembler).addLinks(ArgumentMatchers.<EntityModel<ProviderDto>>any());
 
-		MvcResult result = mockMvc
-				.perform(get("/" + Constants.PROVIDERS + "/" + provId).accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk()).andReturn();
+        MvcResult result = mockMvc
+                .perform(get("/" + Constants.PROVIDERS + "/" + provId).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
 
-		EntityModel<ProviderDto> response = new ObjectMapper().readValue(result.getResponse().getContentAsString(),
-				new TypeReference<EntityModel<ProviderDto>>() {
-				});
-		assertEquals(response.getContent().getId(), provId);
-	}
+        EntityModel<ProviderDto> response = new ObjectMapper().readValue(result.getResponse().getContentAsString(),
+                new TypeReference<EntityModel<ProviderDto>>() {
+                });
+        assertEquals(response.getContent().getId(), provId);
+    }
 
-	@Test
-	public void createProvider_returnBadRequest() throws Exception {
-		ProviderDto providerDto = new ProviderDto();
-		providerDto.setName("IBM");
+    @Test
+    public void createProvider_returnBadRequest() throws Exception {
+        ProviderDto providerDto = new ProviderDto();
+        providerDto.setName("IBM");
 
-		mockMvc.perform(
-				post("/" + Constants.PROVIDERS + "/").content(new ObjectMapper().writeValueAsString(providerDto))
-						.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isBadRequest());
-	}
+        mockMvc.perform(
+                post("/" + Constants.PROVIDERS + "/").content(new ObjectMapper().writeValueAsString(providerDto))
+                        .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
 
-	@Test
-	public void createProvider_returnProvider() throws Exception {
-		ProviderDto providerDto = new ProviderDto();
-		providerDto.setName("IBM");
-		providerDto.setAccessKey("123");
-		providerDto.setSecretKey("456");
-		Provider provider = ModelMapperUtils.convert(providerDto, Provider.class);
+    @Test
+    public void createProvider_returnProvider() throws Exception {
+        ProviderDto providerDto = new ProviderDto();
+        providerDto.setName("IBM");
+        providerDto.setAccessKey("123");
+        providerDto.setSecretKey("456");
+        Provider provider = ModelMapperUtils.convert(providerDto, Provider.class);
 
-		when(providerService.save(provider)).thenReturn(provider);
-		doNothing().when(providerAssembler).addLinks(ArgumentMatchers.<EntityModel<ProviderDto>>any());
+        when(providerService.save(provider)).thenReturn(provider);
+        doNothing().when(providerAssembler).addLinks(ArgumentMatchers.<EntityModel<ProviderDto>>any());
 
-		MvcResult result = mockMvc
-				.perform(post("/" + Constants.PROVIDERS + "/")
-						.content(new ObjectMapper().writeValueAsString(providerDto))
-						.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isCreated()).andReturn();
+        MvcResult result = mockMvc
+                .perform(post("/" + Constants.PROVIDERS + "/")
+                        .content(new ObjectMapper().writeValueAsString(providerDto))
+                        .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated()).andReturn();
 
-		EntityModel<ProviderDto> response = new ObjectMapper().readValue(result.getResponse().getContentAsString(),
-				new TypeReference<EntityModel<ProviderDto>>() {
-				});
-		assertEquals(response.getContent().getName(), providerDto.getName());
-	}
+        EntityModel<ProviderDto> response = new ObjectMapper().readValue(result.getResponse().getContentAsString(),
+                new TypeReference<EntityModel<ProviderDto>>() {
+                });
+        assertEquals(response.getContent().getName(), providerDto.getName());
+    }
 }

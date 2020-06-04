@@ -15,14 +15,14 @@ import lombok.EqualsAndHashCode;
 @Entity
 public class PatternRelation extends HasId {
 
-	@ManyToOne
-	private Algorithm algorithm;
+    @ManyToOne
+    private Algorithm algorithm;
 
-	private URI pattern;
+    private URI pattern;
 
-	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	private PatternRelationType patternRelationType;
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private PatternRelationType patternRelationType;
 
-	private String description;
-	
+    private String description;
+
 }

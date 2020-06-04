@@ -15,17 +15,17 @@ import lombok.Setter;
 @Entity
 public class AlgorithmRelation extends HasId {
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@Setter
-	private Algorithm sourceAlgorithm;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @Setter
+    private Algorithm sourceAlgorithm;
 
-	@ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.REFRESH})
-	@JoinColumn(name = "targetAlgorithm", referencedColumnName = "id")
-	private Algorithm targetAlgorithm;
+    @ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.MERGE, CascadeType.REFRESH })
+    @JoinColumn(name = "targetAlgorithm", referencedColumnName = "id")
+    private Algorithm targetAlgorithm;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	private AlgoRelationType algoRelationType;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private AlgoRelationType algoRelationType;
 
-	private String description;
+    private String description;
 
 }

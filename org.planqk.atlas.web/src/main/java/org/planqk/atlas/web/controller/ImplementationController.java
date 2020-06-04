@@ -97,28 +97,27 @@ public class ImplementationController {
         return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
     }
 
-    @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "404", content = @Content)
-    })
+    @Operation(responses = { @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", content = @Content) })
     @GetMapping("/{implId}")
-    public HttpEntity<EntityModel<ImplementationDto>> getImplementation(@RequestParam UUID algoId, @PathVariable UUID implId) {
+    public HttpEntity<EntityModel<ImplementationDto>> getImplementation(@RequestParam UUID algoId,
+            @PathVariable UUID implId) {
         LOG.debug("Get to retrieve implementation with id: {}.", implId);
         // Get Implementation
         Implementation implementation = implementationService.findById(implId);
         // Generate EntityModel
-        EntityModel<ImplementationDto> dtoOutput = HateoasUtils.generateEntityModel(ModelMapperUtils.convert(implementation, ImplementationDto.class));
+        EntityModel<ImplementationDto> dtoOutput = HateoasUtils
+                .generateEntityModel(ModelMapperUtils.convert(implementation, ImplementationDto.class));
         // Fill Links
         implementationAssembler.addLinks(dtoOutput);
         return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
     }
 
-    @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400", content = @Content)
-    })
+    @Operation(responses = { @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400", content = @Content) })
     @PostMapping("/")
-    public HttpEntity<EntityModel<ImplementationDto>> createImplementation(@RequestParam UUID algoId, @Valid @RequestBody ImplementationDto impl) {
+    public HttpEntity<EntityModel<ImplementationDto>> createImplementation(@RequestParam UUID algoId,
+            @Valid @RequestBody ImplementationDto impl) {
         LOG.debug("Post to create new implementation received.");
         // Get Algorithm
         Algorithm algorithm = algorithmService.findById(algoId);
@@ -126,19 +125,19 @@ public class ImplementationController {
         Implementation input = ModelMapperUtils.convert(impl, Implementation.class);
         input.setImplementedAlgorithm(algorithm);
         // Generate EntityModel
-        EntityModel<ImplementationDto> dtoOutput = HateoasUtils.generateEntityModel(ModelMapperUtils.convert(implementationService.save(input), ImplementationDto.class));
+        EntityModel<ImplementationDto> dtoOutput = HateoasUtils.generateEntityModel(
+                ModelMapperUtils.convert(implementationService.save(input), ImplementationDto.class));
         // Add Links
         implementationAssembler.addLinks(dtoOutput);
         return new ResponseEntity<>(dtoOutput, HttpStatus.CREATED);
     }
 
-    @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "404", content = @Content)
-    })
+    @Operation(responses = { @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", content = @Content) })
     @GetMapping("/{implId}/" + Constants.TAGS)
-    public HttpEntity<CollectionModel<EntityModel<TagDto>>> getTags(@RequestParam UUID algoId, @PathVariable UUID implId) {
-    	// Get Implementation
+    public HttpEntity<CollectionModel<EntityModel<TagDto>>> getTags(@RequestParam UUID algoId,
+            @PathVariable UUID implId) {
+        // Get Implementation
         Implementation implementation = implementationService.findById(implId);
         // Get Tags of Implementation
         Set<Tag> tags = implementation.getTags();

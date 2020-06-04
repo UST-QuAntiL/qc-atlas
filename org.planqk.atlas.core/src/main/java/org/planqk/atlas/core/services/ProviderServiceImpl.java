@@ -34,20 +34,20 @@ import org.springframework.stereotype.Repository;
 @AllArgsConstructor
 public class ProviderServiceImpl implements ProviderService {
 
-	private ProviderRepository repository;
+    private ProviderRepository repository;
 
-	@Override
-	public Provider save(Provider provider) {
-		return repository.save(provider);
-	}
+    @Override
+    public Provider save(Provider provider) {
+        return repository.save(provider);
+    }
 
-	@Override
-	public Page<Provider> findAll(Pageable pageable) {
-		return repository.findAll(pageable);
-	}
+    @Override
+    public Page<Provider> findAll(Pageable pageable) {
+        return repository.findAll(pageable);
+    }
 
-	@Override
-	public Provider findById(UUID providerId) {
-		return repository.findById(providerId).orElseThrow(NoSuchElementException::new);
-	}
+    @Override
+    public Provider findById(UUID providerId) {
+        return repository.findById(providerId).orElseThrow(NoSuchElementException::new);
+    }
 }

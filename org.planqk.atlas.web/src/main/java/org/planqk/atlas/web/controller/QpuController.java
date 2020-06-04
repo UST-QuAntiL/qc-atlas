@@ -71,20 +71,20 @@ import org.springframework.web.bind.annotation.RestController;
 public class QpuController {
 
     private final static Logger LOG = LoggerFactory.getLogger(QpuController.class);
-    
+
     private QpuService qpuService;
     private ProviderService providerService;
     private PagedResourcesAssembler<QpuDto> paginationAssembler;
     private QpuAssembler qpuAssembler;
 
     @GetMapping("/")
-    public HttpEntity<PagedModel<EntityModel<QpuDto>>> getQpus(@RequestParam UUID providerId, @RequestParam(required = false) Integer page,
-                                          @RequestParam(required = false) Integer size) {
+    public HttpEntity<PagedModel<EntityModel<QpuDto>>> getQpus(@RequestParam UUID providerId,
+            @RequestParam(required = false) Integer page, @RequestParam(required = false) Integer size) {
         LOG.debug("Get to retrieve all QPUs received.");
         // Generate Pageable
         Pageable p = RestUtils.getPageableFromRequestParams(page, size);
         // Generate PageDTO
-        Page<QpuDto> pagedQpus = ModelMapperUtils.convertPage(qpuService.findAll(p), QpuDto.class); 
+        Page<QpuDto> pagedQpus = ModelMapperUtils.convertPage(qpuService.findAll(p), QpuDto.class);
         // Generate PagedModel
         PagedModel<EntityModel<QpuDto>> dtoOutput = paginationAssembler.toModel(pagedQpus);
         // Add EntityModel Links
@@ -92,10 +92,8 @@ public class QpuController {
         return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
     }
 
-    @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "404", content = @Content)
-    })
+    @Operation(responses = { @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", content = @Content) })
     @GetMapping("/{qpuId}")
     public HttpEntity<EntityModel<QpuDto>> getQpu(@PathVariable UUID qpuId, @RequestParam UUID providerId) {
         LOG.debug("Get to retrieve QPU with id: {}.", qpuId);
@@ -108,13 +106,11 @@ public class QpuController {
         return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
     }
 
-    @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400", content = @Content),
-            @ApiResponse(responseCode = "404", content = @Content)
-    })
+    @Operation(responses = { @ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400", content = @Content),
+            @ApiResponse(responseCode = "404", content = @Content) })
     @PostMapping("/")
-    public HttpEntity<EntityModel<QpuDto>> createQpu(@RequestParam UUID providerId, @Valid @RequestBody QpuDto qpuRequest) {
+    public HttpEntity<EntityModel<QpuDto>> createQpu(@RequestParam UUID providerId,
+            @Valid @RequestBody QpuDto qpuRequest) {
         LOG.debug("Post to create new QPU received.");
         // Get provider if possible
         Provider provider = providerService.findById(providerId);

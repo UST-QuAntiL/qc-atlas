@@ -7,9 +7,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class AlgorithmRelationAssembler extends GenericLinkAssembler<AlgorithmRelationDto> {
 
-	@Override
-	public void addLinks(EntityModel<AlgorithmRelationDto> resource) {
-		// TODO: Add links
-	}
+    @Override
+    public void addLinks(EntityModel<AlgorithmRelationDto> resource) {
+        // TODO: Add links
+    }
 
 }

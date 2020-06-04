@@ -16,16 +16,16 @@ import lombok.Setter;
 @Entity
 public class QuantumAlgorithm extends Algorithm {
 
-	private boolean nisqReady;
-	
-	private QuantumComputationModel quantumComputationModel;
-	
-	@OneToMany(mappedBy = "algorithm", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-	@Setter
-	private Set<QuantumResource> requiredQuantumResources;
-	
-	private String speedUp;
-	
-	// TODO: Add implementations
-	
+    private boolean nisqReady;
+
+    private QuantumComputationModel quantumComputationModel;
+
+    @OneToMany(mappedBy = "algorithm", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @Setter
+    private Set<QuantumResource> requiredQuantumResources;
+
+    private String speedUp;
+
+    // TODO: Add implementations
+
 }

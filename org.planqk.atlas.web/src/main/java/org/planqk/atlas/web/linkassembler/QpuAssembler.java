@@ -15,20 +15,20 @@ import org.springframework.stereotype.Component;
 @Component
 public class QpuAssembler extends GenericLinkAssembler<QpuDto> {
 
-	@Override
-	public void addLinks(EntityModel<QpuDto> resource) {
-		resource.add(
-				linkTo(methodOn(QpuController.class).getQpu(getProviderId(resource), getId(resource))).withSelfRel());
-		resource.add(linkTo(methodOn(ProviderController.class).getProvider(getProviderId(resource)))
-				.withRel(Constants.PROVIDER));
-	}
+    @Override
+    public void addLinks(EntityModel<QpuDto> resource) {
+        resource.add(
+                linkTo(methodOn(QpuController.class).getQpu(getProviderId(resource), getId(resource))).withSelfRel());
+        resource.add(linkTo(methodOn(ProviderController.class).getProvider(getProviderId(resource)))
+                .withRel(Constants.PROVIDER));
+    }
 
-	private UUID getId(EntityModel<QpuDto> resource) {
-		return resource.getContent().getId();
-	}
+    private UUID getId(EntityModel<QpuDto> resource) {
+        return resource.getContent().getId();
+    }
 
-	private UUID getProviderId(EntityModel<QpuDto> resource) {
-		return resource.getContent().getProvider().getId();
-	}
+    private UUID getProviderId(EntityModel<QpuDto> resource) {
+        return resource.getContent().getProvider().getId();
+    }
 
 }

@@ -8,9 +8,10 @@ import java.lang.annotation.Target;
 /**
  * Add API versioning information to a controller or controller method.
  *
- * The specified version(s) are appended to the controller's base path (i.e. before the individual route paths).
+ * The specified version(s) are appended to the controller's base path (i.e.
+ * before the individual route paths).
  */
-@Target( {ElementType.METHOD, ElementType.TYPE})
+@Target({ ElementType.METHOD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ApiVersion {
     String[] value();

@@ -20,11 +20,11 @@ import lombok.ToString;
 public class QuantumAlgorithmDto extends AlgorithmDto {
 
     private boolean nisqReady;
-    
+
     @NotNull(message = "QuantumComputationModel must not be null!")
-	private QuantumComputationModel quantumComputationModel;
-    
-	private Set<QuantumResource> requiredQuantumResources;
-	private String speedUp;
-	
+    private QuantumComputationModel quantumComputationModel;
+
+    private Set<QuantumResource> requiredQuantumResources;
+    private String speedUp;
+
 }

@@ -62,15 +62,15 @@ import org.springframework.web.bind.annotation.*;
 public class ProviderController {
 
     final private static Logger LOG = LoggerFactory.getLogger(ProviderController.class);
-    
+
     private ProviderService providerService;
     private PagedResourcesAssembler<ProviderDto> paginationAssembler;
     private ProviderAssembler providerAssembler;
 
     @GetMapping("/")
     public HttpEntity<PagedModel<EntityModel<ProviderDto>>> getProviders(@RequestParam(required = false) Integer page,
-                                                    @RequestParam(required = false) Integer size) {
-        LOG.debug("Get to retrieve all providers received.");    
+            @RequestParam(required = false) Integer size) {
+        LOG.debug("Get to retrieve all providers received.");
         // Generate Pageable
         Pageable p = RestUtils.getPageableFromRequestParams(page, size);
         // Retrieve Page of DTOs
@@ -81,34 +81,32 @@ public class ProviderController {
         return new ResponseEntity<>(outputDto, HttpStatus.OK);
     }
 
-    @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "404", content = @Content)
-    })
+    @Operation(responses = { @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", content = @Content) })
     @GetMapping("/{id}")
     public HttpEntity<EntityModel<ProviderDto>> getProvider(@PathVariable UUID id) {
         LOG.debug("Get to retrieve provider with id: {}.", id);
 
         Provider provider = providerService.findById(id);
-        
+
         // Generate EntityModel
-        EntityModel<ProviderDto> dtoOutput = HateoasUtils.generateEntityModel(ModelMapperUtils.convert(provider, ProviderDto.class));
+        EntityModel<ProviderDto> dtoOutput = HateoasUtils
+                .generateEntityModel(ModelMapperUtils.convert(provider, ProviderDto.class));
         providerAssembler.addLinks(dtoOutput);
 
         return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
     }
 
-    @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400", content = @Content)
-    })
+    @Operation(responses = { @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400", content = @Content) })
     @PostMapping("/")
     public HttpEntity<EntityModel<ProviderDto>> createProvider(@Valid @RequestBody ProviderDto providerDto) {
         LOG.debug("Post to create new provider received.");
         // Save incoming provider inside database
         Provider provider = providerService.save(ModelMapperUtils.convert(providerDto, Provider.class));
         // Convert saved provider to EntityModelDTO
-        EntityModel<ProviderDto> outputDto = HateoasUtils.generateEntityModel(ModelMapperUtils.convert(provider, ProviderDto.class));
+        EntityModel<ProviderDto> outputDto = HateoasUtils
+                .generateEntityModel(ModelMapperUtils.convert(provider, ProviderDto.class));
         // Add Links
         providerAssembler.addLinks(outputDto);
         return new ResponseEntity<>(outputDto, HttpStatus.CREATED);

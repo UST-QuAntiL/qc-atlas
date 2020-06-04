@@ -36,17 +36,17 @@ import lombok.NoArgsConstructor;
 @Data
 public class AlgorithmRelationDto {
 
-	private UUID id;
+    private UUID id;
 
-	@NotNull(message = "SourceAlgorithm of the AlgorithmRelation must not be null!")
-	private AlgorithmDto sourceAlgorithm;
+    @NotNull(message = "SourceAlgorithm of the AlgorithmRelation must not be null!")
+    private AlgorithmDto sourceAlgorithm;
 
-	@NotNull(message = "TargetAlgorithm of the AlgorithmRelation must not be null!")
-	private AlgorithmDto targetAlgorithm;
+    @NotNull(message = "TargetAlgorithm of the AlgorithmRelation must not be null!")
+    private AlgorithmDto targetAlgorithm;
 
-	@NotNull(message = "AlgorithmRelationType must not be null!")
-	private AlgoRelationTypeDto algoRelationType;
+    @NotNull(message = "AlgorithmRelationType must not be null!")
+    private AlgoRelationTypeDto algoRelationType;
 
-	private String description;
+    private String description;
 
 }

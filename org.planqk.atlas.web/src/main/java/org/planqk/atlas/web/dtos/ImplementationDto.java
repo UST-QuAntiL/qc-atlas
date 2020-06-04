@@ -33,7 +33,8 @@ import lombok.NoArgsConstructor;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
- * Data transfer object for the model class Implementation ({@link org.planqk.atlas.core.model.Implementation}).
+ * Data transfer object for the model class Implementation
+ * ({@link org.planqk.atlas.core.model.Implementation}).
  */
 @EqualsAndHashCode
 @Data
@@ -41,12 +42,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class ImplementationDto {
 
     private UUID id;
-    
+
     @NotNull(message = "Implementation-Name must not be null!")
     private String name;
     @NotNull(message = "Implementation-FileLocation must not be null!")
     private URL fileLocation;
-    
+
     private String inputFormat;
     private String outputFormat;
     private String description;
@@ -54,7 +55,7 @@ public class ImplementationDto {
     private String assumptions;
     private String parameter;
     private String dependencies;
-    
+
     @JsonIgnore
     private Algorithm implementedAlgorithm;
 

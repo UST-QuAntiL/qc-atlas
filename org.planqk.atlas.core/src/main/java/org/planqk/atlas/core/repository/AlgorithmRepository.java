@@ -29,14 +29,15 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 /**
- * Repository to access {@link Algorithm}s available in the data base with different queries.
+ * Repository to access {@link Algorithm}s available in the data base with
+ * different queries.
  */
 @RepositoryRestResource(exported = false)
 public interface AlgorithmRepository extends JpaRepository<Algorithm, UUID> {
 
     Optional<Algorithm> findByName(String name);
-    
+
     @Query("SELECT COUNT(alg) FROM Algorithm alg JOIN alg.problemTypes probType WHERE probType.id = :problemTypeId")
     long countAlgorithmsUsingProblemType(@Param("problemTypeId") UUID problemTypeId);
-    
+
 }
