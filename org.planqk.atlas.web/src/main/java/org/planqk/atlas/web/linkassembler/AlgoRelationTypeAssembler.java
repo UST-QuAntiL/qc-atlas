@@ -24,8 +24,8 @@ public class AlgoRelationTypeAssembler extends GenericLinkAssembler<AlgoRelation
 
 	}
 
-	private <T> UUID getId(EntityModel<T> resource) {
-		return ((AlgoRelationTypeDto) resource.getContent()).getId();
+	private UUID getId(EntityModel<AlgoRelationTypeDto> resource) {
+		return resource.getContent().getId();
 	}
 
 }

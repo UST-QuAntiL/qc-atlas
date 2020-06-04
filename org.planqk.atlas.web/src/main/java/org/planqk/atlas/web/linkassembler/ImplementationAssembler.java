@@ -34,7 +34,7 @@ public class ImplementationAssembler extends GenericLinkAssembler<Implementation
 	}
 
 	public UUID getId(EntityModel<ImplementationDto> resource) {
-		return ((ImplementationDto) resource.getContent()).getId();
+		return resource.getContent().getId();
 	}
 
 	public UUID getAlgId(EntityModel<ImplementationDto> resource) {

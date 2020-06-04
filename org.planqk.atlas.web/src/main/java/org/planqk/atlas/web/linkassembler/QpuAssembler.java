@@ -27,7 +27,7 @@ public class QpuAssembler extends GenericLinkAssembler<QpuDto> {
 		return resource.getContent().getId();
 	}
 
-	private <T> UUID getProviderId(EntityModel<QpuDto> resource) {
+	private UUID getProviderId(EntityModel<QpuDto> resource) {
 		return resource.getContent().getProvider().getId();
 	}
 
