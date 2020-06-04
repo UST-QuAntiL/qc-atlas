@@ -91,7 +91,7 @@ The following sections present an approach on how to validate `_links` and `Page
 
 #### Getting the objects from a `PagedModel`
 
-If you want to verify the contents of a PagedModel you can use a small helper method in the `ObjectMapperUtils` class: `ObjectMapperUtils.mapResponseToList()`. To retrieve a list of DTOs, just pass the response as a string, returned from MockMvc, as well as the key under which the resources are located. The key in the case, the class name ends with DTO usually is `<ClassName>es` where the class name is written in Camel case. For example: `cloudServiceDtoes` is the key for Cloud service objects. Apart from these two values you must pass the an Instance of the `Class` object for the type of the elements. This can be obtained by calling `<ClassName>.class`
+If you want to verify the contents of a PagedModel you can use a small helper method in the `ObjectMapperUtils` class: `ObjectMapperUtils.mapResponseToList()`. To retrieve a list of DTOs, just pass the response as a string, returned from MockMvc, as well as the key under which the resources are located. The key in the case, the class name ends with DTO usually is `<ClassName>es` where the class name is written in Camel case. For example: `cloudServiceDtoes` is the key for Cloud service objects. Apart from these two values you must pass an Instance of the `Class` object for the type of the elements. This can be obtained by calling `<ClassName>.class`
 
 Also an optional instance of the ObjectMapper may be passed to the method, however this mapper must be configured to not fail on unknown properties. By default a mapper is built by calling the `newTestMapper()` method.
 
