@@ -19,67 +19,61 @@
 
 package org.planqk.atlas.web.dtos;
 
-import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
-import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.ComputationModel;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.springframework.hateoas.RepresentationModel;
+
+import javax.validation.constraints.*;
 
 import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.WRITE_ONLY;
 
 /**
- * Data transfer object for Algorithms ({@link org.planqk.atlas.core.model.Algorithm}).
+ * Data transfer object for Algorithms
+ * ({@link org.planqk.atlas.core.model.Algorithm}).
  */
-@EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @Data
 @NoArgsConstructor
-public class AlgorithmDto extends RepresentationModel<AlgorithmDto> {
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "computationModel", visible = true)
+@JsonSubTypes({ @JsonSubTypes.Type(value = QuantumAlgorithmDto.class, name = "QUANTUM"),
+        @JsonSubTypes.Type(value = ClassicAlgorithmDto.class, name = "CLASSIC") })
+public class AlgorithmDto {
 
     private UUID id;
 
+    @NotNull(message = "Algorithm-Name must not be null!")
     private String name;
+
+    private String problem;
 
     private String inputFormat;
 
     private String outputFormat;
 
-    // we do not embedded tags into the object (via @jsonInclude) - instead, we add a hateoas link to the associated tags
+    @NotNull(message = "Computational-Model must not be null!")
+    private ComputationModel computationModel;
+
+    @Size(min = 1, message = "Algorithm must have at least 1 ProblemType!")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    // annotate this for swagger as well, because swagger doesn't recognize the json property annotation
+    @Schema(accessMode = WRITE_ONLY)
+    private Set<ProblemTypeDto> problemTypes;
+
+    // we do not embedded tags into the object (via @jsonInclude) - instead, we add
+    // a hateoas link to the associated tags
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    // annotate this for swagger as well, because swagger doesn't recognize the json
+    // property annotation
     @Schema(accessMode = WRITE_ONLY)
     private Set<TagDto> tags;
 
-    public static final class Converter {
-
-        public static AlgorithmDto convert(final Algorithm object) {
-            final AlgorithmDto dto = new AlgorithmDto();
-            dto.setId(object.getId());
-            dto.setName(object.getName());
-            dto.setTags(object.getTags().stream().map(TagDto.Converter::convert).collect(Collectors.toSet()));
-            dto.setInputFormat(object.getInputFormat());
-            dto.setOutputFormat(object.getInputFormat());
-            return dto;
-        }
-
-        public static Algorithm convert(final AlgorithmDto object) {
-            final Algorithm algo = new Algorithm();
-            algo.setName(object.getName());
-            if (Objects.nonNull(object.getTags())) {
-                algo.setTags(object.getTags().stream().map(TagDto.Converter::convert).collect(Collectors.toSet()));
-            }
-            algo.setInputFormat(object.getInputFormat());
-            algo.setOutputFormat(object.getInputFormat());
-            return algo;
-        }
-    }
 }

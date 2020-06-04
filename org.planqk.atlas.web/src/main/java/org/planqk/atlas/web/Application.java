@@ -35,20 +35,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @EnableAsync
 @SpringBootApplication(scanBasePackages = "org.planqk.atlas.*")
 @EntityScan("org.planqk.atlas.*")
-@OpenAPIDefinition(
-        info = @Info(
-                title = "atlas", version = "1.0",
-                description = "Platform for Sharing Quantum Software",
-                license = @License(
-                        name = "Apache 2.0",
-                        url = "http://www.apache.org/licenses/LICENSE-2.0.html"
-                ),
-                contact = @Contact(
-                        url = "https://github.com/PlanQK/qc-atlas",
-                        name = "GitHub Repository"
-                )
-        )
-)
+@OpenAPIDefinition(info = @Info(title = "atlas", version = "1.0", description = "Platform for Sharing Quantum Software", license = @License(name = "Apache 2.0", url = "http://www.apache.org/licenses/LICENSE-2.0.html"), contact = @Contact(url = "https://github.com/PlanQK/qc-atlas", name = "GitHub Repository")))
 public class Application extends SpringBootServletInitializer {
 
     final private static Logger LOG = LoggerFactory.getLogger(Application.class);
@@ -59,9 +46,8 @@ public class Application extends SpringBootServletInitializer {
 
     private static void logReadyMessage() {
         if (LOG.isInfoEnabled()) {
-            final String readyMessage = "\n===================================================\n" +
-                    "ATLAS IS READY TO USE!\n" +
-                    "===================================================";
+            final String readyMessage = "\n===================================================\n"
+                    + "ATLAS IS READY TO USE!\n" + "===================================================";
             LOG.info(readyMessage);
         }
     }
@@ -70,6 +56,7 @@ public class Application extends SpringBootServletInitializer {
      * Launch the embedded Tomcat server.
      *
      * See `application.properties` for its configuration.
+     * 
      * @param args
      */
     public static void main(String[] args) {

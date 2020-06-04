@@ -19,7 +19,7 @@
 
 package org.planqk.atlas.core.services;
 
-import java.util.Optional;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Implementation;
@@ -47,7 +47,7 @@ public class ImplementationServiceImpl implements ImplementationService {
     }
 
     @Override
-    public Optional<Implementation> findById(UUID implId) {
-        return repository.findById(implId);
+    public Implementation findById(UUID implId) {
+        return repository.findById(implId).orElseThrow(NoSuchElementException::new);
     }
 }

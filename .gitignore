@@ -1,3 +1,4 @@
+bin/
 target/
 pom.xml.tag
 pom.xml.releaseBackup
@@ -12,3 +13,12 @@ buildNumber.properties
 *.iml
 .mvn/
 .idea/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache

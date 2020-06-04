@@ -28,7 +28,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 /**
- * Repository to access {@link Provider}s available in the data base with different queries.
+ * Repository to access {@link Provider}s available in the data base with
+ * different queries.
  */
 @RepositoryRestResource(exported = false)
 public interface ProviderRepository extends JpaRepository<Provider, UUID> {
