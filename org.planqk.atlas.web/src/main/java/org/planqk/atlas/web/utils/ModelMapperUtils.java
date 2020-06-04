@@ -12,7 +12,7 @@ public class ModelMapperUtils {
 
     public static <D, T> Set<D> convertSet(Set<T> entities, Class<D> dtoClass) {
         Set<D> resultSet = new HashSet<D>();
-        for (T entity: entities) {
+        for (T entity : entities) {
             resultSet.add(convert(entity, dtoClass));
         }
         return resultSet;

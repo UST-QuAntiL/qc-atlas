@@ -7,7 +7,6 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
-
 @Entity
 @Table(name = "cloud_services")
 @Data

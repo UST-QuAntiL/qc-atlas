@@ -1,6 +1,5 @@
 package org.planqk.atlas.core.model;
 
-
 import lombok.*;
 
 import javax.persistence.*;
@@ -37,4 +36,3 @@ public class SoftwarePlatform extends HasId {
     private Set<CloudService> supportedCloudServices = new HashSet<>();
 
 }
-

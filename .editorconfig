@@ -1,0 +1,22 @@
+# Editor configuration, see https://editorconfig.org
+# This provides only a basic level of formatting!
+# see docs/dev/config/IntelliJ IDEA/README.md for more instructions
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+indent_style = space
+indent_size = 4
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.java]
+continuation_indent_size = 8
+
+[*.md]
+max_line_length = off
+trim_trailing_whitespace = false
+
+[*.properties]
+max_line_length = off

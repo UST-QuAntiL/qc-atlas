@@ -19,7 +19,7 @@
 
 package org.planqk.atlas.core.services;
 
-import java.util.Optional;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Qpu;
@@ -47,7 +47,7 @@ public class QpuServiceImpl implements QpuService {
     }
 
     @Override
-    public Optional<Qpu> findById(UUID qpuId) {
-        return repository.findById(qpuId);
+    public Qpu findById(UUID qpuId) {
+        return repository.findById(qpuId).orElseThrow(NoSuchElementException::new);
     }
 }

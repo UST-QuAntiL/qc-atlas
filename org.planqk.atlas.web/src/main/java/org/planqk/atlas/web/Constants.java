@@ -32,6 +32,9 @@ public class Constants {
     public static final String TAGS = "tags";
     public static final String SOFTWARE_PLATFORMS = "software-platforms";
     public static final String CLOUD_SERVICES = "cloud-services";
+    public static final String PROBLEM_TYPES = "problem-types";
+    public static final String ALGORITHM_RELATIONS = "algorithm-relations";
+    public static final String ALGO_RELATION_TYPES = "algo-relation-types";
 
     // link names
     public static final String ALGORITHM_LINK = "implementedAlgorithm";

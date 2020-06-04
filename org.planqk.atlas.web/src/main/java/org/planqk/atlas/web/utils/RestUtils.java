@@ -20,10 +20,7 @@
 package org.planqk.atlas.web.utils;
 
 import org.planqk.atlas.web.Constants;
-import org.planqk.atlas.web.controller.AlgorithmController;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
@@ -32,15 +29,14 @@ import org.springframework.data.domain.Pageable;
  */
 public class RestUtils {
 
-    final private static Logger LOG = LoggerFactory.getLogger(AlgorithmController.class);
-
     /**
-     * Return a (default) pageable from the provided Requestparams for an endpoint that can be used with pagination
+     * Return a (default) pageable from the provided Requestparams for an endpoint
+     * that can be used with pagination
      *
      * @param size the size of a page
      * @param page the number of the page that should be returned
-     * @return construct the <code>Pageable</code> if suitable parameters are given, <code>Pageable.unpaged()</code> (no
-     * Pagination) otherwise
+     * @return construct the <code>Pageable</code> if suitable parameters are given,
+     *         <code>Pageable.unpaged()</code> (no Pagination) otherwise
      */
     public static Pageable getPageableFromRequestParams(Integer page, Integer size) {
         if (size != null && page != null) {
