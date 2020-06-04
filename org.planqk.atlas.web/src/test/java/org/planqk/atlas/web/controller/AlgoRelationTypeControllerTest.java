@@ -1,68 +1,69 @@
 package org.planqk.atlas.web.controller;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.ArgumentMatchers;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.planqk.atlas.core.model.AlgoRelationType;
-import org.planqk.atlas.core.services.AlgoRelationTypeService;
-import org.planqk.atlas.web.Constants;
-import org.planqk.atlas.web.dtos.AlgoRelationTypeDto;
-import org.planqk.atlas.web.dtos.ProviderDto;
-import org.planqk.atlas.web.linkassembler.AlgoRelationTypeAssembler;
-import org.planqk.atlas.web.utils.HateoasUtils;
-import org.planqk.atlas.web.utils.ModelMapperUtils;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.PagedModel;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
-import static org.mockito.ArgumentMatchers.any;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
-@WebMvcTest
+import org.planqk.atlas.core.model.AlgoRelationType;
+import org.planqk.atlas.core.services.AlgoRelationTypeService;
+import org.planqk.atlas.web.Constants;
+import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
+import org.planqk.atlas.web.dtos.AlgoRelationTypeDto;
+import org.planqk.atlas.web.dtos.ProviderDto;
+import org.planqk.atlas.web.linkassembler.AlgoRelationTypeAssembler;
+import org.planqk.atlas.web.utils.HateoasUtils;
+import org.planqk.atlas.web.utils.ModelMapperUtils;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@WebMvcTest(AlgoRelationTypeController.class)
+@ExtendWith(MockitoExtension.class)
+@AutoConfigureMockMvc
 public class AlgoRelationTypeControllerTest {
 
-    @Mock
+    @MockBean
     private AlgoRelationTypeService algoRelationTypeService;
-    @Mock
+    @MockBean
     private AlgoRelationTypeAssembler algoRelationTypeAssembler;
-    @Mock
+    @MockBean
     private PagedResourcesAssembler<AlgoRelationTypeDto> paginationAssembler;
 
-    @InjectMocks
-    AlgoRelationTypeController algoRelationTypeController;
-
+    @Autowired
     private MockMvc mockMvc;
+
     private ObjectMapper mapper;
 
     private int page = 0;
@@ -73,12 +74,9 @@ public class AlgoRelationTypeControllerTest {
     private AlgoRelationType algoRelationType2;
     private AlgoRelationTypeDto algoRelationType1Dto;
 
-    @Before
+    @BeforeEach
     public void initialize() {
-        MockitoAnnotations.initMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(algoRelationTypeController)
-                .setControllerAdvice(new RestErrorHandler()).build();
-        mapper = new ObjectMapper();
+        mapper = ObjectMapperUtils.newTestMapper();
         mapper.enable(DeserializationFeature.READ_UNKNOWN_ENUM_VALUES_AS_NULL);
 
         algoRelationType1 = new AlgoRelationType();
@@ -89,11 +87,6 @@ public class AlgoRelationTypeControllerTest {
         algoRelationType2.setName("relationType2");
 
         algoRelationType1Dto = ModelMapperUtils.convert(algoRelationType1, AlgoRelationTypeDto.class);
-    }
-
-    public void setupTest() {
-        assertNotNull(mockMvc);
-        assertNotNull(algoRelationTypeController);
     }
 
     @Test
@@ -166,10 +159,12 @@ public class AlgoRelationTypeControllerTest {
                         .queryParam(Constants.SIZE, Integer.toString(size)).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
-        PagedModel<EntityModel<ProviderDto>> algoRelationTypeListDto = mapper.readValue(
-                result.getResponse().getContentAsString(), new TypeReference<PagedModel<EntityModel<ProviderDto>>>() {
-                });
-        assertEquals(algoRelationTypeListDto.getContent().size(), 0);
+        var providers = ObjectMapperUtils.mapResponseToList(
+                result.getResponse().getContentAsString(),
+                "algoRelationTypeDtoes",
+                ProviderDto.class
+        );
+        assertEquals(providers.size(), 0);
     }
 
     @Test
@@ -194,10 +189,12 @@ public class AlgoRelationTypeControllerTest {
                         .queryParam(Constants.SIZE, Integer.toString(size)).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
-        PagedModel<EntityModel<ProviderDto>> algoRelationTypeListDto = mapper.readValue(
-                result.getResponse().getContentAsString(), new TypeReference<PagedModel<EntityModel<ProviderDto>>>() {
-                });
-        assertEquals(algoRelationTypeListDto.getContent().size(), 2);
+        var providers = ObjectMapperUtils.mapResponseToList(
+                result.getResponse().getContentAsString(),
+                "algoRelationTypeDtoes",
+                ProviderDto.class
+        );
+        assertEquals(providers.size(), 2);
     }
 
     @Test
@@ -235,5 +232,4 @@ public class AlgoRelationTypeControllerTest {
         mockMvc.perform(delete("/" + Constants.ALGO_RELATION_TYPES + "/{id}", algoRelationType1.getId())
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
     }
-
 }

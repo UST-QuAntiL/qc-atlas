@@ -34,24 +34,29 @@ import org.planqk.atlas.core.model.ComputationModel;
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.web.Constants;
+import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
 import org.planqk.atlas.web.linkassembler.AlgorithmAssembler;
 import org.planqk.atlas.web.linkassembler.AlgorithmRelationAssembler;
+import org.planqk.atlas.web.linkassembler.ProblemTypeAssembler;
+import org.planqk.atlas.web.linkassembler.TagAssembler;
 import org.planqk.atlas.web.utils.HateoasUtils;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -63,37 +68,49 @@ import org.springframework.hateoas.PagedModel;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
-import static org.mockito.ArgumentMatchers.any;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
+@WebMvcTest(AlgorithmController.class)
+@ExtendWith(MockitoExtension.class)
+@AutoConfigureMockMvc
 public class AlgorithmControllerTest {
 
-    @Mock
+    @TestConfiguration
+    public static class TestConfig {
+        @Bean
+        public ProblemTypeAssembler problemTypeAssembler() {
+            return new ProblemTypeAssembler();
+        }
+
+        @Bean
+        public TagAssembler tagAssembler() {
+            return new TagAssembler();
+        }
+    }
+
+    @MockBean
     private AlgorithmService algorithmService;
-    @Mock
+    @MockBean
     private PagedResourcesAssembler<AlgorithmDto> paginationAssembler;
-    @Mock
+    @MockBean
     private AlgorithmAssembler algorithmAssembler;
-    @Mock
+    @MockBean
     private AlgorithmRelationAssembler algorithmRelationAssembler;
 
-    @InjectMocks
-    private AlgorithmController algorithmController;
-
+    @Autowired
     private MockMvc mockMvc;
+
     private ObjectMapper mapper;
 
     private int page = 0;
@@ -106,15 +123,11 @@ public class AlgorithmControllerTest {
     private AlgorithmRelationDto algorithmRelation1Dto;
     private AlgorithmDto algorithm1Dto;
     private AlgorithmDto algorithm2Dto;
-    Set<AlgorithmRelation> algorithmRelations;
+    private Set<AlgorithmRelation> algorithmRelations;
 
-    @Before
+    @BeforeEach
     public void initialize() {
-        MockitoAnnotations.initMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(algorithmController).setControllerAdvice(new RestErrorHandler())
-                .build();
-        mapper = new ObjectMapper();
-        mapper.enable(DeserializationFeature.READ_UNKNOWN_ENUM_VALUES_AS_NULL);
+        mapper = ObjectMapperUtils.newTestMapper();
 
         Set<ProblemType> problemTypes = new HashSet<>();
 
@@ -165,13 +178,6 @@ public class AlgorithmControllerTest {
 //    	when(algorithmService.findById(any(UUID.class))).thenReturn(Optional.empty());
         when(algorithmService.findById(algorithm1.getId())).thenReturn(algorithm1);
         when(algorithmService.findById(algorithm2.getId())).thenReturn(algorithm2);
-
-    }
-
-    @Test
-    public void setupTest() {
-        assertNotNull(mockMvc);
-        assertNotNull(algorithmController);
     }
 
     @Test
@@ -222,10 +228,12 @@ public class AlgorithmControllerTest {
                         .queryParam(Constants.SIZE, Integer.toString(size)).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON)).andReturn();
 
-        PagedModel<EntityModel<AlgorithmDto>> algorithmListDto = mapper.readValue(
-                result.getResponse().getContentAsString(), new TypeReference<PagedModel<EntityModel<AlgorithmDto>>>() {
-                });
-        assertEquals(algorithmListDto.getContent().size(), 2);
+        var resultList = ObjectMapperUtils.mapResponseToList(
+                result.getResponse().getContentAsString(),
+                "algorithmDtoes",
+                Algorithm.class
+        );
+        assertEquals(resultList.size(), 2);
     }
 
     @Test
@@ -349,11 +357,12 @@ public class AlgorithmControllerTest {
                         algorithm2.getId()).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
-        CollectionModel<EntityModel<AlgorithmRelationDto>> algorithmRelationListDto = mapper.readValue(
+        var resultList = ObjectMapperUtils.mapResponseToList(
                 result.getResponse().getContentAsString(),
-                new TypeReference<CollectionModel<EntityModel<AlgorithmRelationDto>>>() {
-                });
-        assertEquals(algorithmRelationListDto.getContent().size(), 0);
+                "algorithmRelationDtoes",
+                AlgorithmRelationDto.class
+        );
+        assertEquals(resultList.size(), 0);
     }
 
     @Test
@@ -369,11 +378,12 @@ public class AlgorithmControllerTest {
                         algorithm1.getId()).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON)).andReturn();
 
-        CollectionModel<EntityModel<AlgorithmRelationDto>> algorithmRelationListDto = mapper.readValue(
+        var resultList = ObjectMapperUtils.mapResponseToList(
                 result.getResponse().getContentAsString(),
-                new TypeReference<CollectionModel<EntityModel<AlgorithmRelationDto>>>() {
-                });
-        assertEquals(algorithmRelationListDto.getContent().size(), 2);
+                "algorithmRelationDtoes",
+                AlgorithmRelationDto.class
+        );
+        assertEquals(resultList.size(), 2);
     }
 
     @Test
@@ -389,19 +399,19 @@ public class AlgorithmControllerTest {
         AlgorithmRelationDto algoRelationDto = new AlgorithmRelationDto();
         mockMvc.perform(put("/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS,
                 algorithm1.getId()).content(mapper.writeValueAsString(algoRelationDto))
-                        .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
 
         algoRelationDto.setSourceAlgorithm(algorithm1Dto);
         mockMvc.perform(put("/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS,
                 algorithm1.getId()).content(mapper.writeValueAsString(algoRelationDto))
-                        .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
 
         algoRelationDto.setTargetAlgorithm(algorithm2Dto);
         mockMvc.perform(put("/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS,
                 algorithm1.getId()).content(mapper.writeValueAsString(algoRelationDto))
-                        .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
 
@@ -412,7 +422,7 @@ public class AlgorithmControllerTest {
 
         mockMvc.perform(put("/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS,
                 UUID.randomUUID()).content(mapper.writeValueAsString(algorithmRelation1Dto))
-                        .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
 
@@ -426,7 +436,7 @@ public class AlgorithmControllerTest {
         MvcResult result = mockMvc
                 .perform(put("/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS,
                         algorithm1.getId()).content(mapper.writeValueAsString(algorithmRelation1Dto))
-                                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
         EntityModel<AlgorithmRelationDto> response = mapper.readValue(result.getResponse().getContentAsString(),
@@ -437,7 +447,7 @@ public class AlgorithmControllerTest {
 
 //    @Test
 //    public void deleteAlgorithmRelation_notModified() throws Exception {
-//        
+//
 //    	when(algorithmService.deleteAlgorithmRelation(any(UUID.class),any(UUID.class))).thenReturn(false);
 //
 //    	mockMvc.perform(delete("/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS +

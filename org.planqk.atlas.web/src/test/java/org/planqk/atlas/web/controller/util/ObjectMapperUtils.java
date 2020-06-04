@@ -20,6 +20,7 @@
 package org.planqk.atlas.web.controller.util;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -53,7 +54,11 @@ public class ObjectMapperUtils {
             Class<? extends T> className,
             @NonNull ObjectMapper mapper
     ) throws Exception {
-        var objects = new JSONObject(response).getJSONObject(EMBEDDED_RESOURCES_JSON_KEY).getJSONArray(key);
+        var rootObject = new JSONObject(response);
+        if (!rootObject.has(EMBEDDED_RESOURCES_JSON_KEY)) {
+            return Collections.emptyList();
+        }
+        var objects = rootObject.getJSONObject(EMBEDDED_RESOURCES_JSON_KEY).getJSONArray(key);
 
         var contents = new ArrayList<T>();
 
@@ -103,6 +108,7 @@ public class ObjectMapperUtils {
     public static ObjectMapper newTestMapper() {
         var mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.configure(DeserializationFeature.READ_UNKNOWN_ENUM_VALUES_AS_NULL, true);
         return mapper;
     }
 
