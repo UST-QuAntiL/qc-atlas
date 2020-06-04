@@ -9,18 +9,18 @@ import org.springframework.data.domain.Pageable;
 
 public interface ProblemTypeService {
 
-	ProblemType save(ProblemType problemType);
-	
-	ProblemType update(UUID id, ProblemType problemType);
-	
-	void delete(UUID id);
-	
-	ProblemType findById(UUID id);
-	
-	ProblemType findByName(String name);
-	
-	Page<ProblemType> findAll(Pageable pageable);
-	
-	Set<ProblemType> createOrUpdateAll(Set<ProblemType> problemTypes);
-	
+    ProblemType save(ProblemType problemType);
+
+    ProblemType update(UUID id, ProblemType problemType);
+
+    void delete(UUID id);
+
+    ProblemType findById(UUID id);
+
+    ProblemType findByName(String name);
+
+    Page<ProblemType> findAll(Pageable pageable);
+
+    Set<ProblemType> createOrUpdateAll(Set<ProblemType> problemTypes);
+
 }

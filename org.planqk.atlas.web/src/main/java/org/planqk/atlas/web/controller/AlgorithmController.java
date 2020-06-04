@@ -22,6 +22,8 @@ package org.planqk.atlas.web.controller;
 import java.util.Set;
 import java.util.UUID;
 
+import javax.validation.Valid;
+
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.model.ProblemType;
@@ -57,7 +59,6 @@ import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -83,7 +84,7 @@ public class AlgorithmController {
     final private static Logger LOG = LoggerFactory.getLogger(AlgorithmController.class);
 
     private AlgorithmService algorithmService;
-	private PagedResourcesAssembler<AlgorithmDto> paginationAssembler;
+    private PagedResourcesAssembler<AlgorithmDto> paginationAssembler;
     private ProblemTypeAssembler problemTypeAssembler;
     private TagAssembler tagAssembler;
     private AlgorithmAssembler algorithmAssembler;
@@ -92,7 +93,7 @@ public class AlgorithmController {
     @Operation()
     @GetMapping("/")
     public HttpEntity<PagedModel<EntityModel<AlgorithmDto>>> getAlgorithms(@RequestParam(required = false) Integer page,
-                                                      @RequestParam(required = false) Integer size) {
+            @RequestParam(required = false) Integer size) {
         LOG.debug("Get to retrieve all algorithms received.");
         // Generate Pageable
         Pageable p = RestUtils.getPageableFromRequestParams(page, size);
@@ -104,28 +105,29 @@ public class AlgorithmController {
         return new ResponseEntity<>(outputDto, HttpStatus.OK);
     }
 
-    @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400", content = @Content)
-    })
+    @Operation(responses = { @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400", content = @Content) })
     @PostMapping("/")
-    public HttpEntity<EntityModel<AlgorithmDto>> createAlgorithm(@Validated @RequestBody AlgorithmDto algo) {
+    public HttpEntity<EntityModel<AlgorithmDto>> createAlgorithm(@Valid @RequestBody AlgorithmDto algo) {
         LOG.debug("Post to create new algorithm received.");
         // store and return algorithm
         Algorithm algorithm = algorithmService.save(ModelMapperUtils.convert(algo, Algorithm.class));
         // Convert To EntityModel
-        EntityModel<AlgorithmDto> dtoOutput = HateoasUtils.generateEntityModel(ModelMapperUtils.convert(algorithm, AlgorithmDto.class));
+        EntityModel<AlgorithmDto> dtoOutput = HateoasUtils
+                .generateEntityModel(ModelMapperUtils.convert(algorithm, AlgorithmDto.class));
         // Fill EntityModel with links
         algorithmAssembler.addLinks(dtoOutput);
         return new ResponseEntity<>(dtoOutput, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public HttpEntity<EntityModel<AlgorithmDto>> updateAlgorithm(@PathVariable UUID id, @Validated @RequestBody AlgorithmDto algo) {
+    public HttpEntity<EntityModel<AlgorithmDto>> updateAlgorithm(@PathVariable UUID id,
+            @Valid @RequestBody AlgorithmDto algo) {
         LOG.debug("Put to update algorithm with id: {}.", id);
         Algorithm updatedAlgorithm = algorithmService.update(id, ModelMapperUtils.convert(algo, Algorithm.class));
         // Convert To EntityModel
-        EntityModel<AlgorithmDto> dtoOutput = HateoasUtils.generateEntityModel(ModelMapperUtils.convert(updatedAlgorithm, AlgorithmDto.class));
+        EntityModel<AlgorithmDto> dtoOutput = HateoasUtils
+                .generateEntityModel(ModelMapperUtils.convert(updatedAlgorithm, AlgorithmDto.class));
         // Fill EntityModel with links
         algorithmAssembler.addLinks(dtoOutput);
         return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
@@ -138,27 +140,24 @@ public class AlgorithmController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "404", content = @Content)
-    })
+    @Operation(responses = { @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", content = @Content) })
     @GetMapping("/{id}")
     public HttpEntity<EntityModel<AlgorithmDto>> getAlgorithm(@PathVariable UUID id) {
         LOG.debug("Get to retrieve algorithm with id: {}.", id);
 
         Algorithm algorithm = algorithmService.findById(id);
         // Convert To EntityModel
-        EntityModel<AlgorithmDto> dtoOutput = HateoasUtils.generateEntityModel(ModelMapperUtils.convert(algorithm, AlgorithmDto.class));
+        EntityModel<AlgorithmDto> dtoOutput = HateoasUtils
+                .generateEntityModel(ModelMapperUtils.convert(algorithm, AlgorithmDto.class));
         // Fill EntityModel with links
         algorithmAssembler.addLinks(dtoOutput);
 
         return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
     }
 
-    @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "404", content = @Content)
-    })
+    @Operation(responses = { @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", content = @Content) })
     @GetMapping("/{id}/" + Constants.TAGS)
     public HttpEntity<CollectionModel<EntityModel<TagDto>>> getTags(@PathVariable UUID id) {
         Algorithm algorithm = algorithmService.findById(id);
@@ -192,13 +191,16 @@ public class AlgorithmController {
     }
 
     @GetMapping("/{sourceAlgorithmId}/" + Constants.ALGORITHM_RELATIONS)
-    public HttpEntity<CollectionModel<EntityModel<AlgorithmRelationDto>>> getAlgorithmRelations(@PathVariable UUID sourceAlgorithmId) {
+    public HttpEntity<CollectionModel<EntityModel<AlgorithmRelationDto>>> getAlgorithmRelations(
+            @PathVariable UUID sourceAlgorithmId) {
         // get AlgorithmRelations of Algorithm
         Set<AlgorithmRelation> algorithmRelations = algorithmService.getAlgorithmRelations(sourceAlgorithmId);
         // Get AlgorithmRelationDTOs of Algorithm
-        Set<AlgorithmRelationDto> dtoALgorithmRelation = ModelMapperUtils.convertSet(algorithmRelations, AlgorithmRelationDto.class);
+        Set<AlgorithmRelationDto> dtoALgorithmRelation = ModelMapperUtils.convertSet(algorithmRelations,
+                AlgorithmRelationDto.class);
         // Generate CollectionModel
-        CollectionModel<EntityModel<AlgorithmRelationDto>> resultCollection = HateoasUtils.generateCollectionModel(dtoALgorithmRelation);
+        CollectionModel<EntityModel<AlgorithmRelationDto>> resultCollection = HateoasUtils
+                .generateCollectionModel(dtoALgorithmRelation);
         // Fill EntityModel Links
         algorithmRelationAssembler.addLinks(resultCollection);
         // Fill Collection-Links
@@ -208,11 +210,11 @@ public class AlgorithmController {
 
     @PutMapping("/{sourceAlgorithmId}/" + Constants.ALGORITHM_RELATIONS)
     public HttpEntity<EntityModel<AlgorithmRelationDto>> updateAlgorithmRelation(@PathVariable UUID sourceAlgorithmId,
-    		@Validated @RequestBody AlgorithmRelationDto relation) {
+            @Valid @RequestBody AlgorithmRelationDto relation) {
         LOG.debug("Post to add algorithm relation received.");
 
-        AlgorithmRelation algorithmRelation = algorithmService.addUpdateAlgorithmRelation(sourceAlgorithmId, ModelMapperUtils
-        		.convert(relation, AlgorithmRelation.class));
+        AlgorithmRelation algorithmRelation = algorithmService.addOrUpdateAlgorithmRelation(sourceAlgorithmId,
+                ModelMapperUtils.convert(relation, AlgorithmRelation.class));
         AlgorithmRelationDto dtoOutput = ModelMapperUtils.convert(algorithmRelation, AlgorithmRelationDto.class);
         EntityModel<AlgorithmRelationDto> entityDto = HateoasUtils.generateEntityModel(dtoOutput);
         algorithmRelationAssembler.addLinks(entityDto);
@@ -220,7 +222,8 @@ public class AlgorithmController {
     }
 
     @DeleteMapping("/{sourceAlgorithmId}/" + Constants.ALGORITHM_RELATIONS + "/{relationId}")
-    public HttpEntity<AlgorithmRelationDto> deleteAlgorithmRelation(@PathVariable UUID sourceAlgorithmId, @PathVariable UUID relationId) {
+    public HttpEntity<AlgorithmRelationDto> deleteAlgorithmRelation(@PathVariable UUID sourceAlgorithmId,
+            @PathVariable UUID relationId) {
         LOG.debug("Delete received to remove algorithm relation with id {}.", relationId);
         algorithmService.deleteAlgorithmRelation(sourceAlgorithmId, relationId);
         return new ResponseEntity<>(HttpStatus.OK);

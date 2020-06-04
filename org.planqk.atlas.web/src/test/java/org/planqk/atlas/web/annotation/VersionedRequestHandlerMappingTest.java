@@ -25,7 +25,7 @@ class VersionedRequestHandlerMappingTest {
         }
 
         @RequestMapping("/versioned")
-        @ApiVersion( {"v1", "v2"})
+        @ApiVersion({ "v1", "v2" })
         public void versioned() {
         }
     }

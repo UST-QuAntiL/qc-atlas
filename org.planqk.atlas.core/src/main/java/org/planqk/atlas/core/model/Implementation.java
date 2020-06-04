@@ -57,11 +57,8 @@ public class Implementation extends AlgorOrImpl {
     @ManyToOne
     private Algorithm implementedAlgorithm;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinTable(
-            name = "implementation_tag",
-            joinColumns = @JoinColumn(name = "implementation_id"),
-            inverseJoinColumns = @JoinColumn(name = "tag_id"))
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @JoinTable(name = "implementation_tag", joinColumns = @JoinColumn(name = "implementation_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private Set<Tag> tags;
 
     public Implementation() {

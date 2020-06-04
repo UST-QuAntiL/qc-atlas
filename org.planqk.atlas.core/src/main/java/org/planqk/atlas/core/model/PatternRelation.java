@@ -6,7 +6,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -16,14 +15,14 @@ import lombok.EqualsAndHashCode;
 @Entity
 public class PatternRelation extends HasId {
 
-	@ManyToOne
-	private Algorithm algorithm;
+    @ManyToOne
+    private Algorithm algorithm;
 
-	private URI pattern;
+    private URI pattern;
 
-	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	private PatternRelationType patternRelationType;
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private PatternRelationType patternRelationType;
 
-	private String description;
-	
+    private String description;
+
 }

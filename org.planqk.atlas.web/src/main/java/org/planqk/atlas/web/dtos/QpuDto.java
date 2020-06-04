@@ -49,8 +49,8 @@ public class QpuDto {
     private float t1;
 
     private float maxGateTime;
-    
+
     @JsonIgnore
-    ProviderDto provider;
-    
+    private ProviderDto provider;
+
 }

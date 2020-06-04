@@ -20,14 +20,13 @@
 package org.planqk.atlas.core.model;
 
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
@@ -46,157 +45,157 @@ import org.springframework.lang.NonNull;
 @Entity
 public class Algorithm extends AlgorOrImpl {
 
-	@Setter
-	@Getter
-	private String name;
+    @Setter
+    @Getter
+    private String name;
 
-	@Setter
-	@Getter
-	private String acronym;
+    @Setter
+    @Getter
+    private String acronym;
 
-	@ManyToMany(cascade= {CascadeType.PERSIST, CascadeType.MERGE}, fetch=FetchType.EAGER)
-	@JoinTable(name = "algorithm_publication",
-			   joinColumns = @JoinColumn(name = "algorithm_id"),
-			   inverseJoinColumns = @JoinColumn(name ="publication_id"))
-	@Setter
-	@Getter
-	private Set<Publication> publications;
+    @Setter
+    @Getter
+    private String name;
 
-	@Setter
-	@Getter
-	private String intent;
+    @Setter
+    @Getter
+    private String acronym;
 
-	@Setter
-	@Getter
-	private String problem;
+    @ManyToMany(cascade= {CascadeType.PERSIST, CascadeType.MERGE}, fetch=FetchType.EAGER)
+    @JoinTable(name = "algorithm_publication",
+            joinColumns = @JoinColumn(name = "algorithm_id"),
+            inverseJoinColumns = @JoinColumn(name ="publication_id"))
+    @Setter
+    @Getter
+    private Set<Publication> publications;
 
-	@OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, orphanRemoval = true)
-	@JoinColumn(name = "sourceAlgorithm", referencedColumnName = "id")
-	@Setter
-	private Set<AlgorithmRelation> algorithmRelations;
+    @Setter
+    @Getter
+    private String intent;
 
-	@Setter
-	@Getter
-	private String inputFormat;
+    @Setter
+    @Getter
+    private String problem;
 
-	@Setter
-	@Getter
-	private String algoParameter;
+    @OneToMany(fetch = FetchType.LAZY, cascade = { CascadeType.ALL }, orphanRemoval = true)
+    @JoinColumn(name = "sourceAlgorithm", referencedColumnName = "id")
+    @Setter
+    private Set<AlgorithmRelation> algorithmRelations;
 
-	@Setter
-	@Getter
-	private String outputFormat;
+    @Setter
+    @Getter
+    private String inputFormat;
 
-	@Setter
-	@Getter
-	private Sketch sketch;
+    @Setter
+    @Getter
+    private String algoParameter;
 
-	@Setter
-	@Getter
-	private String solution;
+    @Setter
+    @Getter
+    private String outputFormat;
 
-	@Setter
-	@Getter
-	private String assumptions;
+    @Setter
+    @Getter
+    private Sketch sketch;
 
-	@Setter
-	@Getter
-	private ComputationModel computationModel;
+    @Setter
+    @Getter
+    private String solution;
 
-	@OneToMany(mappedBy = "algorithm", fetch = FetchType.LAZY, cascade = CascadeType.MERGE, orphanRemoval = true)
-	@Setter
-	private Set<PatternRelation> relatedPatterns;
+    @Setter
+    @Getter
+    private String assumptions;
 
-	@ManyToMany(cascade = { CascadeType.MERGE })
-	@JoinTable(name = "algorithm_problem_type", joinColumns = @JoinColumn(name = "algorithm_id"), inverseJoinColumns = @JoinColumn(name = "problem_type_id"))
-	@Setter
-	private Set<ProblemType> problemTypes;
+    @Setter
+    @Getter
+    private ComputationModel computationModel;
 
-	@ElementCollection
-	@Setter
-	private Set<String> applicationAreas;
+    @OneToMany(mappedBy = "algorithm", fetch = FetchType.LAZY, cascade = CascadeType.MERGE, orphanRemoval = true)
+    @Setter
+    private Set<PatternRelation> relatedPatterns;
 
-	@OneToMany(mappedBy = "implementedAlgorithm", cascade = { CascadeType.MERGE })
-	@Setter
-	private Set<Implementation> implementations;
+    @ManyToMany(cascade = { CascadeType.MERGE })
+    @JoinTable(name = "algorithm_problem_type", joinColumns = @JoinColumn(name = "algorithm_id"), inverseJoinColumns = @JoinColumn(name = "problem_type_id"))
+    @Setter
+    private Set<ProblemType> problemTypes;
 
-	@ManyToMany(cascade = { CascadeType.MERGE })
-	@JoinTable(name = "algorithm_tag", joinColumns = @JoinColumn(name = "algorithm_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
-	@Setter
-	private Set<Tag> tags;
+    @ElementCollection
+    @Setter
+    private Set<String> applicationAreas;
 
-	@NonNull
-	public Set<Implementation> getImplementations() {
-		if (Objects.isNull(implementations)) {
-			return new HashSet<>();
-		}
-		return implementations;
-	}
+    @OneToMany(mappedBy = "implementedAlgorithm", cascade = { CascadeType.MERGE })
+    @Setter
+    private Set<Implementation> implementations;
 
-	@NonNull
-	public Set<Tag> getTags() {
-		if (Objects.isNull(tags)) {
-			return new HashSet<>();
-		}
-		return tags;
-	}
+    @ManyToMany(cascade = { CascadeType.MERGE })
+    @JoinTable(name = "algorithm_tag", joinColumns = @JoinColumn(name = "algorithm_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
+    @Setter
+    private Set<Tag> tags;
 
-	@NonNull
-	public Set<Publication> getPublications() {
-		if (Objects.isNull(publications)) {
-			return new HashSet<>();
-		}
-		return publications;
-	}
-	
-	@NonNull
-	public boolean addAlgorithmRelation(AlgorithmRelation relation) {
-		return algorithmRelations.add(relation);
-	}
-	
-	@NonNull
-	public boolean updateAlgorithmRelation(AlgorithmRelation relation) {
-		for (AlgorithmRelation persistantRelation : algorithmRelations) {
-			if (persistantRelation.getId().equals(relation.getId())) {
-				persistantRelation.setSourceAlgorithm(relation.getSourceAlgorithm());
-				persistantRelation.setTargetAlgorithm(relation.getTargetAlgorithm());
-				persistantRelation.setAlgoRelationType(relation.getAlgoRelationType());
-				persistantRelation.setDescription(relation.getDescription());
-				return true;
-			}
-		}
-		return false;
-	}
+    @NonNull
+    public Set<Implementation> getImplementations() {
+        if (Objects.isNull(implementations)) {
+            return new HashSet<>();
+        }
+        return implementations;
+    }
 
-	@NonNull
-	public Set<AlgorithmRelation> getAlgorithmRelations() {
-		if (Objects.isNull(algorithmRelations)) {
-			return new HashSet<>();
-		}
-		return algorithmRelations;
-	}
+    @NonNull
+    public Set<Tag> getTags() {
+        if (Objects.isNull(tags)) {
+            return new HashSet<>();
+        }
+        return tags;
+    }
 
-	@NonNull
-	public Set<PatternRelation> getRelatedPatterns() {
-		if (Objects.isNull(relatedPatterns)) {
-			return new HashSet<>();
-		}
-		return relatedPatterns;
-	}
+    @NonNull
+    public boolean addAlgorithmRelation(AlgorithmRelation relation) {
+        return algorithmRelations.add(relation);
+    }
 
-	@NonNull
-	public Set<String> getApplicationAreas() {
-		if (Objects.isNull(applicationAreas)) {
-			return new HashSet<>();
-		}
-		return applicationAreas;
-	}
+    @NonNull
+    public boolean updateAlgorithmRelation(AlgorithmRelation relation) {
+        for (AlgorithmRelation persistantRelation : algorithmRelations) {
+            if (persistantRelation.getId().equals(relation.getId())) {
+                persistantRelation.setSourceAlgorithm(relation.getSourceAlgorithm());
+                persistantRelation.setTargetAlgorithm(relation.getTargetAlgorithm());
+                persistantRelation.setAlgoRelationType(relation.getAlgoRelationType());
+                persistantRelation.setDescription(relation.getDescription());
+                return true;
+            }
+        }
+        return false;
+    }
 
-	@NonNull
-	public Set<ProblemType> getProblemTypes() {
-		if (Objects.isNull(problemTypes)) {
-			return new HashSet<>();
-		}
-		return problemTypes;
-	}
+    @NonNull
+    public Set<AlgorithmRelation> getAlgorithmRelations() {
+        if (Objects.isNull(algorithmRelations)) {
+            return new HashSet<>();
+        }
+        return algorithmRelations;
+    }
+
+    @NonNull
+    public Set<PatternRelation> getRelatedPatterns() {
+        if (Objects.isNull(relatedPatterns)) {
+            return new HashSet<>();
+        }
+        return relatedPatterns;
+    }
+
+    @NonNull
+    public Set<String> getApplicationAreas() {
+        if (Objects.isNull(applicationAreas)) {
+            return new HashSet<>();
+        }
+        return applicationAreas;
+    }
+
+    @NonNull
+    public Set<ProblemType> getProblemTypes() {
+        if (Objects.isNull(problemTypes)) {
+            return new HashSet<>();
+        }
+        return problemTypes;
+    }
 }

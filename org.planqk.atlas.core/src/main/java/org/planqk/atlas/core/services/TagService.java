@@ -38,5 +38,5 @@ public interface TagService {
     @Transactional(readOnly = true)
     Tag getTagById(UUID tagId);
 
-	Set<Tag> createOrUpdateAll(Set<Tag> algorithmTags);
+    Set<Tag> createOrUpdateAll(Set<Tag> algorithmTags);
 }

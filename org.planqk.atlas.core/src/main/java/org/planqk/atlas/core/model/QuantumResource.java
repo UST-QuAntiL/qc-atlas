@@ -17,19 +17,16 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
-@TypeDef(
-        name = "jsonb",
-        typeClass = JsonBinaryType.class
-)
+@TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
 public class QuantumResource extends HasId {
 
-	@OneToOne(fetch = FetchType.LAZY)
-	QuantumResourceType quantumResourceType;
-	
-	@ManyToOne
-	QuantumAlgorithm algorithm;
-	
-	@Type(type = "jsonb")
+    @OneToOne(fetch = FetchType.LAZY)
+    private QuantumResourceType quantumResourceType;
+
+    @ManyToOne
+    private QuantumAlgorithm algorithm;
+
+    @Type(type = "jsonb")
     @Column(columnDefinition = "jsonb")
-	Object value;
+    private Object value;
 }

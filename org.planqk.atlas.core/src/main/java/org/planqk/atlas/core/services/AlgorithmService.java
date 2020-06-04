@@ -41,10 +41,10 @@ public interface AlgorithmService {
     Page<Algorithm> findAll(Pageable pageable);
 
     Algorithm findById(UUID algoId);
-    
+
     Optional<Algorithm> findOptionalById(UUID algoId);
 
-	AlgorithmRelation addUpdateAlgorithmRelation(UUID sourceAlgorithm_id, AlgorithmRelation relation);
-	
-	Set<AlgorithmRelation> getAlgorithmRelations(UUID sourceAlgorithm_id);
+    AlgorithmRelation addOrUpdateAlgorithmRelation(UUID sourceAlgorithm_id, AlgorithmRelation relation);
+
+    Set<AlgorithmRelation> getAlgorithmRelations(UUID sourceAlgorithm_id);
 }

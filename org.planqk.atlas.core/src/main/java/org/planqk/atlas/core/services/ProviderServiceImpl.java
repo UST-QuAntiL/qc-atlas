@@ -19,12 +19,10 @@
 
 package org.planqk.atlas.core.services;
 
-import java.util.Objects;
-import java.util.Optional;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Provider;
-import org.planqk.atlas.core.model.exceptions.NotFoundException;
 import org.planqk.atlas.core.repository.ProviderRepository;
 
 import lombok.AllArgsConstructor;
@@ -36,24 +34,20 @@ import org.springframework.stereotype.Repository;
 @AllArgsConstructor
 public class ProviderServiceImpl implements ProviderService {
 
-	private ProviderRepository repository;
+    private ProviderRepository repository;
 
-	@Override
-	public Provider save(Provider provider) {
-		return repository.save(provider);
-	}
+    @Override
+    public Provider save(Provider provider) {
+        return repository.save(provider);
+    }
 
-	@Override
-	public Page<Provider> findAll(Pageable pageable) {
-		return repository.findAll(pageable);
-	}
+    @Override
+    public Page<Provider> findAll(Pageable pageable) {
+        return repository.findAll(pageable);
+    }
 
-	@Override
-	public Provider findById(UUID providerId) {
-		Optional<Provider> providerOptional = Objects.isNull(providerId) ? Optional.empty()
-				: repository.findById(providerId);
-		if (providerOptional.isPresent())
-			return providerOptional.get();
-		throw new NotFoundException("The provider does not exist!");
-	}
+    @Override
+    public Provider findById(UUID providerId) {
+        return repository.findById(providerId).orElseThrow(NoSuchElementException::new);
+    }
 }

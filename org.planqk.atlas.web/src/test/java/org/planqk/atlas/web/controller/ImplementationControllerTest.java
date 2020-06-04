@@ -28,7 +28,6 @@ import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Implementation;
-import org.planqk.atlas.core.model.exceptions.NotFoundException;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.web.dtos.ImplementationDto;
@@ -71,205 +70,214 @@ import static org.springframework.web.servlet.mvc.method.annotation.MvcUriCompon
 @SpringBootTest
 public class ImplementationControllerTest {
 
-	@Mock
-	private AlgorithmService algorithmService;
-	@Mock
-	private ImplementationService implementationService;
-	@Mock
-	private ImplementationAssembler implementationAssembler;
+    @Mock
+    private AlgorithmService algorithmService;
+    @Mock
+    private ImplementationService implementationService;
+    @Mock
+    private ImplementationAssembler implementationAssembler;
 
-	@InjectMocks
-	private ImplementationController implementationController;
+    @InjectMocks
+    private ImplementationController implementationController;
 
-	private ObjectMapper objectMapper = new ObjectMapper();
-	private MockMvc mockMvc;
-	private UriComponentsBuilder uriBuilder;
+    private ObjectMapper objectMapper = new ObjectMapper();
+    private MockMvc mockMvc;
+    private UriComponentsBuilder uriBuilder;
 
-	@Before
-	public void initialize() {
-		MockitoAnnotations.initMocks(this);
-		mockMvc = MockMvcBuilders.standaloneSetup(implementationController).build();
-		uriBuilder = UriComponentsBuilder.fromPath("/");
-	}
+    @Before
+    public void initialize() {
+        MockitoAnnotations.initMocks(this);
+        mockMvc = MockMvcBuilders.standaloneSetup(implementationController).build();
+        uriBuilder = UriComponentsBuilder.fromPath("/");
+    }
 
-	@Test
-	public void setupTest() {
-		assertNotNull(mockMvc);
-	}
+    @Test
+    public void setupTest() {
+        assertNotNull(mockMvc);
+    }
 
-	@Test
-	public void getOneImplForAlgo() throws Exception {
-		UUID algoId = UUID.randomUUID();
-		UUID implId = UUID.randomUUID();
-		Algorithm algorithm = mockValidAlgorithmForImplCreation(algoId);
-		Implementation implementation = mockValidMinimalImpl(implId);
-		implementation.setImplementedAlgorithm(algorithm);
-		List<Implementation> implementationList = new ArrayList<Implementation>();
-		implementationList.add(implementation);
-		
-		Pageable pageable = PageRequest.of(0, 2);
+    @Test
+    public void getOneImplForAlgo() throws Exception {
+        UUID algoId = UUID.randomUUID();
+        UUID implId = UUID.randomUUID();
+        Algorithm algorithm = mockValidAlgorithmForImplCreation(algoId);
+        Implementation implementation = mockValidMinimalImpl(implId);
+        implementation.setImplementedAlgorithm(algorithm);
+        List<Implementation> implementationList = new ArrayList<Implementation>();
+        implementationList.add(implementation);
 
-		Page<Implementation> page = new PageImpl<Implementation>(implementationList, pageable,
-				implementationList.size());
+        Pageable pageable = PageRequest.of(0, 2);
 
-		when(implementationService.findAll(any(Pageable.class))).thenReturn(page);
-		doNothing().when(implementationAssembler)
-				.addLinks(ArgumentMatchers.<Collection<EntityModel<ImplementationDto>>>any());
+        Page<Implementation> page = new PageImpl<Implementation>(implementationList, pageable,
+                implementationList.size());
 
-		 MvcResult mvcResult = mockMvc.perform(get(fromMethodCall(uriBuilder,
-	                on(ImplementationController.class).getImplementations(algoId)).toUriString())
-	                        .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
+        when(implementationService.findAll(any(Pageable.class))).thenReturn(page);
+        doNothing().when(implementationAssembler)
+                .addLinks(ArgumentMatchers.<Collection<EntityModel<ImplementationDto>>>any());
 
-		CollectionModel<EntityModel<ImplementationDto>> implementationListResult = new ObjectMapper().readValue(
-				mvcResult.getResponse().getContentAsString(),
-				new TypeReference<CollectionModel<EntityModel<ImplementationDto>>>() {
-				});
-		List<EntityModel<ImplementationDto>> resultList = new ArrayList<>(implementationListResult.getContent());
+        MvcResult mvcResult = mockMvc.perform(get(
+                fromMethodCall(uriBuilder, on(ImplementationController.class).getImplementations(algoId)).toUriString())
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
 
-		assertEquals(resultList.get(0).getContent().getId(), implementation.getId());
-		assertEquals(resultList.size(), 1);
-	}
+        CollectionModel<EntityModel<ImplementationDto>> implementationListResult = new ObjectMapper().readValue(
+                mvcResult.getResponse().getContentAsString(),
+                new TypeReference<CollectionModel<EntityModel<ImplementationDto>>>() {
+                });
+        List<EntityModel<ImplementationDto>> resultList = new ArrayList<>(implementationListResult.getContent());
 
-	@Test
-	public void getMultipleImplForAlgo() throws Exception {
-		UUID algoId = UUID.randomUUID();
-		UUID implId1 = UUID.randomUUID();
-		UUID implId2 = UUID.randomUUID();
-		Algorithm algorithm = mockValidAlgorithmForImplCreation(algoId);
-		Implementation implementation1 = mockValidMinimalImpl(implId1);
-		Implementation implementation2 = mockValidMinimalImpl(implId2);
-		implementation1.setImplementedAlgorithm(algorithm);
-		implementation2.setImplementedAlgorithm(algorithm);
-		List<Implementation> implementationList = new ArrayList<Implementation>();
-		implementationList.add(implementation1);
-		implementationList.add(implementation2);
+        assertEquals(resultList.get(0).getContent().getId(), implementation.getId());
+        assertEquals(resultList.size(), 1);
+    }
 
-		Pageable pageable = PageRequest.of(0, 2);
+    @Test
+    public void getMultipleImplForAlgo() throws Exception {
+        UUID algoId = UUID.randomUUID();
+        UUID implId1 = UUID.randomUUID();
+        UUID implId2 = UUID.randomUUID();
+        Algorithm algorithm = mockValidAlgorithmForImplCreation(algoId);
+        Implementation implementation1 = mockValidMinimalImpl(implId1);
+        Implementation implementation2 = mockValidMinimalImpl(implId2);
+        implementation1.setImplementedAlgorithm(algorithm);
+        implementation2.setImplementedAlgorithm(algorithm);
+        List<Implementation> implementationList = new ArrayList<Implementation>();
+        implementationList.add(implementation1);
+        implementationList.add(implementation2);
 
-		Page<Implementation> page = new PageImpl<Implementation>(implementationList, pageable,
-				implementationList.size());
+        Pageable pageable = PageRequest.of(0, 2);
 
-		when(implementationService.findAll(any(Pageable.class))).thenReturn(page);
-		doNothing().when(implementationAssembler)
-				.addLinks(ArgumentMatchers.<Collection<EntityModel<ImplementationDto>>>any());
+        Page<Implementation> page = new PageImpl<Implementation>(implementationList, pageable,
+                implementationList.size());
 
-		MvcResult mvcResult = mockMvc.perform(get(fromMethodCall(uriBuilder,
-                on(ImplementationController.class).getImplementations(algoId)).toUriString())
-                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
+        when(implementationService.findAll(any(Pageable.class))).thenReturn(page);
+        doNothing().when(implementationAssembler)
+                .addLinks(ArgumentMatchers.<Collection<EntityModel<ImplementationDto>>>any());
 
-		CollectionModel<EntityModel<ImplementationDto>> implementationListResult = new ObjectMapper().readValue(
-				mvcResult.getResponse().getContentAsString(),
-				new TypeReference<CollectionModel<EntityModel<ImplementationDto>>>() {
-				});
-		List<EntityModel<ImplementationDto>> resultList = new ArrayList<>(implementationListResult.getContent());
+        MvcResult mvcResult = mockMvc.perform(get(
+                fromMethodCall(uriBuilder, on(ImplementationController.class).getImplementations(algoId)).toUriString())
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
 
-		assertTrue(resultList.stream().map(impl -> impl.getContent().getId())
-				.allMatch(id -> id.equals(implId1) || id.equals(implId2)));
-		assertEquals(resultList.size(), implementationList.size());
-	}
+        CollectionModel<EntityModel<ImplementationDto>> implementationListResult = new ObjectMapper().readValue(
+                mvcResult.getResponse().getContentAsString(),
+                new TypeReference<CollectionModel<EntityModel<ImplementationDto>>>() {
+                });
+        List<EntityModel<ImplementationDto>> resultList = new ArrayList<>(implementationListResult.getContent());
 
-	@Test
-	public void createImplWithCompleteInfosForAlgo() throws Exception {
-		UUID algoId = UUID.randomUUID();
-		UUID implId = UUID.randomUUID();
-		Algorithm algorithm = mockValidAlgorithmForImplCreation(algoId);
+        assertTrue(resultList.stream().map(impl -> impl.getContent().getId())
+                .allMatch(id -> id.equals(implId1) || id.equals(implId2)));
+        assertEquals(resultList.size(), implementationList.size());
+    }
 
-		Implementation implementation = mockValidMinimalImpl(implId);
-		implementation.setImplementedAlgorithm(algorithm);
+    @Test
+    public void createImplWithCompleteInfosForAlgo() throws Exception {
+        UUID algoId = UUID.randomUUID();
+        UUID implId = UUID.randomUUID();
+        Algorithm algorithm = mockValidAlgorithmForImplCreation(algoId);
 
-		when(algorithmService.findById(any(UUID.class))).thenReturn(algorithm);
-		when(implementationService.save(any(Implementation.class))).thenReturn(implementation);
-		doNothing().when(implementationAssembler).addLinks(ArgumentMatchers.<EntityModel<ImplementationDto>>any());
+        Implementation implementation = mockValidMinimalImpl(implId);
+        implementation.setImplementedAlgorithm(algorithm);
 
-		MvcResult mvcResult = mockMvc.perform(post(fromMethodCall(uriBuilder,
-                on(ImplementationController.class).createImplementation(algoId, null)).toUriString())
-                .content(objectMapper.writeValueAsString(ModelMapperUtils.convert(implementation, ImplementationDto.class)))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isCreated()).andReturn();
+        when(algorithmService.findById(any(UUID.class))).thenReturn(algorithm);
+        when(implementationService.save(any(Implementation.class))).thenReturn(implementation);
+        doNothing().when(implementationAssembler).addLinks(ArgumentMatchers.<EntityModel<ImplementationDto>>any());
 
-		EntityModel<ImplementationDto> implementationResult = new ObjectMapper().readValue(
-				mvcResult.getResponse().getContentAsString(), new TypeReference<EntityModel<ImplementationDto>>() {
-				});
-		assertEquals(implementationResult.getContent().getId(), implId);
-	}
+        MvcResult mvcResult = mockMvc
+                .perform(post(fromMethodCall(uriBuilder,
+                        on(ImplementationController.class).createImplementation(algoId, null)).toUriString())
+                                .content(objectMapper.writeValueAsString(
+                                        ModelMapperUtils.convert(implementation, ImplementationDto.class)))
+                                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated()).andReturn();
 
-	@Test
-	public void createImplWithMinimalInfosForAlgo() throws Exception {
-		UUID algoId = UUID.randomUUID();
-		UUID implId = UUID.randomUUID();
-		Algorithm algorithm = mockValidAlgorithmForImplCreation(algoId);
+        EntityModel<ImplementationDto> implementationResult = new ObjectMapper().readValue(
+                mvcResult.getResponse().getContentAsString(), new TypeReference<EntityModel<ImplementationDto>>() {
+                });
+        assertEquals(implementationResult.getContent().getId(), implId);
+    }
 
-		Implementation implementation = mockValidMinimalImpl(implId);
-		implementation.setImplementedAlgorithm(algorithm);
+    @Test
+    public void createImplWithMinimalInfosForAlgo() throws Exception {
+        UUID algoId = UUID.randomUUID();
+        UUID implId = UUID.randomUUID();
+        Algorithm algorithm = mockValidAlgorithmForImplCreation(algoId);
 
-		when(algorithmService.findById(any(UUID.class))).thenReturn(algorithm);
-		when(implementationService.save(any(Implementation.class))).thenReturn(implementation);
-		doNothing().when(implementationAssembler).addLinks(ArgumentMatchers.<EntityModel<ImplementationDto>>any());
+        Implementation implementation = mockValidMinimalImpl(implId);
+        implementation.setImplementedAlgorithm(algorithm);
 
-		MvcResult mvcResult = mockMvc.perform(post(fromMethodCall(uriBuilder,
-                on(ImplementationController.class).createImplementation(algoId, null)).toUriString())
-                .content(objectMapper.writeValueAsString(ModelMapperUtils.convert(implementation, ImplementationDto.class)))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isCreated()).andReturn();
+        when(algorithmService.findById(any(UUID.class))).thenReturn(algorithm);
+        when(implementationService.save(any(Implementation.class))).thenReturn(implementation);
+        doNothing().when(implementationAssembler).addLinks(ArgumentMatchers.<EntityModel<ImplementationDto>>any());
 
-		EntityModel<ImplementationDto> createdImpl = new ObjectMapper().readValue(
-				mvcResult.getResponse().getContentAsString(), new TypeReference<EntityModel<ImplementationDto>>() {
-				});
-		assertEquals(createdImpl.getContent().getId(), implId);
-	}
+        MvcResult mvcResult = mockMvc
+                .perform(post(fromMethodCall(uriBuilder,
+                        on(ImplementationController.class).createImplementation(algoId, null)).toUriString())
+                                .content(objectMapper.writeValueAsString(
+                                        ModelMapperUtils.convert(implementation, ImplementationDto.class)))
+                                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated()).andReturn();
 
-	private Implementation mockValidMinimalImpl(UUID implId) throws MalformedURLException {
-		Implementation implementation = new Implementation();
-		implementation.setName("implementation for Shor");
-		implementation.setId(implId);
+        EntityModel<ImplementationDto> createdImpl = new ObjectMapper().readValue(
+                mvcResult.getResponse().getContentAsString(), new TypeReference<EntityModel<ImplementationDto>>() {
+                });
+        assertEquals(createdImpl.getContent().getId(), implId);
+    }
 
-		// set everything we need to set for a valid request:
-		implementation.setFileLocation(new URL("https://wwww.uri/for/test/"));
-		when(implementationService.save(any(Implementation.class))).thenReturn(implementation);
-		return implementation;
-	}
+    private Implementation mockValidMinimalImpl(UUID implId) throws MalformedURLException {
+        Implementation implementation = new Implementation();
+        implementation.setName("implementation for Shor");
+        implementation.setId(implId);
 
-	@Test
-	public void createImplWithInvalidInfo() throws Exception {
-		UUID algoId = UUID.randomUUID();
-		UUID implId = UUID.randomUUID();
-		mockValidAlgorithmForImplCreation(algoId);
+        // set everything we need to set for a valid request:
+        implementation.setFileLocation(new URL("https://wwww.uri/for/test/"));
+        when(implementationService.save(any(Implementation.class))).thenReturn(implementation);
+        return implementation;
+    }
 
-		// specify an implementation:
-		Implementation implementation = new Implementation();
-		implementation.setName("implementation for Shor");
+    @Test
+    public void createImplWithInvalidInfo() throws Exception {
+        UUID algoId = UUID.randomUUID();
+        UUID implId = UUID.randomUUID();
+        mockValidAlgorithmForImplCreation(algoId);
 
-		implementation.setId(implId);
+        // specify an implementation:
+        Implementation implementation = new Implementation();
+        implementation.setName("implementation for Shor");
 
-		when(implementationService.save(any(Implementation.class))).thenReturn(implementation);
+        implementation.setId(implId);
 
-		 mockMvc.perform(post(fromMethodCall(uriBuilder,
-	                on(ImplementationController.class).createImplementation(algoId, null)).toUriString())
-	                .content(objectMapper.writeValueAsString(ModelMapperUtils.convert(implementation, ImplementationDto.class)))
-	                .contentType(MediaType.APPLICATION_JSON)
-	                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
-	}
+        when(implementationService.save(any(Implementation.class))).thenReturn(implementation);
 
-	public void createImplForNonExistentAlgo() throws Exception {
-		UUID nonExistentAlgoId = UUID.randomUUID();
-		UUID implId = UUID.randomUUID();
-		Implementation implementation = mockValidMinimalImpl(implId);
-		// pretend algo is not found:
-		when(algorithmService.findById(nonExistentAlgoId)).thenReturn(null);
-		when(implementationService.save(any(Implementation.class))).thenReturn(implementation);
+        mockMvc.perform(
+                post(fromMethodCall(uriBuilder, on(ImplementationController.class).createImplementation(algoId, null))
+                        .toUriString())
+                                .content(objectMapper.writeValueAsString(
+                                        ModelMapperUtils.convert(implementation, ImplementationDto.class)))
+                                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
 
-		mockMvc.perform(post(fromMethodCall(uriBuilder,
+    public void createImplForNonExistentAlgo() throws Exception {
+        UUID nonExistentAlgoId = UUID.randomUUID();
+        UUID implId = UUID.randomUUID();
+        Implementation implementation = mockValidMinimalImpl(implId);
+        // pretend algo is not found:
+        when(algorithmService.findById(nonExistentAlgoId)).thenReturn(null);
+        when(implementationService.save(any(Implementation.class))).thenReturn(implementation);
+
+        mockMvc.perform(post(fromMethodCall(uriBuilder,
                 on(ImplementationController.class).createImplementation(nonExistentAlgoId, null)).toUriString())
-                .content(objectMapper.writeValueAsString(ModelMapperUtils.convert(implementation, ImplementationDto.class)))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
-	}
+                        .content(objectMapper
+                                .writeValueAsString(ModelMapperUtils.convert(implementation, ImplementationDto.class)))
+                        .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
 
-	private Algorithm mockValidAlgorithmForImplCreation(UUID algoId) throws NotFoundException {
-		Algorithm algorithm = new Algorithm();
-		algorithm.setId(algoId);
-		when(algorithmService.findById(algoId)).thenReturn(algorithm);
-		return algorithm;
-	}
-	
+    private Algorithm mockValidAlgorithmForImplCreation(UUID algoId) {
+        Algorithm algorithm = new Algorithm();
+        algorithm.setId(algoId);
+        when(algorithmService.findById(algoId)).thenReturn(algorithm);
+        return algorithm;
+    }
+
 }

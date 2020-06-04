@@ -1,11 +1,11 @@
 package org.planqk.atlas.core.services;
 
-import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.AlgoRelationType;
-import org.planqk.atlas.core.model.exceptions.NotFoundException;
 import org.planqk.atlas.core.model.exceptions.ConsistencyException;
 import org.planqk.atlas.core.repository.AlgoRelationTypeRepository;
 import org.planqk.atlas.core.repository.AlgorithmRelationRepository;
@@ -21,71 +21,56 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class AlgoRelationTypeServiceImpl implements AlgoRelationTypeService {
 
-	private static final Logger LOG = LoggerFactory.getLogger(AlgoRelationType.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AlgoRelationType.class);
 
-	private AlgoRelationTypeRepository repo;
-	private AlgorithmRelationRepository algorithmRelationRepository;
+    private AlgoRelationTypeRepository repo;
+    private AlgorithmRelationRepository algorithmRelationRepository;
 
-	@Override
-	public AlgoRelationType save(AlgoRelationType algoRelationType) {
-		return repo.save(algoRelationType);
-	}
+    @Override
+    public AlgoRelationType save(AlgoRelationType algoRelationType) {
+        return repo.save(algoRelationType);
+    }
 
-	@Override
-	public AlgoRelationType update(UUID id, AlgoRelationType algoRelationType) {
-		// Check for type in database
-		Optional<AlgoRelationType> typeOpt = findOptionalById(id);
-		// If Type exists
-		if (typeOpt.isPresent()) {
-			// Update fields
-			AlgoRelationType persistedType = typeOpt.get();
-			persistedType.setName(algoRelationType.getName());
-			// Reference database type to set
-			return save(persistedType);
-		}
-		LOG.info("Trying to update AlgoRelationType which does not exist.");
-		throw new NotFoundException("Cannot update AlgoRelationType since it could not be found.");
-	}
+    @Override
+    public AlgoRelationType update(UUID id, AlgoRelationType algoRelationType) {
+        // Check for type in database
+        AlgoRelationType persistedType = repo.findById(id).orElseThrow(NoSuchElementException::new);
 
-	@Override
-	public void delete(UUID id) {
-		if (algorithmRelationRepository.countRelationsUsingRelationType(id) > 0) {
-			LOG.info("Trying to delete algoRelationType that is used in at least 1 algorithmRelation.");
-			throw new ConsistencyException("Cannot delete algoRelationType since it is used by existing algorithmRelations.");
-		}
-		if (repo.findById(id).isEmpty()) {
-			LOG.info("Trying to delete algoRelationType which does not exist.");
-			throw new NotFoundException("Cannot delete algoRelationTypesince it could not be found.");
-		}
-		repo.deleteById(id);
-	}
+        // Update Fields
+        persistedType.setName(algoRelationType.getName());
+        // Reference database type to set
+        return save(persistedType);
+    }
 
-	@Override
-	public AlgoRelationType findById(UUID id) {
-		Optional<AlgoRelationType> algoRelationTypeOpt = findOptionalById(id);
-		if (algoRelationTypeOpt.isEmpty()) {
-			throw new NotFoundException("The AlgoRelationType could not be found.");
-		}
-		return algoRelationTypeOpt.get();
-	}
+    @Override
+    public void delete(UUID id) {
+        if (algorithmRelationRepository.countRelationsUsingRelationType(id) > 0) {
+            LOG.info("Trying to delete algoRelationType that is used in at least 1 algorithmRelation.");
+            throw new ConsistencyException(
+                    "Cannot delete algoRelationType since it is used by existing algorithmRelations.");
+        }
 
-	@Override
-	public List<AlgoRelationType> findByName(String name) {
-		Optional<List<AlgoRelationType>> algoRelationTypes = repo.findByName(name);
-		if (algoRelationTypes.isEmpty()) {
-			throw new NotFoundException("No AlgoRelationType found to match name '" + name + "'");
-		}
-		return algoRelationTypes.get();
-	}
+        repo.deleteById(id);
+    }
 
-	@Override
-	public Page<AlgoRelationType> findAll(Pageable pageable) {
-		return repo.findAll(pageable);
-	}
+    @Override
+    public AlgoRelationType findById(UUID id) {
+        return repo.findById(id).orElseThrow(NoSuchElementException::new);
+    }
 
-	@Override
-	public Optional<AlgoRelationType> findOptionalById(UUID id) {
-		return repo.findById(id);
-	}
+    @Override
+    public Set<AlgoRelationType> findByName(String name) {
+        return repo.findByName(name);
+    }
+
+    @Override
+    public Page<AlgoRelationType> findAll(Pageable pageable) {
+        return repo.findAll(pageable);
+    }
+
+    @Override
+    public Optional<AlgoRelationType> findOptionalById(UUID id) {
+        return repo.findById(id);
+    }
 
 }

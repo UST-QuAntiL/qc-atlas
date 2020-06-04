@@ -12,8 +12,8 @@ import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 /**
- * Special implementation of RequestMappingHandlerMapping that optionally adds version suffixes to
- * controller URLs.
+ * Special implementation of RequestMappingHandlerMapping that optionally adds
+ * version suffixes to controller URLs.
  */
 public class VersionedRequestHandlerMapping extends RequestMappingHandlerMapping {
     @Override
@@ -42,14 +42,15 @@ public class VersionedRequestHandlerMapping extends RequestMappingHandlerMapping
     @Nullable
     private RequestMappingInfo createRequestMappingInfo(AnnotatedElement element) {
         RequestMapping requestMapping = AnnotatedElementUtils.findMergedAnnotation(element, RequestMapping.class);
-        RequestCondition<?> condition = (element instanceof Class ?
-                getCustomTypeCondition((Class<?>) element) : getCustomMethodCondition((Method) element));
+        RequestCondition<?> condition = (element instanceof Class ? getCustomTypeCondition((Class<?>) element)
+                : getCustomMethodCondition((Method) element));
         return (requestMapping != null ? createRequestMappingInfo(requestMapping, condition) : null);
     }
 
     private RequestMappingInfo createApiVersionInfo(ApiVersion annotation) {
-        return new RequestMappingInfo(new PatternsRequestCondition(annotation.value(), getUrlPathHelper(), getPathMatcher(),
-                useSuffixPatternMatch(), useTrailingSlashMatch(), getFileExtensions()),
+        return new RequestMappingInfo(
+                new PatternsRequestCondition(annotation.value(), getUrlPathHelper(), getPathMatcher(),
+                        useSuffixPatternMatch(), useTrailingSlashMatch(), getFileExtensions()),
                 null, null, null, null, null, null);
     }
 }
