@@ -24,12 +24,12 @@ import lombok.EqualsAndHashCode;
 public class QuantumResource extends HasId {
 
 	@OneToOne(fetch = FetchType.LAZY)
-	QuantumResourceType quantumResourceType;
+	private QuantumResourceType quantumResourceType;
 	
 	@ManyToOne
-	QuantumAlgorithm algorithm;
+	private QuantumAlgorithm algorithm;
 	
 	@Type(type = "jsonb")
     @Column(columnDefinition = "jsonb")
-	Object value;
+	private Object value;
 }
