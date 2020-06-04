@@ -19,12 +19,14 @@
 
 package org.planqk.atlas.web.dtos;
 
-import java.util.UUID;
+import org.planqk.atlas.core.model.Provider;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import org.planqk.atlas.core.model.Provider;
 import org.springframework.hateoas.RepresentationModel;
+
+import java.util.UUID;
 
 /**
  * Data transfer object for the model class {@link Provider}.

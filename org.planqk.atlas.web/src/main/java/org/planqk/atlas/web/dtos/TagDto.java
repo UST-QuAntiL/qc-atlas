@@ -19,11 +19,13 @@
 
 package org.planqk.atlas.web.dtos;
 
-import java.util.UUID;
+import org.planqk.atlas.core.model.Tag;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.planqk.atlas.core.model.Tag;
 import org.springframework.hateoas.RepresentationModel;
+
+import java.util.UUID;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -34,7 +36,6 @@ public class TagDto extends RepresentationModel<TagDto> {
     private String value;
 
     private UUID id;
-
 
     public static final class Converter {
 

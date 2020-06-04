@@ -21,9 +21,11 @@ package org.planqk.atlas.web.dtos;
 
 import java.util.Arrays;
 import java.util.List;
+
+import org.planqk.atlas.core.model.Qpu;
+
 import lombok.Getter;
 import org.assertj.core.util.Lists;
-import org.planqk.atlas.core.model.Qpu;
 import org.springframework.hateoas.RepresentationModel;
 
 /**

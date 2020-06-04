@@ -22,6 +22,7 @@ package org.planqk.atlas.web.dtos;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import lombok.Getter;
 import org.springframework.hateoas.RepresentationModel;
 
@@ -40,5 +41,4 @@ public class ImplementationListDto extends RepresentationModel<ImplementationLis
     public void add(final ImplementationDto implementation) {
         this.implementationDtos.add(implementation);
     }
-
 }

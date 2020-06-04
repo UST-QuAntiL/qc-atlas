@@ -20,6 +20,7 @@
 package org.planqk.atlas.web.dtos;
 
 import java.util.List;
+
 import lombok.Getter;
 import org.assertj.core.util.Lists;
 import org.springframework.hateoas.RepresentationModel;
@@ -36,5 +37,4 @@ public class TagListDto extends RepresentationModel<TagListDto> {
     public void add(final TagDto tag) {
         this.tagsDtos.add(tag);
     }
-
 }

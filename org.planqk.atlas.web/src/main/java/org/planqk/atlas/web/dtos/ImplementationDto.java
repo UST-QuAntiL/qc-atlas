@@ -21,12 +21,14 @@ package org.planqk.atlas.web.dtos;
 
 import java.net.URL;
 import java.util.UUID;
+
+import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.Implementation;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.planqk.atlas.core.model.Algorithm;
-import org.planqk.atlas.core.model.Implementation;
 import org.springframework.hateoas.RepresentationModel;
 
 /**

@@ -21,9 +21,11 @@ package org.planqk.atlas.web.dtos;
 
 import java.util.Arrays;
 import java.util.List;
+
+import org.planqk.atlas.core.model.Provider;
+
 import lombok.Getter;
 import org.assertj.core.util.Lists;
-import org.planqk.atlas.core.model.Provider;
 import org.springframework.hateoas.RepresentationModel;
 
 /**
@@ -37,5 +39,4 @@ public class ProviderListDto extends RepresentationModel<ProviderListDto> {
     public void add(final ProviderDto... provider) {
         this.providerDtoList.addAll(Arrays.asList(provider));
     }
-
 }
