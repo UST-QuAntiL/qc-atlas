@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -50,16 +51,17 @@ public class PublicationServiceImpl implements PublicationService {
     @Override
     public Page<Publication> findAll(Pageable pageable) {
         return publicationRepository.findAll(pageable);
+
     }
 
     @Override
     public Publication findById(UUID pubId) {
 
-        Optional<Publication> publicationOptional = publicationRepository.findById(pubId);
-        if(publicationOptional.isEmpty()) {
-            throw new NotFoundException("Could not find publication with id "+pubId);
-        }
+        return findOptionalById(pubId).orElseThrow(NoSuchElementException::new);
+    }
 
-        return publicationOptional.get();
+    @Override
+    public Optional<Publication> findOptionalById(UUID pubId) {
+        return publicationRepository.findById(pubId);
     }
 }

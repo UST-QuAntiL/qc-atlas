@@ -19,4 +19,6 @@ public interface PublicationService {
     Page<Publication> findAll(Pageable pageable);
 
     Publication findById(UUID pubId);
+
+    Optional<Publication> findOptionalById(UUID pubId);
 }

@@ -15,6 +15,7 @@ import org.planqk.atlas.web.linkassembler.PublicationAssembler;
 import org.planqk.atlas.web.utils.HateoasUtils;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.RestUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
@@ -65,10 +66,6 @@ public class PublicationController {
         return new ResponseEntity<>(dtoEntityModel, HttpStatus.CREATED);
     }
 
-    @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "404", content = @Content)
-    })
     @GetMapping("/{id}")
     public HttpEntity<EntityModel<PublicationDto>> getPublication(@PathVariable UUID id) {
         log.debug("Get publication with id: {}",id);

@@ -4,23 +4,29 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.ComputationModel;
 import org.planqk.atlas.core.model.Publication;
+import org.planqk.atlas.core.model.exceptions.NotFoundException;
 import org.planqk.atlas.core.services.PublicationService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.*;
 import org.planqk.atlas.web.linkassembler.PublicationAssembler;
 import org.planqk.atlas.web.utils.HateoasUtils;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
@@ -37,11 +43,13 @@ import java.util.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers= {PublicationController.class})
@@ -61,9 +69,10 @@ public class PublicationControllerTest {
     @InjectMocks
     private PublicationController publicationController;
 
+    @Autowired
     private MockMvc mockMvc;
 
-    ObjectMapper mapper=new ObjectMapper();
+    ObjectMapper mapper;
 
     private int page=0;
     private int size=1;
@@ -74,6 +83,7 @@ public class PublicationControllerTest {
     @Before
     public void init() throws Exception {
         MockitoAnnotations.initMocks(this);
+        mapper = new ObjectMapper();
         mockMvc=MockMvcBuilders.standaloneSetup(publicationController).build();
         publication=new Publication();
         publication.setId(UUID.randomUUID());
@@ -91,12 +101,29 @@ public class PublicationControllerTest {
 
     @Test
     public void getPublications_PublicationList() throws Exception {
+        List<Publication> publications = new ArrayList<>();
+        publications.add(publication);
+        Page<Publication> pagePublication = new PageImpl<>(publications);
+        Page<PublicationDto> pagePublicationDto = ModelMapperUtils.convertPage(pagePublication, PublicationDto.class);
 
+        when(publicationService.findAll(pageable)).thenReturn(pagePublication);
+        when(paginationAssembler.toModel(ArgumentMatchers.<Page<PublicationDto>>any()))
+                .thenReturn(HateoasUtils.generatePagedModel(pagePublicationDto));
+        doNothing().when(publicationAssembler).addLinks(ArgumentMatchers.<Collection<EntityModel<PublicationDto>>>any());
+
+        MvcResult result = mockMvc
+                .perform(get("/" + Constants.PUBLICATIONS + "/").queryParam(Constants.PAGE, Integer.toString(page))
+                        .queryParam(Constants.SIZE, Integer.toString(size)).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON)).andReturn();
+
+        PagedModel<EntityModel<PublicationDto>> publicationListDto = mapper.readValue(
+                result.getResponse().getContentAsString(), new TypeReference<PagedModel<EntityModel<PublicationDto>>>() {
+                });
+        assertEquals(publicationListDto.getContent().size(), 1);
     }
 
     @Test
     public void getPublications_emptyPublicationList() throws Exception {
-
         when(publicationService.findAll(pageable)).thenReturn(Page.empty());
         when(paginationAssembler.toModel(ArgumentMatchers.<Page<PublicationDto>>any()))
                 .thenReturn(HateoasUtils.generatePagedModel(Page.empty()));
@@ -110,26 +137,17 @@ public class PublicationControllerTest {
         assertEquals(pagedModel.getContent().size(), 0);
     }
 
+
     @Test
     public void getPublication_returnNotFound() throws Exception {
 
-        this.mockMvc.perform(get("/" + Constants.PUBLICATIONS + "/" + UUID.randomUUID()).accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
-
+        when(publicationService.findById(any(UUID.class))).thenThrow(new NoSuchElementException());
+        mockMvc.perform(get("/" + Constants.PUBLICATIONS + "/" + UUID.randomUUID()).accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
 
     }
 
     @Test
-    public void createPublication_returnBadRequest() throws Exception {
-
-        PublicationDto emptyPublicationDto=new PublicationDto();
-        mockMvc.perform(post("/" + Constants.PUBLICATIONS + "/")
-                .content(mapper.writeValueAsString(emptyPublicationDto))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
-    }
-
-    @Test
-    public void getPublication_returnPublication() throws Exception {
+    public void createPublication_returnPublication() throws Exception {
 
         when(publicationService.save(publication)).thenReturn(publication);
         doNothing().when(publicationAssembler).addLinks(ArgumentMatchers.<EntityModel<PublicationDto>>any());
@@ -148,6 +166,16 @@ public class PublicationControllerTest {
 
     @Test
     public void getAlgorithmsOfPublication() throws Exception {
+
+        Algorithm algo = new Algorithm();
+        Set<Publication> publications= new HashSet<>(Arrays.asList(publication));
+        algo.setId(UUID.randomUUID());
+        algo.setName("alg1");
+        algo.setComputationModel(ComputationModel.CLASSIC);
+        algo.setPublications(publications);
+        when(publicationService.findById(publication.getId())).thenReturn(publication);
+        MvcResult result = mockMvc.perform(get("/"+publication.getId()+"/"+Constants.ALGORITHMS).accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)).andReturn();
+        System.out.println(result.getResponse());
 
         //TODO
         fail();
