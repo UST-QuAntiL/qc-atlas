@@ -26,6 +26,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import org.json.JSONObject;
 
 public class ObjectMapperUtils {
@@ -38,7 +39,7 @@ public class ObjectMapperUtils {
      *
      * @param response  the application/json+hal response body returned from the request
      * @param key       the key for the resources within the '_embedded' child object
-     * @param mapper    The object mapper used to perform the mapping operations
+     * @param mapper    The object mapper used to perform the mapping operations. Must not be null.
      * @param className the Class object of the elements to unmarshall e.g. AlgorithmDto.class. Must be a child o <T>
      * @param <T>       Generic type that the unmarshalled objects will be returned as
      * @return an (array) list of all objects in the response under the given key. The ordering shuld remain identical
@@ -49,8 +50,8 @@ public class ObjectMapperUtils {
     public static <T> List<T> mapResponseToList(
             String response,
             String key,
-            ObjectMapper mapper,
-            Class<? extends T> className
+            Class<? extends T> className,
+            @NonNull ObjectMapper mapper
     ) throws Exception {
         var objects = new JSONObject(response).getJSONObject(EMBEDDED_RESOURCES_JSON_KEY).getJSONArray(key);
 
@@ -64,6 +65,26 @@ public class ObjectMapperUtils {
         }
 
         return contents;
+    }
+
+    /**
+     * Returns all Unmarshalled objects of a Paged Model Response
+     *
+     * @param response  the application/json+hal response body returned from the request
+     * @param key       the key for the resources within the '_embedded' child object
+     * @param className the Class object of the elements to unmarshall e.g. AlgorithmDto.class. Must be a child o <T>
+     * @param <T>       Generic type that the unmarshalled objects will be returned as
+     * @return an (array) list of all objects in the response under the given key. The ordering shuld remain identical
+     * to before
+     * @throws Exception generic errors may occur since this method does not handle errors . It is only intended to be
+     *                   used in tests.
+     */
+    public static <T> List<T> mapResponseToList(
+            String response,
+            String key,
+            Class<? extends T> className
+    ) throws Exception {
+        return mapResponseToList(response, key, className, newTestMapper());
     }
 
     /**

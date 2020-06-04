@@ -2,7 +2,7 @@
 
 ## Writing Service tests
 
-To test services and repositories, write a test class inheriting from `AtlasDatabaseTestBase` in the `org.planqk.atlas.core` the services you want to use can be requested using Springs dependency injection for example by using the `@Autowired` annotation on a attribute in the same way it can be done in services or controllers. These tests are considered integration tests, since they get executed on a real postgres database and
+To test services and repositories, write a test class inheriting from `AtlasDatabaseTestBase` in the `org.planqk.atlas.core` the services you want to use can be requested using Springs dependency injection for example by using the `@Autowired` annotation on a attribute in the same way it can be done in services or controllers. These tests are considered integration tests, since they get executed on a real PostgreSQL database.
 
 Such a test may look like this, for example:
 
@@ -30,9 +30,9 @@ public class DatabaseTest extends AtlasDatabaseTestBase {
 }
 ```
 
-If you inherit from the `AtlasDatabaseTestBase` class a test will only be executed if you have a local postgres instance.
+If you inherit from the `AtlasDatabaseTestBase` class a test will only be executed if you have a local PostgreSQL instance.
 
-Please be aware that running these tests locally, when postgres is available, all your previous entries in the database will be dropped.
+Please be aware that running these tests locally, when PostgreSQL is available, all your previous entries in the database will be dropped.
 
 ## Writing Controller tests
 
@@ -75,13 +75,7 @@ This example also shows the three annotations mandatory to define a WebMvc Test:
 
 ### Unmarshalling (deserializing) Objects
 
-#### Getting the objects from a `PagedModel`
-
-#### Verifying `_links`
-
-#### Using a failsafe `ObjectMapper`
-
-Since HATEOAS uses a different schema internally, compared to what is exposed using HTTP Unmarshalling a response of an object may fail to prevent this a special implementation of the object mapper should be used. This one can be obtained using `ObjectMapperUtils.newTestMapper()`. An example how the mapper can be initiialzied is shown below:
+Since HATEOAS uses a different schema internally, compared to what is exposed using HTTP, as shown [here](#difference-between-internal-and-exposed-hateoas-represenations). Unmarshalling a response of an object may fail to prevent this a special implementation of the object mapper should be used. This one can be obtained using `ObjectMapperUtils.newTestMapper()`. An example how the mapper can be initialized is shown below:
 
 
 ```java
@@ -93,7 +87,28 @@ public void init() {
 }
 ```
 
-Keep in mind this is not a solution for lists of elements Stored in a page model 
+The following sections present an approach on how to validate `_links` and `PagedModels` (`_embedded`), since these sections cannot be verified using the customized `ObjectMapper`.
+
+#### Getting the objects from a `PagedModel`
+
+If you want to verify the contents of a PagedModel you can use a small helper method in the `ObjectMapperUtils` class: `ObjectMapperUtils.mapResponseToList()`. To retrieve a list of DTOs, just pass the response as a string, returned from MockMvc, as well as the key under which the resources are located. The key in the case, the class name ends with DTO usually is `<ClassName>es` where the class name is written in Camel case. For example: `cloudServiceDtoes` is the key for Cloud service objects. Apart from these two values you must pass the an Instance of the `Class` object for the type of the elements. This can be obtained by calling `<ClassName>.class`
+
+Also an optional instance of the ObjectMapper may be passed to the method, however this mapper must be configured to not fail on unknown properties. By default a mapper is built by calling the `newTestMapper()` method.
+
+#### Verifying `_links`
+
+Verifying the links of an object is not possible using the previous two methods. Verifying links can be done using JsonPath or Json objects, as the example below shows:
+
+```java
+var responseObject = new JSONObject(result.getResponse().getContentAsString());
+var linkArray = responseObject.getJSONObject("_links");
+assertEquals(4, linkArray.length());
+assertTrue(linkArray.has("self"));
+assertTrue(linkArray.has(Constants.ALGORITHMS));
+assertTrue(linkArray.has(Constants.PROVIDERS));
+assertTrue(linkArray.has(Constants.TAGS));
+assertFalse(linkArray.has("randomLink"));
+```
 
 ## Difference between internal and exposed HATEOAS represenations
 

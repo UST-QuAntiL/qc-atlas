@@ -49,7 +49,6 @@ public class RootControllerTest {
                 .andExpect(status().isOk()).andReturn();
 
         var responseObject = new JSONObject(result.getResponse().getContentAsString());
-        System.out.println(responseObject.toString(2));
 
         var linkArray = responseObject.getJSONObject("_links");
         assertEquals(4, linkArray.length());
