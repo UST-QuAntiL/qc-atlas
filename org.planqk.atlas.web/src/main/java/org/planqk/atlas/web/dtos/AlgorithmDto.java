@@ -58,13 +58,14 @@ public class AlgorithmDto {
 
     private String acronym;
 
-    // private Set<Publication> publications = new HashSet<>();
+    // private Set<Publication> publications;
 
     private String intent;
 
     private String problem;
 
-    private Set<AlgorithmRelationDto> relations = new HashSet<>();
+    // circular dependency on within algorithmRelation crashes model mapper
+    // private Set<AlgorithmRelationDto> algorithmRelations;
 
     private String inputFormat;
 
@@ -86,7 +87,7 @@ public class AlgorithmDto {
     @Schema(accessMode = WRITE_ONLY)
     private Set<ProblemTypeDto> problemTypes;
 
-    private Set<String> applicationAreas = new HashSet<>();
+    private Set<String> applicationAreas;
 
     // we do not embedded tags into the object (via @jsonInclude) - instead, we add
     // a hateoas link to the associated tags
