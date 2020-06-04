@@ -19,6 +19,7 @@
 
 package org.planqk.atlas.web.dtos;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -32,6 +33,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.planqk.atlas.core.model.Sketch;
 
 import javax.validation.constraints.*;
 
@@ -54,11 +56,27 @@ public class AlgorithmDto {
     @NotNull(message = "Algorithm-Name must not be null!")
     private String name;
 
+    private String acronym;
+
+    // private Set<Publication> publications = new HashSet<>();
+
+    private String intent;
+
     private String problem;
+
+    private Set<AlgorithmRelationDto> relations = new HashSet<>();
 
     private String inputFormat;
 
+    private String algoParameter;
+
     private String outputFormat;
+
+    private Sketch sketch;
+
+    private String solution;
+
+    private String assumptions;
 
     @NotNull(message = "Computational-Model must not be null!")
     private ComputationModel computationModel;
@@ -67,6 +85,8 @@ public class AlgorithmDto {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Schema(accessMode = WRITE_ONLY)
     private Set<ProblemTypeDto> problemTypes;
+
+    private Set<String> applicationAreas = new HashSet<>();
 
     // we do not embedded tags into the object (via @jsonInclude) - instead, we add
     // a hateoas link to the associated tags
