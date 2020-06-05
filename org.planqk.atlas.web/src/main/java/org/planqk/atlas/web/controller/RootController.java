@@ -19,14 +19,8 @@
 
 package org.planqk.atlas.web.controller;
 
-import org.planqk.atlas.core.model.Publication;
-import org.planqk.atlas.core.services.PublicationService;
 import org.planqk.atlas.web.Constants;
 
-import org.planqk.atlas.web.dtos.PublicationDto;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
@@ -35,30 +29,31 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
- * Root controller to access all entities within Quality, trigger the hardware selection, and execution of quantum
- * algorithms.
+ * Root controller to access all entities within Quality, trigger the hardware
+ * selection, and execution of quantum algorithms.
  */
+@io.swagger.v3.oas.annotations.tags.Tag(name = "root")
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 public class RootController {
 
     @GetMapping("/")
-    public HttpEntity<RepresentationModel> root() {
-        RepresentationModel responseEntity = new RepresentationModel<>();
+    public HttpEntity<RepresentationModel<?>> root() {
+        RepresentationModel<?> responseEntity = new RepresentationModel<>();
 
         // add links to sub-controllers
         responseEntity.add(linkTo(methodOn(RootController.class).root()).withSelfRel());
-        responseEntity.add(linkTo(methodOn(AlgorithmController.class).getAlgorithms(Constants.DEFAULT_PAGE_NUMBER, Constants.DEFAULT_PAGE_SIZE)).withRel(Constants.ALGORITHMS));
-        responseEntity.add(linkTo(methodOn(ProviderController.class).getProviders(Constants.DEFAULT_PAGE_NUMBER, Constants.DEFAULT_PAGE_SIZE)).withRel(Constants.PROVIDERS));
-        responseEntity.add(linkTo(methodOn(TagController.class).getTags(Constants.DEFAULT_PAGE_NUMBER, Constants.DEFAULT_PAGE_SIZE)).withRel(Constants.TAGS));
-        responseEntity.add(linkTo(methodOn(PublicationController.class).getPublications(Constants.DEFAULT_PAGE_NUMBER, Constants.DEFAULT_PAGE_SIZE)).withRel(Constants.PUBLICATIONS));
+        responseEntity.add(linkTo(methodOn(AlgorithmController.class).getAlgorithms(Constants.DEFAULT_PAGE_NUMBER,
+                Constants.DEFAULT_PAGE_SIZE)).withRel(Constants.ALGORITHMS));
+        responseEntity.add(linkTo(methodOn(ProviderController.class).getProviders(Constants.DEFAULT_PAGE_NUMBER,
+                Constants.DEFAULT_PAGE_SIZE)).withRel(Constants.PROVIDERS));
+        responseEntity.add(linkTo(
+                methodOn(TagController.class).getTags(Constants.DEFAULT_PAGE_NUMBER, Constants.DEFAULT_PAGE_SIZE))
+                        .withRel(Constants.TAGS));
 
         return new ResponseEntity<>(responseEntity, HttpStatus.OK);
     }

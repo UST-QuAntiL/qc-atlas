@@ -1,23 +1,21 @@
 package org.planqk.atlas.core.services;
 
+import lombok.AllArgsConstructor;
 import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.repository.PublicationRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
-import java.util.Objects;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 
-@Service
+@Repository
+@AllArgsConstructor
 public class PublicationServiceImpl implements PublicationService {
 
-    private final PublicationRepository publicationRepository;
-
-    public PublicationServiceImpl(PublicationRepository publicationRepository) {
-        this.publicationRepository=publicationRepository;
-    }
+    private PublicationRepository publicationRepository;
 
     @Override
     public Publication save(Publication publication) {
@@ -49,13 +47,17 @@ public class PublicationServiceImpl implements PublicationService {
     @Override
     public Page<Publication> findAll(Pageable pageable) {
         return publicationRepository.findAll(pageable);
+
     }
 
     @Override
-    public Optional<Publication> findById(UUID pubId) {
-        if (Objects.isNull(pubId)) {
-            return Optional.empty();
-        }
+    public Publication findById(UUID pubId) {
+
+        return findOptionalById(pubId).orElseThrow(NoSuchElementException::new);
+    }
+
+    @Override
+    public Optional<Publication> findOptionalById(UUID pubId) {
         return publicationRepository.findById(pubId);
     }
 }

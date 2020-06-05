@@ -1,44 +1,38 @@
 package org.planqk.atlas.web.dtos;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.planqk.atlas.core.model.Publication;
-import org.springframework.hateoas.RepresentationModel;
-
+import lombok.NoArgsConstructor;
+import org.planqk.atlas.core.model.Algorithm;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.net.URL;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
-@EqualsAndHashCode(callSuper = true)
+import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.WRITE_ONLY;
+
+@EqualsAndHashCode
 @Data
-public class PublicationDto extends RepresentationModel<PublicationDto> {
+@NoArgsConstructor
+public class PublicationDto{
 
     private UUID id;
+
+    @NotNull(message = "Title of the Publication must not be null!")
     private String title;
+
     private String doi;
+
     private URL url;
+
+    @NotEmpty(message = "Authors of the Publication must not be empty!")
     private List<String> authors;
 
-    public static final class Converter {
-
-        public static PublicationDto convert(final Publication object) {
-            final PublicationDto dto = new PublicationDto();
-            dto.setId(object.getId());
-            dto.setTitle(object.getTitle());
-            dto.setAuthors(object.getAuthors());
-            dto.setUrl(object.getUrl());
-            dto.setDoi(object.getDoi());
-            return dto;
-        }
-
-        public static Publication convert(final PublicationDto object) {
-            final Publication publication = new Publication();
-            publication.setId(object.getId());
-            publication.setTitle(object.getTitle());
-            publication.setAuthors(object.getAuthors());
-            publication.setUrl(object.getUrl());
-            publication.setDoi(object.getDoi());
-            return publication;
-        }
-    }
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Schema(accessMode= WRITE_ONLY)
+    private Set<Algorithm> algorithms;
 }

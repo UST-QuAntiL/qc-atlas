@@ -19,26 +19,34 @@
 
 package org.planqk.atlas.web.dtos;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.UUID;
 
-import lombok.Getter;
-import org.springframework.hateoas.RepresentationModel;
+import javax.validation.constraints.*;
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 /**
- * Data transfer object for multiple Implementations ({@link org.planqk.atlas.core.model.Implementation}).
+ * Data transfer object for Algorithms
+ * ({@link org.planqk.atlas.core.model.Algorithm}).
  */
-public class ImplementationListDto extends RepresentationModel<ImplementationListDto> {
+@EqualsAndHashCode
+@NoArgsConstructor
+@Data
+public class AlgorithmRelationDto {
 
-    @Getter
-    private final Set<ImplementationDto> implementationDtos = new HashSet<>();
+    private UUID id;
 
-    public void add(final List<ImplementationDto> implementations) {
-        this.implementationDtos.addAll(implementations);
-    }
+    @NotNull(message = "SourceAlgorithm of the AlgorithmRelation must not be null!")
+    private AlgorithmDto sourceAlgorithm;
 
-    public void add(final ImplementationDto implementation) {
-        this.implementationDtos.add(implementation);
-    }
+    @NotNull(message = "TargetAlgorithm of the AlgorithmRelation must not be null!")
+    private AlgorithmDto targetAlgorithm;
+
+    @NotNull(message = "AlgorithmRelationType must not be null!")
+    private AlgoRelationTypeDto algoRelationType;
+
+    private String description;
+
 }

@@ -20,11 +20,10 @@
 package org.planqk.atlas.core.services;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Tag;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,5 +36,7 @@ public interface TagService {
     Page<Tag> findAll(Pageable pageable);
 
     @Transactional(readOnly = true)
-    Optional<Tag> getTagById(UUID tagId);
+    Tag getTagById(UUID tagId);
+
+    Set<Tag> createOrUpdateAll(Set<Tag> algorithmTags);
 }
