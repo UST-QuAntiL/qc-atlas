@@ -1,5 +1,8 @@
 package org.planqk.atlas.web.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.planqk.atlas.core.model.Algorithm;
@@ -31,6 +34,7 @@ import java.util.UUID;
 /**
  * Controller to access and manipulate publication algorithms.
  */
+@io.swagger.v3.oas.annotations.tags.Tag(name = "publication")
 @Slf4j
 @RestController
 @ApiVersion("v1")
@@ -55,6 +59,8 @@ public class PublicationController {
         return new ResponseEntity<>(outputModel,HttpStatus.OK);
     }
 
+    @Operation(responses = { @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400", content = @Content) })
     @PostMapping("/")
     public HttpEntity<EntityModel<PublicationDto>> createPublication(@Validated @RequestBody PublicationDto publicationDto) {
         log.debug("Create publication");
@@ -64,6 +70,8 @@ public class PublicationController {
         return new ResponseEntity<>(dtoEntityModel, HttpStatus.CREATED);
     }
 
+    @Operation(responses = { @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", content = @Content) })
     @GetMapping("/{id}")
     public HttpEntity<EntityModel<PublicationDto>> getPublication(@PathVariable UUID id) {
         log.debug("Get publication with id: {}",id);
