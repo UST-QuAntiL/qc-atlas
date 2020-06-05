@@ -1,8 +1,6 @@
 package org.planqk.atlas.web.controller;
-;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Publication;
@@ -15,7 +13,6 @@ import org.planqk.atlas.web.linkassembler.PublicationAssembler;
 import org.planqk.atlas.web.utils.HateoasUtils;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.RestUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
@@ -38,6 +35,7 @@ import java.util.UUID;
 @RestController
 @ApiVersion("v1")
 @CrossOrigin(allowedHeaders = "*", origins = "*")
+@AllArgsConstructor
 @RequestMapping("/" + Constants.PUBLICATIONS)
 public class PublicationController {
 

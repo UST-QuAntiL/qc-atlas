@@ -113,6 +113,7 @@ public class AlgorithmController {
         // store and return algorithm
         Algorithm algorithm = algorithmService.save(ModelMapperUtils.convert(algo, Algorithm.class));
         // Convert To EntityModel
+
         EntityModel<AlgorithmDto> dtoOutput = HateoasUtils
                 .generateEntityModel(ModelMapperUtils.convert(algorithm, AlgorithmDto.class));
         // Fill EntityModel with links

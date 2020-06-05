@@ -1,25 +1,21 @@
 package org.planqk.atlas.core.services;
 
+import lombok.AllArgsConstructor;
 import org.planqk.atlas.core.model.Publication;
-import org.planqk.atlas.core.model.exceptions.NotFoundException;
 import org.planqk.atlas.core.repository.PublicationRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
 import java.util.NoSuchElementException;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
-@Service
+@Repository
+@AllArgsConstructor
 public class PublicationServiceImpl implements PublicationService {
 
-    private final PublicationRepository publicationRepository;
-
-    public PublicationServiceImpl(PublicationRepository publicationRepository) {
-        this.publicationRepository=publicationRepository;
-    }
+    private PublicationRepository publicationRepository;
 
     @Override
     public Publication save(Publication publication) {

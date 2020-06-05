@@ -23,14 +23,8 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
+import javax.persistence.*;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -44,14 +38,6 @@ import org.springframework.lang.NonNull;
 @NoArgsConstructor
 @Entity
 public class Algorithm extends AlgorOrImpl {
-
-    @Setter
-    @Getter
-    private String name;
-
-    @Setter
-    @Getter
-    private String acronym;
 
     @Setter
     @Getter

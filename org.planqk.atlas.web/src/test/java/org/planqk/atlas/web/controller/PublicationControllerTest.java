@@ -1,7 +1,9 @@
 package org.planqk.atlas.web.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AllArgsConstructor;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.BeforeAll;
@@ -24,6 +26,7 @@ import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -40,10 +43,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.net.URL;
 import java.util.*;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -69,10 +70,9 @@ public class PublicationControllerTest {
     @InjectMocks
     private PublicationController publicationController;
 
-    @Autowired
-    private MockMvc mockMvc;
 
-    ObjectMapper mapper;
+    private MockMvc mockMvc;
+    private ObjectMapper mapper;
 
     private int page=0;
     private int size=1;
@@ -84,19 +84,23 @@ public class PublicationControllerTest {
     public void init() throws Exception {
         MockitoAnnotations.initMocks(this);
         mapper = new ObjectMapper();
-        mockMvc=MockMvcBuilders.standaloneSetup(publicationController).build();
+        mockMvc=MockMvcBuilders.standaloneSetup(publicationController).setControllerAdvice(new RestErrorHandler()).build();
+        mapper.enable(DeserializationFeature.READ_UNKNOWN_ENUM_VALUES_AS_NULL);
         publication=new Publication();
         publication.setId(UUID.randomUUID());
         publication.setAuthors(new ArrayList<>(Arrays.asList("author1", "author2")));
         publication.setUrl(new URL("http://www.atlas-is-cool.org"));
         publication.setTitle("TestPublication");
-        publicationDto=ModelMapperUtils.convert(publication, PublicationDto.class);
-    }
+        publication.setDoi("");
 
+        publicationDto=ModelMapperUtils.convert(publication, PublicationDto.class);
+        when(publicationService.findById(publication.getId())).thenReturn(publication);
+    }
 
     @Test
     public void contextLoaded() throws Exception {
-        assertThat(publicationController).isNotNull();
+        assertNotNull(publicationController);
+        assertNotNull(mockMvc);
     }
 
     @Test
@@ -137,47 +141,18 @@ public class PublicationControllerTest {
         assertEquals(pagedModel.getContent().size(), 0);
     }
 
-
-    @Test
-    public void getPublication_returnNotFound() throws Exception {
-
-        when(publicationService.findById(any(UUID.class))).thenThrow(new NoSuchElementException());
-        mockMvc.perform(get("/" + Constants.PUBLICATIONS + "/" + UUID.randomUUID()).accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
-
-    }
-
     @Test
     public void createPublication_returnPublication() throws Exception {
 
         when(publicationService.save(publication)).thenReturn(publication);
         doNothing().when(publicationAssembler).addLinks(ArgumentMatchers.<EntityModel<PublicationDto>>any());
-
         MvcResult result = mockMvc
-                .perform(post("/" + Constants.PUBLICATIONS + "/").content(mapper.writeValueAsString(publicationDto))
+                .perform(post("/" + Constants.PUBLICATIONS+ "/").content(mapper.writeValueAsString(publicationDto))
                         .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated()).andReturn();
 
-        EntityModel<PublicationDto> response = mapper.readValue(result.getResponse().getContentAsString(),
+       EntityModel<PublicationDto> response = mapper.readValue(result.getResponse().getContentAsString(),
                 new TypeReference<EntityModel<PublicationDto>>() {
                 });
-        assertEquals(response.getContent().getTitle(), this.publicationDto.getTitle());
-        assertEquals(response.getContent().getId(), this.publicationDto.getId());
-    }
-
-    @Test
-    public void getAlgorithmsOfPublication() throws Exception {
-
-        Algorithm algo = new Algorithm();
-        Set<Publication> publications= new HashSet<>(Arrays.asList(publication));
-        algo.setId(UUID.randomUUID());
-        algo.setName("alg1");
-        algo.setComputationModel(ComputationModel.CLASSIC);
-        algo.setPublications(publications);
-        when(publicationService.findById(publication.getId())).thenReturn(publication);
-        MvcResult result = mockMvc.perform(get("/"+publication.getId()+"/"+Constants.ALGORITHMS).accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)).andReturn();
-        System.out.println(result.getResponse());
-
-        //TODO
-        fail();
     }
 }
