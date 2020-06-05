@@ -1,5 +1,8 @@
 package org.planqk.atlas.web.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import org.planqk.atlas.core.model.CloudService;
 import org.planqk.atlas.core.services.CloudServiceService;
@@ -38,6 +41,11 @@ public class CloudServiceController {
     private final CloudServiceAssembler cloudServiceAssembler;
     private final PagedResourcesAssembler<CloudServiceDto> paginationAssembler;
 
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", content = @Content),
+            @ApiResponse(responseCode = "500", content = @Content)
+    })
     @GetMapping("/")
     public HttpEntity<?> getCloudServices(@RequestParam(required = false) Integer page,
                                           @RequestParam(required = false) Integer size) {
@@ -48,6 +56,11 @@ public class CloudServiceController {
         return new ResponseEntity<>(pagedCloudServiceDtos, HttpStatus.OK);
     }
 
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", content = @Content),
+            @ApiResponse(responseCode = "500", content = @Content)
+    })
     @GetMapping("/{id}")
     public HttpEntity<EntityModel<CloudServiceDto>> getCloudService(@PathVariable UUID id) {
         CloudServiceDto savedCloudServiceDto = ModelMapperUtils.convert(cloudServiceService.findById(id), CloudServiceDto.class);
@@ -56,6 +69,11 @@ public class CloudServiceController {
         return new ResponseEntity<>(cloudServiceDtoEntity, HttpStatus.OK);
     }
 
+    @Operation(responses = {
+            @ApiResponse(responseCode = "201"),
+            @ApiResponse(responseCode = "400", content = @Content),
+            @ApiResponse(responseCode = "500", content = @Content)
+    })
     @PutMapping("/")
     public HttpEntity<EntityModel<CloudServiceDto>> addCloudService(@Valid @RequestBody CloudServiceDto cloudServiceDto) {
         CloudService savedCloudService = cloudServiceService.save(ModelMapperUtils.convert(cloudServiceDto, CloudService.class));
@@ -65,6 +83,11 @@ public class CloudServiceController {
         return new ResponseEntity<>(cloudServiceDtoEntity, HttpStatus.CREATED);
     }
 
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", content = @Content),
+            @ApiResponse(responseCode = "500", content = @Content)
+    })
     @DeleteMapping("/{id}")
     public HttpEntity<CloudServiceDto> deleteCloudService(@PathVariable UUID id) {
         cloudServiceService.delete(id);
@@ -72,7 +95,7 @@ public class CloudServiceController {
     }
 
     @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity handleNotFound() {
+    public ResponseEntity<?> handleNotFound() {
         return ResponseEntity.notFound().build();
     }
 

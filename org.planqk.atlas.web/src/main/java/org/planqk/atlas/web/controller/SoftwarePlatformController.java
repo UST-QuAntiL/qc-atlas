@@ -1,5 +1,8 @@
 package org.planqk.atlas.web.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import org.planqk.atlas.core.model.SoftwarePlatform;
 import org.planqk.atlas.core.services.SoftwarePlatformService;
@@ -39,6 +42,11 @@ public class SoftwarePlatformController {
     private final SoftwarePlatformAssembler softwarePlatformAssembler;
     private final PagedResourcesAssembler<SoftwarePlatformDto> paginationAssembler;
 
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", content = @Content),
+            @ApiResponse(responseCode = "500", content = @Content)
+    })
     @GetMapping("/")
     public HttpEntity<?> getSoftwarePlatforms(@RequestParam(required = false) Integer page,
                                               @RequestParam(required = false) Integer size) {
@@ -49,6 +57,11 @@ public class SoftwarePlatformController {
         return new ResponseEntity<>(pagedPlatformDtos, HttpStatus.OK);
     }
 
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", content = @Content),
+            @ApiResponse(responseCode = "500", content = @Content)
+    })
     @GetMapping("/{id}")
     public HttpEntity<EntityModel<SoftwarePlatformDto>> getSoftwarePlatform(@PathVariable UUID id) {
         SoftwarePlatformDto platformDto = ModelMapperUtils.convert(softwarePlatformService.findById(id), SoftwarePlatformDto.class);
@@ -57,6 +70,11 @@ public class SoftwarePlatformController {
         return new ResponseEntity<>(platformDtoEntity, HttpStatus.OK);
     }
 
+    @Operation(responses = {
+            @ApiResponse(responseCode = "201"),
+            @ApiResponse(responseCode = "400", content = @Content),
+            @ApiResponse(responseCode = "500", content = @Content)
+    })
     @PutMapping("/")
     public HttpEntity<EntityModel<SoftwarePlatformDto>> addSoftwarePlatform(@Valid @RequestBody SoftwarePlatformDto platformDto) {
         SoftwarePlatform savedPlatform = softwarePlatformService.save(ModelMapperUtils.convert(platformDto, SoftwarePlatform.class));
@@ -66,6 +84,11 @@ public class SoftwarePlatformController {
         return new ResponseEntity<>(platformDtoEntity, HttpStatus.CREATED);
     }
 
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", content = @Content),
+            @ApiResponse(responseCode = "500", content = @Content)
+    })
     @DeleteMapping("/{id}")
     public HttpEntity<SoftwarePlatformDto> deleteSoftwarePlatform(@PathVariable UUID id) {
         softwarePlatformService.delete(id);
@@ -73,7 +96,7 @@ public class SoftwarePlatformController {
     }
 
     @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity handleNotFound() {
+    public ResponseEntity<?> handleNotFound() {
         return ResponseEntity.notFound().build();
     }
 }
