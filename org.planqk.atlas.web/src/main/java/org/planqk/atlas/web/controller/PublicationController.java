@@ -83,7 +83,7 @@ public class PublicationController {
 
     @PutMapping("/{id}")
     public HttpEntity<EntityModel<PublicationDto>> updatePublication(@PathVariable UUID id, @Validated @RequestBody PublicationDto pub) {
-        log.debug("Put to update algorithm with id '" + id + "' received");
+        log.debug("Put to update algorithm with id: {}", id);
         Publication publication = publicationService.update(id,ModelMapperUtils.convert(pub, Publication.class));
         EntityModel<PublicationDto> dtoEntityModel = HateoasUtils.generateEntityModel(ModelMapperUtils.convert(publication,PublicationDto.class));
         publicationAssembler.addLinks(dtoEntityModel);
@@ -92,7 +92,7 @@ public class PublicationController {
 
     @DeleteMapping("/{id}")
     public HttpEntity<AlgorithmDto> deletePublication(@PathVariable UUID id) {
-        log.debug("Delete to remove algorithm with id '" + id + "' received");
+        log.debug("Delete to remove algorithm with id: {}", id);
         publicationService.deleteById(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
