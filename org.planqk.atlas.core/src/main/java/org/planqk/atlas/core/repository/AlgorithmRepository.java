@@ -20,6 +20,7 @@
 package org.planqk.atlas.core.repository;
 
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
@@ -39,5 +40,8 @@ public interface AlgorithmRepository extends JpaRepository<Algorithm, UUID> {
 
     @Query("SELECT COUNT(alg) FROM Algorithm alg JOIN alg.problemTypes probType WHERE probType.id = :problemTypeId")
     long countAlgorithmsUsingProblemType(@Param("problemTypeId") UUID problemTypeId);
+    
+    @Query("SELECT alg FROM Algorithm alg JOIN alg.publications publication WHERE publication.id = :publicationId")
+    Set<Algorithm> getAlgorithmsWithPublicationId(@Param("publicationId") UUID publicationId);
 
 }

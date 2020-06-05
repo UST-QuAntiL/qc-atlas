@@ -99,9 +99,8 @@ public class PublicationController {
 
     @GetMapping("/{id}/" + Constants.ALGORITHMS)
     public HttpEntity<CollectionModel<EntityModel<AlgorithmDto>>> getAlgorithms(@PathVariable UUID id) {
-        log.debug("Get algorithms of Publication with id {}",id);
-        Publication publication = publicationService.findById(id);
-        Set<Algorithm> algorithms = publication.getAlgorithms();
+        log.debug("Get algorithms of Publication with id {}", id);
+        Set<Algorithm> algorithms = publicationService.findPublicationAlgorithms(id);
         Set<AlgorithmDto> algorithmDtos = ModelMapperUtils.convertSet(algorithms, AlgorithmDto.class);
         CollectionModel<EntityModel<AlgorithmDto>> resultCollection = HateoasUtils.generateCollectionModel(algorithmDtos);
         algorithmAssembler.addLinks(resultCollection);

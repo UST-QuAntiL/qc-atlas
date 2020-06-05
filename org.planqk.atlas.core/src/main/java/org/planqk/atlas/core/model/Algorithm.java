@@ -47,7 +47,7 @@ public class Algorithm extends AlgorOrImpl {
     @Getter
     private String acronym;
 
-    @ManyToMany(cascade= {CascadeType.PERSIST, CascadeType.MERGE}, fetch=FetchType.EAGER)
+    @ManyToMany(cascade= {CascadeType.MERGE}, fetch=FetchType.LAZY)
     @JoinTable(name = "algorithm_publication",
             joinColumns = @JoinColumn(name = "algorithm_id"),
             inverseJoinColumns = @JoinColumn(name ="publication_id"))
