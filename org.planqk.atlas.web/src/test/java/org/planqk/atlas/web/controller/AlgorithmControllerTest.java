@@ -37,7 +37,6 @@ import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
-import org.planqk.atlas.web.dtos.ClassicAlgorithmDto;
 import org.planqk.atlas.web.linkassembler.AlgorithmAssembler;
 import org.planqk.atlas.web.linkassembler.AlgorithmRelationAssembler;
 import org.planqk.atlas.web.utils.HateoasUtils;
@@ -159,8 +158,8 @@ public class AlgorithmControllerTest {
         algorithm2.setProblemTypes(problemTypes);
 
         // Generate DTOs from above Entities
-        algorithm1Dto = ModelMapperUtils.convert(algorithm1, ClassicAlgorithmDto.class);
-        algorithm2Dto = ModelMapperUtils.convert(algorithm2, ClassicAlgorithmDto.class);
+        algorithm1Dto = ModelMapperUtils.convert(algorithm1, AlgorithmDto.class);
+        algorithm2Dto = ModelMapperUtils.convert(algorithm2, AlgorithmDto.class);
 
         algorithmRelation1Dto = ModelMapperUtils.convert(algorithmRelation1, AlgorithmRelationDto.class);
 
