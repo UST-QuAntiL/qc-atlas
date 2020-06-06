@@ -10,13 +10,9 @@ import org.planqk.atlas.core.model.QuantumAlgorithm;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.ClassicAlgorithmDto;
 import org.planqk.atlas.web.dtos.QuantumAlgorithmDto;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 
 public class ModelMapperUtils {
-	
-	public static final Logger LOG = LoggerFactory.getLogger(ModelMapperUtils.class);
 
     private static ModelMapper mapper = new ModelMapper();
 
