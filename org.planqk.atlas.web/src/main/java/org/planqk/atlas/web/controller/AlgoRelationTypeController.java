@@ -5,7 +5,6 @@ import java.util.UUID;
 import javax.validation.Valid;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.planqk.atlas.core.model.AlgoRelationType;
 import org.planqk.atlas.core.services.AlgoRelationTypeService;
