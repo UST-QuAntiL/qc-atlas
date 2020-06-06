@@ -112,22 +112,10 @@ public class Algorithm extends AlgorOrImpl {
     @Setter
     private Set<String> applicationAreas;
 
-    @OneToMany(mappedBy = "implementedAlgorithm", cascade = { CascadeType.MERGE })
-    @Setter
-    private Set<Implementation> implementations;
-
     @ManyToMany(cascade = { CascadeType.MERGE })
     @JoinTable(name = "algorithm_tag", joinColumns = @JoinColumn(name = "algorithm_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
     @Setter
     private Set<Tag> tags;
-
-    @NonNull
-    public Set<Implementation> getImplementations() {
-        if (Objects.isNull(implementations)) {
-            return new HashSet<>();
-        }
-        return implementations;
-    }
 
     @NonNull
     public Set<Tag> getTags() {
