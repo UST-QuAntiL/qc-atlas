@@ -30,12 +30,14 @@ import java.util.UUID;
 import org.planqk.atlas.core.model.AlgoRelationType;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
+import org.planqk.atlas.core.model.ClassicAlgorithm;
 import org.planqk.atlas.core.model.ComputationModel;
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
+import org.planqk.atlas.web.dtos.ClassicAlgorithmDto;
 import org.planqk.atlas.web.linkassembler.AlgorithmAssembler;
 import org.planqk.atlas.web.linkassembler.AlgorithmRelationAssembler;
 import org.planqk.atlas.web.utils.HateoasUtils;
@@ -126,12 +128,12 @@ public class AlgorithmControllerTest {
         AlgoRelationType relType1 = new AlgoRelationType();
         relType1.setName("RelationType1");
 
-        algorithm1 = new Algorithm();
+        algorithm1 = new ClassicAlgorithm();
         algorithm1.setId(UUID.randomUUID());
         algorithm1.setName("alg1");
         algorithm1.setComputationModel(ComputationModel.CLASSIC);
 
-        algorithm2 = new Algorithm();
+        algorithm2 = new ClassicAlgorithm();
         algorithm2.setId(UUID.randomUUID());
         algorithm2.setName("alg2");
         algorithm2.setComputationModel(ComputationModel.CLASSIC);
@@ -157,8 +159,8 @@ public class AlgorithmControllerTest {
         algorithm2.setProblemTypes(problemTypes);
 
         // Generate DTOs from above Entities
-        algorithm1Dto = ModelMapperUtils.convert(algorithm1, AlgorithmDto.class);
-        algorithm2Dto = ModelMapperUtils.convert(algorithm2, AlgorithmDto.class);
+        algorithm1Dto = ModelMapperUtils.convert(algorithm1, ClassicAlgorithmDto.class);
+        algorithm2Dto = ModelMapperUtils.convert(algorithm2, ClassicAlgorithmDto.class);
 
         algorithmRelation1Dto = ModelMapperUtils.convert(algorithmRelation1, AlgorithmRelationDto.class);
 
