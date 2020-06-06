@@ -4,9 +4,19 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.modelmapper.ModelMapper;
+import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.ClassicAlgorithm;
+import org.planqk.atlas.core.model.QuantumAlgorithm;
+import org.planqk.atlas.web.dtos.AlgorithmDto;
+import org.planqk.atlas.web.dtos.ClassicAlgorithmDto;
+import org.planqk.atlas.web.dtos.QuantumAlgorithmDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 
 public class ModelMapperUtils {
+	
+	public static final Logger LOG = LoggerFactory.getLogger(ModelMapperUtils.class);
 
     private static ModelMapper mapper = new ModelMapper();
 
@@ -19,10 +29,34 @@ public class ModelMapperUtils {
     }
 
     public static <D, T> Page<D> convertPage(Page<T> entities, Class<D> dtoClass) {
-        return entities.map(objectEntity -> mapper.map(objectEntity, dtoClass));
+        return entities.map(objectEntity -> convert(objectEntity, dtoClass));
     }
 
-    public static <D, T> D convert(final T entity, Class<D> outClass) {
+    @SuppressWarnings("unchecked")
+	public static <D, T> D convert(final T entity, Class<D> outClass) {
+    	// TODO: Check if there is a better way to do this
+    	if (outClass == AlgorithmDto.class) {
+    		return (D) convertAlgorithm((Algorithm) entity);
+    	} 
+    	
+    	if (outClass == Algorithm.class) {
+    		return (D) convertAlgorithmDto((AlgorithmDto) entity);
+    	}
+    	
         return mapper.map(entity, outClass);
+    }
+    
+    private static AlgorithmDto convertAlgorithm(Algorithm alg) {
+    	if (alg instanceof QuantumAlgorithm) {
+    		return mapper.map(alg, QuantumAlgorithmDto.class);
+    	} 
+    	return mapper.map(alg, ClassicAlgorithmDto.class);
+    }
+    
+    private static Algorithm convertAlgorithmDto(AlgorithmDto dto) {
+    	if (dto instanceof QuantumAlgorithmDto) {
+    		return mapper.map(dto, QuantumAlgorithm.class);
+    	} 
+    	return mapper.map(dto, ClassicAlgorithm.class);
     }
 }
