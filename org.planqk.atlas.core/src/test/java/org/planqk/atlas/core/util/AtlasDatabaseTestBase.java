@@ -17,17 +17,17 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.planqk.atlas.web.controller;
+package org.planqk.atlas.core.util;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
 
-public class TestControllerUtils {
+@ContextConfiguration(classes = {DatabaseTestEnvironmentConfiguration.class})
+@SpringBootTest
+@ExtendWith(MockitoExtension.class)
+@ExtendWith(DatabaseExtension.class)
+public abstract class AtlasDatabaseTestBase {
 
-    public static String asJsonString(final Object obj) {
-        try {
-            return new ObjectMapper().writeValueAsString(obj);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
 }
