@@ -10,6 +10,4 @@ import lombok.EqualsAndHashCode;
 @Entity
 public class ClassicAlgorithm extends Algorithm {
 
-    // TODO: Add ClassicImplementation
-
 }
