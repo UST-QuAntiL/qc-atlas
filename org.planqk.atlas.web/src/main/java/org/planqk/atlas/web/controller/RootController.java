@@ -19,6 +19,8 @@
 
 package org.planqk.atlas.web.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.planqk.atlas.web.Constants;
 
 import org.springframework.hateoas.RepresentationModel;
@@ -33,14 +35,15 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
- * Root controller to access all entities within Quality, trigger the hardware
- * selection, and execution of quantum algorithms.
+ * Root controller to access all entities within Quality, trigger the hardware selection, and execution of quantum
+ * algorithms.
  */
 @io.swagger.v3.oas.annotations.tags.Tag(name = "root")
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 public class RootController {
 
+    @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping("/")
     public HttpEntity<RepresentationModel<?>> root() {
         RepresentationModel<?> responseEntity = new RepresentationModel<>();
@@ -53,7 +56,7 @@ public class RootController {
                 Constants.DEFAULT_PAGE_SIZE)).withRel(Constants.PROVIDERS));
         responseEntity.add(linkTo(
                 methodOn(TagController.class).getTags(Constants.DEFAULT_PAGE_NUMBER, Constants.DEFAULT_PAGE_SIZE))
-                        .withRel(Constants.TAGS));
+                .withRel(Constants.TAGS));
 
         return new ResponseEntity<>(responseEntity, HttpStatus.OK);
     }

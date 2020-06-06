@@ -90,10 +90,10 @@ public class AlgorithmController {
     private AlgorithmAssembler algorithmAssembler;
     private AlgorithmRelationAssembler algorithmRelationAssembler;
 
-    @Operation()
+    @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping("/")
     public HttpEntity<PagedModel<EntityModel<AlgorithmDto>>> getAlgorithms(@RequestParam(required = false) Integer page,
-            @RequestParam(required = false) Integer size) {
+                                                                           @RequestParam(required = false) Integer size) {
         LOG.debug("Get to retrieve all algorithms received.");
         // Generate Pageable
         Pageable p = RestUtils.getPageableFromRequestParams(page, size);
@@ -105,8 +105,7 @@ public class AlgorithmController {
         return new ResponseEntity<>(outputDto, HttpStatus.OK);
     }
 
-    @Operation(responses = { @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400", content = @Content) })
+    @Operation(responses = {@ApiResponse(responseCode = "201")})
     @PostMapping("/")
     public HttpEntity<EntityModel<AlgorithmDto>> createAlgorithm(@Valid @RequestBody AlgorithmDto algo) {
         LOG.debug("Post to create new algorithm received.");
@@ -120,9 +119,10 @@ public class AlgorithmController {
         return new ResponseEntity<>(dtoOutput, HttpStatus.CREATED);
     }
 
+    @Operation(responses = {@ApiResponse(responseCode = "200")})
     @PutMapping("/{id}")
     public HttpEntity<EntityModel<AlgorithmDto>> updateAlgorithm(@PathVariable UUID id,
-            @Valid @RequestBody AlgorithmDto algo) {
+                                                                 @Valid @RequestBody AlgorithmDto algo) {
         LOG.debug("Put to update algorithm with id: {}.", id);
         Algorithm updatedAlgorithm = algorithmService.update(id, ModelMapperUtils.convert(algo, Algorithm.class));
         // Convert To EntityModel
@@ -133,6 +133,7 @@ public class AlgorithmController {
         return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
     }
 
+    @Operation(responses = {@ApiResponse(responseCode = "200")})
     @DeleteMapping("/{id}")
     public HttpEntity<?> deleteAlgorithm(@PathVariable UUID id) {
         LOG.debug("Delete to remove algorithm with id: {}.", id);
@@ -140,8 +141,7 @@ public class AlgorithmController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @Operation(responses = { @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "404", content = @Content) })
+    @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping("/{id}")
     public HttpEntity<EntityModel<AlgorithmDto>> getAlgorithm(@PathVariable UUID id) {
         LOG.debug("Get to retrieve algorithm with id: {}.", id);
@@ -156,8 +156,7 @@ public class AlgorithmController {
         return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
     }
 
-    @Operation(responses = { @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "404", content = @Content) })
+    @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping("/{id}/" + Constants.TAGS)
     public HttpEntity<CollectionModel<EntityModel<TagDto>>> getTags(@PathVariable UUID id) {
         Algorithm algorithm = algorithmService.findById(id);
@@ -174,6 +173,7 @@ public class AlgorithmController {
         return new ResponseEntity<>(resultCollection, HttpStatus.OK);
     }
 
+    @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping("/{id}/" + Constants.PROBLEM_TYPES)
     public HttpEntity<CollectionModel<EntityModel<ProblemTypeDto>>> getProblemTypes(@PathVariable UUID id) {
         Algorithm algorithm = algorithmService.findById(id);
@@ -190,6 +190,7 @@ public class AlgorithmController {
         return new ResponseEntity<>(resultCollection, HttpStatus.OK);
     }
 
+    @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping("/{sourceAlgorithmId}/" + Constants.ALGORITHM_RELATIONS)
     public HttpEntity<CollectionModel<EntityModel<AlgorithmRelationDto>>> getAlgorithmRelations(
             @PathVariable UUID sourceAlgorithmId) {
@@ -208,9 +209,10 @@ public class AlgorithmController {
         return new ResponseEntity<>(resultCollection, HttpStatus.OK);
     }
 
+    @Operation(responses = {@ApiResponse(responseCode = "200")})
     @PutMapping("/{sourceAlgorithmId}/" + Constants.ALGORITHM_RELATIONS)
     public HttpEntity<EntityModel<AlgorithmRelationDto>> updateAlgorithmRelation(@PathVariable UUID sourceAlgorithmId,
-            @Valid @RequestBody AlgorithmRelationDto relation) {
+                                                                                 @Valid @RequestBody AlgorithmRelationDto relation) {
         LOG.debug("Post to add algorithm relation received.");
 
         AlgorithmRelation algorithmRelation = algorithmService.addOrUpdateAlgorithmRelation(sourceAlgorithmId,
@@ -221,12 +223,12 @@ public class AlgorithmController {
         return new ResponseEntity<>(entityDto, HttpStatus.OK);
     }
 
+    @Operation(responses = {@ApiResponse(responseCode = "200")})
     @DeleteMapping("/{sourceAlgorithmId}/" + Constants.ALGORITHM_RELATIONS + "/{relationId}")
     public HttpEntity<AlgorithmRelationDto> deleteAlgorithmRelation(@PathVariable UUID sourceAlgorithmId,
-            @PathVariable UUID relationId) {
+                                                                    @PathVariable UUID relationId) {
         LOG.debug("Delete received to remove algorithm relation with id {}.", relationId);
         algorithmService.deleteAlgorithmRelation(sourceAlgorithmId, relationId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
 }
