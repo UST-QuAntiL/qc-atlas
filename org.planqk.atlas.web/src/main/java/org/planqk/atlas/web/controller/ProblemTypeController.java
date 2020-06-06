@@ -91,8 +91,8 @@ public class ProblemTypeController {
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping("/")
-    public HttpEntity<?> getProblemTypes(@RequestParam(required = false) Integer page,
-                                         @RequestParam(required = false) Integer size) {
+    public HttpEntity<PagedModel<EntityModel<ProblemTypeDto>>> getProblemTypes(@RequestParam(required = false) Integer page,
+                                                                               @RequestParam(required = false) Integer size) {
         // Generate Pageable
         Pageable p = RestUtils.getPageableFromRequestParams(page, size);
         // Get Entities using pagable

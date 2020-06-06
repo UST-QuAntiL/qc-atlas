@@ -90,8 +90,8 @@ public class AlgoRelationTypeController {
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping("/")
-    public HttpEntity<?> getAlgoRelationTypes(@RequestParam(required = false) Integer page,
-                                              @RequestParam(required = false) Integer size) {
+    public HttpEntity<PagedModel<EntityModel<AlgoRelationTypeDto>>> getAlgoRelationTypes(@RequestParam(required = false) Integer page,
+                                                                                         @RequestParam(required = false) Integer size) {
         // Generate pageable
         Pageable p = RestUtils.getPageableFromRequestParams(page, size);
         // Get entities
