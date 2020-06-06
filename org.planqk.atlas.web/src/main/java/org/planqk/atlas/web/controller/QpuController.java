@@ -77,9 +77,10 @@ public class QpuController {
     private PagedResourcesAssembler<QpuDto> paginationAssembler;
     private QpuAssembler qpuAssembler;
 
+    @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping("/")
     public HttpEntity<PagedModel<EntityModel<QpuDto>>> getQpus(@RequestParam UUID providerId,
-            @RequestParam(required = false) Integer page, @RequestParam(required = false) Integer size) {
+                                                               @RequestParam(required = false) Integer page, @RequestParam(required = false) Integer size) {
         LOG.debug("Get to retrieve all QPUs received.");
         // Generate Pageable
         Pageable p = RestUtils.getPageableFromRequestParams(page, size);
@@ -92,8 +93,7 @@ public class QpuController {
         return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
     }
 
-    @Operation(responses = { @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "404", content = @Content) })
+    @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping("/{qpuId}")
     public HttpEntity<EntityModel<QpuDto>> getQpu(@PathVariable UUID qpuId, @RequestParam UUID providerId) {
         LOG.debug("Get to retrieve QPU with id: {}.", qpuId);
@@ -106,11 +106,10 @@ public class QpuController {
         return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
     }
 
-    @Operation(responses = { @ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400", content = @Content),
-            @ApiResponse(responseCode = "404", content = @Content) })
+    @Operation(responses = {@ApiResponse(responseCode = "201")})
     @PostMapping("/")
     public HttpEntity<EntityModel<QpuDto>> createQpu(@RequestParam UUID providerId,
-            @Valid @RequestBody QpuDto qpuRequest) {
+                                                     @Valid @RequestBody QpuDto qpuRequest) {
         LOG.debug("Post to create new QPU received.");
         // Get provider if possible
         Provider provider = providerService.findById(providerId);

@@ -24,8 +24,6 @@ import java.util.UUID;
 
 import javax.validation.constraints.*;
 
-import org.planqk.atlas.core.model.Algorithm;
-
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -57,6 +55,6 @@ public class ImplementationDto {
     private String dependencies;
 
     @JsonIgnore
-    private Algorithm implementedAlgorithm;
+    private AlgorithmDto implementedAlgorithm;
 
 }
