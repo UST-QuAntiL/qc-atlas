@@ -52,7 +52,7 @@ public class Implementation extends AlgorOrImpl {
     private String inputFormat;
     private String parameter;
     private String outputFormat;
-    private URL fileLocation;
+    private URL link;
     private String dependencies;
 
     @ManyToOne

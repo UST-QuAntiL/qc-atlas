@@ -228,7 +228,7 @@ public class ImplementationControllerTest {
         implementation.setId(implId);
 
         // set everything we need to set for a valid request:
-        implementation.setFileLocation(new URL("https://wwww.uri/for/test/"));
+        implementation.setLink(new URL("https://wwww.uri/for/test/"));
         when(implementationService.save(any(Implementation.class))).thenReturn(implementation);
         return implementation;
     }
