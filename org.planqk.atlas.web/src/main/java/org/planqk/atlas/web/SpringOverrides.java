@@ -19,7 +19,9 @@
 package org.planqk.atlas.web;
 
 import org.planqk.atlas.web.annotation.VersionedRequestHandlerMapping;
+import org.planqk.atlas.web.utils.EntityModelConverter;
 
+import io.swagger.v3.core.converter.ModelConverters;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcRegistrations;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,6 +32,10 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
  */
 @Configuration
 public class SpringOverrides {
+    public SpringOverrides() {
+        ModelConverters.getInstance().addConverter(new EntityModelConverter());
+    }
+
     @Bean
     public WebMvcRegistrations webMvcRegistrationsHandlerMapping() {
         return new WebMvcRegistrations() {
