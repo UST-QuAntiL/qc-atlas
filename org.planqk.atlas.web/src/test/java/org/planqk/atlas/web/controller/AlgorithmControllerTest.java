@@ -187,6 +187,13 @@ public class AlgorithmControllerTest {
     }
 
     @Test
+    public void equality() throws Exception {
+        assertEquals(algorithm1, algorithm1);
+        assertEquals(algorithm1, ModelMapperUtils.convert(mapper.readValue(
+                mapper.writeValueAsString(algorithm1Dto), AlgorithmDto.class), Algorithm.class));
+    }
+
+    @Test
     public void getAlgorithms_withoutPagination() throws Exception {
         when(algorithmService.findAll(Pageable.unpaged())).thenReturn(Page.empty());
         when(paginationAssembler.toModel(ArgumentMatchers.any()))
