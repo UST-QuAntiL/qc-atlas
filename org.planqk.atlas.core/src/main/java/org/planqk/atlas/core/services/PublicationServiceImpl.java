@@ -71,7 +71,7 @@ public class PublicationServiceImpl implements PublicationService {
 		for (Publication publication : publications) {
 			Optional<Publication> optPublication = Objects.isNull(publication.getId()) ? Optional.empty()
 					: publicationRepository.findById(publication.getId());
-			
+
 			if (optPublication.isPresent()) {
 				// Use existing publication
 				fillExistingPublication(publication, optPublication.get());
@@ -84,7 +84,7 @@ public class PublicationServiceImpl implements PublicationService {
 
 		return dbPublications;
 	}
-	
+
 	private void fillExistingPublication(Publication updatedPublication, Publication persistedPublication) {
 		persistedPublication.setTitle(updatedPublication.getTitle());
 		persistedPublication.setDoi(updatedPublication.getDoi());
@@ -96,5 +96,9 @@ public class PublicationServiceImpl implements PublicationService {
 	public Set<Algorithm> findPublicationAlgorithms(UUID publicationId) {
 		return algorithmRepository.getAlgorithmsWithPublicationId(publicationId);
 	}
-	
+
+    @Override
+    public void deletePublicationsByIds(Set<UUID> publicationIds) {
+        publicationRepository.deletePublicationsByIds(publicationIds);
+    }
 }

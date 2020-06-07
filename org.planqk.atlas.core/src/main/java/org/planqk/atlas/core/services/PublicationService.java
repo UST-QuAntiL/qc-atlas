@@ -5,6 +5,7 @@ import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Publication;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 import java.util.Set;
@@ -25,7 +26,9 @@ public interface PublicationService {
     Optional<Publication> findOptionalById(UUID pubId);
 
 	Set<Publication> createOrUpdateAll(Set<Publication> publications);
-	
+
 	Set<Algorithm> findPublicationAlgorithms(UUID publicationId);
-	
+
+    void deletePublicationsByIds(Set<UUID> publicationIds);
+
 }
