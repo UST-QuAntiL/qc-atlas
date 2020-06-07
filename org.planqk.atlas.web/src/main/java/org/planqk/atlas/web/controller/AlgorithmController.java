@@ -27,6 +27,7 @@ import javax.validation.Valid;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.model.ProblemType;
+import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.web.Constants;
@@ -34,10 +35,12 @@ import org.planqk.atlas.web.annotation.ApiVersion;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
 import org.planqk.atlas.web.dtos.ProblemTypeDto;
+import org.planqk.atlas.web.dtos.PublicationDto;
 import org.planqk.atlas.web.dtos.TagDto;
 import org.planqk.atlas.web.linkassembler.AlgorithmAssembler;
 import org.planqk.atlas.web.linkassembler.AlgorithmRelationAssembler;
 import org.planqk.atlas.web.linkassembler.ProblemTypeAssembler;
+import org.planqk.atlas.web.linkassembler.PublicationAssembler;
 import org.planqk.atlas.web.linkassembler.TagAssembler;
 import org.planqk.atlas.web.utils.HateoasUtils;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
@@ -89,6 +92,7 @@ public class AlgorithmController {
     private TagAssembler tagAssembler;
     private AlgorithmAssembler algorithmAssembler;
     private AlgorithmRelationAssembler algorithmRelationAssembler;
+    private PublicationAssembler publicationAssembler;
 
     @Operation()
     @GetMapping("/")
@@ -172,6 +176,24 @@ public class AlgorithmController {
         tagAssembler.addLinks(resultCollection);
         // Fill Collection-Links
         algorithmAssembler.addTagLink(resultCollection, id);
+        return new ResponseEntity<>(resultCollection, HttpStatus.OK);
+    }
+    
+    @Operation(responses = { @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", content = @Content) })
+    @GetMapping("/{id}/" + Constants.PUBLICATIONS)
+    public HttpEntity<CollectionModel<EntityModel<PublicationDto>>> getPublications(@PathVariable UUID id) {
+        Algorithm algorithm = algorithmService.findById(id);
+        // Get Tags of Algorithm
+        Set<Publication> publications = algorithm.getPublications();
+        // Translate Entity to DTO
+        Set<PublicationDto> dtoPublications = ModelMapperUtils.convertSet(publications, PublicationDto.class);
+        // Create CollectionModel
+        CollectionModel<EntityModel<PublicationDto>> resultCollection = HateoasUtils.generateCollectionModel(dtoPublications);
+        // Fill EntityModel Links
+        publicationAssembler.addLinks(resultCollection);
+        // Fill Collection-Links
+        algorithmAssembler.addPublicationLink(resultCollection, id);
         return new ResponseEntity<>(resultCollection, HttpStatus.OK);
     }
 
