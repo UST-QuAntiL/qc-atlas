@@ -21,57 +21,41 @@ package org.planqk.atlas.web.controller;
 
 import org.planqk.atlas.web.Constants;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.InjectMocks;
-import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.hateoas.RepresentationModel;
+import org.json.JSONObject;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
+@WebMvcTest(RootController.class)
+@AutoConfigureMockMvc
 public class RootControllerTest {
 
-    @InjectMocks
-    private RootController rootController;
-
+    @Autowired
     private MockMvc mockMvc;
-
-    @Before
-    public void before() {
-        MockitoAnnotations.initMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(rootController).build();
-    }
-
-    @Test
-    public void contextLoaded() throws Exception {
-        assertThat(rootController).isNotNull();
-    }
 
     @Test
     public void testGetHateoasLinks() throws Exception {
+        MvcResult result = mockMvc.perform(get("/").accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
 
-        MvcResult result = mockMvc.perform(get("/").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-                .andReturn();
+        var responseObject = new JSONObject(result.getResponse().getContentAsString());
 
-        RepresentationModel<?> response = new ObjectMapper().readValue(result.getResponse().getContentAsString(),
-                RepresentationModel.class);
-        assertTrue(response.getLinks().hasSize(4L));
-
-        assertTrue(response.getLinks().hasLink("self"));
-        assertTrue(response.getLinks().hasLink(Constants.ALGORITHMS));
-        assertTrue(response.getLinks().hasLink(Constants.PROVIDERS));
-        assertTrue(response.getLinks().hasLink(Constants.TAGS));
-        assertFalse(response.getLinks().hasLink("randomLink"));
+        var linkArray = responseObject.getJSONObject("_links");
+        assertEquals(4, linkArray.length());
+        assertTrue(linkArray.has("self"));
+        assertTrue(linkArray.has(Constants.ALGORITHMS));
+        assertTrue(linkArray.has(Constants.PROVIDERS));
+        assertTrue(linkArray.has(Constants.TAGS));
+        assertFalse(linkArray.has("randomLink"));
     }
 }

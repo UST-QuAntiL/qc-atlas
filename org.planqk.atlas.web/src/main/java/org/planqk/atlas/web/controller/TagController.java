@@ -24,6 +24,8 @@ import java.util.UUID;
 
 import javax.validation.Valid;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.services.TagService;
@@ -58,7 +60,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.AllArgsConstructor;
 
-//
 @io.swagger.v3.oas.annotations.tags.Tag(name = "tag")
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
@@ -73,9 +74,10 @@ public class TagController {
     private AlgorithmAssembler algorithmAssembler;
     private ImplementationAssembler implementationAssembler;
 
+    @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping(value = "/")
     public HttpEntity<PagedModel<EntityModel<TagDto>>> getTags(@RequestParam(required = false) Integer page,
-            @RequestParam(required = false) Integer size) {
+                                                               @RequestParam(required = false) Integer size) {
         // Generate Pageable
         Pageable p = RestUtils.getPageableFromRequestParams(page, size);
         // Retrieve Page of DTOs
@@ -86,6 +88,7 @@ public class TagController {
         return new ResponseEntity<>(outputDto, HttpStatus.OK);
     }
 
+    @Operation(responses = {@ApiResponse(responseCode = "201")})
     @PostMapping(value = "/")
     public HttpEntity<EntityModel<TagDto>> createTag(@Valid @RequestBody TagDto tag) {
         // Persist new tag
@@ -98,6 +101,7 @@ public class TagController {
         return new ResponseEntity<>(dtoOutput, HttpStatus.CREATED);
     }
 
+    @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping(value = "/{tagId}")
     public HttpEntity<EntityModel<TagDto>> getTagById(@PathVariable UUID tagId) {
         // Get Tag
@@ -109,6 +113,7 @@ public class TagController {
         return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
     }
 
+    @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping(value = "/{tagId}/" + Constants.ALGORITHMS)
     public HttpEntity<CollectionModel<EntityModel<AlgorithmDto>>> getAlgorithmsOfTag(@PathVariable UUID tagId) {
         // Get Tag
@@ -127,6 +132,7 @@ public class TagController {
         return new ResponseEntity<>(resultCollection, HttpStatus.OK);
     }
 
+    @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping(value = "/{tagId}/" + Constants.IMPLEMENTATIONS)
     public HttpEntity<CollectionModel<EntityModel<ImplementationDto>>> getImplementationsOfTag(
             @PathVariable UUID tagId) {
