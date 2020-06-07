@@ -184,7 +184,7 @@ public class AlgorithmController {
     @GetMapping("/{id}/" + Constants.PUBLICATIONS)
     public HttpEntity<CollectionModel<EntityModel<PublicationDto>>> getPublications(@PathVariable UUID id) {
         Algorithm algorithm = algorithmService.findById(id);
-        // Get Tags of Algorithm
+        // Get Publications of Algorithm
         Set<Publication> publications = algorithm.getPublications();
         // Translate Entity to DTO
         Set<PublicationDto> dtoPublications = ModelMapperUtils.convertSet(publications, PublicationDto.class);
