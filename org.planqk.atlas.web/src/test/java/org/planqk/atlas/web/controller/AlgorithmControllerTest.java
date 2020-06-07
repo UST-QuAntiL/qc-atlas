@@ -232,7 +232,7 @@ public class AlgorithmControllerTest {
 
         var resultList = ObjectMapperUtils.mapResponseToList(
                 result.getResponse().getContentAsString(),
-                "algorithmDtoes",
+                "classicAlgorithmDtoes",
                 AlgorithmDto.class
         );
         assertEquals(2, resultList.size());
