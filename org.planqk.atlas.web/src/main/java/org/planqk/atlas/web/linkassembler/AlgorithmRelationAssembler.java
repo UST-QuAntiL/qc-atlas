@@ -16,9 +16,13 @@ public class AlgorithmRelationAssembler extends GenericLinkAssembler<AlgorithmRe
 
     @Override
     public void addLinks(EntityModel<AlgorithmRelationDto> resource) {
-        resource.add(linkTo(methodOn(AlgorithmController.class).getAlgorithm(getSourceAlgorithmId(resource))).withRel("sourceAlgorithm"));
-        resource.add(linkTo(methodOn(AlgorithmController.class).getAlgorithm(getTargetAlgorithmId(resource))).withRel("targetAlgorithm"));
-        resource.add(linkTo(methodOn(AlgoRelationTypeController.class).getAlgoRelationTypeById(getAlgoRelationTypeId(resource))).withRel("algoRelationType"));
+        resource.add(linkTo(methodOn(AlgorithmController.class).getAlgorithm(getSourceAlgorithmId(resource)))
+                .withRel("sourceAlgorithm"));
+        resource.add(linkTo(methodOn(AlgorithmController.class).getAlgorithm(getTargetAlgorithmId(resource)))
+                .withRel("targetAlgorithm"));
+        resource.add(linkTo(
+                methodOn(AlgoRelationTypeController.class).getAlgoRelationTypeById(getAlgoRelationTypeId(resource)))
+                        .withRel("algoRelationType"));
     }
 
     private UUID getSourceAlgorithmId(EntityModel<AlgorithmRelationDto> resource) {

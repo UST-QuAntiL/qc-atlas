@@ -19,9 +19,11 @@ public class SoftwarePlatformAssembler implements SimpleRepresentationModelAssem
 
     @Override
     public void addLinks(EntityModel<SoftwarePlatformDto> resource) {
-        resource.add(linkTo(methodOn(SoftwarePlatformController.class).getSoftwarePlatform(getId(resource))).withSelfRel());
+        resource.add(
+                linkTo(methodOn(SoftwarePlatformController.class).getSoftwarePlatform(getId(resource))).withSelfRel());
 
-        resource.add(linkTo(methodOn(SoftwarePlatformController.class).deleteSoftwarePlatform(getId(resource))).withRel("delete"));
+        resource.add(linkTo(methodOn(SoftwarePlatformController.class).deleteSoftwarePlatform(getId(resource)))
+                .withRel("delete"));
     }
 
     @Override

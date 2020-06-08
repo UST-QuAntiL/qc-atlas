@@ -47,54 +47,54 @@ import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.WRITE_ONLY;
 @NoArgsConstructor
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "computationModel", visible = true)
 @JsonSubTypes({ @JsonSubTypes.Type(value = QuantumAlgorithmDto.class, name = "QUANTUM"),
-		@JsonSubTypes.Type(value = ClassicAlgorithmDto.class, name = "CLASSIC"),
-		@JsonSubTypes.Type(value = QuantumAlgorithmDto.class, name = "HYBRID") })
+        @JsonSubTypes.Type(value = ClassicAlgorithmDto.class, name = "CLASSIC"),
+        @JsonSubTypes.Type(value = QuantumAlgorithmDto.class, name = "HYBRID") })
 public class AlgorithmDto {
 
-	private UUID id;
+    private UUID id;
 
-	@NotNull(message = "Algorithm-Name must not be null!")
-	private String name;
+    @NotNull(message = "Algorithm-Name must not be null!")
+    private String name;
 
-	private String acronym;
+    private String acronym;
 
-	// private Set<Publication> publications;
+    // private Set<Publication> publications;
 
-	private String intent;
+    private String intent;
 
-	private String problem;
+    private String problem;
 
-	// circular dependency on within algorithmRelation crashes model mapper
-	// private Set<AlgorithmRelationDto> algorithmRelations;
+    // circular dependency on within algorithmRelation crashes model mapper
+    // private Set<AlgorithmRelationDto> algorithmRelations;
 
-	private String inputFormat;
+    private String inputFormat;
 
-	private String algoParameter;
+    private String algoParameter;
 
-	private String outputFormat;
+    private String outputFormat;
 
-	private Sketch sketch;
+    private Sketch sketch;
 
-	private String solution;
+    private String solution;
 
-	private String assumptions;
+    private String assumptions;
 
-	@NotNull(message = "Computational-Model must not be null!")
-	private ComputationModel computationModel;
+    @NotNull(message = "Computational-Model must not be null!")
+    private ComputationModel computationModel;
 
-	@Size(min = 1, message = "Algorithm must have at least 1 ProblemType!")
-	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-	@Schema(accessMode = WRITE_ONLY)
-	private Set<ProblemTypeDto> problemTypes;
+    @Size(min = 1, message = "Algorithm must have at least 1 ProblemType!")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Schema(accessMode = WRITE_ONLY)
+    private Set<ProblemTypeDto> problemTypes;
 
-	private Set<String> applicationAreas;
+    private Set<String> applicationAreas;
 
-	// we do not embedded tags into the object (via @jsonInclude) - instead, we add
-	// a hateoas link to the associated tags
-	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-	// annotate this for swagger as well, because swagger doesn't recognize the json
-	// property annotation
-	@Schema(accessMode = WRITE_ONLY)
-	private Set<TagDto> tags;
+    // we do not embedded tags into the object (via @jsonInclude) - instead, we add
+    // a hateoas link to the associated tags
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    // annotate this for swagger as well, because swagger doesn't recognize the json
+    // property annotation
+    @Schema(accessMode = WRITE_ONLY)
+    private Set<TagDto> tags;
 
 }

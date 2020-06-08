@@ -24,7 +24,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 
-@ContextConfiguration(classes = {DatabaseTestEnvironmentConfiguration.class})
+@ContextConfiguration(classes = { DatabaseTestEnvironmentConfiguration.class })
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
 @ExtendWith(DatabaseExtension.class)

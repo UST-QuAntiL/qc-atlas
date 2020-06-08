@@ -21,7 +21,8 @@ public class CloudServiceAssembler implements SimpleRepresentationModelAssembler
     public void addLinks(EntityModel<CloudServiceDto> resource) {
         resource.add(linkTo(methodOn(CloudServiceController.class).getCloudService(getId(resource))).withSelfRel());
 
-        resource.add(linkTo(methodOn(CloudServiceController.class).deleteCloudService(getId(resource))).withRel("delete"));
+        resource.add(
+                linkTo(methodOn(CloudServiceController.class).deleteCloudService(getId(resource))).withRel("delete"));
     }
 
     @Override
