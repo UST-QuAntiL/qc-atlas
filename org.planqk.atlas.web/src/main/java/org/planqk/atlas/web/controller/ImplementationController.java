@@ -79,7 +79,7 @@ public class ImplementationController {
     private ImplementationAssembler implementationAssembler;
     private TagAssembler tagAssembler;
 
-    @Operation(responses = {@ApiResponse(responseCode = "200")})
+    @Operation(responses = { @ApiResponse(responseCode = "200") })
     @GetMapping("/")
     public HttpEntity<CollectionModel<EntityModel<ImplementationDto>>> getImplementations(@RequestParam UUID algoId) {
         LOG.debug("Get to retrieve all implementations received.");
@@ -97,10 +97,10 @@ public class ImplementationController {
         return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200")})
+    @Operation(responses = { @ApiResponse(responseCode = "200") })
     @GetMapping("/{implId}")
     public HttpEntity<EntityModel<ImplementationDto>> getImplementation(@RequestParam UUID algoId,
-                                                                        @PathVariable UUID implId) {
+            @PathVariable UUID implId) {
         LOG.debug("Get to retrieve implementation with id: {}.", implId);
         // Get Implementation
         Implementation implementation = implementationService.findById(implId);
@@ -112,10 +112,10 @@ public class ImplementationController {
         return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "201")})
+    @Operation(responses = { @ApiResponse(responseCode = "201") })
     @PostMapping("/")
     public HttpEntity<EntityModel<ImplementationDto>> createImplementation(@RequestParam UUID algoId,
-                                                                           @Valid @RequestBody ImplementationDto impl) {
+            @Valid @RequestBody ImplementationDto impl) {
         LOG.debug("Post to create new implementation received.");
         // Get Algorithm
         Algorithm algorithm = algorithmService.findById(algoId);
@@ -130,10 +130,10 @@ public class ImplementationController {
         return new ResponseEntity<>(dtoOutput, HttpStatus.CREATED);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200")})
+    @Operation(responses = { @ApiResponse(responseCode = "200") })
     @GetMapping("/{implId}/" + Constants.TAGS)
     public HttpEntity<CollectionModel<EntityModel<TagDto>>> getTags(@RequestParam UUID algoId,
-                                                                    @PathVariable UUID implId) {
+            @PathVariable UUID implId) {
         // Get Implementation
         Implementation implementation = implementationService.findById(implId);
         // Get Tags of Implementation

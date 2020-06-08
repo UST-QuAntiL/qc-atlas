@@ -22,7 +22,8 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
         // TODO create or update backends when service is implemented
         // softwarePlatform.setSupportedBackends();
 
-        softwarePlatform.setSupportedCloudServices(cloudServiceService.createOrUpdateAll(softwarePlatform.getSupportedCloudServices()));
+        softwarePlatform.setSupportedCloudServices(
+                cloudServiceService.createOrUpdateAll(softwarePlatform.getSupportedCloudServices()));
 
         return this.softwarePlatformRepository.save(softwarePlatform);
     }

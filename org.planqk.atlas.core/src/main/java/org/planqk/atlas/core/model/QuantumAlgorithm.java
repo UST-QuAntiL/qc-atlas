@@ -33,4 +33,5 @@ public class QuantumAlgorithm extends Algorithm {
     }
 
     // TODO: Add implementations
+
 }

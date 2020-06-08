@@ -67,10 +67,10 @@ public class ProviderController {
     private PagedResourcesAssembler<ProviderDto> paginationAssembler;
     private ProviderAssembler providerAssembler;
 
-    @Operation(responses = {@ApiResponse(responseCode = "200")})
+    @Operation(responses = { @ApiResponse(responseCode = "200") })
     @GetMapping("/")
     public HttpEntity<PagedModel<EntityModel<ProviderDto>>> getProviders(@RequestParam(required = false) Integer page,
-                                                                         @RequestParam(required = false) Integer size) {
+            @RequestParam(required = false) Integer size) {
         LOG.debug("Get to retrieve all providers received.");
         // Generate Pageable
         Pageable p = RestUtils.getPageableFromRequestParams(page, size);
@@ -82,7 +82,7 @@ public class ProviderController {
         return new ResponseEntity<>(outputDto, HttpStatus.OK);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200")})
+    @Operation(responses = { @ApiResponse(responseCode = "200") })
     @GetMapping("/{id}")
     public HttpEntity<EntityModel<ProviderDto>> getProvider(@PathVariable UUID id) {
         LOG.debug("Get to retrieve provider with id: {}.", id);
@@ -97,7 +97,7 @@ public class ProviderController {
         return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "201")})
+    @Operation(responses = { @ApiResponse(responseCode = "201") })
     @PostMapping("/")
     public HttpEntity<EntityModel<ProviderDto>> createProvider(@Valid @RequestBody ProviderDto providerDto) {
         LOG.debug("Post to create new provider received.");

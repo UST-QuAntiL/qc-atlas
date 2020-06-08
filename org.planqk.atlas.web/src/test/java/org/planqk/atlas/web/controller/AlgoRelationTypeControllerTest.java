@@ -159,11 +159,8 @@ public class AlgoRelationTypeControllerTest {
                         .queryParam(Constants.SIZE, Integer.toString(size)).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
-        var providers = ObjectMapperUtils.mapResponseToList(
-                result.getResponse().getContentAsString(),
-                "algoRelationTypeDtoes",
-                ProviderDto.class
-        );
+        var providers = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(),
+                "algoRelationTypeDtoes", ProviderDto.class);
         assertEquals(providers.size(), 0);
     }
 
@@ -189,11 +186,8 @@ public class AlgoRelationTypeControllerTest {
                         .queryParam(Constants.SIZE, Integer.toString(size)).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
-        var providers = ObjectMapperUtils.mapResponseToList(
-                result.getResponse().getContentAsString(),
-                "algoRelationTypeDtoes",
-                ProviderDto.class
-        );
+        var providers = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(),
+                "algoRelationTypeDtoes", ProviderDto.class);
         assertEquals(providers.size(), 2);
     }
 

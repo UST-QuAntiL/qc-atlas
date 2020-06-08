@@ -30,6 +30,7 @@ import java.util.UUID;
 import org.planqk.atlas.core.model.AlgoRelationType;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
+import org.planqk.atlas.core.model.ClassicAlgorithm;
 import org.planqk.atlas.core.model.ComputationModel;
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.services.AlgorithmService;
@@ -138,12 +139,12 @@ public class AlgorithmControllerTest {
         AlgoRelationType relType1 = new AlgoRelationType();
         relType1.setName("RelationType1");
 
-        algorithm1 = new Algorithm();
+        algorithm1 = new ClassicAlgorithm();
         algorithm1.setId(UUID.randomUUID());
         algorithm1.setName("alg1");
         algorithm1.setComputationModel(ComputationModel.CLASSIC);
 
-        algorithm2 = new Algorithm();
+        algorithm2 = new ClassicAlgorithm();
         algorithm2.setId(UUID.randomUUID());
         algorithm2.setName("alg2");
         algorithm2.setComputationModel(ComputationModel.CLASSIC);
@@ -202,11 +203,8 @@ public class AlgorithmControllerTest {
                         .queryParam(Constants.SIZE, Integer.toString(size)).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
-        var resultList = ObjectMapperUtils.mapResponseToList(
-                result.getResponse().getContentAsString(),
-                "algorithmDtoes",
-                AlgorithmDto.class
-        );
+        var resultList = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(),
+                "algorithmDtoes", AlgorithmDto.class);
         assertEquals(0, resultList.size());
     }
 
@@ -229,11 +227,8 @@ public class AlgorithmControllerTest {
                         .queryParam(Constants.SIZE, Integer.toString(size)).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON)).andReturn();
 
-        var resultList = ObjectMapperUtils.mapResponseToList(
-                result.getResponse().getContentAsString(),
-                "algorithmDtoes",
-                AlgorithmDto.class
-        );
+        var resultList = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(),
+                "classicAlgorithmDtoes", AlgorithmDto.class);
         assertEquals(2, resultList.size());
     }
 
@@ -349,19 +344,15 @@ public class AlgorithmControllerTest {
         when(algorithmService.getAlgorithmRelations(any(UUID.class))).thenReturn(new HashSet<>());
         doNothing().when(algorithmRelationAssembler)
                 .addLinks(ArgumentMatchers.<CollectionModel<EntityModel<AlgorithmRelationDto>>>any());
-        doNothing().when(algorithmAssembler).addAlgorithmRelationLink(
-                ArgumentMatchers.any(), any(UUID.class));
+        doNothing().when(algorithmAssembler).addAlgorithmRelationLink(ArgumentMatchers.any(), any(UUID.class));
 
         MvcResult result = mockMvc
                 .perform(get("/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS,
                         algorithm2.getId()).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
-        var resultList = ObjectMapperUtils.mapResponseToList(
-                result.getResponse().getContentAsString(),
-                "algorithmRelationDtoes",
-                AlgorithmRelationDto.class
-        );
+        var resultList = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(),
+                "algorithmRelationDtoes", AlgorithmRelationDto.class);
         assertEquals(0, resultList.size());
     }
 
@@ -370,19 +361,15 @@ public class AlgorithmControllerTest {
         when(algorithmService.getAlgorithmRelations(any(UUID.class))).thenReturn(algorithm1.getAlgorithmRelations());
         doNothing().when(algorithmRelationAssembler)
                 .addLinks(ArgumentMatchers.<CollectionModel<EntityModel<AlgorithmRelationDto>>>any());
-        doNothing().when(algorithmAssembler).addAlgorithmRelationLink(
-                ArgumentMatchers.any(), any(UUID.class));
+        doNothing().when(algorithmAssembler).addAlgorithmRelationLink(ArgumentMatchers.any(), any(UUID.class));
 
         MvcResult result = mockMvc
                 .perform(get("/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS,
                         algorithm1.getId()).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON)).andReturn();
 
-        var resultList = ObjectMapperUtils.mapResponseToList(
-                result.getResponse().getContentAsString(),
-                "algorithmRelationDtoes",
-                AlgorithmRelationDto.class
-        );
+        var resultList = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(),
+                "algorithmRelationDtoes", AlgorithmRelationDto.class);
         assertEquals(2, resultList.size());
     }
 
@@ -398,19 +385,19 @@ public class AlgorithmControllerTest {
         AlgorithmRelationDto algoRelationDto = new AlgorithmRelationDto();
         mockMvc.perform(put("/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS,
                 algorithm1.getId()).content(mapper.writeValueAsString(algoRelationDto))
-                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
 
         algoRelationDto.setSourceAlgorithm(algorithm1Dto);
         mockMvc.perform(put("/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS,
                 algorithm1.getId()).content(mapper.writeValueAsString(algoRelationDto))
-                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
 
         algoRelationDto.setTargetAlgorithm(algorithm2Dto);
         mockMvc.perform(put("/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS,
                 algorithm1.getId()).content(mapper.writeValueAsString(algoRelationDto))
-                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
 
@@ -421,7 +408,7 @@ public class AlgorithmControllerTest {
 
         mockMvc.perform(put("/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS,
                 UUID.randomUUID()).content(mapper.writeValueAsString(algorithmRelation1Dto))
-                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
 
@@ -435,7 +422,7 @@ public class AlgorithmControllerTest {
         MvcResult result = mockMvc
                 .perform(put("/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS,
                         algorithm1.getId()).content(mapper.writeValueAsString(algorithmRelation1Dto))
-                        .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+                                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
         EntityModel<AlgorithmRelationDto> response = mapper.readValue(result.getResponse().getContentAsString(),
