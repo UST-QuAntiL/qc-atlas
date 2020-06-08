@@ -1,7 +1,6 @@
 package org.planqk.atlas.web.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,11 +33,11 @@ import java.util.UUID;
 /**
  * Controller to access and manipulate publication algorithms.
  */
-@io.swagger.v3.oas.annotations.tags.Tag(name = "publication")
+@io.swagger.v3.oas.annotations.tags.Tag(name="publication")
 @Slf4j
 @RestController
 @ApiVersion("v1")
-@CrossOrigin(allowedHeaders = "*", origins = "*")
+@CrossOrigin(allowedHeaders="*", origins="*")
 @AllArgsConstructor
 @RequestMapping("/" + Constants.PUBLICATIONS)
 public class PublicationController {
@@ -49,47 +48,47 @@ public class PublicationController {
     private PagedResourcesAssembler<PublicationDto> paginationAssembler;
 
     @GetMapping("/")
-    public HttpEntity<PagedModel<EntityModel<PublicationDto>>> getPublications(@RequestParam(required = false) Integer page,
-                                                   @RequestParam(required = false) Integer size) {
+    public HttpEntity<PagedModel<EntityModel<PublicationDto>>> getPublications(@RequestParam(required=false) Integer page,
+                                                                               @RequestParam(required=false) Integer size) {
         log.debug("Get all publications");
-        Pageable pageable = RestUtils.getPageableFromRequestParams(page,size);
-        Page<PublicationDto> dtoPage = ModelMapperUtils.convertPage(publicationService.findAll(pageable), PublicationDto.class);
-        PagedModel<EntityModel<PublicationDto>> outputModel = paginationAssembler.toModel(dtoPage);
+        Pageable pageable=RestUtils.getPageableFromRequestParams(page, size);
+        Page<PublicationDto> dtoPage=ModelMapperUtils.convertPage(publicationService.findAll(pageable), PublicationDto.class);
+        PagedModel<EntityModel<PublicationDto>> outputModel=paginationAssembler.toModel(dtoPage);
         publicationAssembler.addLinks(outputModel.getContent());
-        return new ResponseEntity<>(outputModel,HttpStatus.OK);
+        return new ResponseEntity<>(outputModel, HttpStatus.OK);
     }
 
-    @Operation(responses = { @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400", content = @Content) })
+    @Operation(responses={@ApiResponse(responseCode="201")})
     @PostMapping("/")
     public HttpEntity<EntityModel<PublicationDto>> createPublication(@Validated @RequestBody PublicationDto publicationDto) {
         log.debug("Create publication");
-        Publication publication = publicationService.save(ModelMapperUtils.convert(publicationDto, Publication.class));
-        EntityModel<PublicationDto> dtoEntityModel = HateoasUtils.generateEntityModel(ModelMapperUtils.convert(publication, PublicationDto.class));
+        Publication publication=publicationService.save(ModelMapperUtils.convert(publicationDto, Publication.class));
+        EntityModel<PublicationDto> dtoEntityModel=HateoasUtils.generateEntityModel(ModelMapperUtils.convert(publication, PublicationDto.class));
         publicationAssembler.addLinks(dtoEntityModel);
         return new ResponseEntity<>(dtoEntityModel, HttpStatus.CREATED);
     }
 
-    @Operation(responses = { @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "404", content = @Content) })
+    @Operation(responses={@ApiResponse(responseCode="200")})
     @GetMapping("/{id}")
     public HttpEntity<EntityModel<PublicationDto>> getPublication(@PathVariable UUID id) {
-        log.debug("Get publication with id: {}",id);
-        Publication publication = publicationService.findById(id);
-        EntityModel<PublicationDto> dtoEntityModel = HateoasUtils.generateEntityModel(ModelMapperUtils.convert(publication, PublicationDto.class));
+        log.debug("Get publication with id: {}", id);
+        Publication publication=publicationService.findById(id);
+        EntityModel<PublicationDto> dtoEntityModel=HateoasUtils.generateEntityModel(ModelMapperUtils.convert(publication, PublicationDto.class));
         publicationAssembler.addLinks(dtoEntityModel);
         return new ResponseEntity<>(dtoEntityModel, HttpStatus.OK);
     }
 
+    @Operation(responses={@ApiResponse(responseCode="200")})
     @PutMapping("/{id}")
     public HttpEntity<EntityModel<PublicationDto>> updatePublication(@PathVariable UUID id, @Validated @RequestBody PublicationDto pub) {
         log.debug("Put to update algorithm with id: {}", id);
-        Publication publication = publicationService.update(id,ModelMapperUtils.convert(pub, Publication.class));
-        EntityModel<PublicationDto> dtoEntityModel = HateoasUtils.generateEntityModel(ModelMapperUtils.convert(publication,PublicationDto.class));
+        Publication publication=publicationService.update(id, ModelMapperUtils.convert(pub, Publication.class));
+        EntityModel<PublicationDto> dtoEntityModel=HateoasUtils.generateEntityModel(ModelMapperUtils.convert(publication, PublicationDto.class));
         publicationAssembler.addLinks(dtoEntityModel);
         return new ResponseEntity<>(dtoEntityModel, HttpStatus.OK);
     }
 
+    @Operation(responses={@ApiResponse(responseCode="200")})
     @DeleteMapping("/{id}")
     public HttpEntity<AlgorithmDto> deletePublication(@PathVariable UUID id) {
         log.debug("Delete to remove algorithm with id: {}", id);
@@ -97,15 +96,16 @@ public class PublicationController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @Operation(responses={@ApiResponse(responseCode="200")})
     @GetMapping("/{id}/" + Constants.ALGORITHMS)
     public HttpEntity<CollectionModel<EntityModel<AlgorithmDto>>> getAlgorithms(@PathVariable UUID id) {
         log.debug("Get algorithms of Publication with id {}", id);
-        Set<Algorithm> algorithms = publicationService.findPublicationAlgorithms(id);
-        Set<AlgorithmDto> algorithmDtos = ModelMapperUtils.convertSet(algorithms, AlgorithmDto.class);
-        CollectionModel<EntityModel<AlgorithmDto>> resultCollection = HateoasUtils.generateCollectionModel(algorithmDtos);
+        Set<Algorithm> algorithms=publicationService.findPublicationAlgorithms(id);
+        Set<AlgorithmDto> algorithmDtos=ModelMapperUtils.convertSet(algorithms, AlgorithmDto.class);
+        CollectionModel<EntityModel<AlgorithmDto>> resultCollection=HateoasUtils.generateCollectionModel(algorithmDtos);
         algorithmAssembler.addLinks(resultCollection);
-        publicationAssembler.addAlgorithmLink(resultCollection,id);
-        return new ResponseEntity<>(resultCollection,HttpStatus.OK);
+        publicationAssembler.addAlgorithmLink(resultCollection, id);
+        return new ResponseEntity<>(resultCollection, HttpStatus.OK);
     }
 }
 
