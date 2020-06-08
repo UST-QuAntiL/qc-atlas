@@ -24,6 +24,7 @@ import java.util.UUID;
 
 import javax.validation.Valid;
 
+import io.swagger.v3.oas.annotations.media.Content;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.model.ProblemType;
@@ -115,7 +116,6 @@ public class AlgorithmController {
         // store and return algorithm
         Algorithm algorithm = algorithmService.save(ModelMapperUtils.convert(algo, Algorithm.class));
         // Convert To EntityModel
-
         EntityModel<AlgorithmDto> dtoOutput = HateoasUtils
                 .generateEntityModel(ModelMapperUtils.convert(algorithm, AlgorithmDto.class));
         // Fill EntityModel with links
@@ -176,7 +176,7 @@ public class AlgorithmController {
         algorithmAssembler.addTagLink(resultCollection, id);
         return new ResponseEntity<>(resultCollection, HttpStatus.OK);
     }
-    
+
     @Operation(responses = { @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "404", content = @Content) })
     @GetMapping("/{id}/" + Constants.PUBLICATIONS)
