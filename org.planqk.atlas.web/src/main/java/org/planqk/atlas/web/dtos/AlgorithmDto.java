@@ -82,7 +82,6 @@ public class AlgorithmDto {
     @NotNull(message = "Computational-Model must not be null!")
     private ComputationModel computationModel;
 
-    @Size(min = 1, message = "Algorithm must have at least 1 ProblemType!")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Schema(accessMode = WRITE_ONLY)
     private Set<ProblemTypeDto> problemTypes;
