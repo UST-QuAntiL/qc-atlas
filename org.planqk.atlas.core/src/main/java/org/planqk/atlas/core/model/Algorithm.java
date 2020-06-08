@@ -69,7 +69,7 @@ public class Algorithm extends AlgorOrImpl {
     @OneToMany(fetch = FetchType.LAZY, cascade = { CascadeType.ALL }, orphanRemoval = true)
     @JoinColumn(name = "sourceAlgorithm", referencedColumnName = "id")
     @Setter
-    private Set<AlgorithmRelation> algorithmRelations;
+    private Set<AlgorithmRelation> algorithmRelations = new HashSet<>();
 
     @Setter
     @Getter
@@ -101,21 +101,21 @@ public class Algorithm extends AlgorOrImpl {
 
     @OneToMany(mappedBy = "algorithm", fetch = FetchType.LAZY, cascade = CascadeType.MERGE, orphanRemoval = true)
     @Setter
-    private Set<PatternRelation> relatedPatterns;
+    private Set<PatternRelation> relatedPatterns = new HashSet<>();
 
     @ManyToMany(cascade = { CascadeType.MERGE })
     @JoinTable(name = "algorithm_problem_type", joinColumns = @JoinColumn(name = "algorithm_id"), inverseJoinColumns = @JoinColumn(name = "problem_type_id"))
     @Setter
-    private Set<ProblemType> problemTypes;
+    private Set<ProblemType> problemTypes = new HashSet<>();
 
     @ElementCollection
     @Setter
-    private Set<String> applicationAreas;
+    private Set<String> applicationAreas = new HashSet<>();
 
     @ManyToMany(cascade = { CascadeType.MERGE })
     @JoinTable(name = "algorithm_tag", joinColumns = @JoinColumn(name = "algorithm_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
     @Setter
-    private Set<Tag> tags;
+    private Set<Tag> tags = new HashSet<>();
 
     @NonNull
     public Set<Tag> getTags() {
