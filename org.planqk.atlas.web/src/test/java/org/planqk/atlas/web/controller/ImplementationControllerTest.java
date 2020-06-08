@@ -38,6 +38,7 @@ import org.planqk.atlas.web.utils.ModelMapperUtils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.swagger.v3.core.util.Json;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -66,6 +67,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.fromMethodCall;
 import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.on;
@@ -270,6 +272,48 @@ public class ImplementationControllerTest {
                                 .writeValueAsString(ModelMapperUtils.convert(implementation, ImplementationDto.class)))
                         .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void updateImplementation() throws Exception {
+        UUID algoId = UUID.randomUUID();
+        UUID implId = UUID.randomUUID();
+        Algorithm algorithm = mockValidAlgorithmForImplCreation(algoId);
+
+        Implementation implementation = mockValidMinimalImpl(implId);
+        implementation.setImplementedAlgorithm(algorithm);
+
+        when(algorithmService.findById(algoId)).thenReturn(algorithm);
+        when(implementationService.save(any(Implementation.class))).thenAnswer(i -> i.getArguments()[0]);
+        doNothing().when(implementationAssembler).addLinks(ArgumentMatchers.<EntityModel<ImplementationDto>>any());
+
+        mockMvc
+                .perform(post(fromMethodCall(uriBuilder,
+                        on(ImplementationController.class).createImplementation(algoId, null)).toUriString())
+                        .content(mapper.writeValueAsString(
+                                ModelMapperUtils.convert(implementation, ImplementationDto.class)))
+                        .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated()).andReturn();
+
+        final var updateDto = ModelMapperUtils.convert(implementation, ImplementationDto.class);
+        updateDto.setName("name2");
+        updateDto.setDescription("test2");
+
+        when(implementationService.findById(implId)).thenReturn(implementation);
+
+        MvcResult mvcResult = mockMvc
+                .perform(put(fromMethodCall(uriBuilder,
+                        on(ImplementationController.class).updateImplementation(updateDto)).toUriString())
+                        .content(mapper.writeValueAsString(updateDto))
+                        .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
+
+        var updatedImpl = Json.mapper().readValue(
+                mvcResult.getResponse().getContentAsString(), new TypeReference<EntityModel<ImplementationDto>>() {
+                });
+        assertEquals(implId, updatedImpl.getContent().getId());
+        assertEquals("name2", updatedImpl.getContent().getName());
+        assertEquals("test2", updatedImpl.getContent().getDescription());
     }
 
     private Algorithm mockValidAlgorithmForImplCreation(UUID algoId) {
