@@ -19,6 +19,7 @@
 
 package org.planqk.atlas.core.services;
 
+import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
@@ -59,7 +60,69 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         // Persist ProblemTypes separately
         algorithm.setProblemTypes(problemTypeService.createOrUpdateAll(algorithm.getProblemTypes()));
 
+        algorithm = processAlgorithmRelations(algorithm);
+
         return algorithmRepository.save(algorithm);
+    }
+
+    private Algorithm processAlgorithmRelations(Algorithm algorithm) {
+        // save relations to append after persisting algorithm
+        Set<AlgorithmRelation> relations = algorithm.getAlgorithmRelations();
+
+        // remove algorithm relations if source algorithm does not yet exist
+        if (!algorithmAlreadyPersisted(algorithm.getId())) {
+            // remove invalid relations
+            algorithm.setAlgorithmRelations(new HashSet<>());
+            // persist algorithm
+            algorithm = algorithmRepository.save(algorithm);
+
+            for (AlgorithmRelation relation : relations) {
+                // set correct source algorithm
+                relation.setSourceAlgorithm(algorithm);
+                if (Optional.ofNullable(relation.getTargetAlgorithm()).isPresent()
+                        && validateTargetAlgorithmAndRelationType(algorithm, relation)) {
+                    algorithm.addAlgorithmRelation(relation);
+                }
+            }
+        } else {
+            for (AlgorithmRelation relation : relations) {
+                if (algorithm.getId() != relation.getSourceAlgorithm().getId()) {
+                    relation.setSourceAlgorithm(algorithm);
+                } else {
+                    // TODO decide if varying IDs cause error or get corrected without further
+                    // notice
+                }
+                if (Optional.ofNullable(relation.getTargetAlgorithm()).isPresent()
+                        && validateTargetAlgorithmAndRelationType(algorithm, relation)) {
+                    algorithm.addAlgorithmRelation(relation);
+                }
+            }
+        }
+        return algorithm;
+    }
+
+    private boolean algorithmAlreadyPersisted(UUID algorithmId) {
+        return findOptionalById(algorithmId).isPresent();
+    }
+
+    private boolean validateTargetAlgorithmAndRelationType(Algorithm algorithm, AlgorithmRelation relation) {
+        if (findOptionalById(relation.getTargetAlgorithm().getId()).isPresent()) {
+
+            // TODO decide if missing AlgoRelationType causes exception or if
+            // AlgoRelationType gets created on the fly
+            AlgoRelationType relationType = algoRelationTypeService
+                    .findOptionalById(relation.getAlgoRelationType().getId()).isPresent()
+                            ? relation.getAlgoRelationType()
+                            : algoRelationTypeService.save(relation.getAlgoRelationType());
+            relation.setAlgoRelationType(relationType);
+            return true;
+        } else {
+            // TODO decide if invalid relation due to missing target algorithm causes
+            // exception or if relation gets dropped
+            // throw new NoSuchElementException("Target algorithm '" +
+            // relation.getTargetAlgorithm().getId().toString() + "' does not exist");
+        }
+        return false;
     }
 
     @Override
@@ -135,7 +198,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 
         sourceAlgorithm.addAlgorithmRelation(relation);
         // Save updated Algorithm -> CASCADE will save Relation
-        sourceAlgorithm = save(sourceAlgorithm);
+        sourceAlgorithm = algorithmRepository.save(sourceAlgorithm);
 
         return relation;
     }
