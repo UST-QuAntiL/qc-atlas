@@ -13,4 +13,4 @@ before_script:
 script:
   - mvn package --fail-at-end
 after_success:
-  - bash <(curl -s https://codecov.io/bash) -s target/
+  - bash <(curl -s https://codecov.io/bash)

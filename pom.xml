@@ -33,14 +33,9 @@
                 <version>0.8.5</version>
                 <executions>
                     <execution>
-                        <id>agent-for-ut</id>
                         <goals>
                             <goal>prepare-agent</goal>
                         </goals>
-                        <configuration>
-                            <append>true</append>
-                            <destFile>${jacoco.reportPath}</destFile>
-                        </configuration>
                     </execution>
                     <execution>
                         <id>report</id>
