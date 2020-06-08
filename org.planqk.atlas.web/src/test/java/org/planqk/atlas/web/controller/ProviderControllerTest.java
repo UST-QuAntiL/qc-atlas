@@ -113,11 +113,8 @@ public class ProviderControllerTest {
                         .queryParam(Constants.SIZE, Integer.toString(size)).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
-        var resultList = ObjectMapperUtils.mapResponseToList(
-                result.getResponse().getContentAsString(),
-                "providerDtoes",
-                ProviderDto.class
-        );
+        var resultList = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(), "providerDtoes",
+                ProviderDto.class);
         assertEquals(0, resultList.size());
     }
 
@@ -135,8 +132,7 @@ public class ProviderControllerTest {
         Page<ProviderDto> pageDto = ModelMapperUtils.convertPage(pageEntity, ProviderDto.class);
 
         when(providerService.findAll(pageable)).thenReturn(pageEntity);
-        when(paginationAssembler.toModel(ArgumentMatchers.any()))
-                .thenReturn(HateoasUtils.generatePagedModel(pageDto));
+        when(paginationAssembler.toModel(ArgumentMatchers.any())).thenReturn(HateoasUtils.generatePagedModel(pageDto));
         doNothing().when(providerAssembler).addLinks(ArgumentMatchers.<Collection<EntityModel<ProviderDto>>>any());
 
         MvcResult result = mockMvc
@@ -144,11 +140,8 @@ public class ProviderControllerTest {
                         .queryParam(Constants.SIZE, Integer.toString(size)).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON)).andReturn();
 
-        var resultList = ObjectMapperUtils.mapResponseToList(
-                result.getResponse().getContentAsString(),
-                "providerDtoes",
-                ProviderDto.class
-        );
+        var resultList = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(), "providerDtoes",
+                ProviderDto.class);
 
         assertEquals(1, resultList.size());
         assertEquals(provId, resultList.get(0).getId());
@@ -185,9 +178,8 @@ public class ProviderControllerTest {
         ProviderDto providerDto = new ProviderDto();
         providerDto.setName("IBM");
 
-        mockMvc.perform(
-                post("/" + Constants.PROVIDERS + "/").content(mapper.writeValueAsString(providerDto))
-                        .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post("/" + Constants.PROVIDERS + "/").content(mapper.writeValueAsString(providerDto))
+                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
 
@@ -203,8 +195,7 @@ public class ProviderControllerTest {
         doNothing().when(providerAssembler).addLinks(ArgumentMatchers.<EntityModel<ProviderDto>>any());
 
         MvcResult result = mockMvc
-                .perform(post("/" + Constants.PROVIDERS + "/")
-                        .content(mapper.writeValueAsString(providerDto))
+                .perform(post("/" + Constants.PROVIDERS + "/").content(mapper.writeValueAsString(providerDto))
                         .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated()).andReturn();
 

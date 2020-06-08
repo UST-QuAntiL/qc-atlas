@@ -123,14 +123,11 @@ public class ImplementationControllerTest {
 
         MvcResult mvcResult = mockMvc.perform(get(
                 fromMethodCall(uriBuilder, on(ImplementationController.class).getImplementations(algoId)).toUriString())
-                .accept(MediaType.APPLICATION_JSON))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
-        var resultList = ObjectMapperUtils.mapResponseToList(
-                mvcResult.getResponse().getContentAsString(),
-                "implementationDtoes",
-                ImplementationDto.class
-        );
+        var resultList = ObjectMapperUtils.mapResponseToList(mvcResult.getResponse().getContentAsString(),
+                "implementationDtoes", ImplementationDto.class);
 
         assertEquals(implementation.getId(), resultList.get(0).getId());
         assertEquals(1, resultList.size());
@@ -161,16 +158,13 @@ public class ImplementationControllerTest {
 
         MvcResult mvcResult = mockMvc.perform(get(
                 fromMethodCall(uriBuilder, on(ImplementationController.class).getImplementations(algoId)).toUriString())
-                .accept(MediaType.APPLICATION_JSON))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
-        var resultList = ObjectMapperUtils.mapResponseToList(
-                mvcResult.getResponse().getContentAsString(),
-                "implementationDtoes",
-                ImplementationDto.class
-        );
-        assertTrue(resultList.stream().map(impl -> impl.getId())
-                .allMatch(id -> id.equals(implId1) || id.equals(implId2)));
+        var resultList = ObjectMapperUtils.mapResponseToList(mvcResult.getResponse().getContentAsString(),
+                "implementationDtoes", ImplementationDto.class);
+        assertTrue(
+                resultList.stream().map(impl -> impl.getId()).allMatch(id -> id.equals(implId1) || id.equals(implId2)));
         assertEquals(resultList.size(), implementationList.size());
     }
 
@@ -190,9 +184,9 @@ public class ImplementationControllerTest {
         MvcResult mvcResult = mockMvc
                 .perform(post(fromMethodCall(uriBuilder,
                         on(ImplementationController.class).createImplementation(algoId, null)).toUriString())
-                        .content(mapper.writeValueAsString(
-                                ModelMapperUtils.convert(implementation, ImplementationDto.class)))
-                        .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+                                .content(mapper.writeValueAsString(
+                                        ModelMapperUtils.convert(implementation, ImplementationDto.class)))
+                                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated()).andReturn();
 
         EntityModel<ImplementationDto> implementationResult = new ObjectMapper().readValue(
@@ -217,9 +211,9 @@ public class ImplementationControllerTest {
         MvcResult mvcResult = mockMvc
                 .perform(post(fromMethodCall(uriBuilder,
                         on(ImplementationController.class).createImplementation(algoId, null)).toUriString())
-                        .content(mapper.writeValueAsString(
-                                ModelMapperUtils.convert(implementation, ImplementationDto.class)))
-                        .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+                                .content(mapper.writeValueAsString(
+                                        ModelMapperUtils.convert(implementation, ImplementationDto.class)))
+                                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated()).andReturn();
 
         EntityModel<ImplementationDto> createdImpl = new ObjectMapper().readValue(
@@ -256,9 +250,9 @@ public class ImplementationControllerTest {
         mockMvc.perform(
                 post(fromMethodCall(uriBuilder, on(ImplementationController.class).createImplementation(algoId, null))
                         .toUriString())
-                        .content(mapper.writeValueAsString(
-                                ModelMapperUtils.convert(implementation, ImplementationDto.class)))
-                        .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+                                .content(mapper.writeValueAsString(
+                                        ModelMapperUtils.convert(implementation, ImplementationDto.class)))
+                                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
 
@@ -272,9 +266,9 @@ public class ImplementationControllerTest {
 
         mockMvc.perform(post(fromMethodCall(uriBuilder,
                 on(ImplementationController.class).createImplementation(nonExistentAlgoId, null)).toUriString())
-                .content(mapper
-                        .writeValueAsString(ModelMapperUtils.convert(implementation, ImplementationDto.class)))
-                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+                        .content(mapper
+                                .writeValueAsString(ModelMapperUtils.convert(implementation, ImplementationDto.class)))
+                        .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
 

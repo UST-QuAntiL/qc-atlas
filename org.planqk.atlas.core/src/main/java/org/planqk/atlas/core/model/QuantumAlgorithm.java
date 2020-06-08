@@ -1,5 +1,6 @@
 package org.planqk.atlas.core.model;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -22,7 +23,7 @@ public class QuantumAlgorithm extends Algorithm {
 
     @OneToMany(mappedBy = "algorithm", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @Setter
-    private Set<QuantumResource> requiredQuantumResources;
+    private Set<QuantumResource> requiredQuantumResources = new HashSet<>();
 
     private String speedUp;
 
