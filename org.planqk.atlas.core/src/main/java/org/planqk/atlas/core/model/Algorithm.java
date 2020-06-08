@@ -103,5 +103,19 @@ public class Algorithm extends AlgorOrImpl {
         }
         return false;
     }
+    
+    public void setAlgorithmRelations(Set<AlgorithmRelation> algorithmRelations) {
+        this.algorithmRelations.clear();
+        if (algorithmRelations != null) {
+            this.algorithmRelations.addAll(algorithmRelations);
+        }
+    }
+    
+    public void setRelatedPatterns(Set<PatternRelation> relatedPatterns) {
+        this.relatedPatterns.clear();
+        if (relatedPatterns != null) {
+            this.relatedPatterns.addAll(relatedPatterns);
+        }
+    }
 
 }
