@@ -20,7 +20,6 @@
 package org.planqk.atlas.web.controller;
 
 import org.planqk.atlas.web.Constants;
-
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
@@ -36,14 +35,14 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
  * Root controller to access all entities within Quality, trigger the hardware
  * selection, and execution of quantum algorithms.
  */
-@io.swagger.v3.oas.annotations.tags.Tag(name = "root")
+@io.swagger.v3.oas.annotations.tags.Tag(name="root")
 @RestController
-@CrossOrigin(allowedHeaders = "*", origins = "*")
+@CrossOrigin(allowedHeaders="*", origins="*")
 public class RootController {
 
     @GetMapping("/")
     public HttpEntity<RepresentationModel<?>> root() {
-        RepresentationModel<?> responseEntity = new RepresentationModel<>();
+        RepresentationModel<?> responseEntity=new RepresentationModel<>();
 
         // add links to sub-controllers
         responseEntity.add(linkTo(methodOn(RootController.class).root()).withSelfRel());
@@ -53,7 +52,10 @@ public class RootController {
                 Constants.DEFAULT_PAGE_SIZE)).withRel(Constants.PROVIDERS));
         responseEntity.add(linkTo(
                 methodOn(TagController.class).getTags(Constants.DEFAULT_PAGE_NUMBER, Constants.DEFAULT_PAGE_SIZE))
-                        .withRel(Constants.TAGS));
+                .withRel(Constants.TAGS));
+        responseEntity.add(linkTo(
+                methodOn(PublicationController.class).getPublications(Constants.DEFAULT_PAGE_NUMBER, Constants.DEFAULT_PAGE_SIZE))
+                .withRel(Constants.PUBLICATIONS));
 
         return new ResponseEntity<>(responseEntity, HttpStatus.OK);
     }
