@@ -38,22 +38,23 @@ public class ObjectMapperUtils {
     /**
      * Returns all Unmarshalled objects of a Paged Model Response
      *
-     * @param response  the application/json+hal response body returned from the request
-     * @param key       the key for the resources within the '_embedded' child object
-     * @param mapper    The object mapper used to perform the mapping operations. Must not be null.
-     * @param className the Class object of the elements to unmarshall e.g. AlgorithmDto.class. Must be a child o <T>
-     * @param <T>       Generic type that the unmarshalled objects will be returned as
-     * @return an (array) list of all objects in the response under the given key. The ordering shuld remain identical
-     * to before
-     * @throws Exception generic errors may occur since this method does not handle errors . It is only intended to be
-     *                   used in tests.
+     * @param response  the application/json+hal response body returned from the
+     *                  request
+     * @param key       the key for the resources within the '_embedded' child
+     *                  object
+     * @param mapper    The object mapper used to perform the mapping operations.
+     *                  Must not be null.
+     * @param className the Class object of the elements to unmarshall e.g.
+     *                  AlgorithmDto.class. Must be a child o <T>
+     * @param <T>       Generic type that the unmarshalled objects will be returned
+     *                  as
+     * @return an (array) list of all objects in the response under the given key.
+     *         The ordering shuld remain identical to before
+     * @throws Exception generic errors may occur since this method does not handle
+     *                   errors . It is only intended to be used in tests.
      */
-    public static <T> List<T> mapResponseToList(
-            String response,
-            String key,
-            Class<? extends T> className,
-            @NonNull ObjectMapper mapper
-    ) throws Exception {
+    public static <T> List<T> mapResponseToList(String response, String key, Class<? extends T> className,
+            @NonNull ObjectMapper mapper) throws Exception {
         var rootObject = new JSONObject(response);
         if (!rootObject.has(EMBEDDED_RESOURCES_JSON_KEY)) {
             return Collections.emptyList();
@@ -75,20 +76,21 @@ public class ObjectMapperUtils {
     /**
      * Returns all Unmarshalled objects of a Paged Model Response
      *
-     * @param response  the application/json+hal response body returned from the request
-     * @param key       the key for the resources within the '_embedded' child object
-     * @param className the Class object of the elements to unmarshall e.g. AlgorithmDto.class. Must be a child o <T>
-     * @param <T>       Generic type that the unmarshalled objects will be returned as
-     * @return an (array) list of all objects in the response under the given key. The ordering shuld remain identical
-     * to before
-     * @throws Exception generic errors may occur since this method does not handle errors . It is only intended to be
-     *                   used in tests.
+     * @param response  the application/json+hal response body returned from the
+     *                  request
+     * @param key       the key for the resources within the '_embedded' child
+     *                  object
+     * @param className the Class object of the elements to unmarshall e.g.
+     *                  AlgorithmDto.class. Must be a child o <T>
+     * @param <T>       Generic type that the unmarshalled objects will be returned
+     *                  as
+     * @return an (array) list of all objects in the response under the given key.
+     *         The ordering shuld remain identical to before
+     * @throws Exception generic errors may occur since this method does not handle
+     *                   errors . It is only intended to be used in tests.
      */
-    public static <T> List<T> mapResponseToList(
-            String response,
-            String key,
-            Class<? extends T> className
-    ) throws Exception {
+    public static <T> List<T> mapResponseToList(String response, String key, Class<? extends T> className)
+            throws Exception {
         return mapResponseToList(response, key, className, newTestMapper());
     }
 
@@ -97,8 +99,8 @@ public class ObjectMapperUtils {
      *
      * @param response the json+hal response as string
      * @return the Unmarshalled page information
-     * @throws Exception generic errors may occur since this method does not handle errors . It is only intended to be *
-     *                   used in tests.
+     * @throws Exception generic errors may occur since this method does not handle
+     *                   errors . It is only intended to be * used in tests.
      */
     public static PageInfo getPageInfo(String response) throws Exception {
         var pageContent = new JSONObject(response).getJSONObject(PAGED_MODEL_PAGE_INFO_JSON_KEY).toString();

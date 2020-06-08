@@ -42,8 +42,8 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(controllers = {CloudServiceController.class})
-@ExtendWith({MockitoExtension.class})
+@WebMvcTest(controllers = { CloudServiceController.class })
+@ExtendWith({ MockitoExtension.class })
 @AutoConfigureMockMvc
 public class CloudServiceControllerTest {
 
@@ -85,10 +85,8 @@ public class CloudServiceControllerTest {
         CloudServiceDto cloudServiceDto = new CloudServiceDto();
         cloudServiceDto.setId(UUID.randomUUID());
 
-        mockMvc.perform(put("/" + Constants.CLOUD_SERVICES + "/")
-                .content(mapper.writeValueAsString(cloudServiceDto))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(put("/" + Constants.CLOUD_SERVICES + "/").content(mapper.writeValueAsString(cloudServiceDto))
+                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
 
@@ -101,10 +99,9 @@ public class CloudServiceControllerTest {
 
         when(cloudServiceService.save(any(CloudService.class))).thenReturn(cloudService);
 
-        MvcResult result = mockMvc.perform(put("/" + Constants.CLOUD_SERVICES + "/")
-                .content(mapper.writeValueAsString(cloudServiceDto))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
+        MvcResult result = mockMvc
+                .perform(put("/" + Constants.CLOUD_SERVICES + "/").content(mapper.writeValueAsString(cloudServiceDto))
+                        .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated()).andReturn();
 
         EntityModel<CloudServiceDto> resultDtoEntity = mapper.readValue(result.getResponse().getContentAsString(),
@@ -119,14 +116,13 @@ public class CloudServiceControllerTest {
     public void getCloudServices_withEmptySet() throws Exception {
         when(cloudServiceService.findAll(pageable)).thenReturn(Page.empty());
 
-        MvcResult result = mockMvc.perform(get("/" + Constants.CLOUD_SERVICES + "/")
-                .queryParam(Constants.PAGE, Integer.toString(page))
-                .queryParam(Constants.SIZE, Integer.toString(size))
-                .accept(MediaType.APPLICATION_JSON))
+        MvcResult result = mockMvc
+                .perform(get("/" + Constants.CLOUD_SERVICES + "/").queryParam(Constants.PAGE, Integer.toString(page))
+                        .queryParam(Constants.SIZE, Integer.toString(size)).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
-        PagedModel<EntityModel<CloudServiceDto>> pagedDtoEntities = mapper.readValue(
-                result.getResponse().getContentAsString(), new TypeReference<>() {
+        PagedModel<EntityModel<CloudServiceDto>> pagedDtoEntities = mapper
+                .readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
                 });
 
         assertEquals(0, pagedDtoEntities.getContent().size());
@@ -144,10 +140,9 @@ public class CloudServiceControllerTest {
 
         when(cloudServiceService.findAll(pageable)).thenReturn(cloudServicePage);
 
-        MvcResult result = mockMvc.perform(get("/" + Constants.CLOUD_SERVICES + "/")
-                .queryParam(Constants.PAGE, Integer.toString(page))
-                .queryParam(Constants.SIZE, Integer.toString(size))
-                .accept(MediaType.APPLICATION_JSON))
+        MvcResult result = mockMvc
+                .perform(get("/" + Constants.CLOUD_SERVICES + "/").queryParam(Constants.PAGE, Integer.toString(page))
+                        .queryParam(Constants.SIZE, Integer.toString(size)).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
         JSONObject rootObject = new JSONObject(result.getResponse().getContentAsString());
@@ -175,10 +170,9 @@ public class CloudServiceControllerTest {
 
         when(cloudServiceService.findAll(pageable)).thenReturn(cloudServicePage);
 
-        MvcResult result = mockMvc.perform(get("/" + Constants.CLOUD_SERVICES + "/")
-                .queryParam(Constants.PAGE, Integer.toString(page))
-                .queryParam(Constants.SIZE, Integer.toString(size))
-                .accept(MediaType.APPLICATION_JSON))
+        MvcResult result = mockMvc
+                .perform(get("/" + Constants.CLOUD_SERVICES + "/").queryParam(Constants.PAGE, Integer.toString(page))
+                        .queryParam(Constants.SIZE, Integer.toString(size)).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
         JSONObject rootObject = new JSONObject(result.getResponse().getContentAsString());
@@ -192,8 +186,8 @@ public class CloudServiceControllerTest {
         UUID testId = UUID.randomUUID();
         when(cloudServiceService.findById(testId)).thenThrow(NoSuchElementException.class);
 
-        mockMvc.perform(get("/" + Constants.CLOUD_SERVICES + "/" + testId.toString())
-                .accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(
+                get("/" + Constants.CLOUD_SERVICES + "/" + testId.toString()).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
 
@@ -204,12 +198,12 @@ public class CloudServiceControllerTest {
         cloudService.setName("test software platform");
         when(cloudServiceService.findById(cloudService.getId())).thenReturn(cloudService);
 
-        MvcResult result = mockMvc.perform(get("/" + Constants.CLOUD_SERVICES + "/" + cloudService.getId())
-                .accept(MediaType.APPLICATION_JSON))
+        MvcResult result = mockMvc.perform(
+                get("/" + Constants.CLOUD_SERVICES + "/" + cloudService.getId()).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
-        EntityModel<CloudServiceDto> cloudServiceDtoEntity = mapper.readValue(
-                result.getResponse().getContentAsString(), new TypeReference<>() {
+        EntityModel<CloudServiceDto> cloudServiceDtoEntity = mapper.readValue(result.getResponse().getContentAsString(),
+                new TypeReference<>() {
                 });
 
         assertEquals(cloudServiceDtoEntity.getContent().getId(), cloudService.getId());
@@ -221,8 +215,7 @@ public class CloudServiceControllerTest {
         UUID testId = UUID.randomUUID();
         doThrow(new NoSuchElementException()).when(cloudServiceService).delete(testId);
 
-        mockMvc.perform(delete("/" + Constants.CLOUD_SERVICES + "/" + testId)
-                .accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(delete("/" + Constants.CLOUD_SERVICES + "/" + testId).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
 
@@ -231,8 +224,7 @@ public class CloudServiceControllerTest {
         UUID testId = UUID.randomUUID();
         doNothing().when(cloudServiceService).delete(testId);
 
-        mockMvc.perform(delete("/" + Constants.CLOUD_SERVICES + "/" + testId)
-                .accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(delete("/" + Constants.CLOUD_SERVICES + "/" + testId).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 }

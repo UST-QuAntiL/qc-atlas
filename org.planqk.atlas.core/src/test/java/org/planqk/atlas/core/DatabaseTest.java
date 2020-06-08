@@ -38,8 +38,10 @@ public class DatabaseTest extends AtlasDatabaseTestBase {
     @Test
     void modelLoads() {
         // This test is intended to ensure the Database test environment works properly
-        // It therefore uses tags since they are fairly simple, ignoring their attachments
-        // In case the tag class gets a major rework and this test no longer works, just comment it out!
+        // It therefore uses tags since they are fairly simple, ignoring their
+        // attachments
+        // In case the tag class gets a major rework and this test no longer works, just
+        // comment it out!
         var inputTag = new Tag();
         inputTag.setKey("Test");
         inputTag.setValue("test-value");

@@ -123,17 +123,13 @@ public class TagControllerTest {
         Page<TagDto> pageDto = ModelMapperUtils.convertPage(page, TagDto.class);
 
         when(tagService.findAll(any(Pageable.class))).thenReturn(page);
-        when(paginationAssembler.toModel(ArgumentMatchers.any()))
-                .thenReturn(HateoasUtils.generatePagedModel(pageDto));
+        when(paginationAssembler.toModel(ArgumentMatchers.any())).thenReturn(HateoasUtils.generatePagedModel(pageDto));
         doNothing().when(tagAssembler).addLinks(ArgumentMatchers.<Collection<EntityModel<TagDto>>>any());
 
         MvcResult result = mockMvc.perform(get("/" + Constants.TAGS + "/").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
-        var resultList = ObjectMapperUtils.mapResponseToList(
-                result.getResponse().getContentAsString(),
-                "tagDtoes",
-                TagDto.class
-        );
+        var resultList = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(), "tagDtoes",
+                TagDto.class);
         assertEquals(2, resultList.size());
     }
 
@@ -149,11 +145,8 @@ public class TagControllerTest {
                         .queryParam(Constants.SIZE, Integer.toString(4)).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
-        var resultList = ObjectMapperUtils.mapResponseToList(
-                result.getResponse().getContentAsString(),
-                "tagDtoes",
-                TagDto.class
-        );
+        var resultList = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(), "tagDtoes",
+                TagDto.class);
         assertEquals(0, resultList.size());
     }
 
