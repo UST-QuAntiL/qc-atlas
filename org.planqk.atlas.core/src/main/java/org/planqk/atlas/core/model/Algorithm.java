@@ -27,15 +27,14 @@ import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.JoinTable;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import org.springframework.lang.NonNull;
 
 /**
@@ -66,10 +65,10 @@ public class Algorithm extends AlgorOrImpl {
     @Getter
     private String problem;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = { CascadeType.ALL }, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JoinColumn(name = "sourceAlgorithm", referencedColumnName = "id")
     @Setter
-    private Set<AlgorithmRelation> algorithmRelations;
+    private Set<AlgorithmRelation> algorithmRelations = new HashSet<>();
 
     @Setter
     @Getter
@@ -101,25 +100,25 @@ public class Algorithm extends AlgorOrImpl {
 
     @OneToMany(mappedBy = "algorithm", fetch = FetchType.LAZY, cascade = CascadeType.MERGE, orphanRemoval = true)
     @Setter
-    private Set<PatternRelation> relatedPatterns;
+    private Set<PatternRelation> relatedPatterns = new HashSet<>();
 
-    @ManyToMany(cascade = { CascadeType.MERGE })
+    @ManyToMany(cascade = {CascadeType.MERGE})
     @JoinTable(name = "algorithm_problem_type", joinColumns = @JoinColumn(name = "algorithm_id"), inverseJoinColumns = @JoinColumn(name = "problem_type_id"))
     @Setter
-    private Set<ProblemType> problemTypes;
+    private Set<ProblemType> problemTypes = new HashSet<>();
 
     @ElementCollection
     @Setter
-    private Set<String> applicationAreas;
+    private Set<String> applicationAreas = new HashSet<>();
 
-    @OneToMany(mappedBy = "implementedAlgorithm", cascade = { CascadeType.MERGE })
+    @OneToMany(mappedBy = "implementedAlgorithm", cascade = {CascadeType.MERGE})
     @Setter
-    private Set<Implementation> implementations;
+    private Set<Implementation> implementations = new HashSet<>();
 
-    @ManyToMany(cascade = { CascadeType.MERGE })
+    @ManyToMany(cascade = {CascadeType.MERGE})
     @JoinTable(name = "algorithm_tag", joinColumns = @JoinColumn(name = "algorithm_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
     @Setter
-    private Set<Tag> tags;
+    private Set<Tag> tags = new HashSet<>();
 
     @NonNull
     public Set<Implementation> getImplementations() {
