@@ -1,26 +1,25 @@
 package org.planqk.atlas.web.utils;
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-import org.junit.Before;
-import org.junit.Test;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.ComputationModel;
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.ProblemTypeDto;
-import org.springframework.boot.test.context.SpringBootTest;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-@SpringBootTest
+import static org.junit.Assert.assertEquals;
+
 public class ModelMapperUtilsTest {
 
     private Algorithm algorithm;
@@ -29,11 +28,11 @@ public class ModelMapperUtilsTest {
     private Set<ProblemType> problemTypes;
     private Set<ProblemTypeDto> problemTypesDto;
 
-    Pageable pageable = PageRequest.of(0, 2);
+    private Pageable pageable = PageRequest.of(0, 2);
     private Page<ProblemType> pagedProblemTypes;
     private Page<ProblemTypeDto> pagedProblemTypesDto;
 
-    @Before
+    @BeforeEach
     public void initialize() {
         // Prepare IDs
         UUID id = UUID.randomUUID();
@@ -143,5 +142,4 @@ public class ModelMapperUtilsTest {
 
         assertEquals(mappedPage, pagedProblemTypes);
     }
-
 }
