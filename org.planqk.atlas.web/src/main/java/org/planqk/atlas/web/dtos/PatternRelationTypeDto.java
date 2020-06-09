@@ -1,5 +1,7 @@
 package org.planqk.atlas.web.dtos;
 
+import java.util.UUID;
+
 import javax.validation.constraints.NotNull;
 
 import lombok.Data;
@@ -11,7 +13,9 @@ import lombok.NoArgsConstructor;
 @Data
 public class PatternRelationTypeDto {
 
+    private UUID id;
+
     @NotNull(message = "Pattern-Relations-Type must have a name!")
     private String name;
-    
+
 }

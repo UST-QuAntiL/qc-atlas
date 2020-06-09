@@ -1,5 +1,7 @@
 package org.planqk.atlas.web.dtos;
 
+import java.util.UUID;
+
 import java.net.URI;
 
 import javax.validation.constraints.NotNull;
@@ -20,6 +22,8 @@ import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.WRITE_ONLY;
 @EqualsAndHashCode
 @Data
 public class PatternRelationDto {
+
+    private UUID id;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Schema(accessMode = WRITE_ONLY)
