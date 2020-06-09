@@ -20,6 +20,7 @@
 package org.planqk.atlas.web.dtos;
 
 import java.util.Set;
+import java.util.HashSet;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.ComputationModel;
@@ -46,7 +47,8 @@ import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.WRITE_ONLY;
 @NoArgsConstructor
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "computationModel", visible = true)
 @JsonSubTypes({ @JsonSubTypes.Type(value = QuantumAlgorithmDto.class, name = "QUANTUM"),
-        @JsonSubTypes.Type(value = ClassicAlgorithmDto.class, name = "CLASSIC") })
+        @JsonSubTypes.Type(value = ClassicAlgorithmDto.class, name = "CLASSIC"),
+        @JsonSubTypes.Type(value = QuantumAlgorithmDto.class, name = "HYBRID") })
 public class AlgorithmDto {
 
     private UUID id;
@@ -83,12 +85,11 @@ public class AlgorithmDto {
     @NotNull(message = "Computational-Model must not be null!")
     private ComputationModel computationModel;
 
-    @Size(min = 1, message = "Algorithm must have at least 1 ProblemType!")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Schema(accessMode = WRITE_ONLY)
-    private Set<ProblemTypeDto> problemTypes;
+    private Set<ProblemTypeDto> problemTypes = new HashSet<>();
 
-    private Set<String> applicationAreas;
+    private Set<String> applicationAreas = new HashSet<>();
 
     // we do not embedded tags into the object (via @jsonInclude) - instead, we add
     // a hateoas link to the associated tags
@@ -96,6 +97,6 @@ public class AlgorithmDto {
     // annotate this for swagger as well, because swagger doesn't recognize the json
     // property annotation
     @Schema(accessMode = WRITE_ONLY)
-    private Set<TagDto> tags;
+    private Set<TagDto> tags = new HashSet<>();
 
 }

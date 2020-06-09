@@ -20,15 +20,14 @@
 package org.planqk.atlas.core.model;
 
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.*;
 import javax.persistence.JoinColumn;
 
-import lombok.Getter;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import org.springframework.lang.NonNull;
 
@@ -36,15 +35,12 @@ import org.springframework.lang.NonNull;
  * Entity representing a quantum algorithm, e.g., Shors factorization algorithm.
  */
 @NoArgsConstructor
+@EqualsAndHashCode(callSuper = true)
+@Data
 @Entity
 public class Algorithm extends AlgorOrImpl {
 
-    @Setter
-    @Getter
     private String name;
-
-    @Setter
-    @Getter
     private String acronym;
 
     @ManyToMany(cascade= {CascadeType.MERGE}, fetch=FetchType.LAZY)
@@ -55,84 +51,36 @@ public class Algorithm extends AlgorOrImpl {
     @Getter
     private Set<Publication> publications;
 
-    @Setter
-    @Getter
     private String intent;
-
-    @Setter
-    @Getter
     private String problem;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = { CascadeType.ALL }, orphanRemoval = true)
     @JoinColumn(name = "sourceAlgorithm", referencedColumnName = "id")
-    @Setter
-    private Set<AlgorithmRelation> algorithmRelations;
-
-    @Setter
-    @Getter
+    @EqualsAndHashCode.Exclude
+    private Set<AlgorithmRelation> algorithmRelations = new HashSet<>();
     private String inputFormat;
-
-    @Setter
-    @Getter
     private String algoParameter;
-
-    @Setter
-    @Getter
     private String outputFormat;
-
-    @Setter
-    @Getter
     private Sketch sketch;
-
-    @Setter
-    @Getter
     private String solution;
-
-    @Setter
-    @Getter
     private String assumptions;
-
-    @Setter
-    @Getter
     private ComputationModel computationModel;
 
     @OneToMany(mappedBy = "algorithm", fetch = FetchType.LAZY, cascade = CascadeType.MERGE, orphanRemoval = true)
-    @Setter
-    private Set<PatternRelation> relatedPatterns;
+    private Set<PatternRelation> relatedPatterns = new HashSet<>();
 
     @ManyToMany(cascade = { CascadeType.MERGE })
     @JoinTable(name = "algorithm_problem_type", joinColumns = @JoinColumn(name = "algorithm_id"), inverseJoinColumns = @JoinColumn(name = "problem_type_id"))
-    @Setter
-    private Set<ProblemType> problemTypes;
+    @EqualsAndHashCode.Exclude
+    private Set<ProblemType> problemTypes = new HashSet<>();
 
     @ElementCollection
-    @Setter
-    private Set<String> applicationAreas;
-
-    @OneToMany(mappedBy = "implementedAlgorithm", cascade = { CascadeType.MERGE })
-    @Setter
-    private Set<Implementation> implementations;
+    private Set<String> applicationAreas = new HashSet<>();
 
     @ManyToMany(cascade = { CascadeType.MERGE })
     @JoinTable(name = "algorithm_tag", joinColumns = @JoinColumn(name = "algorithm_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
-    @Setter
-    private Set<Tag> tags;
-
-    @NonNull
-    public Set<Implementation> getImplementations() {
-        if (Objects.isNull(implementations)) {
-            return new HashSet<>();
-        }
-        return implementations;
-    }
-
-    @NonNull
-    public Set<Tag> getTags() {
-        if (Objects.isNull(tags)) {
-            return new HashSet<>();
-        }
-        return tags;
-    }
+    @EqualsAndHashCode.Exclude
+    private Set<Tag> tags = new HashSet<>();
 
     @NonNull
     public boolean addAlgorithmRelation(AlgorithmRelation relation) {
@@ -152,36 +100,19 @@ public class Algorithm extends AlgorOrImpl {
         }
         return false;
     }
-
-    @NonNull
-    public Set<AlgorithmRelation> getAlgorithmRelations() {
-        if (Objects.isNull(algorithmRelations)) {
-            return new HashSet<>();
+    
+    public void setAlgorithmRelations(Set<AlgorithmRelation> algorithmRelations) {
+        this.algorithmRelations.clear();
+        if (algorithmRelations != null) {
+            this.algorithmRelations.addAll(algorithmRelations);
         }
-        return algorithmRelations;
+    }
+    
+    public void setRelatedPatterns(Set<PatternRelation> relatedPatterns) {
+        this.relatedPatterns.clear();
+        if (relatedPatterns != null) {
+            this.relatedPatterns.addAll(relatedPatterns);
+        }
     }
 
-    @NonNull
-    public Set<PatternRelation> getRelatedPatterns() {
-        if (Objects.isNull(relatedPatterns)) {
-            return new HashSet<>();
-        }
-        return relatedPatterns;
-    }
-
-    @NonNull
-    public Set<String> getApplicationAreas() {
-        if (Objects.isNull(applicationAreas)) {
-            return new HashSet<>();
-        }
-        return applicationAreas;
-    }
-
-    @NonNull
-    public Set<ProblemType> getProblemTypes() {
-        if (Objects.isNull(problemTypes)) {
-            return new HashSet<>();
-        }
-        return problemTypes;
-    }
 }

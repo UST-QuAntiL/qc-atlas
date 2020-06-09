@@ -92,7 +92,6 @@ public class AlgorithmController {
     private TagAssembler tagAssembler;
     private AlgorithmAssembler algorithmAssembler;
     private AlgorithmRelationAssembler algorithmRelationAssembler;
-    private PublicationAssembler publicationAssembler;
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping("/")

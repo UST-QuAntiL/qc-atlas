@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 import org.planqk.atlas.core.model.AlgoRelationType;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
+import org.planqk.atlas.core.model.QuantumAlgorithm;
 import org.planqk.atlas.core.repository.AlgorithmRelationRepository;
 import org.planqk.atlas.core.repository.AlgorithmRepository;
 import org.slf4j.Logger;
@@ -70,15 +71,42 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 
     @Override
     public Algorithm update(UUID id, Algorithm algorithm) {
-        LOG.info("Trying to update algorithm");
+    	LOG.info("Trying to update algorithm");
         Algorithm persistedAlg = algorithmRepository.findById(id).orElseThrow(NoSuchElementException::new);
 
         persistedAlg.setName(algorithm.getName());
+        persistedAlg.setAcronym(algorithm.getAcronym());
+        // persistedAlg.setPublications(algorithm.getPublications());
+        persistedAlg.setIntent(algorithm.getIntent());
+        persistedAlg.setProblem(algorithm.getProblem());
+        // persistedAlg.setAlgorithmRelations(algorithm.getAlgorithmRelations());
         persistedAlg.setInputFormat(algorithm.getInputFormat());
+        persistedAlg.setAlgoParameter(algorithm.getAlgoParameter());
         persistedAlg.setOutputFormat(algorithm.getOutputFormat());
+        persistedAlg.setSketch(algorithm.getSketch());
+        persistedAlg.setSolution(algorithm.getSolution());
+        persistedAlg.setAssumptions(algorithm.getAssumptions());
+        persistedAlg.setComputationModel(algorithm.getComputationModel());
+        // persistedAlg.setRelatedPatterns(algorithm.getRelatedPatterns());
         persistedAlg.setProblemTypes(algorithm.getProblemTypes());
+        persistedAlg.setApplicationAreas(algorithm.getApplicationAreas());
         persistedAlg.setTags(algorithm.getTags());
-        return algorithmRepository.save(persistedAlg);
+
+        // If QuantumAlgorithm adjust Quantum fields
+        if (algorithm instanceof QuantumAlgorithm) {
+        	QuantumAlgorithm quantumAlgorithm = (QuantumAlgorithm) algorithm;
+        	QuantumAlgorithm persistedQuantumAlg = (QuantumAlgorithm) persistedAlg;
+        	
+        	persistedQuantumAlg.setNisqReady(quantumAlgorithm.isNisqReady());
+        	persistedQuantumAlg.setQuantumComputationModel(quantumAlgorithm.getQuantumComputationModel());
+        	// persistedQuantumAlg.setRequiredQuantumResources(quantumAlgorithm.getRequiredQuantumResources());
+        	persistedQuantumAlg.setSpeedUp(quantumAlgorithm.getSpeedUp());
+        	
+        	return algorithmRepository.save(persistedQuantumAlg);
+        } else {
+        	// Else if ClassicAlgorithm no more fields to adjust
+        	return algorithmRepository.save(persistedAlg);
+        }
     }
 
     @Transactional
