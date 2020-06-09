@@ -64,7 +64,7 @@ public class Algorithm extends AlgorOrImpl {
     private String assumptions;
     private ComputationModel computationModel;
 
-    @OneToMany(mappedBy = "algorithm", fetch = FetchType.LAZY, cascade = CascadeType.MERGE, orphanRemoval = true)
+    @OneToMany(mappedBy = "algorithm", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @EqualsAndHashCode.Exclude
     private Set<PatternRelation> relatedPatterns = new HashSet<>();
 
