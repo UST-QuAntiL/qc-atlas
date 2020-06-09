@@ -47,8 +47,6 @@ public class Algorithm extends AlgorOrImpl {
     @JoinTable(name = "algorithm_publication",
             joinColumns = @JoinColumn(name = "algorithm_id"),
             inverseJoinColumns = @JoinColumn(name ="publication_id"))
-    @Setter
-    @Getter
     private Set<Publication> publications;
 
     private String intent;
@@ -100,14 +98,14 @@ public class Algorithm extends AlgorOrImpl {
         }
         return false;
     }
-    
+
     public void setAlgorithmRelations(Set<AlgorithmRelation> algorithmRelations) {
         this.algorithmRelations.clear();
         if (algorithmRelations != null) {
             this.algorithmRelations.addAll(algorithmRelations);
         }
     }
-    
+
     public void setRelatedPatterns(Set<PatternRelation> relatedPatterns) {
         this.relatedPatterns.clear();
         if (relatedPatterns != null) {
