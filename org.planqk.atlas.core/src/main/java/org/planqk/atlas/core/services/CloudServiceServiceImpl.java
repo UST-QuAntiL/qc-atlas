@@ -33,21 +33,20 @@ public class CloudServiceServiceImpl implements CloudServiceService {
 
     @Override
     public CloudService createOrUpdate(CloudService cloudService) {
-        var cloudServiceOptional = cloudServiceRepository.findById(cloudService.getId());
-        if (cloudServiceOptional.isPresent()) {
-            CloudService updatingCloudService = cloudServiceOptional.get();
-            updatingCloudService.setName(cloudService.getName());
-            updatingCloudService.setProvider(cloudService.getProvider());
-            updatingCloudService.setUrl(cloudService.getUrl());
-            updatingCloudService.setCostModel(cloudService.getCostModel());
-
-            // TODO create or update backends when service is implemented
-            updatingCloudService.setProvidedBackends(cloudService.getProvidedBackends());
-
-            return this.save(updatingCloudService);
-        } else {
+        if (cloudService.getId() == null) {
             return this.save(cloudService);
         }
+
+        var updatingCloudService = findById(cloudService.getId());
+        updatingCloudService.setName(cloudService.getName());
+        updatingCloudService.setProvider(cloudService.getProvider());
+        updatingCloudService.setUrl(cloudService.getUrl());
+        updatingCloudService.setCostModel(cloudService.getCostModel());
+
+        // TODO create or update backends when service is implemented
+        updatingCloudService.setProvidedBackends(cloudService.getProvidedBackends());
+
+        return this.save(updatingCloudService);
     }
 
     @Override
