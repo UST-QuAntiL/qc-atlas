@@ -38,8 +38,9 @@ public class PublicationServiceImpl implements PublicationService {
 		if (existingPublication.isPresent()) {
 			fillExistingPublication(publication, existingPublication.get());
 			return publicationRepository.save(existingPublication.get());
-		}
-		return null;
+		}else {
+		    throw new NoSuchElementException();
+        }
 	}
 
 	@Override
