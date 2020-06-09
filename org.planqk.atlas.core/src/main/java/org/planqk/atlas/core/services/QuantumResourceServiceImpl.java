@@ -20,18 +20,19 @@
 package org.planqk.atlas.core.services;
 
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.UUID;
-
-import javax.transaction.Transactional;
 
 import org.planqk.atlas.core.model.QuantumAlgorithm;
 import org.planqk.atlas.core.model.QuantumResource;
 import org.planqk.atlas.core.model.QuantumResourceType;
+import org.planqk.atlas.core.model.exceptions.ConsistencyException;
 import org.planqk.atlas.core.repository.AlgorithmRepository;
 import org.planqk.atlas.core.repository.QuantumResourceRepository;
 import org.planqk.atlas.core.repository.QuantumResourceTypeRepository;
 
 import lombok.AllArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -46,7 +47,15 @@ public class QuantumResourceServiceImpl implements QuantumResourceService {
     private final QuantumResourceRepository resourceRepository;
 
     @Override
-    @Transactional
+    public void deleteQuantumResourceType(UUID typeId) {
+        try {
+            this.typeRepository.deleteById(typeId);
+        } catch (DataIntegrityViolationException e) {
+            throw new ConsistencyException("QuantumResourceType is still linked to at least one quantum resource", e);
+        }
+    }
+
+    @Override
     public void deleteQuantumResource(UUID resourceId) {
         resourceRepository.deleteById(resourceId);
     }
@@ -57,13 +66,16 @@ public class QuantumResourceServiceImpl implements QuantumResourceService {
     }
 
     @Override
-    @Transactional
+    public Set<QuantumResource> findAllResourcesByAlgorithmId(UUID algoid) {
+        return resourceRepository.findAllByAlgorithm_Id(algoid);
+    }
+
+    @Override
     public QuantumResourceType addOrUpdateQuantumResourceType(QuantumResourceType resourceType) {
         return typeRepository.save(resourceType);
     }
 
     @Override
-    @Transactional
     public QuantumResource addOrUpdateQuantumResource(QuantumResource resource) {
         if (resource.getQuantumResourceType().getId() == null) {
             var type = addOrUpdateQuantumResourceType(resource.getQuantumResourceType());
@@ -73,7 +85,6 @@ public class QuantumResourceServiceImpl implements QuantumResourceService {
     }
 
     @Override
-    @Transactional
     public QuantumResource addQuantumResourceToAlgorithm(QuantumAlgorithm algo, QuantumResource resource) {
         var updatedResource = resource;
         if (updatedResource.getId() == null) {
@@ -84,7 +95,6 @@ public class QuantumResourceServiceImpl implements QuantumResourceService {
     }
 
     @Override
-    @Transactional
     public QuantumResource addQuantumResourceToAlgorithm(UUID algoId, UUID resourceId) {
         var resource = resourceRepository.findById(resourceId).orElseThrow(NoSuchElementException::new);
         var algorithm = (QuantumAlgorithm) algorithmRepository.findById(algoId).orElseThrow(NoSuchElementException::new);

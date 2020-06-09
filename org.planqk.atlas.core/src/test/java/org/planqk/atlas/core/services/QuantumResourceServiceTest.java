@@ -24,18 +24,20 @@ import org.planqk.atlas.core.model.QuantumAlgorithm;
 import org.planqk.atlas.core.model.QuantumResource;
 import org.planqk.atlas.core.model.QuantumResourceDataType;
 import org.planqk.atlas.core.model.QuantumResourceType;
+import org.planqk.atlas.core.model.exceptions.ConsistencyException;
 import org.planqk.atlas.core.repository.QuantumResourceRepository;
 import org.planqk.atlas.core.repository.QuantumResourceTypeRepository;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class QuantumResourceTest extends AtlasDatabaseTestBase {
+public class QuantumResourceServiceTest extends AtlasDatabaseTestBase {
 
     @Autowired
     private QuantumResourceService resourceService;
@@ -46,6 +48,41 @@ public class QuantumResourceTest extends AtlasDatabaseTestBase {
     private QuantumResourceTypeRepository typeRepository;
     @Autowired
     private QuantumResourceRepository resourceRepository;
+
+    @Test
+    void testDeleteType_NotLinked() {
+        var resourceType = new QuantumResourceType();
+        resourceType.setDescription("Hello World");
+        resourceType.setName("Test Name");
+        resourceType.setDatatype(QuantumResourceDataType.FLOAT);
+
+        var resource = new QuantumResource();
+        resource.setQuantumResourceType(resourceType);
+
+        var storedResource = resourceService.addOrUpdateQuantumResource(resource);
+
+        resourceService.deleteQuantumResource(resource.getId());
+        this.resourceService.deleteQuantumResourceType(storedResource.getQuantumResourceType().getId());
+        assertThat(this.resourceService.findAllResourceTypes(Pageable.unpaged()).get().count()).isEqualTo(0);
+    }
+
+    @Test
+    void testDeleteType_StillLinked() {
+        var resourceType = new QuantumResourceType();
+        resourceType.setDescription("Hello World");
+        resourceType.setName("Test Name");
+        resourceType.setDatatype(QuantumResourceDataType.FLOAT);
+
+        var resource = new QuantumResource();
+        resource.setQuantumResourceType(resourceType);
+
+        var storedResource = resourceService.addOrUpdateQuantumResource(resource);
+
+        Assertions.assertThrows(ConsistencyException.class, () -> {
+            this.resourceService.deleteQuantumResourceType(storedResource.getQuantumResourceType().getId());
+        });
+        assertThat(this.resourceService.findAllResourceTypes(Pageable.unpaged()).get().count()).isEqualTo(1);
+    }
 
     @Test
     void testDeleteAlgorithm() {
@@ -69,9 +106,9 @@ public class QuantumResourceTest extends AtlasDatabaseTestBase {
         algorithmService.delete(storedAlgo.getId());
 
         var resourceOpt = this.resourceRepository.findById(storedResource.getId());
-        assertTrue(resourceOpt.isPresent());
+        assertThat(resourceOpt.isPresent()).isTrue();
         var resultResource = resourceOpt.get();
-        assertNull(resultResource.getAlgorithm());
+        assertThat(resultResource.getAlgorithm()).isNotNull();
     }
 
     @Test

@@ -19,6 +19,7 @@
 
 package org.planqk.atlas.core.services;
 
+import java.util.Set;
 import java.util.UUID;
 
 import javax.transaction.Transactional;
@@ -32,9 +33,14 @@ import org.springframework.data.domain.Pageable;
 
 public interface QuantumResourceService {
     @Transactional
+    void deleteQuantumResourceType(UUID typeId);
+
+    @Transactional
     void deleteQuantumResource(UUID resourceId);
 
     Page<QuantumResourceType> findAllResourceTypes(Pageable pageable);
+
+    Set<QuantumResource> findAllResourcesByAlgorithmId(UUID algoid);
 
     @Transactional
     QuantumResourceType addOrUpdateQuantumResourceType(QuantumResourceType resourceType);
