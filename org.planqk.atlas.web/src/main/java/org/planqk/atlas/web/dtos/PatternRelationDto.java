@@ -33,6 +33,8 @@ public class PatternRelationDto {
     @NotNull(message = "Pattern-Relations must have a URI!")
     private URI pattern;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Schema(accessMode = WRITE_ONLY)
     @NotNull(message = "Pattern-Relations must have an type!")
     private PatternRelationType patternRelationType;
 

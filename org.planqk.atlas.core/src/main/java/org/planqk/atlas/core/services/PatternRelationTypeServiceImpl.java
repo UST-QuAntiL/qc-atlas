@@ -1,6 +1,8 @@
 package org.planqk.atlas.core.services;
 
 import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.PatternRelationType;
@@ -44,6 +46,18 @@ public class PatternRelationTypeServiceImpl implements PatternRelationTypeServic
     @Override
     public void deleteById(UUID id) {
         repo.deleteById(id);
+    }
+
+    @Override
+    public PatternRelationType createOrGet(PatternRelationType type) {
+        // Check database for type
+        Optional<PatternRelationType> typeOptional = Objects.isNull(type.getId()) ? Optional.empty()
+                : repo.findById(type.getId());
+        if (typeOptional.isPresent()) {
+            return typeOptional.get();
+        }
+
+        return save(type);
     }
 
 }

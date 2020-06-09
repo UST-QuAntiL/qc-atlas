@@ -18,4 +18,6 @@ public interface PatternRelationTypeService {
 
     void deleteById(UUID id);
 
+    PatternRelationType createOrGet(PatternRelationType type);
+
 }
