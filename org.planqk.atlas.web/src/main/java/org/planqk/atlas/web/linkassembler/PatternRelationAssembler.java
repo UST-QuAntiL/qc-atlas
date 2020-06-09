@@ -5,6 +5,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import java.util.UUID;
 
+import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.AlgorithmController;
 import org.planqk.atlas.web.controller.PatternRelationController;
 import org.planqk.atlas.web.controller.PatternRelationTypeController;
@@ -20,9 +21,9 @@ public class PatternRelationAssembler extends GenericLinkAssembler<PatternRelati
         resource.add(
                 linkTo(methodOn(PatternRelationController.class).getPatternRelation(getId(resource))).withSelfRel());
         resource.add(linkTo(methodOn(AlgorithmController.class).getAlgorithm(getAlgorithmId(resource)))
-                .withRel("algorithm"));
+                .withRel(Constants.ALGORITHM));
         resource.add(linkTo(methodOn(PatternRelationTypeController.class).getPatternRelationType(getTypeId(resource)))
-                .withRel("pattern-relation-type"));
+                .withRel(Constants.PATTERN_RELATION_TYPES));
     }
 
     private UUID getId(EntityModel<PatternRelationDto> resource) {
