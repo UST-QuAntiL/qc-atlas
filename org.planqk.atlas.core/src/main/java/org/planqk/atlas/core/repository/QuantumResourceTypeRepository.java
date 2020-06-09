@@ -17,19 +17,17 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.planqk.atlas.core.model;
+package org.planqk.atlas.core.repository;
 
-import javax.persistence.Entity;
+import java.util.UUID;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import org.planqk.atlas.core.model.QuantumResourceType;
 
-@EqualsAndHashCode(callSuper = true)
-@Data
-@Entity
-public class QuantumResourceType extends HasId {
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
-    private String name;
-    private QuantumResourceDataType datatype;
-    private String description;
+@RepositoryRestResource
+public interface QuantumResourceTypeRepository extends JpaRepository<QuantumResourceType, UUID> {
 }
