@@ -10,6 +10,7 @@ import org.planqk.atlas.web.controller.AlgorithmController;
 import org.planqk.atlas.web.controller.ImplementationController;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
+import org.planqk.atlas.web.dtos.PatternRelationDto;
 import org.planqk.atlas.web.dtos.ProblemTypeDto;
 import org.planqk.atlas.web.dtos.PublicationDto;
 import org.planqk.atlas.web.dtos.TagDto;
@@ -55,6 +56,11 @@ public class AlgorithmAssembler extends GenericLinkAssembler<AlgorithmDto> {
             UUID sourceAlgorithm_id) {
         resultCollection.add(
                 linkTo(methodOn(AlgorithmController.class).getAlgorithmRelations(sourceAlgorithm_id)).withSelfRel());
+    }
+    
+    public void addPatternRelationLink(CollectionModel<EntityModel<PatternRelationDto>> resultCollection, UUID id) {
+        resultCollection.add(
+                linkTo(methodOn(AlgorithmController.class).getPatternRelations(id)).withSelfRel());
     }
 
     private UUID getId(EntityModel<AlgorithmDto> resource) {
