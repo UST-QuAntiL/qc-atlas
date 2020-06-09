@@ -1,5 +1,6 @@
 package org.planqk.atlas.core.services;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.planqk.atlas.core.model.CloudService;
 import org.planqk.atlas.core.model.SoftwarePlatform;
@@ -10,7 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashSet;
+import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -26,10 +29,7 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
 
     @Test
     void testAddSoftwarePlatform_WithoutRelations() throws MalformedURLException {
-        SoftwarePlatform softwarePlatform = new SoftwarePlatform();
-        softwarePlatform.setName("testPlatform");
-        softwarePlatform.setLink(new URL("http://example.com"));
-        softwarePlatform.setVersion("v1");
+        SoftwarePlatform softwarePlatform = getGenericTestSoftwarePlatformWithoutRelations("testSoftwarePlatform");
 
         var storedSoftwarePlatform = softwarePlatformService.save(softwarePlatform);
         assertSoftwarePlatformEquality(storedSoftwarePlatform, softwarePlatform);
@@ -37,10 +37,7 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
 
     @Test
     void testAddSoftwarePlatform_WithCloudServices() throws MalformedURLException {
-        SoftwarePlatform softwarePlatform = new SoftwarePlatform();
-        softwarePlatform.setName("testPlatform");
-        softwarePlatform.setLink(new URL("http://example.com"));
-        softwarePlatform.setVersion("v1");
+        SoftwarePlatform softwarePlatform = getGenericTestSoftwarePlatformWithoutRelations("testSoftwarePlatform");
 
         Set<CloudService> cloudServices = new HashSet<>();
         CloudService cloudService = new CloudService();
@@ -55,7 +52,6 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
         var storedSoftwarePlatform = softwarePlatformService.save(softwarePlatform);
         assertSoftwarePlatformEquality(storedSoftwarePlatform, softwarePlatform);
         assertCloudServiceEquality(storedSoftwarePlatform, cloudService);
-
     }
 
     @Test
@@ -65,22 +61,62 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
 
     @Test
     void testFindSoftwarePlatformById_ElementNotFound() {
-
+        Assertions.assertThrows(NoSuchElementException.class, () -> {
+            softwarePlatformService.findById(UUID.randomUUID());
+        });
     }
 
     @Test
-    void testFindSoftwarePlatformById_ElementFound() {
+    void testFindSoftwarePlatformById_ElementFound() throws MalformedURLException {
+        SoftwarePlatform softwarePlatform = getGenericTestSoftwarePlatformWithoutRelations("testSoftwarePlatform");
 
+        var storedSoftwarePlatform = softwarePlatformService.save(softwarePlatform);
+
+        softwarePlatformService.findById(storedSoftwarePlatform.getId());
+
+        assertSoftwarePlatformEquality(storedSoftwarePlatform, softwarePlatform);
     }
 
     @Test
-    void testDeleteSoftwarePlatform_WithoutRelations() {
+    void testDeleteSoftwarePlatform_WithoutRelations() throws MalformedURLException {
+        SoftwarePlatform softwarePlatform = getGenericTestSoftwarePlatformWithoutRelations("testSoftwarePlatform");
 
+        var storedSoftwarePlatform = softwarePlatformService.save(softwarePlatform);
+        softwarePlatformService.findById(storedSoftwarePlatform.getId());
+
+        softwarePlatformService.delete(storedSoftwarePlatform.getId());
+
+        Assertions.assertThrows(NoSuchElementException.class, () -> {
+            softwarePlatformService.findById(storedSoftwarePlatform.getId());
+        });
     }
 
     @Test
-    void testDeleteSoftwarePlatform_WithCloudServices() {
+    void testDeleteSoftwarePlatform_WithCloudServices() throws MalformedURLException {
+        SoftwarePlatform softwarePlatform = getGenericTestSoftwarePlatformWithoutRelations("testSoftwarePlatform");
 
+        Set<CloudService> cloudServices = new HashSet<>();
+        CloudService cloudService = new CloudService();
+        cloudService.setName("testCloudService");
+        cloudService.setProvider("testProvider");
+        cloudService.setUrl(new URL("http://example.com"));
+        cloudService.setCostModel("testCostModel");
+        cloudServices.add(cloudService);
+
+        softwarePlatform.setSupportedCloudServices(cloudServices);
+
+        var storedSoftwarePlatform = softwarePlatformService.save(softwarePlatform);
+        softwarePlatformService.findById(storedSoftwarePlatform.getId());
+
+        softwarePlatformService.delete(storedSoftwarePlatform.getId());
+
+        Assertions.assertThrows(NoSuchElementException.class, () -> {
+            softwarePlatformService.findById(storedSoftwarePlatform.getId());
+        });
+
+        storedSoftwarePlatform.getSupportedCloudServices().forEach(cs -> {
+            cloudServiceService.findById(cs.getId());
+        });
     }
 
     @Test
@@ -104,5 +140,13 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
             assertThat(cs.getUrl()).isEqualTo(compareCloudService.getUrl());
             assertThat(cs.getCostModel()).isEqualTo(compareCloudService.getCostModel());
         });
+    }
+
+    private SoftwarePlatform getGenericTestSoftwarePlatformWithoutRelations(String name) throws MalformedURLException {
+        SoftwarePlatform softwarePlatform = new SoftwarePlatform();
+        softwarePlatform.setName(name);
+        softwarePlatform.setLink(new URL("http://example.com"));
+        softwarePlatform.setVersion("v1");
+        return softwarePlatform;
     }
 }
