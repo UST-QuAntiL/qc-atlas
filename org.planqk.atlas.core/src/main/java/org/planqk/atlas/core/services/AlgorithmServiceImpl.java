@@ -24,6 +24,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.planqk.atlas.core.model.AlgoRelationType;
 import org.planqk.atlas.core.model.Algorithm;
@@ -39,6 +40,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
 
 @Repository
 @AllArgsConstructor
@@ -53,6 +56,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     private TagService tagService;
     private ProblemTypeService problemTypeService;
     private AlgoRelationTypeService algoRelationTypeService;
+    private PublicationService publicationService;
 
     @Override
     public Algorithm save(Algorithm algorithm) {
@@ -60,6 +64,8 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         algorithm.setTags(tagService.createOrUpdateAll(algorithm.getTags()));
         // Persist ProblemTypes separately
         algorithm.setProblemTypes(problemTypeService.createOrUpdateAll(algorithm.getProblemTypes()));
+        // Persist Publications separately
+        algorithm.setPublications(publicationService.createOrUpdateAll(algorithm.getPublications()));
 
         algorithm = processAlgorithmRelations(algorithm);
 
@@ -166,12 +172,18 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         }
     }
 
+    @Transactional
     @Override
     public void delete(UUID id) {
         Set<AlgorithmRelation> linkedAsTargetRelations = algorithmRelationRepository.findByTargetAlgorithmId(id);
         for (AlgorithmRelation relation : linkedAsTargetRelations) {
             deleteAlgorithmRelation(relation.getSourceAlgorithm().getId(), relation.getId());
         }
+
+        //Remove all publications and associations that refer only to this single algorithm
+        Set<String> publicationIds = algorithmRepository.getPublicationIdsOfAlgorithm(id);
+        algorithmRepository.deleteAssociationsOfAlgorithm(id);
+        publicationIds.stream().map(publicationId -> UUID.fromString(publicationId)).forEach(publicationService::deleteById);
 
         algorithmRepository.deleteById(id);
     }

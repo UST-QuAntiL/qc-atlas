@@ -20,9 +20,11 @@
 package org.planqk.atlas.web.dtos;
 
 import java.util.Set;
+import java.util.HashSet;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.ComputationModel;
+import org.planqk.atlas.core.model.Publication;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -31,7 +33,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 import org.planqk.atlas.core.model.Sketch;
 
 import javax.validation.constraints.*;
@@ -42,7 +43,6 @@ import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.WRITE_ONLY;
  * Data transfer object for Algorithms
  * ({@link org.planqk.atlas.core.model.Algorithm}).
  */
-@ToString(callSuper = true)
 @Data
 @NoArgsConstructor
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "computationModel", visible = true)
@@ -58,7 +58,10 @@ public class AlgorithmDto {
 
     private String acronym;
 
-    // private Set<Publication> publications;
+    @Size(min = 1, message = "Algorithm must have at least 1 Publication!")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Schema(accessMode = WRITE_ONLY)
+    private Set<Publication> publications;
 
     private String intent;
 
@@ -90,9 +93,9 @@ public class AlgorithmDto {
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Schema(accessMode = WRITE_ONLY)
-    private Set<ProblemTypeDto> problemTypes;
+    private Set<ProblemTypeDto> problemTypes = new HashSet<>();
 
-    private Set<String> applicationAreas;
+    private Set<String> applicationAreas = new HashSet<>();
 
     // we do not embedded tags into the object (via @jsonInclude) - instead, we add
     // a hateoas link to the associated tags
@@ -100,6 +103,6 @@ public class AlgorithmDto {
     // annotate this for swagger as well, because swagger doesn't recognize the json
     // property annotation
     @Schema(accessMode = WRITE_ONLY)
-    private Set<TagDto> tags;
+    private Set<TagDto> tags = new HashSet<>();
 
 }
