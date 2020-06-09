@@ -11,6 +11,7 @@ import org.planqk.atlas.web.controller.ImplementationController;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
 import org.planqk.atlas.web.dtos.ProblemTypeDto;
+import org.planqk.atlas.web.dtos.PublicationDto;
 import org.planqk.atlas.web.dtos.TagDto;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -33,6 +34,8 @@ public class AlgorithmAssembler extends GenericLinkAssembler<AlgorithmDto> {
                 .withRel(Constants.PROBLEM_TYPES));
         resource.add(linkTo(methodOn(AlgorithmController.class).getAlgorithmRelations(getId(resource)))
                 .withRel(Constants.ALGORITHM_RELATIONS));
+        resource.add(linkTo(methodOn(AlgorithmController.class).getPublications(getId(resource)))
+                .withRel(Constants.PUBLICATIONS));
 
     }
 
@@ -42,6 +45,10 @@ public class AlgorithmAssembler extends GenericLinkAssembler<AlgorithmDto> {
 
     public void addTagLink(CollectionModel<EntityModel<TagDto>> resources, UUID id) {
         resources.add(linkTo(methodOn(AlgorithmController.class).getTags(id)).withSelfRel());
+    }
+    
+    public void addPublicationLink(CollectionModel<EntityModel<PublicationDto>> resources, UUID id) {
+        resources.add(linkTo(methodOn(AlgorithmController.class).getPublications(id)).withSelfRel());
     }
 
     public void addAlgorithmRelationLink(CollectionModel<EntityModel<AlgorithmRelationDto>> resultCollection,

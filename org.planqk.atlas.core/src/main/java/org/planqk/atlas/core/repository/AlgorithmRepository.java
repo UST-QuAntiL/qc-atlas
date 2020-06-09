@@ -19,11 +19,14 @@
 
 package org.planqk.atlas.core.repository;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
@@ -40,4 +43,15 @@ public interface AlgorithmRepository extends JpaRepository<Algorithm, UUID> {
     @Query("SELECT COUNT(alg) FROM Algorithm alg JOIN alg.problemTypes probType WHERE probType.id = :problemTypeId")
     long countAlgorithmsUsingProblemType(@Param("problemTypeId") UUID problemTypeId);
 
+    @Query("SELECT alg FROM Algorithm alg JOIN alg.publications publication WHERE publication.id = :publicationId")
+    Set<Algorithm> getAlgorithmsWithPublicationId(@Param("publicationId") UUID publicationId);
+
+    //Get all publications that refer only to this single algorithm
+    @Query(nativeQuery=true, value="SELECT CAST(algpub.publication_id AS VARCHAR) FROM algorithm_publication algpub JOIN Publication pub ON algpub.publication_id = pub.id JOIN algorithm_publication algpub2 ON pub.id = algpub2.publication_id WHERE algpub2.algorithm_id = :algorithmId GROUP BY algpub.publication_id HAVING count(algpub.algorithm_id) = 1")
+    Set<String> getPublicationIdsOfAlgorithm(@Param("algorithmId") UUID algorithmId);
+
+    //Remove all associations of algorithm
+    @Modifying
+    @Query(nativeQuery=true, value="DELETE FROM algorithm_publication WHERE algorithm_publication.algorithm_id = :algorithmId")
+    void deleteAssociationsOfAlgorithm(@Param("algorithmId") UUID algorithmId);
 }

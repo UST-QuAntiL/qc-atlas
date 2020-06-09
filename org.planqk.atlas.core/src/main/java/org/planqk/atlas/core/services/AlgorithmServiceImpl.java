@@ -23,6 +23,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.planqk.atlas.core.model.AlgoRelationType;
 import org.planqk.atlas.core.model.Algorithm;
@@ -30,14 +31,16 @@ import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.model.QuantumAlgorithm;
 import org.planqk.atlas.core.repository.AlgorithmRelationRepository;
 import org.planqk.atlas.core.repository.AlgorithmRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.planqk.atlas.core.repository.QuantumResourceRepository;
 
 import lombok.AllArgsConstructor;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
 
 @Repository
 @AllArgsConstructor
@@ -45,20 +48,35 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 
     private final static Logger LOG = LoggerFactory.getLogger(AlgorithmServiceImpl.class);
 
-    private AlgorithmRepository algorithmRepository;
-    private AlgorithmRelationRepository algorithmRelationRepository;
-    private AlgoRelationTypeService relationTypeService;
+    private final AlgorithmRepository algorithmRepository;
+    private final AlgorithmRelationRepository algorithmRelationRepository;
+    private final AlgoRelationTypeService relationTypeService;
+    private final QuantumResourceRepository resourceRepository;
 
-    private TagService tagService;
-    private ProblemTypeService problemTypeService;
-    private AlgoRelationTypeService algoRelationTypeService;
+    private final TagService tagService;
+    private final ProblemTypeService problemTypeService;
+    private final AlgoRelationTypeService algoRelationTypeService;
+    private PublicationService publicationService;
 
+    public void detachResourcesFromAlgorithm(UUID algoId) {
+        var algorithm = algorithmRepository.findById(algoId).orElseThrow(NoSuchElementException::new);
+        if (algorithm instanceof QuantumAlgorithm) {
+            var items = this.resourceRepository.findAllByAlgorithm_Id(algoId)
+                    .stream()
+                    .peek(resource -> resource.setAlgorithm(null))
+                    .collect(Collectors.toList());
+            this.resourceRepository.saveAll(items);
+        }
+    }
+    
     @Override
     public Algorithm save(Algorithm algorithm) {
         // Persist Tags separately
         algorithm.setTags(tagService.createOrUpdateAll(algorithm.getTags()));
         // Persist ProblemTypes separately
         algorithm.setProblemTypes(problemTypeService.createOrUpdateAll(algorithm.getProblemTypes()));
+        // Persist Publications separately
+        algorithm.setPublications(publicationService.createOrUpdateAll(algorithm.getPublications()));
 
         return algorithmRepository.save(algorithm);
     }
@@ -103,12 +121,19 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         }
     }
 
+    @Transactional
     @Override
     public void delete(UUID id) {
         Set<AlgorithmRelation> linkedAsTargetRelations = algorithmRelationRepository.findByTargetAlgorithmId(id);
         for (AlgorithmRelation relation : linkedAsTargetRelations) {
             deleteAlgorithmRelation(relation.getSourceAlgorithm().getId(), relation.getId());
         }
+        detachResourcesFromAlgorithm(id);
+
+        //Remove all publications and associations that refer only to this single algorithm
+        Set<String> publicationIds = algorithmRepository.getPublicationIdsOfAlgorithm(id);
+        algorithmRepository.deleteAssociationsOfAlgorithm(id);
+        publicationIds.stream().map(publicationId -> UUID.fromString(publicationId)).forEach(publicationService::deleteById);
 
         algorithmRepository.deleteById(id);
     }

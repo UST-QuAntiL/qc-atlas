@@ -41,6 +41,7 @@ import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
 import org.planqk.atlas.web.linkassembler.AlgorithmAssembler;
 import org.planqk.atlas.web.linkassembler.AlgorithmRelationAssembler;
 import org.planqk.atlas.web.linkassembler.ProblemTypeAssembler;
+import org.planqk.atlas.web.linkassembler.PublicationAssembler;
 import org.planqk.atlas.web.linkassembler.TagAssembler;
 import org.planqk.atlas.web.utils.HateoasUtils;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
@@ -88,6 +89,11 @@ public class AlgorithmControllerTest {
 
     @TestConfiguration
     public static class TestConfig {
+        @Bean
+        public PublicationAssembler publicationAssembler() {
+            return new PublicationAssembler();
+        }
+
         @Bean
         public ProblemTypeAssembler problemTypeAssembler() {
             return new ProblemTypeAssembler();
