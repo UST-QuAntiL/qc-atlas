@@ -20,6 +20,7 @@
 package org.planqk.atlas.web.dtos;
 
 import java.util.Set;
+import java.util.HashSet;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.ComputationModel;
@@ -84,9 +85,9 @@ public class AlgorithmDto {
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Schema(accessMode = WRITE_ONLY)
-    private Set<ProblemTypeDto> problemTypes;
+    private Set<ProblemTypeDto> problemTypes = new HashSet<>();
 
-    private Set<String> applicationAreas;
+    private Set<String> applicationAreas = new HashSet<>();
 
     // we do not embedded tags into the object (via @jsonInclude) - instead, we add
     // a hateoas link to the associated tags
@@ -94,6 +95,6 @@ public class AlgorithmDto {
     // annotate this for swagger as well, because swagger doesn't recognize the json
     // property annotation
     @Schema(accessMode = WRITE_ONLY)
-    private Set<TagDto> tags;
+    private Set<TagDto> tags = new HashSet<>();
 
 }

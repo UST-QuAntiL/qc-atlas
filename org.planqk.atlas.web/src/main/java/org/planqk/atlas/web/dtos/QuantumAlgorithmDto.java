@@ -1,5 +1,6 @@
 package org.planqk.atlas.web.dtos;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.validation.constraints.NotNull;
@@ -24,7 +25,7 @@ public class QuantumAlgorithmDto extends AlgorithmDto {
     @NotNull(message = "QuantumComputationModel must not be null!")
     private QuantumComputationModel quantumComputationModel;
 
-    private Set<QuantumResource> requiredQuantumResources;
+    private Set<QuantumResource> requiredQuantumResources = new HashSet<>();
     private String speedUp;
 
 }
