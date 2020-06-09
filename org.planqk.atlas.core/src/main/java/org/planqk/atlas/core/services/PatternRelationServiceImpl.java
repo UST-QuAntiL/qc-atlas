@@ -16,6 +16,8 @@ import lombok.AllArgsConstructor;
 @Service
 public class PatternRelationServiceImpl implements PatternRelationService {
 
+    private final String NO_RELATION_ERROR = "PatternRelation does not exist!";
+
     private PatternRelationRepository repo;
     private AlgorithmService algorithmService;
     private PatternRelationTypeService patternRelationTypeService;
@@ -23,13 +25,13 @@ public class PatternRelationServiceImpl implements PatternRelationService {
     @Override
     public PatternRelation save(PatternRelation relation) {
         // Validate input
-        validateAlgorithm(relation);
+        validatePatternRelation(relation);
         return repo.save(relation);
     }
 
     @Override
     public PatternRelation findById(UUID id) {
-        return repo.findById(id).orElseThrow(() -> new NoSuchElementException("PatternRelation does not exist!"));
+        return repo.findById(id).orElseThrow(() -> new NoSuchElementException(NO_RELATION_ERROR));
     }
 
     @Override
@@ -37,7 +39,22 @@ public class PatternRelationServiceImpl implements PatternRelationService {
         return repo.findAll(pageable);
     }
 
-    private void validateAlgorithm(PatternRelation relation) {
+    @Override
+    public PatternRelation update(UUID id, PatternRelation relation) {
+        PatternRelation persistedRelation = repo.findById(id).orElseThrow(() -> new NoSuchElementException(NO_RELATION_ERROR));
+        // Update fields
+        persistedRelation.setPatternRelationType(patternRelationTypeService.createOrGet(relation.getPatternRelationType()));
+        persistedRelation.setPattern(relation.getPattern());
+        persistedRelation.setDescription(relation.getDescription());
+        return repo.save(persistedRelation);
+    }
+
+    @Override
+    public void deleteById(UUID id) {
+        repo.deleteById(id);
+    }
+
+    private void validatePatternRelation(PatternRelation relation) {
         // Can't create PatternRelation if Algorithm is not described
         if (Objects.isNull(relation.getAlgorithm().getId())) {
             throw new NoSuchElementException("Algorithm for pattern relation does not exist!");

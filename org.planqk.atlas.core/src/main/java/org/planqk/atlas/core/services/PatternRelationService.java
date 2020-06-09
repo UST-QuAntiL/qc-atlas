@@ -14,4 +14,8 @@ public interface PatternRelationService {
 
     Page<PatternRelation> findAll(Pageable pageable);
 
+    PatternRelation update(UUID id, PatternRelation relation);
+
+    void deleteById(UUID id);
+
 }

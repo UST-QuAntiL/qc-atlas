@@ -58,11 +58,11 @@ public class PatternRelationTypeController {
             @Valid @RequestBody PatternRelationTypeDto typeDto) {
         LOG.debug("Post to create new PatternRelationTypes received.");
         // Store and return PatternRelationType
-        PatternRelationType savedRelation = patternRelationTypeService
+        PatternRelationType savedRelationType = patternRelationTypeService
                 .save(ModelMapperUtils.convert(typeDto, PatternRelationType.class));
         // Convert To EntityModel
         EntityModel<PatternRelationTypeDto> dtoOutput = HateoasUtils
-                .generateEntityModel(ModelMapperUtils.convert(savedRelation, PatternRelationTypeDto.class));
+                .generateEntityModel(ModelMapperUtils.convert(savedRelationType, PatternRelationTypeDto.class));
         // Fill EntityModel with links
         patternRelationTypeAssembler.addLinks(dtoOutput);
         return new ResponseEntity<>(dtoOutput, HttpStatus.CREATED);
@@ -88,10 +88,10 @@ public class PatternRelationTypeController {
     @GetMapping("/{id}")
     public HttpEntity<EntityModel<PatternRelationTypeDto>> getPatternRelationType(@PathVariable UUID id) {
         LOG.debug("Get to retrieve PatternRelationType with id: {}.", id);
-        PatternRelationType savedPatternRelationType = patternRelationTypeService.findById(id);
+        PatternRelationType savedRelationType = patternRelationTypeService.findById(id);
         // Convert To EntityModel
         EntityModel<PatternRelationTypeDto> dtoOutput = HateoasUtils
-                .generateEntityModel(ModelMapperUtils.convert(savedPatternRelationType, PatternRelationTypeDto.class));
+                .generateEntityModel(ModelMapperUtils.convert(savedRelationType, PatternRelationTypeDto.class));
         // Fill EntityModel with links
         patternRelationTypeAssembler.addLinks(dtoOutput);
         return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
@@ -102,11 +102,11 @@ public class PatternRelationTypeController {
     public HttpEntity<EntityModel<PatternRelationTypeDto>> updatePatternRelationType(@PathVariable UUID id,
             @Valid @RequestBody PatternRelationTypeDto typeDto) {
         LOG.debug("Put to update PatternRelationType with id: {}.", id);
-        PatternRelationType updatedAlgorithm = patternRelationTypeService.update(id,
+        PatternRelationType updatedRelationType = patternRelationTypeService.update(id,
                 ModelMapperUtils.convert(typeDto, PatternRelationType.class));
         // Convert To EntityModel
         EntityModel<PatternRelationTypeDto> dtoOutput = HateoasUtils
-                .generateEntityModel(ModelMapperUtils.convert(updatedAlgorithm, PatternRelationTypeDto.class));
+                .generateEntityModel(ModelMapperUtils.convert(updatedRelationType, PatternRelationTypeDto.class));
         // Fill EntityModel with links
         patternRelationTypeAssembler.addLinks(dtoOutput);
         return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
