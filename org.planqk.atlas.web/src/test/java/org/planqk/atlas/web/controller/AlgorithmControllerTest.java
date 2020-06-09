@@ -40,6 +40,7 @@ import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
 import org.planqk.atlas.web.linkassembler.AlgorithmAssembler;
 import org.planqk.atlas.web.linkassembler.AlgorithmRelationAssembler;
+import org.planqk.atlas.web.linkassembler.PatternRelationAssembler;
 import org.planqk.atlas.web.linkassembler.ProblemTypeAssembler;
 import org.planqk.atlas.web.linkassembler.PublicationAssembler;
 import org.planqk.atlas.web.linkassembler.TagAssembler;
@@ -102,6 +103,11 @@ public class AlgorithmControllerTest {
         @Bean
         public TagAssembler tagAssembler() {
             return new TagAssembler();
+        }
+        
+        @Bean
+        public PatternRelationAssembler patternRelationAssembler() {
+            return new PatternRelationAssembler();
         }
     }
 

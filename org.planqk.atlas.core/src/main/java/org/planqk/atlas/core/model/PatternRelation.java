@@ -22,7 +22,7 @@ public class PatternRelation extends HasId {
 
     private URI pattern;
 
-    @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.MERGE, CascadeType.REFRESH })
     private PatternRelationType patternRelationType;
 
     private String description;
