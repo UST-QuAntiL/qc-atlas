@@ -22,14 +22,8 @@ package org.planqk.atlas.core.model;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinTable;
+import javax.persistence.*;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -49,10 +43,11 @@ public class Algorithm extends AlgorOrImpl {
     private String name;
     private String acronym;
 
-//	@ManyToMany(cascade = {CascadeType.ALL})
-//	@Setter
-//	@Getter
-//	private Set<Publication> publications;
+    @ManyToMany(cascade= {CascadeType.MERGE}, fetch=FetchType.LAZY)
+    @JoinTable(name = "algorithm_publication",
+            joinColumns = @JoinColumn(name = "algorithm_id"),
+            inverseJoinColumns = @JoinColumn(name ="publication_id"))
+    private Set<Publication> publications;
 
     private String intent;
     private String problem;
@@ -103,14 +98,14 @@ public class Algorithm extends AlgorOrImpl {
         }
         return false;
     }
-    
+
     public void setAlgorithmRelations(Set<AlgorithmRelation> algorithmRelations) {
         this.algorithmRelations.clear();
         if (algorithmRelations != null) {
             this.algorithmRelations.addAll(algorithmRelations);
         }
     }
-    
+
     public void setRelatedPatterns(Set<PatternRelation> relatedPatterns) {
         this.relatedPatterns.clear();
         if (relatedPatterns != null) {

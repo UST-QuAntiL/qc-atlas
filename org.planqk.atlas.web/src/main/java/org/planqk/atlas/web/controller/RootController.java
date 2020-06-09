@@ -43,7 +43,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 public class RootController {
 
-    @Operation(responses = { @ApiResponse(responseCode = "200") })
+    @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping("/")
     public HttpEntity<RepresentationModel<?>> root() {
         RepresentationModel<?> responseEntity = new RepresentationModel<>();
@@ -56,7 +56,10 @@ public class RootController {
                 Constants.DEFAULT_PAGE_SIZE)).withRel(Constants.PROVIDERS));
         responseEntity.add(linkTo(
                 methodOn(TagController.class).getTags(Constants.DEFAULT_PAGE_NUMBER, Constants.DEFAULT_PAGE_SIZE))
-                        .withRel(Constants.TAGS));
+                .withRel(Constants.TAGS));
+        responseEntity.add(linkTo(
+                methodOn(PublicationController.class).getPublications(Constants.DEFAULT_PAGE_NUMBER, Constants.DEFAULT_PAGE_SIZE))
+                .withRel(Constants.PUBLICATIONS));
 
         return new ResponseEntity<>(responseEntity, HttpStatus.OK);
     }
