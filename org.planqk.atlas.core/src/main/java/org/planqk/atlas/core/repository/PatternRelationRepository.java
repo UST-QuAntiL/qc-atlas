@@ -13,4 +13,6 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 @RepositoryRestResource(exported = false)
 public interface PatternRelationRepository extends JpaRepository<PatternRelation, UUID> {
 
+    long countByPatternRelationTypeId(UUID id);
+
 }

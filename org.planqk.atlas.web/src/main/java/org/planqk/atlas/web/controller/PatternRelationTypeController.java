@@ -97,7 +97,8 @@ public class PatternRelationTypeController {
         return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
     }
 
-    @Operation(responses = { @ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404") })
+    @Operation(responses = { @ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404") })
     @PutMapping("/{id}")
     public HttpEntity<EntityModel<PatternRelationTypeDto>> updatePatternRelationType(@PathVariable UUID id,
             @Valid @RequestBody PatternRelationTypeDto typeDto) {

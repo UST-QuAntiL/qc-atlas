@@ -6,6 +6,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.PatternRelationType;
+import org.planqk.atlas.core.model.exceptions.ConsistencyException;
+import org.planqk.atlas.core.repository.PatternRelationRepository;
 import org.planqk.atlas.core.repository.PatternRelationTypeRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,8 +19,10 @@ import lombok.AllArgsConstructor;
 @Service
 public class PatternRelationTypeServiceImpl implements PatternRelationTypeService {
 
-    private PatternRelationTypeRepository repo;
     private final String NO_TYPE_ERROR = "PatternRelationType does not exist!";
+
+    private PatternRelationTypeRepository repo;
+    private PatternRelationRepository patternRelationRepo;
 
     @Override
     public PatternRelationType save(PatternRelationType type) {
@@ -45,6 +49,8 @@ public class PatternRelationTypeServiceImpl implements PatternRelationTypeServic
 
     @Override
     public void deleteById(UUID id) {
+        if (patternRelationRepo.countByPatternRelationTypeId(id) > 0)
+            throw new ConsistencyException("Can not delete a used PatternRelationType!");
         repo.deleteById(id);
     }
 
