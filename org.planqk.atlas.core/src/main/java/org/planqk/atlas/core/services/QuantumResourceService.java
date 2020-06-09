@@ -19,38 +19,38 @@
 
 package org.planqk.atlas.core.services;
 
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
 import javax.transaction.Transactional;
 
-import org.planqk.atlas.core.model.Algorithm;
-import org.planqk.atlas.core.model.AlgorithmRelation;
+import org.planqk.atlas.core.model.QuantumAlgorithm;
+import org.planqk.atlas.core.model.QuantumResource;
+import org.planqk.atlas.core.model.QuantumResourceType;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-public interface AlgorithmService {
-
-    Algorithm save(Algorithm algorithm);
-
-    Algorithm update(UUID id, Algorithm algorithm);
+public interface QuantumResourceService {
+    @Transactional
+    void deleteQuantumResourceType(UUID typeId);
 
     @Transactional
-    void delete(UUID id);
+    void deleteQuantumResource(UUID resourceId);
 
-    void deleteAlgorithmRelation(UUID algoId, UUID relationId);
+    Page<QuantumResourceType> findAllResourceTypes(Pageable pageable);
 
-    Page<Algorithm> findAll(Pageable pageable);
+    Set<QuantumResource> findAllResourcesByAlgorithmId(UUID algoid);
 
-    Algorithm findById(UUID algoId);
+    @Transactional
+    QuantumResourceType addOrUpdateQuantumResourceType(QuantumResourceType resourceType);
 
-    Optional<Algorithm> findOptionalById(UUID algoId);
+    @Transactional
+    QuantumResource addOrUpdateQuantumResource(QuantumResource resource);
 
-    AlgorithmRelation addOrUpdateAlgorithmRelation(UUID sourceAlgorithm_id, AlgorithmRelation relation);
+    @Transactional
+    QuantumResource addQuantumResourceToAlgorithm(QuantumAlgorithm algo, QuantumResource resource);
 
-    Set<AlgorithmRelation> getAlgorithmRelations(UUID sourceAlgorithm_id);
-
-    void detachResourcesFromAlgorithm(UUID algoId);
+    @Transactional
+    QuantumResource addQuantumResourceToAlgorithm(UUID algoId, UUID resourceId);
 }
