@@ -88,20 +88,6 @@ public class Algorithm extends AlgorOrImpl {
         return algorithmRelations.add(relation);
     }
 
-    @NonNull
-    public boolean updateAlgorithmRelation(AlgorithmRelation relation) {
-        for (AlgorithmRelation persistantRelation : algorithmRelations) {
-            if (persistantRelation.getId().equals(relation.getId())) {
-                persistantRelation.setSourceAlgorithm(relation.getSourceAlgorithm());
-                persistantRelation.setTargetAlgorithm(relation.getTargetAlgorithm());
-                persistantRelation.setAlgoRelationType(relation.getAlgoRelationType());
-                persistantRelation.setDescription(relation.getDescription());
-                return true;
-            }
-        }
-        return false;
-    }
-
     public void setAlgorithmRelations(Set<AlgorithmRelation> algorithmRelations) {
         this.algorithmRelations.clear();
         if (algorithmRelations != null) {
