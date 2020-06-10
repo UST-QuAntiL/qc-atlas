@@ -40,6 +40,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -77,9 +78,9 @@ public class QuantumResourceTypeController {
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404"),
     })
-    @GetMapping("/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteQuantumResourceType(@PathVariable UUID id) {
-        service.deleteQuantumResource(id);
+        service.deleteQuantumResourceType(id);
         return ResponseEntity.ok().build();
     }
 

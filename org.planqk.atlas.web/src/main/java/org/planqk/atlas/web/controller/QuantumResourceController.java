@@ -71,8 +71,8 @@ public class QuantumResourceController {
             @ApiResponse(responseCode = "404"),
     })
     @GetMapping("/{id}")
-    public ResponseEntity<?> deleteQuantumResourceType(@PathVariable UUID id) {
-        service.deleteQuantumResourceType(id);
+    public ResponseEntity<?> deleteQuantumResource(@PathVariable UUID id) {
+        service.deleteQuantumResource(id);
         return ResponseEntity.ok().build();
     }
 }

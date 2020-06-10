@@ -648,4 +648,56 @@ public class AlgorithmControllerTest {
         mockMvc.perform(post(path).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsBytes(resource)))
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    void testAddQuantumResource() throws Exception {
+        var type = new QuantumResourceTypeDto();
+        type.setDatatype(QuantumResourceDataType.FLOAT);
+        type.setName("test-type");
+        type.setId(UUID.randomUUID());
+        var resource = new QuantumResourceDto();
+        resource.setType(type);
+        resource.setId(UUID.randomUUID());
+
+        Set<ProblemType> problemTypes = new HashSet<>();
+
+        ProblemType type1 = new ProblemType();
+        type1.setId(UUID.randomUUID());
+        type1.setName("ProblemType1");
+        problemTypes.add(type1);
+
+        AlgoRelationType relType1 = new AlgoRelationType();
+        relType1.setName("RelationType1");
+
+        var algorithm1 = new QuantumAlgorithm();
+        algorithm1.setId(UUID.randomUUID());
+        algorithm1.setName("alg1");
+        algorithm1.setComputationModel(ComputationModel.CLASSIC);
+
+        var algorithm2 = new QuantumAlgorithm();
+        algorithm2.setId(UUID.randomUUID());
+        algorithm2.setName("alg2");
+        algorithm2.setComputationModel(ComputationModel.CLASSIC);
+        algorithm2.setAlgorithmRelations(new HashSet<>());
+
+        var algorithmRelation1 = new AlgorithmRelation();
+        algorithmRelation1.setId(UUID.randomUUID());
+        algorithmRelation1.setSourceAlgorithm(algorithm1);
+        algorithmRelation1.setTargetAlgorithm(algorithm2);
+        algorithmRelation1.setAlgoRelationType(relType1);
+        AlgorithmRelation algorithmRelation2 = new AlgorithmRelation();
+        algorithmRelation2.setId(UUID.randomUUID());
+        algorithmRelation2.setSourceAlgorithm(algorithm1);
+        algorithmRelation2.setTargetAlgorithm(algorithm2);
+        algorithmRelation2.setAlgoRelationType(relType1);
+        var algorithmRelations = new HashSet<>();
+        algorithmRelations.add(algorithmRelation1);
+        algorithmRelations.add(algorithmRelation2);
+
+        when(algorithmService.findById(any())).thenReturn(algorithm1);
+        when(quantumResourceService.addQuantumResourceToAlgorithm(any(QuantumAlgorithm.class), any(QuantumResource.class))).thenReturn(new QuantumResource());
+        var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.QUANTUM_RESOURCES + "/";
+        mockMvc.perform(post(path).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsBytes(resource)))
+                .andExpect(status().isOk());
+    }
 }
