@@ -38,6 +38,8 @@ public interface QuantumResourceService {
     @Transactional
     void deleteQuantumResource(UUID resourceId);
 
+    QuantumResourceType findResourceTypeById(UUID resourceTypeId);
+
     Page<QuantumResourceType> findAllResourceTypes(Pageable pageable);
 
     Set<QuantumResource> findAllResourcesByAlgorithmId(UUID algoid);
@@ -53,4 +55,6 @@ public interface QuantumResourceService {
 
     @Transactional
     QuantumResource addQuantumResourceToAlgorithm(UUID algoId, UUID resourceId);
+
+    QuantumResource findResourceById(UUID id);
 }
