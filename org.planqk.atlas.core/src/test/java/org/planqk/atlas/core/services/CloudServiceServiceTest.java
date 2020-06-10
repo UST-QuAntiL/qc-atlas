@@ -36,6 +36,25 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
+    void testUpdateCloudService() throws MalformedURLException {
+        CloudService cloudService = getGenericTestCloudServiceWithoutRelations("testCloudService");
+        CloudService storedCloudService = getGenericTestCloudServiceWithoutRelations("testCloudService");
+
+        CloudService storedEditedCloudService = cloudServiceService.save(cloudService);
+        storedCloudService.setId(storedEditedCloudService.getId());
+        String editName = "editedCloudService";
+        storedEditedCloudService.setName(editName);
+        storedEditedCloudService = cloudServiceService.save(storedEditedCloudService);
+
+        assertThat(storedEditedCloudService.getId()).isEqualTo(storedCloudService.getId());
+        assertThat(storedEditedCloudService.getName()).isNotEqualTo(storedCloudService.getName());
+        assertThat(storedEditedCloudService.getName()).isEqualTo(editName);
+        assertThat(storedEditedCloudService.getProvider()).isEqualTo(storedCloudService.getProvider());
+        assertThat(storedEditedCloudService.getUrl()).isEqualTo(storedCloudService.getUrl());
+        assertThat(storedEditedCloudService.getCostModel()).isEqualTo(storedCloudService.getCostModel());
+    }
+
+    @Test
     void testFindCloudServiceById_ElementNotFound() {
         Assertions.assertThrows(NoSuchElementException.class, () -> {
             cloudServiceService.findById(UUID.randomUUID());
