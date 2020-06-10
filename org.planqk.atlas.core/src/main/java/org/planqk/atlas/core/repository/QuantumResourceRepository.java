@@ -19,13 +19,13 @@
 
 package org.planqk.atlas.core.repository;
 
-import java.awt.print.Pageable;
 import java.util.Set;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.QuantumResource;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
