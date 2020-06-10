@@ -51,7 +51,7 @@ public class Algorithm extends AlgorOrImpl {
     @ManyToMany(cascade = {CascadeType.MERGE}, fetch = FetchType.LAZY)
     @JoinTable(name = "algorithm_publication",
             joinColumns = @JoinColumn(name = "algorithm_id"),
-            inverseJoinColumns = @JoinColumn(name ="publication_id"))
+            inverseJoinColumns = @JoinColumn(name = "publication_id"))
     @EqualsAndHashCode.Exclude
     private Set<Publication> publications;
 
