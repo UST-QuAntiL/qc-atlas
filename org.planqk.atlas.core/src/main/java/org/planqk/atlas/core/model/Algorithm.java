@@ -22,13 +22,18 @@ package org.planqk.atlas.core.model;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-
 import org.springframework.lang.NonNull;
 
 /**
@@ -43,7 +48,7 @@ public class Algorithm extends AlgorOrImpl {
     private String name;
     private String acronym;
 
-    @ManyToMany(cascade= {CascadeType.MERGE}, fetch=FetchType.LAZY)
+    @ManyToMany(cascade = {CascadeType.MERGE}, fetch = FetchType.LAZY)
     @JoinTable(name = "algorithm_publication",
             joinColumns = @JoinColumn(name = "algorithm_id"),
             inverseJoinColumns = @JoinColumn(name ="publication_id"))
@@ -53,7 +58,7 @@ public class Algorithm extends AlgorOrImpl {
     private String intent;
     private String problem;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = { CascadeType.ALL }, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JoinColumn(name = "sourceAlgorithm", referencedColumnName = "id")
     @EqualsAndHashCode.Exclude
     private Set<AlgorithmRelation> algorithmRelations = new HashSet<>();
@@ -70,7 +75,7 @@ public class Algorithm extends AlgorOrImpl {
     @EqualsAndHashCode.Exclude
     private Set<PatternRelation> relatedPatterns = new HashSet<>();
 
-    @ManyToMany(cascade = { CascadeType.MERGE })
+    @ManyToMany(cascade = {CascadeType.MERGE})
     @JoinTable(name = "algorithm_problem_type", joinColumns = @JoinColumn(name = "algorithm_id"), inverseJoinColumns = @JoinColumn(name = "problem_type_id"))
     @EqualsAndHashCode.Exclude
     private Set<ProblemType> problemTypes = new HashSet<>();
@@ -78,7 +83,7 @@ public class Algorithm extends AlgorOrImpl {
     @ElementCollection
     private Set<String> applicationAreas = new HashSet<>();
 
-    @ManyToMany(cascade = { CascadeType.MERGE })
+    @ManyToMany(cascade = {CascadeType.MERGE})
     @JoinTable(name = "algorithm_tag", joinColumns = @JoinColumn(name = "algorithm_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
     @EqualsAndHashCode.Exclude
     private Set<Tag> tags = new HashSet<>();
@@ -101,5 +106,4 @@ public class Algorithm extends AlgorOrImpl {
             this.relatedPatterns.addAll(relatedPatterns);
         }
     }
-
 }

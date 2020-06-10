@@ -69,6 +69,10 @@ public class PublicationServiceImpl implements PublicationService {
 	public Set<Publication> createOrUpdateAll(Set<Publication> publications) {
 		Set<Publication> dbPublications = new HashSet<>();
 
+		if(publications == null) {
+		    return dbPublications;
+        }
+
 		for (Publication publication : publications) {
 			Optional<Publication> optPublication = Objects.isNull(publication.getId()) ? Optional.empty()
 					: publicationRepository.findById(publication.getId());

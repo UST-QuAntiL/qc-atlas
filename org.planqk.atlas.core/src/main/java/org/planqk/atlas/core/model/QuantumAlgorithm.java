@@ -10,9 +10,11 @@ import javax.persistence.OneToMany;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Setter;
+import lombok.NonNull;
+import lombok.ToString;
 
 @EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 @Data
 @Entity
 public class QuantumAlgorithm extends Algorithm {
@@ -21,12 +23,13 @@ public class QuantumAlgorithm extends Algorithm {
 
     private QuantumComputationModel quantumComputationModel;
 
-    @OneToMany(mappedBy = "algorithm", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @Setter
+    @OneToMany(mappedBy = "algorithm", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<QuantumResource> requiredQuantumResources = new HashSet<>();
 
     private String speedUp;
 
-    // TODO: Add implementations
+    public void addQuantumResource(@NonNull QuantumResource resource) {
+        this.requiredQuantumResources.add(resource);
+    }
 
 }
