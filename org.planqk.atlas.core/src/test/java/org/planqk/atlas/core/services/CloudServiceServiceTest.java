@@ -19,14 +19,11 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
     @Autowired
     private CloudServiceService cloudServiceService;
 
-    @Autowired
-    private CloudServiceRepository cloudServiceRepository;
-
     @Test
     void testAddCloudService_WithoutBackends() throws MalformedURLException {
         CloudService cloudService = getGenericTestCloudServiceWithoutRelations("testCloudService");
 
-        var storedCloudService = cloudServiceService.save(cloudService);
+        CloudService storedCloudService = cloudServiceService.save(cloudService);
         assertCloudServiceEquality(storedCloudService, cloudService);
     }
 
@@ -65,9 +62,9 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
     void testFindCloudServiceById_ElementFound() throws MalformedURLException {
         CloudService cloudService = getGenericTestCloudServiceWithoutRelations("testCloudService");
 
-        var storedCloudService = cloudServiceService.save(cloudService);
+        CloudService storedCloudService = cloudServiceService.save(cloudService);
 
-        cloudServiceService.findById(storedCloudService.getId());
+        storedCloudService = cloudServiceService.findById(storedCloudService.getId());
 
         assertCloudServiceEquality(storedCloudService, cloudService);
     }
@@ -76,14 +73,14 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
     void testDeleteCloudService_WithoutBackends() throws MalformedURLException {
         CloudService cloudService = getGenericTestCloudServiceWithoutRelations("testCloudService");
 
-        var storedCloudService = cloudServiceService.save(cloudService);
-        cloudServiceService.findById(storedCloudService.getId());
+        CloudService storedCloudService = cloudServiceService.save(cloudService);
+
+        Assertions.assertDoesNotThrow(() -> cloudServiceService.findById(storedCloudService.getId()));
 
         cloudServiceService.delete(storedCloudService.getId());
 
-        Assertions.assertThrows(NoSuchElementException.class, () -> {
-            cloudServiceService.findById(storedCloudService.getId());
-        });
+        Assertions.assertThrows(NoSuchElementException.class, () ->
+            cloudServiceService.findById(storedCloudService.getId()));
     }
 
     @Test
