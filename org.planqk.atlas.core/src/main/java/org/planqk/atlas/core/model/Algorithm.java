@@ -47,6 +47,7 @@ public class Algorithm extends AlgorOrImpl {
     @JoinTable(name = "algorithm_publication",
             joinColumns = @JoinColumn(name = "algorithm_id"),
             inverseJoinColumns = @JoinColumn(name ="publication_id"))
+    @EqualsAndHashCode.Exclude
     private Set<Publication> publications;
 
     private String intent;
@@ -56,6 +57,7 @@ public class Algorithm extends AlgorOrImpl {
     @JoinColumn(name = "sourceAlgorithm", referencedColumnName = "id")
     @EqualsAndHashCode.Exclude
     private Set<AlgorithmRelation> algorithmRelations = new HashSet<>();
+
     private String inputFormat;
     private String algoParameter;
     private String outputFormat;
@@ -65,6 +67,7 @@ public class Algorithm extends AlgorOrImpl {
     private ComputationModel computationModel;
 
     @OneToMany(mappedBy = "algorithm", fetch = FetchType.LAZY, cascade = CascadeType.MERGE, orphanRemoval = true)
+    @EqualsAndHashCode.Exclude
     private Set<PatternRelation> relatedPatterns = new HashSet<>();
 
     @ManyToMany(cascade = { CascadeType.MERGE })

@@ -8,7 +8,6 @@ import javax.persistence.ManyToOne;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Setter;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -16,14 +15,16 @@ import lombok.Setter;
 public class AlgorithmRelation extends HasId {
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @Setter
+    @EqualsAndHashCode.Exclude
     private Algorithm sourceAlgorithm;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.MERGE, CascadeType.REFRESH })
     @JoinColumn(name = "targetAlgorithm", referencedColumnName = "id")
+    @EqualsAndHashCode.Exclude
     private Algorithm targetAlgorithm;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @EqualsAndHashCode.Exclude
     private AlgoRelationType algoRelationType;
 
     private String description;
