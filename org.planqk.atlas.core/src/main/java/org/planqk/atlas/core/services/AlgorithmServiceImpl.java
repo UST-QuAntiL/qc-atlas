@@ -138,12 +138,12 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         if (algorithm instanceof QuantumAlgorithm) {
         	QuantumAlgorithm quantumAlgorithm = (QuantumAlgorithm) algorithm;
         	QuantumAlgorithm persistedQuantumAlg = (QuantumAlgorithm) persistedAlg;
-        	
+
         	persistedQuantumAlg.setNisqReady(quantumAlgorithm.isNisqReady());
         	persistedQuantumAlg.setQuantumComputationModel(quantumAlgorithm.getQuantumComputationModel());
         	// persistedQuantumAlg.setRequiredQuantumResources(quantumAlgorithm.getRequiredQuantumResources());
         	persistedQuantumAlg.setSpeedUp(quantumAlgorithm.getSpeedUp());
-        	
+
         	return algorithmRepository.save(persistedQuantumAlg);
         } else {
         	// Else if ClassicAlgorithm no more fields to adjust
@@ -191,9 +191,9 @@ public class AlgorithmServiceImpl implements AlgorithmService {
                 .findOptionalById(relation.getAlgoRelationType().getId());
 
         // Create relation type if not exists
-        AlgoRelationType relationType = relationTypeOpt.isEmpty()
-                ? algoRelationTypeService.save(relation.getAlgoRelationType())
-                : relationTypeOpt.get();
+        AlgoRelationType relationType = relationTypeOpt.isPresent()
+                ? relationTypeOpt.get()
+                : algoRelationTypeService.save(relation.getAlgoRelationType());
 
         // Check if relation with those two algorithms and the relation type already
         // exists
@@ -206,7 +206,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
             AlgorithmRelation persistedRelation = persistedRelationOpt.get();
             persistedRelation.setDescription(relation.getDescription());
             // Return updated relation
-            return save(persistedRelation);
+            return algorithmRelationRepository.save(persistedRelation);
         }
 
         // Set Relation Objects with referenced database objects
@@ -215,14 +215,14 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         relation.setAlgoRelationType(relationType);
 
         sourceAlgorithm.addAlgorithmRelation(relation);
+
         // Save updated Algorithm -> CASCADE will save Relation
-        sourceAlgorithm = algorithmRepository.save(sourceAlgorithm);
+        persistAlgorithm(sourceAlgorithm);
+        persistedRelationOpt = algorithmRelationRepository
+                .findBySourceAlgorithmIdAndTargetAlgorithmIdAndAlgoRelationTypeId(sourceAlgorithm.getId(),
+                        targetAlgorithm.getId(), relationType.getId());
 
-        return relation;
-    }
-
-    private AlgorithmRelation save(AlgorithmRelation current) {
-        return algorithmRelationRepository.save(current);
+        return persistedRelationOpt.get();
     }
 
     @Override
