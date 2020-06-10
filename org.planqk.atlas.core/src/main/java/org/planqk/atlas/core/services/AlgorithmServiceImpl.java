@@ -88,8 +88,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         for (AlgorithmRelation relation : inputRelations) {
             // set correct source algorithm
             relation.setSourceAlgorithm(algorithm);
-            if (Optional.ofNullable(relation.getTargetAlgorithm()).isPresent()
-                    && algorithmAlreadyPersisted(relation.getTargetAlgorithm().getId())) {
+            if (algorithmAlreadyPersisted(relation.getTargetAlgorithm().getId())) {
                 relation.setAlgoRelationType(getPersistedAlgoRelationType(relation));
                 validRelations.add(relation);
             }
