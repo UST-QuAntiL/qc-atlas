@@ -24,6 +24,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.planqk.atlas.core.model.AlgoRelationType;
 import org.planqk.atlas.core.model.Algorithm;
@@ -67,7 +68,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
             this.resourceRepository.saveAll(items);
         }
     }
-    
+
     @Override
     public Algorithm save(Algorithm algorithm) {
         // Persist Tags separately
