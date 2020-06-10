@@ -76,6 +76,11 @@ public class QuantumResourceServiceImpl implements QuantumResourceService {
     }
 
     @Override
+    public Page<QuantumResource> findAllResourcesByAlgorithmId(UUID algoid, Pageable pageable) {
+        return resourceRepository.findAllByAlgorithm_Id(algoid, pageable);
+    }
+
+    @Override
     public QuantumResourceType addOrUpdateQuantumResourceType(QuantumResourceType resourceType) {
         return typeRepository.save(resourceType);
     }

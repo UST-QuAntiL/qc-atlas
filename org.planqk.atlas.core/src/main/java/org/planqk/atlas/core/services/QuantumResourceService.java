@@ -44,6 +44,8 @@ public interface QuantumResourceService {
 
     Set<QuantumResource> findAllResourcesByAlgorithmId(UUID algoid);
 
+    Page<QuantumResource> findAllResourcesByAlgorithmId(UUID algoid, Pageable pageable);
+
     @Transactional
     QuantumResourceType addOrUpdateQuantumResourceType(QuantumResourceType resourceType);
 

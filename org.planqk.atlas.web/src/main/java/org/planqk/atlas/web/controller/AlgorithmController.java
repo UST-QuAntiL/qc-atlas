@@ -28,19 +28,24 @@ import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.model.Publication;
+import org.planqk.atlas.core.model.QuantumAlgorithm;
+import org.planqk.atlas.core.model.QuantumResource;
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.services.AlgorithmService;
+import org.planqk.atlas.core.services.QuantumResourceService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.annotation.ApiVersion;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
 import org.planqk.atlas.web.dtos.ProblemTypeDto;
 import org.planqk.atlas.web.dtos.PublicationDto;
+import org.planqk.atlas.web.dtos.QuantumResourceDto;
 import org.planqk.atlas.web.dtos.TagDto;
 import org.planqk.atlas.web.linkassembler.AlgorithmAssembler;
 import org.planqk.atlas.web.linkassembler.AlgorithmRelationAssembler;
 import org.planqk.atlas.web.linkassembler.ProblemTypeAssembler;
 import org.planqk.atlas.web.linkassembler.PublicationAssembler;
+import org.planqk.atlas.web.linkassembler.QuantumResourceAssembler;
 import org.planqk.atlas.web.linkassembler.TagAssembler;
 import org.planqk.atlas.web.utils.HateoasUtils;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
@@ -85,13 +90,17 @@ public class AlgorithmController {
 
     final private static Logger LOG = LoggerFactory.getLogger(AlgorithmController.class);
 
-    private AlgorithmService algorithmService;
-    private PagedResourcesAssembler<AlgorithmDto> paginationAssembler;
-    private ProblemTypeAssembler problemTypeAssembler;
-    private TagAssembler tagAssembler;
-    private AlgorithmAssembler algorithmAssembler;
-    private AlgorithmRelationAssembler algorithmRelationAssembler;
-    private PublicationAssembler publicationAssembler;
+    private final AlgorithmService algorithmService;
+    private final QuantumResourceService quantumResourceService;
+
+    private final PagedResourcesAssembler<AlgorithmDto> algorithmPaginationAssembler;
+    private final PagedResourcesAssembler<QuantumResourceDto> quantumResourcePaginationAssembler;
+    private final ProblemTypeAssembler problemTypeAssembler;
+    private final TagAssembler tagAssembler;
+    private final AlgorithmAssembler algorithmAssembler;
+    private final AlgorithmRelationAssembler algorithmRelationAssembler;
+    private final PublicationAssembler publicationAssembler;
+    private final QuantumResourceAssembler quantumResourceAssembler;
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping("/")
@@ -103,7 +112,7 @@ public class AlgorithmController {
         // Get Page of DTOs
         Page<AlgorithmDto> pageDto = ModelMapperUtils.convertPage(algorithmService.findAll(p), AlgorithmDto.class);
         // Generate PagedModel
-        PagedModel<EntityModel<AlgorithmDto>> outputDto = paginationAssembler.toModel(pageDto);
+        PagedModel<EntityModel<AlgorithmDto>> outputDto = algorithmPaginationAssembler.toModel(pageDto);
         algorithmAssembler.addLinks(outputDto.getContent());
         return new ResponseEntity<>(outputDto, HttpStatus.OK);
     }
@@ -251,5 +260,53 @@ public class AlgorithmController {
         LOG.debug("Delete received to remove algorithm relation with id {}.", relationId);
         algorithmService.deleteAlgorithmRelation(sourceAlgorithmId, relationId);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404")
+    })
+    @GetMapping("/{id}/" + Constants.QUANTUM_RESOURCES)
+    public ResponseEntity<PagedModel<EntityModel<QuantumResourceDto>>> getQuantumResources(
+            @PathVariable UUID id,
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size
+    ) {
+        var algorithm = algorithmService.findById(id);
+        if (!(algorithm instanceof QuantumAlgorithm)) {
+            return ResponseEntity.badRequest().build();
+        }
+        var resources = quantumResourceService.findAllResourcesByAlgorithmId(id,
+                RestUtils.getPageableFromRequestParams(page, size));
+        var typeDtoes = ModelMapperUtils.convertPage(resources, QuantumResourceDto.class);
+        var pagedModel = quantumResourcePaginationAssembler.toModel(typeDtoes);
+        quantumResourceAssembler.addLinks(pagedModel);
+        return ResponseEntity.ok(pagedModel);
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404")
+    })
+    @PostMapping("/{id}/" + Constants.QUANTUM_RESOURCES)
+    public ResponseEntity<?> addQuantumResource(
+            @PathVariable UUID id,
+            @Valid @RequestBody QuantumResourceDto resourceDto
+    ) {
+        var algorithm = algorithmService.findById(id);
+        if (!(algorithm instanceof QuantumAlgorithm)) {
+            return ResponseEntity.badRequest().build();
+        }
+        var resource = ModelMapperUtils.convert(resourceDto, QuantumResource.class);
+        var updatedAlgorithm = quantumResourceService.addQuantumResourceToAlgorithm(
+                (QuantumAlgorithm) algorithm,
+                resource
+        );
+        EntityModel<AlgorithmDto> algoDto = HateoasUtils.generateEntityModel(
+                ModelMapperUtils.convert(updatedAlgorithm, AlgorithmDto.class));
+        algorithmAssembler.addLinks(algoDto);
+        return ResponseEntity.ok(algoDto);
     }
 }
