@@ -1,10 +1,33 @@
 package org.planqk.atlas.core.services;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.UUID;
+
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.ClassicAlgorithm;
+import org.planqk.atlas.core.model.ComputationModel;
+import org.planqk.atlas.core.model.ProblemType;
+import org.planqk.atlas.core.model.Publication;
+import org.planqk.atlas.core.model.QuantumAlgorithm;
+import org.planqk.atlas.core.model.QuantumComputationModel;
+import org.planqk.atlas.core.model.Sketch;
+import org.planqk.atlas.core.model.SoftwarePlatform;
+import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.repository.AlgorithmRelationRepository;
 import org.planqk.atlas.core.repository.AlgorithmRepository;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
 
@@ -16,6 +39,8 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
     private TagService tagService;
     @Autowired
     private ProblemTypeService problemTypeService;
+    @Autowired
+    private PublicationService publicationService;
 
     @Autowired
     private AlgorithmRepository algorithmRepository;
@@ -24,52 +49,238 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
 
     @Test
     void testAddAlgorithm_WithoutRelations() {
+        Algorithm algorithm = getGenericAlgorithmWithoutReferences("testAlgorithm");
 
+        Algorithm storedAlgorithm = algorithmService.save(algorithm);
+
+        assertAlgorithmEquality(storedAlgorithm, algorithm);
     }
 
     @Test
     void testAddAlgorithm_WithTags() {
+        Algorithm algorithm = getGenericAlgorithmWithoutReferences("testAlgorithm");
 
+        Set<Tag> tags = new HashSet<>();
+        Tag tag = new Tag();
+        tag.setKey("tagKey");
+        tag.setValue("tagValue");
+        tags.add(tag);
+        algorithm.setTags(tags);
+
+        Algorithm storedAlgorithm = algorithmService.save(algorithm);
+
+        assertAlgorithmEquality(storedAlgorithm, algorithm);
+
+        storedAlgorithm.getTags().forEach(t -> {
+            assertThat(t.getId()).isNotNull();
+            assertThat(t.getKey()).isEqualTo(tag.getKey());
+            assertThat(t.getValue()).isEqualTo(tag.getValue());
+            Assertions.assertDoesNotThrow(() -> tagService.getTagById(t.getId()));
+            // assertThat(storedAlgorithm).isIn(t.getAlgorithms());
+        });
     }
 
     @Test
     void testAddAlgorithm_WithProblemTypes() {
+        Algorithm algorithm = getGenericAlgorithmWithoutReferences("testAlgorithm");
 
+        Set<ProblemType> problemTypes = new HashSet<>();
+        ProblemType problemType = new ProblemType();
+        problemType.setName("testProblemType");
+        problemType.setParentProblemType(UUID.randomUUID());
+        problemTypes.add(problemType);
+        algorithm.setProblemTypes(problemTypes);
+
+        Algorithm storedAlgorithm = algorithmService.save(algorithm);
+
+        assertAlgorithmEquality(storedAlgorithm, algorithm);
+
+        storedAlgorithm.getProblemTypes().forEach(pt -> {
+            assertThat(pt.getId()).isNotNull();
+            assertThat(pt.getName()).isEqualTo(problemType.getName());
+            assertThat(pt.getParentProblemType()).isEqualTo(problemType.getParentProblemType());
+            Assertions.assertDoesNotThrow(() -> problemTypeService.findById(pt.getId()));
+        });
+    }
+
+    @Test
+    void testAddAlgorithm_WithPublications() throws MalformedURLException {
+        Algorithm algorithm = getGenericAlgorithmWithoutReferences("testAlgorithm");
+
+        Set<Publication> publications = new HashSet<>();
+        Publication publication = new Publication();
+        publication.setTitle("testPublicationTitle");
+        publication.setUrl(new URL("http://example.com"));
+        publication.setDoi("testDoi");
+        List<String> publicationAuthors = new ArrayList<>();
+        publicationAuthors.add("test publication author");
+        publication.setAuthors(publicationAuthors);
+        publications.add(publication);
+        algorithm.setPublications(publications);
+
+        Algorithm storedAlgorithm = algorithmService.save(algorithm);
+
+        assertAlgorithmEquality(storedAlgorithm, algorithm);
+
+        storedAlgorithm.getPublications().forEach(pub -> {
+            assertThat(pub.getId()).isNotNull();
+            assertThat(pub.getTitle()).isEqualTo(publication.getTitle());
+            assertThat(pub.getUrl()).isEqualTo(publication.getUrl());
+            assertThat(pub.getDoi()).isEqualTo(publication.getDoi());
+            assertThat(pub.getAuthors()).isEqualTo(publication.getAuthors());
+            Assertions.assertDoesNotThrow(() -> publicationService.findById(pub.getId()));
+        });
     }
 
     @Test
     void testUpdateAlgorithm_ElementFound() {
+        Algorithm algorithm = getGenericAlgorithmWithoutReferences("testAlgorithm");
+        Algorithm compareAlgorithm = getGenericAlgorithmWithoutReferences("testAlgorithm");
 
+        Algorithm storedAlgorithm = algorithmService.save(algorithm);
+        compareAlgorithm.setId(storedAlgorithm.getId());
+        String editName = "editedAlgorithm";
+        storedAlgorithm.setName(editName);
+        Algorithm editedAlgorithm = algorithmService.update(storedAlgorithm.getId(), storedAlgorithm);
+
+        assertThat(editedAlgorithm.getId()).isNotNull();
+        assertThat(editedAlgorithm.getId()).isEqualTo(compareAlgorithm.getId());
+        assertThat(editedAlgorithm.getName()).isNotEqualTo(compareAlgorithm.getName());
+        assertThat(editedAlgorithm.getName()).isEqualTo(editName);
+        assertThat(editedAlgorithm.getAcronym()).isEqualTo(compareAlgorithm.getAcronym());
+        assertThat(editedAlgorithm.getIntent()).isEqualTo(compareAlgorithm.getIntent());
+        assertThat(editedAlgorithm.getProblem()).isEqualTo(compareAlgorithm.getProblem());
+        assertThat(editedAlgorithm.getInputFormat()).isEqualTo(compareAlgorithm.getInputFormat());
+        assertThat(editedAlgorithm.getAlgoParameter()).isEqualTo(compareAlgorithm.getAlgoParameter());
+        assertThat(editedAlgorithm.getOutputFormat()).isEqualTo(compareAlgorithm.getOutputFormat());
+        assertThat(editedAlgorithm.getSketch()).isEqualTo(compareAlgorithm.getSketch());
+        assertThat(editedAlgorithm.getSolution()).isEqualTo(compareAlgorithm.getSolution());
+        assertThat(editedAlgorithm.getAssumptions()).isEqualTo(compareAlgorithm.getAssumptions());
+        assertThat(editedAlgorithm.getComputationModel()).isEqualTo(compareAlgorithm.getComputationModel());
+        assertThat(editedAlgorithm.getApplicationAreas()).isEqualTo(compareAlgorithm.getApplicationAreas());
     }
 
     @Test
     void testUpdateAlgorithm_ElementNotFound() {
+        Algorithm algorithm = getGenericAlgorithmWithoutReferences("testAlgorithm");
 
+        Assertions.assertThrows(NoSuchElementException.class, () ->
+                algorithmService.update(UUID.randomUUID(), algorithm));
     }
 
     @Test
     void testUpdateAlgorithm_QuantumAlgorithm() {
+        QuantumAlgorithm algorithm = new QuantumAlgorithm();
+        algorithm.setName("testQuantumAlgorithm");
+        algorithm.setComputationModel(ComputationModel.QUANTUM);
+        algorithm.setNisqReady(false);
+        algorithm.setSpeedUp("2");
+        algorithm.setQuantumComputationModel(QuantumComputationModel.QUANTUM_ANNEALING);
+        QuantumAlgorithm compareAlgorithm = new QuantumAlgorithm();
+        compareAlgorithm.setName("testQuantumAlgorithm");
+        compareAlgorithm.setComputationModel(ComputationModel.QUANTUM);
+        compareAlgorithm.setNisqReady(false);
+        compareAlgorithm.setSpeedUp("2");
+        compareAlgorithm.setQuantumComputationModel(QuantumComputationModel.QUANTUM_ANNEALING);
 
+        QuantumAlgorithm storedAlgorithm = (QuantumAlgorithm) algorithmService.save(algorithm);
+        compareAlgorithm.setId(storedAlgorithm.getId());
+        String editName = "editedQuantumAlgorithm";
+        storedAlgorithm.setName(editName);
+        QuantumAlgorithm editedAlgorithm = (QuantumAlgorithm) algorithmService.update(storedAlgorithm.getId(), storedAlgorithm);
+
+        assertThat(editedAlgorithm.getId()).isNotNull();
+        assertThat(editedAlgorithm.getId()).isEqualTo(compareAlgorithm.getId());
+        assertThat(editedAlgorithm.getName()).isNotEqualTo(compareAlgorithm.getName());
+        assertThat(editedAlgorithm.getName()).isEqualTo(editName);
+        assertThat(editedAlgorithm.getComputationModel()).isEqualTo(compareAlgorithm.getComputationModel());
+        assertThat(editedAlgorithm.isNisqReady()).isEqualTo(compareAlgorithm.isNisqReady());
+        assertThat(editedAlgorithm.getSpeedUp()).isEqualTo(compareAlgorithm.getSpeedUp());
+        assertThat(editedAlgorithm.getQuantumComputationModel()).isEqualTo(compareAlgorithm.getQuantumComputationModel());
     }
 
     @Test
-    void testFindAlgorithmId_ElementNotFound() {
-
+    void testFindAlgorithmById_ElementNotFound() {
+        Assertions.assertThrows(NoSuchElementException.class, () ->
+                algorithmService.findById(UUID.randomUUID()));
     }
 
     @Test
     void testFindAlgorithmById_ElementFound() {
+        Algorithm algorithm = getGenericAlgorithmWithoutReferences("testAlgorithm");
 
+        Algorithm storedAlgorithm = algorithmService.save(algorithm);
+
+        storedAlgorithm = algorithmService.findById(storedAlgorithm.getId());
+
+        assertAlgorithmEquality(storedAlgorithm, algorithm);
     }
 
     @Test
     void testDeleteAlgorithm_WithoutRelations() {
+        Algorithm algorithm = getGenericAlgorithmWithoutReferences("testAlgorithm");
 
+        Algorithm storedAlgorithm = algorithmService.save(algorithm);
+
+        Assertions.assertDoesNotThrow(() -> algorithmService.findById(storedAlgorithm.getId()));
+
+        algorithmService.delete(storedAlgorithm.getId());
+
+        Assertions.assertThrows(NoSuchElementException.class, () ->
+                algorithmService.findById(storedAlgorithm.getId()));
     }
 
     @Test
-    void testDeleteAlgorithm_WithRelations() {
+    void testDeleteAlgorithm_WithRelations() throws MalformedURLException {
+        Algorithm algorithm = getGenericAlgorithmWithoutReferences("testAlgorithm");
 
+        Set<Tag> tags = new HashSet<>();
+        Tag tag = new Tag();
+        tag.setKey("tagKey");
+        tag.setValue("tagValue");
+        tags.add(tag);
+        algorithm.setTags(tags);
+
+        Set<ProblemType> problemTypes = new HashSet<>();
+        ProblemType problemType = new ProblemType();
+        problemType.setName("testProblemType");
+        problemType.setParentProblemType(UUID.randomUUID());
+        problemTypes.add(problemType);
+        algorithm.setProblemTypes(problemTypes);
+
+        Set<Publication> publications = new HashSet<>();
+        Publication publication = new Publication();
+        publication.setTitle("testPublicationTitle");
+        publication.setUrl(new URL("http://example.com"));
+        publication.setDoi("testDoi");
+        List<String> publicationAuthors = new ArrayList<>();
+        publicationAuthors.add("test publication author");
+        publication.setAuthors(publicationAuthors);
+        publications.add(publication);
+        algorithm.setPublications(publications);
+
+        Algorithm storedAlgorithm = algorithmService.save(algorithm);
+
+        Assertions.assertDoesNotThrow(() -> algorithmService.findById(storedAlgorithm.getId()));
+        storedAlgorithm.getTags().forEach(t ->
+            Assertions.assertDoesNotThrow(() -> tagService.getTagById(t.getId())));
+        storedAlgorithm.getProblemTypes().forEach(pt ->
+            Assertions.assertDoesNotThrow(() -> problemTypeService.findById(pt.getId())));
+        storedAlgorithm.getPublications().forEach(pub ->
+            Assertions.assertDoesNotThrow(() -> publicationService.findById(pub.getId())));
+
+        algorithmService.delete(storedAlgorithm.getId());
+
+        Assertions.assertThrows(NoSuchElementException.class, () ->
+                algorithmService.findById(storedAlgorithm.getId()));
+        storedAlgorithm.getTags().forEach(t ->
+                Assertions.assertDoesNotThrow(() -> tagService.getTagById(t.getId())));
+        storedAlgorithm.getProblemTypes().forEach(pt ->
+                Assertions.assertDoesNotThrow(() -> problemTypeService.findById(pt.getId())));
+        // TODO maybe test with publication used in 2 algos if not done in publication service test
+        storedAlgorithm.getPublications().forEach(pub ->
+                Assertions.assertThrows(NoSuchElementException.class, () ->
+                        publicationService.findById(pub.getId())));
     }
 
     @Test
@@ -105,6 +316,41 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
     @Test
     void testDeleteAlgorithmRelation_ElementsFound() {
 
+    }
+
+    private void assertAlgorithmEquality(Algorithm dbAlgorithm, Algorithm compareAlgorithm) {
+        assertThat(dbAlgorithm.getId()).isNotNull();
+        assertThat(dbAlgorithm.getName()).isEqualTo(compareAlgorithm.getName());
+        assertThat(dbAlgorithm.getAcronym()).isEqualTo(compareAlgorithm.getAcronym());
+        assertThat(dbAlgorithm.getIntent()).isEqualTo(compareAlgorithm.getIntent());
+        assertThat(dbAlgorithm.getProblem()).isEqualTo(compareAlgorithm.getProblem());
+        assertThat(dbAlgorithm.getInputFormat()).isEqualTo(compareAlgorithm.getInputFormat());
+        assertThat(dbAlgorithm.getAlgoParameter()).isEqualTo(compareAlgorithm.getAlgoParameter());
+        assertThat(dbAlgorithm.getOutputFormat()).isEqualTo(compareAlgorithm.getOutputFormat());
+        assertThat(dbAlgorithm.getSketch()).isEqualTo(compareAlgorithm.getSketch());
+        assertThat(dbAlgorithm.getSolution()).isEqualTo(compareAlgorithm.getSolution());
+        assertThat(dbAlgorithm.getAssumptions()).isEqualTo(compareAlgorithm.getAssumptions());
+        assertThat(dbAlgorithm.getComputationModel()).isEqualTo(compareAlgorithm.getComputationModel());
+        assertThat(dbAlgorithm.getApplicationAreas()).isEqualTo(compareAlgorithm.getApplicationAreas());
+    }
+
+    private Algorithm getGenericAlgorithmWithoutReferences(String name) {
+        Algorithm algorithm = new ClassicAlgorithm();
+        algorithm.setName(name);
+        algorithm.setAcronym("testAcronym");
+        algorithm.setIntent("testIntent");
+        algorithm.setProblem("testProblem");
+        algorithm.setInputFormat("testInputFormat");
+        algorithm.setAlgoParameter("testAlgoParameter");
+        algorithm.setOutputFormat("testOutputFormat");
+        algorithm.setSketch(Sketch.CIRCUIT);
+        algorithm.setSolution("testSolution");
+        algorithm.setAssumptions("testAssumptions");
+        algorithm.setComputationModel(ComputationModel.CLASSIC);
+        Set<String> applicationAreas = new HashSet<>();
+        applicationAreas.add("testApplicationArea");
+        algorithm.setApplicationAreas(applicationAreas);
+        return algorithm;
     }
 
 }
