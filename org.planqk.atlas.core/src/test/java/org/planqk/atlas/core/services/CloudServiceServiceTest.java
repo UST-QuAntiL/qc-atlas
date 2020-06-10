@@ -53,9 +53,8 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
 
     @Test
     void testFindCloudServiceById_ElementNotFound() {
-        Assertions.assertThrows(NoSuchElementException.class, () -> {
-            cloudServiceService.findById(UUID.randomUUID());
-        });
+        Assertions.assertThrows(NoSuchElementException.class, () ->
+            cloudServiceService.findById(UUID.randomUUID()));
     }
 
     @Test

@@ -23,8 +23,6 @@ import org.planqk.atlas.core.model.QuantumAlgorithm;
 import org.planqk.atlas.core.model.QuantumComputationModel;
 import org.planqk.atlas.core.model.Sketch;
 import org.planqk.atlas.core.model.Tag;
-import org.planqk.atlas.core.repository.AlgorithmRelationRepository;
-import org.planqk.atlas.core.repository.AlgorithmRepository;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -35,18 +33,11 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
     @Autowired
     private AlgorithmService algorithmService;
     @Autowired
-    private AlgoRelationTypeService algoRelationTypeService;
-    @Autowired
     private TagService tagService;
     @Autowired
     private ProblemTypeService problemTypeService;
     @Autowired
     private PublicationService publicationService;
-
-    @Autowired
-    private AlgorithmRepository algorithmRepository;
-    @Autowired
-    private AlgorithmRelationRepository algorithmRelationRepository;
 
     @Test
     void testAddAlgorithm_WithoutRelations() {
