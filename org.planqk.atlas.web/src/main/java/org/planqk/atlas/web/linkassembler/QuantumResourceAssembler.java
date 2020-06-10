@@ -35,7 +35,7 @@ public class QuantumResourceAssembler extends GenericLinkAssembler<QuantumResour
     @Override
     public void addLinks(EntityModel<QuantumResourceDto> resource) {
         resource.add(linkTo(methodOn(QuantumResourceController.class)
-                .deleteQuantumResourceType(resource.getContent().getId()))
+                .deleteQuantumResource(resource.getContent().getId()))
                 .withRel("delete"));
         resource.add(linkTo(methodOn(QuantumResourceController.class)
                 .getQuantumResource(resource.getContent().getId()))

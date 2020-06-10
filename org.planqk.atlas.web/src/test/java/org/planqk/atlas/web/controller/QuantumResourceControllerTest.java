@@ -19,14 +19,21 @@
 
 package org.planqk.atlas.web.controller;
 
+import java.util.NoSuchElementException;
+import java.util.UUID;
+
 import org.planqk.atlas.core.model.QuantumResource;
+import org.planqk.atlas.core.model.QuantumResourceDataType;
+import org.planqk.atlas.core.model.QuantumResourceType;
 import org.planqk.atlas.core.services.QuantumResourceService;
+import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
 import org.planqk.atlas.web.linkassembler.QuantumResourceAssembler;
-import org.planqk.atlas.web.linkassembler.QuantumResourceTypeAssembler;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,9 +42,17 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(QuantumResourceController.class)
 @ExtendWith(MockitoExtension.class)
@@ -46,11 +61,6 @@ public class QuantumResourceControllerTest {
 
     @TestConfiguration
     public static class TestConfig {
-
-        @Bean
-        public QuantumResourceTypeAssembler quantumResourceTypeAssembler() {
-            return new QuantumResourceTypeAssembler();
-        }
 
         @Bean
         public QuantumResourceAssembler quantumResourceAssembler() {
@@ -69,5 +79,50 @@ public class QuantumResourceControllerTest {
     @BeforeEach
     void setUp() {
         mapper = ObjectMapperUtils.newTestMapper();
+    }
+
+    @Test
+    void test_deleteResource() throws Exception {
+        doNothing().when(resourceService).deleteQuantumResource(any());
+        var url = "/" + Constants.QUANTUM_RESOURCES + "/" + UUID.randomUUID().toString();
+        mockMvc.perform(delete(url)).andExpect(status().isOk());
+    }
+
+    @Test
+    void test_deleteResource_InvalidId() throws Exception {
+        doThrow(new NoSuchElementException()).when(resourceService).deleteQuantumResource(any());
+        var url = "/" + Constants.QUANTUM_RESOURCES + "/" + UUID.randomUUID().toString();
+        mockMvc.perform(delete(url)).andExpect(status().isNotFound());
+    }
+
+    @Test
+    void test_getResource_InvalidId() throws Exception {
+        when(resourceService.findResourceById(any())).thenThrow(new NoSuchElementException());
+        var url = "/" + Constants.QUANTUM_RESOURCES + "/" + UUID.randomUUID().toString();
+        mockMvc.perform(get(url)).andExpect(status().isNotFound());
+    }
+
+    @Test
+    void test_getResource() throws Exception {
+        var sampleType = new QuantumResourceType();
+        sampleType.setId(UUID.randomUUID());
+        sampleType.setName("Hello World");
+        sampleType.setDatatype(QuantumResourceDataType.FLOAT);
+        sampleType.setDescription("Test");
+        var sampleResource = new QuantumResource();
+        sampleResource.setId(UUID.randomUUID());
+        sampleResource.setQuantumResourceType(sampleType);
+
+        when(resourceService.findResourceById(any())).thenReturn(sampleResource);
+        var url = "/" + Constants.QUANTUM_RESOURCES + "/" + UUID.randomUUID().toString();
+        var result = mockMvc.perform(get(url)).andExpect(status().isOk()).andReturn();
+
+        var dto = mapper.readValue(
+                result.getResponse().getContentAsString(),
+                new TypeReference<EntityModel<QuantumResource>>() {
+                }
+        ).getContent();
+
+        assertThat(dto.getId()).isEqualTo(sampleResource.getId());
     }
 }
