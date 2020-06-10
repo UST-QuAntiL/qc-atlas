@@ -6,6 +6,7 @@ import org.planqk.atlas.core.repository.SoftwarePlatformRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.NoSuchElementException;
 import java.util.UUID;
@@ -17,6 +18,7 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
     private final SoftwarePlatformRepository softwarePlatformRepository;
     private final CloudServiceService cloudServiceService;
 
+    @Transactional
     @Override
     public SoftwarePlatform save(SoftwarePlatform softwarePlatform) {
         // TODO create or update backends when service is implemented
@@ -38,6 +40,7 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
         return softwarePlatformRepository.findById(platformId).orElseThrow(NoSuchElementException::new);
     }
 
+    @Transactional
     @Override
     public void delete(UUID platformId) {
         softwarePlatformRepository.deleteById(platformId);

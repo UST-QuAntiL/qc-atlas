@@ -16,8 +16,7 @@ import java.util.UUID;
 @JsonTypeName("CLASSIC")
 @NoArgsConstructor
 public class SoftwarePlatformDto extends RepresentationModel<SoftwarePlatformDto> {
-
-    @NotNull(message = "Id must not be null!")
+    
     private UUID id;
 
     @NotNull(message = "SoftwarePlatform name must not be null!")

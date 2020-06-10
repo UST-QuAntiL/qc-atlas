@@ -20,7 +20,6 @@ import java.util.UUID;
 @NoArgsConstructor
 public class CloudServiceDto extends RepresentationModel<CloudServiceDto> {
 
-    @NotNull(message = "Id must not be null!")
     private UUID id;
 
     @NotNull(message = "CloudService name must not be null!")

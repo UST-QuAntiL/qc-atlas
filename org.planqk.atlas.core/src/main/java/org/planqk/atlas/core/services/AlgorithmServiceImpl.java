@@ -41,7 +41,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-
 @Repository
 @AllArgsConstructor
 public class AlgorithmServiceImpl implements AlgorithmService {
@@ -68,7 +67,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
             this.resourceRepository.saveAll(items);
         }
     }
-    
+
     @Override
     public Algorithm save(Algorithm algorithm) {
         // Persist Tags separately
@@ -108,12 +107,12 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         if (algorithm instanceof QuantumAlgorithm) {
         	QuantumAlgorithm quantumAlgorithm = (QuantumAlgorithm) algorithm;
         	QuantumAlgorithm persistedQuantumAlg = (QuantumAlgorithm) persistedAlg;
-        	
+
         	persistedQuantumAlg.setNisqReady(quantumAlgorithm.isNisqReady());
         	persistedQuantumAlg.setQuantumComputationModel(quantumAlgorithm.getQuantumComputationModel());
         	// persistedQuantumAlg.setRequiredQuantumResources(quantumAlgorithm.getRequiredQuantumResources());
         	persistedQuantumAlg.setSpeedUp(quantumAlgorithm.getSpeedUp());
-        	
+
         	return algorithmRepository.save(persistedQuantumAlg);
         } else {
         	// Else if ClassicAlgorithm no more fields to adjust
@@ -158,6 +157,10 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         // Read involved Algorithms from database
         Algorithm sourceAlgorithm = findById(sourceAlgorithmId);
         Algorithm targetAlgorithm = findById(relation.getTargetAlgorithm().getId());
+
+        if (relation.getAlgoRelationType().getId() == null) {
+            algoRelationTypeService.save(relation.getAlgoRelationType());
+        }
         Optional<AlgoRelationType> relationTypeOpt = relationTypeService
                 .findOptionalById(relation.getAlgoRelationType().getId());
 

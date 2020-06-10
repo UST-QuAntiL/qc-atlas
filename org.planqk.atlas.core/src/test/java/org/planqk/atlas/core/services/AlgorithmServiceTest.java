@@ -12,7 +12,9 @@ import java.util.UUID;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import org.planqk.atlas.core.model.AlgoRelationType;
 import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
 import org.planqk.atlas.core.model.ComputationModel;
 import org.planqk.atlas.core.model.ProblemType;
@@ -20,7 +22,6 @@ import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.model.QuantumAlgorithm;
 import org.planqk.atlas.core.model.QuantumComputationModel;
 import org.planqk.atlas.core.model.Sketch;
-import org.planqk.atlas.core.model.SoftwarePlatform;
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.repository.AlgorithmRelationRepository;
 import org.planqk.atlas.core.repository.AlgorithmRepository;
@@ -284,38 +285,85 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void testAddAlgorithmRelation() {
+    void testAddOrUpdateAlgorithmRelation_AddAndUpdateRelation() {
+        Algorithm sourceAlgorithm = getGenericAlgorithmWithoutReferences("sourceAlgorithm");
+        Algorithm targetAlgorithm = getGenericAlgorithmWithoutReferences("targetAlgorithm");
+        Algorithm storedSourceAlgorithm = algorithmService.save(sourceAlgorithm);
+        Algorithm storedTargetAlgorithm = algorithmService.save(targetAlgorithm);
+        AlgorithmRelation algorithmRelation = getGenericAlgorithmRelation(storedSourceAlgorithm, storedTargetAlgorithm);
 
-    }
+        algorithmService.addOrUpdateAlgorithmRelation(storedSourceAlgorithm.getId(), algorithmRelation);
 
-    @Test
-    void testAddOrUpdateAlgorithmRelation_AlgorithmOrRelationNotFound() {
+        Set<AlgorithmRelation> sourceAlgoRelation = algorithmService.getAlgorithmRelations(storedSourceAlgorithm.getId());
+        sourceAlgoRelation.forEach(relation -> {
+            assertAlgorithmRelationEquality(relation, algorithmRelation);
+            Assertions.assertDoesNotThrow(() -> algorithmService.findById(relation.getSourceAlgorithm().getId()));
+            Assertions.assertDoesNotThrow(() -> algorithmService.findById(relation.getTargetAlgorithm().getId()));
+            algorithmRelation.setId(relation.getId());
+        });
 
-    }
-
-    @Test
-    void testAddOrUpdateAlgorithmRelation_AddRelation() {
-
-    }
-
-    @Test
-    void testAddOrUpdateAlgorithmRelation_UpdateRelation() {
-
+        // TODO update when service impl is finished
+//        algorithmRelation.setDescription("updatedDescription");
+//        AlgoRelationType algoRelationType = algorithmRelation.getAlgoRelationType();
+//        algoRelationType.setName("updatedRelation");
+//        algorithmRelation.setAlgoRelationType(algoRelationType);
+//
+//        algorithmService.addOrUpdateAlgorithmRelation(storedSourceAlgorithm.getId(), algorithmRelation);
+//
+//        sourceAlgoRelation.forEach(relation -> {
+//            assertAlgorithmRelationEquality(relation, algorithmRelation);
+//            Assertions.assertDoesNotThrow(() -> algorithmService.findById(relation.getSourceAlgorithm().getId()));
+//            Assertions.assertDoesNotThrow(() -> algorithmService.findById(relation.getTargetAlgorithm().getId()));
+//            algorithmRelation.setId(relation.getId());
+//        });
     }
 
     @Test
     void testGetAlgorithmRelations() {
+        Algorithm sourceAlgorithm = getGenericAlgorithmWithoutReferences("sourceAlgorithm");
+        Algorithm targetAlgorithm = getGenericAlgorithmWithoutReferences("targetAlgorithm");
+        Algorithm storedSourceAlgorithm = algorithmService.save(sourceAlgorithm);
+        Algorithm storedTargetAlgorithm = algorithmService.save(targetAlgorithm);
+        AlgorithmRelation algorithmRelation = getGenericAlgorithmRelation(storedSourceAlgorithm, storedTargetAlgorithm);
 
+        algorithmService.addOrUpdateAlgorithmRelation(storedSourceAlgorithm.getId(), algorithmRelation);
+
+        Set<AlgorithmRelation> algorithmRelations = algorithmService.getAlgorithmRelations(storedSourceAlgorithm.getId());
+        assertThat(algorithmRelations.size()).isEqualTo(1);
     }
 
     @Test
     void testDeleteAlgorithmRelation_ElementsNotFound() {
+        Assertions.assertThrows(NoSuchElementException.class ,() ->
+                algorithmService.deleteAlgorithmRelation(UUID.randomUUID(), UUID.randomUUID()));
 
+        Algorithm sourceAlgorithm = getGenericAlgorithmWithoutReferences("sourceAlgorithm");
+        Algorithm storedSourceAlgorithm = algorithmService.save(sourceAlgorithm);
+
+        Assertions.assertThrows(NoSuchElementException.class ,() ->
+                algorithmService.deleteAlgorithmRelation(storedSourceAlgorithm.getId(), UUID.randomUUID()));
     }
 
     @Test
     void testDeleteAlgorithmRelation_ElementsFound() {
+        Algorithm sourceAlgorithm = getGenericAlgorithmWithoutReferences("sourceAlgorithm");
+        Algorithm targetAlgorithm = getGenericAlgorithmWithoutReferences("targetAlgorithm");
+        Algorithm storedSourceAlgorithm = algorithmService.save(sourceAlgorithm);
+        Algorithm storedTargetAlgorithm = algorithmService.save(targetAlgorithm);
+        AlgorithmRelation algorithmRelation = getGenericAlgorithmRelation(storedSourceAlgorithm, storedTargetAlgorithm);
 
+        algorithmService.addOrUpdateAlgorithmRelation(storedSourceAlgorithm.getId(), algorithmRelation);
+
+        Set<AlgorithmRelation> algorithmRelations = algorithmService.getAlgorithmRelations(storedSourceAlgorithm.getId());
+        algorithmRelations.forEach(relation -> {
+            Assertions.assertDoesNotThrow(() ->
+                    algorithmService.deleteAlgorithmRelation(storedSourceAlgorithm.getId(), relation.getId()));
+            Set<AlgorithmRelation> afterDeleteRelations = algorithmService.getAlgorithmRelations(storedSourceAlgorithm.getId());
+            assertThat(afterDeleteRelations).doesNotContain(relation);
+        });
+
+        Assertions.assertDoesNotThrow(() -> algorithmService.findById(storedSourceAlgorithm.getId()));
+        Assertions.assertDoesNotThrow(() -> algorithmService.findById(storedTargetAlgorithm.getId()));
     }
 
     private void assertAlgorithmEquality(Algorithm dbAlgorithm, Algorithm compareAlgorithm) {
@@ -332,6 +380,25 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
         assertThat(dbAlgorithm.getAssumptions()).isEqualTo(compareAlgorithm.getAssumptions());
         assertThat(dbAlgorithm.getComputationModel()).isEqualTo(compareAlgorithm.getComputationModel());
         assertThat(dbAlgorithm.getApplicationAreas()).isEqualTo(compareAlgorithm.getApplicationAreas());
+    }
+
+    private void assertAlgorithmRelationEquality(AlgorithmRelation dbRelation, AlgorithmRelation compareRelation) {
+        assertThat(dbRelation.getId()).isNotNull();
+        assertThat(dbRelation.getDescription()).isEqualTo(compareRelation.getDescription());
+        assertThat(dbRelation.getSourceAlgorithm()).isEqualTo(compareRelation.getSourceAlgorithm());
+        assertThat(dbRelation.getTargetAlgorithm()).isEqualTo(compareRelation.getTargetAlgorithm());
+        assertThat(dbRelation.getAlgoRelationType().getName()).isEqualTo(compareRelation.getAlgoRelationType().getName());
+    }
+
+    private AlgorithmRelation getGenericAlgorithmRelation(Algorithm sourceAlgorithm, Algorithm targetAlgorithm) {
+        AlgorithmRelation algorithmRelation = new AlgorithmRelation();
+        algorithmRelation.setDescription("testRelationDescription");
+        algorithmRelation.setSourceAlgorithm(sourceAlgorithm);
+        algorithmRelation.setTargetAlgorithm(targetAlgorithm);
+        AlgoRelationType algoRelationType = new AlgoRelationType();
+        algoRelationType.setName("testRelation");
+        algorithmRelation.setAlgoRelationType(algoRelationType);
+        return algorithmRelation;
     }
 
     private Algorithm getGenericAlgorithmWithoutReferences(String name) {
