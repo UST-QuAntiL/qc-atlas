@@ -33,7 +33,6 @@ import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.PatternRelationDto;
 import org.planqk.atlas.web.dtos.PatternRelationTypeDto;
 import org.planqk.atlas.web.linkassembler.PatternRelationAssembler;
-import org.planqk.atlas.web.linkassembler.PatternRelationTypeAssembler;
 import org.planqk.atlas.web.utils.HateoasUtils;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,8 +72,6 @@ public class PatternRelationControllerTest {
     private PatternRelationService patternRelationService;
     @MockBean
     private PagedResourcesAssembler<PatternRelationDto> paginationAssembler;
-    @MockBean
-    private PatternRelationTypeAssembler patternRelationAssembler;
 
     @Autowired
     private MockMvc mockMvc;
@@ -201,14 +198,14 @@ public class PatternRelationControllerTest {
                 .content(mapper.writeValueAsString(missingReqParamRelationDto)).contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
     }
-    
+
     @Test
     public void createRelation_returnAlgorithmNotFound() throws Exception {
         when(patternRelationService.save(any())).thenThrow(NoSuchElementException.class);
-        
-        mockMvc.perform(post("/" + Constants.PATTERN_RELATIONS + "/")
-                .content(mapper.writeValueAsString(relation2Dto)).contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
+
+        mockMvc.perform(post("/" + Constants.PATTERN_RELATIONS + "/").content(mapper.writeValueAsString(relation2Dto))
+                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
     }
 
     @Test

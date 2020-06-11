@@ -67,8 +67,6 @@ public class PatternRelationTypeControllerTest {
     private PatternRelationTypeService patternRelationTypeService;
     @MockBean
     private PagedResourcesAssembler<PatternRelationTypeDto> paginationAssembler;
-    @MockBean
-    private PatternRelationTypeAssembler patternRelationTypeAssembler;
 
     @Autowired
     private MockMvc mockMvc;
