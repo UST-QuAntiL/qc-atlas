@@ -6,8 +6,6 @@ import java.net.URI;
 
 import javax.validation.constraints.NotNull;
 
-import org.planqk.atlas.core.model.Algorithm;
-import org.planqk.atlas.core.model.PatternRelationType;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -28,7 +26,7 @@ public class PatternRelationDto {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Schema(accessMode = WRITE_ONLY)
     @NotNull(message = "Pattern-Relations must have an algorithm!")
-    private Algorithm algorithm;
+    private AlgorithmDto algorithm;
 
     @NotNull(message = "Pattern-Relations must have a URI!")
     private URI pattern;
@@ -36,7 +34,7 @@ public class PatternRelationDto {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Schema(accessMode = WRITE_ONLY)
     @NotNull(message = "Pattern-Relations must have an type!")
-    private PatternRelationType patternRelationType;
+    private PatternRelationTypeDto patternRelationType;
 
     private String description;
 

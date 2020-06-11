@@ -52,7 +52,8 @@ public class PatternRelationController {
     private PagedResourcesAssembler<PatternRelationDto> paginationAssembler;
     private PatternRelationAssembler patternRelationAssembler;
 
-    @Operation(responses = { @ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "404") })
+    @Operation(responses = { @ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404") })
     @PostMapping("/")
     public HttpEntity<EntityModel<PatternRelationDto>> createPatternRelation(
             @Valid @RequestBody PatternRelationDto relationDto) {
@@ -98,7 +99,8 @@ public class PatternRelationController {
         return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
     }
 
-    @Operation(responses = { @ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404") })
+    @Operation(responses = { @ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404") })
     @PutMapping("/{id}")
     public HttpEntity<EntityModel<PatternRelationDto>> updatePatternRelationType(@PathVariable UUID id,
             @Valid @RequestBody PatternRelationDto typeDto) {
