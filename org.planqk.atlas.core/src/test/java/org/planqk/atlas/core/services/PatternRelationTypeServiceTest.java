@@ -24,6 +24,7 @@ import org.planqk.atlas.core.repository.PatternRelationRepository;
 import org.planqk.atlas.core.repository.PatternRelationTypeRepository;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -185,6 +186,13 @@ public class PatternRelationTypeServiceTest extends AtlasDatabaseTestBase {
 
         assertThrows(ConsistencyException.class, () -> {
             service.deleteById(storedType.getId());
+        });
+    }
+    
+    @Test
+    void delete_noContent() {
+        assertThrows(EmptyResultDataAccessException.class, () -> {
+            service.deleteById(UUID.randomUUID());
         });
     }
 
