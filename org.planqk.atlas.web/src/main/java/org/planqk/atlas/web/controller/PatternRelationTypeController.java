@@ -52,7 +52,7 @@ public class PatternRelationTypeController {
     private PagedResourcesAssembler<PatternRelationTypeDto> paginationAssembler;
     private PatternRelationTypeAssembler patternRelationTypeAssembler;
 
-    @Operation(responses = { @ApiResponse(responseCode = "201") })
+    @Operation(responses = { @ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "400") })
     @PostMapping("/")
     public HttpEntity<EntityModel<PatternRelationTypeDto>> createPatternRelationType(
             @Valid @RequestBody PatternRelationTypeDto typeDto) {
