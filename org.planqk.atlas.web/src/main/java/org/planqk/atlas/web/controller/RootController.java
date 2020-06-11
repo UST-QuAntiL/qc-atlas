@@ -52,8 +52,6 @@ public class RootController {
         responseEntity.add(linkTo(methodOn(RootController.class).root()).withSelfRel());
         responseEntity.add(linkTo(methodOn(AlgorithmController.class).getAlgorithms(Constants.DEFAULT_PAGE_NUMBER,
                 Constants.DEFAULT_PAGE_SIZE)).withRel(Constants.ALGORITHMS));
-        responseEntity.add(linkTo(methodOn(ProviderController.class).getProviders(Constants.DEFAULT_PAGE_NUMBER,
-                Constants.DEFAULT_PAGE_SIZE)).withRel(Constants.PROVIDERS));
         responseEntity.add(linkTo(
                 methodOn(TagController.class).getTags(Constants.DEFAULT_PAGE_NUMBER, Constants.DEFAULT_PAGE_SIZE))
                 .withRel(Constants.TAGS));

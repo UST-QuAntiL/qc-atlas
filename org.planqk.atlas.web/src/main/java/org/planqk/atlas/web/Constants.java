@@ -27,8 +27,6 @@ public class Constants {
     // URL snippets
     public static final String IMPLEMENTATIONS = "implementations";
     public static final String ALGORITHMS = "algorithms";
-    public static final String PROVIDERS = "providers";
-    public static final String QPUS = "qpus";
     public static final String TAGS = "tags";
     public static final String SOFTWARE_PLATFORMS = "software-platforms";
     public static final String CLOUD_SERVICES = "cloud-services";
@@ -39,7 +37,6 @@ public class Constants {
 
     // link names
     public static final String ALGORITHM_LINK = "implementedAlgorithm";
-    public static final String PROVIDER = "provider";
     public static final String ALGORITHM = "algorithm";
     public static final String TAGS_LINK = "tags";
     public static final String PUBLICATIONS_LINK = "publications";
