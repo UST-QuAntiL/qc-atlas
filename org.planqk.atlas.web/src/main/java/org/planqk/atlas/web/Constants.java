@@ -34,6 +34,7 @@ public class Constants {
     public static final String ALGORITHM_RELATIONS = "algorithm-relations";
     public static final String ALGO_RELATION_TYPES = "algo-relation-types";
     public static final String PUBLICATIONS = "publications";
+    public static final String BACKENDS = "backends";
 
     // link names
     public static final String ALGORITHM_LINK = "implementedAlgorithm";
