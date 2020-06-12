@@ -44,7 +44,7 @@ public class CloudServiceController {
     @Operation(responses = { @ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", content = @Content),
             @ApiResponse(responseCode = "500", content = @Content) })
     @GetMapping("/")
-    public HttpEntity<?> getCloudServices(@RequestParam(required = false) Integer page,
+    public HttpEntity<PagedModel<EntityModel<CloudServiceDto>>> getCloudServices(@RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size) {
         Page<CloudService> cloudServices = cloudServiceService
                 .findAll(RestUtils.getPageableFromRequestParams(page, size));

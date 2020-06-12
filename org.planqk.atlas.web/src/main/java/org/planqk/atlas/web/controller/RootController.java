@@ -19,10 +19,17 @@
 
 package org.planqk.atlas.web.controller;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.planqk.atlas.web.Constants;
 
+import org.planqk.atlas.web.utils.HateoasUtils;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
@@ -35,8 +42,8 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
- * Root controller to access all entities within Quality, trigger the hardware
- * selection, and execution of quantum algorithms.
+ * Root controller to access all entities within Quality, trigger the hardware selection, and execution of quantum
+ * algorithms.
  */
 @io.swagger.v3.oas.annotations.tags.Tag(name = "root")
 @RestController
@@ -45,8 +52,12 @@ public class RootController {
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping("/")
-    public HttpEntity<RepresentationModel<?>> root() {
-        RepresentationModel<?> responseEntity = new RepresentationModel<>();
+    public HttpEntity<RepresentationModel> root() {
+        // EntityModel can unfortunately not be used here because it requires non null content
+
+        // raw use of parameterized class is best practice according the official hateoas examples
+        // see: https://github.com/spring-projects/spring-hateoas-examples/blob/master/hypermedia/src/main/java/org/springframework/hateoas/examples/RootController.java
+        RepresentationModel responseEntity = new RepresentationModel<>();
 
         // add links to sub-controllers
         responseEntity.add(linkTo(methodOn(RootController.class).root()).withSelfRel());
@@ -59,6 +70,6 @@ public class RootController {
                 methodOn(PublicationController.class).getPublications(Constants.DEFAULT_PAGE_NUMBER, Constants.DEFAULT_PAGE_SIZE))
                 .withRel(Constants.PUBLICATIONS));
 
-        return new ResponseEntity<>(responseEntity, HttpStatus.OK);
+        return ResponseEntity.ok(responseEntity);
     }
 }
