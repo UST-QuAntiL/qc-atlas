@@ -14,6 +14,7 @@ import org.planqk.atlas.web.dtos.PatternRelationDto;
 import org.planqk.atlas.web.dtos.ProblemTypeDto;
 import org.planqk.atlas.web.dtos.PublicationDto;
 import org.planqk.atlas.web.dtos.TagDto;
+
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Component;
@@ -47,17 +48,17 @@ public class AlgorithmAssembler extends GenericLinkAssembler<AlgorithmDto> {
     public void addTagLink(CollectionModel<EntityModel<TagDto>> resources, UUID id) {
         resources.add(linkTo(methodOn(AlgorithmController.class).getTags(id)).withSelfRel());
     }
-    
+
     public void addPublicationLink(CollectionModel<EntityModel<PublicationDto>> resources, UUID id) {
         resources.add(linkTo(methodOn(AlgorithmController.class).getPublications(id)).withSelfRel());
     }
 
     public void addAlgorithmRelationLink(CollectionModel<EntityModel<AlgorithmRelationDto>> resultCollection,
-            UUID sourceAlgorithm_id) {
+                                         UUID sourceAlgorithm_id) {
         resultCollection.add(
                 linkTo(methodOn(AlgorithmController.class).getAlgorithmRelations(sourceAlgorithm_id)).withSelfRel());
     }
-    
+
     public void addPatternRelationLink(CollectionModel<EntityModel<PatternRelationDto>> resultCollection, UUID id) {
         resultCollection.add(
                 linkTo(methodOn(AlgorithmController.class).getPatternRelations(id)).withSelfRel());
@@ -66,5 +67,4 @@ public class AlgorithmAssembler extends GenericLinkAssembler<AlgorithmDto> {
     private UUID getId(EntityModel<AlgorithmDto> resource) {
         return resource.getContent().getId();
     }
-
 }

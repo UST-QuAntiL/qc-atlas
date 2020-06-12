@@ -179,7 +179,7 @@ public class AlgorithmControllerTest {
         algorithmRelations = new HashSet<>();
         algorithmRelations.add(algorithmRelation1);
         algorithmRelations.add(algorithmRelation2);
-        
+
         PatternRelationType patternType1 = new PatternRelationType();
         patternType1.setId(UUID.randomUUID());
         patternType1.setName("Type1");
@@ -423,19 +423,19 @@ public class AlgorithmControllerTest {
         AlgorithmRelationDto algoRelationDto = new AlgorithmRelationDto();
         mockMvc.perform(put("/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS,
                 algorithm1.getId()).content(mapper.writeValueAsString(algoRelationDto))
-                        .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
 
         algoRelationDto.setSourceAlgorithm(algorithm1Dto);
         mockMvc.perform(put("/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS,
                 algorithm1.getId()).content(mapper.writeValueAsString(algoRelationDto))
-                        .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
 
         algoRelationDto.setTargetAlgorithm(algorithm2Dto);
         mockMvc.perform(put("/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS,
                 algorithm1.getId()).content(mapper.writeValueAsString(algoRelationDto))
-                        .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
 
@@ -446,7 +446,7 @@ public class AlgorithmControllerTest {
 
         mockMvc.perform(put("/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS,
                 UUID.randomUUID()).content(mapper.writeValueAsString(algorithmRelation1Dto))
-                        .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
 
@@ -460,7 +460,7 @@ public class AlgorithmControllerTest {
         MvcResult result = mockMvc
                 .perform(put("/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS,
                         algorithm1.getId()).content(mapper.writeValueAsString(algorithmRelation1Dto))
-                                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
         EntityModel<AlgorithmRelationDto> response = mapper.readValue(result.getResponse().getContentAsString(),

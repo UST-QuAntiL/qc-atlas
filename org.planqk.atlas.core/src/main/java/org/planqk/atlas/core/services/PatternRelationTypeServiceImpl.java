@@ -9,6 +9,7 @@ import org.planqk.atlas.core.model.PatternRelationType;
 import org.planqk.atlas.core.model.exceptions.ConsistencyException;
 import org.planqk.atlas.core.repository.PatternRelationRepository;
 import org.planqk.atlas.core.repository.PatternRelationTypeRepository;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -65,5 +66,4 @@ public class PatternRelationTypeServiceImpl implements PatternRelationTypeServic
 
         return save(type);
     }
-
 }

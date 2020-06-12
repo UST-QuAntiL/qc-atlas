@@ -13,5 +13,4 @@ import lombok.NoArgsConstructor;
 public class PatternRelationType extends HasId {
 
     private String name;
-
 }

@@ -10,6 +10,7 @@ import org.planqk.atlas.web.controller.AlgorithmController;
 import org.planqk.atlas.web.controller.PatternRelationController;
 import org.planqk.atlas.web.controller.PatternRelationTypeController;
 import org.planqk.atlas.web.dtos.PatternRelationDto;
+
 import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Component;
 
@@ -37,5 +38,4 @@ public class PatternRelationAssembler extends GenericLinkAssembler<PatternRelati
     private UUID getTypeId(EntityModel<PatternRelationDto> resource) {
         return resource.getContent().getPatternRelationType().getId();
     }
-
 }

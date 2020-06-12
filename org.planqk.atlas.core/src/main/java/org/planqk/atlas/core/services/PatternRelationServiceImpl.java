@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.repository.PatternRelationRepository;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -63,5 +64,4 @@ public class PatternRelationServiceImpl implements PatternRelationService {
         relation.setAlgorithm(algorithmService.findById(relation.getAlgorithm().getId()));
         relation.setPatternRelationType(patternRelationTypeService.createOrGet(relation.getPatternRelationType()));
     }
-
 }

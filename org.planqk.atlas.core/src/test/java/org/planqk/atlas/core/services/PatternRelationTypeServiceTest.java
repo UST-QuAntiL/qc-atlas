@@ -13,6 +13,7 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
 import org.planqk.atlas.core.model.ComputationModel;
@@ -23,6 +24,7 @@ import org.planqk.atlas.core.repository.AlgorithmRepository;
 import org.planqk.atlas.core.repository.PatternRelationRepository;
 import org.planqk.atlas.core.repository.PatternRelationTypeRepository;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
@@ -188,12 +190,11 @@ public class PatternRelationTypeServiceTest extends AtlasDatabaseTestBase {
             service.deleteById(storedType.getId());
         });
     }
-    
+
     @Test
     void delete_noContent() {
         assertThrows(EmptyResultDataAccessException.class, () -> {
             service.deleteById(UUID.randomUUID());
         });
     }
-
 }

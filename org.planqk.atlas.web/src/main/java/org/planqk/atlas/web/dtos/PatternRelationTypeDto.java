@@ -17,5 +17,4 @@ public class PatternRelationTypeDto {
 
     @NotNull(message = "Pattern-Relations-Type must have a name!")
     private String name;
-
 }

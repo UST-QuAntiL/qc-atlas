@@ -12,12 +12,14 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
 import org.planqk.atlas.core.model.ComputationModel;
 import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.model.PatternRelationType;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
@@ -182,14 +184,14 @@ public class PatternRelationServiceTest extends AtlasDatabaseTestBase {
             service.findById(UUID.randomUUID());
         });
     }
-    
+
     @Test
     void delete_noContent() {
         assertThrows(EmptyResultDataAccessException.class, () -> {
             service.deleteById(UUID.randomUUID());
         });
     }
-    
+
     @Test
     void delete_success() {
         relation1.setAlgorithm(savedAlgorithm);
@@ -197,9 +199,8 @@ public class PatternRelationServiceTest extends AtlasDatabaseTestBase {
 
         PatternRelation savedRelation = service.save(relation1);
         assertEquals(1, algorithmService.findById(savedAlgorithm.getId()).getRelatedPatterns().size());
-        
+
         service.deleteById(savedRelation.getId());
         assertEquals(0, algorithmService.findById(savedAlgorithm.getId()).getRelatedPatterns().size());
     }
-
 }

@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.junit.jupiter.MockitoExtension;
+
 import org.planqk.atlas.core.model.PatternRelationType;
 import org.planqk.atlas.core.services.PatternRelationTypeService;
 import org.planqk.atlas.web.Constants;
@@ -30,6 +31,7 @@ import org.planqk.atlas.web.dtos.PatternRelationTypeDto;
 import org.planqk.atlas.web.linkassembler.PatternRelationTypeAssembler;
 import org.planqk.atlas.web.utils.HateoasUtils;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -247,5 +249,4 @@ public class PatternRelationTypeControllerTest {
         mockMvc.perform(delete("/" + Constants.PATTERN_RELATION_TYPES + "/{id}", UUID.randomUUID())
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isNoContent());
     }
-
 }

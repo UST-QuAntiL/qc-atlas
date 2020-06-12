@@ -13,6 +13,7 @@ import org.planqk.atlas.web.linkassembler.PatternRelationAssembler;
 import org.planqk.atlas.web.utils.HateoasUtils;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.RestUtils;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -52,8 +53,8 @@ public class PatternRelationController {
     private PagedResourcesAssembler<PatternRelationDto> paginationAssembler;
     private PatternRelationAssembler patternRelationAssembler;
 
-    @Operation(responses = { @ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404") })
+    @Operation(responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404")})
     @PostMapping("/")
     public HttpEntity<EntityModel<PatternRelationDto>> createPatternRelation(
             @Valid @RequestBody PatternRelationDto relationDto) {
@@ -70,7 +71,7 @@ public class PatternRelationController {
         return new ResponseEntity<>(dtoOutput, HttpStatus.CREATED);
     }
 
-    @Operation(responses = { @ApiResponse(responseCode = "200") })
+    @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping("/")
     public HttpEntity<PagedModel<EntityModel<PatternRelationDto>>> getPatternRelationTypes(
             @RequestParam(required = false) Integer page, @RequestParam(required = false) Integer size) {
@@ -86,7 +87,7 @@ public class PatternRelationController {
         return new ResponseEntity<>(outputDto, HttpStatus.OK);
     }
 
-    @Operation(responses = { @ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404") })
+    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404")})
     @GetMapping("/{id}")
     public HttpEntity<EntityModel<PatternRelationDto>> getPatternRelation(@PathVariable UUID id) {
         LOG.debug("Get to retrieve PatternRelation with id: {}.", id);
@@ -99,11 +100,11 @@ public class PatternRelationController {
         return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
     }
 
-    @Operation(responses = { @ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404") })
+    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404")})
     @PutMapping("/{id}")
     public HttpEntity<EntityModel<PatternRelationDto>> updatePatternRelationType(@PathVariable UUID id,
-            @Valid @RequestBody PatternRelationDto typeDto) {
+                                                                                 @Valid @RequestBody PatternRelationDto typeDto) {
         LOG.debug("Put to update PatternRelation with id: {}.", id);
         PatternRelation updatedRelation = patternRelationService.update(id,
                 ModelMapperUtils.convert(typeDto, PatternRelation.class));
@@ -115,12 +116,11 @@ public class PatternRelationController {
         return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
     }
 
-    @Operation(responses = { @ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "204") })
+    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "204")})
     @DeleteMapping("/{id}")
     public HttpEntity<?> deletePatternRelation(@PathVariable UUID id) {
         LOG.debug("Delete to remove PatternRelation with id: {}.", id);
         patternRelationService.deleteById(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
 }

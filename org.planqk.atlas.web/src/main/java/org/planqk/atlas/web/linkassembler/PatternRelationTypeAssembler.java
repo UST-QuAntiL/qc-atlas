@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import org.planqk.atlas.web.controller.PatternRelationTypeController;
 import org.planqk.atlas.web.dtos.PatternRelationTypeDto;
+
 import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Component;
 
@@ -26,5 +27,4 @@ public class PatternRelationTypeAssembler extends GenericLinkAssembler<PatternRe
     private UUID getId(EntityModel<PatternRelationTypeDto> resource) {
         return resource.getContent().getId();
     }
-
 }
