@@ -40,6 +40,7 @@ import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
 import org.planqk.atlas.web.dtos.ProblemTypeDto;
 import org.planqk.atlas.web.dtos.PublicationDto;
 import org.planqk.atlas.web.dtos.QuantumResourceDto;
+import org.planqk.atlas.web.dtos.QuantumAlgorithmDto;
 import org.planqk.atlas.web.dtos.TagDto;
 import org.planqk.atlas.web.linkassembler.AlgorithmAssembler;
 import org.planqk.atlas.web.linkassembler.AlgorithmRelationAssembler;
@@ -305,7 +306,7 @@ public class AlgorithmController {
                 resource
         );
         EntityModel<AlgorithmDto> algoDto = HateoasUtils.generateEntityModel(
-                ModelMapperUtils.convert(updatedAlgorithm, AlgorithmDto.class));
+                ModelMapperUtils.convert(updatedAlgorithm, QuantumAlgorithmDto.class));
         algorithmAssembler.addLinks(algoDto);
         return ResponseEntity.ok(algoDto);
     }
