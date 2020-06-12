@@ -291,7 +291,7 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "404")
     })
     @PostMapping("/{id}/" + Constants.QUANTUM_RESOURCES)
-    public ResponseEntity<?> addQuantumResource(
+    public ResponseEntity<EntityModel<QuantumAlgorithmDto>> addQuantumResource(
             @PathVariable UUID id,
             @Valid @RequestBody QuantumResourceDto resourceDto
     ) {
