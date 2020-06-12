@@ -46,7 +46,7 @@ public class AlgorithmAssembler extends GenericLinkAssembler<AlgorithmDto> {
     public void addTagLink(CollectionModel<EntityModel<TagDto>> resources, UUID id) {
         resources.add(linkTo(methodOn(AlgorithmController.class).getTags(id)).withSelfRel());
     }
-    
+
     public void addPublicationLink(CollectionModel<EntityModel<PublicationDto>> resources, UUID id) {
         resources.add(linkTo(methodOn(AlgorithmController.class).getPublications(id)).withSelfRel());
     }
