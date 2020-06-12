@@ -106,9 +106,7 @@ public class QuantumResourceServiceTest extends AtlasDatabaseTestBase {
         algorithmService.delete(storedAlgo.getId());
 
         var resourceOpt = this.resourceRepository.findById(storedResource.getId());
-        assertThat(resourceOpt.isPresent()).isTrue();
-        var resultResource = resourceOpt.get();
-        assertThat(resultResource.getAlgorithm()).isNull();
+        assertThat(resourceOpt.isPresent()).isFalse();
     }
 
     @Test
