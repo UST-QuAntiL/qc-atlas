@@ -292,7 +292,7 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "404")
     })
     @PostMapping("/{id}/" + Constants.QUANTUM_RESOURCES)
-    public ResponseEntity<EntityModel<QuantumAlgorithmDto>> addQuantumResource(
+    public ResponseEntity<EntityModel<AlgorithmDto>> addQuantumResource(
             @PathVariable UUID id,
             @Valid @RequestBody QuantumResourceDto resourceDto
     ) {
@@ -306,7 +306,7 @@ public class AlgorithmController {
                 resource
         );
         EntityModel<AlgorithmDto> algoDto = HateoasUtils.generateEntityModel(
-                ModelMapperUtils.convert(updatedAlgorithm, QuantumAlgorithmDto.class));
+                ModelMapperUtils.convert(updatedAlgorithm, AlgorithmDto.class));
         algorithmAssembler.addLinks(algoDto);
         return ResponseEntity.ok(algoDto);
     }
