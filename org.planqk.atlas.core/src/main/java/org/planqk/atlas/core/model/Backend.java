@@ -4,7 +4,9 @@ import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "backends")
 @Data
