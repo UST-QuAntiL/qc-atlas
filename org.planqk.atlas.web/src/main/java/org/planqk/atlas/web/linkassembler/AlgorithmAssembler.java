@@ -59,7 +59,8 @@ public class AlgorithmAssembler extends GenericLinkAssembler<AlgorithmDto> {
                 linkTo(methodOn(AlgorithmController.class).getAlgorithmRelations(sourceAlgorithm_id)).withSelfRel());
     }
 
-    public void addPatternRelationLink(CollectionModel<EntityModel<PatternRelationDto>> resultCollection, UUID id) {
+    public void addPatternRelationLink(CollectionModel<EntityModel<PatternRelationDto>> resultCollection, UUID
+            id) {
         resultCollection.add(
                 linkTo(methodOn(AlgorithmController.class).getPatternRelations(id)).withSelfRel());
     }

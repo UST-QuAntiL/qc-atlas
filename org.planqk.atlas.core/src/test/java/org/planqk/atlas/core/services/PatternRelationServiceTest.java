@@ -123,12 +123,12 @@ public class PatternRelationServiceTest extends AtlasDatabaseTestBase {
     @Test
     void updateRelation_notFound() {
         // Fill algorithm with random ID
-        algorithm.setId(UUID.randomUUID());
+        relation1.setId(UUID.randomUUID());
         relation1.setAlgorithm(savedAlgorithm);
         relation1.setPatternRelationType(savedType);
 
         assertThrows(NoSuchElementException.class, () -> {
-            service.save(relation1);
+            service.update(relation1.getId(), relation1);
         });
     }
 

@@ -31,7 +31,6 @@ import lombok.NoArgsConstructor;
  * Data transfer object for Algorithms
  * ({@link org.planqk.atlas.core.model.Algorithm}).
  */
-@EqualsAndHashCode
 @NoArgsConstructor
 @Data
 public class AlgorithmRelationDto {
@@ -39,9 +38,11 @@ public class AlgorithmRelationDto {
     private UUID id;
 
     @NotNull(message = "SourceAlgorithm of the AlgorithmRelation must not be null!")
+    @EqualsAndHashCode.Exclude
     private AlgorithmDto sourceAlgorithm;
 
     @NotNull(message = "TargetAlgorithm of the AlgorithmRelation must not be null!")
+    @EqualsAndHashCode.Exclude
     private AlgorithmDto targetAlgorithm;
 
     @NotNull(message = "AlgorithmRelationType must not be null!")
