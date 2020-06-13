@@ -9,9 +9,6 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.UUID;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
 import org.planqk.atlas.core.model.AlgoRelationType;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
@@ -24,6 +21,9 @@ import org.planqk.atlas.core.model.QuantumComputationModel;
 import org.planqk.atlas.core.model.Sketch;
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -107,6 +107,7 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
         List<String> publicationAuthors = new ArrayList<>();
         publicationAuthors.add("test publication author");
         publication.setAuthors(publicationAuthors);
+        publication = publicationService.save(publication);
         publications.add(publication);
         algorithm.setPublications(publications);
 
@@ -114,12 +115,15 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
 
         assertAlgorithmEquality(storedAlgorithm, algorithm);
 
+        Publication finalPublication = publication;
         storedAlgorithm.getPublications().forEach(pub -> {
             assertThat(pub.getId()).isNotNull();
-            assertThat(pub.getTitle()).isEqualTo(publication.getTitle());
-            assertThat(pub.getUrl()).isEqualTo(publication.getUrl());
-            assertThat(pub.getDoi()).isEqualTo(publication.getDoi());
-            assertThat(pub.getAuthors()).isEqualTo(publication.getAuthors());
+            assertThat(pub.getTitle()).isEqualTo(finalPublication.getTitle());
+            assertThat(pub.getUrl()).isEqualTo(finalPublication.getUrl());
+            assertThat(pub.getDoi()).isEqualTo(finalPublication.getDoi());
+            assertThat(
+                    pub.getAuthors().stream().filter(e -> finalPublication.getAuthors().contains(e)).count()
+            ).isEqualTo(finalPublication.getAuthors().size());
             Assertions.assertDoesNotThrow(() -> publicationService.findById(pub.getId()));
         });
     }
@@ -248,6 +252,7 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
         List<String> publicationAuthors = new ArrayList<>();
         publicationAuthors.add("test publication author");
         publication.setAuthors(publicationAuthors);
+        publication = publicationService.save(publication);
         publications.add(publication);
         algorithm.setPublications(publications);
 
