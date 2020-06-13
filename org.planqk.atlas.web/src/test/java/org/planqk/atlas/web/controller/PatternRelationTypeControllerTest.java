@@ -243,10 +243,10 @@ public class PatternRelationTypeControllerTest {
     }
 
     @Test
-    public void deleteType_returnNoContent() throws Exception {
+    public void deleteType_returnNotFound() throws Exception {
         doThrow(EmptyResultDataAccessException.class).when(patternRelationTypeService).deleteById(any());
 
         mockMvc.perform(delete("/" + Constants.PATTERN_RELATION_TYPES + "/{id}", UUID.randomUUID())
-                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isNoContent());
+                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
     }
 }

@@ -304,10 +304,10 @@ public class PatternRelationControllerTest {
     }
 
     @Test
-    public void deleteRelation_returnNoContent() throws Exception {
+    public void deleteRelation_returnNotFound() throws Exception {
         doThrow(EmptyResultDataAccessException.class).when(patternRelationService).deleteById(any());
 
         mockMvc.perform(delete("/" + Constants.PATTERN_RELATIONS + "/{id}", UUID.randomUUID())
-                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isNoContent());
+                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
     }
 }

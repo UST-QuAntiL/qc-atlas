@@ -87,7 +87,7 @@ public class PatternRelationController {
         return new ResponseEntity<>(outputDto, HttpStatus.OK);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404")})
+    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400"), @ApiResponse(responseCode = "404")})
     @GetMapping("/{id}")
     public HttpEntity<EntityModel<PatternRelationDto>> getPatternRelation(@PathVariable UUID id) {
         LOG.debug("Get to retrieve PatternRelation with id: {}.", id);
@@ -116,7 +116,7 @@ public class PatternRelationController {
         return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "204")})
+    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400"), @ApiResponse(responseCode = "404")})
     @DeleteMapping("/{id}")
     public HttpEntity<?> deletePatternRelation(@PathVariable UUID id) {
         LOG.debug("Delete to remove PatternRelation with id: {}.", id);

@@ -105,7 +105,7 @@ public class AlgorithmController {
     private final AlgorithmRelationAssembler algorithmRelationAssembler;
     private final PublicationAssembler publicationAssembler;
     private final QuantumResourceAssembler quantumResourceAssembler;
-    private PatternRelationAssembler patternRelationAssembler;
+    private final PatternRelationAssembler patternRelationAssembler;
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping("/")
@@ -225,7 +225,7 @@ public class AlgorithmController {
         return new ResponseEntity<>(resultCollection, HttpStatus.OK);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404")})
+    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400"), @ApiResponse(responseCode = "404")})
     @GetMapping("/{id}/" + Constants.PATTERN_RELATIONS)
     public HttpEntity<CollectionModel<EntityModel<PatternRelationDto>>> getPatternRelations(@PathVariable UUID id) {
         Algorithm algorithm = algorithmService.findById(id);
