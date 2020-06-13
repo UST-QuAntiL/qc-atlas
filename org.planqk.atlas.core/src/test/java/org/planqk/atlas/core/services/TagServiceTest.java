@@ -50,7 +50,9 @@ public class TagServiceTest extends AtlasDatabaseTestBase {
         tag = tagService.save(tag);
 
         var dbTag = tagService.getTagById(tag.getId());
-        assertThat(dbTag).isEqualTo(tag);
+        assertThat(dbTag.getId()).isEqualTo(tag.getId());
+        assertThat(dbTag.getValue()).isEqualTo(tag.getValue());
+        assertThat(dbTag.getKey()).isEqualTo(tag.getKey());
     }
 
     @Test
@@ -101,12 +103,12 @@ public class TagServiceTest extends AtlasDatabaseTestBase {
     }
 
     private void assertTagListIdsPresent(Collection<Tag> a, Collection<Tag> b) {
-        assertThat(a.stream().filter(e -> e.getId() != null)).isEqualTo(b.size());
+        assertThat(a.stream().filter(e -> e.getId() != null).count()).isEqualTo(b.size());
     }
 
     private void assertTagListEquality(Collection<Tag> a, Collection<Tag> b) {
         assertThat(a.size()).isEqualTo(b.size());
-        assertThat(a.stream().filter(e -> b.stream().anyMatch(el -> e.getKey().equals(el.getKey()))))
+        assertThat(a.stream().filter(e -> b.stream().anyMatch(el -> e.getKey().equals(el.getKey()))).count())
                 .isEqualTo(a.size());
     }
 }
