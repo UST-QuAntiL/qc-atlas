@@ -4,6 +4,8 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.UUID;
 
+import javax.transaction.Transactional;
+
 import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.repository.PatternRelationRepository;
 
@@ -24,6 +26,7 @@ public class PatternRelationServiceImpl implements PatternRelationService {
     private PatternRelationTypeService patternRelationTypeService;
 
     @Override
+    @Transactional
     public PatternRelation save(PatternRelation relation) {
         // Validate input
         validatePatternRelation(relation);
@@ -41,6 +44,7 @@ public class PatternRelationServiceImpl implements PatternRelationService {
     }
 
     @Override
+    @Transactional
     public PatternRelation update(UUID id, PatternRelation relation) {
         PatternRelation persistedRelation = repo.findById(id).orElseThrow(() -> new NoSuchElementException(NO_RELATION_ERROR));
         // Update fields
@@ -51,6 +55,7 @@ public class PatternRelationServiceImpl implements PatternRelationService {
     }
 
     @Override
+    @Transactional
     public void deleteById(UUID id) {
         repo.deleteById(id);
     }

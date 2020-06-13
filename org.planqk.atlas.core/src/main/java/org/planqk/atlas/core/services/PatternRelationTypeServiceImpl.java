@@ -5,6 +5,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
+import javax.transaction.Transactional;
+
 import org.planqk.atlas.core.model.PatternRelationType;
 import org.planqk.atlas.core.model.exceptions.ConsistencyException;
 import org.planqk.atlas.core.repository.PatternRelationRepository;
@@ -26,6 +28,7 @@ public class PatternRelationTypeServiceImpl implements PatternRelationTypeServic
     private PatternRelationRepository patternRelationRepo;
 
     @Override
+    @Transactional
     public PatternRelationType save(PatternRelationType type) {
         return repo.save(type);
     }
@@ -41,6 +44,7 @@ public class PatternRelationTypeServiceImpl implements PatternRelationTypeServic
     }
 
     @Override
+    @Transactional
     public PatternRelationType update(UUID id, PatternRelationType type) {
         PatternRelationType persistedType = repo.findById(id)
                 .orElseThrow(() -> new NoSuchElementException(NO_TYPE_ERROR));
@@ -49,6 +53,7 @@ public class PatternRelationTypeServiceImpl implements PatternRelationTypeServic
     }
 
     @Override
+    @Transactional
     public void deleteById(UUID id) {
         if (patternRelationRepo.countByPatternRelationTypeId(id) > 0)
             throw new ConsistencyException("Can not delete a used PatternRelationType!");
@@ -56,6 +61,7 @@ public class PatternRelationTypeServiceImpl implements PatternRelationTypeServic
     }
 
     @Override
+    @Transactional
     public PatternRelationType createOrGet(PatternRelationType type) {
         // Check database for type
         Optional<PatternRelationType> typeOptional = Objects.isNull(type.getId()) ? Optional.empty()
