@@ -32,6 +32,4 @@ public class QuantumAlgorithm extends Algorithm {
         this.requiredQuantumResources.add(resource);
     }
 
-    // TODO: Add implementations
-
 }

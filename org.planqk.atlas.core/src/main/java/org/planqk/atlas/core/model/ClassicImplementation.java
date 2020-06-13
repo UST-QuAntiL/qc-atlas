@@ -8,6 +8,6 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
-public class ClassicAlgorithm extends Algorithm {
+public class ClassicImplementation extends Implementation {
 
 }

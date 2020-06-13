@@ -44,7 +44,7 @@ public class ImplementationDto {
     @NotNull(message = "Implementation-Name must not be null!")
     private String name;
     @NotNull(message = "Implementation-FileLocation must not be null!")
-    private URL fileLocation;
+    private URL link;
 
     private String inputFormat;
     private String outputFormat;

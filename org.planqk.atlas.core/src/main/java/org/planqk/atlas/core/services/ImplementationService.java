@@ -31,5 +31,5 @@ public interface ImplementationService {
 
     Page<Implementation> findAll(Pageable pageable);
 
-    Implementation findById(UUID algoId);
+    Implementation findById(UUID implId);
 }
