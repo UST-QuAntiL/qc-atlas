@@ -3,6 +3,7 @@ package org.planqk.atlas.web.controller;
 import java.util.NoSuchElementException;
 
 import org.planqk.atlas.core.model.exceptions.ConsistencyException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -42,7 +43,6 @@ public class RestErrorHandler {
 
     @ExceptionHandler(EmptyResultDataAccessException.class)
     public ResponseEntity<?> handleEmptyResultDataAccessException(EmptyResultDataAccessException e) {
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
-
 }
