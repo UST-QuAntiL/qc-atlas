@@ -6,6 +6,11 @@ import javax.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+/**
+ * A backend is a QPU or a Simulator which are both able to run Quantum Algorithms.
+ * E.g. ibmq_rome or qasm_simulator.
+ */
+
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "backends")

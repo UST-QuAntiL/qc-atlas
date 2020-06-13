@@ -1,5 +1,6 @@
 package org.planqk.atlas.web.dtos;
 
+import java.util.Set;
 import java.util.UUID;
 
 import javax.validation.constraints.NotNull;
@@ -7,6 +8,7 @@ import javax.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.planqk.atlas.core.model.BackendProperty;
 import org.planqk.atlas.core.model.QuantumComputationModel;
 
 @ToString(callSuper = true)
@@ -20,4 +22,5 @@ public class BackendDto {
     private String vendor;
     private String technology;
     private QuantumComputationModel quantumComputationModel;
+    private Set<BackendProperty> backendPropertySet;
 }

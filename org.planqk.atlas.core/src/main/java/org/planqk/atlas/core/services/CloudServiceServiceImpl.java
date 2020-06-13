@@ -1,6 +1,7 @@
 package org.planqk.atlas.core.services;
 
 import lombok.AllArgsConstructor;
+import org.planqk.atlas.core.model.Backend;
 import org.planqk.atlas.core.model.CloudService;
 import org.planqk.atlas.core.repository.CloudServiceRepository;
 import org.springframework.data.domain.Page;
@@ -17,12 +18,11 @@ import java.util.stream.Collectors;
 public class CloudServiceServiceImpl implements CloudServiceService {
 
     private final CloudServiceRepository cloudServiceRepository;
+    private final BackendService backendService;
 
     @Override
     public CloudService save(CloudService cloudService) {
-        // TODO create or update backends when service is implemented
-        // cloudService.setProvidedBackends();
-
+        backendService.saveOrUpdateAll(cloudService.getProvidedBackends());
         return this.cloudServiceRepository.save(cloudService);
     }
 
@@ -40,11 +40,9 @@ public class CloudServiceServiceImpl implements CloudServiceService {
             updatingCloudService.setProvider(cloudService.getProvider());
             updatingCloudService.setUrl(cloudService.getUrl());
             updatingCloudService.setCostModel(cloudService.getCostModel());
-
-            // TODO create or update backends when service is implemented
             updatingCloudService.setProvidedBackends(cloudService.getProvidedBackends());
 
-            return this.save(updatingCloudService);
+            return this.save(cloudService);
         } else {
             return this.save(cloudService);
         }
@@ -64,5 +62,4 @@ public class CloudServiceServiceImpl implements CloudServiceService {
     public void delete(UUID cloudServiceId) {
         cloudServiceRepository.deleteById(cloudServiceId);
     }
-
 }

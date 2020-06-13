@@ -86,6 +86,17 @@ public class CloudServiceController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404")})
+    @PutMapping("/{id}")
+    public HttpEntity<EntityModel<CloudServiceDto>> updateCloudService(@PathVariable UUID id,
+                                                          @Valid @RequestBody CloudServiceDto cloudServiceDto) {
+        LOG.debug("Put to update cloud service with id {}.", id);
+        CloudService updatedCloudService = cloudServiceService.createOrUpdate(ModelMapperUtils.convert(cloudServiceDto, CloudService.class));
+        EntityModel<CloudServiceDto> dtoOutput = HateoasUtils.generateEntityModel(ModelMapperUtils.convert(updatedCloudService, CloudServiceDto.class));
+        cloudServiceAssembler.addLinks(dtoOutput);
+        return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
+    }
+
     @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<?> handleNotFound() {
         return ResponseEntity.notFound().build();
