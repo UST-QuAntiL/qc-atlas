@@ -9,7 +9,9 @@ import javax.persistence.ManyToOne;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
@@ -20,9 +22,8 @@ public class PatternRelation extends HasId {
 
     private URI pattern;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.REFRESH})
     private PatternRelationType patternRelationType;
 
     private String description;
-
 }

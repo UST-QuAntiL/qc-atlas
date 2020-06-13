@@ -26,6 +26,7 @@ import javax.validation.Valid;
 
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
+import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.model.QuantumAlgorithm;
@@ -37,6 +38,7 @@ import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.annotation.ApiVersion;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
+import org.planqk.atlas.web.dtos.PatternRelationDto;
 import org.planqk.atlas.web.dtos.ProblemTypeDto;
 import org.planqk.atlas.web.dtos.PublicationDto;
 import org.planqk.atlas.web.dtos.QuantumResourceDto;
@@ -44,6 +46,7 @@ import org.planqk.atlas.web.dtos.QuantumAlgorithmDto;
 import org.planqk.atlas.web.dtos.TagDto;
 import org.planqk.atlas.web.linkassembler.AlgorithmAssembler;
 import org.planqk.atlas.web.linkassembler.AlgorithmRelationAssembler;
+import org.planqk.atlas.web.linkassembler.PatternRelationAssembler;
 import org.planqk.atlas.web.linkassembler.ProblemTypeAssembler;
 import org.planqk.atlas.web.linkassembler.PublicationAssembler;
 import org.planqk.atlas.web.linkassembler.QuantumResourceAssembler;
@@ -102,6 +105,7 @@ public class AlgorithmController {
     private final AlgorithmRelationAssembler algorithmRelationAssembler;
     private final PublicationAssembler publicationAssembler;
     private final QuantumResourceAssembler quantumResourceAssembler;
+    private final PatternRelationAssembler patternRelationAssembler;
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping("/")
@@ -186,8 +190,8 @@ public class AlgorithmController {
         return new ResponseEntity<>(resultCollection, HttpStatus.OK);
     }
 
-    @Operation(responses = { @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "404", content = @Content) })
+    @Operation(responses = {@ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", content = @Content)})
     @GetMapping("/{id}/" + Constants.PUBLICATIONS)
     public HttpEntity<CollectionModel<EntityModel<PublicationDto>>> getPublications(@PathVariable UUID id) {
         Algorithm algorithm = algorithmService.findById(id);
@@ -218,6 +222,23 @@ public class AlgorithmController {
         problemTypeAssembler.addLinks(resultCollection);
         // Fill Collection-Links
         algorithmAssembler.addProblemTypeLink(resultCollection, id);
+        return new ResponseEntity<>(resultCollection, HttpStatus.OK);
+    }
+
+    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400"), @ApiResponse(responseCode = "404")})
+    @GetMapping("/{id}/" + Constants.PATTERN_RELATIONS)
+    public HttpEntity<CollectionModel<EntityModel<PatternRelationDto>>> getPatternRelations(@PathVariable UUID id) {
+        Algorithm algorithm = algorithmService.findById(id);
+        // Get PatternRelations of Algorithm
+        Set<PatternRelation> patternRelations = algorithm.getRelatedPatterns();
+        // Translate Entity to DTO
+        Set<PatternRelationDto> dtoTypes = ModelMapperUtils.convertSet(patternRelations, PatternRelationDto.class);
+        // Create CollectionModel
+        CollectionModel<EntityModel<PatternRelationDto>> resultCollection = HateoasUtils.generateCollectionModel(dtoTypes);
+        // Fill EntityModel Links
+        patternRelationAssembler.addLinks(resultCollection);
+        // Fill Collection-Links
+        algorithmAssembler.addPatternRelationLink(resultCollection, id);
         return new ResponseEntity<>(resultCollection, HttpStatus.OK);
     }
 

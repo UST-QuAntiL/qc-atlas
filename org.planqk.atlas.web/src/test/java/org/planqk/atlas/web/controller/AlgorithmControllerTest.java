@@ -31,6 +31,8 @@ import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
 import org.planqk.atlas.core.model.ComputationModel;
+import org.planqk.atlas.core.model.PatternRelation;
+import org.planqk.atlas.core.model.PatternRelationType;
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.model.QuantumAlgorithm;
 import org.planqk.atlas.core.model.QuantumResource;
@@ -42,10 +44,12 @@ import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
+import org.planqk.atlas.web.dtos.PatternRelationDto;
 import org.planqk.atlas.web.dtos.QuantumResourceDto;
 import org.planqk.atlas.web.dtos.QuantumResourceTypeDto;
 import org.planqk.atlas.web.linkassembler.AlgorithmAssembler;
 import org.planqk.atlas.web.linkassembler.AlgorithmRelationAssembler;
+import org.planqk.atlas.web.linkassembler.PatternRelationAssembler;
 import org.planqk.atlas.web.linkassembler.ProblemTypeAssembler;
 import org.planqk.atlas.web.linkassembler.PublicationAssembler;
 import org.planqk.atlas.web.linkassembler.QuantumResourceAssembler;
@@ -109,6 +113,11 @@ public class AlgorithmControllerTest {
         }
 
         @Bean
+        public PatternRelationAssembler patternRelationAssembler() {
+            return new PatternRelationAssembler();
+        }
+
+        @Bean
         public AlgorithmAssembler algorithmAssembler() {
             return new AlgorithmAssembler();
         }
@@ -145,6 +154,7 @@ public class AlgorithmControllerTest {
     private AlgorithmDto algorithm1Dto;
     private AlgorithmDto algorithm2Dto;
     private Set<AlgorithmRelation> algorithmRelations;
+    private Set<PatternRelation> patternRelations;
 
     @BeforeEach
     public void initialize() {
@@ -186,6 +196,28 @@ public class AlgorithmControllerTest {
         algorithmRelations = new HashSet<>();
         algorithmRelations.add(algorithmRelation1);
         algorithmRelations.add(algorithmRelation2);
+
+        PatternRelationType patternType1 = new PatternRelationType();
+        patternType1.setId(UUID.randomUUID());
+        patternType1.setName("Type1");
+        PatternRelationType patternType2 = new PatternRelationType();
+        patternType2.setId(UUID.randomUUID());
+        patternType2.setName("Type2");
+
+        PatternRelation patternRelation1 = new PatternRelation();
+        patternRelation1.setId(UUID.randomUUID());
+        patternRelation1.setDescription("Description1");
+        patternRelation1.setAlgorithm(algorithm1);
+        patternRelation1.setPatternRelationType(patternType1);
+        PatternRelation patternRelation2 = new PatternRelation();
+        patternRelation2.setId(UUID.randomUUID());
+        patternRelation2.setDescription("Description2");
+        patternRelation2.setAlgorithm(algorithm1);
+        patternRelation2.setPatternRelationType(patternType2);
+        patternRelations = new HashSet<>();
+        patternRelations.add(patternRelation1);
+        patternRelations.add(patternRelation2);
+        algorithm1.setRelatedPatterns(patternRelations);
 
         algorithm1.setAlgorithmRelations(algorithmRelations);
         algorithm1.setProblemTypes(problemTypes);
@@ -413,19 +445,19 @@ public class AlgorithmControllerTest {
         AlgorithmRelationDto algoRelationDto = new AlgorithmRelationDto();
         mockMvc.perform(put("/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS,
                 algorithm1.getId()).content(mapper.writeValueAsString(algoRelationDto))
-                        .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
 
         algoRelationDto.setSourceAlgorithm(algorithm1Dto);
         mockMvc.perform(put("/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS,
                 algorithm1.getId()).content(mapper.writeValueAsString(algoRelationDto))
-                        .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
 
         algoRelationDto.setTargetAlgorithm(algorithm2Dto);
         mockMvc.perform(put("/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS,
                 algorithm1.getId()).content(mapper.writeValueAsString(algoRelationDto))
-                        .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
 
@@ -437,7 +469,7 @@ public class AlgorithmControllerTest {
 
         mockMvc.perform(put("/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS,
                 UUID.randomUUID()).content(mapper.writeValueAsString(algorithmRelation1Dto))
-                        .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
 
@@ -477,6 +509,30 @@ public class AlgorithmControllerTest {
         mockMvc.perform(delete("/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS
                 + "/{relation_id}", algorithm1.getId(), algorithmRelation1.getId())).andExpect(status().isOk())
                 .andReturn();
+    }
+
+    @Test
+    public void getPatternRelations_returnTwo() throws Exception {
+        initializeAlgorithms();
+        when(algorithmService.findById(any())).thenReturn(algorithm1);
+
+        MvcResult result = mockMvc.perform(
+                get("/" + Constants.ALGORITHMS + "/{id}/" + Constants.PATTERN_RELATIONS, UUID.randomUUID()).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
+
+        var resultList = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(),
+                "patternRelationDtoes", PatternRelationDto.class);
+        assertEquals(2, resultList.size());
+    }
+
+    @Test
+    public void getPatternRelations_returnNotFound() throws Exception {
+        initializeAlgorithms();
+        when(algorithmService.findById(any())).thenThrow(NoSuchElementException.class);
+
+        mockMvc.perform(
+                get("/" + Constants.ALGORITHMS + "/{id}/" + Constants.PATTERN_RELATIONS, algorithm1.getId()).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
     }
 
     @Test

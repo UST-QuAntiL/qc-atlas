@@ -10,9 +10,11 @@ import org.planqk.atlas.web.controller.AlgorithmController;
 import org.planqk.atlas.web.controller.ImplementationController;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
+import org.planqk.atlas.web.dtos.PatternRelationDto;
 import org.planqk.atlas.web.dtos.ProblemTypeDto;
 import org.planqk.atlas.web.dtos.PublicationDto;
 import org.planqk.atlas.web.dtos.TagDto;
+
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Component;
@@ -22,7 +24,6 @@ public class AlgorithmAssembler extends GenericLinkAssembler<AlgorithmDto> {
 
     @Override
     public void addLinks(EntityModel<AlgorithmDto> resource) {
-
         resource.add(linkTo(methodOn(AlgorithmController.class).getAlgorithm(getId(resource))).withSelfRel());
         resource.add(linkTo(methodOn(AlgorithmController.class).updateAlgorithm(getId(resource), getContent(resource)))
                 .withRel("update"));
@@ -36,7 +37,8 @@ public class AlgorithmAssembler extends GenericLinkAssembler<AlgorithmDto> {
                 .withRel(Constants.ALGORITHM_RELATIONS));
         resource.add(linkTo(methodOn(AlgorithmController.class).getPublications(getId(resource)))
                 .withRel(Constants.PUBLICATIONS));
-
+        resource.add(linkTo(methodOn(AlgorithmController.class).getPatternRelations(getId(resource)))
+                .withRel(Constants.PATTERN_RELATIONS));
     }
 
     public void addProblemTypeLink(CollectionModel<EntityModel<ProblemTypeDto>> resources, UUID id) {
@@ -52,13 +54,18 @@ public class AlgorithmAssembler extends GenericLinkAssembler<AlgorithmDto> {
     }
 
     public void addAlgorithmRelationLink(CollectionModel<EntityModel<AlgorithmRelationDto>> resultCollection,
-            UUID sourceAlgorithm_id) {
+                                         UUID sourceAlgorithm_id) {
         resultCollection.add(
                 linkTo(methodOn(AlgorithmController.class).getAlgorithmRelations(sourceAlgorithm_id)).withSelfRel());
+    }
+
+    public void addPatternRelationLink(CollectionModel<EntityModel<PatternRelationDto>> resultCollection, UUID
+            id) {
+        resultCollection.add(
+                linkTo(methodOn(AlgorithmController.class).getPatternRelations(id)).withSelfRel());
     }
 
     private UUID getId(EntityModel<AlgorithmDto> resource) {
         return resource.getContent().getId();
     }
-
 }
