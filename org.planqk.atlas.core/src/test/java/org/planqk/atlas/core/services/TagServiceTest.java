@@ -50,7 +50,7 @@ public class TagServiceTest extends AtlasDatabaseTestBase {
         tag.setKey("World");
         tag = tagService.save(tag);
 
-        var dbTag = tagRepository.findById(tag.getId());
+        var dbTag = tagRepository.findById(tag.getId()).get();
         assertThat(dbTag).isEqualTo(tag);
     }
 
