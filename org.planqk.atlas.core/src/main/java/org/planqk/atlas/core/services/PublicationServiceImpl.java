@@ -9,6 +9,7 @@ import org.planqk.atlas.core.repository.PublicationRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.NoSuchElementException;
@@ -102,8 +103,9 @@ public class PublicationServiceImpl implements PublicationService {
 		return algorithmRepository.getAlgorithmsWithPublicationId(publicationId);
 	}
 
+	@Transactional
     @Override
     public void deletePublicationsByIds(Set<UUID> publicationIds) {
-        publicationRepository.deletePublicationsByIds(publicationIds);
+        publicationRepository.deleteByIdIn(publicationIds);
     }
 }
