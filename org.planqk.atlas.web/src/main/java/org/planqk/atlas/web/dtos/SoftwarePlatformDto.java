@@ -16,7 +16,7 @@ import java.util.UUID;
 @JsonTypeName("CLASSIC")
 @NoArgsConstructor
 public class SoftwarePlatformDto extends RepresentationModel<SoftwarePlatformDto> {
-    
+
     private UUID id;
 
     @NotNull(message = "SoftwarePlatform name must not be null!")
@@ -25,6 +25,8 @@ public class SoftwarePlatformDto extends RepresentationModel<SoftwarePlatformDto
     private URL link;
 
     private String version;
+
+    private String licence;
 
     private Set<BackendDto> supportedBackends = new HashSet<>();
 

@@ -29,6 +29,8 @@ public class CloudServiceDto extends RepresentationModel<CloudServiceDto> {
 
     private URL url;
 
+    private String description;
+
     private String costModel;
 
     private Set<BackendDto> providedBackends = new HashSet<>();

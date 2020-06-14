@@ -15,6 +15,7 @@ public class CloudService extends HasId {
     private String name;
     private String provider;
     private URL url;
+    private String description;
     private String costModel;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.MERGE })
