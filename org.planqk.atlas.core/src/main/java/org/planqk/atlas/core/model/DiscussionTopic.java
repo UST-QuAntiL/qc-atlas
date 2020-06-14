@@ -2,7 +2,6 @@ package org.planqk.atlas.core.model;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
 import javax.persistence.*;
 import java.time.OffsetDateTime;
 import java.util.HashSet;
@@ -18,8 +17,10 @@ public class DiscussionTopic extends KnowledgeArtifact {
 
     @Enumerated(EnumType.STRING)
     private Status status;
+
     private OffsetDateTime date;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.MERGE })
+    @OneToMany(mappedBy="discussionTopic",orphanRemoval=true, cascade = { CascadeType.ALL })
     private Set<DiscussionComment> discussionComments = new HashSet<>();
+
 }
