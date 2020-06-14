@@ -39,7 +39,7 @@ public class PublicationServiceImpl implements PublicationService {
 		if (existingPublication.isPresent()) {
 			fillExistingPublication(publication, existingPublication.get());
 			return publicationRepository.save(existingPublication.get());
-		}else {
+		} else {
 		    throw new NoSuchElementException();
         }
 	}
@@ -70,7 +70,7 @@ public class PublicationServiceImpl implements PublicationService {
 	public Set<Publication> createOrUpdateAll(Set<Publication> publications) {
 		Set<Publication> dbPublications = new HashSet<>();
 
-		if(publications == null) {
+		if (publications == null) {
 		    return dbPublications;
         }
 
