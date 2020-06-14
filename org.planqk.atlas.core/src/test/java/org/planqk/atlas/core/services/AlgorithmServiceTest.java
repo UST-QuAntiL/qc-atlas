@@ -44,6 +44,7 @@ import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -100,6 +101,11 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
         problemType.setName("testProblemType");
         problemType.setParentProblemType(UUID.randomUUID());
         problemTypes.add(problemType);
+        ProblemType problemType2 = new ProblemType();
+        problemType2.setName("testProblemType");
+        problemType2.setParentProblemType(UUID.randomUUID());
+        ProblemType storedProblemType = problemTypeService.save(problemType2);
+        problemTypes.add(storedProblemType);
         algorithm.setProblemTypes(problemTypes);
 
         Algorithm storedAlgorithm = algorithmService.save(algorithm);
@@ -108,8 +114,6 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
 
         storedAlgorithm.getProblemTypes().forEach(pt -> {
             assertThat(pt.getId()).isNotNull();
-            assertThat(pt.getName()).isEqualTo(problemType.getName());
-            assertThat(pt.getParentProblemType()).isEqualTo(problemType.getParentProblemType());
             Assertions.assertDoesNotThrow(() -> problemTypeService.findById(pt.getId()));
         });
     }
@@ -229,6 +233,18 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
         storedAlgorithm = algorithmService.findById(storedAlgorithm.getId());
 
         assertAlgorithmEquality(storedAlgorithm, algorithm);
+    }
+
+    @Test
+    void testFindAll() {
+        Algorithm algorithm1 = getGenericAlgorithmWithoutReferences("testAlgorithm1");
+        algorithmService.save(algorithm1);
+        Algorithm algorithm2 = getGenericAlgorithmWithoutReferences("testAlgorithm2");
+        algorithmService.save(algorithm2);
+
+        List<Algorithm> algorithms = algorithmService.findAll(Pageable.unpaged()).getContent();
+
+        assertThat(algorithms.size()).isEqualTo(2);
     }
 
     @Test

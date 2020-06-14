@@ -19,6 +19,7 @@
 
 package org.planqk.atlas.core.services;
 
+import java.util.List;
 import java.util.Set;
 
 import org.planqk.atlas.core.model.Algorithm;
@@ -30,6 +31,7 @@ import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -77,4 +79,19 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
         assertThat(dbImpl.getImplementedAlgorithm().getName()).isEqualTo(algo.getName());
         assertThat(dbImpl.getTags().size()).isEqualTo(1);
     }
+
+    @Test
+    void testFindAll() {
+        Implementation implementation1 = new Implementation();
+        implementation1.setName("test-impl1");
+        implementationService.save(implementation1);
+        Implementation implementation2 = new Implementation();
+        implementation2.setName("test-impl2");
+        implementationService.save(implementation2);
+
+        List<Implementation> implementations = implementationService.findAll(Pageable.unpaged()).getContent();
+
+        assertThat(implementations.size()).isEqualTo(2);
+    }
+
 }
