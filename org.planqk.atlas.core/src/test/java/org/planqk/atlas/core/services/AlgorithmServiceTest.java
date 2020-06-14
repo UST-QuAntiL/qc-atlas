@@ -101,6 +101,11 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
         problemType.setName("testProblemType");
         problemType.setParentProblemType(UUID.randomUUID());
         problemTypes.add(problemType);
+        ProblemType problemType2 = new ProblemType();
+        problemType2.setName("testProblemType");
+        problemType2.setParentProblemType(UUID.randomUUID());
+        ProblemType storedProblemType = problemTypeService.save(problemType2);
+        problemTypes.add(storedProblemType);
         algorithm.setProblemTypes(problemTypes);
 
         Algorithm storedAlgorithm = algorithmService.save(algorithm);
@@ -109,8 +114,6 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
 
         storedAlgorithm.getProblemTypes().forEach(pt -> {
             assertThat(pt.getId()).isNotNull();
-            assertThat(pt.getName()).isEqualTo(problemType.getName());
-            assertThat(pt.getParentProblemType()).isEqualTo(problemType.getParentProblemType());
             Assertions.assertDoesNotThrow(() -> problemTypeService.findById(pt.getId()));
         });
     }

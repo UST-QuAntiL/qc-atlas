@@ -20,6 +20,7 @@
 package org.planqk.atlas.core.services;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.UUID;
@@ -34,6 +35,7 @@ import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.model.exceptions.ConsistencyException;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -95,6 +97,18 @@ public class ProblemTypeServiceTest extends AtlasDatabaseTestBase {
         assertThat(storedProblemType.getId()).isNotNull();
         assertThat(storedProblemType.getName()).isEqualTo(problemType.getName());
         assertThat(storedProblemType.getParentProblemType()).isEqualTo(problemType.getParentProblemType());
+    }
+
+    @Test
+    void testFindAll() {
+        ProblemType problemType1 = getGenericProblemType("testProblemType1");
+        problemTypeService.save(problemType1);
+        ProblemType problemType2 = getGenericProblemType("testProblemType2");
+        problemTypeService.save(problemType2);
+
+        List<ProblemType> problemTypes = problemTypeService.findAll(Pageable.unpaged()).getContent();
+
+        assertThat(problemTypes.size()).isEqualTo(2);
     }
 
     @Test

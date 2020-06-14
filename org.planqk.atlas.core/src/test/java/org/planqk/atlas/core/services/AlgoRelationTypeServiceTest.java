@@ -19,6 +19,7 @@
 
 package org.planqk.atlas.core.services;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
@@ -33,6 +34,7 @@ import org.planqk.atlas.core.model.ComputationModel;
 import org.planqk.atlas.core.model.exceptions.ConsistencyException;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -68,7 +70,7 @@ public class AlgoRelationTypeServiceTest extends AtlasDatabaseTestBase {
         compareRelationType.setId(storedRelationType.getId());
         String editName = "editedRelation";
         storedRelationType.setName(editName);
-        storedRelationType = algoRelationTypeService.save(storedRelationType);
+        storedRelationType = algoRelationTypeService.update(storedRelationType.getId(), storedRelationType);
 
         assertThat(storedRelationType.getId()).isNotNull();
         assertThat(storedRelationType.getId()).isEqualTo(compareRelationType.getId());
@@ -92,6 +94,18 @@ public class AlgoRelationTypeServiceTest extends AtlasDatabaseTestBase {
 
         assertThat(storedRelationType.getId()).isNotNull();
         assertThat(storedRelationType.getName()).isEqualTo(relationType.getName());
+    }
+
+    @Test
+    void testFindAll() {
+        AlgoRelationType relationType1 = getGenericAlgoRelationType("testRelationType1");
+        algoRelationTypeService.save(relationType1);
+        AlgoRelationType relationType2 = getGenericAlgoRelationType("testRelationType2");
+        algoRelationTypeService.save(relationType2);
+
+        List<AlgoRelationType> algoRelationTypes = algoRelationTypeService.findAll(Pageable.unpaged()).getContent();
+
+        assertThat(algoRelationTypes.size()).isEqualTo(2);
     }
 
     @Test

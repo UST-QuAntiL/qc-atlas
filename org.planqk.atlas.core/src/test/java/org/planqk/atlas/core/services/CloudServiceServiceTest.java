@@ -22,9 +22,7 @@ package org.planqk.atlas.core.services;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.CloudService;
-import org.planqk.atlas.core.repository.CloudServiceRepository;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
