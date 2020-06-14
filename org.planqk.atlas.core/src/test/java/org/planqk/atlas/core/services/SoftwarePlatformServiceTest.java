@@ -27,10 +27,12 @@ import org.planqk.atlas.core.model.SoftwarePlatform;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashSet;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.UUID;
@@ -91,6 +93,18 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
         storedSoftwarePlatform = softwarePlatformService.findById(storedSoftwarePlatform.getId());
 
         assertSoftwarePlatformEquality(storedSoftwarePlatform, softwarePlatform);
+    }
+
+    @Test
+    void testFindAll() throws MalformedURLException {
+        SoftwarePlatform softwarePlatform1 = getGenericTestSoftwarePlatformWithoutRelations("testCloudService1");
+        softwarePlatformService.save(softwarePlatform1);
+        SoftwarePlatform softwarePlatform2 = getGenericTestSoftwarePlatformWithoutRelations("testCloudService2");
+        softwarePlatformService.save(softwarePlatform2);
+
+        List<SoftwarePlatform> softwarePlatforms = softwarePlatformService.findAll(Pageable.unpaged()).getContent();
+
+        assertThat(softwarePlatforms.size()).isEqualTo(2);
     }
 
     @Test

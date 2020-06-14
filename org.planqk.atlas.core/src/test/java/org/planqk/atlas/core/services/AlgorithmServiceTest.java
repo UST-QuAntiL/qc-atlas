@@ -44,6 +44,7 @@ import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -229,6 +230,18 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
         storedAlgorithm = algorithmService.findById(storedAlgorithm.getId());
 
         assertAlgorithmEquality(storedAlgorithm, algorithm);
+    }
+
+    @Test
+    void testFindAll() {
+        Algorithm algorithm1 = getGenericAlgorithmWithoutReferences("testAlgorithm1");
+        algorithmService.save(algorithm1);
+        Algorithm algorithm2 = getGenericAlgorithmWithoutReferences("testAlgorithm2");
+        algorithmService.save(algorithm2);
+
+        List<Algorithm> algorithms = algorithmService.findAll(Pageable.unpaged()).getContent();
+
+        assertThat(algorithms.size()).isEqualTo(2);
     }
 
     @Test

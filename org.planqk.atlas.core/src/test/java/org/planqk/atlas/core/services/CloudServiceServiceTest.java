@@ -21,13 +21,17 @@ package org.planqk.atlas.core.services;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.CloudService;
 import org.planqk.atlas.core.repository.CloudServiceRepository;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
@@ -60,7 +64,7 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
         storedCloudService.setId(storedEditedCloudService.getId());
         String editName = "editedCloudService";
         storedEditedCloudService.setName(editName);
-        storedEditedCloudService = cloudServiceService.save(storedEditedCloudService);
+        storedEditedCloudService = cloudServiceService.createOrUpdate(storedEditedCloudService);
 
         assertThat(storedEditedCloudService.getId()).isEqualTo(storedCloudService.getId());
         assertThat(storedEditedCloudService.getName()).isNotEqualTo(storedCloudService.getName());
@@ -85,6 +89,18 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
         storedCloudService = cloudServiceService.findById(storedCloudService.getId());
 
         assertCloudServiceEquality(storedCloudService, cloudService);
+    }
+
+    @Test
+    void testFindAll() throws MalformedURLException {
+        CloudService cloudService1 = getGenericTestCloudServiceWithoutRelations("testCloudService1");
+        cloudServiceService.save(cloudService1);
+        CloudService cloudService2 = getGenericTestCloudServiceWithoutRelations("testCloudService2");
+        cloudServiceService.save(cloudService2);
+
+        List<CloudService> cloudServices = cloudServiceService.findAll(Pageable.unpaged()).getContent();
+
+        assertThat(cloudServices.size()).isEqualTo(2);
     }
 
     @Test
