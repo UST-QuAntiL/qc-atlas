@@ -5,13 +5,16 @@ import java.util.Set;
 
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
+import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.model.QuantumAlgorithm;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.ClassicAlgorithmDto;
+import org.planqk.atlas.web.dtos.PatternRelationDto;
 import org.planqk.atlas.web.dtos.QuantumAlgorithmDto;
 
 import lombok.NonNull;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeMap;
 import org.springframework.data.domain.Page;
 
 public class ModelMapperUtils {
@@ -45,6 +48,10 @@ public class ModelMapperUtils {
                 .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), ClassicAlgorithm.class));
         mapper.createTypeMap(QuantumAlgorithmDto.class, Algorithm.class)
                 .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), QuantumAlgorithm.class));
+        
+        // Map Algorithm of PatternRelation to correct Subclass when mapping to PatternRelationDto
+        TypeMap<PatternRelation, PatternRelationDto> typeMap = mapper.createTypeMap(PatternRelation.class, PatternRelationDto.class);
+        typeMap.addMappings(mappingContext -> mappingContext.map(src -> src.getAlgorithm(), PatternRelationDto::setAlgorithm));
 
         return mapper;
     }

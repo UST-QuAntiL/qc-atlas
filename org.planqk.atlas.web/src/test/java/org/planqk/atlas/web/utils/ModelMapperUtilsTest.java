@@ -1,5 +1,6 @@
 package org.planqk.atlas.web.utils;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -7,9 +8,14 @@ import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.ComputationModel;
+import org.planqk.atlas.core.model.PatternRelation;
+import org.planqk.atlas.core.model.PatternRelationType;
 import org.planqk.atlas.core.model.ProblemType;
+import org.planqk.atlas.core.model.QuantumAlgorithm;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
+import org.planqk.atlas.web.dtos.PatternRelationDto;
 import org.planqk.atlas.web.dtos.ProblemTypeDto;
+import org.planqk.atlas.web.dtos.QuantumAlgorithmDto;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,6 +25,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class ModelMapperUtilsTest {
 
@@ -141,5 +148,35 @@ public class ModelMapperUtilsTest {
         Page<ProblemType> mappedPage = ModelMapperUtils.convertPage(pagedProblemTypes, ProblemType.class);
 
         assertEquals(mappedPage, pagedProblemTypes);
+    }
+
+    @Test
+    public void testInheritance() {
+        QuantumAlgorithm alg = new QuantumAlgorithm();
+        alg.setName("QuantumName");
+        alg.setComputationModel(ComputationModel.QUANTUM);
+        alg.setNisqReady(true);
+        alg.setSpeedUp("SpeedUp1");
+
+        PatternRelationType type = new PatternRelationType();
+        type.setName("TypeName");
+
+        PatternRelation relation = new PatternRelation();
+        relation.setAlgorithm(alg);
+        relation.setPatternRelationType(type);
+        relation.setPattern(URI.create("http://www.test.com"));
+        relation.setDescription("Description");
+
+        PatternRelationDto dto = ModelMapperUtils.convert(relation, PatternRelationDto.class);
+        AlgorithmDto dtoAlg = dto.getAlgorithm();
+
+        assertEquals(dto.getDescription(), relation.getDescription());
+        assertEquals(dto.getPattern(), relation.getPattern());
+        assertTrue(dtoAlg instanceof QuantumAlgorithmDto);
+        if (dtoAlg instanceof QuantumAlgorithmDto) {
+            QuantumAlgorithmDto quantumAlgDto = (QuantumAlgorithmDto) dtoAlg;
+            assertEquals(quantumAlgDto.isNisqReady(), alg.isNisqReady());
+            assertEquals(quantumAlgDto.getSpeedUp(), alg.getSpeedUp());
+        }
     }
 }
