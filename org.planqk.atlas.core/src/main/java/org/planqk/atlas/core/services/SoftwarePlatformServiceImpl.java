@@ -1,17 +1,18 @@
 package org.planqk.atlas.core.services;
 
-import lombok.AllArgsConstructor;
-import org.planqk.atlas.core.model.SoftwarePlatform;
-import org.planqk.atlas.core.repository.SoftwarePlatformRepository;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
-@Repository
+import org.planqk.atlas.core.model.SoftwarePlatform;
+import org.planqk.atlas.core.repository.SoftwarePlatformRepository;
+
+import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
 @AllArgsConstructor
 public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
 

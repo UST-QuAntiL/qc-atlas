@@ -1,16 +1,5 @@
 package org.planqk.atlas.core.services;
 
-import lombok.AllArgsConstructor;
-
-import org.planqk.atlas.core.model.Algorithm;
-import org.planqk.atlas.core.model.Publication;
-import org.planqk.atlas.core.repository.AlgorithmRepository;
-import org.planqk.atlas.core.repository.PublicationRepository;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -18,7 +7,18 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-@Repository
+import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.Publication;
+import org.planqk.atlas.core.repository.AlgorithmRepository;
+import org.planqk.atlas.core.repository.PublicationRepository;
+
+import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
 @AllArgsConstructor
 public class PublicationServiceImpl implements PublicationService {
 

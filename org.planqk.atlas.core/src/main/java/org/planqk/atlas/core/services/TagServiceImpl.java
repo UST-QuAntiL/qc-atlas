@@ -27,24 +27,20 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.repository.TagRepository;
 
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 
-@Repository
+@Service
 @AllArgsConstructor
 public class TagServiceImpl implements TagService {
 
     private TagRepository tagRepository;
-    @PersistenceContext
-    private EntityManager em;
+
 
     @Override
     public List<Tag> findByName(String key) {
