@@ -19,6 +19,9 @@
 
 package org.planqk.atlas.core.services;
 
+import java.util.NoSuchElementException;
+import java.util.UUID;
+
 import org.planqk.atlas.core.model.ComputationModel;
 import org.planqk.atlas.core.model.QuantumAlgorithm;
 import org.planqk.atlas.core.model.QuantumResource;
@@ -36,6 +39,7 @@ import org.springframework.data.domain.Pageable;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class QuantumResourceServiceTest extends AtlasDatabaseTestBase {
 
@@ -209,5 +213,75 @@ public class QuantumResourceServiceTest extends AtlasDatabaseTestBase {
         assertEquals(insertedElem.getId(), testElem.getId());
         assertEquals(resourceType.getDatatype(), testElem.getDatatype());
         assertEquals(resourceType.getName(), testElem.getName());
+    }
+
+    @Test
+    void testFindTypeById_NotFound() {
+        assertThrows(NoSuchElementException.class, () -> resourceService.findResourceTypeById(UUID.randomUUID()));
+    }
+
+    @Test
+    void testFindById_NotFound() {
+        assertThrows(NoSuchElementException.class, () -> resourceService.findResourceById(UUID.randomUUID()));
+    }
+
+    @Test
+    void testFindTypeById() {
+        var resourceType = new QuantumResourceType();
+        resourceType.setDescription("Hello World");
+        resourceType.setName("Test Name");
+        resourceType.setDatatype(QuantumResourceDataType.FLOAT);
+
+        var insertedElem = this.resourceService.addOrUpdateQuantumResourceType(resourceType);
+
+        assertThat(resourceService.findResourceTypeById(insertedElem.getId()).getDatatype()).isEqualTo(resourceType.getDatatype());
+    }
+
+    @Test
+    void testFindById() {
+        var resourceType = new QuantumResourceType();
+        resourceType.setDescription("Hello World");
+        resourceType.setName("Test Name");
+        resourceType.setDatatype(QuantumResourceDataType.FLOAT);
+
+        var resource = new QuantumResource();
+        resource.setQuantumResourceType(resourceType);
+
+        var algo = new QuantumAlgorithm();
+        algo.setNisqReady(true);
+        algo.setName("MyFirstQuantumAlgorithm");
+        algo.setSpeedUp("123");
+        algo.setComputationModel(ComputationModel.QUANTUM);
+        var storedAlgo = (QuantumAlgorithm) algorithmService.save(algo);
+
+        var storedResource = resourceService.addQuantumResourceToAlgorithm(storedAlgo, resource);
+
+        assertThat(resourceService.findResourceById(storedResource.getId()).getAlgorithm().getId()).isEqualTo(storedAlgo.getId());
+    }
+
+    @Test
+    void testFindAll() {
+        var resourceType = new QuantumResourceType();
+        resourceType.setDescription("Hello World");
+        resourceType.setName("Test Name");
+        resourceType.setDatatype(QuantumResourceDataType.FLOAT);
+
+        var resource = new QuantumResource();
+        resource.setQuantumResourceType(resourceType);
+
+        var algo = new QuantumAlgorithm();
+        algo.setNisqReady(true);
+        algo.setName("MyFirstQuantumAlgorithm");
+        algo.setSpeedUp("123");
+        algo.setComputationModel(ComputationModel.QUANTUM);
+        var storedAlgo = (QuantumAlgorithm) algorithmService.save(algo);
+
+        var storedResource = resourceService.addQuantumResourceToAlgorithm(storedAlgo, resource);
+
+        var byAlgo = resourceService.findAllResourcesByAlgorithmId(storedAlgo.getId());
+        var byAlgoP = resourceService.findAllResourcesByAlgorithmId(storedAlgo.getId(), Pageable.unpaged());
+
+        assertThat(byAlgo.size()).isEqualTo(1);
+        assertThat(byAlgoP.getContent().size()).isEqualTo(1);
     }
 }
