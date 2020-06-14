@@ -28,15 +28,16 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.UUID;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
 import org.planqk.atlas.core.model.ComputationModel;
 import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -58,7 +59,7 @@ public class PublicationServiceTest extends AtlasDatabaseTestBase {
     @Test
     void testUpdatePublication_ElementNotFound() {
         Assertions.assertThrows(NoSuchElementException.class, () ->
-            publicationService.update(UUID.randomUUID(), null));
+                publicationService.update(UUID.randomUUID(), null));
     }
 
     @Test
@@ -154,6 +155,26 @@ public class PublicationServiceTest extends AtlasDatabaseTestBase {
                 publicationService.findById(storedPublication2.getId()));
     }
 
+    @Test
+    void testCreateOrUpdateAll() {
+        var publications = new HashSet<Publication>();
+        for (int i = 0; i < 10; i++) {
+            var pub = new Publication();
+            pub.setAuthors(List.of("Hello", "World", "my", "Name", "is", "test", i + ""));
+            pub.setTitle("Some Title " + i);
+            if (i % 2 == 0) {
+                publications.add(publicationService.save(pub));
+            } else {
+                publications.add(pub);
+            }
+        }
+        publicationService.createOrUpdateAll(publications);
+
+        var elements = publicationService.findAll(Pageable.unpaged());
+
+        assertThat(elements.get().filter(e -> e.getId() != null).count()).isEqualTo(publications.size());
+    }
+
     private void assertPublicationEquality(Publication dbPublication, Publication comparePublication) {
         assertThat(dbPublication.getId()).isNotNull();
         assertThat(dbPublication.getTitle()).isEqualTo(comparePublication.getTitle());
@@ -174,5 +195,4 @@ public class PublicationServiceTest extends AtlasDatabaseTestBase {
         publication.setAuthors(publicationAuthors);
         return publication;
     }
-
 }
