@@ -16,30 +16,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package org.planqk.atlas.core.model;
+package org.planqk.atlas.core.repository;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import java.util.UUID;
 
-import javax.persistence.*;
+import org.planqk.atlas.core.model.DiscussionTopic;
 
-import java.time.OffsetDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
-@EqualsAndHashCode(callSuper = true)
-@Data
-@Entity
-public class DiscussionTopic extends KnowledgeArtifact {
-
-    private String title;
-    private String Description;
-
-    @Enumerated(EnumType.STRING)
-    private Status status;
-
-    private OffsetDateTime date;
-
-    @OneToMany(mappedBy = "discussionTopic", orphanRemoval = true, cascade = {CascadeType.ALL})
-    private Set<DiscussionComment> discussionComments = new HashSet<>();
+@RepositoryRestResource(exported = false)
+public interface DiscussionTopicRepository extends JpaRepository<DiscussionTopic, UUID> {
 }

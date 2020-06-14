@@ -16,30 +16,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package org.planqk.atlas.core.model;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+package org.planqk.atlas.core.services;
 
-import javax.persistence.*;
+import java.util.UUID;
 
-import java.time.OffsetDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import org.planqk.atlas.core.model.DiscussionTopic;
 
-@EqualsAndHashCode(callSuper = true)
-@Data
-@Entity
-public class DiscussionTopic extends KnowledgeArtifact {
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-    private String title;
-    private String Description;
+public interface DiscussionTopicService {
 
-    @Enumerated(EnumType.STRING)
-    private Status status;
+    DiscussionTopic save(DiscussionTopic discussionTopic);
 
-    private OffsetDateTime date;
+    Page<DiscussionTopic> findAll(Pageable pageable);
 
-    @OneToMany(mappedBy = "discussionTopic", orphanRemoval = true, cascade = {CascadeType.ALL})
-    private Set<DiscussionComment> discussionComments = new HashSet<>();
+    DiscussionTopic findById(UUID id);
+
+    void deleteById(UUID id);
 }
