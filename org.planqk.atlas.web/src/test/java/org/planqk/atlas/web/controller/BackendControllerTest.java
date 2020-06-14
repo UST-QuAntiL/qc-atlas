@@ -21,7 +21,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.planqk.atlas.core.model.Backend;
 import org.planqk.atlas.core.model.BackendProperty;
 import org.planqk.atlas.core.model.BackendPropertyType;
+import org.planqk.atlas.core.model.Qpu;
 import org.planqk.atlas.core.model.QuantumComputationModel;
+import org.planqk.atlas.core.model.Simulator;
 import org.planqk.atlas.core.services.BackendService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
@@ -78,12 +80,14 @@ public class BackendControllerTest {
     private Backend backend1;
     private BackendDto backendDto1;
     private List<Backend> backendList;
+    private Set<BackendProperty> properties;
+    private QuantumComputationModel model;
 
     @BeforeEach
     public void init() {
         mapper = ObjectMapperUtils.newTestMapper();
         backendList = new ArrayList<>();
-        Set<BackendProperty> properties = new HashSet<>();
+        properties = new HashSet<>();
 
         BackendPropertyType propertyType = new BackendPropertyType();
         propertyType.setDescription("desc");
@@ -96,7 +100,7 @@ public class BackendControllerTest {
         property.setId(UUID.randomUUID());
         properties.add(property);
 
-        QuantumComputationModel model = QuantumComputationModel.GATE_BASED;
+        model = QuantumComputationModel.GATE_BASED;
 
         backend1 = new Backend();
         backend1.setBackendProperties(properties);
@@ -234,6 +238,35 @@ public class BackendControllerTest {
     public void deleteBackend() throws Exception {
         mockMvc.perform(delete("/" + Constants.BACKENDS + "/{id}", backend1.getId()))
                 .andExpect(status().isOk()).andReturn();
+    }
+
+    @Test
+    public void inheritance() throws JsonProcessingException {
+        final Qpu qpu = new Qpu();
+        backend1.setBackendProperties(properties);
+        backend1.setVendor("vendor1");
+        backend1.setName("backend1");
+        backend1.setTechnology("technology1");
+        backend1.setQuantumComputationModel(model);
+        backend1.setId(UUID.randomUUID());
+
+        assertEquals(qpu, qpu);
+        assertEquals(qpu, ModelMapperUtils.convert(mapper.readValue(
+                mapper.writeValueAsString(qpu), BackendDto.class), Qpu.class));
+
+        final Simulator sim = new Simulator();
+        sim.setBackendProperties(properties);
+        sim.setVendor("vendor1");
+        sim.setName("backend1");
+        sim.setTechnology("technology1");
+        sim.setQuantumComputationModel(model);
+        sim.setId(UUID.randomUUID());
+        sim.setLocalExecution(false);
+
+        assertEquals(sim, sim);
+        assertEquals(sim, ModelMapperUtils.convert(mapper.readValue(
+                mapper.writeValueAsString(sim), BackendDto.class), Simulator.class));
+
     }
 
     private List<BackendDto> sortDto(List<BackendDto> backendDtos) {

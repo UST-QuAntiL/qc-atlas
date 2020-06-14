@@ -5,16 +5,22 @@ import java.util.Set;
 
 import org.modelmapper.ModelMapper;
 import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.Backend;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
+import org.planqk.atlas.core.model.Qpu;
 import org.planqk.atlas.core.model.QuantumAlgorithm;
+import org.planqk.atlas.core.model.Simulator;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
+import org.planqk.atlas.web.dtos.BackendDto;
 import org.planqk.atlas.web.dtos.ClassicAlgorithmDto;
+import org.planqk.atlas.web.dtos.QPUDto;
 import org.planqk.atlas.web.dtos.QuantumAlgorithmDto;
+import org.planqk.atlas.web.dtos.SimulatorDto;
 import org.springframework.data.domain.Page;
 
 public class ModelMapperUtils {
 
-    private static ModelMapper mapper = initModelMapper();
+    public static ModelMapper mapper = initModelMapper();
 
     public static <D, T> Set<D> convertSet(Set<T> entities, Class<D> dtoClass) {
         Set<D> resultSet = new HashSet<D>();
@@ -43,6 +49,14 @@ public class ModelMapperUtils {
                 .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), ClassicAlgorithm.class));
         mapper.createTypeMap(QuantumAlgorithmDto.class, Algorithm.class)
                 .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), QuantumAlgorithm.class));
+        mapper.createTypeMap(Qpu.class, BackendDto.class)
+                .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), QPUDto.class));
+        mapper.createTypeMap(Simulator.class, BackendDto.class)
+                .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), SimulatorDto.class));
+        mapper.createTypeMap(QPUDto.class, Backend.class)
+                .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), Qpu.class));
+        mapper.createTypeMap(SimulatorDto.class, Backend.class)
+                .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), Simulator.class));
 
         return mapper;
     }

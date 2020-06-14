@@ -15,6 +15,7 @@ import lombok.EqualsAndHashCode;
 @Entity
 @Table(name = "backends")
 @Data
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class Backend extends HasId {
 
     private String name;
