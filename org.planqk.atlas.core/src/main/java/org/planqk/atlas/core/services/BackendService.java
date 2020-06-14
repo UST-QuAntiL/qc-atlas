@@ -19,7 +19,5 @@ public interface BackendService {
 
     Page<Backend> findAll(Pageable pageable);
 
-    Backend update(UUID id, Backend backend);
-
     void delete (UUID id);
 }

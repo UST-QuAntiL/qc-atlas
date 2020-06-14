@@ -1,7 +1,5 @@
 package org.planqk.atlas.web.controller;
 
-import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.UUID;
 
 import javax.validation.Valid;
@@ -70,11 +68,11 @@ public class BackendController {
         Backend backend = backendService.saveOrUpdate(ModelMapperUtils.convert(backendDto, Backend.class));
         EntityModel<BackendDto> outputDto = HateoasUtils.generateEntityModel(ModelMapperUtils.convert(backend, BackendDto.class));
         backendAssembler.addLinks(outputDto);
-        return new ResponseEntity<>(outputDto, HttpStatus.OK);
+        return new ResponseEntity<>(outputDto, HttpStatus.CREATED);
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
-    @DeleteMapping("/")
+    @DeleteMapping("/{id}")
     public HttpEntity<EntityModel<BackendDto>> deleteBackend(@PathVariable UUID id) {
         LOG.debug("Delete to remove the Backend with id {} received.", id);
         // only deletes if not used in any CloudService or SoftwarePlatform
@@ -84,13 +82,13 @@ public class BackendController {
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "201")})
-    @PutMapping("/")
+    @PutMapping("/{id}")
     public HttpEntity<EntityModel<BackendDto>> updateBackend(@PathVariable UUID id, @Valid @RequestBody BackendDto backendDto) {
-        LOG.debug("Put to add a single Backend received.");
-        Backend backend = backendService.update(id, ModelMapperUtils.convert(backendDto, Backend.class));
+        LOG.debug("Put to update a single Backend received.");
+        Backend backend = backendService.saveOrUpdate(ModelMapperUtils.convert(backendDto, Backend.class));
         EntityModel<BackendDto> outputDto = HateoasUtils.generateEntityModel(ModelMapperUtils.convert(backend, BackendDto.class));
         backendAssembler.addLinks(outputDto);
-        return new ResponseEntity<>(outputDto, HttpStatus.OK);
+        return new ResponseEntity<>(outputDto, HttpStatus.CREATED);
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404")})

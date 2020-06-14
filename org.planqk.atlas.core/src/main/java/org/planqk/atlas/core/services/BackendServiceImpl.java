@@ -59,8 +59,7 @@ public class BackendServiceImpl implements BackendService {
         return repo.findAll(pageable);
     }
 
-    @Override
-    public Backend update(UUID id, Backend backend) {
+    private Backend update(UUID id, Backend backend) {
         Backend persistedBackend = findById(id);
 
         persistedBackend.setQuantumComputationModel(backend.getQuantumComputationModel());
