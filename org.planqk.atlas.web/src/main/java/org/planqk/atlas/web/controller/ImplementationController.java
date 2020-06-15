@@ -45,7 +45,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpEntity;
@@ -123,7 +122,7 @@ public class ImplementationController {
         input.setImplementedAlgorithm(algorithm);
         // Generate EntityModel
         EntityModel<ImplementationDto> dtoOutput = HateoasUtils.generateEntityModel(
-                ModelMapperUtils.convert(implementationService.saveOrUpdate(input), ImplementationDto.class));
+                ModelMapperUtils.convert(implementationService.save(input), ImplementationDto.class));
         // Add Links
         implementationAssembler.addLinks(dtoOutput);
         return new ResponseEntity<>(dtoOutput, HttpStatus.CREATED);
@@ -148,10 +147,10 @@ public class ImplementationController {
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
-    @PutMapping("/")
-    public HttpEntity<EntityModel<ImplementationDto>> updateImplementation(@Valid @RequestBody ImplementationDto dto) {
+    @PutMapping("/{id}")
+    public HttpEntity<EntityModel<ImplementationDto>> updateImplementation(@PathVariable UUID id, @Valid @RequestBody ImplementationDto dto) {
         var impl = ModelMapperUtils.convert(dto, Implementation.class);
-        impl = implementationService.saveOrUpdate(impl);
+        impl = implementationService.update(id, impl);
         return ResponseEntity.ok(HateoasUtils.generateEntityModel(ModelMapperUtils.convert(impl, ImplementationDto.class)));
     }
 }

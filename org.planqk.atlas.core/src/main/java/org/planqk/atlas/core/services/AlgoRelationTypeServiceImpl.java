@@ -1,3 +1,22 @@
+/*******************************************************************************
+ * Copyright (c) 2020 University of Stuttgart
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *******************************************************************************/
+
 package org.planqk.atlas.core.services;
 
 import java.util.NoSuchElementException;
@@ -16,6 +35,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import lombok.AllArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @AllArgsConstructor
@@ -23,28 +43,29 @@ public class AlgoRelationTypeServiceImpl implements AlgoRelationTypeService {
 
     private static final Logger LOG = LoggerFactory.getLogger(AlgoRelationType.class);
 
-    private AlgoRelationTypeRepository repo;
-    private AlgorithmRelationRepository algorithmRelationRepository;
+    private final AlgoRelationTypeRepository repo;
+    private final AlgorithmRelationRepository algorithmRelationRepository;
 
+    @Transactional
     @Override
     public AlgoRelationType save(AlgoRelationType algoRelationType) {
         return repo.save(algoRelationType);
     }
 
+    @Transactional
     @Override
     public AlgoRelationType update(UUID id, AlgoRelationType algoRelationType) {
-        // Check for type in database
-        AlgoRelationType persistedType = repo.findById(id).orElseThrow(NoSuchElementException::new);
-
-        // Update Fields
-        persistedType.setName(algoRelationType.getName());
-        // Reference database type to set
-        return save(persistedType);
+        if (repo.existsAlgoRelationTypeById(id)) {
+            algoRelationType.setId(id);
+            return save(algoRelationType);
+        }
+        throw new NoSuchElementException();
     }
 
+    @Transactional
     @Override
     public void delete(UUID id) {
-        if (algorithmRelationRepository.countRelationsUsingRelationType(id) > 0) {
+        if (algorithmRelationRepository.countByAlgoRelationType_Id(id) > 0) {
             LOG.info("Trying to delete algoRelationType that is used in at least 1 algorithmRelation.");
             throw new ConsistencyException(
                     "Cannot delete algoRelationType since it is used by existing algorithmRelations.");

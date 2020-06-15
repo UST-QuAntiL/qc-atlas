@@ -51,11 +51,7 @@ public class QuantumResourceServiceImpl implements QuantumResourceService {
     @Override
     @Transactional
     public void deleteQuantumResourceType(UUID typeId) {
-        try {
-            this.typeRepository.deleteById(typeId);
-        } catch (DataIntegrityViolationException e) {
-            throw new ConsistencyException("QuantumResourceType is still linked to at least one quantum resource", e);
-        }
+        this.typeRepository.deleteById(typeId);
     }
 
     @Override

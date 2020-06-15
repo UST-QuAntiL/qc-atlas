@@ -180,7 +180,7 @@ public class ImplementationControllerTest {
         implementation.setImplementedAlgorithm(algorithm);
 
         when(algorithmService.findById(any(UUID.class))).thenReturn(algorithm);
-        when(implementationService.saveOrUpdate(any(Implementation.class))).thenReturn(implementation);
+        when(implementationService.save(any(Implementation.class))).thenReturn(implementation);
         doNothing().when(implementationAssembler).addLinks(ArgumentMatchers.<EntityModel<ImplementationDto>>any());
 
         MvcResult mvcResult = mockMvc
@@ -207,7 +207,7 @@ public class ImplementationControllerTest {
         implementation.setImplementedAlgorithm(algorithm);
 
         when(algorithmService.findById(any(UUID.class))).thenReturn(algorithm);
-        when(implementationService.saveOrUpdate(any(Implementation.class))).thenReturn(implementation);
+        when(implementationService.save(any(Implementation.class))).thenReturn(implementation);
         doNothing().when(implementationAssembler).addLinks(ArgumentMatchers.<EntityModel<ImplementationDto>>any());
 
         MvcResult mvcResult = mockMvc
@@ -231,7 +231,7 @@ public class ImplementationControllerTest {
 
         // set everything we need to set for a valid request:
         implementation.setLink(new URL("https://wwww.uri/for/test/"));
-        when(implementationService.saveOrUpdate(any(Implementation.class))).thenReturn(implementation);
+        when(implementationService.save(any(Implementation.class))).thenReturn(implementation);
         return implementation;
     }
 
@@ -247,7 +247,7 @@ public class ImplementationControllerTest {
 
         implementation.setId(implId);
 
-        when(implementationService.saveOrUpdate(any(Implementation.class))).thenReturn(implementation);
+        when(implementationService.save(any(Implementation.class))).thenReturn(implementation);
 
         mockMvc.perform(
                 post(fromMethodCall(uriBuilder, on(ImplementationController.class).createImplementation(algoId, null))
@@ -264,7 +264,7 @@ public class ImplementationControllerTest {
         Implementation implementation = mockValidMinimalImpl(implId);
         // pretend algo is not found:
         when(algorithmService.findById(nonExistentAlgoId)).thenReturn(null);
-        when(implementationService.saveOrUpdate(any(Implementation.class))).thenReturn(implementation);
+        when(implementationService.save(any(Implementation.class))).thenReturn(implementation);
 
         mockMvc.perform(post(fromMethodCall(uriBuilder,
                 on(ImplementationController.class).createImplementation(nonExistentAlgoId, null)).toUriString())
@@ -284,7 +284,7 @@ public class ImplementationControllerTest {
         implementation.setImplementedAlgorithm(algorithm);
 
         when(algorithmService.findById(algoId)).thenReturn(algorithm);
-        when(implementationService.saveOrUpdate(any(Implementation.class))).thenAnswer(i -> i.getArguments()[0]);
+        when(implementationService.save(any(Implementation.class))).thenAnswer(i -> i.getArguments()[0]);
         doNothing().when(implementationAssembler).addLinks(ArgumentMatchers.<EntityModel<ImplementationDto>>any());
 
         mockMvc
@@ -303,7 +303,7 @@ public class ImplementationControllerTest {
 
         MvcResult mvcResult = mockMvc
                 .perform(put(fromMethodCall(uriBuilder,
-                        on(ImplementationController.class).updateImplementation(updateDto)).toUriString())
+                        on(ImplementationController.class).updateImplementation(implId, updateDto)).toUriString())
                         .content(mapper.writeValueAsString(updateDto))
                         .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
