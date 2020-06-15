@@ -3,10 +3,13 @@ package org.planqk.atlas.web.linkassembler;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 
 public abstract class GenericLinkAssembler<T> {
+    @Autowired
+    protected LinkBuilderService links;
 
     public abstract void addLinks(EntityModel<T> resource);
 
@@ -24,5 +27,4 @@ public abstract class GenericLinkAssembler<T> {
     public T getContent(EntityModel<T> resource) {
         return resource.getContent();
     }
-
 }
