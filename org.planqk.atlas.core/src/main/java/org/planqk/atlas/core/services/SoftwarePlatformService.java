@@ -6,6 +6,8 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.UUID;
 
+import javax.transaction.Transactional;
+
 public interface SoftwarePlatformService {
 
     @Transactional

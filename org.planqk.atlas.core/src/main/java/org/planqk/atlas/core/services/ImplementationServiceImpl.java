@@ -23,6 +23,7 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Implementation;
+import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.repository.ImplementationRepository;
 
 import lombok.AllArgsConstructor;
@@ -72,7 +73,7 @@ public class ImplementationServiceImpl implements ImplementationService {
 
         // Tags, Publications, Algorithms
         // update them if new ones are added
-        tagService.createOrUpdateAll(implementation.getTags());
+        var persistedTags = tagService.createOrUpdateAll(implementation.getTags());
         persistedImpl.setTags(implementation.getTags());
 
         publicationService.createOrUpdateAll(implementation.getPublications());

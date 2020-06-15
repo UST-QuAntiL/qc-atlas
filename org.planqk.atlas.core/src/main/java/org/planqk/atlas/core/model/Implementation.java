@@ -56,6 +56,8 @@ public class Implementation extends AlgorOrImpl {
     private String dependencies;
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private Set<Publication> publications;
 
     @ManyToOne
@@ -64,6 +66,8 @@ public class Implementation extends AlgorOrImpl {
     private Algorithm implementedAlgorithm;
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     @JoinTable(name = "implementation_tag", joinColumns = @JoinColumn(name = "implementation_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private Set<Tag> tags;
 
