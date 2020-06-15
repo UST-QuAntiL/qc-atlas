@@ -22,6 +22,7 @@ package org.planqk.atlas.core.services;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import org.planqk.atlas.core.model.Backend;
 import org.planqk.atlas.core.model.CloudService;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +30,10 @@ import org.springframework.data.domain.Pageable;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,6 +42,7 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
 
     @Autowired
     private CloudServiceService cloudServiceService;
+    @Autowired BackendService backendService;
 
     @Test
     void testAddCloudService_WithoutBackends() throws MalformedURLException {
@@ -49,12 +53,36 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void testAddCloudService_WithBackends() {
-        // TODO: When backend is implemented
+    void testAddCloudService_WithBackends() throws MalformedURLException {
+        CloudService cloudService = getGenericTestCloudServiceWithoutRelations("testCloudService");
+        Set<Backend> backends = new HashSet<>();
+
+        Backend backend = new Backend();
+        backend.setName("testBackend");
+        backends.add(backend);
+
+        cloudService.setProvidedBackends(backends);
+
+        CloudService storedCloudService = cloudServiceService.save(cloudService);
+        assertCloudServiceEquality(storedCloudService, cloudService);
+
+        storedCloudService.getProvidedBackends().forEach(b -> {
+            assertThat(b.getId()).isNotNull();
+            assertThat(b.getName()).isEqualTo(backend.getName());
+            Assertions.assertDoesNotThrow(() -> backendService.findById(b.getId()));
+        });
+
+        assertThat(storedCloudService.getProvidedBackends().size()).isEqualTo(1);
     }
 
     @Test
-    void testUpdateCloudService() throws MalformedURLException {
+    void testUpdateCloudService_ElementNotFound() throws MalformedURLException {
+        Assertions.assertThrows(NoSuchElementException.class, () ->
+                cloudServiceService.update(UUID.randomUUID(), null));
+    }
+
+    @Test
+    void testUpdateCloudService_ElementFound() throws MalformedURLException {
         CloudService cloudService = getGenericTestCloudServiceWithoutRelations("testCloudService");
         CloudService storedCloudService = getGenericTestCloudServiceWithoutRelations("testCloudService");
 
@@ -62,7 +90,7 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
         storedCloudService.setId(storedEditedCloudService.getId());
         String editName = "editedCloudService";
         storedEditedCloudService.setName(editName);
-        storedEditedCloudService = cloudServiceService.createOrUpdate(storedEditedCloudService);
+        storedEditedCloudService = cloudServiceService.update(storedEditedCloudService.getId(), storedEditedCloudService);
 
         assertThat(storedEditedCloudService.getId()).isEqualTo(storedCloudService.getId());
         assertThat(storedEditedCloudService.getName()).isNotEqualTo(storedCloudService.getName());
@@ -116,8 +144,30 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void testDeleteSoftwarePlatform_WithBackends() {
-        // TODO: When backend is implemented
+    void testDeleteSoftwarePlatform_WithBackends() throws MalformedURLException {
+        CloudService cloudService = getGenericTestCloudServiceWithoutRelations("testCloudService");
+        Set<Backend> backends = new HashSet<>();
+
+        Backend backend = new Backend();
+        backend.setName("testBackend");
+        backends.add(backend);
+
+        cloudService.setProvidedBackends(backends);
+
+        CloudService storedCloudService = cloudServiceService.save(cloudService);
+
+        Assertions.assertDoesNotThrow(() -> cloudServiceService.findById(storedCloudService.getId()));
+        storedCloudService.getProvidedBackends().forEach(b -> {
+            Assertions.assertDoesNotThrow(() -> backendService.findById(b.getId()));
+        });
+
+        cloudServiceService.delete(storedCloudService.getId());
+
+        Assertions.assertThrows(NoSuchElementException.class, () ->
+                cloudServiceService.findById(storedCloudService.getId()));
+        storedCloudService.getProvidedBackends().forEach(b -> {
+            Assertions.assertDoesNotThrow(() -> backendService.findById(b.getId()));
+        });
     }
 
     private void assertCloudServiceEquality(CloudService dbCloudService, CloudService compareCloudService) {

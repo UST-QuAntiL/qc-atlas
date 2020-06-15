@@ -17,7 +17,7 @@ public interface CloudServiceService {
     Set<CloudService> createOrUpdateAll(Set<CloudService> cloudServices);
 
     @Transactional
-    CloudService createOrUpdate(CloudService cloudService);
+    CloudService update(UUID id, CloudService cloudService);
 
     Page<CloudService> findAll(Pageable pageable);
 

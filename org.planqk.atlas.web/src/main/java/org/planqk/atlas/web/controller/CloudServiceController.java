@@ -91,7 +91,7 @@ public class CloudServiceController {
     public HttpEntity<EntityModel<CloudServiceDto>> updateCloudService(@PathVariable UUID id,
                                                           @Valid @RequestBody CloudServiceDto cloudServiceDto) {
         LOG.debug("Put to update cloud service with id {}.", id);
-        CloudService updatedCloudService = cloudServiceService.createOrUpdate(ModelMapperUtils.convert(cloudServiceDto, CloudService.class));
+        CloudService updatedCloudService = cloudServiceService.save(ModelMapperUtils.convert(cloudServiceDto, CloudService.class));
         EntityModel<CloudServiceDto> dtoOutput = HateoasUtils.generateEntityModel(ModelMapperUtils.convert(updatedCloudService, CloudServiceDto.class));
         cloudServiceAssembler.addLinks(dtoOutput);
         return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
