@@ -6,6 +6,7 @@ import org.planqk.atlas.core.model.exceptions.ConsistencyException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +34,11 @@ public class RestErrorHandler {
 
     @ExceptionHandler(ConsistencyException.class)
     public ResponseEntity<?> handleSqlConsistencyException(ConsistencyException e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<?> handleIntegrityViolationException(DataIntegrityViolationException e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
