@@ -20,13 +20,10 @@
 package org.planqk.atlas.web.dtos;
 
 import java.time.OffsetDateTime;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
 
 import javax.validation.constraints.NotNull;
 
-import org.planqk.atlas.core.model.DiscussionComment;
 import org.planqk.atlas.core.model.Status;
 
 import lombok.Data;
@@ -45,5 +42,4 @@ public class DiscussionTopicDto {
     @NotNull(message = "Date must not be null!")
     private OffsetDateTime date;
 
-    private Set<DiscussionComment> discussionComments = new HashSet<>();
 }

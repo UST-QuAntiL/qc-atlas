@@ -21,8 +21,9 @@ package org.planqk.atlas.core.model;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
@@ -37,10 +38,8 @@ public class DiscussionComment extends HasId {
     private OffsetDateTime date;
 
     @OneToOne
-    @JoinColumn(name = "parentComment")
     private DiscussionComment replyTo;
 
-    @ManyToOne
-    @JoinColumn(name = "discussionTopic")
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.REFRESH, CascadeType.MERGE})
     private DiscussionTopic discussionTopic;
 }

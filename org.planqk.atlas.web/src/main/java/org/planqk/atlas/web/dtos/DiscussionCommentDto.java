@@ -24,14 +24,13 @@ import java.util.UUID;
 
 import javax.validation.constraints.NotNull;
 
-import org.planqk.atlas.core.model.DiscussionComment;
-import org.planqk.atlas.core.model.DiscussionTopic;
-
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
+@EqualsAndHashCode
 public class DiscussionCommentDto {
     private UUID id;
     @NotNull(message = "Text must not be null!")
@@ -39,7 +38,8 @@ public class DiscussionCommentDto {
     @NotNull(message = "Date must not be null!")
     private OffsetDateTime date;
 
-    private DiscussionComment replyTo;
+    private DiscussionCommentDto replyTo;
 
-    private DiscussionTopic discussionTopic;
+    @NotNull(message = "Discussion-Comment must have a referenced Discussion-Topic")
+    private DiscussionTopicDto discussionTopic;
 }

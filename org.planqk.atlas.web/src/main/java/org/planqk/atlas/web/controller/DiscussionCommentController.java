@@ -21,6 +21,8 @@ package org.planqk.atlas.web.controller;
 
 import java.util.UUID;
 
+import javax.validation.Valid;
+
 import org.planqk.atlas.core.model.DiscussionComment;
 import org.planqk.atlas.core.services.DiscussionCommentService;
 import org.planqk.atlas.web.Constants;
@@ -48,6 +50,8 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -97,5 +101,17 @@ public class DiscussionCommentController {
     public HttpEntity<?> deleteDiscussionComment(@PathVariable UUID id) {
         discussionCommentService.deleteById(id);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Operation(responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "400", content = @Content),
+            @ApiResponse(responseCode = "500", content = @Content)})
+    @PostMapping("/")
+    public HttpEntity<EntityModel<DiscussionCommentDto>> createDiscussionComment(
+            @Valid @RequestBody DiscussionCommentDto discussionCommentDto) {
+
+        DiscussionComment discussionComment = discussionCommentService.save(ModelMapperUtils.convert(discussionCommentDto, DiscussionComment.class));
+        EntityModel<DiscussionCommentDto> discussionCommentDtoEntityModel = HateoasUtils.generateEntityModel(ModelMapperUtils.convert(discussionComment, DiscussionCommentDto.class));
+        discussionCommentAssembler.addLinks(discussionCommentDtoEntityModel);
+        return new ResponseEntity<>(discussionCommentDtoEntityModel, HttpStatus.CREATED);
     }
 }
