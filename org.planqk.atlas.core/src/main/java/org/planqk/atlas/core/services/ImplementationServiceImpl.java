@@ -22,15 +22,12 @@ package org.planqk.atlas.core.services;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
-import lombok.AllArgsConstructor;
-import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.repository.ImplementationRepository;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -61,31 +58,31 @@ public class ImplementationServiceImpl implements ImplementationService {
     }
 
     private Implementation update(UUID id, Implementation implementation) {
-        Implementation persistetImpl = repository.findById(id).orElseThrow(NoSuchElementException::new);
+        Implementation persistedImpl = repository.findById(id).orElseThrow(NoSuchElementException::new);
 
-        persistetImpl.setLink(implementation.getLink());
-        persistetImpl.setDependencies(implementation.getDependencies());
-        persistetImpl.setParameter(implementation.getParameter());
-        persistetImpl.setAssumptions(implementation.getAssumptions());
-        persistetImpl.setContributors(implementation.getContributors());
-        persistetImpl.setName(implementation.getName());
-        persistetImpl.setDescription(implementation.getDescription());
-        persistetImpl.setInputFormat(implementation.getInputFormat());
-        persistetImpl.setOutputFormat(implementation.getOutputFormat());
+        persistedImpl.setLink(implementation.getLink());
+        persistedImpl.setDependencies(implementation.getDependencies());
+        persistedImpl.setParameter(implementation.getParameter());
+        persistedImpl.setAssumptions(implementation.getAssumptions());
+        persistedImpl.setContributors(implementation.getContributors());
+        persistedImpl.setName(implementation.getName());
+        persistedImpl.setDescription(implementation.getDescription());
+        persistedImpl.setInputFormat(implementation.getInputFormat());
+        persistedImpl.setOutputFormat(implementation.getOutputFormat());
 
         // Tags, Publications, Algorithms
         // update them if new ones are added
         tagService.createOrUpdateAll(implementation.getTags());
-        persistetImpl.setTags(implementation.getTags());
+        persistedImpl.setTags(implementation.getTags());
 
         publicationService.createOrUpdateAll(implementation.getPublications());
-        persistetImpl.setPublications(implementation.getPublications());
+        persistedImpl.setPublications(implementation.getPublications());
 
         if (implementation.getImplementedAlgorithm().getId() == null) {
             algorithmService.save(implementation.getImplementedAlgorithm());
         }
-        persistetImpl.setImplementedAlgorithm(implementation.getImplementedAlgorithm());
+        persistedImpl.setImplementedAlgorithm(implementation.getImplementedAlgorithm());
 
-        return repository.save(persistetImpl);
+        return repository.save(persistedImpl);
     }
 }

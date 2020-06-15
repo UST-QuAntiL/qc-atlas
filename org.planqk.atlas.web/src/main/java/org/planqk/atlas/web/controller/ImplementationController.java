@@ -149,10 +149,9 @@ public class ImplementationController {
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
     @PutMapping("/")
-    public HttpEntity<EntityModel<ImplementationDto>> updateImplementation(@Valid @RequestBody ImplementationDto impl) {
-        var dbImpl = implementationService.findById(impl.getId());
-        BeanUtils.copyProperties(impl, dbImpl, "id", "implementedAlgorithm");
-        dbImpl = implementationService.saveOrUpdate(dbImpl);
-        return ResponseEntity.ok(HateoasUtils.generateEntityModel(ModelMapperUtils.convert(dbImpl, ImplementationDto.class)));
+    public HttpEntity<EntityModel<ImplementationDto>> updateImplementation(@Valid @RequestBody ImplementationDto dto) {
+        var impl = ModelMapperUtils.convert(dto, Implementation.class);
+        impl = implementationService.saveOrUpdate(impl);
+        return ResponseEntity.ok(HateoasUtils.generateEntityModel(ModelMapperUtils.convert(impl, ImplementationDto.class)));
     }
 }
