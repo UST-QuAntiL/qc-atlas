@@ -43,8 +43,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 
 /**
- * Custom HATEOAS link builder that resolves paths using the container's {@link RequestMappingInfoHandlerMapping}
- * instance.
+ * Custom HATEOAS {@link org.springframework.hateoas.server.LinkBuilder} that resolves path mappings
+ * using the container's {@link RequestMappingInfoHandlerMapping} instance.
  */
 @Component
 @RequiredArgsConstructor
@@ -62,25 +62,27 @@ public class LinkBuilderService {
     /**
      * Special version of {@link WebMvcLinkBuilder#linkTo(Object)} that resolves paths via {@link
      * RequestMappingInfoHandlerMapping}.
+     *
+     * If that is impossible, the class- and method-annotations are considered.
      */
     public LinkBuilder linkTo(Object invocationValue) {
         Assert.isInstanceOf(LastInvocationAware.class, invocationValue);
 
-        var invocations = DummyInvocationUtils.getLastInvocationAware(invocationValue);
+        final var invocations = DummyInvocationUtils.getLastInvocationAware(invocationValue);
         if (invocations == null) {
             throw new IllegalStateException(String.format("Could not obtain previous invocation from %s!", invocationValue));
         }
 
-        var invocation = invocations.getLastInvocation();
+        final var invocation = invocations.getLastInvocation();
         Assert.notNull(invocation, "No invocation present");
 
-        var mappingInfo = resolveInvocation(invocation);
+        final var mappingInfo = resolveInvocation(invocation);
         if (mappingInfo == null) {
             // In case there's no mapping, using just the annotations is our only option!
             return new LinkBuilder(WebMvcLinkBuilder.linkTo(invocationValue).toUriComponentsBuilder().build());
         }
 
-        UriComponentsBuilder builder;
+        final UriComponentsBuilder builder;
         // This is required for tests, which don't necessarily have a current request
         // (for example, when using this method to build an URL in order to perform a request).
         // If we supply a null builder in such a case, fromMethodCall will throw an InvalidStateException,
@@ -101,15 +103,15 @@ public class LinkBuilderService {
     }
 
     private UriComponentsBuilder appendMappingPath(UriComponentsBuilder builder, RequestMappingInfo mapping) {
-        var patternSet = mapping.getPatternsCondition().getPatterns();
+        final var patternSet = mapping.getPatternsCondition().getPatterns();
         Assert.notEmpty(patternSet, "Need at least one URL mapping");
         builder.path(patternSet.stream().sorted().findFirst().orElse(""));
         return builder;
     }
 
     private UriComponentsBuilder appendMappingParameters(UriComponentsBuilder builder, MethodInvocation invocation) {
-        int paramCount = invocation.getMethod().getParameterCount();
-        int argCount = invocation.getArguments().length;
+        final var paramCount = invocation.getMethod().getParameterCount();
+        final var argCount = invocation.getArguments().length;
         if (paramCount != argCount) {
             throw new IllegalArgumentException("Number of method parameters " + paramCount +
                     " does not match number of argument values " + argCount);
@@ -117,7 +119,7 @@ public class LinkBuilderService {
 
         final Map<String, Object> uriVars = new HashMap<>();
         for (int i = 0; i < paramCount; i++) {
-            MethodParameter param = new SynthesizingMethodParameter(invocation.getMethod(), i);
+            final MethodParameter param = new SynthesizingMethodParameter(invocation.getMethod(), i);
             param.initParameterNameDiscovery(parameterNameDiscoverer);
             contributor.contributeMethodArgument(param, invocation.getArguments()[i], builder, uriVars);
         }
