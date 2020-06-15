@@ -83,14 +83,16 @@ public class ImplementationControllerTest {
         public TagAssembler tagAssembler() {
             return new TagAssembler();
         }
+
+        public ImplementationAssembler implementationAssembler() {
+            return new ImplementationAssembler();
+        }
     }
 
     @MockBean
     private AlgorithmService algorithmService;
     @MockBean
     private ImplementationService implementationService;
-    @MockBean
-    private ImplementationAssembler implementationAssembler;
 
     @Autowired
     private MockMvc mockMvc;
@@ -120,8 +122,6 @@ public class ImplementationControllerTest {
                 implementationList.size());
 
         when(implementationService.findAll(any(Pageable.class))).thenReturn(page);
-        doNothing().when(implementationAssembler)
-                .addLinks(ArgumentMatchers.<Collection<EntityModel<ImplementationDto>>>any());
 
         MvcResult mvcResult = mockMvc.perform(get(
                 fromMethodCall(uriBuilder, on(ImplementationController.class).getImplementations(algoId)).toUriString())
@@ -181,7 +181,6 @@ public class ImplementationControllerTest {
 
         when(algorithmService.findById(any(UUID.class))).thenReturn(algorithm);
         when(implementationService.saveOrUpdate(any(Implementation.class))).thenReturn(implementation);
-        doNothing().when(implementationAssembler).addLinks(ArgumentMatchers.<EntityModel<ImplementationDto>>any());
 
         MvcResult mvcResult = mockMvc
                 .perform(post(fromMethodCall(uriBuilder,
@@ -208,7 +207,6 @@ public class ImplementationControllerTest {
 
         when(algorithmService.findById(any(UUID.class))).thenReturn(algorithm);
         when(implementationService.saveOrUpdate(any(Implementation.class))).thenReturn(implementation);
-        doNothing().when(implementationAssembler).addLinks(ArgumentMatchers.<EntityModel<ImplementationDto>>any());
 
         MvcResult mvcResult = mockMvc
                 .perform(post(fromMethodCall(uriBuilder,
@@ -285,7 +283,6 @@ public class ImplementationControllerTest {
 
         when(algorithmService.findById(algoId)).thenReturn(algorithm);
         when(implementationService.saveOrUpdate(any(Implementation.class))).thenAnswer(i -> i.getArguments()[0]);
-        doNothing().when(implementationAssembler).addLinks(ArgumentMatchers.<EntityModel<ImplementationDto>>any());
 
         mockMvc
                 .perform(post(fromMethodCall(uriBuilder,
