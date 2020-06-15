@@ -23,6 +23,8 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.UUID;
 
+import javax.transaction.Transactional;
+
 import org.planqk.atlas.core.model.QuantumAlgorithm;
 import org.planqk.atlas.core.model.QuantumResource;
 import org.planqk.atlas.core.model.QuantumResourceType;
@@ -47,6 +49,7 @@ public class QuantumResourceServiceImpl implements QuantumResourceService {
     private final QuantumResourceRepository resourceRepository;
 
     @Override
+    @Transactional
     public void deleteQuantumResourceType(UUID typeId) {
         try {
             this.typeRepository.deleteById(typeId);
@@ -56,6 +59,7 @@ public class QuantumResourceServiceImpl implements QuantumResourceService {
     }
 
     @Override
+    @Transactional
     public void deleteQuantumResource(UUID resourceId) {
         resourceRepository.deleteById(resourceId);
     }
@@ -81,11 +85,13 @@ public class QuantumResourceServiceImpl implements QuantumResourceService {
     }
 
     @Override
+    @Transactional
     public QuantumResourceType addOrUpdateQuantumResourceType(QuantumResourceType resourceType) {
         return typeRepository.save(resourceType);
     }
 
     @Override
+    @Transactional
     public QuantumResource addOrUpdateQuantumResource(QuantumResource resource) {
         if (resource.getQuantumResourceType().getId() == null) {
             var type = addOrUpdateQuantumResourceType(resource.getQuantumResourceType());
@@ -95,6 +101,7 @@ public class QuantumResourceServiceImpl implements QuantumResourceService {
     }
 
     @Override
+    @Transactional
     public QuantumResource addQuantumResourceToAlgorithm(QuantumAlgorithm algo, QuantumResource resource) {
         var updatedResource = resource;
         if (updatedResource.getId() == null) {
@@ -105,6 +112,7 @@ public class QuantumResourceServiceImpl implements QuantumResourceService {
     }
 
     @Override
+    @Transactional
     public QuantumResource addQuantumResourceToAlgorithm(UUID algoId, UUID resourceId) {
         var resource = resourceRepository.findById(resourceId).orElseThrow(NoSuchElementException::new);
         var algorithm = (QuantumAlgorithm) algorithmRepository.findById(algoId).orElseThrow(NoSuchElementException::new);

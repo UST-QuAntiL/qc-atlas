@@ -7,6 +7,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+import javax.transaction.Transactional;
+
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.model.exceptions.ConsistencyException;
 import org.planqk.atlas.core.repository.AlgorithmRepository;
@@ -25,15 +27,17 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
 
     private static final Logger LOG = LoggerFactory.getLogger(ProblemTypeServiceImpl.class);
 
-    private ProblemTypeRepository repo;
-    private AlgorithmRepository algRepo;
+    private final ProblemTypeRepository repo;
+    private final AlgorithmRepository algRepo;
 
     @Override
+    @Transactional
     public ProblemType save(ProblemType problemType) {
         return repo.save(problemType);
     }
 
     @Override
+    @Transactional
     public ProblemType update(UUID id, ProblemType problemType) {
         // Get existing ProblemType if it exists
         ProblemType persistedType = findById(id);
@@ -45,6 +49,7 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
     }
 
     @Override
+    @Transactional
     public void delete(UUID id) {
         if (algRepo.countAlgorithmsUsingProblemType(id) > 0) {
             LOG.info("Trying to delete ProblemType that is used by at least 1 algorithm");
@@ -70,6 +75,7 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
     }
 
     @Override
+    @Transactional
     public Set<ProblemType> createOrUpdateAll(Set<ProblemType> problemTypes) {
         Set<ProblemType> types = new HashSet<>();
         // Go Iterate all types

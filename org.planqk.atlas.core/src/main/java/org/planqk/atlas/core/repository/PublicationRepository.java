@@ -1,15 +1,14 @@
 package org.planqk.atlas.core.repository;
 
-import org.planqk.atlas.core.model.Publication;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-import org.springframework.data.rest.core.annotation.RepositoryRestResource;
-import org.springframework.stereotype.Repository;
-
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+
+import org.planqk.atlas.core.model.Publication;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import org.springframework.stereotype.Repository;
 
 /**
  * Repository to access {@link Publication}s available in the data base with different queries.
@@ -19,6 +18,8 @@ import java.util.UUID;
 public interface PublicationRepository extends JpaRepository<Publication, UUID> {
 
     Optional<Publication> findByTitle(String title);
+
+    boolean existsById(UUID id);
 
     void deleteByIdIn(Set<UUID> ids);
 
