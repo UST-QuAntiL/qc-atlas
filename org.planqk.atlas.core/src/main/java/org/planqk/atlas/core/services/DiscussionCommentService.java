@@ -34,5 +34,7 @@ public interface DiscussionCommentService {
 
     DiscussionComment findById(UUID id);
 
+    DiscussionComment update(UUID id, DiscussionComment comment);
+
     void deleteById(UUID id);
 }

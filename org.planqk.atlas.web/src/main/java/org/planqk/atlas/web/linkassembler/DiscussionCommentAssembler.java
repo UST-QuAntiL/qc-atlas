@@ -40,6 +40,7 @@ public class DiscussionCommentAssembler implements SimpleRepresentationModelAsse
     public void addLinks(EntityModel<DiscussionCommentDto> resource) {
         resource.add(linkTo(methodOn(DiscussionCommentController.class).getDiscussionComment(this.getID(resource))).withSelfRel());
         resource.add(linkTo(methodOn(DiscussionCommentController.class).deleteDiscussionComment(this.getID(resource))).withRel("delete"));
+        resource.add(linkTo(methodOn(DiscussionCommentController.class).updateDiscussionComment(this.getID(resource),resource.getContent())).withRel("update"));
     }
 
     @Override

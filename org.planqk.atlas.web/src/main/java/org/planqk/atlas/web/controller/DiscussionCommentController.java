@@ -51,6 +51,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -113,5 +114,16 @@ public class DiscussionCommentController {
         EntityModel<DiscussionCommentDto> discussionCommentDtoEntityModel = HateoasUtils.generateEntityModel(ModelMapperUtils.convert(discussionComment, DiscussionCommentDto.class));
         discussionCommentAssembler.addLinks(discussionCommentDtoEntityModel);
         return new ResponseEntity<>(discussionCommentDtoEntityModel, HttpStatus.CREATED);
+    }
+
+    @Operation(responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "400"), @ApiResponse(responseCode = "404")})
+    @PutMapping("/{id}")
+    public HttpEntity<EntityModel<DiscussionCommentDto>> updateDiscussionComment(@PathVariable UUID id,
+                                                                                 @Valid @RequestBody DiscussionCommentDto discussionCommentDto) {
+
+        DiscussionComment discussionComment = discussionCommentService.update(id, ModelMapperUtils.convert(discussionCommentDto, DiscussionComment.class));
+        EntityModel<DiscussionCommentDto> discussionCommentDtoEntityModel = HateoasUtils.generateEntityModel(ModelMapperUtils.convert(discussionComment, DiscussionCommentDto.class));
+        discussionCommentAssembler.addLinks(discussionCommentDtoEntityModel);
+        return new ResponseEntity<>(discussionCommentDtoEntityModel, HttpStatus.OK);
     }
 }

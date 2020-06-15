@@ -52,6 +52,12 @@ public class DiscussionTopicServiceImpl implements DiscussionTopicService {
     }
 
     @Override
+    public DiscussionTopic update(UUID id, DiscussionTopic topic) {
+        repository.findById(id).orElseThrow(NoSuchElementException::new);
+        return repository.save(topic);
+    }
+
+    @Override
     public void deleteById(UUID id) {
         repository.deleteById(id);
     }

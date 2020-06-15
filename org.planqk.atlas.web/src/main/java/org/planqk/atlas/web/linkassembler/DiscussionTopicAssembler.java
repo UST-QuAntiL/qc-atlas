@@ -22,7 +22,9 @@ package org.planqk.atlas.web.linkassembler;
 import java.util.Iterator;
 import java.util.UUID;
 
+import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.DiscussionTopicController;
+import org.planqk.atlas.web.dtos.DiscussionCommentDto;
 import org.planqk.atlas.web.dtos.DiscussionTopicDto;
 
 import org.springframework.hateoas.CollectionModel;
@@ -40,6 +42,7 @@ public class DiscussionTopicAssembler implements SimpleRepresentationModelAssemb
     public void addLinks(EntityModel<DiscussionTopicDto> resource) {
         resource.add(linkTo(methodOn(DiscussionTopicController.class).getDiscussionTopic(this.getID(resource))).withSelfRel());
         resource.add(linkTo(methodOn(DiscussionTopicController.class).deleteDiscussionTopic(this.getID(resource))).withRel("delete"));
+        resource.add(linkTo(methodOn(DiscussionTopicController.class).getDiscussionCommentsOfTopic(this.getID(resource))).withRel(Constants.DISCUSSION_COMMENTS));
     }
 
     @Override
@@ -52,5 +55,9 @@ public class DiscussionTopicAssembler implements SimpleRepresentationModelAssemb
 
     private UUID getID(EntityModel<DiscussionTopicDto> resource) {
         return resource.getContent().getId();
+    }
+
+    public void addDiscussionCommentLink(CollectionModel<EntityModel<DiscussionCommentDto>> results, UUID id) {
+        results.add(linkTo(methodOn(DiscussionTopicController.class).getDiscussionCommentsOfTopic(id)).withSelfRel());
     }
 }
