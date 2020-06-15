@@ -47,8 +47,8 @@ public class ImplementationServiceImpl implements ImplementationService {
 
         publicationService.createOrUpdateAll(implementation.getPublications());
 
-        if (implementation.getImplementedAlgorithm().getId() == null) {
-            algorithmService.save(implementation.getImplementedAlgorithm());
+        if (implementation.getImplementedAlgorithm() != null && implementation.getImplementedAlgorithm().getId() == null) {
+            implementation.setImplementedAlgorithm(algorithmService.save(implementation.getImplementedAlgorithm()));
         }
 
         return repository.save(implementation);

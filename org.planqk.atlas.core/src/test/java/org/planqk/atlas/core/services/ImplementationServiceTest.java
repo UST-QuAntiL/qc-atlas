@@ -29,6 +29,7 @@ import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.repository.TagRepository;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
+import org.planqk.atlas.core.util.SetUtils;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,13 +67,13 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
         impl.setName("test-impl");
         impl.setImplementedAlgorithm(algo);
         impl.setTags(tags);
-        tags.forEach(e -> e.setImplementations(Set.of(impl)));
+        tags.forEach(e -> e.setImplementations(SetUtils.hashSetOf(impl)));
 
         var returnedImpl = implementationService.save(impl);
 
         var returnedTag = tagService.getTagById(tag.getId());
-        returnedTag.setImplementations(Set.of(impl));
-        returnedImpl.setTags(Set.of(returnedTag));
+        returnedTag.setImplementations(SetUtils.hashSetOf(impl));
+        returnedImpl.setTags(SetUtils.hashSetOf(tag));
 
         implementationService.save(returnedImpl);
 

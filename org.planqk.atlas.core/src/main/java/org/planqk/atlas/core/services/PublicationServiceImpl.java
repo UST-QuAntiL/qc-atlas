@@ -65,7 +65,7 @@ public class PublicationServiceImpl implements PublicationService {
     @Transactional
     public Set<Publication> createOrUpdateAll(Set<Publication> publications) {
         if (publications == null) {
-            return Set.of();
+            return new HashSet<>();
         }
 
         return new HashSet<>(this.publicationRepository.saveAll(publications));
