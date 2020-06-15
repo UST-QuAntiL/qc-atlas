@@ -102,8 +102,4 @@ public class PublicationServiceImpl implements PublicationService {
 		return algorithmRepository.getAlgorithmsWithPublicationId(publicationId);
 	}
 
-    @Override
-    public void deletePublicationsByIds(Set<UUID> publicationIds) {
-        publicationRepository.deletePublicationsByIds(publicationIds);
-    }
 }
