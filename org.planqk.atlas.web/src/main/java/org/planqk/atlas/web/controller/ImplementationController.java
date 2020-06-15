@@ -123,7 +123,7 @@ public class ImplementationController {
         input.setImplementedAlgorithm(algorithm);
         // Generate EntityModel
         EntityModel<ImplementationDto> dtoOutput = HateoasUtils.generateEntityModel(
-                ModelMapperUtils.convert(implementationService.save(input), ImplementationDto.class));
+                ModelMapperUtils.convert(implementationService.saveOrUpdate(input), ImplementationDto.class));
         // Add Links
         implementationAssembler.addLinks(dtoOutput);
         return new ResponseEntity<>(dtoOutput, HttpStatus.CREATED);
@@ -152,7 +152,7 @@ public class ImplementationController {
     public HttpEntity<EntityModel<ImplementationDto>> updateImplementation(@Valid @RequestBody ImplementationDto impl) {
         var dbImpl = implementationService.findById(impl.getId());
         BeanUtils.copyProperties(impl, dbImpl, "id", "implementedAlgorithm");
-        dbImpl = implementationService.save(dbImpl);
+        dbImpl = implementationService.saveOrUpdate(dbImpl);
         return ResponseEntity.ok(HateoasUtils.generateEntityModel(ModelMapperUtils.convert(dbImpl, ImplementationDto.class)));
     }
 }
