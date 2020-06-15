@@ -68,7 +68,7 @@ public class BackendServiceImpl implements BackendService {
         persistedBackend.setVendor(backend.getVendor());
         persistedBackend.setBackendProperties(backend.getBackendProperties());
 
-        return saveOrUpdate(persistedBackend);
+        return repo.save(persistedBackend);
     }
 
     @Override
