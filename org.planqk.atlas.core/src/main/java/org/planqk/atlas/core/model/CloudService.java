@@ -1,12 +1,21 @@
 package org.planqk.atlas.core.model;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
+
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * A cloud service is a service which provides backends and can be used by developers via a software platform which
+ * supports the cloud service. E.g. qiskit is a software platform which supports the cloud service ibmq, which provides
+ * the backend ibmq_rome.
+ */
+
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "cloud_services")
 @Data

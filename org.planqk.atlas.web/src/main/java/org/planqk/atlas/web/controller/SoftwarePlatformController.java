@@ -4,10 +4,12 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
+import org.planqk.atlas.core.model.CloudService;
 import org.planqk.atlas.core.model.SoftwarePlatform;
 import org.planqk.atlas.core.services.SoftwarePlatformService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.annotation.ApiVersion;
+import org.planqk.atlas.web.dtos.CloudServiceDto;
 import org.planqk.atlas.web.dtos.SoftwarePlatformDto;
 import org.planqk.atlas.web.linkassembler.SoftwarePlatformAssembler;
 import org.planqk.atlas.web.utils.HateoasUtils;
@@ -44,7 +46,7 @@ public class SoftwarePlatformController {
     @Operation(responses = { @ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", content = @Content),
             @ApiResponse(responseCode = "500", content = @Content) })
     @GetMapping("/")
-    public HttpEntity<?> getSoftwarePlatforms(@RequestParam(required = false) Integer page,
+    public HttpEntity<PagedModel<EntityModel<SoftwarePlatformDto>>> getSoftwarePlatforms(@RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size) {
         Page<SoftwarePlatform> platforms = softwarePlatformService
                 .findAll(RestUtils.getPageableFromRequestParams(page, size));
@@ -76,6 +78,17 @@ public class SoftwarePlatformController {
         EntityModel<SoftwarePlatformDto> platformDtoEntity = HateoasUtils.generateEntityModel(savedPlatformDto);
         softwarePlatformAssembler.addLinks(platformDtoEntity);
         return new ResponseEntity<>(platformDtoEntity, HttpStatus.CREATED);
+    }
+
+    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404")})
+    @PutMapping("/{id}")
+    public HttpEntity<EntityModel<SoftwarePlatformDto>> updateSoftwarePlatform(@PathVariable UUID id,
+                                                                            @Valid @RequestBody SoftwarePlatformDto softwarePlatformDto) {
+        LOG.debug("Put to update software platform with id {}.", id);
+        SoftwarePlatform updatedSoftwarePlatform = softwarePlatformService.update(id, ModelMapperUtils.convert(softwarePlatformDto, SoftwarePlatform.class));
+        EntityModel<SoftwarePlatformDto> dtoOutput = HateoasUtils.generateEntityModel(ModelMapperUtils.convert(updatedSoftwarePlatform, SoftwarePlatformDto.class));
+        softwarePlatformAssembler.addLinks(dtoOutput);
+        return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
     }
 
     @Operation(responses = { @ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", content = @Content),
