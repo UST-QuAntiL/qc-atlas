@@ -1,9 +1,11 @@
 package org.planqk.atlas.core.services;
 
 import lombok.AllArgsConstructor;
+
 import org.planqk.atlas.core.model.Backend;
 import org.planqk.atlas.core.model.CloudService;
 import org.planqk.atlas.core.repository.CloudServiceRepository;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -42,19 +44,18 @@ public class CloudServiceServiceImpl implements CloudServiceService {
 
     @Override
     public CloudService createOrUpdate(CloudService cloudService) {
-        var cloudServiceOptional = cloudServiceRepository.findById(cloudService.getId());
-        if (cloudServiceOptional.isPresent()) {
-            CloudService updatingCloudService = cloudServiceOptional.get();
-            updatingCloudService.setName(cloudService.getName());
-            updatingCloudService.setProvider(cloudService.getProvider());
-            updatingCloudService.setUrl(cloudService.getUrl());
-            updatingCloudService.setCostModel(cloudService.getCostModel());
-            updatingCloudService.setProvidedBackends(cloudService.getProvidedBackends());
-
-            return this.save(updatingCloudService);
-        } else {
+        if (cloudService.getId() == null) {
             return this.save(cloudService);
         }
+
+        CloudService updatingCloudService = findById(cloudService.getId());
+        updatingCloudService.setName(cloudService.getName());
+        updatingCloudService.setProvider(cloudService.getProvider());
+        updatingCloudService.setUrl(cloudService.getUrl());
+        updatingCloudService.setCostModel(cloudService.getCostModel());
+        updatingCloudService.setProvidedBackends(cloudService.getProvidedBackends());
+
+        return this.save(updatingCloudService);
     }
 
     @Override
