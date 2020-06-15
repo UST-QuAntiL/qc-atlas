@@ -74,10 +74,10 @@ public class ImplementationServiceImpl implements ImplementationService {
         // Tags, Publications, Algorithms
         // update them if new ones are added
         var persistedTags = tagService.createOrUpdateAll(implementation.getTags());
-        persistedImpl.setTags(implementation.getTags());
+        persistedImpl.setTags(persistedTags);
 
-        publicationService.createOrUpdateAll(implementation.getPublications());
-        persistedImpl.setPublications(implementation.getPublications());
+        var persistedPublications = publicationService.createOrUpdateAll(implementation.getPublications());
+        persistedImpl.setPublications(persistedPublications);
 
         if (implementation.getImplementedAlgorithm().getId() == null) {
             algorithmService.save(implementation.getImplementedAlgorithm());

@@ -19,6 +19,7 @@
 
 package org.planqk.atlas.core.services;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -54,7 +55,8 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
         var tag = new Tag();
         tag.setKey("test");
         tag.setValue("test");
-        tag = tagService.save(tag);
+        Set<Tag> tags = new HashSet<>();
+        tags.add(tag);
 
         Algorithm algo = new ClassicAlgorithm();
         algo.setName("test");
@@ -63,8 +65,8 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
         var impl = new Implementation();
         impl.setName("test-impl");
         impl.setImplementedAlgorithm(algo);
-//        impl.setTags(tags);
-//        tags.forEach(e -> e.setImplementations(Set.of(impl)));
+        impl.setTags(tags);
+        tags.forEach(e -> e.setImplementations(Set.of(impl)));
 
         var returnedImpl = implementationService.saveOrUpdate(impl);
 
