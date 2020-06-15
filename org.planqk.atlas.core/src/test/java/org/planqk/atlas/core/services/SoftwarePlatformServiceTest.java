@@ -22,6 +22,7 @@ package org.planqk.atlas.core.services;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import org.planqk.atlas.core.model.Backend;
 import org.planqk.atlas.core.model.CloudService;
 import org.planqk.atlas.core.model.SoftwarePlatform;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
@@ -45,6 +46,8 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
     private SoftwarePlatformService softwarePlatformService;
     @Autowired
     private CloudServiceService cloudServiceService;
+    @Autowired
+    private BackendService backendService;
 
     @Test
     void testAddSoftwarePlatform_WithoutRelations() throws MalformedURLException {
@@ -74,8 +77,50 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void testAddSoftwarePlatform_WithBackends() {
-        // TODO: When backend is implemented
+    void testAddSoftwarePlatform_WithBackends() throws MalformedURLException {
+        SoftwarePlatform softwarePlatform = getGenericTestSoftwarePlatformWithoutRelations("testSoftwarePlatform");
+
+        Set<Backend> backends = new HashSet<>();
+        Backend backend = new Backend();
+        backend.setName("testBackend");
+        backends.add(backend);
+
+        softwarePlatform.setSupportedBackends(backends);
+
+        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.save(softwarePlatform);
+        assertSoftwarePlatformEquality(storedSoftwarePlatform, softwarePlatform);
+
+        storedSoftwarePlatform.getSupportedBackends().forEach(b -> {
+            assertThat(b.getId()).isNotNull();
+            assertThat(b.getName()).isEqualTo(backend.getName());
+            Assertions.assertDoesNotThrow(() -> backendService.findById(b.getId()));
+        });
+
+        assertThat(storedSoftwarePlatform.getSupportedBackends().size()).isEqualTo(1);
+    }
+
+    @Test
+    void testUpdateSoftwarePlatform_ElementNotFound() {
+        Assertions.assertThrows(NoSuchElementException.class, () ->
+                softwarePlatformService.update(UUID.randomUUID(), null));
+    }
+
+    @Test
+    void testUpdateSoftwarePlatform_ElementFound() throws MalformedURLException {
+        SoftwarePlatform softwarePlatform = getGenericTestSoftwarePlatformWithoutRelations("testSoftwarePlatform");
+        SoftwarePlatform storedSoftwarePlatform = getGenericTestSoftwarePlatformWithoutRelations("testSoftwarePlatform");
+
+        SoftwarePlatform storedEditedSoftwarePlatform = softwarePlatformService.save(softwarePlatform);
+        storedSoftwarePlatform.setId(storedEditedSoftwarePlatform.getId());
+        String editName = "editedSoftwarePlatform";
+        storedEditedSoftwarePlatform.setName(editName);
+        storedEditedSoftwarePlatform = softwarePlatformService.update(storedEditedSoftwarePlatform.getId(), storedEditedSoftwarePlatform);
+
+        assertThat(storedEditedSoftwarePlatform.getId()).isEqualTo(storedSoftwarePlatform.getId());
+        assertThat(storedEditedSoftwarePlatform.getName()).isNotEqualTo(storedSoftwarePlatform.getName());
+        assertThat(storedEditedSoftwarePlatform.getName()).isEqualTo(editName);
+        assertThat(storedEditedSoftwarePlatform.getLink()).isEqualTo(storedSoftwarePlatform.getLink());
+        assertThat(storedEditedSoftwarePlatform.getVersion()).isEqualTo(storedSoftwarePlatform.getVersion());
     }
 
     @Test
@@ -148,8 +193,30 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void testDeleteSoftwarePlatform_WithBackends() {
-        // TODO: When backend is implemented
+    void testDeleteSoftwarePlatform_WithBackends() throws MalformedURLException {
+        SoftwarePlatform softwarePlatform = getGenericTestSoftwarePlatformWithoutRelations("testSoftwarePlatform");
+
+        Set<Backend> backends = new HashSet<>();
+        Backend backend = new Backend();
+        backend.setName("testBackend");
+        backends.add(backend);
+
+        softwarePlatform.setSupportedBackends(backends);
+
+        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.save(softwarePlatform);
+
+        Assertions.assertDoesNotThrow(() -> softwarePlatformService.findById(storedSoftwarePlatform.getId()));
+        storedSoftwarePlatform.getSupportedBackends().forEach(b -> {
+            Assertions.assertDoesNotThrow(() -> backendService.findById(b.getId()));
+        });
+
+        softwarePlatformService.delete(storedSoftwarePlatform.getId());
+
+        Assertions.assertThrows(NoSuchElementException.class, () ->
+                softwarePlatformService.findById(storedSoftwarePlatform.getId()));
+        storedSoftwarePlatform.getSupportedBackends().forEach(b -> {
+            Assertions.assertDoesNotThrow(() -> backendService.findById(b.getId()));
+        });
     }
 
     private void assertSoftwarePlatformEquality(SoftwarePlatform dbSoftwarePlatform, SoftwarePlatform compareSoftwarePlatform) {

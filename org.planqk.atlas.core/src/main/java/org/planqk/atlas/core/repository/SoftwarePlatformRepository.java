@@ -11,6 +11,7 @@ import java.util.UUID;
 
 @RepositoryRestResource(exported = false)
 public interface SoftwarePlatformRepository extends JpaRepository<SoftwarePlatform, UUID> {
+    boolean existsSoftwarePlatformById (UUID id);
 
     @Query("SELECT COUNT(sp) FROM SoftwarePlatform sp JOIN sp.supportedBackends backend WHERE backend.id = :backendId")
     long countSoftwarePlatformByBackend(@Param("backendId") UUID backendId);

@@ -76,7 +76,7 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void testUpdateCloudService_ElementNotFound() throws MalformedURLException {
+    void testUpdateCloudService_ElementNotFound() {
         Assertions.assertThrows(NoSuchElementException.class, () ->
                 cloudServiceService.update(UUID.randomUUID(), null));
     }

@@ -31,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 public interface TagService {
     List<Tag> findByName(String name);
 
+    @Transactional
     Tag save(Tag tag);
 
     Page<Tag> findAll(Pageable pageable);
@@ -38,5 +39,6 @@ public interface TagService {
     @Transactional(readOnly = true)
     Tag getTagById(UUID tagId);
 
+    @Transactional
     Set<Tag> createOrUpdateAll(Set<Tag> algorithmTags);
 }
