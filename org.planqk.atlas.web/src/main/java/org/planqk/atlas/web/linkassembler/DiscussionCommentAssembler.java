@@ -28,10 +28,12 @@ import org.planqk.atlas.web.dtos.DiscussionCommentDto;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.SimpleRepresentationModelAssembler;
+import org.springframework.stereotype.Component;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+@Component
 public class DiscussionCommentAssembler implements SimpleRepresentationModelAssembler<DiscussionCommentDto> {
 
     @Override

@@ -26,6 +26,7 @@ import javax.validation.Valid;
 import org.planqk.atlas.core.model.DiscussionTopic;
 import org.planqk.atlas.core.services.DiscussionTopicService;
 import org.planqk.atlas.web.Constants;
+import org.planqk.atlas.web.annotation.ApiVersion;
 import org.planqk.atlas.web.dtos.DiscussionTopicDto;
 import org.planqk.atlas.web.linkassembler.DiscussionTopicAssembler;
 import org.planqk.atlas.web.utils.HateoasUtils;
@@ -59,13 +60,14 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/" + Constants.DISCUSSION_TOPICS)
 @Slf4j
+@ApiVersion("v1")
 @AllArgsConstructor
 @RestController
 public class DiscussionTopicController {
 
-    private final DiscussionTopicService discussionTopicService;
-    private final PagedResourcesAssembler<DiscussionTopicDto> pagedResourcesAssembler;
-    private final DiscussionTopicAssembler discussionTopicAssembler;
+    private DiscussionTopicService discussionTopicService;
+    private PagedResourcesAssembler<DiscussionTopicDto> pagedResourcesAssembler;
+    private DiscussionTopicAssembler discussionTopicAssembler;
 
     @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", content = @Content),
             @ApiResponse(responseCode = "500", content = @Content)})

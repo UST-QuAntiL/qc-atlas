@@ -24,6 +24,7 @@ import java.util.UUID;
 import org.planqk.atlas.core.model.DiscussionComment;
 import org.planqk.atlas.core.services.DiscussionCommentService;
 import org.planqk.atlas.web.Constants;
+import org.planqk.atlas.web.annotation.ApiVersion;
 import org.planqk.atlas.web.dtos.DiscussionCommentDto;
 import org.planqk.atlas.web.linkassembler.DiscussionCommentAssembler;
 import org.planqk.atlas.web.utils.HateoasUtils;
@@ -52,16 +53,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @io.swagger.v3.oas.annotations.tags.Tag(name = "discussion_comment")
+@RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/" + Constants.DISCUSSION_COMMENTS)
-@Slf4j
+@ApiVersion("v1")
 @AllArgsConstructor
-@RestController
+@Slf4j
 public class DiscussionCommentController {
 
-    private final DiscussionCommentService discussionCommentService;
-    private final PagedResourcesAssembler<DiscussionCommentDto> pagedResourcesAssembler;
-    private final DiscussionCommentAssembler discussionCommentAssembler;
+    private DiscussionCommentService discussionCommentService;
+    private PagedResourcesAssembler<DiscussionCommentDto> pagedResourcesAssembler;
+    private DiscussionCommentAssembler discussionCommentAssembler;
 
     @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", content = @Content),
             @ApiResponse(responseCode = "500", content = @Content)})
