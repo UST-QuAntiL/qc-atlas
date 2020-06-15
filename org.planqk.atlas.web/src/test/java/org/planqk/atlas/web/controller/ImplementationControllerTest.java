@@ -22,7 +22,6 @@ package org.planqk.atlas.web.controller;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -42,7 +41,6 @@ import io.swagger.v3.core.util.Json;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -63,7 +61,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -84,6 +81,7 @@ public class ImplementationControllerTest {
             return new TagAssembler();
         }
 
+        @Bean
         public ImplementationAssembler implementationAssembler() {
             return new ImplementationAssembler();
         }
@@ -125,7 +123,7 @@ public class ImplementationControllerTest {
 
         MvcResult mvcResult = mockMvc.perform(get(
                 fromMethodCall(uriBuilder, on(ImplementationController.class).getImplementations(algoId)).toUriString())
-                        .accept(MediaType.APPLICATION_JSON))
+                .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
         var resultList = ObjectMapperUtils.mapResponseToList(mvcResult.getResponse().getContentAsString(),
@@ -155,12 +153,10 @@ public class ImplementationControllerTest {
                 implementationList.size());
 
         when(implementationService.findAll(any(Pageable.class))).thenReturn(page);
-        doNothing().when(implementationAssembler)
-                .addLinks(ArgumentMatchers.<Collection<EntityModel<ImplementationDto>>>any());
 
         MvcResult mvcResult = mockMvc.perform(get(
                 fromMethodCall(uriBuilder, on(ImplementationController.class).getImplementations(algoId)).toUriString())
-                        .accept(MediaType.APPLICATION_JSON))
+                .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
         var resultList = ObjectMapperUtils.mapResponseToList(mvcResult.getResponse().getContentAsString(),
@@ -180,14 +176,13 @@ public class ImplementationControllerTest {
         implementation.setImplementedAlgorithm(algorithm);
 
         when(algorithmService.findById(any(UUID.class))).thenReturn(algorithm);
-        when(implementationService.saveOrUpdate(any(Implementation.class))).thenReturn(implementation);
 
         MvcResult mvcResult = mockMvc
                 .perform(post(fromMethodCall(uriBuilder,
                         on(ImplementationController.class).createImplementation(algoId, null)).toUriString())
-                                .content(mapper.writeValueAsString(
-                                        ModelMapperUtils.convert(implementation, ImplementationDto.class)))
-                                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+                        .content(mapper.writeValueAsString(
+                                ModelMapperUtils.convert(implementation, ImplementationDto.class)))
+                        .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated()).andReturn();
 
         EntityModel<ImplementationDto> implementationResult = new ObjectMapper().readValue(
@@ -206,14 +201,13 @@ public class ImplementationControllerTest {
         implementation.setImplementedAlgorithm(algorithm);
 
         when(algorithmService.findById(any(UUID.class))).thenReturn(algorithm);
-        when(implementationService.saveOrUpdate(any(Implementation.class))).thenReturn(implementation);
 
         MvcResult mvcResult = mockMvc
                 .perform(post(fromMethodCall(uriBuilder,
                         on(ImplementationController.class).createImplementation(algoId, null)).toUriString())
-                                .content(mapper.writeValueAsString(
-                                        ModelMapperUtils.convert(implementation, ImplementationDto.class)))
-                                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+                        .content(mapper.writeValueAsString(
+                                ModelMapperUtils.convert(implementation, ImplementationDto.class)))
+                        .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated()).andReturn();
 
         EntityModel<ImplementationDto> createdImpl = new ObjectMapper().readValue(
@@ -229,7 +223,7 @@ public class ImplementationControllerTest {
 
         // set everything we need to set for a valid request:
         implementation.setLink(new URL("https://wwww.uri/for/test/"));
-        when(implementationService.saveOrUpdate(any(Implementation.class))).thenReturn(implementation);
+        when(implementationService.save(any(Implementation.class))).thenReturn(implementation);
         return implementation;
     }
 
@@ -245,14 +239,14 @@ public class ImplementationControllerTest {
 
         implementation.setId(implId);
 
-        when(implementationService.saveOrUpdate(any(Implementation.class))).thenReturn(implementation);
+        when(implementationService.save(any(Implementation.class))).thenReturn(implementation);
 
         mockMvc.perform(
                 post(fromMethodCall(uriBuilder, on(ImplementationController.class).createImplementation(algoId, null))
                         .toUriString())
-                                .content(mapper.writeValueAsString(
-                                        ModelMapperUtils.convert(implementation, ImplementationDto.class)))
-                                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+                        .content(mapper.writeValueAsString(
+                                ModelMapperUtils.convert(implementation, ImplementationDto.class)))
+                        .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
 
@@ -262,13 +256,13 @@ public class ImplementationControllerTest {
         Implementation implementation = mockValidMinimalImpl(implId);
         // pretend algo is not found:
         when(algorithmService.findById(nonExistentAlgoId)).thenReturn(null);
-        when(implementationService.saveOrUpdate(any(Implementation.class))).thenReturn(implementation);
+        when(implementationService.save(any(Implementation.class))).thenReturn(implementation);
 
         mockMvc.perform(post(fromMethodCall(uriBuilder,
                 on(ImplementationController.class).createImplementation(nonExistentAlgoId, null)).toUriString())
-                        .content(mapper
-                                .writeValueAsString(ModelMapperUtils.convert(implementation, ImplementationDto.class)))
-                        .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+                .content(mapper
+                        .writeValueAsString(ModelMapperUtils.convert(implementation, ImplementationDto.class)))
+                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
 
@@ -282,7 +276,6 @@ public class ImplementationControllerTest {
         implementation.setImplementedAlgorithm(algorithm);
 
         when(algorithmService.findById(algoId)).thenReturn(algorithm);
-        when(implementationService.saveOrUpdate(any(Implementation.class))).thenAnswer(i -> i.getArguments()[0]);
 
         mockMvc
                 .perform(post(fromMethodCall(uriBuilder,
@@ -296,11 +289,14 @@ public class ImplementationControllerTest {
         updateDto.setName("name2");
         updateDto.setDescription("test2");
 
+        final var updatedImplementation = ModelMapperUtils.convert(updateDto, Implementation.class);
+
         when(implementationService.findById(implId)).thenReturn(implementation);
+        when(implementationService.update(any(UUID.class), any(Implementation.class))).thenReturn(updatedImplementation);
 
         MvcResult mvcResult = mockMvc
                 .perform(put(fromMethodCall(uriBuilder,
-                        on(ImplementationController.class).updateImplementation(updateDto)).toUriString())
+                        on(ImplementationController.class).updateImplementation(implId, updateDto)).toUriString())
                         .content(mapper.writeValueAsString(updateDto))
                         .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();

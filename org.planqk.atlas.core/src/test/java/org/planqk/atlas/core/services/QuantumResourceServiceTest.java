@@ -35,6 +35,7 @@ import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -82,7 +83,7 @@ public class QuantumResourceServiceTest extends AtlasDatabaseTestBase {
 
         var storedResource = resourceService.addOrUpdateQuantumResource(resource);
 
-        Assertions.assertThrows(ConsistencyException.class, () -> {
+        Assertions.assertThrows(DataIntegrityViolationException.class, () -> {
             this.resourceService.deleteQuantumResourceType(storedResource.getQuantumResourceType().getId());
         });
         assertThat(this.resourceService.findAllResourceTypes(Pageable.unpaged()).get().count()).isEqualTo(1);

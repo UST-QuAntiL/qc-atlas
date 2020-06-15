@@ -21,8 +21,10 @@ public interface AlgorithmRelationRepository extends JpaRepository<AlgorithmRela
 
     Set<AlgorithmRelation> findBySourceAlgorithmId(UUID sourceAlgId);
 
-    @Query("SELECT COUNT(algRel) FROM AlgorithmRelation algRel WHERE algRel.algoRelationType.id = :algoRelationTypeId")
-    long countRelationsUsingRelationType(@Param("algoRelationTypeId") UUID algoRelationTypeId);
+    long countByAlgoRelationType_Id(UUID algoRelationTypeId);
+
+//    @Query("SELECT COUNT(algRel) FROM AlgorithmRelation algRel WHERE algRel.algoRelationType.id = :algoRelationTypeId")
+//    long countRelationsUsingRelationType(@Param("algoRelationTypeId") UUID algoRelationTypeId);
 
     Optional<AlgorithmRelation> findBySourceAlgorithmIdAndTargetAlgorithmIdAndAlgoRelationTypeId(UUID sourceAlgId,
             UUID targetAlgId, UUID algoRelationTypeId);

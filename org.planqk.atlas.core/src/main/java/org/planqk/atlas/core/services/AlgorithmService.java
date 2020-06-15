@@ -23,23 +23,25 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-import javax.transaction.Transactional;
-
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface AlgorithmService {
 
+    @Transactional
     Algorithm save(Algorithm algorithm);
 
+    @Transactional
     Algorithm update(UUID id, Algorithm algorithm);
 
     @Transactional
     void delete(UUID id);
 
+    @Transactional
     void deleteAlgorithmRelation(UUID algoId, UUID relationId);
 
     Page<Algorithm> findAll(Pageable pageable);
@@ -48,6 +50,7 @@ public interface AlgorithmService {
 
     Optional<Algorithm> findOptionalById(UUID algoId);
 
+    @Transactional
     AlgorithmRelation addOrUpdateAlgorithmRelation(UUID sourceAlgorithm_id, AlgorithmRelation relation);
 
     Set<AlgorithmRelation> getAlgorithmRelations(UUID sourceAlgorithm_id);

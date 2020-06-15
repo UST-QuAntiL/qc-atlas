@@ -68,13 +68,13 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
         impl.setTags(tags);
         tags.forEach(e -> e.setImplementations(Set.of(impl)));
 
-        var returnedImpl = implementationService.saveOrUpdate(impl);
+        var returnedImpl = implementationService.save(impl);
 
         var returnedTag = tagService.getTagById(tag.getId());
         returnedTag.setImplementations(Set.of(impl));
         returnedImpl.setTags(Set.of(returnedTag));
 
-        implementationService.saveOrUpdate(returnedImpl);
+        implementationService.save(returnedImpl);
 
         var dbImpl = implementationService.findById(returnedImpl.getId());
         assertThat(dbImpl.getName()).isEqualTo(impl.getName());
@@ -86,10 +86,10 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
     void testFindAll() {
         Implementation implementation1 = new Implementation();
         implementation1.setName("test-impl1");
-        implementationService.saveOrUpdate(implementation1);
+        implementationService.save(implementation1);
         Implementation implementation2 = new Implementation();
         implementation2.setName("test-impl2");
-        implementationService.saveOrUpdate(implementation2);
+        implementationService.save(implementation2);
 
         List<Implementation> implementations = implementationService.findAll(Pageable.unpaged()).getContent();
 

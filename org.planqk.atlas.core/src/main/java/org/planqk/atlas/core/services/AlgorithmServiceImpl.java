@@ -25,8 +25,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-import javax.transaction.Transactional;
-
 import org.planqk.atlas.core.model.AlgoRelationType;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
@@ -40,6 +38,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @AllArgsConstructor
@@ -53,9 +52,9 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 
     private final TagService tagService;
     private final ProblemTypeService problemTypeService;
-    private final AlgoRelationTypeService algoRelationTypeService;
     private final PublicationService publicationService;
 
+    @Transactional
     @Override
     public Algorithm save(Algorithm algorithm) {
         // Persist Tags separately
@@ -86,7 +85,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         for (AlgorithmRelation relation : inputRelations) {
             // set correct source algorithm
             relation.setSourceAlgorithm(algorithm);
-            if (algorithmAlreadyPersisted(relation.getTargetAlgorithm().getId())) {
+            if (algorithmRepository.existsAlgorithmById((relation.getTargetAlgorithm().getId()))) {
                 relation.setAlgoRelationType(getPersistedAlgoRelationType(relation));
                 validRelations.add(relation);
             }
@@ -95,19 +94,16 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         return validRelations;
     }
 
-    private boolean algorithmAlreadyPersisted(UUID algorithmId) {
-        return findOptionalById(algorithmId).isPresent();
-    }
-
     private AlgoRelationType getPersistedAlgoRelationType(AlgorithmRelation relation) {
         // TODO decide if missing AlgoRelationType causes exception or if it gets created
         // AlgoRelationType gets created on the fly if it does not exist yet
-        return algoRelationTypeService
+        return relationTypeService
                 .findOptionalById(relation.getAlgoRelationType().getId()).isPresent()
                 ? relation.getAlgoRelationType()
-                : algoRelationTypeService.save(relation.getAlgoRelationType());
+                : relationTypeService.save(relation.getAlgoRelationType());
     }
 
+    @Transactional
     @Override
     public Algorithm update(UUID id, Algorithm algorithm) {
     	LOG.info("Trying to update algorithm");
@@ -178,6 +174,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         return algorithmRepository.findById(algoId);
     }
 
+    @Transactional
     @Override
     public AlgorithmRelation addOrUpdateAlgorithmRelation(UUID sourceAlgorithmId, AlgorithmRelation relation) {
         // Read involved Algorithms from database
@@ -185,7 +182,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         Algorithm targetAlgorithm = findById(relation.getTargetAlgorithm().getId());
 
         if (relation.getAlgoRelationType().getId() == null) {
-            algoRelationTypeService.save(relation.getAlgoRelationType());
+            relationTypeService.save(relation.getAlgoRelationType());
         }
         Optional<AlgoRelationType> relationTypeOpt = relationTypeService
                 .findOptionalById(relation.getAlgoRelationType().getId());
@@ -193,7 +190,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         // Create relation type if not exists
         AlgoRelationType relationType = relationTypeOpt.isPresent()
                 ? relationTypeOpt.get()
-                : algoRelationTypeService.save(relation.getAlgoRelationType());
+                : relationTypeService.save(relation.getAlgoRelationType());
 
         // Check if relation with those two algorithms and the relation type already
         // exists
