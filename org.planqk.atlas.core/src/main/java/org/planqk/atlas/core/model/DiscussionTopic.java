@@ -40,6 +40,7 @@ public class DiscussionTopic extends KnowledgeArtifact {
 
     private OffsetDateTime date;
 
+    @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "discussionTopic", orphanRemoval = true, cascade = {CascadeType.ALL})
     private Set<DiscussionComment> discussionComments = new HashSet<>();
 }
