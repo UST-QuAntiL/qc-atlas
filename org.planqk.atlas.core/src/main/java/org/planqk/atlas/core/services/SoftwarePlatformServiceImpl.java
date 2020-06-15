@@ -1,8 +1,6 @@
 package org.planqk.atlas.core.services;
 
-import java.util.NoSuchElementException;
-import java.util.UUID;
-
+import lombok.AllArgsConstructor;
 import org.planqk.atlas.core.model.SoftwarePlatform;
 import org.planqk.atlas.core.repository.SoftwarePlatformRepository;
 
@@ -12,19 +10,22 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+
+import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.UUID;
+
 @Service
 @AllArgsConstructor
 public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
 
     private final SoftwarePlatformRepository softwarePlatformRepository;
     private final CloudServiceService cloudServiceService;
+    private final BackendService backendService;
 
-    @Transactional
     @Override
     public SoftwarePlatform save(SoftwarePlatform softwarePlatform) {
-        // TODO create or update backends when service is implemented
-        // softwarePlatform.setSupportedBackends();
-
+        backendService.saveOrUpdateAll(softwarePlatform.getSupportedBackends());
         softwarePlatform.setSupportedCloudServices(
                 cloudServiceService.createOrUpdateAll(softwarePlatform.getSupportedCloudServices()));
 
@@ -41,7 +42,18 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
         return softwarePlatformRepository.findById(platformId).orElseThrow(NoSuchElementException::new);
     }
 
-    @Transactional
+    @Override
+    public SoftwarePlatform update(UUID id, SoftwarePlatform softwarePlatform) {
+        SoftwarePlatform persistedSoftwarePlatform = softwarePlatformRepository.findById(id).orElseThrow(NoSuchElementException::new);
+
+        persistedSoftwarePlatform.setLink(softwarePlatform.getLink());
+        persistedSoftwarePlatform.setName(softwarePlatform.getName());
+        persistedSoftwarePlatform.setVersion(softwarePlatform.getVersion());
+        persistedSoftwarePlatform.setSupportedBackends(softwarePlatform.getSupportedBackends());
+
+        return save(persistedSoftwarePlatform);
+    }
+
     @Override
     public void delete(UUID platformId) {
         softwarePlatformRepository.deleteById(platformId);

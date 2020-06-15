@@ -1,5 +1,13 @@
 package org.planqk.atlas.core.services;
 
+import lombok.AllArgsConstructor;
+import org.planqk.atlas.core.model.Backend;
+import org.planqk.atlas.core.model.CloudService;
+import org.planqk.atlas.core.repository.CloudServiceRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Repository;
+
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.UUID;
@@ -19,39 +27,34 @@ import org.springframework.transaction.annotation.Transactional;
 public class CloudServiceServiceImpl implements CloudServiceService {
 
     private final CloudServiceRepository cloudServiceRepository;
+    private final BackendService backendService;
 
-    @Transactional
     @Override
     public CloudService save(CloudService cloudService) {
-        // TODO create or update backends when service is implemented
-        // cloudService.setProvidedBackends();
-
+        backendService.saveOrUpdateAll(cloudService.getProvidedBackends());
         return this.cloudServiceRepository.save(cloudService);
     }
 
-    @Transactional
     @Override
     public Set<CloudService> createOrUpdateAll(Set<CloudService> cloudServices) {
         return cloudServices.stream().map(this::createOrUpdate).collect(Collectors.toSet());
     }
 
-    @Transactional
     @Override
     public CloudService createOrUpdate(CloudService cloudService) {
-        if (cloudService.getId() == null) {
+        var cloudServiceOptional = cloudServiceRepository.findById(cloudService.getId());
+        if (cloudServiceOptional.isPresent()) {
+            CloudService updatingCloudService = cloudServiceOptional.get();
+            updatingCloudService.setName(cloudService.getName());
+            updatingCloudService.setProvider(cloudService.getProvider());
+            updatingCloudService.setUrl(cloudService.getUrl());
+            updatingCloudService.setCostModel(cloudService.getCostModel());
+            updatingCloudService.setProvidedBackends(cloudService.getProvidedBackends());
+
+            return this.save(updatingCloudService);
+        } else {
             return this.save(cloudService);
         }
-
-        var updatingCloudService = findById(cloudService.getId());
-        updatingCloudService.setName(cloudService.getName());
-        updatingCloudService.setProvider(cloudService.getProvider());
-        updatingCloudService.setUrl(cloudService.getUrl());
-        updatingCloudService.setCostModel(cloudService.getCostModel());
-
-        // TODO create or update backends when service is implemented
-        updatingCloudService.setProvidedBackends(cloudService.getProvidedBackends());
-
-        return this.save(updatingCloudService);
     }
 
     @Override
@@ -69,5 +72,4 @@ public class CloudServiceServiceImpl implements CloudServiceService {
     public void delete(UUID cloudServiceId) {
         cloudServiceRepository.deleteById(cloudServiceId);
     }
-
 }

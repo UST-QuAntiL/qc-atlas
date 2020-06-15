@@ -44,7 +44,7 @@ public class CloudServiceController {
     @Operation(responses = { @ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", content = @Content),
             @ApiResponse(responseCode = "500", content = @Content) })
     @GetMapping("/")
-    public HttpEntity<?> getCloudServices(@RequestParam(required = false) Integer page,
+    public HttpEntity<PagedModel<EntityModel<CloudServiceDto>>> getCloudServices(@RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size) {
         Page<CloudService> cloudServices = cloudServiceService
                 .findAll(RestUtils.getPageableFromRequestParams(page, size));
@@ -84,6 +84,17 @@ public class CloudServiceController {
     public HttpEntity<CloudServiceDto> deleteCloudService(@PathVariable UUID id) {
         cloudServiceService.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404")})
+    @PutMapping("/{id}")
+    public HttpEntity<EntityModel<CloudServiceDto>> updateCloudService(@PathVariable UUID id,
+                                                          @Valid @RequestBody CloudServiceDto cloudServiceDto) {
+        LOG.debug("Put to update cloud service with id {}.", id);
+        CloudService updatedCloudService = cloudServiceService.createOrUpdate(ModelMapperUtils.convert(cloudServiceDto, CloudService.class));
+        EntityModel<CloudServiceDto> dtoOutput = HateoasUtils.generateEntityModel(ModelMapperUtils.convert(updatedCloudService, CloudServiceDto.class));
+        cloudServiceAssembler.addLinks(dtoOutput);
+        return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
     }
 
     @ExceptionHandler(NoSuchElementException.class)

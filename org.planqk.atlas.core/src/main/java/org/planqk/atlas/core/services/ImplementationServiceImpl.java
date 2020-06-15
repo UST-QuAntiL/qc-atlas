@@ -25,19 +25,25 @@ import java.util.UUID;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.repository.ImplementationRepository;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class ImplementationServiceImpl implements ImplementationService {
 
     private final ImplementationRepository repository;
+    private TagService tagService;
+    private PublicationService publicationService;
+    private AlgorithmService algorithmService;
 
     @Override
-    public Implementation save(Implementation implementation) {
+    public Implementation saveOrUpdate(Implementation implementation) {
+        if (implementation.getId() != null) {
+            return update(implementation.getId(), implementation);
+        }
         return repository.save(implementation);
     }
 
@@ -49,5 +55,34 @@ public class ImplementationServiceImpl implements ImplementationService {
     @Override
     public Implementation findById(UUID implId) {
         return repository.findById(implId).orElseThrow(NoSuchElementException::new);
+    }
+
+    private Implementation update(UUID id, Implementation implementation) {
+        Implementation persistedImpl = repository.findById(id).orElseThrow(NoSuchElementException::new);
+
+        persistedImpl.setLink(implementation.getLink());
+        persistedImpl.setDependencies(implementation.getDependencies());
+        persistedImpl.setParameter(implementation.getParameter());
+        persistedImpl.setAssumptions(implementation.getAssumptions());
+        persistedImpl.setContributors(implementation.getContributors());
+        persistedImpl.setName(implementation.getName());
+        persistedImpl.setDescription(implementation.getDescription());
+        persistedImpl.setInputFormat(implementation.getInputFormat());
+        persistedImpl.setOutputFormat(implementation.getOutputFormat());
+
+        // Tags, Publications, Algorithms
+        // update them if new ones are added
+        tagService.createOrUpdateAll(implementation.getTags());
+        persistedImpl.setTags(implementation.getTags());
+
+        publicationService.createOrUpdateAll(implementation.getPublications());
+        persistedImpl.setPublications(implementation.getPublications());
+
+        if (implementation.getImplementedAlgorithm().getId() == null) {
+            algorithmService.save(implementation.getImplementedAlgorithm());
+        }
+        persistedImpl.setImplementedAlgorithm(implementation.getImplementedAlgorithm());
+
+        return repository.save(persistedImpl);
     }
 }

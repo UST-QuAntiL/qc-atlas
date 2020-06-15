@@ -35,8 +35,8 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
- * Root controller to access all entities within Quality, trigger the hardware
- * selection, and execution of quantum algorithms.
+ * Root controller to access all entities within Quality, trigger the hardware selection, and execution of quantum
+ * algorithms.
  */
 @io.swagger.v3.oas.annotations.tags.Tag(name = "root")
 @RestController
@@ -46,14 +46,14 @@ public class RootController {
     @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping("/")
     public HttpEntity<RepresentationModel<?>> root() {
+        // EntityModel can unfortunately not be used here because it requires non null content
+        // OpenAPI does not care about ? in this case because we only provide links anyway
         RepresentationModel<?> responseEntity = new RepresentationModel<>();
 
         // add links to sub-controllers
         responseEntity.add(linkTo(methodOn(RootController.class).root()).withSelfRel());
         responseEntity.add(linkTo(methodOn(AlgorithmController.class).getAlgorithms(Constants.DEFAULT_PAGE_NUMBER,
                 Constants.DEFAULT_PAGE_SIZE)).withRel(Constants.ALGORITHMS));
-        responseEntity.add(linkTo(methodOn(ProviderController.class).getProviders(Constants.DEFAULT_PAGE_NUMBER,
-                Constants.DEFAULT_PAGE_SIZE)).withRel(Constants.PROVIDERS));
         responseEntity.add(linkTo(
                 methodOn(TagController.class).getTags(Constants.DEFAULT_PAGE_NUMBER, Constants.DEFAULT_PAGE_SIZE))
                 .withRel(Constants.TAGS));

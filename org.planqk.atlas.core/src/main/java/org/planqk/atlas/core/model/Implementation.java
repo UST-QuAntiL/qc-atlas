@@ -55,6 +55,9 @@ public class Implementation extends AlgorOrImpl {
     private URL link;
     private String dependencies;
 
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    private Set<Publication> publications;
+
     @ManyToOne
     @EqualsAndHashCode.Exclude
     @ToString.Exclude

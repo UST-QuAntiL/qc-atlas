@@ -6,17 +6,17 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.planqk.atlas.core.model.AlgoRelationType;
 import org.planqk.atlas.core.services.AlgoRelationTypeService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
 import org.planqk.atlas.web.dtos.AlgoRelationTypeDto;
-import org.planqk.atlas.web.dtos.ProviderDto;
+import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
 import org.planqk.atlas.web.linkassembler.AlgoRelationTypeAssembler;
 import org.planqk.atlas.web.utils.HateoasUtils;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -111,8 +111,8 @@ public class AlgoRelationTypeControllerTest {
                         .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated()).andReturn();
 
-        EntityModel<ProviderDto> type = mapper.readValue(result.getResponse().getContentAsString(),
-                new TypeReference<EntityModel<ProviderDto>>() {
+        EntityModel<AlgorithmRelationDto> type = mapper.readValue(result.getResponse().getContentAsString(),
+                new TypeReference<>() {
                 });
         assertEquals(type.getContent().getId(), algoRelationType1Dto.getId());
     }
@@ -139,8 +139,8 @@ public class AlgoRelationTypeControllerTest {
                         .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
-        EntityModel<ProviderDto> type = mapper.readValue(result.getResponse().getContentAsString(),
-                new TypeReference<EntityModel<ProviderDto>>() {
+        EntityModel<AlgorithmRelationDto> type = mapper.readValue(result.getResponse().getContentAsString(),
+                new TypeReference<>() {
                 });
         assertEquals(type.getContent().getId(), algoRelationType1Dto.getId());
     }
@@ -160,7 +160,7 @@ public class AlgoRelationTypeControllerTest {
                 .andExpect(status().isOk()).andReturn();
 
         var providers = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(),
-                "algoRelationTypeDtoes", ProviderDto.class);
+                "algoRelationTypeDtoes", AlgorithmRelationDto.class);
         assertEquals(providers.size(), 0);
     }
 
@@ -187,7 +187,7 @@ public class AlgoRelationTypeControllerTest {
                 .andExpect(status().isOk()).andReturn();
 
         var providers = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(),
-                "algoRelationTypeDtoes", ProviderDto.class);
+                "algoRelationTypeDtoes", AlgorithmRelationDto.class);
         assertEquals(providers.size(), 2);
     }
 
@@ -207,8 +207,8 @@ public class AlgoRelationTypeControllerTest {
         MvcResult result = mockMvc.perform(get("/" + Constants.ALGO_RELATION_TYPES + "/{id}", algoRelationType1.getId())
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
 
-        EntityModel<ProviderDto> algoRelationTypeDto = mapper.readValue(result.getResponse().getContentAsString(),
-                new TypeReference<EntityModel<ProviderDto>>() {
+        EntityModel<AlgorithmRelationDto> algoRelationTypeDto = mapper.readValue(result.getResponse().getContentAsString(),
+                new TypeReference<>() {
                 });
         assertEquals(algoRelationTypeDto.getContent().getId(), algoRelationType1.getId());
     }
