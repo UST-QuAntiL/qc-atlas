@@ -38,9 +38,9 @@ public class CloudServiceServiceImpl implements CloudServiceService {
     @Override
     public CloudService update(UUID id, CloudService cloudService) {
         if (cloudServiceRepository.existsCloudServiceById(id)) {
+            cloudService.setId(id);
             return save(cloudService);
         }
-
         throw new NoSuchElementException();
     }
 

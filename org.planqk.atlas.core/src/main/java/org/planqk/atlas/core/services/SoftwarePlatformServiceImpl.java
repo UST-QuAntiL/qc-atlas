@@ -1,18 +1,15 @@
 package org.planqk.atlas.core.services;
 
 import lombok.AllArgsConstructor;
+
 import org.planqk.atlas.core.model.SoftwarePlatform;
 import org.planqk.atlas.core.repository.SoftwarePlatformRepository;
 
-import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 
 import java.util.NoSuchElementException;
-import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -26,8 +23,7 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
     @Override
     public SoftwarePlatform save(SoftwarePlatform softwarePlatform) {
         backendService.saveOrUpdateAll(softwarePlatform.getSupportedBackends());
-        softwarePlatform.setSupportedCloudServices(
-                cloudServiceService.createOrUpdateAll(softwarePlatform.getSupportedCloudServices()));
+        cloudServiceService.createOrUpdateAll(softwarePlatform.getSupportedCloudServices());
 
         return this.softwarePlatformRepository.save(softwarePlatform);
     }
@@ -44,19 +40,15 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
 
     @Override
     public SoftwarePlatform update(UUID id, SoftwarePlatform softwarePlatform) {
-        SoftwarePlatform persistedSoftwarePlatform = softwarePlatformRepository.findById(id).orElseThrow(NoSuchElementException::new);
-
-        persistedSoftwarePlatform.setLink(softwarePlatform.getLink());
-        persistedSoftwarePlatform.setName(softwarePlatform.getName());
-        persistedSoftwarePlatform.setVersion(softwarePlatform.getVersion());
-        persistedSoftwarePlatform.setSupportedBackends(softwarePlatform.getSupportedBackends());
-
-        return save(persistedSoftwarePlatform);
+        if (softwarePlatformRepository.existsSoftwarePlatformById(id)) {
+            softwarePlatform.setId(id);
+            return save(softwarePlatform);
+        }
+        throw new NoSuchElementException();
     }
 
     @Override
     public void delete(UUID platformId) {
         softwarePlatformRepository.deleteById(platformId);
     }
-
 }
