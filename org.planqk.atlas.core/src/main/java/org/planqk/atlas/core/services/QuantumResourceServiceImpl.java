@@ -28,13 +28,11 @@ import javax.transaction.Transactional;
 import org.planqk.atlas.core.model.QuantumAlgorithm;
 import org.planqk.atlas.core.model.QuantumResource;
 import org.planqk.atlas.core.model.QuantumResourceType;
-import org.planqk.atlas.core.model.exceptions.ConsistencyException;
 import org.planqk.atlas.core.repository.AlgorithmRepository;
 import org.planqk.atlas.core.repository.QuantumResourceRepository;
 import org.planqk.atlas.core.repository.QuantumResourceTypeRepository;
 
 import lombok.AllArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -43,7 +41,6 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class QuantumResourceServiceImpl implements QuantumResourceService {
 
-    private final AlgorithmService algorithmService;
     private final AlgorithmRepository algorithmRepository;
     private final QuantumResourceTypeRepository typeRepository;
     private final QuantumResourceRepository resourceRepository;
