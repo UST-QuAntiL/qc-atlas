@@ -75,8 +75,7 @@ public class DiscussionTopicController {
     private DiscussionTopicAssembler discussionTopicAssembler;
     private DiscussionCommentAssembler discussionCommentAssembler;
 
-    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", content = @Content),
-            @ApiResponse(responseCode = "500", content = @Content)})
+    @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping("/")
     public HttpEntity<PagedModel<EntityModel<DiscussionTopicDto>>> getDiscussionTopics(@RequestParam(required = false) Integer page,
                                                                                        @RequestParam(required = false) Integer size) {
@@ -89,8 +88,7 @@ public class DiscussionTopicController {
         return new ResponseEntity<>(pagedModel, HttpStatus.OK);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", content = @Content),
-            @ApiResponse(responseCode = "500", content = @Content)})
+    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400"), @ApiResponse(responseCode = "404")})
     @GetMapping("/{id}")
     public HttpEntity<EntityModel<DiscussionTopicDto>> getDiscussionTopic(@PathVariable UUID id) {
         log.debug("Received request to retrieve DiscussionTopic with id: {}", id);
@@ -101,8 +99,7 @@ public class DiscussionTopicController {
         return new ResponseEntity<>(discussionTopicDtoEntityModel, HttpStatus.OK);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", content = @Content),
-            @ApiResponse(responseCode = "500", content = @Content)})
+    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400"), @ApiResponse(responseCode = "404")})
     @DeleteMapping("/{id}")
     public HttpEntity<DiscussionTopicDto> deleteDiscussionTopic(@PathVariable UUID id) {
         discussionTopicService.deleteById(id);
@@ -110,7 +107,7 @@ public class DiscussionTopicController {
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "400", content = @Content),
-            @ApiResponse(responseCode = "500", content = @Content)})
+            @ApiResponse(responseCode = "404")})
     @PostMapping("/")
     public HttpEntity<EntityModel<DiscussionTopicDto>> createDiscussionTopic(
             @Valid @RequestBody DiscussionTopicDto discussionTopicDto) {

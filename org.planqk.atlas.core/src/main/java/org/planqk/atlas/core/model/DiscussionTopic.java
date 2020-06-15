@@ -33,7 +33,7 @@ import java.util.Set;
 public class DiscussionTopic extends KnowledgeArtifact {
 
     private String title;
-    private String Description;
+    private String description;
 
     @Enumerated(EnumType.STRING)
     private Status status;

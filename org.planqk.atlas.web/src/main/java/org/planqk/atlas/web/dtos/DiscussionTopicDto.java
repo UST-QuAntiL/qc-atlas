@@ -36,10 +36,9 @@ public class DiscussionTopicDto {
     private UUID id;
     @NotNull(message = "Title must not be null!")
     private String title;
-    private String Description;
+    private String description;
     @NotNull(message = "Status must not be null!")
     private Status status;
     @NotNull(message = "Date must not be null!")
     private OffsetDateTime date;
-
 }

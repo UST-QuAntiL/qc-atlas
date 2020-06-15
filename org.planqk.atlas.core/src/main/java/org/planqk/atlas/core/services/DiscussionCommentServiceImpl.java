@@ -20,11 +20,10 @@
 package org.planqk.atlas.core.services;
 
 import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.Objects;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.DiscussionComment;
-import org.planqk.atlas.core.model.DiscussionTopic;
 import org.planqk.atlas.core.repository.DiscussionCommentRepository;
 
 import lombok.AllArgsConstructor;
@@ -41,10 +40,8 @@ public class DiscussionCommentServiceImpl implements DiscussionCommentService {
 
     @Override
     public DiscussionComment save(DiscussionComment discussionComment) {
-
-        Optional<DiscussionTopic> discussionTopic = Optional.of(discussionTopicService.findById(discussionComment.getDiscussionTopic().getId()));
-        if (discussionTopic.isEmpty()) {
-            throw new NoSuchElementException("The referenced Discussion Topic does not exist!");
+        if (Objects.isNull((discussionComment.getDiscussionTopic().getId()))) {
+            throw new NoSuchElementException("The DiscussionTopic for DiscussionComment does not exist!");
         }
         return repository.save(discussionComment);
     }

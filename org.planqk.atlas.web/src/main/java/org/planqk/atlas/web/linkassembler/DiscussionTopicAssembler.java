@@ -19,7 +19,6 @@
 
 package org.planqk.atlas.web.linkassembler;
 
-import java.util.Iterator;
 import java.util.UUID;
 
 import org.planqk.atlas.web.Constants;
@@ -29,28 +28,20 @@ import org.planqk.atlas.web.dtos.DiscussionTopicDto;
 
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.server.SimpleRepresentationModelAssembler;
 import org.springframework.stereotype.Component;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Component
-public class DiscussionTopicAssembler implements SimpleRepresentationModelAssembler<DiscussionTopicDto> {
+public class DiscussionTopicAssembler extends GenericLinkAssembler<DiscussionTopicDto> {
 
     @Override
     public void addLinks(EntityModel<DiscussionTopicDto> resource) {
         resource.add(linkTo(methodOn(DiscussionTopicController.class).getDiscussionTopic(this.getID(resource))).withSelfRel());
         resource.add(linkTo(methodOn(DiscussionTopicController.class).deleteDiscussionTopic(this.getID(resource))).withRel("delete"));
+        resource.add(linkTo(methodOn(DiscussionTopicController.class).updateDiscussionTopic(this.getID(resource), getContent(resource))).withRel("update"));
         resource.add(linkTo(methodOn(DiscussionTopicController.class).getDiscussionCommentsOfTopic(this.getID(resource))).withRel(Constants.DISCUSSION_COMMENTS));
-    }
-
-    @Override
-    public void addLinks(CollectionModel<EntityModel<DiscussionTopicDto>> resources) {
-        Iterator<EntityModel<DiscussionTopicDto>> iter = resources.getContent().iterator();
-        while (iter.hasNext()) {
-            addLinks(iter.next());
-        }
     }
 
     private UUID getID(EntityModel<DiscussionTopicDto> resource) {

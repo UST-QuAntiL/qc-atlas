@@ -19,36 +19,25 @@
 
 package org.planqk.atlas.web.linkassembler;
 
-import java.util.Iterator;
 import java.util.UUID;
 
 import org.planqk.atlas.web.controller.DiscussionCommentController;
 import org.planqk.atlas.web.dtos.DiscussionCommentDto;
 
-import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.server.SimpleRepresentationModelAssembler;
 import org.springframework.stereotype.Component;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Component
-public class DiscussionCommentAssembler implements SimpleRepresentationModelAssembler<DiscussionCommentDto> {
+public class DiscussionCommentAssembler extends GenericLinkAssembler<DiscussionCommentDto> {
 
     @Override
     public void addLinks(EntityModel<DiscussionCommentDto> resource) {
         resource.add(linkTo(methodOn(DiscussionCommentController.class).getDiscussionComment(this.getID(resource))).withSelfRel());
         resource.add(linkTo(methodOn(DiscussionCommentController.class).deleteDiscussionComment(this.getID(resource))).withRel("delete"));
-        resource.add(linkTo(methodOn(DiscussionCommentController.class).updateDiscussionComment(this.getID(resource),resource.getContent())).withRel("update"));
-    }
-
-    @Override
-    public void addLinks(CollectionModel<EntityModel<DiscussionCommentDto>> resources) {
-        Iterator<EntityModel<DiscussionCommentDto>> iter = resources.getContent().iterator();
-        while (iter.hasNext()) {
-            addLinks(iter.next());
-        }
+        resource.add(linkTo(methodOn(DiscussionCommentController.class).updateDiscussionComment(this.getID(resource), getContent(resource))).withRel("update"));
     }
 
     private UUID getID(EntityModel<DiscussionCommentDto> resource) {
