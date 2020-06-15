@@ -61,6 +61,11 @@ public class QuantumResourceServiceImpl implements QuantumResourceService {
     }
 
     @Override
+    public QuantumResourceType findResourceTypeById(UUID resourceTypeId) {
+        return this.typeRepository.findById(resourceTypeId).orElseThrow(NoSuchElementException::new);
+    }
+
+    @Override
     public Page<QuantumResourceType> findAllResourceTypes(Pageable pageable) {
         return typeRepository.findAll(pageable);
     }
@@ -68,6 +73,11 @@ public class QuantumResourceServiceImpl implements QuantumResourceService {
     @Override
     public Set<QuantumResource> findAllResourcesByAlgorithmId(UUID algoid) {
         return resourceRepository.findAllByAlgorithm_Id(algoid);
+    }
+
+    @Override
+    public Page<QuantumResource> findAllResourcesByAlgorithmId(UUID algoid, Pageable pageable) {
+        return resourceRepository.findAllByAlgorithm_Id(algoid, pageable);
     }
 
     @Override
@@ -100,5 +110,10 @@ public class QuantumResourceServiceImpl implements QuantumResourceService {
         var algorithm = (QuantumAlgorithm) algorithmRepository.findById(algoId).orElseThrow(NoSuchElementException::new);
 
         return addQuantumResourceToAlgorithm(algorithm, resource);
+    }
+
+    @Override
+    public QuantumResource findResourceById(UUID id) {
+        return resourceRepository.findById(id).orElseThrow(NoSuchElementException::new);
     }
 }

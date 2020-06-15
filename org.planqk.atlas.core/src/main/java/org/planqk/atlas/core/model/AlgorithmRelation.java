@@ -17,12 +17,14 @@ import lombok.ToString;
 public class AlgorithmRelation extends HasId {
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @EqualsAndHashCode.Exclude
     @Setter
     @ToString.Exclude
     private Algorithm sourceAlgorithm;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.MERGE, CascadeType.REFRESH })
     @JoinColumn(name = "targetAlgorithm", referencedColumnName = "id")
+    @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Algorithm targetAlgorithm;
 

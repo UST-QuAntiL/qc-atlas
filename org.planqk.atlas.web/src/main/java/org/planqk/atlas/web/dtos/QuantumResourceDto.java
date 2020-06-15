@@ -17,39 +17,24 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.planqk.atlas.core.services;
+package org.planqk.atlas.web.dtos;
 
-import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
-import javax.transaction.Transactional;
+import javax.validation.constraints.NotNull;
 
-import org.planqk.atlas.core.model.Algorithm;
-import org.planqk.atlas.core.model.AlgorithmRelation;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
-public interface AlgorithmService {
-
-    Algorithm save(Algorithm algorithm);
-
-    Algorithm update(UUID id, Algorithm algorithm);
-
-    @Transactional
-    void delete(UUID id);
-
-    void deleteAlgorithmRelation(UUID algoId, UUID relationId);
-
-    Page<Algorithm> findAll(Pageable pageable);
-
-    Algorithm findById(UUID algoId);
-
-    Optional<Algorithm> findOptionalById(UUID algoId);
-
-    AlgorithmRelation addOrUpdateAlgorithmRelation(UUID sourceAlgorithm_id, AlgorithmRelation relation);
-
-    Set<AlgorithmRelation> getAlgorithmRelations(UUID sourceAlgorithm_id);
-
+@Data
+@EqualsAndHashCode
+@ToString
+@NoArgsConstructor
+public class QuantumResourceDto {
+    private UUID id;
+    private Object value;
+    @NotNull
+    private QuantumResourceTypeDto type;
 }

@@ -3,7 +3,6 @@ package org.planqk.atlas.web.utils;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.modelmapper.ModelMapper;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Backend;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
@@ -16,13 +15,16 @@ import org.planqk.atlas.web.dtos.ClassicAlgorithmDto;
 import org.planqk.atlas.web.dtos.QPUDto;
 import org.planqk.atlas.web.dtos.QuantumAlgorithmDto;
 import org.planqk.atlas.web.dtos.SimulatorDto;
+import lombok.NonNull;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 
 public class ModelMapperUtils {
 
-    public static ModelMapper mapper = initModelMapper();
+    public static final ModelMapper mapper = initModelMapper();
 
-    public static <D, T> Set<D> convertSet(Set<T> entities, Class<D> dtoClass) {
+
+    public static <D, T> Set<D> convertSet(@NonNull Set<T> entities, @NonNull Class<D> dtoClass) {
         Set<D> resultSet = new HashSet<D>();
         for (T entity : entities) {
             resultSet.add(convert(entity, dtoClass));
@@ -30,7 +32,7 @@ public class ModelMapperUtils {
         return resultSet;
     }
 
-    public static <D, T> Page<D> convertPage(Page<T> entities, Class<D> dtoClass) {
+    public static <D, T> Page<D> convertPage(@NonNull Page<T> entities, @NonNull Class<D> dtoClass) {
         return entities.map(objectEntity -> convert(objectEntity, dtoClass));
     }
 

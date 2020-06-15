@@ -24,10 +24,14 @@ import java.util.UUID;
 
 import org.planqk.atlas.core.model.QuantumResource;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 @RepositoryRestResource(exported = false)
 public interface QuantumResourceRepository extends JpaRepository<QuantumResource, UUID> {
     Set<QuantumResource> findAllByAlgorithm_Id(UUID algoId);
+
+    Page<QuantumResource> findAllByAlgorithm_Id(UUID algoId, Pageable p);
 }
