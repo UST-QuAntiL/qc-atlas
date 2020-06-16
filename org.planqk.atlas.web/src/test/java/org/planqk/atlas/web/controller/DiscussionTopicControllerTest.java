@@ -37,7 +37,9 @@ import org.planqk.atlas.web.utils.HateoasUtils;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -116,6 +118,8 @@ public class DiscussionTopicControllerTest {
     @BeforeEach
     public void init() {
         mapper = ObjectMapperUtils.newTestMapper();
+        mapper.findAndRegisterModules();
+        mapper.configure(DeserializationFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE,false);
         discussionTopic = new DiscussionTopic();
         discussionTopic.setDescription("Description");
         discussionTopic.setTitle("Topic");
@@ -167,13 +171,14 @@ public class DiscussionTopicControllerTest {
                         .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
-        var resultList = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(),
-                "discussionTopicDtoes", DiscussionTopicDto.class);
+        JSONObject rootObject = new JSONObject(result.getResponse().getContentAsString());
+        var embeddedJSONObjects = rootObject.getJSONObject("_embedded").getJSONArray("discussionTopicDtoes");
+        var resultObject = mapper.readValue(embeddedJSONObjects.getJSONObject(0).toString(), DiscussionTopicDto.class);
 
-        assertEquals(resultList.size(), 1);
-        assertEquals(resultList.get(0).getTitle(), discussionTopicDto.getTitle());
-        assertEquals(resultList.get(0).getId(), discussionTopicDto.getId());
-        assertEquals(resultList.get(0).getDate(), discussionTopicDto.getDate());
+        assertEquals(1, embeddedJSONObjects.length());
+        assertEquals(resultObject.getTitle(), discussionTopicDto.getTitle());
+        assertEquals(resultObject.getId(), discussionTopicDto.getId());
+        assertEquals(resultObject.getDate(), discussionTopicDto.getDate());
     }
 
     @Test
@@ -191,7 +196,7 @@ public class DiscussionTopicControllerTest {
                 get("/" + Constants.DISCUSSION_TOPICS + "/" + discussionTopic.getId()).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
-        EntityModel<DiscussionTopicDto> response = new ObjectMapper().readValue(
+        EntityModel<DiscussionTopicDto> response = mapper.readValue(
                 result.getResponse().getContentAsString(), new TypeReference<EntityModel<DiscussionTopicDto>>() {
                 });
 
@@ -218,7 +223,7 @@ public class DiscussionTopicControllerTest {
     @Test
     public void updateDiscussionTopic_returnDiscussionTopic() throws Exception {
         when(discussionTopicService.update(discussionTopic.getId(), discussionTopic)).thenReturn(discussionTopic);
-
+        System.out.println(mapper.writeValueAsString(discussionTopicDto));
         MvcResult result = mockMvc.perform(put("/" + Constants.DISCUSSION_TOPICS + "/" + discussionTopic.getId())
                 .content(mapper.writeValueAsString(discussionTopicDto)).contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();

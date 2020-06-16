@@ -37,6 +37,7 @@ import org.planqk.atlas.web.utils.HateoasUtils;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -107,6 +108,8 @@ public class DiscussionCommentControllerTest {
     @BeforeEach
     public void init() {
         mapper = ObjectMapperUtils.newTestMapper();
+        mapper.findAndRegisterModules();
+        mapper.configure(DeserializationFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE,false);
         discussionTopic = new DiscussionTopic();
         discussionTopic.setDescription("Description");
         discussionTopic.setTitle("Topic");
