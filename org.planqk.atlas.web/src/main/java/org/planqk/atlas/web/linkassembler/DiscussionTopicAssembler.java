@@ -30,7 +30,6 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Component;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Component
@@ -38,10 +37,10 @@ public class DiscussionTopicAssembler extends GenericLinkAssembler<DiscussionTop
 
     @Override
     public void addLinks(EntityModel<DiscussionTopicDto> resource) {
-        resource.add(linkTo(methodOn(DiscussionTopicController.class).getDiscussionTopic(this.getID(resource))).withSelfRel());
-        resource.add(linkTo(methodOn(DiscussionTopicController.class).deleteDiscussionTopic(this.getID(resource))).withRel("delete"));
-        resource.add(linkTo(methodOn(DiscussionTopicController.class).updateDiscussionTopic(this.getID(resource), getContent(resource))).withRel("update"));
-        resource.add(linkTo(methodOn(DiscussionTopicController.class).getDiscussionCommentsOfTopic(this.getID(resource))).withRel(Constants.DISCUSSION_COMMENTS));
+        resource.add(links.linkTo(methodOn(DiscussionTopicController.class).getDiscussionTopic(this.getID(resource))).withSelfRel());
+        resource.add(links.linkTo(methodOn(DiscussionTopicController.class).deleteDiscussionTopic(this.getID(resource))).withRel("delete"));
+        resource.add(links.linkTo(methodOn(DiscussionTopicController.class).updateDiscussionTopic(this.getID(resource), getContent(resource))).withRel("update"));
+        resource.add(links.linkTo(methodOn(DiscussionTopicController.class).getDiscussionCommentsOfTopic(this.getID(resource))).withRel(Constants.DISCUSSION_COMMENTS));
     }
 
     private UUID getID(EntityModel<DiscussionTopicDto> resource) {
@@ -49,6 +48,6 @@ public class DiscussionTopicAssembler extends GenericLinkAssembler<DiscussionTop
     }
 
     public void addDiscussionCommentLink(CollectionModel<EntityModel<DiscussionCommentDto>> results, UUID id) {
-        results.add(linkTo(methodOn(DiscussionTopicController.class).getDiscussionCommentsOfTopic(id)).withSelfRel());
+        results.add(links.linkTo(methodOn(DiscussionTopicController.class).getDiscussionCommentsOfTopic(id)).withSelfRel());
     }
 }
