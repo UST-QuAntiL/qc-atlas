@@ -42,8 +42,8 @@ import org.planqk.atlas.web.dtos.PatternRelationDto;
 import org.planqk.atlas.web.dtos.ProblemTypeDto;
 import org.planqk.atlas.web.dtos.PublicationDto;
 import org.planqk.atlas.web.dtos.QuantumResourceDto;
-import org.planqk.atlas.web.dtos.QuantumAlgorithmDto;
 import org.planqk.atlas.web.dtos.TagDto;
+import org.planqk.atlas.web.exceptions.InvalidTypeException;
 import org.planqk.atlas.web.linkassembler.AlgorithmAssembler;
 import org.planqk.atlas.web.linkassembler.AlgorithmRelationAssembler;
 import org.planqk.atlas.web.linkassembler.PatternRelationAssembler;
@@ -297,7 +297,8 @@ public class AlgorithmController {
     ) {
         var algorithm = algorithmService.findById(id);
         if (!(algorithm instanceof QuantumAlgorithm)) {
-            return ResponseEntity.badRequest().build();
+            LOG.warn("Attempted to add a quantum reource for a non quantum algorithm");
+            throw new InvalidTypeException("The algorithm given is not a quantum algorithm");
         }
         var resources = quantumResourceService.findAllResourcesByAlgorithmId(id,
                 RestUtils.getPageableFromRequestParams(page, size));
@@ -319,7 +320,8 @@ public class AlgorithmController {
     ) {
         var algorithm = algorithmService.findById(id);
         if (!(algorithm instanceof QuantumAlgorithm)) {
-            return ResponseEntity.badRequest().build();
+            LOG.warn("Attempted to add a quantum reource for a non quantum algorithm");
+            throw new InvalidTypeException("The algorithm given is not a quantum algorithm");
         }
         var resource = ModelMapperUtils.convert(resourceDto, QuantumResource.class);
         var updatedAlgorithm = quantumResourceService.addQuantumResourceToAlgorithm(
