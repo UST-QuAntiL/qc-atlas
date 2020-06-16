@@ -36,13 +36,9 @@ import org.springframework.stereotype.Service;
 public class DiscussionCommentServiceImpl implements DiscussionCommentService {
 
     private DiscussionCommentRepository repository;
-    private DiscussionTopicService discussionTopicService;
 
     @Override
     public DiscussionComment save(DiscussionComment discussionComment) {
-        if (Objects.isNull((discussionComment.getDiscussionTopic().getId()))) {
-            throw new NoSuchElementException("The DiscussionTopic for DiscussionComment does not exist!");
-        }
         return repository.save(discussionComment);
     }
 
