@@ -34,6 +34,7 @@ import javax.persistence.ManyToOne;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import lombok.ToString;
 import org.springframework.lang.NonNull;
 
 /**
@@ -51,10 +52,15 @@ public class Implementation extends AlgorOrImpl {
     private String inputFormat;
     private String parameter;
     private String outputFormat;
-    private URL fileLocation;
+    private URL link;
     private String dependencies;
 
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    private Set<Publication> publications;
+
     @ManyToOne
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private Algorithm implementedAlgorithm;
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })

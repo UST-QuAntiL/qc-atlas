@@ -67,8 +67,9 @@ public class AlgorithmDto {
 
     private String problem;
 
-    // circular dependency on within algorithmRelation crashes model mapper
-    // private Set<AlgorithmRelationDto> algorithmRelations;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Schema(accessMode = WRITE_ONLY)
+    private Set<AlgorithmRelationDto> algorithmRelations;
 
     private String inputFormat;
 

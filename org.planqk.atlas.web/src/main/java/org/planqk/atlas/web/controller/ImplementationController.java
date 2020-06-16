@@ -41,12 +41,11 @@ import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.RestUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpEntity;
@@ -56,6 +55,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -99,8 +99,7 @@ public class ImplementationController {
 
     @Operation(responses = { @ApiResponse(responseCode = "200") })
     @GetMapping("/{implId}")
-    public HttpEntity<EntityModel<ImplementationDto>> getImplementation(@RequestParam UUID algoId,
-            @PathVariable UUID implId) {
+    public HttpEntity<EntityModel<ImplementationDto>> getImplementation(@PathVariable UUID implId) {
         LOG.debug("Get to retrieve implementation with id: {}.", implId);
         // Get Implementation
         Implementation implementation = implementationService.findById(implId);
@@ -124,7 +123,7 @@ public class ImplementationController {
         input.setImplementedAlgorithm(algorithm);
         // Generate EntityModel
         EntityModel<ImplementationDto> dtoOutput = HateoasUtils.generateEntityModel(
-                ModelMapperUtils.convert(implementationService.save(input), ImplementationDto.class));
+                ModelMapperUtils.convert(implementationService.saveOrUpdate(input), ImplementationDto.class));
         // Add Links
         implementationAssembler.addLinks(dtoOutput);
         return new ResponseEntity<>(dtoOutput, HttpStatus.CREATED);
@@ -132,8 +131,7 @@ public class ImplementationController {
 
     @Operation(responses = { @ApiResponse(responseCode = "200") })
     @GetMapping("/{implId}/" + Constants.TAGS)
-    public HttpEntity<CollectionModel<EntityModel<TagDto>>> getTags(@RequestParam UUID algoId,
-            @PathVariable UUID implId) {
+    public HttpEntity<CollectionModel<EntityModel<TagDto>>> getTags(@PathVariable UUID implId) {
         // Get Implementation
         Implementation implementation = implementationService.findById(implId);
         // Get Tags of Implementation
@@ -145,7 +143,15 @@ public class ImplementationController {
         // Fill EntityModel Links
         tagAssembler.addLinks(resultCollection);
         // Fill Collection-Links
-        implementationAssembler.addTagLink(resultCollection, implId, algoId);
+        implementationAssembler.addTagLink(resultCollection, implId);
         return new ResponseEntity<>(resultCollection, HttpStatus.OK);
+    }
+
+    @Operation(responses = {@ApiResponse(responseCode = "200")})
+    @PutMapping("/")
+    public HttpEntity<EntityModel<ImplementationDto>> updateImplementation(@Valid @RequestBody ImplementationDto dto) {
+        var impl = ModelMapperUtils.convert(dto, Implementation.class);
+        impl = implementationService.saveOrUpdate(impl);
+        return ResponseEntity.ok(HateoasUtils.generateEntityModel(ModelMapperUtils.convert(impl, ImplementationDto.class)));
     }
 }

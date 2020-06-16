@@ -27,21 +27,23 @@ public class Constants {
     // URL snippets
     public static final String IMPLEMENTATIONS = "implementations";
     public static final String ALGORITHMS = "algorithms";
-    public static final String PROVIDERS = "providers";
-    public static final String QPUS = "qpus";
     public static final String TAGS = "tags";
     public static final String SOFTWARE_PLATFORMS = "software-platforms";
     public static final String CLOUD_SERVICES = "cloud-services";
     public static final String PROBLEM_TYPES = "problem-types";
     public static final String ALGORITHM_RELATIONS = "algorithm-relations";
     public static final String ALGO_RELATION_TYPES = "algo-relation-types";
+    public static final String PATTERN_RELATION_TYPES = "pattern-relation-types";
     public static final String PUBLICATIONS = "publications";
     public static final String DISCUSSION_TOPICS = "discussion-topics";
     public static final String DISCUSSION_COMMENTS = "discussion-comments";
+    public static final String BACKENDS = "backends";
+    public static final String PATTERN_RELATIONS = "pattern-relations";
+    public static final String QUANTUM_RESOURCES = "quantum-resources";
+    public static final String QUANTUM_RESOURCE_TYPES = "quantum-resource-types";
 
     // link names
     public static final String ALGORITHM_LINK = "implementedAlgorithm";
-    public static final String PROVIDER = "provider";
     public static final String ALGORITHM = "algorithm";
     public static final String TAGS_LINK = "tags";
     public static final String PUBLICATIONS_LINK = "publications";

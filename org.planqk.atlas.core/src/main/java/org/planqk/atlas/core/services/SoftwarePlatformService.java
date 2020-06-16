@@ -14,5 +14,8 @@ public interface SoftwarePlatformService {
 
     SoftwarePlatform findById(UUID platformId);
 
+    SoftwarePlatform update(UUID id, SoftwarePlatform softwarePlatform);
+
     void delete(UUID platformId);
+
 }
