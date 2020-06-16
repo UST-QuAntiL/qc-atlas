@@ -118,8 +118,6 @@ public class DiscussionTopicControllerTest {
     @BeforeEach
     public void init() {
         mapper = ObjectMapperUtils.newTestMapper();
-        mapper.findAndRegisterModules();
-        mapper.configure(DeserializationFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE,false);
         discussionTopic = new DiscussionTopic();
         discussionTopic.setDescription("Description");
         discussionTopic.setTitle("Topic");

@@ -37,7 +37,6 @@ import org.planqk.atlas.web.utils.HateoasUtils;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -85,6 +84,7 @@ public class DiscussionCommentControllerTest {
 
     @MockBean
     private PagedResourcesAssembler<DiscussionCommentDto> paginationAssembler;
+
     @MockBean
     private DiscussionCommentService discussionCommentService;
 
@@ -108,8 +108,6 @@ public class DiscussionCommentControllerTest {
     @BeforeEach
     public void init() {
         mapper = ObjectMapperUtils.newTestMapper();
-        mapper.findAndRegisterModules();
-        mapper.configure(DeserializationFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE,false);
         discussionTopic = new DiscussionTopic();
         discussionTopic.setDescription("Description");
         discussionTopic.setTitle("Topic");
@@ -187,7 +185,7 @@ public class DiscussionCommentControllerTest {
                 get("/" + Constants.DISCUSSION_COMMENTS + "/" + discussionComment.getId()).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
-        EntityModel<DiscussionCommentDto> response = new ObjectMapper().readValue(
+        EntityModel<DiscussionCommentDto> response = mapper.readValue(
                 result.getResponse().getContentAsString(), new TypeReference<EntityModel<DiscussionCommentDto>>() {
                 });
 
