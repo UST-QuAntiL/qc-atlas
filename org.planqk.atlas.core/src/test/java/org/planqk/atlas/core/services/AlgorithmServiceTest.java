@@ -125,7 +125,7 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
         Set<Publication> publications = new HashSet<>();
         Publication publication = new Publication();
         publication.setTitle("testPublicationTitle");
-        publication.setUrl(new URL("http://example.com"));
+        publication.setUrl("http://example.com");
         publication.setDoi("testDoi");
         List<String> publicationAuthors = new ArrayList<>();
         publicationAuthors.add("test publication author");
@@ -282,7 +282,7 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
         Set<Publication> publications = new HashSet<>();
         Publication publication = new Publication();
         publication.setTitle("testPublicationTitle");
-        publication.setUrl(new URL("http://example.com"));
+        publication.setUrl("http://example.com");
         publication.setDoi("testDoi");
         List<String> publicationAuthors = new ArrayList<>();
         publicationAuthors.add("test publication author");

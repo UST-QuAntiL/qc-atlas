@@ -188,7 +188,7 @@ public class PublicationServiceTest extends AtlasDatabaseTestBase {
     private Publication getGenericTestPublication(String title) throws MalformedURLException {
         Publication publication = new Publication();
         publication.setTitle(title);
-        publication.setUrl(new URL("http://example.com"));
+        publication.setUrl("http://example.com");
         publication.setDoi("testDoi");
         List<String> publicationAuthors = new ArrayList<>();
         publicationAuthors.add("test publication author");
