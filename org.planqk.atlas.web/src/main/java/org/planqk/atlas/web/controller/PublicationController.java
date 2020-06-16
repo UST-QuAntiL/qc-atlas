@@ -47,6 +47,7 @@ public class PublicationController {
     private AlgorithmAssembler algorithmAssembler;
     private PagedResourcesAssembler<PublicationDto> paginationAssembler;
 
+    @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping("/")
     public HttpEntity<PagedModel<EntityModel<PublicationDto>>> getPublications(@RequestParam(required = false) Integer page,
                                                                                @RequestParam(required = false) Integer size) {
@@ -58,7 +59,7 @@ public class PublicationController {
         return new ResponseEntity<>(outputModel, HttpStatus.OK);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "201")})
+    @Operation(responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "400"), @ApiResponse(responseCode = "404")})
     @PostMapping("/")
     public HttpEntity<EntityModel<PublicationDto>> createPublication(@Validated @RequestBody PublicationDto publicationDto) {
         log.debug("Create publication");
@@ -68,7 +69,7 @@ public class PublicationController {
         return new ResponseEntity<>(dtoEntityModel, HttpStatus.CREATED);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200")})
+    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400"), @ApiResponse(responseCode = "404")})
     @GetMapping("/{id}")
     public HttpEntity<EntityModel<PublicationDto>> getPublication(@PathVariable UUID id) {
         log.debug("Get publication with id: {}", id);
@@ -78,7 +79,7 @@ public class PublicationController {
         return new ResponseEntity<>(dtoEntityModel, HttpStatus.OK);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200")})
+    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400"), @ApiResponse(responseCode = "404")})
     @PutMapping("/{id}")
     public HttpEntity<EntityModel<PublicationDto>> updatePublication(@PathVariable UUID id, @Validated @RequestBody PublicationDto pub) {
         log.debug("Put to update algorithm with id: {}", id);
@@ -88,7 +89,7 @@ public class PublicationController {
         return new ResponseEntity<>(dtoEntityModel, HttpStatus.OK);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200")})
+    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400"), @ApiResponse(responseCode = "404")})
     @DeleteMapping("/{id}")
     public HttpEntity<AlgorithmDto> deletePublication(@PathVariable UUID id) {
         log.debug("Delete to remove algorithm with id: {}", id);
@@ -96,7 +97,7 @@ public class PublicationController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200")})
+    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400"), @ApiResponse(responseCode = "404")})
     @GetMapping("/{id}/" + Constants.ALGORITHMS)
     public HttpEntity<CollectionModel<EntityModel<AlgorithmDto>>> getAlgorithms(@PathVariable UUID id) {
         log.debug("Get algorithms of Publication with id {}", id);
