@@ -58,10 +58,9 @@ public class AlgorithmDto {
 
     private String acronym;
 
-    @Size(min = 1, message = "Algorithm must have at least 1 Publication!")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Schema(accessMode = WRITE_ONLY)
-    private Set<Publication> publications;
+    private Set<Publication> publications = new HashSet<>();
 
     private String intent;
 
@@ -69,7 +68,7 @@ public class AlgorithmDto {
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Schema(accessMode = WRITE_ONLY)
-    private Set<AlgorithmRelationDto> algorithmRelations;
+    private Set<AlgorithmRelationDto> algorithmRelations = new HashSet<>();
 
     private String inputFormat;
 
