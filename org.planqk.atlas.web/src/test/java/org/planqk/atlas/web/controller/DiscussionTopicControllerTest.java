@@ -37,7 +37,6 @@ import org.planqk.atlas.web.utils.HateoasUtils;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
@@ -152,6 +151,8 @@ public class DiscussionTopicControllerTest {
 
     @Test
     public void createDiscussionTopic_returnBadRequest() throws Exception {
+        // Missing required attribute
+        discussionTopicDto.setDate(null);
         mockMvc.perform(post("/" + Constants.DISCUSSION_TOPICS + "/")
                 .content(mapper.writeValueAsString(discussionTopicDto)).contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
@@ -221,7 +222,6 @@ public class DiscussionTopicControllerTest {
     @Test
     public void updateDiscussionTopic_returnDiscussionTopic() throws Exception {
         when(discussionTopicService.update(discussionTopic.getId(), discussionTopic)).thenReturn(discussionTopic);
-        System.out.println(mapper.writeValueAsString(discussionTopicDto));
         MvcResult result = mockMvc.perform(put("/" + Constants.DISCUSSION_TOPICS + "/" + discussionTopic.getId())
                 .content(mapper.writeValueAsString(discussionTopicDto)).contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();

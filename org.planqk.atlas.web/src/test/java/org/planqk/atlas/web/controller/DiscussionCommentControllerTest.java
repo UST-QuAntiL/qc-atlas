@@ -145,6 +145,8 @@ public class DiscussionCommentControllerTest {
 
     @Test
     public void createDiscussionComment_returnBadRequest() throws Exception {
+        // Missing required attribute
+        discussionCommentDto.setDate(null);
         mockMvc.perform(post("/" + Constants.DISCUSSION_COMMENTS + "/")
                 .content(mapper.writeValueAsString(discussionCommentDto)).contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
