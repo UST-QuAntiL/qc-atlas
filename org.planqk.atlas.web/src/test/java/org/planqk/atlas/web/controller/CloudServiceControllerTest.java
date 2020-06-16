@@ -85,7 +85,7 @@ public class CloudServiceControllerTest {
         CloudServiceDto cloudServiceDto = new CloudServiceDto();
         cloudServiceDto.setId(UUID.randomUUID());
 
-        mockMvc.perform(put("/" + Constants.CLOUD_SERVICES + "/").content(mapper.writeValueAsString(cloudServiceDto))
+        mockMvc.perform(post("/" + Constants.CLOUD_SERVICES + "/").content(mapper.writeValueAsString(cloudServiceDto))
                 .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
@@ -100,7 +100,7 @@ public class CloudServiceControllerTest {
         when(cloudServiceService.save(any(CloudService.class))).thenReturn(cloudService);
 
         MvcResult result = mockMvc
-                .perform(put("/" + Constants.CLOUD_SERVICES + "/").content(mapper.writeValueAsString(cloudServiceDto))
+                .perform(post("/" + Constants.CLOUD_SERVICES + "/").content(mapper.writeValueAsString(cloudServiceDto))
                         .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated()).andReturn();
 
