@@ -75,7 +75,7 @@ public class DiscussionTopicServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void updateDiscussionComment() {
+    void updateDiscussionTopic() {
         DiscussionTopic topic = topicService.save(this.topic);
         topic.setTitle("New Title");
         DiscussionTopic update = topicService.update(topic.getId(), topic);
@@ -86,21 +86,21 @@ public class DiscussionTopicServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void updateDiscussionComment_notFound() {
+    void updateDiscussionTopic_notFound() {
         assertThrows(NoSuchElementException.class, () -> {
             topicService.update(UUID.randomUUID(), this.topic);
         });
     }
 
     @Test
-    void findDiscussionCommentById_notFound() {
+    void findDiscussionTopicById_notFound() {
         assertThrows(NoSuchElementException.class, () -> {
             topicService.findById(UUID.randomUUID());
         });
     }
 
     @Test
-    void findAllDiscussionComments() {
+    void findAllDiscussionTopic() {
         topicService.save(this.topic);
         topicService.save(this.topic2);
 
@@ -109,11 +109,26 @@ public class DiscussionTopicServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void deleteDiscussionComment() {
+    void deleteDiscussionTopic() {
         DiscussionTopic topic = topicService.save(this.topic);
         topicService.deleteById(topic.getId());
         assertThrows(NoSuchElementException.class, () -> {
             topicService.findById(topic.getId());
         });
+    }
+
+    @Test
+    void existsDiscussionTopic_exists(){
+        DiscussionTopic topic = topicService.save(this.topic);
+        boolean exists = topicService.existsDiscussionTopicById(topic.getId());
+
+        assertThat(exists).isEqualTo(true);
+    }
+
+    @Test
+    void existsDiscussionTopic_notExists(){
+
+        boolean exists = topicService.existsDiscussionTopicById(UUID.randomUUID());
+        assertThat(exists).isEqualTo(false);
     }
 }

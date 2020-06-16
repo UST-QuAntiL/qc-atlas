@@ -20,7 +20,6 @@
 package org.planqk.atlas.core.services;
 
 import java.util.NoSuchElementException;
-import java.util.Objects;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.DiscussionComment;
@@ -50,17 +49,29 @@ public class DiscussionCommentServiceImpl implements DiscussionCommentService {
     @Override
     public DiscussionComment findById(UUID id) {
 
-        return repository.findById(id).orElseThrow(NoSuchElementException::new);
+        if (!this.existsDiscussionCommentById(id)) {
+            throw new NoSuchElementException();
+        }
+        return repository.findById(id).get();
     }
 
     @Override
     public DiscussionComment update(UUID id, DiscussionComment comment) {
-        repository.findById(id).orElseThrow(NoSuchElementException::new);
+
+        if (!this.existsDiscussionCommentById(id)) {
+            throw new NoSuchElementException();
+        }
         return repository.save(comment);
     }
 
     @Override
     public void deleteById(UUID id) {
         repository.deleteById(id);
+    }
+
+    @Override
+    public boolean existsDiscussionCommentById(UUID id) {
+
+        return repository.existsById(id);
     }
 }

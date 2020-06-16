@@ -37,4 +37,6 @@ public interface DiscussionCommentService {
     DiscussionComment update(UUID id, DiscussionComment comment);
 
     void deleteById(UUID id);
+
+    boolean existsDiscussionCommentById(UUID id);
 }

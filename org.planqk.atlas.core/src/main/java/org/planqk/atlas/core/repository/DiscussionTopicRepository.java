@@ -27,4 +27,6 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 @RepositoryRestResource(exported = false)
 public interface DiscussionTopicRepository extends JpaRepository<DiscussionTopic, UUID> {
+
+    boolean existsById(UUID id);
 }

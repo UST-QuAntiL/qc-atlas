@@ -48,13 +48,23 @@ public class DiscussionTopicServiceImpl implements DiscussionTopicService {
 
     @Override
     public DiscussionTopic findById(UUID id) {
-        return repository.findById(id).orElseThrow(NoSuchElementException::new);
+        if (!this.existsDiscussionTopicById(id)) {
+            throw new NoSuchElementException();
+        }
+        return repository.findById(id).get();
     }
 
     @Override
     public DiscussionTopic update(UUID id, DiscussionTopic topic) {
-        repository.findById(id).orElseThrow(NoSuchElementException::new);
+        if (!this.existsDiscussionTopicById(id)) {
+            throw new NoSuchElementException();
+        }
         return repository.save(topic);
+    }
+
+    @Override
+    public boolean existsDiscussionTopicById(UUID id) {
+        return repository.existsById(id);
     }
 
     @Override

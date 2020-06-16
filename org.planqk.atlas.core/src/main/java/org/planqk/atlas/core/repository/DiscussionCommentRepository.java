@@ -27,4 +27,6 @@ import java.util.UUID;
 
 @RepositoryRestResource(exported = false)
 public interface DiscussionCommentRepository extends JpaRepository<DiscussionComment, UUID> {
+
+    boolean existsById(UUID id);
 }

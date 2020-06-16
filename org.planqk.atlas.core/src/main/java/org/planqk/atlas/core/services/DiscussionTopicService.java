@@ -38,4 +38,6 @@ public interface DiscussionTopicService {
     void deleteById(UUID id);
 
     DiscussionTopic update(UUID id, DiscussionTopic topic);
+
+    boolean existsDiscussionTopicById(UUID id);
 }

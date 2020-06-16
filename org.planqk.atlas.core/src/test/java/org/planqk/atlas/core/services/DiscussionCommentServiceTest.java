@@ -123,4 +123,20 @@ public class DiscussionCommentServiceTest extends AtlasDatabaseTestBase {
             commentService.findById(comment.getId());
         });
     }
+
+    @Test
+    void existsDiscussionComment_exists(){
+        topicService.save(this.topic);
+        DiscussionComment comment = commentService.save(this.comment);
+        boolean exists = commentService.existsDiscussionCommentById(comment.getId());
+
+        assertThat(exists).isEqualTo(true);
+    }
+
+    @Test
+    void existsDiscussionComment_notExists(){
+
+        boolean exists = commentService.existsDiscussionCommentById(UUID.randomUUID());
+        assertThat(exists).isEqualTo(false);
+    }
 }
