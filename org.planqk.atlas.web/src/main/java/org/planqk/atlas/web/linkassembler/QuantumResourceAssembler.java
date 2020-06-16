@@ -26,7 +26,6 @@ import org.planqk.atlas.web.dtos.QuantumResourceDto;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Component;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @SuppressWarnings("ConstantConditions")
@@ -34,13 +33,13 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class QuantumResourceAssembler extends GenericLinkAssembler<QuantumResourceDto> {
     @Override
     public void addLinks(EntityModel<QuantumResourceDto> resource) {
-        resource.add(linkTo(methodOn(QuantumResourceController.class)
+        resource.add(links.linkTo(methodOn(QuantumResourceController.class)
                 .deleteQuantumResource(resource.getContent().getId()))
                 .withRel("delete"));
-        resource.add(linkTo(methodOn(QuantumResourceController.class)
+        resource.add(links.linkTo(methodOn(QuantumResourceController.class)
                 .getQuantumResource(resource.getContent().getId()))
                 .withSelfRel());
-        resource.add(linkTo(methodOn(QuantumResourceTypeController.class)
+        resource.add(links.linkTo(methodOn(QuantumResourceTypeController.class)
                 .getQuantumResourceType(resource.getContent().getType().getId()))
                 .withRel("type"));
         // TODO (Maybe) add link to the entities linked to this quantum Resource, e.g. the Quantum Algorithms

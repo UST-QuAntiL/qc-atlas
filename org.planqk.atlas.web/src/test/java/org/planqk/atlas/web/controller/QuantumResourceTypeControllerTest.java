@@ -29,7 +29,7 @@ import org.planqk.atlas.core.services.QuantumResourceService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
 import org.planqk.atlas.web.dtos.QuantumResourceTypeDto;
-import org.planqk.atlas.web.linkassembler.QuantumResourceTypeAssembler;
+import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -40,9 +40,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.test.web.servlet.MockMvc;
@@ -59,17 +57,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(QuantumResourceTypeController.class)
 @ExtendWith(MockitoExtension.class)
 @AutoConfigureMockMvc
+@EnableLinkAssemblers
 public class QuantumResourceTypeControllerTest {
-
-    @TestConfiguration
-    public static class TestConfig {
-
-        @Bean
-        public QuantumResourceTypeAssembler quantumResourceTypeAssembler() {
-            return new QuantumResourceTypeAssembler();
-        }
-    }
-
     @MockBean
     private QuantumResourceService resourceService;
 

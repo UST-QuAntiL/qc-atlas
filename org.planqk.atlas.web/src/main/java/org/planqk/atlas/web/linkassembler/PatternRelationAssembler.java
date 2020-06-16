@@ -1,8 +1,5 @@
 package org.planqk.atlas.web.linkassembler;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
-
 import java.util.UUID;
 
 import org.planqk.atlas.web.Constants;
@@ -14,16 +11,18 @@ import org.planqk.atlas.web.dtos.PatternRelationDto;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Component;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 @Component
 public class PatternRelationAssembler extends GenericLinkAssembler<PatternRelationDto> {
 
     @Override
     public void addLinks(EntityModel<PatternRelationDto> resource) {
         resource.add(
-                linkTo(methodOn(PatternRelationController.class).getPatternRelation(getId(resource))).withSelfRel());
-        resource.add(linkTo(methodOn(AlgorithmController.class).getAlgorithm(getAlgorithmId(resource)))
+                links.linkTo(methodOn(PatternRelationController.class).getPatternRelation(getId(resource))).withSelfRel());
+        resource.add(links.linkTo(methodOn(AlgorithmController.class).getAlgorithm(getAlgorithmId(resource)))
                 .withRel(Constants.ALGORITHM));
-        resource.add(linkTo(methodOn(PatternRelationTypeController.class).getPatternRelationType(getTypeId(resource)))
+        resource.add(links.linkTo(methodOn(PatternRelationTypeController.class).getPatternRelationType(getTypeId(resource)))
                 .withRel(Constants.PATTERN_RELATION_TYPES));
     }
 

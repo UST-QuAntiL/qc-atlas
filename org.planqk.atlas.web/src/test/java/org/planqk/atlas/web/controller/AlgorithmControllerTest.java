@@ -47,13 +47,7 @@ import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
 import org.planqk.atlas.web.dtos.PatternRelationDto;
 import org.planqk.atlas.web.dtos.QuantumResourceDto;
 import org.planqk.atlas.web.dtos.QuantumResourceTypeDto;
-import org.planqk.atlas.web.linkassembler.AlgorithmAssembler;
-import org.planqk.atlas.web.linkassembler.AlgorithmRelationAssembler;
-import org.planqk.atlas.web.linkassembler.PatternRelationAssembler;
-import org.planqk.atlas.web.linkassembler.ProblemTypeAssembler;
-import org.planqk.atlas.web.linkassembler.PublicationAssembler;
-import org.planqk.atlas.web.linkassembler.QuantumResourceAssembler;
-import org.planqk.atlas.web.linkassembler.TagAssembler;
+import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -65,9 +59,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -93,45 +85,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(AlgorithmController.class)
 @ExtendWith(MockitoExtension.class)
 @AutoConfigureMockMvc
+@EnableLinkAssemblers
 public class AlgorithmControllerTest {
-
-    @TestConfiguration
-    public static class TestConfig {
-        @Bean
-        public PublicationAssembler publicationAssembler() {
-            return new PublicationAssembler();
-        }
-
-        @Bean
-        public ProblemTypeAssembler problemTypeAssembler() {
-            return new ProblemTypeAssembler();
-        }
-
-        @Bean
-        public TagAssembler tagAssembler() {
-            return new TagAssembler();
-        }
-
-        @Bean
-        public PatternRelationAssembler patternRelationAssembler() {
-            return new PatternRelationAssembler();
-        }
-
-        @Bean
-        public AlgorithmAssembler algorithmAssembler() {
-            return new AlgorithmAssembler();
-        }
-
-        @Bean
-        public AlgorithmRelationAssembler algorithmRelationAssembler() {
-            return new AlgorithmRelationAssembler();
-        }
-
-        @Bean
-        public QuantumResourceAssembler quantumResourceAssembler() {
-            return new QuantumResourceAssembler();
-        }
-    }
 
     @MockBean
     private AlgorithmService algorithmService;

@@ -27,7 +27,6 @@ import org.planqk.atlas.web.dtos.DiscussionCommentDto;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Component;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Component
@@ -35,9 +34,9 @@ public class DiscussionCommentAssembler extends GenericLinkAssembler<DiscussionC
 
     @Override
     public void addLinks(EntityModel<DiscussionCommentDto> resource) {
-        resource.add(linkTo(methodOn(DiscussionCommentController.class).getDiscussionComment(this.getID(resource))).withSelfRel());
-        resource.add(linkTo(methodOn(DiscussionCommentController.class).deleteDiscussionComment(this.getID(resource))).withRel("delete"));
-        resource.add(linkTo(methodOn(DiscussionCommentController.class).updateDiscussionComment(this.getID(resource), getContent(resource))).withRel("update"));
+        resource.add(links.linkTo(methodOn(DiscussionCommentController.class).getDiscussionComment(this.getID(resource))).withSelfRel());
+        resource.add(links.linkTo(methodOn(DiscussionCommentController.class).deleteDiscussionComment(this.getID(resource))).withRel("delete"));
+        resource.add(links.linkTo(methodOn(DiscussionCommentController.class).updateDiscussionComment(this.getID(resource), getContent(resource))).withRel("update"));
     }
 
     private UUID getID(EntityModel<DiscussionCommentDto> resource) {
