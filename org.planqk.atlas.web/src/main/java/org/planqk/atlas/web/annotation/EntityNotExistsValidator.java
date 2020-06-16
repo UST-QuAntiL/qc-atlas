@@ -17,32 +17,30 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.planqk.atlas.web.dtos;
+package org.planqk.atlas.web.annotation;
 
-import java.time.OffsetDateTime;
-import java.util.UUID;
+import javax.validation.ConstraintValidator;
+import javax.validation.ConstraintValidatorContext;
 
-import javax.validation.constraints.NotNull;
+import org.planqk.atlas.core.repository.DiscussionTopicRepository;
+import org.planqk.atlas.web.dtos.DiscussionTopicDto;
 
-import org.planqk.atlas.web.annotation.EntityNotExists;
+import lombok.AllArgsConstructor;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+@AllArgsConstructor
+public class EntityNotExistsValidator implements ConstraintValidator<EntityNotExists, DiscussionTopicDto> {
 
-@Data
-@NoArgsConstructor
-@EqualsAndHashCode
-public class DiscussionCommentDto {
-    private UUID id;
-    @NotNull(message = "Text must not be null!")
-    private String text;
-    @NotNull(message = "Date must not be null!")
-    private OffsetDateTime date;
+    private DiscussionTopicRepository repository;
 
-    private DiscussionCommentDto replyTo;
+    @Override
+    public void initialize(EntityNotExists constraintAnnotation) {
 
-    @NotNull(message = "Discussion-Comment must have a referenced Discussion-Topic")
-    @EntityNotExists(message = "The referenced Discussion Topic does not exit!")
-    private DiscussionTopicDto discussionTopic;
+    }
+
+    @Override
+    public boolean isValid(DiscussionTopicDto discussionTopicDto, ConstraintValidatorContext constraintValidatorContext) {
+
+        return repository.findById(discussionTopicDto.getId()).isPresent();
+    }
+
 }

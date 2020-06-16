@@ -17,32 +17,21 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.planqk.atlas.web.dtos;
+package org.planqk.atlas.web.annotation;
 
-import java.time.OffsetDateTime;
-import java.util.UUID;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import javax.validation.constraints.NotNull;
+import javax.validation.Constraint;
+import javax.validation.Payload;
 
-import org.planqk.atlas.web.annotation.EntityNotExists;
-
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-
-@Data
-@NoArgsConstructor
-@EqualsAndHashCode
-public class DiscussionCommentDto {
-    private UUID id;
-    @NotNull(message = "Text must not be null!")
-    private String text;
-    @NotNull(message = "Date must not be null!")
-    private OffsetDateTime date;
-
-    private DiscussionCommentDto replyTo;
-
-    @NotNull(message = "Discussion-Comment must have a referenced Discussion-Topic")
-    @EntityNotExists(message = "The referenced Discussion Topic does not exit!")
-    private DiscussionTopicDto discussionTopic;
+@Target({ElementType.METHOD, ElementType.FIELD})
+@Retention(RetentionPolicy.RUNTIME)
+@Constraint(validatedBy = EntityNotExistsValidator.class)
+public @interface EntityNotExists {
+    String message() default  "The referenced Entity does not exist";
+    Class<?>[] groups() default {};
+    Class<? extends Payload> [] payload() default {};
 }
