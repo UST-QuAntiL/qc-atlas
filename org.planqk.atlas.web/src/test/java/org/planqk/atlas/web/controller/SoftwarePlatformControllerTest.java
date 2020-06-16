@@ -41,7 +41,6 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = { SoftwarePlatformController.class })
@@ -88,7 +87,7 @@ public class SoftwarePlatformControllerTest {
         softwarePlatform.setId(UUID.randomUUID());
 
         mockMvc.perform(
-                post("/" + Constants.SOFTWARE_PLATFORMS + "/").content(mapper.writeValueAsString(softwarePlatform))
+                put("/" + Constants.SOFTWARE_PLATFORMS + "/").content(mapper.writeValueAsString(softwarePlatform))
                         .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
@@ -103,7 +102,7 @@ public class SoftwarePlatformControllerTest {
         when(softwarePlatformService.save(any(SoftwarePlatform.class))).thenReturn(softwarePlatform);
 
         MvcResult result = mockMvc.perform(
-                post("/" + Constants.SOFTWARE_PLATFORMS + "/").content(mapper.writeValueAsString(softwarePlatformDto))
+                put("/" + Constants.SOFTWARE_PLATFORMS + "/").content(mapper.writeValueAsString(softwarePlatformDto))
                         .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated()).andReturn();
 
