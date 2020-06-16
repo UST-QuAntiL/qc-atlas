@@ -67,7 +67,7 @@ public class CloudServiceController {
 
     @Operation(responses = { @ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "400", content = @Content),
             @ApiResponse(responseCode = "500", content = @Content) })
-    @PutMapping("/")
+    @PostMapping("/")
     public HttpEntity<EntityModel<CloudServiceDto>> addCloudService(
             @Valid @RequestBody CloudServiceDto cloudServiceDto) {
         CloudService savedCloudService = cloudServiceService
