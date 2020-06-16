@@ -1,16 +1,19 @@
 package org.planqk.atlas.core.services;
 
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
 import lombok.AllArgsConstructor;
+
 import org.planqk.atlas.core.model.Backend;
 import org.planqk.atlas.core.model.exceptions.ConsistencyException;
+import org.planqk.atlas.core.repository.BackendPropertyRepository;
+import org.planqk.atlas.core.repository.BackendPropertyTypeRepository;
 import org.planqk.atlas.core.repository.BackendRepository;
 import org.planqk.atlas.core.repository.CloudServiceRepository;
 import org.planqk.atlas.core.repository.SoftwarePlatformRepository;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -23,16 +26,21 @@ public class BackendServiceImpl implements BackendService {
 
     private final static Logger LOG = LoggerFactory.getLogger(BackendServiceImpl.class);
 
-    private BackendRepository repo;
-    private CloudServiceRepository cloudServiceRepository;
-    private SoftwarePlatformRepository softwarePlatformRepository;
-
+    private final BackendRepository repo;
+    private final BackendPropertyRepository backendPropertyRepository;
+    private final BackendPropertyTypeRepository backendPropertyTypeRepository;
+    private final CloudServiceRepository cloudServiceRepository;
+    private final SoftwarePlatformRepository softwarePlatformRepository;
 
     @Override
     public Backend saveOrUpdate(Backend backend) {
         if (backend.getId() != null) {
             return update(backend.getId(), backend);
         } else {
+            backend.getBackendProperties().forEach(backendProperty -> {
+                backendPropertyTypeRepository.save(backendProperty.getType());
+                backendPropertyRepository.save(backendProperty);
+            });
             return repo.save(backend);
         }
     }
@@ -67,6 +75,10 @@ public class BackendServiceImpl implements BackendService {
         persistedBackend.setName(backend.getName());
         persistedBackend.setVendor(backend.getVendor());
         persistedBackend.setBackendProperties(backend.getBackendProperties());
+        persistedBackend.getBackendProperties().forEach(backendProperty -> {
+            backendPropertyTypeRepository.save(backendProperty.getType());
+            backendPropertyRepository.save(backendProperty);
+        });
 
         return repo.save(persistedBackend);
     }
@@ -76,7 +88,8 @@ public class BackendServiceImpl implements BackendService {
         // only delete if unused in SoftwarePlatforms and CloudServices
         long count = cloudServiceRepository.countCloudServiceByBackend(id) + softwarePlatformRepository.countSoftwarePlatformByBackend(id);
         if (count == 0) {
-            delete(id);
+            
+            repo.deleteById(id);
         } else {
             LOG.info("Trying to delete Backend that is used in a CloudService or SoftwarePlatform");
             throw new ConsistencyException(

@@ -42,7 +42,8 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
 
     @Autowired
     private CloudServiceService cloudServiceService;
-    @Autowired BackendService backendService;
+    @Autowired
+    private BackendService backendService;
 
     @Test
     void testAddCloudService_WithoutBackends() throws MalformedURLException {
