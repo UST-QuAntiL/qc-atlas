@@ -6,23 +6,26 @@ import java.util.Set;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Backend;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
+import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.model.Qpu;
 import org.planqk.atlas.core.model.QuantumAlgorithm;
 import org.planqk.atlas.core.model.Simulator;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.BackendDto;
 import org.planqk.atlas.web.dtos.ClassicAlgorithmDto;
+import org.planqk.atlas.web.dtos.PatternRelationDto;
 import org.planqk.atlas.web.dtos.QPUDto;
 import org.planqk.atlas.web.dtos.QuantumAlgorithmDto;
 import org.planqk.atlas.web.dtos.SimulatorDto;
+
 import lombok.NonNull;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeMap;
 import org.springframework.data.domain.Page;
 
 public class ModelMapperUtils {
 
     public static final ModelMapper mapper = initModelMapper();
-
 
     public static <D, T> Set<D> convertSet(@NonNull Set<T> entities, @NonNull Class<D> dtoClass) {
         Set<D> resultSet = new HashSet<D>();
@@ -59,6 +62,10 @@ public class ModelMapperUtils {
                 .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), Qpu.class));
         mapper.createTypeMap(SimulatorDto.class, Backend.class)
                 .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), Simulator.class));
+
+        // Map Algorithm of PatternRelation to correct Subclass when mapping to PatternRelationDto
+        TypeMap<PatternRelation, PatternRelationDto> typeMap = mapper.createTypeMap(PatternRelation.class, PatternRelationDto.class);
+        typeMap.addMappings(mappingContext -> mappingContext.map(src -> src.getAlgorithm(), PatternRelationDto::setAlgorithm));
 
         return mapper;
     }
