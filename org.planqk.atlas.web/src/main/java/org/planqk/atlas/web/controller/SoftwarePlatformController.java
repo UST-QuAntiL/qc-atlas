@@ -67,7 +67,7 @@ public class SoftwarePlatformController {
 
     @Operation(responses = { @ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "400", content = @Content),
             @ApiResponse(responseCode = "500", content = @Content) })
-    @PutMapping("/")
+    @PostMapping("/")
     public HttpEntity<EntityModel<SoftwarePlatformDto>> addSoftwarePlatform(
             @Valid @RequestBody SoftwarePlatformDto platformDto) {
         SoftwarePlatform savedPlatform = softwarePlatformService
