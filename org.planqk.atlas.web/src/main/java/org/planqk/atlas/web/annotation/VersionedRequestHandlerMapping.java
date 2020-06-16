@@ -16,6 +16,15 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
  * version suffixes to controller URLs.
  */
 public class VersionedRequestHandlerMapping extends RequestMappingHandlerMapping {
+    /**
+     * Utility function to manually add routes from a given handler instance.
+     *
+     * Only for testing!
+     */
+    public void populateFromHandler(Object handler) {
+        detectHandlerMethods(handler);
+    }
+
     @Override
     protected RequestMappingInfo getMappingForMethod(Method method, Class<?> handlerType) {
         RequestMappingInfo info = createRequestMappingInfo(method);

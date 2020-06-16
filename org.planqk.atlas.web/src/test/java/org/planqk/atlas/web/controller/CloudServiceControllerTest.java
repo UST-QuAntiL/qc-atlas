@@ -12,19 +12,16 @@ import org.planqk.atlas.core.model.CloudService;
 import org.planqk.atlas.core.services.CloudServiceService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.CloudServiceDto;
-import org.planqk.atlas.web.linkassembler.CloudServiceAssembler;
+import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.MediaType;
@@ -45,21 +42,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = { CloudServiceController.class })
 @ExtendWith({ MockitoExtension.class })
 @AutoConfigureMockMvc
+@EnableLinkAssemblers
 public class CloudServiceControllerTest {
-
-    @TestConfiguration
-    public static class TestConfig {
-        @Bean
-        public CloudServiceAssembler getCloudServiceAssembler() {
-            return new CloudServiceAssembler();
-        }
-
-        @Bean
-        public PagedResourcesAssembler<CloudServiceDto> getPagedResourcesAssembler() {
-            return new PagedResourcesAssembler<>(null, null);
-        }
-    }
-
     @MockBean
     private CloudServiceService cloudServiceService;
 

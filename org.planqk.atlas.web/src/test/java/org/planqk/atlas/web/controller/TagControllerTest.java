@@ -30,8 +30,7 @@ import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
 import org.planqk.atlas.web.controller.util.TestControllerUtils;
 import org.planqk.atlas.web.dtos.TagDto;
-import org.planqk.atlas.web.linkassembler.AlgorithmAssembler;
-import org.planqk.atlas.web.linkassembler.ImplementationAssembler;
+import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
 import org.planqk.atlas.web.linkassembler.TagAssembler;
 import org.planqk.atlas.web.utils.HateoasUtils;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
@@ -46,9 +45,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -70,21 +67,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(TagController.class)
 @ExtendWith(MockitoExtension.class)
 @AutoConfigureMockMvc
+@EnableLinkAssemblers
 public class TagControllerTest {
-
-    @TestConfiguration
-    public static class TestConfig {
-        @Bean
-        public AlgorithmAssembler algorithmAssembler() {
-            return new AlgorithmAssembler();
-        }
-
-        @Bean
-        public ImplementationAssembler implementationAssembler() {
-            return new ImplementationAssembler();
-        }
-    }
-
     @MockBean
     private TagService tagService;
     @MockBean
