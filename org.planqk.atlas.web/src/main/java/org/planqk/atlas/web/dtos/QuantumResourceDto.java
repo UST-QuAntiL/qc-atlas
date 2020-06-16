@@ -17,22 +17,24 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.planqk.atlas.core.repository;
+package org.planqk.atlas.web.dtos;
 
-import java.util.Optional;
 import java.util.UUID;
 
-import org.planqk.atlas.core.model.Provider;
+import javax.validation.constraints.NotNull;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
-/**
- * Repository to access {@link Provider}s available in the data base with
- * different queries.
- */
-@RepositoryRestResource(exported = false)
-public interface ProviderRepository extends JpaRepository<Provider, UUID> {
-
-    Optional<Provider> findByName(String name);
+@Data
+@EqualsAndHashCode
+@ToString
+@NoArgsConstructor
+public class QuantumResourceDto {
+    private UUID id;
+    private Object value;
+    @NotNull
+    private QuantumResourceTypeDto type;
 }

@@ -27,9 +27,9 @@ import org.springframework.data.domain.Pageable;
 
 public interface ImplementationService {
 
-    Implementation save(Implementation tag);
+    Implementation saveOrUpdate(Implementation tag);
 
     Page<Implementation> findAll(Pageable pageable);
 
-    Implementation findById(UUID algoId);
+    Implementation findById(UUID implId);
 }

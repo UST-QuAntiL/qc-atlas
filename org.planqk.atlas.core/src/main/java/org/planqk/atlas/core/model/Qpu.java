@@ -33,16 +33,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 @Data
-public class Qpu extends HasId {
+public class Qpu extends Backend {
 
-    private String name;
-
-    private int qubitCount;
-
-    private float t1;
-
-    private float maxGateTime;
-
-    @ManyToOne
-    private Provider provider;
 }

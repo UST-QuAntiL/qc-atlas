@@ -19,16 +19,15 @@
 
 package org.planqk.atlas.core.repository;
 
-import java.util.Optional;
 import java.util.UUID;
 
-import org.planqk.atlas.core.model.Qpu;
+import org.planqk.atlas.core.model.QuantumResourceType;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
-@RepositoryRestResource(exported = false)
-public interface QpuRepository extends JpaRepository<Qpu, UUID> {
-
-    Optional<Qpu> findByName(String name);
+@RepositoryRestResource
+public interface QuantumResourceTypeRepository extends JpaRepository<QuantumResourceType, UUID> {
 }

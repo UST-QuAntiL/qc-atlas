@@ -20,15 +20,21 @@
 package org.planqk.atlas.web.dtos;
 
 import java.net.URL;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.validation.constraints.*;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.planqk.atlas.core.model.Publication;
+
+import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.WRITE_ONLY;
 
 /**
  * Data transfer object for the model class Implementation
@@ -44,7 +50,7 @@ public class ImplementationDto {
     @NotNull(message = "Implementation-Name must not be null!")
     private String name;
     @NotNull(message = "Implementation-FileLocation must not be null!")
-    private URL fileLocation;
+    private URL link;
 
     private String inputFormat;
     private String outputFormat;
@@ -53,6 +59,10 @@ public class ImplementationDto {
     private String assumptions;
     private String parameter;
     private String dependencies;
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Schema(accessMode = WRITE_ONLY)
+    private Set<Publication> publications;
 
     @JsonIgnore
     private AlgorithmDto implementedAlgorithm;

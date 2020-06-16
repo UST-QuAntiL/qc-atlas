@@ -23,8 +23,11 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+import javax.transaction.Transactional;
+
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -34,6 +37,7 @@ public interface AlgorithmService {
 
     Algorithm update(UUID id, Algorithm algorithm);
 
+    @Transactional
     void delete(UUID id);
 
     void deleteAlgorithmRelation(UUID algoId, UUID relationId);
@@ -47,4 +51,5 @@ public interface AlgorithmService {
     AlgorithmRelation addOrUpdateAlgorithmRelation(UUID sourceAlgorithm_id, AlgorithmRelation relation);
 
     Set<AlgorithmRelation> getAlgorithmRelations(UUID sourceAlgorithm_id);
+
 }

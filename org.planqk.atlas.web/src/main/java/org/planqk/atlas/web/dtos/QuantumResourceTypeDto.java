@@ -17,37 +17,31 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.planqk.atlas.core.services;
+package org.planqk.atlas.web.dtos;
 
-import java.util.NoSuchElementException;
 import java.util.UUID;
 
-import org.planqk.atlas.core.model.Provider;
-import org.planqk.atlas.core.repository.ProviderRepository;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
-import lombok.AllArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Repository;
+import org.planqk.atlas.core.model.QuantumResourceDataType;
 
-@Repository
-@AllArgsConstructor
-public class ProviderServiceImpl implements ProviderService {
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
-    private ProviderRepository repository;
+@Data
+@EqualsAndHashCode
+@ToString
+@NoArgsConstructor
+public class QuantumResourceTypeDto {
 
-    @Override
-    public Provider save(Provider provider) {
-        return repository.save(provider);
-    }
+    private UUID id;
 
-    @Override
-    public Page<Provider> findAll(Pageable pageable) {
-        return repository.findAll(pageable);
-    }
-
-    @Override
-    public Provider findById(UUID providerId) {
-        return repository.findById(providerId).orElseThrow(NoSuchElementException::new);
-    }
+    @NotEmpty
+    private String name;
+    @NotNull
+    private QuantumResourceDataType datatype;
+    private String description;
 }

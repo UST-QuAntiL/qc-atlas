@@ -1,4 +1,4 @@
-/********************************************************************************
+/*******************************************************************************
  * Copyright (c) 2020 University of Stuttgart
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -17,35 +17,9 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.planqk.atlas.web.dtos;
+package org.planqk.atlas.core.model;
 
-import org.planqk.atlas.core.model.Provider;
+public enum QuantumResourceDataType {
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-
-import java.util.UUID;
-
-import javax.validation.constraints.*;
-
-/**
- * Data transfer object for the model class {@link Provider}.
- */
-@EqualsAndHashCode
-@Data
-@NoArgsConstructor
-public class ProviderDto {
-
-    private UUID id;
-
-    @NotNull(message = "Provider-Name must not be null!")
-    private String name;
-
-    @NotNull(message = "Provider-AccessKey must not be null!")
-    private String accessKey;
-
-    @NotNull(message = "Provider-SecretKey must not be null!")
-    private String secretKey;
-
+    INTEGER, STRING, FLOAT
 }
