@@ -13,7 +13,6 @@ import java.util.UUID;
 @NoArgsConstructor
 public class SoftwarePlatformDto {
 
-    @NotNull(message = "Id must not be null!")
     private UUID id;
 
     @NotNull(message = "SoftwarePlatform name must not be null!")
@@ -22,6 +21,8 @@ public class SoftwarePlatformDto {
     private URL link;
 
     private String version;
+
+    private String licence;
 
     private Set<BackendDto> supportedBackends = new HashSet<>();
 

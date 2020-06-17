@@ -16,4 +16,6 @@ public interface AlgoRelationTypeRepository extends JpaRepository<AlgoRelationTy
 
     Set<AlgoRelationType> findByName(String name);
 
+    boolean existsAlgoRelationTypeById(UUID id);
+
 }

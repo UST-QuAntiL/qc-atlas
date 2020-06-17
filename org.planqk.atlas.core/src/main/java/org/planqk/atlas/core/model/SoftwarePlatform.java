@@ -23,6 +23,7 @@ public class SoftwarePlatform extends HasId {
     private String name;
     private URL link;
     private String version;
+    private String licence;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.MERGE })
     @JoinTable(name = "software_platforms_backends", joinColumns = @JoinColumn(name = "software_platform_id"), inverseJoinColumns = @JoinColumn(name = "backend_id"))
