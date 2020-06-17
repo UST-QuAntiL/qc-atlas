@@ -30,6 +30,7 @@ import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
 import org.planqk.atlas.web.dtos.PublicationDto;
 import org.planqk.atlas.web.linkassembler.AlgorithmAssembler;
+import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
 import org.planqk.atlas.web.linkassembler.PublicationAssembler;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 
@@ -65,20 +66,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = {PublicationController.class})
 @ExtendWith({MockitoExtension.class})
 @AutoConfigureMockMvc
+@EnableLinkAssemblers
 public class PublicationControllerTest {
-
-    @TestConfiguration
-    public static class TestConfig {
-        @Bean
-        public PublicationAssembler publicationAssembler() {
-            return new PublicationAssembler();
-        }
-
-        @Bean
-        public AlgorithmAssembler algorithmAssembler() {
-            return new AlgorithmAssembler();
-        }
-    }
 
     @MockBean
     private PublicationService publicationService;
