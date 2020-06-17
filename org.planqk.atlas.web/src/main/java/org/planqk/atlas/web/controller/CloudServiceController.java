@@ -24,11 +24,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-import java.util.NoSuchElementException;
-import java.util.UUID;
-
-@io.swagger.v3.oas.annotations.tags.Tag(name = "cloud_services")
+@io.swagger.v3.oas.annotations.tags.Tag(name = "cloud-services")
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/" + Constants.CLOUD_SERVICES)
