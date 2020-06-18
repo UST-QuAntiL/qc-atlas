@@ -88,20 +88,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @EnableLinkAssemblers
 public class AlgorithmControllerTest {
 
+    private final int page = 0;
+    private final int size = 2;
+    private final Pageable pageable = PageRequest.of(page, size);
     @MockBean
     private AlgorithmService algorithmService;
     @MockBean
     private QuantumResourceService quantumResourceService;
-
     @Autowired
     private MockMvc mockMvc;
-
     private ObjectMapper mapper;
-
-    private final int page = 0;
-    private final int size = 2;
-    private final Pageable pageable = PageRequest.of(page, size);
-
     private Algorithm algorithm1;
     private Algorithm algorithm2;
     private AlgorithmRelation algorithmRelation1;
@@ -493,14 +489,14 @@ public class AlgorithmControllerTest {
     @Test
     void testListQuantumResources_AlgoNotFound() throws Exception {
         when(algorithmService.findById(any())).thenThrow(new NoSuchElementException());
-        var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.QUANTUM_RESOURCES + "/";
+        var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES + "/";
         mockMvc.perform(get(path)).andExpect(status().isNotFound());
     }
 
     @Test
     void testListQuantumResources_AlgoNotQuantum() throws Exception {
         when(algorithmService.findById(any())).thenReturn(new ClassicAlgorithm());
-        var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.QUANTUM_RESOURCES + "/";
+        var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES + "/";
         mockMvc.perform(get(path)).andExpect(status().isBadRequest());
     }
 
@@ -510,7 +506,7 @@ public class AlgorithmControllerTest {
         algo.setRequiredQuantumResources(new HashSet<>());
         when(algorithmService.findById(any())).thenReturn(algo);
         when(quantumResourceService.findAllResourcesByAlgorithmId(any(), any())).thenReturn(Page.empty());
-        var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.QUANTUM_RESOURCES + "/";
+        var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES + "/";
         var result = mockMvc.perform(get(path)).andExpect(status().isOk()).andReturn();
 
         var resultList = ObjectMapperUtils.mapResponseToList(
@@ -543,7 +539,7 @@ public class AlgorithmControllerTest {
 
         when(algorithmService.findById(any())).thenReturn(algo);
         when(quantumResourceService.findAllResourcesByAlgorithmId(any(), any())).thenReturn(new PageImpl<>(resources));
-        var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.QUANTUM_RESOURCES + "/";
+        var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES + "/";
         var result = mockMvc.perform(get(path)).andExpect(status().isOk()).andReturn();
 
         var resultList = ObjectMapperUtils.mapResponseToList(
@@ -568,7 +564,7 @@ public class AlgorithmControllerTest {
         resource.setId(UUID.randomUUID());
 
         when(algorithmService.findById(any())).thenThrow(new NoSuchElementException());
-        var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.QUANTUM_RESOURCES + "/";
+        var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES + "/";
         mockMvc.perform(post(path).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsBytes(resource)))
                 .andExpect(status().isNotFound());
     }
@@ -584,7 +580,7 @@ public class AlgorithmControllerTest {
         resource.setId(UUID.randomUUID());
 
         when(algorithmService.findById(any())).thenReturn(new ClassicAlgorithm());
-        var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.QUANTUM_RESOURCES + "/";
+        var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES + "/";
         mockMvc.perform(post(path).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsBytes(resource)))
                 .andExpect(status().isBadRequest());
     }
@@ -595,7 +591,7 @@ public class AlgorithmControllerTest {
         resource.setId(UUID.randomUUID());
 
         when(algorithmService.findById(any())).thenReturn(new ClassicAlgorithm());
-        var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.QUANTUM_RESOURCES + "/";
+        var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES + "/";
         mockMvc.perform(post(path).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsBytes(resource)))
                 .andExpect(status().isBadRequest());
     }
@@ -610,7 +606,7 @@ public class AlgorithmControllerTest {
         resource.setId(UUID.randomUUID());
 
         when(algorithmService.findById(any())).thenReturn(new ClassicAlgorithm());
-        var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.QUANTUM_RESOURCES + "/";
+        var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES + "/";
         mockMvc.perform(post(path).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsBytes(resource)))
                 .andExpect(status().isBadRequest());
     }
@@ -625,7 +621,7 @@ public class AlgorithmControllerTest {
         resource.setId(UUID.randomUUID());
 
         when(algorithmService.findById(any())).thenReturn(new ClassicAlgorithm());
-        var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.QUANTUM_RESOURCES + "/";
+        var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES + "/";
         mockMvc.perform(post(path).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsBytes(resource)))
                 .andExpect(status().isBadRequest());
     }
@@ -639,7 +635,7 @@ public class AlgorithmControllerTest {
         resource.setId(UUID.randomUUID());
 
         when(algorithmService.findById(any())).thenReturn(new ClassicAlgorithm());
-        var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.QUANTUM_RESOURCES + "/";
+        var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES + "/";
         mockMvc.perform(post(path).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsBytes(resource)))
                 .andExpect(status().isBadRequest());
     }
@@ -655,7 +651,7 @@ public class AlgorithmControllerTest {
         resource.setId(UUID.randomUUID());
 
         when(algorithmService.findById(any())).thenReturn(new ClassicAlgorithm());
-        var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.QUANTUM_RESOURCES + "/";
+        var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES + "/";
         mockMvc.perform(post(path).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsBytes(resource)))
                 .andExpect(status().isBadRequest());
     }
@@ -707,7 +703,7 @@ public class AlgorithmControllerTest {
 
         when(algorithmService.findById(any())).thenReturn(algorithm1);
         when(quantumResourceService.addQuantumResourceToAlgorithm(any(QuantumAlgorithm.class), any(QuantumResource.class))).thenReturn(new QuantumResource());
-        var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.QUANTUM_RESOURCES + "/";
+        var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES + "/";
         mockMvc.perform(post(path).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsBytes(resource)))
                 .andExpect(status().isOk());
     }

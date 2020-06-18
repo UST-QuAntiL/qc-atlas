@@ -73,21 +73,21 @@ public class QuantumResourceControllerTest {
     @Test
     void test_deleteResource() throws Exception {
         doNothing().when(resourceService).deleteQuantumResource(any());
-        var url = "/" + Constants.QUANTUM_RESOURCES + "/" + UUID.randomUUID().toString();
+        var url = "/" + Constants.COMPUTING_RESOURCES + "/" + UUID.randomUUID().toString();
         mockMvc.perform(delete(url)).andExpect(status().isOk());
     }
 
     @Test
     void test_deleteResource_InvalidId() throws Exception {
         doThrow(new NoSuchElementException()).when(resourceService).deleteQuantumResource(any());
-        var url = "/" + Constants.QUANTUM_RESOURCES + "/" + UUID.randomUUID().toString();
+        var url = "/" + Constants.COMPUTING_RESOURCES + "/" + UUID.randomUUID().toString();
         mockMvc.perform(delete(url)).andExpect(status().isNotFound());
     }
 
     @Test
     void test_getResource_InvalidId() throws Exception {
         when(resourceService.findResourceById(any())).thenThrow(new NoSuchElementException());
-        var url = "/" + Constants.QUANTUM_RESOURCES + "/" + UUID.randomUUID().toString();
+        var url = "/" + Constants.COMPUTING_RESOURCES + "/" + UUID.randomUUID().toString();
         mockMvc.perform(get(url)).andExpect(status().isNotFound());
     }
 
@@ -103,7 +103,7 @@ public class QuantumResourceControllerTest {
         sampleResource.setQuantumResourceType(sampleType);
 
         when(resourceService.findResourceById(any())).thenReturn(sampleResource);
-        var url = "/" + Constants.QUANTUM_RESOURCES + "/" + UUID.randomUUID().toString();
+        var url = "/" + Constants.COMPUTING_RESOURCES + "/" + UUID.randomUUID().toString();
         var result = mockMvc.perform(get(url)).andExpect(status().isOk()).andReturn();
 
         var dto = mapper.readValue(

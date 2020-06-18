@@ -44,7 +44,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "quantum-resource")
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
-@RequestMapping("/" + Constants.QUANTUM_RESOURCES)
+@RequestMapping("/" + Constants.COMPUTING_RESOURCES)
 @AllArgsConstructor
 public class QuantumResourceController {
     private final QuantumResourceAssembler assembler;

@@ -39,7 +39,7 @@ public class Constants {
     public static final String DISCUSSION_COMMENTS = "discussion-comments";
     public static final String BACKENDS = "backends";
     public static final String PATTERN_RELATIONS = "pattern-relations";
-    public static final String QUANTUM_RESOURCES = "quantum-resources";
+    public static final String COMPUTING_RESOURCES = "computing-resources";
     public static final String QUANTUM_RESOURCE_TYPES = "quantum-resource-types";
 
     // link names

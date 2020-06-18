@@ -287,7 +287,7 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404")
     })
-    @GetMapping("/{id}/" + Constants.QUANTUM_RESOURCES)
+    @GetMapping("/{id}/" + Constants.COMPUTING_RESOURCES)
     public ResponseEntity<PagedModel<EntityModel<QuantumResourceDto>>> getQuantumResources(
             @PathVariable UUID id,
             @RequestParam(required = false) Integer page,
@@ -311,7 +311,7 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404")
     })
-    @PostMapping("/{id}/" + Constants.QUANTUM_RESOURCES)
+    @PostMapping("/{id}/" + Constants.COMPUTING_RESOURCES)
     public ResponseEntity<EntityModel<AlgorithmDto>> addQuantumResource(
             @PathVariable UUID id,
             @Valid @RequestBody QuantumResourceDto resourceDto
