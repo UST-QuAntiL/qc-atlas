@@ -49,6 +49,7 @@ public class ImplementationDto {
 
     @NotNull(message = "Implementation-Name must not be null!")
     private String name;
+    @Schema(description = "URL of implementation", example = "http://www.github.com/planqk", required = false)
     private URL link;
 
     private String inputFormat;

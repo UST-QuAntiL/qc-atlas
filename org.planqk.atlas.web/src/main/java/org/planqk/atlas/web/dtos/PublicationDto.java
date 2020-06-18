@@ -18,16 +18,17 @@
  *******************************************************************************/
 package org.planqk.atlas.web.dtos;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.URL;
+import java.util.List;
+import java.util.UUID;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
-import java.util.List;
-import java.util.UUID;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.URL;
 
 @EqualsAndHashCode
 @Data
@@ -41,8 +42,9 @@ public class PublicationDto {
 
     private String doi;
 
+    @Schema(description = "URL", example = "https://www.ibm.com/quantum-computing/", required = false)
     @URL(message = "Publication URL must be a valid URL!")
-    private String url;
+    private java.net.URL url;
 
     @NotEmpty(message = "Authors of the Publication must not be empty!")
     private List<String> authors;
