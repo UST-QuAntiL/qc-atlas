@@ -9,27 +9,6 @@ import static org.junit.Assert.assertEquals;
 
 class VersionedRequestHandlerMappingTest {
 
-    @RequestMapping("/unversioned")
-    static class Unversioned {
-        @RequestMapping("/versioned")
-        @ApiVersion("v1")
-        public void versioned() {
-        }
-    }
-
-    @RequestMapping("/versioned")
-    @ApiVersion("v1")
-    static class Versioned {
-        @RequestMapping("/unversioned")
-        public void unversioned() {
-        }
-
-        @RequestMapping("/versioned")
-        @ApiVersion({ "v1", "v2" })
-        public void versioned() {
-        }
-    }
-
     private VersionedRequestHandlerMapping mapping = new VersionedRequestHandlerMapping();
 
     @Test
@@ -42,5 +21,23 @@ class VersionedRequestHandlerMappingTest {
 
     private Set<String> getMethodPathMapping(Class<?> clazz, String methodName) throws NoSuchMethodException {
         return mapping.getMappingForMethod(clazz.getMethod(methodName), clazz).getPatternsCondition().getPatterns();
+    }
+
+    @RequestMapping("/unversioned")
+    static class Unversioned {
+        @RequestMapping("/versioned")
+        public void versioned() {
+        }
+    }
+
+    @RequestMapping("/versioned")
+    static class Versioned {
+        @RequestMapping("/unversioned")
+        public void unversioned() {
+        }
+
+        @RequestMapping("/versioned")
+        public void versioned() {
+        }
     }
 }

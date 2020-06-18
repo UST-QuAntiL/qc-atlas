@@ -18,13 +18,11 @@
  *******************************************************************************/
 package org.planqk.atlas.web.linkassembler;
 
-import org.planqk.atlas.web.SpringOverrides;
 import org.planqk.atlas.web.controller.RootController;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.hateoas.IanaLinkRelations;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -32,7 +30,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @WebMvcTest( {RootController.class, DummyController.class})
 @EnableLinkAssemblers
-@Import(SpringOverrides.class)
 public class LinkBuilderServiceIntegrationTest {
     @Autowired
     private LinkBuilderService service;
