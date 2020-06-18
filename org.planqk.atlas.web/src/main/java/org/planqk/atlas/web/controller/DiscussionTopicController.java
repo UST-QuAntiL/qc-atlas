@@ -61,7 +61,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@io.swagger.v3.oas.annotations.tags.Tag(name = "discussion_topic")
+@io.swagger.v3.oas.annotations.tags.Tag(name = "discussion-topic")
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/" + Constants.DISCUSSION_TOPICS)
 @Slf4j
