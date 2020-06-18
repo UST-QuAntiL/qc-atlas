@@ -1,4 +1,4 @@
-/********************************************************************************
+/*******************************************************************************
  * Copyright (c) 2020 University of Stuttgart
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -19,23 +19,25 @@
 
 package org.planqk.atlas.web.dtos;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import org.planqk.atlas.core.model.QuantumAlgorithm;
+import org.planqk.atlas.core.model.SoftwarePlatform;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
-import java.util.UUID;
-
-import javax.validation.constraints.NotNull;
-
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 @Data
-public class TagDto {
+public class QuantumImplementationDto extends ImplementationDto {
 
-    @NotNull(message = "Tag key must not be null!")
-    private String key;
+    private QuantumAlgorithm algorithm;
 
-    @NotNull(message = "Tag value must not be null!")
-    private String value;
+    private Set<QuantumResourceDto> requiredQuantumResources = new HashSet<>();
 
-    private UUID id;
+    private SoftwarePlatform usedSoftwarePlatform;
 
 }

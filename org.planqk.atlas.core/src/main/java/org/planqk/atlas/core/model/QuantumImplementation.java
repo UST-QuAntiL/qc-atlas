@@ -20,7 +20,7 @@ public class QuantumImplementation extends Implementation {
     @ManyToOne(fetch = FetchType.LAZY)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    private ClassicAlgorithm algorithm;
+    private QuantumAlgorithm algorithm;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
     private Set<QuantumResource> requiredQuantumResources;

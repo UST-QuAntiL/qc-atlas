@@ -14,5 +14,9 @@ import lombok.NoArgsConstructor;
 @Entity
 @Data
 public class Simulator extends Backend {
+
     private boolean localExecution;
+
+    private String licence;
+
 }
