@@ -40,11 +40,4 @@ public class LinkBuilderServiceIntegrationTest {
         assertEquals(IanaLinkRelations.SELF, link.getRel());
         assertEquals("/", link.getHref());
     }
-
-    @Test
-    public void resolvesAsVersioned() {
-        var link = service.linkTo(methodOn(DummyController.class).test()).withSelfRel();
-        assertEquals(IanaLinkRelations.SELF, link.getRel());
-        assertEquals("/controller/v1/test", link.getHref());
-    }
 }
