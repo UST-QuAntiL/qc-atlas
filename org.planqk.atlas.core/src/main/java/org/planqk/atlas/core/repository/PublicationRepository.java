@@ -18,6 +18,10 @@
  *******************************************************************************/
 package org.planqk.atlas.core.repository;
 
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+
 import org.planqk.atlas.core.model.Publication;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -35,4 +39,8 @@ import java.util.UUID;
 public interface PublicationRepository extends JpaRepository<Publication, UUID> {
 
     Optional<Publication> findByTitle(String title);
+
+    boolean existsById(UUID id);
+
+    void deleteByIdIn(Set<UUID> ids);
 }

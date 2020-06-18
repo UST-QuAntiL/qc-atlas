@@ -15,7 +15,6 @@ import java.util.UUID;
 @NoArgsConstructor
 public class CloudServiceDto {
 
-    @NotNull(message = "Id must not be null!")
     private UUID id;
 
     @NotNull(message = "CloudService name must not be null!")
@@ -24,6 +23,8 @@ public class CloudServiceDto {
     private String provider;
 
     private URL url;
+
+    private String description;
 
     private String costModel;
 
