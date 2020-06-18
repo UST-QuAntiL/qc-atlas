@@ -39,7 +39,7 @@ import org.planqk.atlas.core.model.PatternRelationType;
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.model.QuantumAlgorithm;
 import org.planqk.atlas.core.services.AlgorithmService;
-import org.planqk.atlas.core.services.QuantumResourceService;
+import org.planqk.atlas.core.services.ComputingResourceService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
@@ -94,7 +94,7 @@ public class AlgorithmControllerTest {
     @MockBean
     private AlgorithmService algorithmService;
     @MockBean
-    private QuantumResourceService quantumResourceService;
+    private ComputingResourceService computingResourceService;
     @Autowired
     private MockMvc mockMvc;
     private ObjectMapper mapper;
@@ -505,7 +505,7 @@ public class AlgorithmControllerTest {
         var algo = new QuantumAlgorithm();
         algo.setRequiredComputingResources(new HashSet<>());
         when(algorithmService.findById(any())).thenReturn(algo);
-        when(quantumResourceService.findAllResourcesByAlgorithmId(any(), any())).thenReturn(Page.empty());
+        when(computingResourceService.findAllResourcesByAlgorithmId(any(), any())).thenReturn(Page.empty());
         var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES + "/";
         var result = mockMvc.perform(get(path)).andExpect(status().isOk()).andReturn();
 
@@ -538,7 +538,7 @@ public class AlgorithmControllerTest {
         }
 
         when(algorithmService.findById(any())).thenReturn(algo);
-        when(quantumResourceService.findAllResourcesByAlgorithmId(any(), any())).thenReturn(new PageImpl<>(resources));
+        when(computingResourceService.findAllResourcesByAlgorithmId(any(), any())).thenReturn(new PageImpl<>(resources));
         var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES + "/";
         var result = mockMvc.perform(get(path)).andExpect(status().isOk()).andReturn();
 
@@ -702,7 +702,7 @@ public class AlgorithmControllerTest {
         algorithmRelations.add(algorithmRelation2);
 
         when(algorithmService.findById(any())).thenReturn(algorithm1);
-        when(quantumResourceService.addQuantumResourceToAlgorithm(any(QuantumAlgorithm.class), any(ComputingResource.class))).thenReturn(new ComputingResource());
+        when(computingResourceService.addComputingResourceToAlgorithm(any(QuantumAlgorithm.class), any(ComputingResource.class))).thenReturn(new ComputingResource());
         var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES + "/";
         mockMvc.perform(post(path).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsBytes(resource)))
                 .andExpect(status().isOk());

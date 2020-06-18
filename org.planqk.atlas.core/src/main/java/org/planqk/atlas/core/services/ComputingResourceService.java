@@ -31,12 +31,12 @@ import org.planqk.atlas.core.model.QuantumAlgorithm;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-public interface QuantumResourceService {
+public interface ComputingResourceService {
     @Transactional
-    void deleteQuantumResourceType(UUID typeId);
+    void deleteComputingResourceType(UUID typeId);
 
     @Transactional
-    void deleteQuantumResource(UUID resourceId);
+    void deleteComputingResource(UUID resourceId);
 
     ComputingResourceType findResourceTypeById(UUID resourceTypeId);
 
@@ -47,16 +47,16 @@ public interface QuantumResourceService {
     Page<ComputingResource> findAllResourcesByAlgorithmId(UUID algoid, Pageable pageable);
 
     @Transactional
-    ComputingResourceType addOrUpdateQuantumResourceType(ComputingResourceType resourceType);
+    ComputingResourceType addOrUpdateComputingResourceType(ComputingResourceType resourceType);
 
     @Transactional
-    ComputingResource addOrUpdateQuantumResource(ComputingResource resource);
+    ComputingResource addOrUpdateComputingResource(ComputingResource resource);
 
     @Transactional
-    ComputingResource addQuantumResourceToAlgorithm(QuantumAlgorithm algo, ComputingResource resource);
+    ComputingResource addComputingResourceToAlgorithm(QuantumAlgorithm algo, ComputingResource resource);
 
     @Transactional
-    ComputingResource addQuantumResourceToAlgorithm(UUID algoId, UUID resourceId);
+    ComputingResource addComputingResourceToAlgorithm(UUID algoId, UUID resourceId);
 
     ComputingResource findResourceById(UUID id);
 }

@@ -29,8 +29,8 @@ import org.planqk.atlas.core.model.ComputingResource;
 import org.planqk.atlas.core.model.ComputingResourceType;
 import org.planqk.atlas.core.model.QuantumAlgorithm;
 import org.planqk.atlas.core.repository.AlgorithmRepository;
-import org.planqk.atlas.core.repository.QuantumResourceRepository;
-import org.planqk.atlas.core.repository.QuantumResourceTypeRepository;
+import org.planqk.atlas.core.repository.ComputingResourceRepository;
+import org.planqk.atlas.core.repository.ComputingResourceTypeRepository;
 
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -39,21 +39,21 @@ import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
-public class QuantumResourceServiceImpl implements QuantumResourceService {
+public class ComputingResourceServiceImpl implements ComputingResourceService {
 
     private final AlgorithmRepository algorithmRepository;
-    private final QuantumResourceTypeRepository typeRepository;
-    private final QuantumResourceRepository resourceRepository;
+    private final ComputingResourceTypeRepository typeRepository;
+    private final ComputingResourceRepository resourceRepository;
 
     @Override
     @Transactional
-    public void deleteQuantumResourceType(UUID typeId) {
+    public void deleteComputingResourceType(UUID typeId) {
         this.typeRepository.deleteById(typeId);
     }
 
     @Override
     @Transactional
-    public void deleteQuantumResource(UUID resourceId) {
+    public void deleteComputingResource(UUID resourceId) {
         resourceRepository.deleteById(resourceId);
     }
 
@@ -79,15 +79,15 @@ public class QuantumResourceServiceImpl implements QuantumResourceService {
 
     @Override
     @Transactional
-    public ComputingResourceType addOrUpdateQuantumResourceType(ComputingResourceType resourceType) {
+    public ComputingResourceType addOrUpdateComputingResourceType(ComputingResourceType resourceType) {
         return typeRepository.save(resourceType);
     }
 
     @Override
     @Transactional
-    public ComputingResource addOrUpdateQuantumResource(ComputingResource resource) {
+    public ComputingResource addOrUpdateComputingResource(ComputingResource resource) {
         if (resource.getComputingResourceType().getId() == null) {
-            var type = addOrUpdateQuantumResourceType(resource.getComputingResourceType());
+            var type = addOrUpdateComputingResourceType(resource.getComputingResourceType());
             resource.setComputingResourceType(type);
         }
         return resourceRepository.save(resource);
@@ -95,10 +95,10 @@ public class QuantumResourceServiceImpl implements QuantumResourceService {
 
     @Override
     @Transactional
-    public ComputingResource addQuantumResourceToAlgorithm(QuantumAlgorithm algo, ComputingResource resource) {
+    public ComputingResource addComputingResourceToAlgorithm(QuantumAlgorithm algo, ComputingResource resource) {
         var updatedResource = resource;
         if (updatedResource.getId() == null) {
-            updatedResource = this.addOrUpdateQuantumResource(resource);
+            updatedResource = this.addOrUpdateComputingResource(resource);
         }
         updatedResource.setAlgorithm(algo);
         return this.resourceRepository.save(updatedResource);
@@ -106,11 +106,11 @@ public class QuantumResourceServiceImpl implements QuantumResourceService {
 
     @Override
     @Transactional
-    public ComputingResource addQuantumResourceToAlgorithm(UUID algoId, UUID resourceId) {
+    public ComputingResource addComputingResourceToAlgorithm(UUID algoId, UUID resourceId) {
         var resource = resourceRepository.findById(resourceId).orElseThrow(NoSuchElementException::new);
         var algorithm = (QuantumAlgorithm) algorithmRepository.findById(algoId).orElseThrow(NoSuchElementException::new);
 
-        return addQuantumResourceToAlgorithm(algorithm, resource);
+        return addComputingResourceToAlgorithm(algorithm, resource);
     }
 
     @Override

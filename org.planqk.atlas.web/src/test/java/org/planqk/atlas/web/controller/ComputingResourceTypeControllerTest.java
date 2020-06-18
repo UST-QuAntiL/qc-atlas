@@ -25,7 +25,7 @@ import java.util.UUID;
 
 import org.planqk.atlas.core.model.ComputingResourceDataType;
 import org.planqk.atlas.core.model.ComputingResourceType;
-import org.planqk.atlas.core.services.QuantumResourceService;
+import org.planqk.atlas.core.services.ComputingResourceService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
 import org.planqk.atlas.web.dtos.QuantumResourceTypeDto;
@@ -60,7 +60,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @EnableLinkAssemblers
 public class ComputingResourceTypeControllerTest {
     @MockBean
-    private QuantumResourceService resourceService;
+    private ComputingResourceService resourceService;
 
     @Autowired
     private MockMvc mockMvc;
@@ -74,14 +74,14 @@ public class ComputingResourceTypeControllerTest {
 
     @Test
     void test_deleteType() throws Exception {
-        doNothing().when(resourceService).deleteQuantumResourceType(any());
+        doNothing().when(resourceService).deleteComputingResourceType(any());
         var url = "/" + Constants.QUANTUM_RESOURCE_TYPES + "/" + UUID.randomUUID().toString();
         mockMvc.perform(delete(url)).andExpect(status().isOk());
     }
 
     @Test
     void test_deleteType_InvalidId() throws Exception {
-        doThrow(new NoSuchElementException()).when(resourceService).deleteQuantumResourceType(any());
+        doThrow(new NoSuchElementException()).when(resourceService).deleteComputingResourceType(any());
         var url = "/" + Constants.QUANTUM_RESOURCE_TYPES + "/" + UUID.randomUUID().toString();
         mockMvc.perform(delete(url)).andExpect(status().isNotFound());
     }

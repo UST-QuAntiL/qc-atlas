@@ -33,7 +33,7 @@ import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.model.QuantumAlgorithm;
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.services.AlgorithmService;
-import org.planqk.atlas.core.services.QuantumResourceService;
+import org.planqk.atlas.core.services.ComputingResourceService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
@@ -93,7 +93,7 @@ public class AlgorithmController {
     final private static Logger LOG = LoggerFactory.getLogger(AlgorithmController.class);
 
     private final AlgorithmService algorithmService;
-    private final QuantumResourceService quantumResourceService;
+    private final ComputingResourceService computingResourceService;
 
     private final PagedResourcesAssembler<AlgorithmDto> algorithmPaginationAssembler;
     private final PagedResourcesAssembler<QuantumResourceDto> quantumResourcePaginationAssembler;
@@ -298,7 +298,7 @@ public class AlgorithmController {
             LOG.warn("Attempted to add a quantum reource for a non quantum algorithm");
             throw new InvalidTypeException("The algorithm given is not a quantum algorithm");
         }
-        var resources = quantumResourceService.findAllResourcesByAlgorithmId(id,
+        var resources = computingResourceService.findAllResourcesByAlgorithmId(id,
                 RestUtils.getPageableFromRequestParams(page, size));
         var typeDtoes = ModelMapperUtils.convertPage(resources, QuantumResourceDto.class);
         var pagedModel = quantumResourcePaginationAssembler.toModel(typeDtoes);
@@ -322,7 +322,7 @@ public class AlgorithmController {
             throw new InvalidTypeException("The algorithm given is not a quantum algorithm");
         }
         var resource = ModelMapperUtils.convert(resourceDto, ComputingResource.class);
-        var updatedAlgorithm = quantumResourceService.addQuantumResourceToAlgorithm(
+        var updatedAlgorithm = computingResourceService.addComputingResourceToAlgorithm(
                 (QuantumAlgorithm) algorithm,
                 resource
         );

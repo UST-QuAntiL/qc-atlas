@@ -27,8 +27,8 @@ import org.planqk.atlas.core.model.ComputingResource;
 import org.planqk.atlas.core.model.ComputingResourceDataType;
 import org.planqk.atlas.core.model.ComputingResourceType;
 import org.planqk.atlas.core.model.QuantumAlgorithm;
-import org.planqk.atlas.core.repository.QuantumResourceRepository;
-import org.planqk.atlas.core.repository.QuantumResourceTypeRepository;
+import org.planqk.atlas.core.repository.ComputingResourceRepository;
+import org.planqk.atlas.core.repository.ComputingResourceTypeRepository;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 
 import org.junit.jupiter.api.Assertions;
@@ -44,14 +44,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class ComputingResourceServiceTest extends AtlasDatabaseTestBase {
 
     @Autowired
-    private QuantumResourceService resourceService;
+    private ComputingResourceService resourceService;
     @Autowired
     private AlgorithmService algorithmService;
 
     @Autowired
-    private QuantumResourceTypeRepository typeRepository;
+    private ComputingResourceTypeRepository typeRepository;
     @Autowired
-    private QuantumResourceRepository resourceRepository;
+    private ComputingResourceRepository resourceRepository;
 
     @Test
     void testDeleteType_NotLinked() {
@@ -63,10 +63,10 @@ public class ComputingResourceServiceTest extends AtlasDatabaseTestBase {
         var resource = new ComputingResource();
         resource.setComputingResourceType(resourceType);
 
-        var storedResource = resourceService.addOrUpdateQuantumResource(resource);
+        var storedResource = resourceService.addOrUpdateComputingResource(resource);
 
-        resourceService.deleteQuantumResource(resource.getId());
-        this.resourceService.deleteQuantumResourceType(storedResource.getComputingResourceType().getId());
+        resourceService.deleteComputingResource(resource.getId());
+        this.resourceService.deleteComputingResourceType(storedResource.getComputingResourceType().getId());
         assertThat(this.resourceService.findAllResourceTypes(Pageable.unpaged()).get().count()).isEqualTo(0);
     }
 
@@ -80,10 +80,10 @@ public class ComputingResourceServiceTest extends AtlasDatabaseTestBase {
         var resource = new ComputingResource();
         resource.setComputingResourceType(resourceType);
 
-        var storedResource = resourceService.addOrUpdateQuantumResource(resource);
+        var storedResource = resourceService.addOrUpdateComputingResource(resource);
 
         Assertions.assertThrows(DataIntegrityViolationException.class, () -> {
-            this.resourceService.deleteQuantumResourceType(storedResource.getComputingResourceType().getId());
+            this.resourceService.deleteComputingResourceType(storedResource.getComputingResourceType().getId());
         });
         assertThat(this.resourceService.findAllResourceTypes(Pageable.unpaged()).get().count()).isEqualTo(1);
     }
@@ -105,7 +105,7 @@ public class ComputingResourceServiceTest extends AtlasDatabaseTestBase {
         algo.setComputationModel(ComputationModel.QUANTUM);
         var storedAlgo = (QuantumAlgorithm) algorithmService.save(algo);
 
-        var storedResource = resourceService.addQuantumResourceToAlgorithm(storedAlgo, resource);
+        var storedResource = resourceService.addComputingResourceToAlgorithm(storedAlgo, resource);
 
         algorithmService.delete(storedAlgo.getId());
 
@@ -130,9 +130,9 @@ public class ComputingResourceServiceTest extends AtlasDatabaseTestBase {
         algo.setComputationModel(ComputationModel.QUANTUM);
         var storedAlgo = (QuantumAlgorithm) algorithmService.save(algo);
 
-        var storedResource = resourceService.addQuantumResourceToAlgorithm(storedAlgo, resource);
+        var storedResource = resourceService.addComputingResourceToAlgorithm(storedAlgo, resource);
 
-        this.resourceService.deleteQuantumResource(storedResource.getId());
+        this.resourceService.deleteComputingResource(storedResource.getId());
         assertEquals(0, this.resourceRepository.findAllByAlgorithm_Id(storedAlgo.getId()).size());
         assertEquals(1, this.typeRepository.findAll().size());
         var dbAlgo = algorithmService.findById(storedAlgo.getId());
@@ -157,9 +157,9 @@ public class ComputingResourceServiceTest extends AtlasDatabaseTestBase {
         algo.setComputationModel(ComputationModel.QUANTUM);
         var storedAlgo = (QuantumAlgorithm) algorithmService.save(algo);
 
-        var storedResource = resourceService.addOrUpdateQuantumResource(resource);
+        var storedResource = resourceService.addOrUpdateComputingResource(resource);
 
-        resourceService.addQuantumResourceToAlgorithm(storedAlgo.getId(), resource.getId());
+        resourceService.addComputingResourceToAlgorithm(storedAlgo.getId(), resource.getId());
 
         var resultAlgo = ((QuantumAlgorithm) algorithmService.findById(algo.getId()));
         assertEquals(1, this.resourceRepository.findAllByAlgorithm_Id(resultAlgo.getId()).size());
@@ -187,7 +187,7 @@ public class ComputingResourceServiceTest extends AtlasDatabaseTestBase {
         algo.setComputationModel(ComputationModel.QUANTUM);
         var storedAlgo = (QuantumAlgorithm) algorithmService.save(algo);
 
-        var storedResource = resourceService.addQuantumResourceToAlgorithm(storedAlgo, resource);
+        var storedResource = resourceService.addComputingResourceToAlgorithm(storedAlgo, resource);
 
         var resultAlgo = ((QuantumAlgorithm) algorithmService.findById(algo.getId()));
         assertEquals(1, this.resourceRepository.findAllByAlgorithm_Id(resultAlgo.getId()).size());
@@ -205,7 +205,7 @@ public class ComputingResourceServiceTest extends AtlasDatabaseTestBase {
         resourceType.setName("Test Name");
         resourceType.setDatatype(ComputingResourceDataType.FLOAT);
 
-        var insertedElem = this.resourceService.addOrUpdateQuantumResourceType(resourceType);
+        var insertedElem = this.resourceService.addOrUpdateComputingResourceType(resourceType);
 
         var elements = this.typeRepository.findAll();
         assertEquals(1, elements.size());
@@ -232,7 +232,7 @@ public class ComputingResourceServiceTest extends AtlasDatabaseTestBase {
         resourceType.setName("Test Name");
         resourceType.setDatatype(ComputingResourceDataType.FLOAT);
 
-        var insertedElem = this.resourceService.addOrUpdateQuantumResourceType(resourceType);
+        var insertedElem = this.resourceService.addOrUpdateComputingResourceType(resourceType);
 
         assertThat(resourceService.findResourceTypeById(insertedElem.getId()).getDatatype()).isEqualTo(resourceType.getDatatype());
     }
@@ -254,7 +254,7 @@ public class ComputingResourceServiceTest extends AtlasDatabaseTestBase {
         algo.setComputationModel(ComputationModel.QUANTUM);
         var storedAlgo = (QuantumAlgorithm) algorithmService.save(algo);
 
-        var storedResource = resourceService.addQuantumResourceToAlgorithm(storedAlgo, resource);
+        var storedResource = resourceService.addComputingResourceToAlgorithm(storedAlgo, resource);
 
         assertThat(resourceService.findResourceById(storedResource.getId()).getAlgorithm().getId()).isEqualTo(storedAlgo.getId());
     }
@@ -276,7 +276,7 @@ public class ComputingResourceServiceTest extends AtlasDatabaseTestBase {
         algo.setComputationModel(ComputationModel.QUANTUM);
         var storedAlgo = (QuantumAlgorithm) algorithmService.save(algo);
 
-        var storedResource = resourceService.addQuantumResourceToAlgorithm(storedAlgo, resource);
+        var storedResource = resourceService.addComputingResourceToAlgorithm(storedAlgo, resource);
 
         var byAlgo = resourceService.findAllResourcesByAlgorithmId(storedAlgo.getId());
         var byAlgoP = resourceService.findAllResourcesByAlgorithmId(storedAlgo.getId(), Pageable.unpaged());

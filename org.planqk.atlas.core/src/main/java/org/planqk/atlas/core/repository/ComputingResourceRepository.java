@@ -19,13 +19,19 @@
 
 package org.planqk.atlas.core.repository;
 
+import java.util.Set;
 import java.util.UUID;
 
-import org.planqk.atlas.core.model.ComputingResourceType;
+import org.planqk.atlas.core.model.ComputingResource;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
-@RepositoryRestResource
-public interface QuantumResourceTypeRepository extends JpaRepository<ComputingResourceType, UUID> {
+@RepositoryRestResource(exported = false)
+public interface ComputingResourceRepository extends JpaRepository<ComputingResource, UUID> {
+    Set<ComputingResource> findAllByAlgorithm_Id(UUID algoId);
+
+    Page<ComputingResource> findAllByAlgorithm_Id(UUID algoId, Pageable p);
 }

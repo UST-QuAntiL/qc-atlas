@@ -21,7 +21,7 @@ package org.planqk.atlas.web.controller;
 
 import java.util.UUID;
 
-import org.planqk.atlas.core.services.QuantumResourceService;
+import org.planqk.atlas.core.services.ComputingResourceService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.QuantumResourceTypeDto;
 import org.planqk.atlas.web.linkassembler.QuantumResourceTypeAssembler;
@@ -54,7 +54,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class QuantumResourceTypeController {
 
     private final QuantumResourceTypeAssembler assembler;
-    private final QuantumResourceService service;
+    private final ComputingResourceService service;
     private final PagedResourcesAssembler<QuantumResourceTypeDto> paginationAssembler;
 
     @Operation(responses = {
@@ -78,7 +78,7 @@ public class QuantumResourceTypeController {
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteQuantumResourceType(@PathVariable UUID id) {
-        service.deleteQuantumResourceType(id);
+        service.deleteComputingResourceType(id);
         return ResponseEntity.ok().build();
     }
 
