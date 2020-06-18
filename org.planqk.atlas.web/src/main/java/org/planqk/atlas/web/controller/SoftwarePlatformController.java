@@ -8,6 +8,7 @@ import javax.validation.Valid;
 import org.planqk.atlas.core.model.SoftwarePlatform;
 import org.planqk.atlas.core.services.SoftwarePlatformService;
 import org.planqk.atlas.web.Constants;
+import org.planqk.atlas.web.annotation.ApiVersion;
 import org.planqk.atlas.web.dtos.SoftwarePlatformDto;
 import org.planqk.atlas.web.linkassembler.SoftwarePlatformAssembler;
 import org.planqk.atlas.web.utils.HateoasUtils;
@@ -39,10 +40,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@io.swagger.v3.oas.annotations.tags.Tag(name = "software_platform")
+@io.swagger.v3.oas.annotations.tags.Tag(name = "software-platform")
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/" + Constants.SOFTWARE_PLATFORMS)
+@ApiVersion("v1")
 @AllArgsConstructor
 public class SoftwarePlatformController {
     final private static Logger LOG = LoggerFactory.getLogger(SoftwarePlatformController.class);

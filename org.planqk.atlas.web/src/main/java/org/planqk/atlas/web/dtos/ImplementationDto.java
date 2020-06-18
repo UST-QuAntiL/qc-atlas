@@ -23,16 +23,16 @@ import java.net.URL;
 import java.util.Set;
 import java.util.UUID;
 
-import javax.validation.constraints.*;
+import javax.validation.constraints.NotNull;
 
+import org.planqk.atlas.core.model.Publication;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.planqk.atlas.core.model.Publication;
 
 import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.WRITE_ONLY;
 
@@ -49,7 +49,6 @@ public class ImplementationDto {
 
     @NotNull(message = "Implementation-Name must not be null!")
     private String name;
-    @NotNull(message = "Implementation-FileLocation must not be null!")
     private URL link;
 
     private String inputFormat;
