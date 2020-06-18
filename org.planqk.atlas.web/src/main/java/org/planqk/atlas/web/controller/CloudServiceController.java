@@ -8,7 +8,6 @@ import javax.validation.Valid;
 import org.planqk.atlas.core.model.CloudService;
 import org.planqk.atlas.core.services.CloudServiceService;
 import org.planqk.atlas.web.Constants;
-import org.planqk.atlas.web.annotation.ApiVersion;
 import org.planqk.atlas.web.dtos.CloudServiceDto;
 import org.planqk.atlas.web.linkassembler.CloudServiceAssembler;
 import org.planqk.atlas.web.utils.HateoasUtils;
@@ -44,7 +43,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/" + Constants.CLOUD_SERVICES)
-@ApiVersion("v1")
 @AllArgsConstructor
 public class CloudServiceController {
     final private static Logger LOG = LoggerFactory.getLogger(CloudServiceController.class);

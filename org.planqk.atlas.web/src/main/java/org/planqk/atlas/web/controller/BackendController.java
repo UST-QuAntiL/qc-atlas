@@ -7,7 +7,6 @@ import javax.validation.Valid;
 import org.planqk.atlas.core.model.Backend;
 import org.planqk.atlas.core.services.BackendService;
 import org.planqk.atlas.web.Constants;
-import org.planqk.atlas.web.annotation.ApiVersion;
 import org.planqk.atlas.web.dtos.BackendDto;
 import org.planqk.atlas.web.linkassembler.BackendAssembler;
 import org.planqk.atlas.web.utils.HateoasUtils;
@@ -42,7 +41,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/" + Constants.BACKENDS)
-@ApiVersion("v1")
 @AllArgsConstructor
 @io.swagger.v3.oas.annotations.tags.Tag(name = "backend")
 public class BackendController {

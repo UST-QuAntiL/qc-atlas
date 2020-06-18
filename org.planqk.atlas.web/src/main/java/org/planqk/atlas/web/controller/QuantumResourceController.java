@@ -23,7 +23,6 @@ import java.util.UUID;
 
 import org.planqk.atlas.core.services.QuantumResourceService;
 import org.planqk.atlas.web.Constants;
-import org.planqk.atlas.web.annotation.ApiVersion;
 import org.planqk.atlas.web.dtos.QuantumResourceDto;
 import org.planqk.atlas.web.linkassembler.QuantumResourceAssembler;
 import org.planqk.atlas.web.utils.HateoasUtils;
@@ -46,7 +45,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/" + Constants.QUANTUM_RESOURCES)
-@ApiVersion("v1")
 @AllArgsConstructor
 public class QuantumResourceController {
     private final QuantumResourceAssembler assembler;
