@@ -87,6 +87,10 @@ public class AlgorithmDto {
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Schema(accessMode = WRITE_ONLY)
+    private Set<PatternRelationDto> relatedPatterns = new HashSet<>();
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Schema(accessMode = WRITE_ONLY)
     private Set<ProblemTypeDto> problemTypes = new HashSet<>();
 
     private Set<String> applicationAreas = new HashSet<>();
