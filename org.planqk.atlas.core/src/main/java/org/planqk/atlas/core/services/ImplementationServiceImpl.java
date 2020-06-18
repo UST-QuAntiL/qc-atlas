@@ -29,21 +29,28 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @AllArgsConstructor
 public class ImplementationServiceImpl implements ImplementationService {
 
     private final ImplementationRepository repository;
-    private TagService tagService;
-    private PublicationService publicationService;
-    private AlgorithmService algorithmService;
+    private final TagService tagService;
+    private final PublicationService publicationService;
+    private final AlgorithmService algorithmService;
 
+    @Transactional
     @Override
-    public Implementation saveOrUpdate(Implementation implementation) {
-        if (implementation.getId() != null) {
-            return update(implementation.getId(), implementation);
+    public Implementation save(Implementation implementation) {
+        tagService.createOrUpdateAll(implementation.getTags());
+
+        publicationService.createOrUpdateAll(implementation.getPublications());
+
+        if (implementation.getImplementedAlgorithm() != null && implementation.getImplementedAlgorithm().getId() == null) {
+            implementation.setImplementedAlgorithm(algorithmService.save(implementation.getImplementedAlgorithm()));
         }
+
         return repository.save(implementation);
     }
 
@@ -57,32 +64,13 @@ public class ImplementationServiceImpl implements ImplementationService {
         return repository.findById(implId).orElseThrow(NoSuchElementException::new);
     }
 
-    private Implementation update(UUID id, Implementation implementation) {
-        Implementation persistedImpl = repository.findById(id).orElseThrow(NoSuchElementException::new);
-
-        persistedImpl.setLink(implementation.getLink());
-        persistedImpl.setDependencies(implementation.getDependencies());
-        persistedImpl.setParameter(implementation.getParameter());
-        persistedImpl.setAssumptions(implementation.getAssumptions());
-        persistedImpl.setContributors(implementation.getContributors());
-        persistedImpl.setName(implementation.getName());
-        persistedImpl.setDescription(implementation.getDescription());
-        persistedImpl.setInputFormat(implementation.getInputFormat());
-        persistedImpl.setOutputFormat(implementation.getOutputFormat());
-
-        // Tags, Publications, Algorithms
-        // update them if new ones are added
-        tagService.createOrUpdateAll(implementation.getTags());
-        persistedImpl.setTags(implementation.getTags());
-
-        publicationService.createOrUpdateAll(implementation.getPublications());
-        persistedImpl.setPublications(implementation.getPublications());
-
-        if (implementation.getImplementedAlgorithm().getId() == null) {
-            algorithmService.save(implementation.getImplementedAlgorithm());
+    @Transactional
+    @Override
+    public Implementation update(UUID id, Implementation implementation) {
+        if (repository.existsImplementationById(id)) {
+            implementation.setId(id);
+            return save(implementation);
         }
-        persistedImpl.setImplementedAlgorithm(implementation.getImplementedAlgorithm());
-
-        return repository.save(persistedImpl);
+        throw new NoSuchElementException();
     }
 }

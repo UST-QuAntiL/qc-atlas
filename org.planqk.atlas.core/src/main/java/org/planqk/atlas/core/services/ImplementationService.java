@@ -24,10 +24,15 @@ import java.util.UUID;
 import org.planqk.atlas.core.model.Implementation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface ImplementationService {
 
-    Implementation saveOrUpdate(Implementation tag);
+    @Transactional
+    Implementation save(Implementation implementation);
+
+    @Transactional
+    Implementation update(UUID id, Implementation implementation);
 
     Page<Implementation> findAll(Pageable pageable);
 

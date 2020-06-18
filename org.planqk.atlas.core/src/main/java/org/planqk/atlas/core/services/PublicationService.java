@@ -1,4 +1,4 @@
-/*******************************************************************************
+/********************************************************************************
  * Copyright (c) 2020 University of Stuttgart
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -16,6 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
+
 package org.planqk.atlas.core.services;
 
 import org.planqk.atlas.core.model.Algorithm;
@@ -23,16 +24,21 @@ import org.planqk.atlas.core.model.Publication;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
 public interface PublicationService {
+
+    @Transactional
     Publication save(Publication publication);
 
+    @Transactional
     Publication update(UUID pubId, Publication publication);
 
+    @Transactional
     void deleteById(UUID pubId);
 
     Page<Publication> findAll(Pageable pageable);
@@ -41,7 +47,11 @@ public interface PublicationService {
 
     Optional<Publication> findOptionalById(UUID pubId);
 
+    @Transactional
     Set<Publication> createOrUpdateAll(Set<Publication> publications);
 
     Set<Algorithm> findPublicationAlgorithms(UUID publicationId);
+
+    @Transactional
+    void deletePublicationsByIds(Set<UUID> publicationIds);
 }
