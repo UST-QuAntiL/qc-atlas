@@ -44,7 +44,7 @@ public class PublicationDto {
 
     @Schema(description = "URL", example = "https://www.ibm.com/quantum-computing/", required = false)
     @URL(message = "Publication URL must be a valid URL!")
-    private java.net.URL url;
+    private String url;
 
     @NotEmpty(message = "Authors of the Publication must not be empty!")
     private List<String> authors;
