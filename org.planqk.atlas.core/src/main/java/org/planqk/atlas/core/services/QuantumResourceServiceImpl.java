@@ -25,9 +25,9 @@ import java.util.UUID;
 
 import javax.transaction.Transactional;
 
+import org.planqk.atlas.core.model.ComputingResource;
+import org.planqk.atlas.core.model.ComputingResourceType;
 import org.planqk.atlas.core.model.QuantumAlgorithm;
-import org.planqk.atlas.core.model.QuantumResource;
-import org.planqk.atlas.core.model.QuantumResourceType;
 import org.planqk.atlas.core.repository.AlgorithmRepository;
 import org.planqk.atlas.core.repository.QuantumResourceRepository;
 import org.planqk.atlas.core.repository.QuantumResourceTypeRepository;
@@ -58,44 +58,44 @@ public class QuantumResourceServiceImpl implements QuantumResourceService {
     }
 
     @Override
-    public QuantumResourceType findResourceTypeById(UUID resourceTypeId) {
+    public ComputingResourceType findResourceTypeById(UUID resourceTypeId) {
         return this.typeRepository.findById(resourceTypeId).orElseThrow(NoSuchElementException::new);
     }
 
     @Override
-    public Page<QuantumResourceType> findAllResourceTypes(Pageable pageable) {
+    public Page<ComputingResourceType> findAllResourceTypes(Pageable pageable) {
         return typeRepository.findAll(pageable);
     }
 
     @Override
-    public Set<QuantumResource> findAllResourcesByAlgorithmId(UUID algoid) {
+    public Set<ComputingResource> findAllResourcesByAlgorithmId(UUID algoid) {
         return resourceRepository.findAllByAlgorithm_Id(algoid);
     }
 
     @Override
-    public Page<QuantumResource> findAllResourcesByAlgorithmId(UUID algoid, Pageable pageable) {
+    public Page<ComputingResource> findAllResourcesByAlgorithmId(UUID algoid, Pageable pageable) {
         return resourceRepository.findAllByAlgorithm_Id(algoid, pageable);
     }
 
     @Override
     @Transactional
-    public QuantumResourceType addOrUpdateQuantumResourceType(QuantumResourceType resourceType) {
+    public ComputingResourceType addOrUpdateQuantumResourceType(ComputingResourceType resourceType) {
         return typeRepository.save(resourceType);
     }
 
     @Override
     @Transactional
-    public QuantumResource addOrUpdateQuantumResource(QuantumResource resource) {
-        if (resource.getQuantumResourceType().getId() == null) {
-            var type = addOrUpdateQuantumResourceType(resource.getQuantumResourceType());
-            resource.setQuantumResourceType(type);
+    public ComputingResource addOrUpdateQuantumResource(ComputingResource resource) {
+        if (resource.getComputingResourceType().getId() == null) {
+            var type = addOrUpdateQuantumResourceType(resource.getComputingResourceType());
+            resource.setComputingResourceType(type);
         }
         return resourceRepository.save(resource);
     }
 
     @Override
     @Transactional
-    public QuantumResource addQuantumResourceToAlgorithm(QuantumAlgorithm algo, QuantumResource resource) {
+    public ComputingResource addQuantumResourceToAlgorithm(QuantumAlgorithm algo, ComputingResource resource) {
         var updatedResource = resource;
         if (updatedResource.getId() == null) {
             updatedResource = this.addOrUpdateQuantumResource(resource);
@@ -106,7 +106,7 @@ public class QuantumResourceServiceImpl implements QuantumResourceService {
 
     @Override
     @Transactional
-    public QuantumResource addQuantumResourceToAlgorithm(UUID algoId, UUID resourceId) {
+    public ComputingResource addQuantumResourceToAlgorithm(UUID algoId, UUID resourceId) {
         var resource = resourceRepository.findById(resourceId).orElseThrow(NoSuchElementException::new);
         var algorithm = (QuantumAlgorithm) algorithmRepository.findById(algoId).orElseThrow(NoSuchElementException::new);
 
@@ -114,7 +114,7 @@ public class QuantumResourceServiceImpl implements QuantumResourceService {
     }
 
     @Override
-    public QuantumResource findResourceById(UUID id) {
+    public ComputingResource findResourceById(UUID id) {
         return resourceRepository.findById(id).orElseThrow(NoSuchElementException::new);
     }
 }

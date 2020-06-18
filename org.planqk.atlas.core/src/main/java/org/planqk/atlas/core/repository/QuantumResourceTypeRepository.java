@@ -21,13 +21,11 @@ package org.planqk.atlas.core.repository;
 
 import java.util.UUID;
 
-import org.planqk.atlas.core.model.QuantumResourceType;
+import org.planqk.atlas.core.model.ComputingResourceType;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 @RepositoryRestResource
-public interface QuantumResourceTypeRepository extends JpaRepository<QuantumResourceType, UUID> {
+public interface QuantumResourceTypeRepository extends JpaRepository<ComputingResourceType, UUID> {
 }

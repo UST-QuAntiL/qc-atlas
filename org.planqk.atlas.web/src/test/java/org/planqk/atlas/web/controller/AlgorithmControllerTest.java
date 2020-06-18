@@ -31,13 +31,13 @@ import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
 import org.planqk.atlas.core.model.ComputationModel;
+import org.planqk.atlas.core.model.ComputingResource;
+import org.planqk.atlas.core.model.ComputingResourceDataType;
+import org.planqk.atlas.core.model.ComputingResourceType;
 import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.model.PatternRelationType;
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.model.QuantumAlgorithm;
-import org.planqk.atlas.core.model.QuantumResource;
-import org.planqk.atlas.core.model.QuantumResourceDataType;
-import org.planqk.atlas.core.model.QuantumResourceType;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.core.services.QuantumResourceService;
 import org.planqk.atlas.web.Constants;
@@ -503,7 +503,7 @@ public class AlgorithmControllerTest {
     @Test
     void testListQuantumResources_ValidAlgo_NoResources() throws Exception {
         var algo = new QuantumAlgorithm();
-        algo.setRequiredQuantumResources(new HashSet<>());
+        algo.setRequiredComputingResources(new HashSet<>());
         when(algorithmService.findById(any())).thenReturn(algo);
         when(quantumResourceService.findAllResourcesByAlgorithmId(any(), any())).thenReturn(Page.empty());
         var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES + "/";
@@ -519,19 +519,19 @@ public class AlgorithmControllerTest {
 
     @Test
     void testListQuantumResources_ValidAlgo_ResourcesIncluded() throws Exception {
-        var type = new QuantumResourceType();
-        type.setDatatype(QuantumResourceDataType.FLOAT);
+        var type = new ComputingResourceType();
+        type.setDatatype(ComputingResourceDataType.FLOAT);
         type.setName("test-type");
         type.setId(UUID.randomUUID());
 
         var algo = new QuantumAlgorithm();
-        algo.setRequiredQuantumResources(new HashSet<>());
+        algo.setRequiredComputingResources(new HashSet<>());
         algo.setId(UUID.randomUUID());
-        var resources = new ArrayList<QuantumResource>();
+        var resources = new ArrayList<ComputingResource>();
 
         for (int i = 0; i < 10; i++) {
-            var resource = new QuantumResource();
-            resource.setQuantumResourceType(type);
+            var resource = new ComputingResource();
+            resource.setComputingResourceType(type);
             resource.setId(UUID.randomUUID());
             resources.add(resource);
             algo.addQuantumResource(resource);
@@ -556,7 +556,7 @@ public class AlgorithmControllerTest {
     @Test
     void testAddQuantumResource_AlgoNotFound() throws Exception {
         var type = new QuantumResourceTypeDto();
-        type.setDatatype(QuantumResourceDataType.FLOAT);
+        type.setDatatype(ComputingResourceDataType.FLOAT);
         type.setName("test-type");
         type.setId(UUID.randomUUID());
         var resource = new QuantumResourceDto();
@@ -572,7 +572,7 @@ public class AlgorithmControllerTest {
     @Test
     void testAddQuantumResource_AlgoNotQuantum() throws Exception {
         var type = new QuantumResourceTypeDto();
-        type.setDatatype(QuantumResourceDataType.FLOAT);
+        type.setDatatype(ComputingResourceDataType.FLOAT);
         type.setName("test-type");
         type.setId(UUID.randomUUID());
         var resource = new QuantumResourceDto();
@@ -599,7 +599,7 @@ public class AlgorithmControllerTest {
     @Test
     void testAddQuantumResource_InvalidInput_InvalidType_MissingName() throws Exception {
         var type = new QuantumResourceTypeDto();
-        type.setDatatype(QuantumResourceDataType.FLOAT);
+        type.setDatatype(ComputingResourceDataType.FLOAT);
         type.setId(UUID.randomUUID());
         var resource = new QuantumResourceDto();
         resource.setType(type);
@@ -644,7 +644,7 @@ public class AlgorithmControllerTest {
     void testAddQuantumResource_InvalidInput_InvalidType_EmptyName() throws Exception {
         var type = new QuantumResourceTypeDto();
         type.setName("");
-        type.setDatatype(QuantumResourceDataType.FLOAT);
+        type.setDatatype(ComputingResourceDataType.FLOAT);
         type.setId(UUID.randomUUID());
         var resource = new QuantumResourceDto();
         resource.setType(type);
@@ -659,7 +659,7 @@ public class AlgorithmControllerTest {
     @Test
     void testAddQuantumResource() throws Exception {
         var type = new QuantumResourceTypeDto();
-        type.setDatatype(QuantumResourceDataType.FLOAT);
+        type.setDatatype(ComputingResourceDataType.FLOAT);
         type.setName("test-type");
         type.setId(UUID.randomUUID());
         var resource = new QuantumResourceDto();
@@ -702,7 +702,7 @@ public class AlgorithmControllerTest {
         algorithmRelations.add(algorithmRelation2);
 
         when(algorithmService.findById(any())).thenReturn(algorithm1);
-        when(quantumResourceService.addQuantumResourceToAlgorithm(any(QuantumAlgorithm.class), any(QuantumResource.class))).thenReturn(new QuantumResource());
+        when(quantumResourceService.addQuantumResourceToAlgorithm(any(QuantumAlgorithm.class), any(ComputingResource.class))).thenReturn(new ComputingResource());
         var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES + "/";
         mockMvc.perform(post(path).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsBytes(resource)))
                 .andExpect(status().isOk());

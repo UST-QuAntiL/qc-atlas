@@ -24,9 +24,9 @@ import java.util.UUID;
 
 import javax.transaction.Transactional;
 
+import org.planqk.atlas.core.model.ComputingResource;
+import org.planqk.atlas.core.model.ComputingResourceType;
 import org.planqk.atlas.core.model.QuantumAlgorithm;
-import org.planqk.atlas.core.model.QuantumResource;
-import org.planqk.atlas.core.model.QuantumResourceType;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -38,25 +38,25 @@ public interface QuantumResourceService {
     @Transactional
     void deleteQuantumResource(UUID resourceId);
 
-    QuantumResourceType findResourceTypeById(UUID resourceTypeId);
+    ComputingResourceType findResourceTypeById(UUID resourceTypeId);
 
-    Page<QuantumResourceType> findAllResourceTypes(Pageable pageable);
+    Page<ComputingResourceType> findAllResourceTypes(Pageable pageable);
 
-    Set<QuantumResource> findAllResourcesByAlgorithmId(UUID algoid);
+    Set<ComputingResource> findAllResourcesByAlgorithmId(UUID algoid);
 
-    Page<QuantumResource> findAllResourcesByAlgorithmId(UUID algoid, Pageable pageable);
-
-    @Transactional
-    QuantumResourceType addOrUpdateQuantumResourceType(QuantumResourceType resourceType);
+    Page<ComputingResource> findAllResourcesByAlgorithmId(UUID algoid, Pageable pageable);
 
     @Transactional
-    QuantumResource addOrUpdateQuantumResource(QuantumResource resource);
+    ComputingResourceType addOrUpdateQuantumResourceType(ComputingResourceType resourceType);
 
     @Transactional
-    QuantumResource addQuantumResourceToAlgorithm(QuantumAlgorithm algo, QuantumResource resource);
+    ComputingResource addOrUpdateQuantumResource(ComputingResource resource);
 
     @Transactional
-    QuantumResource addQuantumResourceToAlgorithm(UUID algoId, UUID resourceId);
+    ComputingResource addQuantumResourceToAlgorithm(QuantumAlgorithm algo, ComputingResource resource);
 
-    QuantumResource findResourceById(UUID id);
+    @Transactional
+    ComputingResource addQuantumResourceToAlgorithm(UUID algoId, UUID resourceId);
+
+    ComputingResource findResourceById(UUID id);
 }

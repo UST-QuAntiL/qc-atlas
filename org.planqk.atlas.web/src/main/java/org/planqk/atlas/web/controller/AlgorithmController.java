@@ -26,11 +26,11 @@ import javax.validation.Valid;
 
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
+import org.planqk.atlas.core.model.ComputingResource;
 import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.model.QuantumAlgorithm;
-import org.planqk.atlas.core.model.QuantumResource;
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.core.services.QuantumResourceService;
@@ -321,7 +321,7 @@ public class AlgorithmController {
             LOG.warn("Attempted to add a quantum reource for a non quantum algorithm");
             throw new InvalidTypeException("The algorithm given is not a quantum algorithm");
         }
-        var resource = ModelMapperUtils.convert(resourceDto, QuantumResource.class);
+        var resource = ModelMapperUtils.convert(resourceDto, ComputingResource.class);
         var updatedAlgorithm = quantumResourceService.addQuantumResourceToAlgorithm(
                 (QuantumAlgorithm) algorithm,
                 resource

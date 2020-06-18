@@ -24,7 +24,7 @@ import java.util.UUID;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
-import org.planqk.atlas.core.model.QuantumResourceDataType;
+import org.planqk.atlas.core.model.ComputingResourceDataType;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -42,6 +42,6 @@ public class QuantumResourceTypeDto {
     @NotEmpty
     private String name;
     @NotNull
-    private QuantumResourceDataType datatype;
+    private ComputingResourceDataType datatype;
     private String description;
 }
