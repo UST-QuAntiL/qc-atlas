@@ -26,6 +26,5 @@ public class BackendDto {
     private String vendor;
     private String technology;
     private QuantumComputationModel quantumComputationModel;
-    @NotNull()
     private Set<BackendProperty> backendProperties;
 }
