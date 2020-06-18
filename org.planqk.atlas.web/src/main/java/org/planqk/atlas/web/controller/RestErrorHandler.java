@@ -29,7 +29,7 @@ public class RestErrorHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<?> handleInvalidJson(HttpMessageNotReadableException e) {
         LOG.error(e.getMessage(), e);
-        return new ResponseEntity<>("Jackson cannot deserialize request", HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(ConsistencyException.class)

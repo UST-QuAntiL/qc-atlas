@@ -207,8 +207,6 @@ public class ImplementationControllerTest {
         implementation.setName("implementation for Shor");
         implementation.setId(implId);
 
-        // set everything we need to set for a valid request:
-        implementation.setLink(new URL("https://wwww.uri/for/test/"));
         when(implementationService.save(any(Implementation.class))).thenReturn(implementation);
         return implementation;
     }
@@ -221,7 +219,6 @@ public class ImplementationControllerTest {
 
         // specify an implementation:
         Implementation implementation = new Implementation();
-        implementation.setName("implementation for Shor");
 
         implementation.setId(implId);
 

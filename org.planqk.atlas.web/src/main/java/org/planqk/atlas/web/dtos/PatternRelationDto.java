@@ -17,16 +17,12 @@ public class PatternRelationDto {
 
     private UUID id;
 
-    //    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-//    @Schema(accessMode = WRITE_ONLY)
     @NotNull(message = "Pattern-Relations must have an algorithm!")
     private AlgorithmDto algorithm;
 
     @NotNull(message = "Pattern-Relations must have a URI!")
     private URI pattern;
 
-    //    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-//    @Schema(accessMode = WRITE_ONLY)
     @NotNull(message = "Pattern-Relations must have an type!")
     private PatternRelationTypeDto patternRelationType;
 

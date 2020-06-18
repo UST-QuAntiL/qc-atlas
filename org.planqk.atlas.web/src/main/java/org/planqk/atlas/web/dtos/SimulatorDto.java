@@ -7,5 +7,10 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @Data
-public class SimulatorDto extends BackendDto{
+public class SimulatorDto extends BackendDto {
+
+    private boolean localExecution;
+
+    private String licence;
+
 }
