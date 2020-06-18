@@ -5,12 +5,13 @@ import java.util.UUID;
 
 import javax.validation.constraints.NotNull;
 
+import org.planqk.atlas.core.model.BackendProperty;
+import org.planqk.atlas.core.model.QuantumComputationModel;
+
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.planqk.atlas.core.model.BackendProperty;
-import org.planqk.atlas.core.model.QuantumComputationModel;
 
 @ToString(callSuper = true)
 @Data
@@ -25,5 +26,6 @@ public class BackendDto {
     private String vendor;
     private String technology;
     private QuantumComputationModel quantumComputationModel;
+    @NotNull()
     private Set<BackendProperty> backendProperties;
 }
