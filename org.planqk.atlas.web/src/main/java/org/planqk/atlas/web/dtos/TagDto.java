@@ -24,12 +24,16 @@ import lombok.EqualsAndHashCode;
 
 import java.util.UUID;
 
+import javax.validation.constraints.NotNull;
+
 @EqualsAndHashCode
 @Data
 public class TagDto {
 
+    @NotNull(message = "Tag key must not be null!")
     private String key;
 
+    @NotNull(message = "Tag value must not be null!")
     private String value;
 
     private UUID id;
