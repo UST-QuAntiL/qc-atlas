@@ -18,9 +18,17 @@
  *******************************************************************************/
 package org.planqk.atlas.web;
 
+import java.util.Map;
+
+import org.planqk.atlas.web.dtos.AlgorithmDto;
+import org.planqk.atlas.web.dtos.ClassicAlgorithmDto;
+import org.planqk.atlas.web.dtos.QuantumAlgorithmDto;
+import org.planqk.atlas.web.utils.EntityModelConverter;
 import org.planqk.atlas.web.utils.LinkRemoverModelConverter;
 
 import io.swagger.v3.core.converter.ModelConverters;
+import io.swagger.v3.oas.annotations.media.DiscriminatorMapping;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
@@ -38,5 +46,34 @@ public class SwaggerConfiguration {
         final var converter = new LinkRemoverModelConverter();
         ModelConverters.getInstance().addConverter(converter);
         return converter;
+    }
+
+    @Bean
+    @Lazy(false)
+    public EntityModelConverter entityModelConverter() {
+        final var converter = new EntityModelConverter(Map.of(
+                AlgorithmDto.class, AlgorithmSchema.class
+                ));
+        ModelConverters.getInstance().addConverter(converter);
+        return converter;
+    }
+
+    // The private classes below provide custom schemas for certain types used in our public API.
+    // Setting these annotations on the correct types is not always possible, because we could end up with
+    // reference cycles, for example:
+    //
+    // AlgorithmDto -- (via oneOf) --> ClassicAlgorithmDto -- (extends) --> AlgorithmDto
+
+    @Schema(
+            name = "AlgorithmDto",
+            title = "quantum/classic algorithm",
+            description = "Either a quantum or a classic algorithm",
+            oneOf = {ClassicAlgorithmDto.class, QuantumAlgorithmDto.class},
+            discriminatorMapping = {
+                    @DiscriminatorMapping(value = "CLASSIC", schema = ClassicAlgorithmDto.class),
+                    @DiscriminatorMapping(value = "QUANTUM", schema = QuantumAlgorithmDto.class),
+            }
+    )
+    private static class AlgorithmSchema {
     }
 }

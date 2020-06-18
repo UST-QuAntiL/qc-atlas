@@ -41,7 +41,6 @@ import lombok.NoArgsConstructor;
 @JsonSubTypes( {@JsonSubTypes.Type(value = QuantumAlgorithmDto.class, name = "QUANTUM"),
         @JsonSubTypes.Type(value = ClassicAlgorithmDto.class, name = "CLASSIC"),
         @JsonSubTypes.Type(value = QuantumAlgorithmDto.class, name = "HYBRID")})
-@Schema(oneOf = {QuantumAlgorithmDto.class, ClassicAlgorithmDto.class}, description = "either a quantum or a classic algorithm", title = "quantum/classic algorithm")
 public class AlgorithmDto {
     private UUID id;
 
