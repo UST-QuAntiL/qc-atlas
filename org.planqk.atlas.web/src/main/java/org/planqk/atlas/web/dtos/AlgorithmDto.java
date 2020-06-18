@@ -19,23 +19,24 @@
 
 package org.planqk.atlas.web.dtos;
 
-import java.util.Set;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
+import javax.validation.constraints.NotNull;
+
+import org.planqk.atlas.core.model.ClassicAlgorithm;
 import org.planqk.atlas.core.model.ComputationModel;
 import org.planqk.atlas.core.model.Publication;
+import org.planqk.atlas.core.model.QuantumAlgorithm;
+import org.planqk.atlas.core.model.Sketch;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.planqk.atlas.core.model.Sketch;
-
-import javax.validation.constraints.*;
 
 import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.WRITE_ONLY;
 
@@ -49,6 +50,7 @@ import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.WRITE_ONLY;
 @JsonSubTypes({ @JsonSubTypes.Type(value = QuantumAlgorithmDto.class, name = "QUANTUM"),
         @JsonSubTypes.Type(value = ClassicAlgorithmDto.class, name = "CLASSIC"),
         @JsonSubTypes.Type(value = QuantumAlgorithmDto.class, name = "HYBRID") })
+@Schema(oneOf = {QuantumAlgorithm.class, ClassicAlgorithm.class}, description = "either a quantum or a classic algorithm", title = "quantum/classic algorithm")
 public class AlgorithmDto {
 
     private UUID id;

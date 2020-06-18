@@ -18,14 +18,15 @@
  *******************************************************************************/
 package org.planqk.atlas.core.model;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 
-import java.util.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 /**
  * Entity which represents the publication.
