@@ -37,10 +37,10 @@ import org.planqk.atlas.core.services.ComputingResourceService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
+import org.planqk.atlas.web.dtos.ComputingResourceDto;
 import org.planqk.atlas.web.dtos.PatternRelationDto;
 import org.planqk.atlas.web.dtos.ProblemTypeDto;
 import org.planqk.atlas.web.dtos.PublicationDto;
-import org.planqk.atlas.web.dtos.QuantumResourceDto;
 import org.planqk.atlas.web.dtos.TagDto;
 import org.planqk.atlas.web.exceptions.InvalidTypeException;
 import org.planqk.atlas.web.linkassembler.AlgorithmAssembler;
@@ -96,7 +96,7 @@ public class AlgorithmController {
     private final ComputingResourceService computingResourceService;
 
     private final PagedResourcesAssembler<AlgorithmDto> algorithmPaginationAssembler;
-    private final PagedResourcesAssembler<QuantumResourceDto> quantumResourcePaginationAssembler;
+    private final PagedResourcesAssembler<ComputingResourceDto> quantumResourcePaginationAssembler;
     private final ProblemTypeAssembler problemTypeAssembler;
     private final TagAssembler tagAssembler;
     private final AlgorithmAssembler algorithmAssembler;
@@ -288,7 +288,7 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "404")
     })
     @GetMapping("/{id}/" + Constants.COMPUTING_RESOURCES)
-    public ResponseEntity<PagedModel<EntityModel<QuantumResourceDto>>> getQuantumResources(
+    public ResponseEntity<PagedModel<EntityModel<ComputingResourceDto>>> getQuantumResources(
             @PathVariable UUID id,
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size
@@ -300,7 +300,7 @@ public class AlgorithmController {
         }
         var resources = computingResourceService.findAllResourcesByAlgorithmId(id,
                 RestUtils.getPageableFromRequestParams(page, size));
-        var typeDtoes = ModelMapperUtils.convertPage(resources, QuantumResourceDto.class);
+        var typeDtoes = ModelMapperUtils.convertPage(resources, ComputingResourceDto.class);
         var pagedModel = quantumResourcePaginationAssembler.toModel(typeDtoes);
         quantumResourceAssembler.addLinks(pagedModel);
         return ResponseEntity.ok(pagedModel);
@@ -314,7 +314,7 @@ public class AlgorithmController {
     @PostMapping("/{id}/" + Constants.COMPUTING_RESOURCES)
     public ResponseEntity<EntityModel<AlgorithmDto>> addQuantumResource(
             @PathVariable UUID id,
-            @Valid @RequestBody QuantumResourceDto resourceDto
+            @Valid @RequestBody ComputingResourceDto resourceDto
     ) {
         var algorithm = algorithmService.findById(id);
         if (!(algorithm instanceof QuantumAlgorithm)) {

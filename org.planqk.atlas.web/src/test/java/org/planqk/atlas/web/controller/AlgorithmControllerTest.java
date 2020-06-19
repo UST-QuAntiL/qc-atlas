@@ -44,8 +44,8 @@ import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
+import org.planqk.atlas.web.dtos.ComputingResourceDto;
 import org.planqk.atlas.web.dtos.PatternRelationDto;
-import org.planqk.atlas.web.dtos.QuantumResourceDto;
 import org.planqk.atlas.web.dtos.QuantumResourceTypeDto;
 import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
@@ -512,7 +512,7 @@ public class AlgorithmControllerTest {
         var resultList = ObjectMapperUtils.mapResponseToList(
                 result.getResponse().getContentAsString(),
                 "quantumResourceDtoes",
-                QuantumResourceDto.class
+                ComputingResourceDto.class
         );
         assertThat(resultList.size()).isEqualTo(0);
     }
@@ -545,7 +545,7 @@ public class AlgorithmControllerTest {
         var resultList = ObjectMapperUtils.mapResponseToList(
                 result.getResponse().getContentAsString(),
                 "quantumResourceDtoes",
-                QuantumResourceDto.class
+                ComputingResourceDto.class
         );
         assertThat(resultList.size()).isEqualTo(10);
 
@@ -559,7 +559,7 @@ public class AlgorithmControllerTest {
         type.setDatatype(ComputingResourceDataType.FLOAT);
         type.setName("test-type");
         type.setId(UUID.randomUUID());
-        var resource = new QuantumResourceDto();
+        var resource = new ComputingResourceDto();
         resource.setType(type);
         resource.setId(UUID.randomUUID());
 
@@ -575,7 +575,7 @@ public class AlgorithmControllerTest {
         type.setDatatype(ComputingResourceDataType.FLOAT);
         type.setName("test-type");
         type.setId(UUID.randomUUID());
-        var resource = new QuantumResourceDto();
+        var resource = new ComputingResourceDto();
         resource.setType(type);
         resource.setId(UUID.randomUUID());
 
@@ -587,7 +587,7 @@ public class AlgorithmControllerTest {
 
     @Test
     void testAddQuantumResource_InvalidInput_NoType() throws Exception {
-        var resource = new QuantumResourceDto();
+        var resource = new ComputingResourceDto();
         resource.setId(UUID.randomUUID());
 
         when(algorithmService.findById(any())).thenReturn(new ClassicAlgorithm());
@@ -601,7 +601,7 @@ public class AlgorithmControllerTest {
         var type = new QuantumResourceTypeDto();
         type.setDatatype(ComputingResourceDataType.FLOAT);
         type.setId(UUID.randomUUID());
-        var resource = new QuantumResourceDto();
+        var resource = new ComputingResourceDto();
         resource.setType(type);
         resource.setId(UUID.randomUUID());
 
@@ -616,7 +616,7 @@ public class AlgorithmControllerTest {
         var type = new QuantumResourceTypeDto();
         type.setName("test");
         type.setId(UUID.randomUUID());
-        var resource = new QuantumResourceDto();
+        var resource = new ComputingResourceDto();
         resource.setType(type);
         resource.setId(UUID.randomUUID());
 
@@ -630,7 +630,7 @@ public class AlgorithmControllerTest {
     void testAddQuantumResource_InvalidInput_InvalidType_MissingRequirements() throws Exception {
         var type = new QuantumResourceTypeDto();
         type.setId(UUID.randomUUID());
-        var resource = new QuantumResourceDto();
+        var resource = new ComputingResourceDto();
         resource.setType(type);
         resource.setId(UUID.randomUUID());
 
@@ -646,7 +646,7 @@ public class AlgorithmControllerTest {
         type.setName("");
         type.setDatatype(ComputingResourceDataType.FLOAT);
         type.setId(UUID.randomUUID());
-        var resource = new QuantumResourceDto();
+        var resource = new ComputingResourceDto();
         resource.setType(type);
         resource.setId(UUID.randomUUID());
 
@@ -662,7 +662,7 @@ public class AlgorithmControllerTest {
         type.setDatatype(ComputingResourceDataType.FLOAT);
         type.setName("test-type");
         type.setId(UUID.randomUUID());
-        var resource = new QuantumResourceDto();
+        var resource = new ComputingResourceDto();
         resource.setType(type);
         resource.setId(UUID.randomUUID());
 

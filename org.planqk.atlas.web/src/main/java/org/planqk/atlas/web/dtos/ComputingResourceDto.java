@@ -32,7 +32,7 @@ import lombok.ToString;
 @EqualsAndHashCode
 @ToString
 @NoArgsConstructor
-public class QuantumResourceDto {
+public class ComputingResourceDto {
     private UUID id;
     private Object value;
     @NotNull

@@ -23,7 +23,7 @@ import java.util.UUID;
 
 import org.planqk.atlas.core.services.ComputingResourceService;
 import org.planqk.atlas.web.Constants;
-import org.planqk.atlas.web.dtos.QuantumResourceDto;
+import org.planqk.atlas.web.dtos.ComputingResourceDto;
 import org.planqk.atlas.web.linkassembler.QuantumResourceAssembler;
 import org.planqk.atlas.web.utils.HateoasUtils;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
@@ -56,9 +56,9 @@ public class QuantumResourceController {
             @ApiResponse(responseCode = "404"),
     })
     @GetMapping("/{id}")
-    public ResponseEntity<EntityModel<QuantumResourceDto>> getQuantumResource(@PathVariable UUID id) {
+    public ResponseEntity<EntityModel<ComputingResourceDto>> getQuantumResource(@PathVariable UUID id) {
         var resource = service.findResourceById(id);
-        var resourceDto = ModelMapperUtils.convert(resource, QuantumResourceDto.class);
+        var resourceDto = ModelMapperUtils.convert(resource, ComputingResourceDto.class);
         var entityModel = HateoasUtils.generateEntityModel(resourceDto);
         assembler.addLinks(entityModel);
         return ResponseEntity.ok(entityModel);
