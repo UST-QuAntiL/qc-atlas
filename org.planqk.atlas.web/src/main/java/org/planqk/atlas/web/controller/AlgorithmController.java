@@ -19,6 +19,8 @@
 
 package org.planqk.atlas.web.controller;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -232,6 +234,27 @@ public class AlgorithmController {
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
+    @PutMapping("/{id}/" + Constants.PUBLICATIONS)
+    public HttpEntity<CollectionModel<EntityModel<PublicationDto>>> updatePublications(@PathVariable UUID id, @Valid @RequestBody List<PublicationDto> publications) {
+        Algorithm algorithm = algorithmService.findById(id);
+        // access publication in db to throw NoSuchElementException if it doesn't exist
+        Set<Publication> newPublications = new HashSet<>();
+        publications.forEach(publicationDto -> {
+            publicationService.findById(publicationDto.getId());
+            newPublications.add(ModelMapperUtils.convert(publicationDto, Publication.class));
+        });
+        // update and return update list:
+        algorithm.setPublications(newPublications);
+        Set<Publication> updatedPublications = algorithmService.save(algorithm).getPublications();
+        Set<PublicationDto> dtoPublications = ModelMapperUtils.convertSet(updatedPublications, PublicationDto.class);
+        // Create CollectionModel
+        CollectionModel<EntityModel<PublicationDto>> resultCollection = HateoasUtils.generateCollectionModel(dtoPublications);
+        // Fill EntityModel Links
+        publicationAssembler.addLinks(resultCollection);
+        return new ResponseEntity<>(resultCollection, HttpStatus.OK);
+    }
+
+    @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping("/{id}/" + Constants.PROBLEM_TYPES)
     public HttpEntity<CollectionModel<EntityModel<ProblemTypeDto>>> getProblemTypes(@PathVariable UUID id) {
         Algorithm algorithm = algorithmService.findById(id);
@@ -264,6 +287,27 @@ public class AlgorithmController {
         Set<ProblemType> updatedProblemTypes = algorithmService.save(algorithm).getProblemTypes();
         Set<ProblemTypeDto> problemTypeDtos = ModelMapperUtils.convertSet(updatedProblemTypes, ProblemTypeDto.class);
         CollectionModel<EntityModel<ProblemTypeDto>> resultCollection = HateoasUtils.generateCollectionModel(problemTypeDtos);
+        // Fill EntityModel Links
+        problemTypeAssembler.addLinks(resultCollection);
+        return new ResponseEntity<>(resultCollection, HttpStatus.OK);
+    }
+
+    @Operation(responses = {@ApiResponse(responseCode = "200")})
+    @PutMapping("/{id}/" + Constants.PROBLEM_TYPES)
+    public HttpEntity<CollectionModel<EntityModel<ProblemTypeDto>>> updateProblemTypes(@PathVariable UUID id, @Valid @RequestBody List<ProblemTypeDto> problemTypeDtos) {
+        Algorithm algorithm = algorithmService.findById(id);
+        // access publication in db to throw NoSuchElementException if it doesn't exist
+        Set<ProblemType> newProblemTypes = new HashSet<>();
+        problemTypeDtos.forEach(problemTypeDto -> {
+            problemTypeService.findById(problemTypeDto.getId());
+            newProblemTypes.add(ModelMapperUtils.convert(problemTypeDto, ProblemType.class));
+        });
+        // update and return update list:
+        algorithm.setProblemTypes(newProblemTypes);
+        Set<ProblemType> updatedProblemTypes = algorithmService.save(algorithm).getProblemTypes();
+        Set<ProblemTypeDto> problemTypeDtosResult = ModelMapperUtils.convertSet(updatedProblemTypes, ProblemTypeDto.class);
+        // Create CollectionModel
+        CollectionModel<EntityModel<ProblemTypeDto>> resultCollection = HateoasUtils.generateCollectionModel(problemTypeDtosResult);
         // Fill EntityModel Links
         problemTypeAssembler.addLinks(resultCollection);
         return new ResponseEntity<>(resultCollection, HttpStatus.OK);
@@ -304,6 +348,27 @@ public class AlgorithmController {
         Set<PatternRelation> updatedPatternRelations = algorithmService.save(algorithm).getRelatedPatterns();
         Set<PatternRelationDto> result = ModelMapperUtils.convertSet(updatedPatternRelations, PatternRelationDto.class);
         CollectionModel<EntityModel<PatternRelationDto>> resultCollection = HateoasUtils.generateCollectionModel(result);
+        // Fill EntityModel Links
+        patternRelationAssembler.addLinks(resultCollection);
+        return new ResponseEntity<>(resultCollection, HttpStatus.OK);
+    }
+
+    @Operation(responses = {@ApiResponse(responseCode = "201")})
+    @PutMapping("/{id}/" + Constants.PATTERN_RELATIONS)
+    public HttpEntity<CollectionModel<EntityModel<PatternRelationDto>>> updatePatternRelations(@PathVariable UUID id, @Valid @RequestBody List<PatternRelationDto> patternRelationDtos) {
+        Algorithm algorithm = algorithmService.findById(id);
+        // access publication in db to throw NoSuchElementException if it doesn't exist
+        Set<PatternRelation> newPatternRelations = new HashSet<>();
+        patternRelationDtos.forEach(patternRelationDto -> {
+            patternRelationService.findById(patternRelationDto.getId());
+            newPatternRelations.add(ModelMapperUtils.convert(patternRelationDto, PatternRelation.class));
+        });
+        // update and return update list:
+        algorithm.setRelatedPatterns(newPatternRelations);
+        Set<PatternRelation> updatedPatternRelations = algorithmService.save(algorithm).getRelatedPatterns();
+        Set<PatternRelationDto> patternRelationseDtosResult = ModelMapperUtils.convertSet(updatedPatternRelations, PatternRelationDto.class);
+        // Create CollectionModel
+        CollectionModel<EntityModel<PatternRelationDto>> resultCollection = HateoasUtils.generateCollectionModel(patternRelationseDtosResult);
         // Fill EntityModel Links
         patternRelationAssembler.addLinks(resultCollection);
         return new ResponseEntity<>(resultCollection, HttpStatus.OK);
