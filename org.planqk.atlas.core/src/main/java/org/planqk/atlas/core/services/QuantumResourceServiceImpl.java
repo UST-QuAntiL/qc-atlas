@@ -25,10 +25,12 @@ import java.util.UUID;
 
 import javax.transaction.Transactional;
 
+import org.planqk.atlas.core.model.Backend;
 import org.planqk.atlas.core.model.QuantumAlgorithm;
 import org.planqk.atlas.core.model.QuantumResource;
 import org.planqk.atlas.core.model.QuantumResourceType;
 import org.planqk.atlas.core.repository.AlgorithmRepository;
+import org.planqk.atlas.core.repository.BackendRepository;
 import org.planqk.atlas.core.repository.QuantumResourceRepository;
 import org.planqk.atlas.core.repository.QuantumResourceTypeRepository;
 
@@ -42,6 +44,7 @@ import org.springframework.stereotype.Service;
 public class QuantumResourceServiceImpl implements QuantumResourceService {
 
     private final AlgorithmRepository algorithmRepository;
+    private final BackendRepository backendRepository;
     private final QuantumResourceTypeRepository typeRepository;
     private final QuantumResourceRepository resourceRepository;
 
@@ -78,6 +81,16 @@ public class QuantumResourceServiceImpl implements QuantumResourceService {
     }
 
     @Override
+    public Set<QuantumResource> findAllResourcesByBackendId(UUID backendId) {
+        return resourceRepository.findAllByBackend_Id(backendId);
+    }
+
+    @Override
+    public Page<QuantumResource> findAllResourcesByBackendId(UUID backendId, Pageable pageable) {
+        return resourceRepository.findAllByBackend_Id(backendId, pageable);
+    }
+
+    @Override
     @Transactional
     public QuantumResourceType addOrUpdateQuantumResourceType(QuantumResourceType resourceType) {
         return typeRepository.save(resourceType);
@@ -111,6 +124,26 @@ public class QuantumResourceServiceImpl implements QuantumResourceService {
         var algorithm = (QuantumAlgorithm) algorithmRepository.findById(algoId).orElseThrow(NoSuchElementException::new);
 
         return addQuantumResourceToAlgorithm(algorithm, resource);
+    }
+
+    @Override
+    @Transactional
+    public QuantumResource addQuantumResourceToBackend(Backend backend, QuantumResource resource) {
+        var updatedResource = resource;
+        if (updatedResource.getId() == null) {
+            updatedResource = this.addOrUpdateQuantumResource(resource);
+        }
+        updatedResource.setBackend(backend);
+        return this.resourceRepository.save(updatedResource);
+    }
+
+    @Override
+    @Transactional
+    public QuantumResource addQuantumResourceToBackend(UUID backendId, UUID resourceId) {
+        var resource = resourceRepository.findById(resourceId).orElseThrow(NoSuchElementException::new);
+        var backend = (Backend) backendRepository.findById(backendId).orElseThrow(NoSuchElementException::new);
+
+        return addQuantumResourceToBackend(backend, resource);
     }
 
     @Override

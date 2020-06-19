@@ -29,7 +29,10 @@ public class QuantumAlgorithmDto extends AlgorithmDto {
     @NotNull(message = "QuantumComputationModel must not be null!")
     private QuantumComputationModel quantumComputationModel;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Schema(accessMode = WRITE_ONLY)
     private Set<QuantumResourceDto> requiredQuantumResources = new HashSet<>();
+
     private String speedUp;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)

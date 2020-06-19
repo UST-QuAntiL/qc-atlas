@@ -1,5 +1,6 @@
 package org.planqk.atlas.web.dtos;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -25,6 +26,7 @@ public class BackendDto {
     private String name;
     private String vendor;
     private String technology;
+    private Set<QuantumResourceDto> providedQuantumResources = new HashSet<>();
     private QuantumComputationModel quantumComputationModel;
     private Set<BackendProperty> backendProperties;
 }

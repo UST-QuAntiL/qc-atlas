@@ -46,6 +46,10 @@ public class QuantumResource extends HasId {
     @Exclude
     private QuantumAlgorithm algorithm;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @Exclude
+    private Backend backend;
+
     @Type(type = "jsonb")
     @Column(columnDefinition = "jsonb")
     private Object value;

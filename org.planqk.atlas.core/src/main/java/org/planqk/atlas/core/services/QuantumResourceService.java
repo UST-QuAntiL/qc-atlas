@@ -24,6 +24,7 @@ import java.util.UUID;
 
 import javax.transaction.Transactional;
 
+import org.planqk.atlas.core.model.Backend;
 import org.planqk.atlas.core.model.QuantumAlgorithm;
 import org.planqk.atlas.core.model.QuantumResource;
 import org.planqk.atlas.core.model.QuantumResourceType;
@@ -46,6 +47,10 @@ public interface QuantumResourceService {
 
     Page<QuantumResource> findAllResourcesByAlgorithmId(UUID algoid, Pageable pageable);
 
+    Set<QuantumResource> findAllResourcesByBackendId(UUID backendId);
+
+    Page<QuantumResource> findAllResourcesByBackendId(UUID backendId, Pageable pageable);
+
     @Transactional
     QuantumResourceType addOrUpdateQuantumResourceType(QuantumResourceType resourceType);
 
@@ -57,6 +62,12 @@ public interface QuantumResourceService {
 
     @Transactional
     QuantumResource addQuantumResourceToAlgorithm(UUID algoId, UUID resourceId);
+
+    @Transactional
+    QuantumResource addQuantumResourceToBackend(Backend backend, QuantumResource resource);
+
+    @Transactional
+    QuantumResource addQuantumResourceToBackend(UUID backendId, UUID resourceId);
 
     QuantumResource findResourceById(UUID id);
 }

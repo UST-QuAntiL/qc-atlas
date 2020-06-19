@@ -5,11 +5,16 @@ import java.util.UUID;
 import javax.validation.Valid;
 
 import org.planqk.atlas.core.model.Backend;
+import org.planqk.atlas.core.model.QuantumResource;
 import org.planqk.atlas.core.services.BackendService;
+import org.planqk.atlas.core.services.QuantumResourceService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.annotation.ApiVersion;
 import org.planqk.atlas.web.dtos.BackendDto;
+import org.planqk.atlas.web.dtos.QuantumResourceDto;
+import org.planqk.atlas.web.exceptions.InvalidTypeException;
 import org.planqk.atlas.web.linkassembler.BackendAssembler;
+import org.planqk.atlas.web.linkassembler.QuantumResourceAssembler;
 import org.planqk.atlas.web.utils.HateoasUtils;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.RestUtils;
@@ -48,9 +53,13 @@ public class BackendController {
 
     final private static Logger LOG = LoggerFactory.getLogger(BackendController.class);
 
+    private final QuantumResourceService quantumResourceService;
+
     private BackendService backendService;
     private BackendAssembler backendAssembler;
     private PagedResourcesAssembler<BackendDto> paginationAssembler;
+    private final PagedResourcesAssembler<QuantumResourceDto> quantumResourcePaginationAssembler;
+    private final QuantumResourceAssembler quantumResourceAssembler;
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping("/")
@@ -101,5 +110,43 @@ public class BackendController {
         EntityModel<BackendDto> dtoOutput = HateoasUtils.generateEntityModel(ModelMapperUtils.convert(backend, BackendDto.class));
         backendAssembler.addLinks(dtoOutput);
         return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404")
+    })
+    @GetMapping("/{id}/" + Constants.QUANTUM_RESOURCES)
+    public ResponseEntity<PagedModel<EntityModel<QuantumResourceDto>>> getQuantumResources(
+            @PathVariable UUID id,
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size
+    ) {
+        var resources = quantumResourceService.findAllResourcesByBackendId(id,
+                RestUtils.getPageableFromRequestParams(page, size));
+        var typeDtoes = ModelMapperUtils.convertPage(resources, QuantumResourceDto.class);
+        var pagedModel = quantumResourcePaginationAssembler.toModel(typeDtoes);
+        quantumResourceAssembler.addLinks(pagedModel);
+        return ResponseEntity.ok(pagedModel);
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404")
+    })
+    @PostMapping("/{id}/" + Constants.QUANTUM_RESOURCES)
+    public ResponseEntity<EntityModel<BackendDto>> addQuantumResource(
+            @PathVariable UUID id,
+            @Valid @RequestBody QuantumResourceDto resourceDto
+    ) {
+        var backend = backendService.findById(id);
+        var resource = ModelMapperUtils.convert(resourceDto, QuantumResource.class);
+        var updatedBackend = quantumResourceService.addQuantumResourceToBackend(backend, resource);
+        EntityModel<BackendDto> backendDto = HateoasUtils.generateEntityModel(
+                ModelMapperUtils.convert(updatedBackend, BackendDto.class));
+        backendAssembler.addLinks(backendDto);
+        return ResponseEntity.ok(backendDto);
     }
 }

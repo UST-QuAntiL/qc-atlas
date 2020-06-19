@@ -91,7 +91,7 @@ public class BackendServiceImpl implements BackendService {
     }
 
     private Backend update(UUID id, Backend backend) {
-        Backend persistedBackend = findById(id);
+        Backend persistedBackend = repo.findById(id).orElseThrow(NoSuchElementException::new);
 
         persistedBackend.setQuantumComputationModel(backend.getQuantumComputationModel());
         persistedBackend.setTechnology(backend.getTechnology());
@@ -102,6 +102,7 @@ public class BackendServiceImpl implements BackendService {
             backendPropertyTypeRepository.save(backendProperty.getType());
             backendPropertyRepository.save(backendProperty);
         });
+        persistedBackend.setProvidedQuantumResources(backend.getProvidedQuantumResources());
 
         return repo.save(persistedBackend);
     }

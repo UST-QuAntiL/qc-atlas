@@ -34,4 +34,8 @@ public interface QuantumResourceRepository extends JpaRepository<QuantumResource
     Set<QuantumResource> findAllByAlgorithm_Id(UUID algoId);
 
     Page<QuantumResource> findAllByAlgorithm_Id(UUID algoId, Pageable p);
+
+    Set<QuantumResource> findAllByBackend_Id(UUID backendId);
+
+    Page<QuantumResource> findAllByBackend_Id(UUID backendId, Pageable p);
 }

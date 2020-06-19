@@ -85,9 +85,9 @@ public class AlgorithmDto {
     @NotNull(message = "Computational-Model must not be null!")
     private ComputationModel computationModel;
 
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @Schema(accessMode = WRITE_ONLY)
-    private Set<PatternRelationDto> relatedPatterns = new HashSet<>();
+//    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+//    @Schema(accessMode = WRITE_ONLY)
+//    private Set<PatternRelationDto> relatedPatterns = new HashSet<>();
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Schema(accessMode = WRITE_ONLY)
