@@ -41,8 +41,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
@@ -75,8 +73,6 @@ public class DiscussionTopicController {
     private DiscussionTopicAssembler discussionTopicAssembler;
     private DiscussionCommentService discussionCommentService;
 
-    @Autowired
-    @Qualifier("discussion-comment")
     private DiscussionCommentController discussionCommentController;
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
@@ -179,13 +175,8 @@ public class DiscussionTopicController {
     @PutMapping("/{topicId}")
     public HttpEntity<EntityModel<DiscussionTopicDto>> updateDiscussionTopic(@PathVariable UUID topicId,
                                                                              @Valid @RequestBody DiscussionTopicDto discussionTopicDto) {
-        DiscussionTopic discussionTopic = discussionTopicService.findById(topicId);
-        if (!(discussionTopic.getId().equals(topicId))) {
-            log.debug("Not the matching topic id: {}", topicId);
-            throw new NoSuchElementException();
-        }
         discussionTopicDto.setId(topicId);
-        discussionTopic = discussionTopicService.update(topicId, ModelMapperUtils.convert(discussionTopicDto, DiscussionTopic.class));
+        DiscussionTopic discussionTopic = discussionTopicService.update(topicId, ModelMapperUtils.convert(discussionTopicDto, DiscussionTopic.class));
         EntityModel<DiscussionTopicDto> discussionTopicDtoEntityModel = HateoasUtils.generateEntityModel(ModelMapperUtils.convert(discussionTopic, DiscussionTopicDto.class));
         discussionTopicAssembler.addLinks(discussionTopicDtoEntityModel);
         return new ResponseEntity<>(discussionTopicDtoEntityModel, HttpStatus.OK);
