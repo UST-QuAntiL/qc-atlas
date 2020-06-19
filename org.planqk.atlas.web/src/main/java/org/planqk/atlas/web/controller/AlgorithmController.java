@@ -30,7 +30,6 @@ import org.planqk.atlas.core.model.ComputingResource;
 import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.model.Publication;
-import org.planqk.atlas.core.model.QuantumAlgorithm;
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.core.services.ComputingResourceService;
@@ -42,7 +41,6 @@ import org.planqk.atlas.web.dtos.PatternRelationDto;
 import org.planqk.atlas.web.dtos.ProblemTypeDto;
 import org.planqk.atlas.web.dtos.PublicationDto;
 import org.planqk.atlas.web.dtos.TagDto;
-import org.planqk.atlas.web.exceptions.InvalidTypeException;
 import org.planqk.atlas.web.linkassembler.AlgorithmAssembler;
 import org.planqk.atlas.web.linkassembler.AlgorithmRelationAssembler;
 import org.planqk.atlas.web.linkassembler.ComputingResourceAssembler;
@@ -313,13 +311,9 @@ public class AlgorithmController {
             @Valid @RequestBody ComputingResourceDto resourceDto
     ) {
         var algorithm = algorithmService.findById(id);
-        if (!(algorithm instanceof QuantumAlgorithm)) {
-            LOG.warn("Attempted to add a quantum reource for a non quantum algorithm");
-            throw new InvalidTypeException("The algorithm given is not a quantum algorithm");
-        }
         var resource = ModelMapperUtils.convert(resourceDto, ComputingResource.class);
         var updatedAlgorithm = computingResourceService.addComputingResourceToAlgorithm(
-                (QuantumAlgorithm) algorithm,
+                algorithm,
                 resource
         );
         EntityModel<AlgorithmDto> algoDto = HateoasUtils.generateEntityModel(

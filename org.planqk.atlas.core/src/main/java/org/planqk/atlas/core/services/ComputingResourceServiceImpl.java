@@ -25,6 +25,7 @@ import java.util.UUID;
 
 import javax.transaction.Transactional;
 
+import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.ComputingResource;
 import org.planqk.atlas.core.model.ComputingResourceType;
 import org.planqk.atlas.core.model.QuantumAlgorithm;
@@ -95,7 +96,7 @@ public class ComputingResourceServiceImpl implements ComputingResourceService {
 
     @Override
     @Transactional
-    public ComputingResource addComputingResourceToAlgorithm(QuantumAlgorithm algo, ComputingResource resource) {
+    public ComputingResource addComputingResourceToAlgorithm(Algorithm algo, ComputingResource resource) {
         var updatedResource = resource;
         if (updatedResource.getId() == null) {
             updatedResource = this.addOrUpdateComputingResource(resource);

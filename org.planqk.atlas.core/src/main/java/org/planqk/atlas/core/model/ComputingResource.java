@@ -44,7 +44,7 @@ public class ComputingResource extends HasId {
 
     @ManyToOne(cascade = CascadeType.DETACH)
     @Exclude
-    private QuantumAlgorithm algorithm;
+    private Algorithm algorithm;
 
     @Type(type = "jsonb")
     @Column(columnDefinition = "jsonb")

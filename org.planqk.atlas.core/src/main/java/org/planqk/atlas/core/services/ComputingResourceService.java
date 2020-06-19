@@ -24,9 +24,9 @@ import java.util.UUID;
 
 import javax.transaction.Transactional;
 
+import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.ComputingResource;
 import org.planqk.atlas.core.model.ComputingResourceType;
-import org.planqk.atlas.core.model.QuantumAlgorithm;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -53,7 +53,7 @@ public interface ComputingResourceService {
     ComputingResource addOrUpdateComputingResource(ComputingResource resource);
 
     @Transactional
-    ComputingResource addComputingResourceToAlgorithm(QuantumAlgorithm algo, ComputingResource resource);
+    ComputingResource addComputingResourceToAlgorithm(Algorithm algo, ComputingResource resource);
 
     @Transactional
     ComputingResource addComputingResourceToAlgorithm(UUID algoId, UUID resourceId);

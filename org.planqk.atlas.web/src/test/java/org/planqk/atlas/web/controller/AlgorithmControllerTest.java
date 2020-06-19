@@ -580,10 +580,16 @@ public class AlgorithmControllerTest {
         resource.setType(type);
         resource.setId(UUID.randomUUID());
 
-        when(algorithmService.findById(any())).thenReturn(new ClassicAlgorithm());
+        var algorithm = new Algorithm();
+        algorithm.setId(UUID.randomUUID());
+        algorithm.setName("alg1");
+        algorithm.setComputationModel(ComputationModel.CLASSIC);
+
+        when(algorithmService.findById(any())).thenReturn(algorithm);
+        when(computingResourceService.addComputingResourceToAlgorithm(any(Algorithm.class), any(ComputingResource.class))).thenReturn(new ComputingResource());
         var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES + "/";
         mockMvc.perform(post(path).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsBytes(resource)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isOk());
     }
 
     @Test
