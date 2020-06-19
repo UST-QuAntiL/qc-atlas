@@ -51,10 +51,9 @@ public class RootControllerTest {
         var responseObject = new JSONObject(result.getResponse().getContentAsString());
 
         var linkArray = responseObject.getJSONObject("_links");
-        assertEquals(4, linkArray.length());
+        assertEquals(3, linkArray.length());
         assertTrue(linkArray.has("self"));
         assertTrue(linkArray.has(Constants.ALGORITHMS));
-        assertTrue(linkArray.has(Constants.TAGS));
         assertTrue(linkArray.has(Constants.PUBLICATIONS));
         assertFalse(linkArray.has("randomLink"));
     }

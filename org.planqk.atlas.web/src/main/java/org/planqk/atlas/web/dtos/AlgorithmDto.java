@@ -34,6 +34,7 @@ import org.planqk.atlas.core.model.Sketch;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -52,7 +53,6 @@ import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY;
         @JsonSubTypes.Type(value = QuantumAlgorithmDto.class, name = "HYBRID") })
 @Schema(oneOf = {QuantumAlgorithm.class, ClassicAlgorithm.class}, description = "either a quantum or a classic algorithm", title = "quantum/classic algorithm")
 public class AlgorithmDto {
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @Schema(accessMode = READ_ONLY)
     private UUID id;
 
@@ -69,8 +69,8 @@ public class AlgorithmDto {
 
     private String problem;
 
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    @Schema(accessMode = READ_ONLY)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Hidden
     private Set<AlgorithmRelationDto> algorithmRelations = new HashSet<>();
 
     private String inputFormat;
