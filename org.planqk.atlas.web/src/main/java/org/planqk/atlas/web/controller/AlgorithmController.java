@@ -206,6 +206,26 @@ public class AlgorithmController {
         return new ResponseEntity<>(resultCollection, HttpStatus.OK);
     }
 
+    @Operation(responses = {@ApiResponse(responseCode = "201")})
+    @PostMapping("/{id}/" + Constants.PUBLICATIONS)
+    public HttpEntity<CollectionModel<EntityModel<PublicationDto>>> addPatternRelations(@PathVariable UUID id, @Valid @RequestBody PublicationDto publicationDto) {
+        Algorithm algorithm = algorithmService.findById(id);
+        Publication publication = ModelMapperUtils.convert(publicationDto, Publication.class);
+        // Get ProblemTypes of Algorithm
+        Set<Publication> publications = algorithm.getPublications();
+        // add new problemtype
+        publications.add(publication);
+        // update and return update list:
+        algorithm.setPublications(publications);
+        Set<Publication> updatedPublications = algorithmService.save(algorithm).getPublications();
+        Set<PublicationDto> dtoPublications = ModelMapperUtils.convertSet(updatedPublications, PublicationDto.class);
+        // Create CollectionModel
+        CollectionModel<EntityModel<PublicationDto>> resultCollection = HateoasUtils.generateCollectionModel(dtoPublications);
+        // Fill EntityModel Links
+        publicationAssembler.addLinks(resultCollection);
+        return new ResponseEntity<>(resultCollection, HttpStatus.OK);
+    }
+
     @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping("/{id}/" + Constants.PROBLEM_TYPES)
     public HttpEntity<CollectionModel<EntityModel<ProblemTypeDto>>> getProblemTypes(@PathVariable UUID id) {
@@ -223,6 +243,25 @@ public class AlgorithmController {
         return new ResponseEntity<>(resultCollection, HttpStatus.OK);
     }
 
+    @Operation(responses = {@ApiResponse(responseCode = "201")})
+    @PostMapping("/{id}/" + Constants.PROBLEM_TYPES)
+    public HttpEntity<CollectionModel<EntityModel<ProblemTypeDto>>> addProblemType(@PathVariable UUID id, @Valid @RequestBody ProblemTypeDto problemTypeDto) {
+        Algorithm algorithm = algorithmService.findById(id);
+        ProblemType problemtype = ModelMapperUtils.convert(problemTypeDto, ProblemType.class);
+        // Get ProblemTypes of Algorithm
+        Set<ProblemType> problemTypes = algorithm.getProblemTypes();
+        // add new problemtype
+        problemTypes.add(problemtype);
+        // update and return update list:
+        algorithm.setProblemTypes(problemTypes);
+        Set<ProblemType> updatedProblemTypes = algorithmService.save(algorithm).getProblemTypes();
+        Set<ProblemTypeDto> problemTypeDtos = ModelMapperUtils.convertSet(updatedProblemTypes, ProblemTypeDto.class);
+        CollectionModel<EntityModel<ProblemTypeDto>> resultCollection = HateoasUtils.generateCollectionModel(problemTypeDtos);
+        // Fill EntityModel Links
+        problemTypeAssembler.addLinks(resultCollection);
+        return new ResponseEntity<>(resultCollection, HttpStatus.OK);
+    }
+
     @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400"), @ApiResponse(responseCode = "404")})
     @GetMapping("/{id}/" + Constants.PATTERN_RELATIONS)
     public HttpEntity<CollectionModel<EntityModel<PatternRelationDto>>> getPatternRelations(@PathVariable UUID id) {
@@ -237,6 +276,25 @@ public class AlgorithmController {
         patternRelationAssembler.addLinks(resultCollection);
         // Fill Collection-Links
         algorithmAssembler.addPatternRelationLink(resultCollection, id);
+        return new ResponseEntity<>(resultCollection, HttpStatus.OK);
+    }
+
+    @Operation(responses = {@ApiResponse(responseCode = "201")})
+    @PostMapping("/{id}/" + Constants.PATTERN_RELATIONS)
+    public HttpEntity<CollectionModel<EntityModel<PatternRelationDto>>> addPatternRelations(@PathVariable UUID id, @Valid @RequestBody PatternRelationDto patternRelationDto) {
+        Algorithm algorithm = algorithmService.findById(id);
+        PatternRelation patternRelations = ModelMapperUtils.convert(patternRelationDto, PatternRelation.class);
+        // Get ProblemTypes of Algorithm
+        Set<PatternRelation> relatedPatterns = algorithm.getRelatedPatterns();
+        // add new problemtype
+        relatedPatterns.add(patternRelations);
+        // update and return update list:
+        algorithm.setRelatedPatterns(relatedPatterns);
+        Set<PatternRelation> updatedPatternRelations = algorithmService.save(algorithm).getRelatedPatterns();
+        Set<PatternRelationDto> result = ModelMapperUtils.convertSet(updatedPatternRelations, PatternRelationDto.class);
+        CollectionModel<EntityModel<PatternRelationDto>> resultCollection = HateoasUtils.generateCollectionModel(result);
+        // Fill EntityModel Links
+        patternRelationAssembler.addLinks(resultCollection);
         return new ResponseEntity<>(resultCollection, HttpStatus.OK);
     }
 
