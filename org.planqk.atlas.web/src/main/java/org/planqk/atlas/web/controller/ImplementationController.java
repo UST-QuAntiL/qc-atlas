@@ -192,19 +192,18 @@ public class ImplementationController {
             @ApiResponse(responseCode = "404")
     })
     @PostMapping("/{implId}/" + Constants.COMPUTING_RESOURCES)
-    public ResponseEntity<EntityModel<ImplementationDto>> addComputingResource(
+    public ResponseEntity<EntityModel<ComputingResourceDto>> addComputingResource(
             @PathVariable UUID algoId, @PathVariable UUID implId,
             @Valid @RequestBody ComputingResourceDto resourceDto
     ) {
         var implementation = implementationService.findById(implId);
         var resource = ModelMapperUtils.convert(resourceDto, ComputingResource.class);
-        var updatedImplementation = computingResourceService.addComputingResourceToImplementation(
+        ComputingResource computingResource = computingResourceService.addComputingResourceToImplementation(
                 implementation,
                 resource
         );
-        EntityModel<ImplementationDto> implDto = HateoasUtils.generateEntityModel(
-                ModelMapperUtils.convert(updatedImplementation, ImplementationDto.class));
-        implementationAssembler.addLinks(implDto);
-        return ResponseEntity.ok(implDto);
+        EntityModel<ComputingResourceDto> dto = HateoasUtils.generateEntityModel(
+                ModelMapperUtils.convert(computingResource, ComputingResourceDto.class));
+        return ResponseEntity.ok(dto);
     }
 }

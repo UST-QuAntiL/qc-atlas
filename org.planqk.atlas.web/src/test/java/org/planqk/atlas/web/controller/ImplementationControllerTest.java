@@ -27,6 +27,7 @@ import java.util.UUID;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.services.AlgorithmService;
+import org.planqk.atlas.core.services.ComputingResourceService;
 import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
 import org.planqk.atlas.web.dtos.ImplementationDto;
@@ -75,6 +76,8 @@ public class ImplementationControllerTest {
     private AlgorithmService algorithmService;
     @MockBean
     private ImplementationService implementationService;
+    @MockBean
+    private ComputingResourceService computingResourceService;
 
     @Autowired
     private MockMvc mockMvc;
