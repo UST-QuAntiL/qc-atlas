@@ -9,7 +9,6 @@ import org.planqk.atlas.core.model.QuantumResource;
 import org.planqk.atlas.core.services.BackendService;
 import org.planqk.atlas.core.services.QuantumResourceService;
 import org.planqk.atlas.web.Constants;
-import org.planqk.atlas.web.annotation.ApiVersion;
 import org.planqk.atlas.web.dtos.BackendDto;
 import org.planqk.atlas.web.dtos.QuantumResourceDto;
 import org.planqk.atlas.web.exceptions.InvalidTypeException;
@@ -47,8 +46,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/" + Constants.BACKENDS)
-@ApiVersion("v1")
 @AllArgsConstructor
+@io.swagger.v3.oas.annotations.tags.Tag(name = "backend")
 public class BackendController {
 
     final private static Logger LOG = LoggerFactory.getLogger(BackendController.class);

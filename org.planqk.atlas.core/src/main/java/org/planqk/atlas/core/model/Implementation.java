@@ -33,7 +33,6 @@ import javax.persistence.ManyToOne;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
 import lombok.ToString;
 import org.springframework.lang.NonNull;
 
