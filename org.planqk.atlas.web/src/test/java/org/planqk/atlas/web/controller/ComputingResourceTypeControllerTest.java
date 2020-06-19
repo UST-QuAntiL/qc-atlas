@@ -19,15 +19,16 @@
 
 package org.planqk.atlas.web.controller;
 
+import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
-import org.planqk.atlas.core.model.QuantumResource;
-import org.planqk.atlas.core.model.QuantumResourceDataType;
-import org.planqk.atlas.core.model.QuantumResourceType;
-import org.planqk.atlas.core.services.QuantumResourceService;
+import org.planqk.atlas.core.model.ComputingResourceDataType;
+import org.planqk.atlas.core.model.ComputingResourceType;
+import org.planqk.atlas.core.services.ComputingResourceService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
+import org.planqk.atlas.web.dtos.ComputingResourceTypeDto;
 import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -40,6 +41,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -52,13 +54,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(QuantumResourceController.class)
+@WebMvcTest(ComputingResourceTypeController.class)
 @ExtendWith(MockitoExtension.class)
 @AutoConfigureMockMvc
 @EnableLinkAssemblers
-public class QuantumResourceControllerTest {
+public class ComputingResourceTypeControllerTest {
     @MockBean
-    private QuantumResourceService resourceService;
+    private ComputingResourceService resourceService;
 
     @Autowired
     private MockMvc mockMvc;
@@ -71,47 +73,74 @@ public class QuantumResourceControllerTest {
     }
 
     @Test
-    void test_deleteResource() throws Exception {
-        doNothing().when(resourceService).deleteQuantumResource(any());
-        var url = "/" + Constants.QUANTUM_RESOURCES + "/" + UUID.randomUUID().toString();
+    void test_deleteType() throws Exception {
+        doNothing().when(resourceService).deleteComputingResourceType(any());
+        var url = "/" + Constants.COMPUTING_RESOURCE_TYPES + "/" + UUID.randomUUID().toString();
         mockMvc.perform(delete(url)).andExpect(status().isOk());
     }
 
     @Test
-    void test_deleteResource_InvalidId() throws Exception {
-        doThrow(new NoSuchElementException()).when(resourceService).deleteQuantumResource(any());
-        var url = "/" + Constants.QUANTUM_RESOURCES + "/" + UUID.randomUUID().toString();
+    void test_deleteType_InvalidId() throws Exception {
+        doThrow(new NoSuchElementException()).when(resourceService).deleteComputingResourceType(any());
+        var url = "/" + Constants.COMPUTING_RESOURCE_TYPES + "/" + UUID.randomUUID().toString();
         mockMvc.perform(delete(url)).andExpect(status().isNotFound());
     }
 
     @Test
-    void test_getResource_InvalidId() throws Exception {
-        when(resourceService.findResourceById(any())).thenThrow(new NoSuchElementException());
-        var url = "/" + Constants.QUANTUM_RESOURCES + "/" + UUID.randomUUID().toString();
+    void test_getType_InvalidId() throws Exception {
+        when(resourceService.findResourceTypeById(any())).thenThrow(new NoSuchElementException());
+        var url = "/" + Constants.COMPUTING_RESOURCE_TYPES + "/" + UUID.randomUUID().toString();
         mockMvc.perform(get(url)).andExpect(status().isNotFound());
     }
 
     @Test
-    void test_getResource() throws Exception {
-        var sampleType = new QuantumResourceType();
+    void test_getType() throws Exception {
+        var sampleType = new ComputingResourceType();
         sampleType.setId(UUID.randomUUID());
         sampleType.setName("Hello World");
-        sampleType.setDatatype(QuantumResourceDataType.FLOAT);
+        sampleType.setDatatype(ComputingResourceDataType.FLOAT);
         sampleType.setDescription("Test");
-        var sampleResource = new QuantumResource();
-        sampleResource.setId(UUID.randomUUID());
-        sampleResource.setQuantumResourceType(sampleType);
 
-        when(resourceService.findResourceById(any())).thenReturn(sampleResource);
-        var url = "/" + Constants.QUANTUM_RESOURCES + "/" + UUID.randomUUID().toString();
+        when(resourceService.findResourceTypeById(any())).thenReturn(sampleType);
+        var url = "/" + Constants.COMPUTING_RESOURCE_TYPES + "/" + UUID.randomUUID().toString();
         var result = mockMvc.perform(get(url)).andExpect(status().isOk()).andReturn();
 
         var dto = mapper.readValue(
                 result.getResponse().getContentAsString(),
-                new TypeReference<EntityModel<QuantumResource>>() {
+                new TypeReference<EntityModel<ComputingResourceTypeDto>>() {
                 }
         ).getContent();
 
-        assertThat(dto.getId()).isEqualTo(sampleResource.getId());
+        assertThat(dto.getId()).isEqualTo(sampleType.getId());
+        assertThat(dto.getDatatype()).isEqualTo(sampleType.getDatatype());
+        assertThat(dto.getName()).isEqualTo(sampleType.getName());
+        assertThat(dto.getDescription()).isEqualTo(sampleType.getDescription());
+    }
+
+    @Test
+    void test_getTypes() throws Exception {
+        var types = new ArrayList<ComputingResourceType>();
+        for (int i = 0; i < 10; i++) {
+            var sampleType = new ComputingResourceType();
+            sampleType.setId(UUID.randomUUID());
+            sampleType.setName("Hello World");
+            sampleType.setDatatype(ComputingResourceDataType.FLOAT);
+            sampleType.setDescription("Test");
+            types.add(sampleType);
+        }
+
+        when(resourceService.findAllResourceTypes(any())).thenReturn(new PageImpl<>(types));
+        var url = "/" + Constants.COMPUTING_RESOURCE_TYPES + "/";
+        var result = mockMvc.perform(get(url)).andExpect(status().isOk()).andReturn();
+
+        var resultList = ObjectMapperUtils.mapResponseToList(
+                result.getResponse().getContentAsString(),
+                "computingResourceTypeDtoes",
+                ComputingResourceTypeDto.class
+        );
+        assertThat(resultList.size()).isEqualTo(10);
+
+        var presentCount = resultList.stream().filter(e -> types.stream().anyMatch(b -> b.getId().equals(e.getId()))).count();
+        assertThat(presentCount).isEqualTo(10);
     }
 }

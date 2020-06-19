@@ -28,8 +28,8 @@ import java.util.UUID;
 import org.planqk.atlas.core.model.AlgoRelationType;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
+import org.planqk.atlas.core.model.ComputingResource;
 import org.planqk.atlas.core.model.QuantumAlgorithm;
-import org.planqk.atlas.core.model.QuantumResource;
 import org.planqk.atlas.core.repository.AlgorithmRelationRepository;
 import org.planqk.atlas.core.repository.AlgorithmRepository;
 
@@ -63,15 +63,12 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         // Persist ProblemTypes separately
         algorithm.setProblemTypes(problemTypeService.createOrUpdateAll(algorithm.getProblemTypes()));
 
-        if (algorithm instanceof QuantumAlgorithm) {
-            QuantumAlgorithm qc = (QuantumAlgorithm) algorithm;
-            Set<QuantumResource> adaptedQuantumResources = new HashSet<>();
-            for (QuantumResource quantumResource : qc.getRequiredQuantumResources()) {
-                quantumResource.setAlgorithm(qc);
-                adaptedQuantumResources.add(quantumResource);
-            }
-            qc.setRequiredQuantumResources(adaptedQuantumResources);
+        Set<ComputingResource> adaptedComputingResources = new HashSet<>();
+        for (ComputingResource computingResource : algorithm.getRequiredComputingResources()) {
+            computingResource.setAlgorithm(algorithm);
+            adaptedComputingResources.add(computingResource);
         }
+        algorithm.setRequiredComputingResources(adaptedComputingResources);
 
         // persist Algorithm before adding relations
         Set<AlgorithmRelation> inputRelations = algorithm.getAlgorithmRelations();
@@ -137,6 +134,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         persistedAlg.setProblemTypes(algorithm.getProblemTypes());
         persistedAlg.setApplicationAreas(algorithm.getApplicationAreas());
         persistedAlg.setTags(algorithm.getTags());
+        persistedAlg.setRequiredComputingResources(persistedAlg.getRequiredComputingResources());
 
         // If QuantumAlgorithm adjust Quantum fields
         if (algorithm instanceof QuantumAlgorithm) {
@@ -145,7 +143,6 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 
             persistedQuantumAlg.setNisqReady(quantumAlgorithm.isNisqReady());
             persistedQuantumAlg.setQuantumComputationModel(quantumAlgorithm.getQuantumComputationModel());
-            persistedQuantumAlg.setRequiredQuantumResources(quantumAlgorithm.getRequiredQuantumResources());
             persistedQuantumAlg.setSpeedUp(quantumAlgorithm.getSpeedUp());
 
             return algorithmRepository.save(persistedQuantumAlg);

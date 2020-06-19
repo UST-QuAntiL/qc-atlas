@@ -63,6 +63,9 @@ public class Algorithm extends AlgorOrImpl {
     @EqualsAndHashCode.Exclude
     private Set<AlgorithmRelation> algorithmRelations = new HashSet<>();
 
+    @OneToMany(mappedBy = "algorithm", fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, orphanRemoval = true)
+    private Set<ComputingResource> requiredComputingResources = new HashSet<>();
+
     private String inputFormat;
     private String algoParameter;
     private String outputFormat;
@@ -105,5 +108,9 @@ public class Algorithm extends AlgorOrImpl {
         if (relatedPatterns != null) {
             this.relatedPatterns.addAll(relatedPatterns);
         }
+    }
+
+    public void addComputingResource(@lombok.NonNull ComputingResource resource) {
+        this.requiredComputingResources.add(resource);
     }
 }

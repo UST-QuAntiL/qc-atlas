@@ -36,7 +36,7 @@ public class QuantumImplementationDto extends ImplementationDto {
 
     private QuantumAlgorithm algorithm;
 
-    private Set<QuantumResourceDto> requiredQuantumResources = new HashSet<>();
+    private Set<ComputingResourceDto> requiredQuantumResources = new HashSet<>();
 
     private SoftwarePlatform usedSoftwarePlatform;
 

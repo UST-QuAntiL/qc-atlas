@@ -5,15 +5,14 @@ import java.util.UUID;
 import javax.validation.Valid;
 
 import org.planqk.atlas.core.model.Backend;
-import org.planqk.atlas.core.model.QuantumResource;
+import org.planqk.atlas.core.model.ComputingResource;
 import org.planqk.atlas.core.services.BackendService;
-import org.planqk.atlas.core.services.QuantumResourceService;
+import org.planqk.atlas.core.services.ComputingResourceService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.BackendDto;
-import org.planqk.atlas.web.dtos.QuantumResourceDto;
-import org.planqk.atlas.web.exceptions.InvalidTypeException;
+import org.planqk.atlas.web.dtos.ComputingResourceDto;
 import org.planqk.atlas.web.linkassembler.BackendAssembler;
-import org.planqk.atlas.web.linkassembler.QuantumResourceAssembler;
+import org.planqk.atlas.web.linkassembler.ComputingResourceAssembler;
 import org.planqk.atlas.web.utils.HateoasUtils;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.RestUtils;
@@ -31,39 +30,35 @@ import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
-@io.swagger.v3.oas.annotations.tags.Tag(name = "backend")
-@RestController
-@CrossOrigin(allowedHeaders = "*", origins = "*")
-@RequestMapping("/" + Constants.BACKENDS)
+//@io.swagger.v3.oas.annotations.tags.Tag(name = "backend")
+//@RestController
+//@CrossOrigin(allowedHeaders = "*", origins = "*")
+//@RequestMapping("/" + Constants.BACKENDS)
 @AllArgsConstructor
-@io.swagger.v3.oas.annotations.tags.Tag(name = "backend")
+//@io.swagger.v3.oas.annotations.tags.Tag(name = "backend")
 public class BackendController {
 
     final private static Logger LOG = LoggerFactory.getLogger(BackendController.class);
 
-    private final QuantumResourceService quantumResourceService;
-
+    private final ComputingResourceService quantumResourceService;
+    private final PagedResourcesAssembler<ComputingResourceDto> quantumResourcePaginationAssembler;
+    private final ComputingResourceAssembler quantumResourceAssembler;
     private BackendService backendService;
     private BackendAssembler backendAssembler;
     private PagedResourcesAssembler<BackendDto> paginationAssembler;
-    private final PagedResourcesAssembler<QuantumResourceDto> quantumResourcePaginationAssembler;
-    private final QuantumResourceAssembler quantumResourceAssembler;
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping("/")
     public HttpEntity<PagedModel<EntityModel<BackendDto>>> getBackends(@RequestParam(required = false) Integer page,
-                                                                         @RequestParam(required = false) Integer size) {
+                                                                       @RequestParam(required = false) Integer size) {
         LOG.debug("Get to retrieve all Backends received.");
         Pageable p = RestUtils.getPageableFromRequestParams(page, size);
         Page<BackendDto> pageDto = ModelMapperUtils.convertPage(backendService.findAll(p), BackendDto.class);
@@ -116,15 +111,15 @@ public class BackendController {
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404")
     })
-    @GetMapping("/{id}/" + Constants.QUANTUM_RESOURCES)
-    public ResponseEntity<PagedModel<EntityModel<QuantumResourceDto>>> getQuantumResources(
+    @GetMapping("/{id}/" + Constants.COMPUTING_RESOURCES)
+    public ResponseEntity<PagedModel<EntityModel<ComputingResourceDto>>> getQuantumResources(
             @PathVariable UUID id,
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size
     ) {
         var resources = quantumResourceService.findAllResourcesByBackendId(id,
                 RestUtils.getPageableFromRequestParams(page, size));
-        var typeDtoes = ModelMapperUtils.convertPage(resources, QuantumResourceDto.class);
+        var typeDtoes = ModelMapperUtils.convertPage(resources, ComputingResourceDto.class);
         var pagedModel = quantumResourcePaginationAssembler.toModel(typeDtoes);
         quantumResourceAssembler.addLinks(pagedModel);
         return ResponseEntity.ok(pagedModel);
@@ -135,14 +130,14 @@ public class BackendController {
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404")
     })
-    @PostMapping("/{id}/" + Constants.QUANTUM_RESOURCES)
+    @PostMapping("/{id}/" + Constants.COMPUTING_RESOURCES)
     public ResponseEntity<EntityModel<BackendDto>> addQuantumResource(
             @PathVariable UUID id,
-            @Valid @RequestBody QuantumResourceDto resourceDto
+            @Valid @RequestBody ComputingResourceDto resourceDto
     ) {
         var backend = backendService.findById(id);
-        var resource = ModelMapperUtils.convert(resourceDto, QuantumResource.class);
-        var updatedBackend = quantumResourceService.addQuantumResourceToBackend(backend, resource);
+        var resource = ModelMapperUtils.convert(resourceDto, ComputingResource.class);
+        var updatedBackend = quantumResourceService.addComputingResourceToBackend(backend, resource);
         EntityModel<BackendDto> backendDto = HateoasUtils.generateEntityModel(
                 ModelMapperUtils.convert(updatedBackend, BackendDto.class));
         backendAssembler.addLinks(backendDto);

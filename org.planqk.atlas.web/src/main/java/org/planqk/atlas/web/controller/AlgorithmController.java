@@ -26,29 +26,27 @@ import javax.validation.Valid;
 
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
+import org.planqk.atlas.core.model.ComputingResource;
 import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.model.Publication;
-import org.planqk.atlas.core.model.QuantumAlgorithm;
-import org.planqk.atlas.core.model.QuantumResource;
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.services.AlgorithmService;
-import org.planqk.atlas.core.services.QuantumResourceService;
+import org.planqk.atlas.core.services.ComputingResourceService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
+import org.planqk.atlas.web.dtos.ComputingResourceDto;
 import org.planqk.atlas.web.dtos.PatternRelationDto;
 import org.planqk.atlas.web.dtos.ProblemTypeDto;
 import org.planqk.atlas.web.dtos.PublicationDto;
-import org.planqk.atlas.web.dtos.QuantumResourceDto;
 import org.planqk.atlas.web.dtos.TagDto;
-import org.planqk.atlas.web.exceptions.InvalidTypeException;
 import org.planqk.atlas.web.linkassembler.AlgorithmAssembler;
 import org.planqk.atlas.web.linkassembler.AlgorithmRelationAssembler;
+import org.planqk.atlas.web.linkassembler.ComputingResourceAssembler;
 import org.planqk.atlas.web.linkassembler.PatternRelationAssembler;
 import org.planqk.atlas.web.linkassembler.ProblemTypeAssembler;
 import org.planqk.atlas.web.linkassembler.PublicationAssembler;
-import org.planqk.atlas.web.linkassembler.QuantumResourceAssembler;
 import org.planqk.atlas.web.linkassembler.TagAssembler;
 import org.planqk.atlas.web.utils.HateoasUtils;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
@@ -93,16 +91,16 @@ public class AlgorithmController {
     final private static Logger LOG = LoggerFactory.getLogger(AlgorithmController.class);
 
     private final AlgorithmService algorithmService;
-    private final QuantumResourceService quantumResourceService;
+    private final ComputingResourceService computingResourceService;
 
     private final PagedResourcesAssembler<AlgorithmDto> algorithmPaginationAssembler;
-    private final PagedResourcesAssembler<QuantumResourceDto> quantumResourcePaginationAssembler;
+    private final PagedResourcesAssembler<ComputingResourceDto> computingResourcePaginationAssembler;
     private final ProblemTypeAssembler problemTypeAssembler;
     private final TagAssembler tagAssembler;
     private final AlgorithmAssembler algorithmAssembler;
     private final AlgorithmRelationAssembler algorithmRelationAssembler;
     private final PublicationAssembler publicationAssembler;
-    private final QuantumResourceAssembler quantumResourceAssembler;
+    private final ComputingResourceAssembler computingResourceAssembler;
     private final PatternRelationAssembler patternRelationAssembler;
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
@@ -287,22 +285,16 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404")
     })
-    @GetMapping("/{id}/" + Constants.QUANTUM_RESOURCES)
-    public ResponseEntity<PagedModel<EntityModel<QuantumResourceDto>>> getQuantumResources(
+    @GetMapping("/{id}/" + Constants.COMPUTING_RESOURCES)
+    public ResponseEntity<PagedModel<EntityModel<ComputingResourceDto>>> getComputingResources(
             @PathVariable UUID id,
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size
     ) {
-        var algorithm = algorithmService.findById(id);
-        if (!(algorithm instanceof QuantumAlgorithm)) {
-            LOG.warn("Attempted to add a quantum resource for a non quantum algorithm");
-            throw new InvalidTypeException("The algorithm given is not a quantum algorithm");
-        }
-        var resources = quantumResourceService.findAllResourcesByAlgorithmId(id,
-                RestUtils.getPageableFromRequestParams(page, size));
-        var typeDtoes = ModelMapperUtils.convertPage(resources, QuantumResourceDto.class);
-        var pagedModel = quantumResourcePaginationAssembler.toModel(typeDtoes);
-        quantumResourceAssembler.addLinks(pagedModel);
+        var resources = computingResourceService.findAllResourcesByAlgorithmId(id, RestUtils.getPageableFromRequestParams(page, size));
+        var typeDtoes = ModelMapperUtils.convertPage(resources, ComputingResourceDto.class);
+        var pagedModel = computingResourcePaginationAssembler.toModel(typeDtoes);
+        computingResourceAssembler.addLinks(pagedModel);
         return ResponseEntity.ok(pagedModel);
     }
 
@@ -311,19 +303,15 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404")
     })
-    @PostMapping("/{id}/" + Constants.QUANTUM_RESOURCES)
-    public ResponseEntity<EntityModel<AlgorithmDto>> addQuantumResource(
+    @PostMapping("/{id}/" + Constants.COMPUTING_RESOURCES)
+    public ResponseEntity<EntityModel<AlgorithmDto>> addComputingResource(
             @PathVariable UUID id,
-            @Valid @RequestBody QuantumResourceDto resourceDto
+            @Valid @RequestBody ComputingResourceDto resourceDto
     ) {
         var algorithm = algorithmService.findById(id);
-        if (!(algorithm instanceof QuantumAlgorithm)) {
-            LOG.warn("Attempted to add a quantum reource for a non quantum algorithm");
-            throw new InvalidTypeException("The algorithm given is not a quantum algorithm");
-        }
-        var resource = ModelMapperUtils.convert(resourceDto, QuantumResource.class);
-        var updatedAlgorithm = quantumResourceService.addQuantumResourceToAlgorithm(
-                (QuantumAlgorithm) algorithm,
+        var resource = ModelMapperUtils.convert(resourceDto, ComputingResource.class);
+        var updatedAlgorithm = computingResourceService.addComputingResourceToAlgorithm(
+                algorithm,
                 resource
         );
         EntityModel<AlgorithmDto> algoDto = HateoasUtils.generateEntityModel(

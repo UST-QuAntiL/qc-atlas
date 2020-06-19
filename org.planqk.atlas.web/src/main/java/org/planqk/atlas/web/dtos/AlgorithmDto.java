@@ -105,4 +105,5 @@ public class AlgorithmDto {
     @Schema(accessMode = WRITE_ONLY)
     private Set<TagDto> tags = new HashSet<>();
 
+    private Set<ComputingResourceDto> requiredComputingResources = new HashSet<>();
 }

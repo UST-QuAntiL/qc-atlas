@@ -19,7 +19,17 @@
 
 package org.planqk.atlas.core.model;
 
-public enum QuantumResourceDataType {
+import javax.persistence.Entity;
 
-    INTEGER, STRING, FLOAT
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+@EqualsAndHashCode(callSuper = true)
+@Data
+@Entity
+public class ComputingResourceType extends HasId {
+
+    private String name;
+    private ComputingResourceDataType datatype;
+    private String description;
 }
