@@ -48,7 +48,7 @@ public class ComputingResource extends HasId {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @Exclude
-    private QuantumImplementation implementation;
+    private Implementation implementation;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @Exclude

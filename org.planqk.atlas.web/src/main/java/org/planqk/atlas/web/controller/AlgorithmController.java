@@ -253,7 +253,7 @@ public class AlgorithmController {
         // Fill EntityModel Links
         algorithmRelationAssembler.addLinks(resultCollection);
         // Fill Collection-Links
-        algorithmAssembler.addAlgorithmRelationLink(resultCollection, sourceAlgorithmId);
+        algorithmAssembler.addAlgorithmRelationLink(resultCollection, algoId);
         return new ResponseEntity<>(resultCollection, HttpStatus.OK);
     }
 

@@ -26,13 +26,17 @@ import java.util.UUID;
 import javax.validation.Valid;
 
 import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.ComputingResource;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.services.AlgorithmService;
+import org.planqk.atlas.core.services.ComputingResourceService;
 import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.web.Constants;
+import org.planqk.atlas.web.dtos.ComputingResourceDto;
 import org.planqk.atlas.web.dtos.ImplementationDto;
 import org.planqk.atlas.web.dtos.TagDto;
+import org.planqk.atlas.web.linkassembler.ComputingResourceAssembler;
 import org.planqk.atlas.web.linkassembler.ImplementationAssembler;
 import org.planqk.atlas.web.linkassembler.TagAssembler;
 import org.planqk.atlas.web.utils.HateoasUtils;
@@ -44,8 +48,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -57,6 +63,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -70,11 +77,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class ImplementationController {
 
     final private static Logger LOG = LoggerFactory.getLogger(ImplementationController.class);
-
-    private ImplementationService implementationService;
-    private AlgorithmService algorithmService;
-    private ImplementationAssembler implementationAssembler;
-    private TagAssembler tagAssembler;
+    private final ComputingResourceService computingResourceService;
+    private final ComputingResourceAssembler computingResourceAssembler;
+    private final PagedResourcesAssembler<ComputingResourceDto> computingResourcePaginationAssembler;
+    private final ImplementationService implementationService;
+    private final AlgorithmService algorithmService;
+    private final ImplementationAssembler implementationAssembler;
+    private final TagAssembler tagAssembler;
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping("/")
@@ -157,5 +166,45 @@ public class ImplementationController {
         var impl = ModelMapperUtils.convert(dto, Implementation.class);
         impl = implementationService.update(implId, impl);
         return ResponseEntity.ok(HateoasUtils.generateEntityModel(ModelMapperUtils.convert(impl, ImplementationDto.class)));
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404")
+    })
+    @GetMapping("/{implId}/" + Constants.COMPUTING_RESOURCES)
+    public ResponseEntity<PagedModel<EntityModel<ComputingResourceDto>>> getComputingResources(
+            @PathVariable UUID algoId, @PathVariable UUID implId,
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size
+    ) {
+        var resources = computingResourceService.findAllResourcesByImplementationId(implId, RestUtils.getPageableFromRequestParams(page, size));
+        var typeDtoes = ModelMapperUtils.convertPage(resources, ComputingResourceDto.class);
+        var pagedModel = computingResourcePaginationAssembler.toModel(typeDtoes);
+        computingResourceAssembler.addLinks(pagedModel);
+        return ResponseEntity.ok(pagedModel);
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404")
+    })
+    @PostMapping("/{implId}/" + Constants.COMPUTING_RESOURCES)
+    public ResponseEntity<EntityModel<ImplementationDto>> addComputingResource(
+            @PathVariable UUID algoId, @PathVariable UUID implId,
+            @Valid @RequestBody ComputingResourceDto resourceDto
+    ) {
+        var implementation = implementationService.findById(implId);
+        var resource = ModelMapperUtils.convert(resourceDto, ComputingResource.class);
+        var updatedImplementation = computingResourceService.addComputingResourceToImplementation(
+                implementation,
+                resource
+        );
+        EntityModel<ImplementationDto> implDto = HateoasUtils.generateEntityModel(
+                ModelMapperUtils.convert(updatedImplementation, ImplementationDto.class));
+        implementationAssembler.addLinks(implDto);
+        return ResponseEntity.ok(implDto);
     }
 }

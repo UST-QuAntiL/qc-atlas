@@ -36,6 +36,10 @@ public interface ComputingResourceRepository extends JpaRepository<ComputingReso
 
     Page<ComputingResource> findAllByAlgorithm_Id(UUID algoId, Pageable p);
 
+    Set<ComputingResource> findAllByImplementation_Id(UUID backendId);
+
+    Page<ComputingResource> findAllByImplementation_Id(UUID backendId, Pageable p);
+
     Set<ComputingResource> findAllByBackend_Id(UUID backendId);
 
     Page<ComputingResource> findAllByBackend_Id(UUID backendId, Pageable p);
