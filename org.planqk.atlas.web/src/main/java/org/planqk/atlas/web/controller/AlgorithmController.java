@@ -96,7 +96,7 @@ public class AlgorithmController {
     private final ComputingResourceService computingResourceService;
 
     private final PagedResourcesAssembler<AlgorithmDto> algorithmPaginationAssembler;
-    private final PagedResourcesAssembler<ComputingResourceDto> quantumResourcePaginationAssembler;
+    private final PagedResourcesAssembler<ComputingResourceDto> computingResourcePaginationAssembler;
     private final ProblemTypeAssembler problemTypeAssembler;
     private final TagAssembler tagAssembler;
     private final AlgorithmAssembler algorithmAssembler;
@@ -301,7 +301,7 @@ public class AlgorithmController {
         var resources = computingResourceService.findAllResourcesByAlgorithmId(id,
                 RestUtils.getPageableFromRequestParams(page, size));
         var typeDtoes = ModelMapperUtils.convertPage(resources, ComputingResourceDto.class);
-        var pagedModel = quantumResourcePaginationAssembler.toModel(typeDtoes);
+        var pagedModel = computingResourcePaginationAssembler.toModel(typeDtoes);
         computingResourceAssembler.addLinks(pagedModel);
         return ResponseEntity.ok(pagedModel);
     }
