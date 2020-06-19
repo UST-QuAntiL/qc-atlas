@@ -50,7 +50,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     private final AlgorithmRelationRepository algorithmRelationRepository;
     private final AlgoRelationTypeService relationTypeService;
 
-    private final TagService tagService;
+    //    private final TagService tagService;
     private final ProblemTypeService problemTypeService;
     private final PublicationService publicationService;
 
@@ -58,7 +58,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     @Override
     public Algorithm save(Algorithm algorithm) {
         // Persist Tags separately
-        algorithm.setTags(tagService.createOrUpdateAll(algorithm.getTags()));
+//        algorithm.setTags(tagService.createOrUpdateAll(algorithm.getTags()));
         // Persist ProblemTypes separately
         algorithm.setProblemTypes(problemTypeService.createOrUpdateAll(algorithm.getProblemTypes()));
 

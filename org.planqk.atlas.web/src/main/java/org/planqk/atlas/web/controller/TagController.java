@@ -19,30 +19,18 @@
 
 package org.planqk.atlas.web.controller;
 
-import org.planqk.atlas.core.services.TagService;
-import org.planqk.atlas.web.Constants;
-import org.planqk.atlas.web.dtos.TagDto;
-import org.planqk.atlas.web.linkassembler.AlgorithmAssembler;
-import org.planqk.atlas.web.linkassembler.ImplementationAssembler;
-
-import lombok.AllArgsConstructor;
-import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-@io.swagger.v3.oas.annotations.tags.Tag(name = "tag")
-@RestController
-@CrossOrigin(allowedHeaders = "*", origins = "*")
-@RequestMapping("/" + Constants.TAGS)
-@AllArgsConstructor
+//@io.swagger.v3.oas.annotations.tags.Tag(name = "tag")
+//@RestController
+//@CrossOrigin(allowedHeaders = "*", origins = "*")
+//@RequestMapping("/" + Constants.TAGS)
+//@AllArgsConstructor
 public class TagController {
 
-    private TagService tagService;
-    private PagedResourcesAssembler<TagDto> paginationAssembler;
-    //    private TagAssembler tagAssembler;
-    private AlgorithmAssembler algorithmAssembler;
-    private ImplementationAssembler implementationAssembler;
+//    private TagService tagService;
+//    private PagedResourcesAssembler<TagDto> paginationAssembler;
+//    //    private TagAssembler tagAssembler;
+//    private AlgorithmAssembler algorithmAssembler;
+//    private ImplementationAssembler implementationAssembler;
 
 //    @Operation(responses = { @ApiResponse(responseCode = "200") })
 //    @GetMapping(value = "/")

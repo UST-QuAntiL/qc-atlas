@@ -27,7 +27,7 @@ public class AlgorithmAssembler extends GenericLinkAssembler<AlgorithmDto> {
         resource.add(links.linkTo(methodOn(AlgorithmController.class).updateAlgorithm(getId(resource), getContent(resource)))
                 .withRel("update"));
         resource.add(links.linkTo(methodOn(AlgorithmController.class).deleteAlgorithm(getId(resource))).withRel("delete"));
-        resource.add(links.linkTo(methodOn(AlgorithmController.class).getTags(getId(resource))).withRel(Constants.TAGS));
+//        resource.add(links.linkTo(methodOn(AlgorithmController.class).getTags(getId(resource))).withRel(Constants.TAGS));
         resource.add(links.linkTo(methodOn(ImplementationController.class).getImplementations(getId(resource)))
                 .withRel(Constants.IMPLEMENTATIONS));
         resource.add(links.linkTo(methodOn(AlgorithmController.class).getProblemTypes(getId(resource)))
@@ -45,7 +45,7 @@ public class AlgorithmAssembler extends GenericLinkAssembler<AlgorithmDto> {
     }
 
     public void addTagLink(CollectionModel<EntityModel<TagDto>> resources, UUID id) {
-        resources.add(links.linkTo(methodOn(AlgorithmController.class).getTags(id)).withSelfRel());
+//        resources.add(links.linkTo(methodOn(AlgorithmController.class).getTags(id)).withSelfRel());
     }
 
     public void addPublicationLink(CollectionModel<EntityModel<PublicationDto>> resources, UUID id) {

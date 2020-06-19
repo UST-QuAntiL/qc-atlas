@@ -20,7 +20,6 @@
 package org.planqk.atlas.core.services;
 
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -38,7 +37,6 @@ import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.model.QuantumAlgorithm;
 import org.planqk.atlas.core.model.QuantumComputationModel;
 import org.planqk.atlas.core.model.Sketch;
-import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 
 import org.junit.jupiter.api.Assertions;
@@ -68,29 +66,31 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
         assertAlgorithmEquality(storedAlgorithm, algorithm);
     }
 
-    @Test
-    void testAddAlgorithm_WithTags() {
-        Algorithm algorithm = getGenericAlgorithmWithoutReferences("testAlgorithm");
+    // Tags will be used/tested and included in the future
 
-        Set<Tag> tags = new HashSet<>();
-        Tag tag = new Tag();
-        tag.setKey("tagKey");
-        tag.setValue("tagValue");
-        tags.add(tag);
-        algorithm.setTags(tags);
-
-        Algorithm storedAlgorithm = algorithmService.save(algorithm);
-
-        assertAlgorithmEquality(storedAlgorithm, algorithm);
-
-        storedAlgorithm.getTags().forEach(t -> {
-            assertThat(t.getId()).isNotNull();
-            assertThat(t.getKey()).isEqualTo(tag.getKey());
-            assertThat(t.getValue()).isEqualTo(tag.getValue());
-            Assertions.assertDoesNotThrow(() -> tagService.getTagById(t.getId()));
-            // assertThat(storedAlgorithm).isIn(t.getAlgorithms());
-        });
-    }
+//    @Test
+//    void testAddAlgorithm_WithTags() {
+//        Algorithm algorithm = getGenericAlgorithmWithoutReferences("testAlgorithm");
+//
+//        Set<Tag> tags = new HashSet<>();
+//        Tag tag = new Tag();
+//        tag.setKey("tagKey");
+//        tag.setValue("tagValue");
+//        tags.add(tag);
+//        algorithm.setTags(tags);
+//
+//        Algorithm storedAlgorithm = algorithmService.save(algorithm);
+//
+//        assertAlgorithmEquality(storedAlgorithm, algorithm);
+//
+//        storedAlgorithm.getTags().forEach(t -> {
+//            assertThat(t.getId()).isNotNull();
+//            assertThat(t.getKey()).isEqualTo(tag.getKey());
+//            assertThat(t.getValue()).isEqualTo(tag.getValue());
+//            Assertions.assertDoesNotThrow(() -> tagService.getTagById(t.getId()));
+//            // assertThat(storedAlgorithm).isIn(t.getAlgorithms());
+//        });
+//    }
 
     @Test
     void testAddAlgorithm_WithProblemTypes() {
@@ -265,12 +265,12 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
     void testDeleteAlgorithm_WithRelations() throws MalformedURLException {
         Algorithm algorithm = getGenericAlgorithmWithoutReferences("testAlgorithm");
 
-        Set<Tag> tags = new HashSet<>();
-        Tag tag = new Tag();
-        tag.setKey("tagKey");
-        tag.setValue("tagValue");
-        tags.add(tag);
-        algorithm.setTags(tags);
+//        Set<Tag> tags = new HashSet<>();
+//        Tag tag = new Tag();
+//        tag.setKey("tagKey");
+//        tag.setValue("tagValue");
+//        tags.add(tag);
+//        algorithm.setTags(tags);
 
         Set<ProblemType> problemTypes = new HashSet<>();
         ProblemType problemType = new ProblemType();
@@ -294,8 +294,8 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
         Algorithm storedAlgorithm = algorithmService.save(algorithm);
 
         Assertions.assertDoesNotThrow(() -> algorithmService.findById(storedAlgorithm.getId()));
-        storedAlgorithm.getTags().forEach(t ->
-            Assertions.assertDoesNotThrow(() -> tagService.getTagById(t.getId())));
+//        storedAlgorithm.getTags().forEach(t ->
+//            Assertions.assertDoesNotThrow(() -> tagService.getTagById(t.getId())));
         storedAlgorithm.getProblemTypes().forEach(pt ->
             Assertions.assertDoesNotThrow(() -> problemTypeService.findById(pt.getId())));
         storedAlgorithm.getPublications().forEach(pub ->
@@ -305,8 +305,8 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
 
         Assertions.assertThrows(NoSuchElementException.class, () ->
                 algorithmService.findById(storedAlgorithm.getId()));
-        storedAlgorithm.getTags().forEach(t ->
-                Assertions.assertDoesNotThrow(() -> tagService.getTagById(t.getId())));
+//        storedAlgorithm.getTags().forEach(t ->
+//                Assertions.assertDoesNotThrow(() -> tagService.getTagById(t.getId())));
         storedAlgorithm.getProblemTypes().forEach(pt ->
                 Assertions.assertDoesNotThrow(() -> problemTypeService.findById(pt.getId())));
         // TODO maybe test with publication used in 2 algos if not done in publication service test

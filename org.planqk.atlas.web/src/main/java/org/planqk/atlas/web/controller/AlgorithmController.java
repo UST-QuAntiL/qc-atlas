@@ -45,7 +45,6 @@ import org.planqk.atlas.web.linkassembler.ComputingResourceAssembler;
 import org.planqk.atlas.web.linkassembler.PatternRelationAssembler;
 import org.planqk.atlas.web.linkassembler.ProblemTypeAssembler;
 import org.planqk.atlas.web.linkassembler.PublicationAssembler;
-import org.planqk.atlas.web.linkassembler.TagAssembler;
 import org.planqk.atlas.web.utils.HateoasUtils;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.RestUtils;
@@ -76,6 +75,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+//import org.planqk.atlas.web.linkassembler.TagAssembler;
+
 /**
  * Controller to access and manipulate quantum algorithms.
  */
@@ -94,7 +95,7 @@ public class AlgorithmController {
     private final PagedResourcesAssembler<AlgorithmDto> algorithmPaginationAssembler;
     private final PagedResourcesAssembler<ComputingResourceDto> computingResourcePaginationAssembler;
     private final ProblemTypeAssembler problemTypeAssembler;
-    private final TagAssembler tagAssembler;
+    //    private final TagAssembler tagAssembler;
     private final AlgorithmAssembler algorithmAssembler;
     private final AlgorithmRelationAssembler algorithmRelationAssembler;
     private final PublicationAssembler publicationAssembler;

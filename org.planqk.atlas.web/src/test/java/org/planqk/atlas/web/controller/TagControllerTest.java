@@ -24,7 +24,7 @@ package org.planqk.atlas.web.controller;
 //@ExtendWith(MockitoExtension.class)
 //@AutoConfigureMockMvc
 //@EnableLinkAssemblers
-//public class TagControllerTest {
+public class TagControllerTest {
 //    @MockBean
 //    private TagService tagService;
 //    @MockBean
