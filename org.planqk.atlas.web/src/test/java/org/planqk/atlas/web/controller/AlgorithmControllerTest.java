@@ -487,7 +487,7 @@ public class AlgorithmControllerTest {
     }
 
     @Test
-    void testListQuantumResources_AlgoNotFound() throws Exception {
+    void testListComputingResources_AlgoNotFound() throws Exception {
         when(algorithmService.findById(any())).thenThrow(new NoSuchElementException());
         var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES + "/";
         mockMvc.perform(get(path)).andExpect(status().isNotFound());
@@ -502,7 +502,7 @@ public class AlgorithmControllerTest {
     }
 
     @Test
-    void testListQuantumResources_ValidAlgo_NoResources() throws Exception {
+    void testListComputingResources_ValidAlgo_NoResources() throws Exception {
         var algo = new QuantumAlgorithm();
         algo.setRequiredComputingResources(new HashSet<>());
         when(algorithmService.findById(any())).thenReturn(algo);
@@ -519,7 +519,7 @@ public class AlgorithmControllerTest {
     }
 
     @Test
-    void testListQuantumResources_ValidAlgo_ResourcesIncluded() throws Exception {
+    void testListComputingResources_ValidAlgo_ResourcesIncluded() throws Exception {
         var type = new ComputingResourceType();
         type.setDatatype(ComputingResourceDataType.FLOAT);
         type.setName("test-type");
