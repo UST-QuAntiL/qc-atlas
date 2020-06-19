@@ -294,10 +294,6 @@ public class AlgorithmController {
             @RequestParam(required = false) Integer size
     ) {
         var algorithm = algorithmService.findById(id);
-        if (!(algorithm instanceof QuantumAlgorithm)) {
-            LOG.warn("Attempted to add a quantum reource for a non quantum algorithm");
-            throw new InvalidTypeException("The algorithm given is not a quantum algorithm");
-        }
         var resources = computingResourceService.findAllResourcesByAlgorithmId(id,
                 RestUtils.getPageableFromRequestParams(page, size));
         var typeDtoes = ModelMapperUtils.convertPage(resources, ComputingResourceDto.class);

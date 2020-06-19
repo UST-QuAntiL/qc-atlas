@@ -494,10 +494,11 @@ public class AlgorithmControllerTest {
     }
 
     @Test
-    void testListQuantumResources_AlgoNotQuantum() throws Exception {
-        when(algorithmService.findById(any())).thenReturn(new ClassicAlgorithm());
+    void testListComputingResources_ClassicAlgorithm() throws Exception {
+        when(algorithmService.findById(any())).thenReturn(new QuantumAlgorithm());
+        when(computingResourceService.findAllResourcesByAlgorithmId(any(), any())).thenReturn(Page.empty());
         var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES + "/";
-        mockMvc.perform(get(path)).andExpect(status().isBadRequest());
+        mockMvc.perform(get(path)).andExpect(status().isOk());
     }
 
     @Test
