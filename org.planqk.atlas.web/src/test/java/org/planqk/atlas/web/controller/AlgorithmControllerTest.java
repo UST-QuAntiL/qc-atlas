@@ -571,7 +571,7 @@ public class AlgorithmControllerTest {
     }
 
     @Test
-    void testAddQuantumResource_AlgoNotQuantum() throws Exception {
+    void testAddQuantumResource_ClassicAlgo() throws Exception {
         var type = new ComputingResourceTypeDto();
         type.setDatatype(ComputingResourceDataType.FLOAT);
         type.setName("test-type");
@@ -704,9 +704,6 @@ public class AlgorithmControllerTest {
         algorithmRelation2.setSourceAlgorithm(algorithm1);
         algorithmRelation2.setTargetAlgorithm(algorithm2);
         algorithmRelation2.setAlgoRelationType(relType1);
-        var algorithmRelations = new HashSet<>();
-        algorithmRelations.add(algorithmRelation1);
-        algorithmRelations.add(algorithmRelation2);
 
         when(algorithmService.findById(any())).thenReturn(algorithm1);
         when(computingResourceService.addComputingResourceToAlgorithm(any(QuantumAlgorithm.class), any(ComputingResource.class))).thenReturn(new ComputingResource());
