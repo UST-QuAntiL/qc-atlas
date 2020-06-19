@@ -588,6 +588,7 @@ public class AlgorithmControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
+    // TODO: We want to test this case
     private ComputingResourceDto getInvalidInputResource() {
         var type = new ComputingResourceTypeDto();
         type.setId(UUID.randomUUID());
