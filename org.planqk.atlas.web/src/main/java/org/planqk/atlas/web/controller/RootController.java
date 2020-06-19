@@ -19,10 +19,10 @@
 
 package org.planqk.atlas.web.controller;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.planqk.atlas.web.Constants;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
@@ -54,9 +54,10 @@ public class RootController {
         responseEntity.add(linkTo(methodOn(RootController.class).root()).withSelfRel());
         responseEntity.add(linkTo(methodOn(AlgorithmController.class).getAlgorithms(Constants.DEFAULT_PAGE_NUMBER,
                 Constants.DEFAULT_PAGE_SIZE)).withRel(Constants.ALGORITHMS));
-        responseEntity.add(linkTo(
-                methodOn(TagController.class).getTags(Constants.DEFAULT_PAGE_NUMBER, Constants.DEFAULT_PAGE_SIZE))
-                .withRel(Constants.TAGS));
+        // This controller will be used/tested and included in the future
+//        responseEntity.add(linkTo(
+//                methodOn(TagController.class).getTags(Constants.DEFAULT_PAGE_NUMBER, Constants.DEFAULT_PAGE_SIZE))
+//                .withRel(Constants.TAGS));
         responseEntity.add(linkTo(
                 methodOn(PublicationController.class).getPublications(Constants.DEFAULT_PAGE_NUMBER, Constants.DEFAULT_PAGE_SIZE))
                 .withRel(Constants.PUBLICATIONS));

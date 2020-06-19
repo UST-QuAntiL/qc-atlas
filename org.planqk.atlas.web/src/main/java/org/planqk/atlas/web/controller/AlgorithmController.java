@@ -30,7 +30,6 @@ import org.planqk.atlas.core.model.ComputingResource;
 import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.model.Publication;
-import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.core.services.ComputingResourceService;
 import org.planqk.atlas.web.Constants;
@@ -40,7 +39,6 @@ import org.planqk.atlas.web.dtos.ComputingResourceDto;
 import org.planqk.atlas.web.dtos.PatternRelationDto;
 import org.planqk.atlas.web.dtos.ProblemTypeDto;
 import org.planqk.atlas.web.dtos.PublicationDto;
-import org.planqk.atlas.web.dtos.TagDto;
 import org.planqk.atlas.web.linkassembler.AlgorithmAssembler;
 import org.planqk.atlas.web.linkassembler.AlgorithmRelationAssembler;
 import org.planqk.atlas.web.linkassembler.ComputingResourceAssembler;
@@ -169,22 +167,22 @@ public class AlgorithmController {
         return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200")})
-    @GetMapping("/{id}/" + Constants.TAGS)
-    public HttpEntity<CollectionModel<EntityModel<TagDto>>> getTags(@PathVariable UUID id) {
-        Algorithm algorithm = algorithmService.findById(id);
-        // Get Tags of Algorithm
-        Set<Tag> tags = algorithm.getTags();
-        // Translate Entity to DTO
-        Set<TagDto> dtoTags = ModelMapperUtils.convertSet(tags, TagDto.class);
-        // Create CollectionModel
-        CollectionModel<EntityModel<TagDto>> resultCollection = HateoasUtils.generateCollectionModel(dtoTags);
-        // Fill EntityModel Links
-        tagAssembler.addLinks(resultCollection);
-        // Fill Collection-Links
-        algorithmAssembler.addTagLink(resultCollection, id);
-        return new ResponseEntity<>(resultCollection, HttpStatus.OK);
-    }
+//    @Operation(responses = {@ApiResponse(responseCode = "200")})
+//    @GetMapping("/{id}/" + Constants.TAGS)
+//    public HttpEntity<CollectionModel<EntityModel<TagDto>>> getTags(@PathVariable UUID id) {
+//        Algorithm algorithm = algorithmService.findById(id);
+//        // Get Tags of Algorithm
+//        Set<Tag> tags = algorithm.getTags();
+//        // Translate Entity to DTO
+//        Set<TagDto> dtoTags = ModelMapperUtils.convertSet(tags, TagDto.class);
+//        // Create CollectionModel
+//        CollectionModel<EntityModel<TagDto>> resultCollection = HateoasUtils.generateCollectionModel(dtoTags);
+//        // Fill EntityModel Links
+//        tagAssembler.addLinks(resultCollection);
+//        // Fill Collection-Links
+//        algorithmAssembler.addTagLink(resultCollection, id);
+//        return new ResponseEntity<>(resultCollection, HttpStatus.OK);
+//    }
 
     @Operation(responses = {@ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "404", content = @Content)})
