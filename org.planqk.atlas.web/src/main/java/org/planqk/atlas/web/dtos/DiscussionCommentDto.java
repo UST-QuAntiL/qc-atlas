@@ -40,6 +40,6 @@ public class DiscussionCommentDto {
 
     private DiscussionCommentDto replyTo;
 
-    @NotNull(message = "Discussion-Comment must have a referenced Discussion-Topic")
+    //@NotNull(message = "Discussion-Comment must have a referenced Discussion-Topic")
     private DiscussionTopicDto discussionTopic;
 }

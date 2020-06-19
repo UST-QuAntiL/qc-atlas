@@ -19,17 +19,18 @@
 
 package org.planqk.atlas.web.controller;
 
-import java.util.Set;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import javax.validation.Valid;
 
+import org.planqk.atlas.core.model.DiscussionComment;
 import org.planqk.atlas.core.model.DiscussionTopic;
+import org.planqk.atlas.core.services.DiscussionCommentService;
 import org.planqk.atlas.core.services.DiscussionTopicService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.DiscussionCommentDto;
 import org.planqk.atlas.web.dtos.DiscussionTopicDto;
-import org.planqk.atlas.web.linkassembler.DiscussionCommentAssembler;
 import org.planqk.atlas.web.linkassembler.DiscussionTopicAssembler;
 import org.planqk.atlas.web.utils.HateoasUtils;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
@@ -39,11 +40,13 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
+import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpEntity;
@@ -71,7 +74,11 @@ public class DiscussionTopicController {
     private DiscussionTopicService discussionTopicService;
     private PagedResourcesAssembler<DiscussionTopicDto> pagedResourcesAssembler;
     private DiscussionTopicAssembler discussionTopicAssembler;
-    private DiscussionCommentAssembler discussionCommentAssembler;
+    private DiscussionCommentService discussionCommentService;
+
+    @Autowired
+    @Qualifier("discussion-comment")
+    private DiscussionCommentController discussionCommentController;
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping("/")
@@ -118,15 +125,54 @@ public class DiscussionTopicController {
 
     @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400"), @ApiResponse(responseCode = "404")})
     @GetMapping("/{id}/" + Constants.DISCUSSION_COMMENTS)
-    public HttpEntity<CollectionModel<EntityModel<DiscussionCommentDto>>> getDiscussionCommentsOfTopic(@PathVariable UUID id) {
+    public HttpEntity<PagedModel<EntityModel<DiscussionCommentDto>>> getDiscussionComments(@PathVariable UUID id,
+                                                                                           @RequestParam(required = false) Integer page,
+                                                                                           @RequestParam(required = false) Integer size) {
+        return discussionCommentController.getDiscussionComments(id, page, size);
+    }
+
+    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400"), @ApiResponse(responseCode = "404")})
+    @GetMapping("/{id}/" + Constants.DISCUSSION_COMMENTS + "/{commentId}")
+    public HttpEntity<EntityModel<DiscussionCommentDto>> getDiscussionComment(@PathVariable UUID id, @PathVariable UUID commentId) {
+        DiscussionComment discussionComment = discussionCommentService.findById(commentId);
+        if (!(discussionComment.getDiscussionTopic().getId().equals(id))) {
+            log.debug("Not the matching topic id: {}", id);
+            throw new NoSuchElementException();
+        }
+        return discussionCommentController.getDiscussionComment(commentId);
+    }
+
+    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400"), @ApiResponse(responseCode = "404")})
+    @DeleteMapping("/{id}/" + Constants.DISCUSSION_COMMENTS + "/{commentId}")
+    public HttpEntity<?> deleteDiscussionComment(@PathVariable UUID id, @PathVariable UUID commentId) {
+        DiscussionComment discussionComment = discussionCommentService.findById(commentId);
+        if (!(discussionComment.getDiscussionTopic().getId().equals(id))) {
+            log.debug("Not the matching topic id: {}", id);
+            throw new NoSuchElementException();
+        }
+        return discussionCommentController.deleteDiscussionComment(commentId);
+    }
+
+    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400"), @ApiResponse(responseCode = "404")})
+    @PutMapping("/{id}/" + Constants.DISCUSSION_COMMENTS + "/{commentId}")
+    public HttpEntity<EntityModel<DiscussionCommentDto>> updateDiscussionComment(@PathVariable UUID id,
+                                                                                 @PathVariable UUID commentId,
+                                                                                 @Valid @RequestBody DiscussionCommentDto discussionCommentDto) {
+        DiscussionComment discussionComment = discussionCommentService.findById(commentId);
+        if (!(discussionComment.getDiscussionTopic().getId().equals(id))) {
+            log.debug("Not the matching topic id: {}", id);
+            throw new NoSuchElementException();
+        }
+        return discussionCommentController.updateDiscussionComment(commentId, discussionCommentDto);
+    }
+
+    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400"), @ApiResponse(responseCode = "404")})
+    @PostMapping("/{id}/" + Constants.DISCUSSION_COMMENTS)
+    public HttpEntity<EntityModel<DiscussionCommentDto>> createDiscussionComment(@PathVariable UUID id,
+                                                                                             @Valid @RequestBody DiscussionCommentDto discussionCommentDto) {
         DiscussionTopic discussionTopic = discussionTopicService.findById(id);
-        Set<DiscussionCommentDto> discussionCommentDtos = ModelMapperUtils.convertSet(discussionTopic.getDiscussionComments(), DiscussionCommentDto.class);
-
-        CollectionModel<EntityModel<DiscussionCommentDto>> result = HateoasUtils.generateCollectionModel(discussionCommentDtos);
-        discussionCommentAssembler.addLinks(result);
-        discussionTopicAssembler.addDiscussionCommentLink(result, id);
-
-        return new ResponseEntity<>(result, HttpStatus.OK);
+        discussionCommentDto.setDiscussionTopic(ModelMapperUtils.convert(discussionTopic, DiscussionTopicDto.class));
+        return discussionCommentController.createDiscussionComment(discussionCommentDto);
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "400"), @ApiResponse(responseCode = "404")})
