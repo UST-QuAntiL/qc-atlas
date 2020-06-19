@@ -556,29 +556,14 @@ public class AlgorithmControllerTest {
 
     @Test
     void testAddQuantumResource_AlgoNotFound() throws Exception {
-        var type = new ComputingResourceTypeDto();
-        type.setDatatype(ComputingResourceDataType.FLOAT);
-        type.setName("test-type");
-        type.setId(UUID.randomUUID());
-        var resource = new ComputingResourceDto();
-        resource.setType(type);
-        resource.setId(UUID.randomUUID());
-
         when(algorithmService.findById(any())).thenThrow(new NoSuchElementException());
         var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES + "/";
-        mockMvc.perform(post(path).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsBytes(resource)))
+        mockMvc.perform(post(path).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsBytes(getValidResourceInput())))
                 .andExpect(status().isNotFound());
     }
 
     @Test
     void testAddQuantumResource_ClassicAlgo() throws Exception {
-        var type = new ComputingResourceTypeDto();
-        type.setDatatype(ComputingResourceDataType.FLOAT);
-        type.setName("test-type");
-        type.setId(UUID.randomUUID());
-        var resource = new ComputingResourceDto();
-        resource.setType(type);
-        resource.setId(UUID.randomUUID());
 
         var algorithm = new Algorithm();
         algorithm.setId(UUID.randomUUID());
@@ -588,7 +573,7 @@ public class AlgorithmControllerTest {
         when(algorithmService.findById(any())).thenReturn(algorithm);
         when(computingResourceService.addComputingResourceToAlgorithm(any(Algorithm.class), any(ComputingResource.class))).thenReturn(new ComputingResource());
         var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES + "/";
-        mockMvc.perform(post(path).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsBytes(resource)))
+        mockMvc.perform(post(path).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsBytes(getValidResourceInput())))
                 .andExpect(status().isOk());
     }
 
@@ -648,8 +633,7 @@ public class AlgorithmControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
-    @Test
-    void testAddQuantumResource() throws Exception {
+    private ComputingResourceDto getValidResourceInput() {
         var type = new ComputingResourceTypeDto();
         type.setDatatype(ComputingResourceDataType.FLOAT);
         type.setName("test-type");
@@ -657,6 +641,11 @@ public class AlgorithmControllerTest {
         var resource = new ComputingResourceDto();
         resource.setType(type);
         resource.setId(UUID.randomUUID());
+        return resource;
+    }
+
+    @Test
+    void testAddQuantumResource() throws Exception {
 
         Set<ProblemType> problemTypes = new HashSet<>();
 
@@ -693,7 +682,7 @@ public class AlgorithmControllerTest {
         when(algorithmService.findById(any())).thenReturn(algorithm1);
         when(computingResourceService.addComputingResourceToAlgorithm(any(QuantumAlgorithm.class), any(ComputingResource.class))).thenReturn(new ComputingResource());
         var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES + "/";
-        mockMvc.perform(post(path).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsBytes(resource)))
+        mockMvc.perform(post(path).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsBytes(getValidResourceInput())))
                 .andExpect(status().isOk());
     }
 }
