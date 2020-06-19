@@ -511,7 +511,7 @@ public class AlgorithmControllerTest {
 
         var resultList = ObjectMapperUtils.mapResponseToList(
                 result.getResponse().getContentAsString(),
-                "quantumResourceDtoes",
+                "computingResourceDtoes",
                 ComputingResourceDto.class
         );
         assertThat(resultList.size()).isEqualTo(0);
@@ -544,7 +544,7 @@ public class AlgorithmControllerTest {
 
         var resultList = ObjectMapperUtils.mapResponseToList(
                 result.getResponse().getContentAsString(),
-                "quantumResourceDtoes",
+                "computingResourceDtoes",
                 ComputingResourceDto.class
         );
         assertThat(resultList.size()).isEqualTo(10);
