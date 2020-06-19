@@ -589,7 +589,7 @@ public class AlgorithmControllerTest {
     }
 
     @Test
-    void testAddQuantumResource_InvalidInput_InvalidType_MissingName() throws Exception {
+    void testAddQuantumResource_InvalidInput_MissingName() throws Exception {
 
         when(algorithmService.findById(any())).thenReturn(new ClassicAlgorithm());
         var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES + "/";
@@ -598,7 +598,7 @@ public class AlgorithmControllerTest {
     }
 
     @Test
-    void testAddQuantumResource_InvalidInput_InvalidType_MissingTypeEnum() throws Exception {
+    void testAddQuantumResource_InvalidInput_MissingTypeEnum() throws Exception {
         ;
 
         when(algorithmService.findById(any())).thenReturn(new ClassicAlgorithm());
@@ -617,7 +617,7 @@ public class AlgorithmControllerTest {
     }
 
     @Test
-    void testAddQuantumResource_InvalidInput_InvalidType_MissingRequirements() throws Exception {
+    void testAddQuantumResource_InvalidInput_MissingRequirements() throws Exception {
         when(algorithmService.findById(any())).thenReturn(new ClassicAlgorithm());
         var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES + "/";
         mockMvc.perform(post(path).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsBytes(getInvalidInputResource())))
@@ -625,11 +625,11 @@ public class AlgorithmControllerTest {
     }
 
     @Test
-    void testAddQuantumResource_InvalidInput_InvalidType_EmptyName() throws Exception {
+    void testAddQuantumResource_InvalidInput_EmptyName() throws Exception {
 
         when(algorithmService.findById(any())).thenReturn(new ClassicAlgorithm());
         var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES + "/";
-        mockMvc.perform(post(path).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsBytes(getInvalidInputResource)))
+        mockMvc.perform(post(path).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsBytes(getInvalidInputResource())))
                 .andExpect(status().isBadRequest());
     }
 
