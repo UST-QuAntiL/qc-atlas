@@ -8,7 +8,6 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 
 import lombok.Data;
@@ -26,7 +25,7 @@ public class QuantumAlgorithm extends Algorithm {
 
     private QuantumComputationModel quantumComputationModel;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+    @OneToMany(mappedBy = "algorithm", fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, orphanRemoval = true)
     private Set<QuantumResource> requiredQuantumResources = new HashSet<>();
 
     private String speedUp;
@@ -41,5 +40,4 @@ public class QuantumAlgorithm extends Algorithm {
     public void addQuantumResource(@NonNull QuantumResource resource) {
         this.requiredQuantumResources.add(resource);
     }
-
 }

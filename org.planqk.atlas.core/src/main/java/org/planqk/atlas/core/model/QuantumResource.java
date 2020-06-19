@@ -42,7 +42,7 @@ public class QuantumResource extends HasId {
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     private QuantumResourceType quantumResourceType;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.DETACH)
     @Exclude
     private QuantumAlgorithm algorithm;
 

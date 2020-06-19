@@ -29,6 +29,7 @@ import org.planqk.atlas.core.model.AlgoRelationType;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.model.QuantumAlgorithm;
+import org.planqk.atlas.core.model.QuantumResource;
 import org.planqk.atlas.core.repository.AlgorithmRelationRepository;
 import org.planqk.atlas.core.repository.AlgorithmRepository;
 
@@ -62,6 +63,16 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         // Persist ProblemTypes separately
         algorithm.setProblemTypes(problemTypeService.createOrUpdateAll(algorithm.getProblemTypes()));
 
+        if (algorithm instanceof QuantumAlgorithm) {
+            QuantumAlgorithm qc = (QuantumAlgorithm) algorithm;
+            Set<QuantumResource> adaptedQuantumResources = new HashSet<>();
+            for (QuantumResource quantumResource : qc.getRequiredQuantumResources()) {
+                quantumResource.setAlgorithm(qc);
+                adaptedQuantumResources.add(quantumResource);
+            }
+            qc.setRequiredQuantumResources(adaptedQuantumResources);
+        }
+
         // persist Algorithm before adding relations
         Set<AlgorithmRelation> inputRelations = algorithm.getAlgorithmRelations();
         algorithm.setAlgorithmRelations(new HashSet<>());
@@ -70,7 +81,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         // Process algorithm relations and persist relation types on the fly
         persistedAlgorithm.setAlgorithmRelations(getValidAlgorithmRelations(persistedAlgorithm, inputRelations));
 
-        return persistAlgorithm(algorithm);
+        return persistAlgorithm(persistedAlgorithm);
     }
 
     private Algorithm persistAlgorithm(Algorithm algorithm) {
@@ -106,7 +117,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     @Transactional
     @Override
     public Algorithm update(UUID id, Algorithm algorithm) {
-    	LOG.info("Trying to update algorithm");
+        LOG.info("Trying to update algorithm");
         Algorithm persistedAlg = algorithmRepository.findById(id).orElseThrow(NoSuchElementException::new);
 
         persistedAlg.setName(algorithm.getName());
@@ -129,18 +140,18 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 
         // If QuantumAlgorithm adjust Quantum fields
         if (algorithm instanceof QuantumAlgorithm) {
-        	QuantumAlgorithm quantumAlgorithm = (QuantumAlgorithm) algorithm;
-        	QuantumAlgorithm persistedQuantumAlg = (QuantumAlgorithm) persistedAlg;
+            QuantumAlgorithm quantumAlgorithm = (QuantumAlgorithm) algorithm;
+            QuantumAlgorithm persistedQuantumAlg = (QuantumAlgorithm) persistedAlg;
 
-        	persistedQuantumAlg.setNisqReady(quantumAlgorithm.isNisqReady());
-        	persistedQuantumAlg.setQuantumComputationModel(quantumAlgorithm.getQuantumComputationModel());
-        	// persistedQuantumAlg.setRequiredQuantumResources(quantumAlgorithm.getRequiredQuantumResources());
-        	persistedQuantumAlg.setSpeedUp(quantumAlgorithm.getSpeedUp());
+            persistedQuantumAlg.setNisqReady(quantumAlgorithm.isNisqReady());
+            persistedQuantumAlg.setQuantumComputationModel(quantumAlgorithm.getQuantumComputationModel());
+            persistedQuantumAlg.setRequiredQuantumResources(quantumAlgorithm.getRequiredQuantumResources());
+            persistedQuantumAlg.setSpeedUp(quantumAlgorithm.getSpeedUp());
 
-        	return algorithmRepository.save(persistedQuantumAlg);
+            return algorithmRepository.save(persistedQuantumAlg);
         } else {
-        	// Else if ClassicAlgorithm no more fields to adjust
-        	return algorithmRepository.save(persistedAlg);
+            // Else if ClassicAlgorithm no more fields to adjust
+            return algorithmRepository.save(persistedAlg);
         }
     }
 
