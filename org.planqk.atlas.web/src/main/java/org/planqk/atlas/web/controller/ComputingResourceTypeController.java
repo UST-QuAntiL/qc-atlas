@@ -49,7 +49,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "quantum-resource-types")
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
-@RequestMapping("/" + Constants.QUANTUM_RESOURCE_TYPES)
+@RequestMapping("/" + Constants.COMPUTING_RESOURCE_TYPES)
 @AllArgsConstructor
 public class ComputingResourceTypeController {
 
