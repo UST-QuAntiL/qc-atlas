@@ -56,16 +56,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Controller to access and manipulate implementations of quantum algorithms.
  */
-@io.swagger.v3.oas.annotations.tags.Tag(name = "implementation")
+@io.swagger.v3.oas.annotations.tags.Tag(name = "algorithm")
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
-@RequestMapping("/" + Constants.IMPLEMENTATIONS)
+@RequestMapping("/" + Constants.ALGORITHMS + "/" + "{algoId}" + "/" + Constants.IMPLEMENTATIONS)
 @AllArgsConstructor
 public class ImplementationController {
 
@@ -76,10 +75,10 @@ public class ImplementationController {
     private ImplementationAssembler implementationAssembler;
     private TagAssembler tagAssembler;
 
-    @Operation(responses = { @ApiResponse(responseCode = "200") })
+    @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping("/")
-    public HttpEntity<CollectionModel<EntityModel<ImplementationDto>>> getImplementations(@RequestParam UUID algoId) {
-        LOG.debug("Get to retrieve all implementations received.");
+    public HttpEntity<CollectionModel<EntityModel<ImplementationDto>>> getImplementations(@PathVariable UUID algoId) {
+        LOG.debug("Get to retrieve all implementations of algorithm with Id {} received.", algoId);
         Set<ImplementationDto> dtoList = new HashSet<ImplementationDto>();
         // Add all available implementations to the response
         for (Implementation impl : implementationService.findAll(RestUtils.getAllPageable())) {
@@ -94,9 +93,9 @@ public class ImplementationController {
         return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
     }
 
-    @Operation(responses = { @ApiResponse(responseCode = "200") })
+    @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping("/{implId}")
-    public HttpEntity<EntityModel<ImplementationDto>> getImplementation(@PathVariable UUID implId) {
+    public HttpEntity<EntityModel<ImplementationDto>> getImplementation(@PathVariable UUID algoId, @PathVariable UUID implId) {
         LOG.debug("Get to retrieve implementation with id: {}.", implId);
         // Get Implementation
         Implementation implementation = implementationService.findById(implId);
@@ -108,10 +107,9 @@ public class ImplementationController {
         return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
     }
 
-    @Operation(responses = { @ApiResponse(responseCode = "201") })
+    @Operation(responses = {@ApiResponse(responseCode = "201")})
     @PostMapping("/")
-    public HttpEntity<EntityModel<ImplementationDto>> createImplementation(@RequestParam UUID algoId,
-            @Valid @RequestBody ImplementationDto impl) {
+    public HttpEntity<EntityModel<ImplementationDto>> createImplementation(@PathVariable UUID algoId, @Valid @RequestBody ImplementationDto impl) {
         LOG.debug("Post to create new implementation received.");
         // Get Algorithm
         Algorithm algorithm = algorithmService.findById(algoId);
@@ -126,9 +124,9 @@ public class ImplementationController {
         return new ResponseEntity<>(dtoOutput, HttpStatus.CREATED);
     }
 
-    @Operation(responses = { @ApiResponse(responseCode = "200") })
+    @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping("/{implId}/" + Constants.TAGS)
-    public HttpEntity<CollectionModel<EntityModel<TagDto>>> getTags(@PathVariable UUID implId) {
+    public HttpEntity<CollectionModel<EntityModel<TagDto>>> getTags(@PathVariable UUID algoId, @PathVariable UUID implId) {
         // Get Implementation
         Implementation implementation = implementationService.findById(implId);
         // Get Tags of Implementation
@@ -140,15 +138,15 @@ public class ImplementationController {
         // Fill EntityModel Links
         tagAssembler.addLinks(resultCollection);
         // Fill Collection-Links
-        implementationAssembler.addTagLink(resultCollection, implId);
+        implementationAssembler.addTagLink(resultCollection, algoId, implId);
         return new ResponseEntity<>(resultCollection, HttpStatus.OK);
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
-    @PutMapping("/{id}")
-    public HttpEntity<EntityModel<ImplementationDto>> updateImplementation(@PathVariable UUID id, @Valid @RequestBody ImplementationDto dto) {
+    @PutMapping("/{implId}")
+    public HttpEntity<EntityModel<ImplementationDto>> updateImplementation(@PathVariable UUID algoId, @PathVariable UUID implId, @Valid @RequestBody ImplementationDto dto) {
         var impl = ModelMapperUtils.convert(dto, Implementation.class);
-        impl = implementationService.update(id, impl);
+        impl = implementationService.update(implId, impl);
         return ResponseEntity.ok(HateoasUtils.generateEntityModel(ModelMapperUtils.convert(impl, ImplementationDto.class)));
     }
 }

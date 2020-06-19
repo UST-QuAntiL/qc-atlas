@@ -20,16 +20,16 @@ public class ImplementationAssembler extends GenericLinkAssembler<Implementation
     @Override
     public void addLinks(EntityModel<ImplementationDto> resource) {
         resource.add(
-                links.linkTo(methodOn(ImplementationController.class).getImplementation(getId(resource)))
+                links.linkTo(methodOn(ImplementationController.class).getImplementation(getAlgId(resource), getId(resource)))
                         .withSelfRel());
         resource.add(links.linkTo(methodOn(AlgorithmController.class).getAlgorithm(getAlgId(resource)))
                 .withRel(Constants.ALGORITHM_LINK));
-        resource.add(links.linkTo(methodOn(ImplementationController.class).getTags(getId(resource)))
+        resource.add(links.linkTo(methodOn(ImplementationController.class).getTags(getAlgId(resource), getId(resource)))
                 .withRel(Constants.TAGS));
     }
 
-    public void addTagLink(CollectionModel<EntityModel<TagDto>> resultCollection, UUID implId) {
-        resultCollection.add(links.linkTo(methodOn(ImplementationController.class).getTags(implId)).withSelfRel());
+    public void addTagLink(CollectionModel<EntityModel<TagDto>> resultCollection, UUID algoId, UUID implId) {
+        resultCollection.add(links.linkTo(methodOn(ImplementationController.class).getTags(algoId, implId)).withSelfRel());
     }
 
     public UUID getId(EntityModel<ImplementationDto> resource) {
