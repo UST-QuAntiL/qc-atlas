@@ -28,7 +28,6 @@ public class QuantumAlgorithmDto extends AlgorithmDto {
     @NotNull(message = "QuantumComputationModel must not be null!")
     private QuantumComputationModel quantumComputationModel;
 
-    private Set<ComputingResourceDto> requiredComputingResources = new HashSet<>();
     private String speedUp;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
