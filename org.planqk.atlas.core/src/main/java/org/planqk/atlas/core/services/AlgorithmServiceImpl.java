@@ -32,6 +32,7 @@ import org.planqk.atlas.core.model.ComputingResource;
 import org.planqk.atlas.core.model.QuantumAlgorithm;
 import org.planqk.atlas.core.repository.AlgorithmRelationRepository;
 import org.planqk.atlas.core.repository.AlgorithmRepository;
+import org.planqk.atlas.core.repository.ImplementationRepository;
 
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
@@ -50,6 +51,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     private final AlgorithmRepository algorithmRepository;
     private final AlgorithmRelationRepository algorithmRelationRepository;
     private final AlgoRelationTypeService relationTypeService;
+    private final ImplementationRepository implementationRepository;
 
     private final TagService tagService;
     private final ProblemTypeService problemTypeService;
@@ -155,10 +157,18 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     @Override
     @Transactional
     public void delete(UUID id) {
+        Optional<Algorithm> algorithmOptional = algorithmRepository.findById(id);
+        if (!algorithmOptional.isPresent()) {
+            return;
+        }
+
+        Algorithm algorithm = algorithmOptional.get();
+        implementationRepository.findByImplementedAlgorithm(algorithm).stream().forEach(implementationRepository::delete);
         Set<AlgorithmRelation> linkedAsTargetRelations = algorithmRelationRepository.findByTargetAlgorithmId(id);
         for (AlgorithmRelation relation : linkedAsTargetRelations) {
             deleteAlgorithmRelation(relation.getSourceAlgorithm().getId(), relation.getId());
         }
+
         //Remove all publications and associations that refer only to this single algorithm
         Set<String> publicationIds = algorithmRepository.getPublicationIdsOfAlgorithm(id);
         algorithmRepository.deleteAssociationsOfAlgorithm(id);
