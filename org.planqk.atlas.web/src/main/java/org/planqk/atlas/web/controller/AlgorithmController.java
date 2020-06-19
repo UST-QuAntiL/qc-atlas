@@ -241,9 +241,9 @@ public class AlgorithmController {
     @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping("/{algoId}/" + Constants.ALGORITHM_RELATIONS)
     public HttpEntity<CollectionModel<EntityModel<AlgorithmRelationDto>>> getAlgorithmRelations(
-            @PathVariable UUID sourceAlgorithmId) {
+            @PathVariable UUID algoId) {
         // get AlgorithmRelations of Algorithm
-        Set<AlgorithmRelation> algorithmRelations = algorithmService.getAlgorithmRelations(sourceAlgorithmId);
+        Set<AlgorithmRelation> algorithmRelations = algorithmService.getAlgorithmRelations(algoId);
         // Get AlgorithmRelationDTOs of Algorithm
         Set<AlgorithmRelationDto> dtoALgorithmRelation = ModelMapperUtils.convertSet(algorithmRelations,
                 AlgorithmRelationDto.class);
@@ -259,11 +259,11 @@ public class AlgorithmController {
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
     @PutMapping("/{algoId}/" + Constants.ALGORITHM_RELATIONS)
-    public HttpEntity<EntityModel<AlgorithmRelationDto>> updateAlgorithmRelation(@PathVariable UUID sourceAlgorithmId,
+    public HttpEntity<EntityModel<AlgorithmRelationDto>> updateAlgorithmRelation(@PathVariable UUID algoId,
                                                                                  @Valid @RequestBody AlgorithmRelationDto relation) {
         LOG.debug("Post to add algorithm relation received.");
 
-        AlgorithmRelation algorithmRelation = algorithmService.addOrUpdateAlgorithmRelation(sourceAlgorithmId,
+        AlgorithmRelation algorithmRelation = algorithmService.addOrUpdateAlgorithmRelation(algoId,
                 ModelMapperUtils.convert(relation, AlgorithmRelation.class));
         AlgorithmRelationDto dtoOutput = ModelMapperUtils.convert(algorithmRelation, AlgorithmRelationDto.class);
         EntityModel<AlgorithmRelationDto> entityDto = HateoasUtils.generateEntityModel(dtoOutput);
@@ -273,10 +273,10 @@ public class AlgorithmController {
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
     @DeleteMapping("/{algoId}/" + Constants.ALGORITHM_RELATIONS + "/{relationId}")
-    public HttpEntity<AlgorithmRelationDto> deleteAlgorithmRelation(@PathVariable UUID sourceAlgorithmId,
+    public HttpEntity<AlgorithmRelationDto> deleteAlgorithmRelation(@PathVariable UUID algoId,
                                                                     @PathVariable UUID relationId) {
         LOG.debug("Delete received to remove algorithm relation with id {}.", relationId);
-        algorithmService.deleteAlgorithmRelation(sourceAlgorithmId, relationId);
+        algorithmService.deleteAlgorithmRelation(algoId, relationId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
