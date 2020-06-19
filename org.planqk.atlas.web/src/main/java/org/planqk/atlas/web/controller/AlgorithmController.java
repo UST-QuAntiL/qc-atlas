@@ -45,10 +45,10 @@ import org.planqk.atlas.web.dtos.TagDto;
 import org.planqk.atlas.web.exceptions.InvalidTypeException;
 import org.planqk.atlas.web.linkassembler.AlgorithmAssembler;
 import org.planqk.atlas.web.linkassembler.AlgorithmRelationAssembler;
+import org.planqk.atlas.web.linkassembler.ComputingResourceAssembler;
 import org.planqk.atlas.web.linkassembler.PatternRelationAssembler;
 import org.planqk.atlas.web.linkassembler.ProblemTypeAssembler;
 import org.planqk.atlas.web.linkassembler.PublicationAssembler;
-import org.planqk.atlas.web.linkassembler.QuantumResourceAssembler;
 import org.planqk.atlas.web.linkassembler.TagAssembler;
 import org.planqk.atlas.web.utils.HateoasUtils;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
@@ -102,7 +102,7 @@ public class AlgorithmController {
     private final AlgorithmAssembler algorithmAssembler;
     private final AlgorithmRelationAssembler algorithmRelationAssembler;
     private final PublicationAssembler publicationAssembler;
-    private final QuantumResourceAssembler quantumResourceAssembler;
+    private final ComputingResourceAssembler computingResourceAssembler;
     private final PatternRelationAssembler patternRelationAssembler;
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
@@ -302,7 +302,7 @@ public class AlgorithmController {
                 RestUtils.getPageableFromRequestParams(page, size));
         var typeDtoes = ModelMapperUtils.convertPage(resources, ComputingResourceDto.class);
         var pagedModel = quantumResourcePaginationAssembler.toModel(typeDtoes);
-        quantumResourceAssembler.addLinks(pagedModel);
+        computingResourceAssembler.addLinks(pagedModel);
         return ResponseEntity.ok(pagedModel);
     }
 

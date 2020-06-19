@@ -24,7 +24,7 @@ import java.util.UUID;
 import org.planqk.atlas.core.services.ComputingResourceService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.ComputingResourceDto;
-import org.planqk.atlas.web.linkassembler.QuantumResourceAssembler;
+import org.planqk.atlas.web.linkassembler.ComputingResourceAssembler;
 import org.planqk.atlas.web.utils.HateoasUtils;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 
@@ -47,7 +47,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/" + Constants.COMPUTING_RESOURCES)
 @AllArgsConstructor
 public class ComputingResourceController {
-    private final QuantumResourceAssembler assembler;
+    private final ComputingResourceAssembler assembler;
     private final ComputingResourceService service;
 
     @Operation(responses = {
@@ -56,7 +56,7 @@ public class ComputingResourceController {
             @ApiResponse(responseCode = "404"),
     })
     @GetMapping("/{id}")
-    public ResponseEntity<EntityModel<ComputingResourceDto>> getQuantumResource(@PathVariable UUID id) {
+    public ResponseEntity<EntityModel<ComputingResourceDto>> getComputingResource(@PathVariable UUID id) {
         var resource = service.findResourceById(id);
         var resourceDto = ModelMapperUtils.convert(resource, ComputingResourceDto.class);
         var entityModel = HateoasUtils.generateEntityModel(resourceDto);
@@ -70,7 +70,7 @@ public class ComputingResourceController {
             @ApiResponse(responseCode = "404"),
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteQuantumResource(@PathVariable UUID id) {
+    public ResponseEntity<?> deleteComputingResource(@PathVariable UUID id) {
         service.deleteComputingResource(id);
         return ResponseEntity.ok().build();
     }

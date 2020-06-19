@@ -30,14 +30,14 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @SuppressWarnings("ConstantConditions")
 @Component
-public class QuantumResourceAssembler extends GenericLinkAssembler<ComputingResourceDto> {
+public class ComputingResourceAssembler extends GenericLinkAssembler<ComputingResourceDto> {
     @Override
     public void addLinks(EntityModel<ComputingResourceDto> resource) {
         resource.add(links.linkTo(methodOn(ComputingResourceController.class)
-                .deleteQuantumResource(resource.getContent().getId()))
+                .deleteComputingResource(resource.getContent().getId()))
                 .withRel("delete"));
         resource.add(links.linkTo(methodOn(ComputingResourceController.class)
-                .getQuantumResource(resource.getContent().getId()))
+                .getComputingResource(resource.getContent().getId()))
                 .withSelfRel());
         resource.add(links.linkTo(methodOn(ComputingResourceTypeController.class)
                 .getQuantumResourceType(resource.getContent().getType().getId()))
