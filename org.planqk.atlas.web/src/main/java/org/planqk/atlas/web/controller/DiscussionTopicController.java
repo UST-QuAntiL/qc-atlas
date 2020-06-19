@@ -40,7 +40,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
-import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -167,7 +166,7 @@ public class DiscussionTopicController {
         return discussionCommentController.updateDiscussionComment(commentId, discussionCommentDto);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400"), @ApiResponse(responseCode = "404")})
+    @Operation(responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "400"), @ApiResponse(responseCode = "404")})
     @PostMapping("/{id}/" + Constants.DISCUSSION_COMMENTS)
     public HttpEntity<EntityModel<DiscussionCommentDto>> createDiscussionComment(@PathVariable UUID id,
                                                                                              @Valid @RequestBody DiscussionCommentDto discussionCommentDto) {
