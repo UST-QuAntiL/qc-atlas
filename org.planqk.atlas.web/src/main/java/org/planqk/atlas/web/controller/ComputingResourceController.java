@@ -46,7 +46,7 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/" + Constants.COMPUTING_RESOURCES)
 @AllArgsConstructor
-public class QuantumResourceController {
+public class ComputingResourceController {
     private final QuantumResourceAssembler assembler;
     private final ComputingResourceService service;
 

@@ -19,8 +19,8 @@
 
 package org.planqk.atlas.web.linkassembler;
 
-import org.planqk.atlas.web.controller.QuantumResourceController;
-import org.planqk.atlas.web.controller.QuantumResourceTypeController;
+import org.planqk.atlas.web.controller.ComputingResourceController;
+import org.planqk.atlas.web.controller.ComputingResourceTypeController;
 import org.planqk.atlas.web.dtos.ComputingResourceDto;
 
 import org.springframework.hateoas.EntityModel;
@@ -33,13 +33,13 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class QuantumResourceAssembler extends GenericLinkAssembler<ComputingResourceDto> {
     @Override
     public void addLinks(EntityModel<ComputingResourceDto> resource) {
-        resource.add(links.linkTo(methodOn(QuantumResourceController.class)
+        resource.add(links.linkTo(methodOn(ComputingResourceController.class)
                 .deleteQuantumResource(resource.getContent().getId()))
                 .withRel("delete"));
-        resource.add(links.linkTo(methodOn(QuantumResourceController.class)
+        resource.add(links.linkTo(methodOn(ComputingResourceController.class)
                 .getQuantumResource(resource.getContent().getId()))
                 .withSelfRel());
-        resource.add(links.linkTo(methodOn(QuantumResourceTypeController.class)
+        resource.add(links.linkTo(methodOn(ComputingResourceTypeController.class)
                 .getQuantumResourceType(resource.getContent().getType().getId()))
                 .withRel("type"));
         // TODO (Maybe) add link to the entities linked to this quantum Resource, e.g. the Quantum Algorithms

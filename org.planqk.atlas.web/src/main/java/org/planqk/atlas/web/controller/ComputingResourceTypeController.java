@@ -51,7 +51,7 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/" + Constants.QUANTUM_RESOURCE_TYPES)
 @AllArgsConstructor
-public class QuantumResourceTypeController {
+public class ComputingResourceTypeController {
 
     private final QuantumResourceTypeAssembler assembler;
     private final ComputingResourceService service;
