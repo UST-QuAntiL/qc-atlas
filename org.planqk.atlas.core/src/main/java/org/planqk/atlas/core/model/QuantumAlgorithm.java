@@ -26,7 +26,7 @@ public class QuantumAlgorithm extends Algorithm {
 
     private QuantumComputationModel quantumComputationModel;
 
-    @OneToMany(mappedBy = "algorithm", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
     private Set<QuantumResource> requiredQuantumResources = new HashSet<>();
 
     private String speedUp;

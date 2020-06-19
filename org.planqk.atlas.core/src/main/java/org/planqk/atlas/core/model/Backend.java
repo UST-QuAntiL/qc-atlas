@@ -22,7 +22,7 @@ public class Backend extends HasId {
     private String vendor;
     private String technology;
 
-    @OneToMany(mappedBy = "backend", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
     private Set<QuantumResource> providedQuantumResources = new HashSet<>();
 
     private QuantumComputationModel quantumComputationModel;

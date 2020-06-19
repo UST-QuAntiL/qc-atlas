@@ -295,7 +295,7 @@ public class AlgorithmController {
     ) {
         var algorithm = algorithmService.findById(id);
         if (!(algorithm instanceof QuantumAlgorithm)) {
-            LOG.warn("Attempted to add a quantum reource for a non quantum algorithm");
+            LOG.warn("Attempted to add a quantum resource for a non quantum algorithm");
             throw new InvalidTypeException("The algorithm given is not a quantum algorithm");
         }
         var resources = quantumResourceService.findAllResourcesByAlgorithmId(id,
