@@ -32,6 +32,9 @@ import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.core.services.ComputingResourceService;
+import org.planqk.atlas.core.services.PatternRelationService;
+import org.planqk.atlas.core.services.ProblemTypeService;
+import org.planqk.atlas.core.services.PublicationService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
@@ -91,6 +94,9 @@ public class AlgorithmController {
 
     private final AlgorithmService algorithmService;
     private final ComputingResourceService computingResourceService;
+    private final PatternRelationService patternRelationService;
+    private final ProblemTypeService problemTypeService;
+    private final PublicationService publicationService;
 
     private final PagedResourcesAssembler<AlgorithmDto> algorithmPaginationAssembler;
     private final PagedResourcesAssembler<ComputingResourceDto> computingResourcePaginationAssembler;
@@ -208,6 +214,8 @@ public class AlgorithmController {
     public HttpEntity<CollectionModel<EntityModel<PublicationDto>>> addPatternRelations(@PathVariable UUID id, @Valid @RequestBody PublicationDto publicationDto) {
         Algorithm algorithm = algorithmService.findById(id);
         Publication publication = ModelMapperUtils.convert(publicationDto, Publication.class);
+        // access publication in db to throw NoSuchElementException if it doesn't exist
+        publicationService.findById(publication.getId());
         // Get ProblemTypes of Algorithm
         Set<Publication> publications = algorithm.getPublications();
         // add new problemtype
@@ -245,6 +253,8 @@ public class AlgorithmController {
     public HttpEntity<CollectionModel<EntityModel<ProblemTypeDto>>> addProblemType(@PathVariable UUID id, @Valid @RequestBody ProblemTypeDto problemTypeDto) {
         Algorithm algorithm = algorithmService.findById(id);
         ProblemType problemtype = ModelMapperUtils.convert(problemTypeDto, ProblemType.class);
+        // access stored pattern relation -> if it does not exists, this throws a NoSuchElementException
+        problemTypeService.findById(problemtype.getId());
         // Get ProblemTypes of Algorithm
         Set<ProblemType> problemTypes = algorithm.getProblemTypes();
         // add new problemtype
@@ -280,11 +290,15 @@ public class AlgorithmController {
     @PostMapping("/{id}/" + Constants.PATTERN_RELATIONS)
     public HttpEntity<CollectionModel<EntityModel<PatternRelationDto>>> addPatternRelations(@PathVariable UUID id, @Valid @RequestBody PatternRelationDto patternRelationDto) {
         Algorithm algorithm = algorithmService.findById(id);
-        PatternRelation patternRelations = ModelMapperUtils.convert(patternRelationDto, PatternRelation.class);
+        PatternRelation patternRelation = ModelMapperUtils.convert(patternRelationDto, PatternRelation.class);
+
+        // access stored pattern relation -> if it does not exists, this throws a NoSuchElementException
+        patternRelationService.findById(patternRelation.getId());
+
         // Get ProblemTypes of Algorithm
         Set<PatternRelation> relatedPatterns = algorithm.getRelatedPatterns();
         // add new problemtype
-        relatedPatterns.add(patternRelations);
+        relatedPatterns.add(patternRelation);
         // update and return update list:
         algorithm.setRelatedPatterns(relatedPatterns);
         Set<PatternRelation> updatedPatternRelations = algorithmService.save(algorithm).getRelatedPatterns();
