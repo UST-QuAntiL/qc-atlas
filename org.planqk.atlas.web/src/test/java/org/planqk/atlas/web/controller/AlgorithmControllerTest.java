@@ -534,7 +534,7 @@ public class AlgorithmControllerTest {
             resource.setComputingResourceType(type);
             resource.setId(UUID.randomUUID());
             resources.add(resource);
-            algo.addQuantumResource(resource);
+            algo.addComputingResource(resource);
         }
 
         when(algorithmService.findById(any())).thenReturn(algo);

@@ -37,7 +37,7 @@ public class QuantumAlgorithm extends Algorithm {
     @EqualsAndHashCode.Exclude
     private Set<QuantumImplementation> implementations;
 
-    public void addQuantumResource(@NonNull ComputingResource resource) {
+    public void addComputingResource(@NonNull ComputingResource resource) {
         this.requiredComputingResources.add(resource);
     }
 
