@@ -605,61 +605,46 @@ public class AlgorithmControllerTest {
 
     @Test
     void testAddQuantumResource_InvalidInput_InvalidType_MissingName() throws Exception {
-        var type = new ComputingResourceTypeDto();
-        type.setDatatype(ComputingResourceDataType.FLOAT);
-        type.setId(UUID.randomUUID());
-        var resource = new ComputingResourceDto();
-        resource.setType(type);
-        resource.setId(UUID.randomUUID());
 
         when(algorithmService.findById(any())).thenReturn(new ClassicAlgorithm());
         var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES + "/";
-        mockMvc.perform(post(path).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsBytes(resource)))
+        mockMvc.perform(post(path).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsBytes(getInvalidInputResource())))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
     void testAddQuantumResource_InvalidInput_InvalidType_MissingTypeEnum() throws Exception {
+        ;
+
+        when(algorithmService.findById(any())).thenReturn(new ClassicAlgorithm());
+        var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES + "/";
+        mockMvc.perform(post(path).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsBytes(getInvalidInputResource())))
+                .andExpect(status().isBadRequest());
+    }
+
+    private ComputingResourceDto getInvalidInputResource() {
         var type = new ComputingResourceTypeDto();
-        type.setName("test");
         type.setId(UUID.randomUUID());
         var resource = new ComputingResourceDto();
         resource.setType(type);
         resource.setId(UUID.randomUUID());
-
-        when(algorithmService.findById(any())).thenReturn(new ClassicAlgorithm());
-        var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES + "/";
-        mockMvc.perform(post(path).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsBytes(resource)))
-                .andExpect(status().isBadRequest());
+        return resource;
     }
 
     @Test
     void testAddQuantumResource_InvalidInput_InvalidType_MissingRequirements() throws Exception {
-        var type = new ComputingResourceTypeDto();
-        type.setId(UUID.randomUUID());
-        var resource = new ComputingResourceDto();
-        resource.setType(type);
-        resource.setId(UUID.randomUUID());
-
         when(algorithmService.findById(any())).thenReturn(new ClassicAlgorithm());
         var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES + "/";
-        mockMvc.perform(post(path).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsBytes(resource)))
+        mockMvc.perform(post(path).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsBytes(getInvalidInputResource())))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
     void testAddQuantumResource_InvalidInput_InvalidType_EmptyName() throws Exception {
-        var type = new ComputingResourceTypeDto();
-        type.setName("");
-        type.setDatatype(ComputingResourceDataType.FLOAT);
-        type.setId(UUID.randomUUID());
-        var resource = new ComputingResourceDto();
-        resource.setType(type);
-        resource.setId(UUID.randomUUID());
 
         when(algorithmService.findById(any())).thenReturn(new ClassicAlgorithm());
         var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES + "/";
-        mockMvc.perform(post(path).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsBytes(resource)))
+        mockMvc.perform(post(path).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsBytes(getInvalidInputResource)))
                 .andExpect(status().isBadRequest());
     }
 
