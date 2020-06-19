@@ -56,6 +56,11 @@ public class ImplementationServiceImpl implements ImplementationService {
     }
 
     @Override
+    public void delete(UUID id) {
+        repository.deleteById(id);
+    }
+
+    @Override
     public Page<Implementation> findAll(Pageable pageable) {
         return repository.findAll(pageable);
     }
