@@ -19,7 +19,6 @@ public class SoftwarePlatformDto {
     @NotNull(message = "SoftwarePlatform name must not be null!")
     private String name;
 
-    @Js
     private URL link;
 
     private String version;
