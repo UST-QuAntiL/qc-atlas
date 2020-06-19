@@ -588,25 +588,6 @@ public class AlgorithmControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
-    @Test
-    void testAddQuantumResource_InvalidInput_MissingName() throws Exception {
-
-        when(algorithmService.findById(any())).thenReturn(new ClassicAlgorithm());
-        var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES + "/";
-        mockMvc.perform(post(path).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsBytes(getInvalidInputResource())))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void testAddQuantumResource_InvalidInput_MissingTypeEnum() throws Exception {
-        ;
-
-        when(algorithmService.findById(any())).thenReturn(new ClassicAlgorithm());
-        var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES + "/";
-        mockMvc.perform(post(path).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsBytes(getInvalidInputResource())))
-                .andExpect(status().isBadRequest());
-    }
-
     private ComputingResourceDto getInvalidInputResource() {
         var type = new ComputingResourceTypeDto();
         type.setId(UUID.randomUUID());
@@ -614,23 +595,6 @@ public class AlgorithmControllerTest {
         resource.setType(type);
         resource.setId(UUID.randomUUID());
         return resource;
-    }
-
-    @Test
-    void testAddQuantumResource_InvalidInput_MissingRequirements() throws Exception {
-        when(algorithmService.findById(any())).thenReturn(new ClassicAlgorithm());
-        var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES + "/";
-        mockMvc.perform(post(path).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsBytes(getInvalidInputResource())))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void testAddQuantumResource_InvalidInput_EmptyName() throws Exception {
-
-        when(algorithmService.findById(any())).thenReturn(new ClassicAlgorithm());
-        var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES + "/";
-        mockMvc.perform(post(path).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsBytes(getInvalidInputResource())))
-                .andExpect(status().isBadRequest());
     }
 
     private ComputingResourceDto getValidResourceInput() {
