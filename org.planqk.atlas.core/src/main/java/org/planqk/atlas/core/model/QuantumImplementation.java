@@ -23,7 +23,7 @@ public class QuantumImplementation extends Implementation {
     private QuantumAlgorithm algorithm;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
-    private Set<QuantumResource> requiredQuantumResources;
+    private Set<ComputingResource> requiredComputingResources;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private SoftwarePlatform usedSoftwarePlatform;

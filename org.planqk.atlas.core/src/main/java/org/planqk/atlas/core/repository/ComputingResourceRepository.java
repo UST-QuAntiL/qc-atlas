@@ -17,9 +17,21 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.planqk.atlas.core.model;
+package org.planqk.atlas.core.repository;
 
-public enum QuantumResourceDataType {
+import java.util.Set;
+import java.util.UUID;
 
-    INTEGER, STRING, FLOAT
+import org.planqk.atlas.core.model.ComputingResource;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+
+@RepositoryRestResource(exported = false)
+public interface ComputingResourceRepository extends JpaRepository<ComputingResource, UUID> {
+    Set<ComputingResource> findAllByAlgorithm_Id(UUID algoId);
+
+    Page<ComputingResource> findAllByAlgorithm_Id(UUID algoId, Pageable p);
 }

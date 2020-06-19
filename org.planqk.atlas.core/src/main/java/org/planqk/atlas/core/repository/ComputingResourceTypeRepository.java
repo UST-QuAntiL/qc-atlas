@@ -17,31 +17,15 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.planqk.atlas.web.dtos;
+package org.planqk.atlas.core.repository;
 
 import java.util.UUID;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import org.planqk.atlas.core.model.ComputingResourceType;
 
-import org.planqk.atlas.core.model.QuantumResourceDataType;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
-
-@Data
-@EqualsAndHashCode
-@ToString
-@NoArgsConstructor
-public class QuantumResourceTypeDto {
-
-    private UUID id;
-
-    @NotEmpty
-    private String name;
-    @NotNull
-    private QuantumResourceDataType datatype;
-    private String description;
+@RepositoryRestResource
+public interface ComputingResourceTypeRepository extends JpaRepository<ComputingResourceType, UUID> {
 }
