@@ -24,39 +24,39 @@ import java.util.UUID;
 
 import javax.transaction.Transactional;
 
-import org.planqk.atlas.core.model.QuantumAlgorithm;
-import org.planqk.atlas.core.model.QuantumResource;
-import org.planqk.atlas.core.model.QuantumResourceType;
+import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.ComputingResource;
+import org.planqk.atlas.core.model.ComputingResourceType;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-public interface QuantumResourceService {
+public interface ComputingResourceService {
     @Transactional
-    void deleteQuantumResourceType(UUID typeId);
-
-    @Transactional
-    void deleteQuantumResource(UUID resourceId);
-
-    QuantumResourceType findResourceTypeById(UUID resourceTypeId);
-
-    Page<QuantumResourceType> findAllResourceTypes(Pageable pageable);
-
-    Set<QuantumResource> findAllResourcesByAlgorithmId(UUID algoid);
-
-    Page<QuantumResource> findAllResourcesByAlgorithmId(UUID algoid, Pageable pageable);
+    void deleteComputingResourceType(UUID typeId);
 
     @Transactional
-    QuantumResourceType addOrUpdateQuantumResourceType(QuantumResourceType resourceType);
+    void deleteComputingResource(UUID resourceId);
+
+    ComputingResourceType findResourceTypeById(UUID resourceTypeId);
+
+    Page<ComputingResourceType> findAllResourceTypes(Pageable pageable);
+
+    Set<ComputingResource> findAllResourcesByAlgorithmId(UUID algoid);
+
+    Page<ComputingResource> findAllResourcesByAlgorithmId(UUID algoid, Pageable pageable);
 
     @Transactional
-    QuantumResource addOrUpdateQuantumResource(QuantumResource resource);
+    ComputingResourceType addOrUpdateComputingResourceType(ComputingResourceType resourceType);
 
     @Transactional
-    QuantumResource addQuantumResourceToAlgorithm(QuantumAlgorithm algo, QuantumResource resource);
+    ComputingResource addOrUpdateComputingResource(ComputingResource resource);
 
     @Transactional
-    QuantumResource addQuantumResourceToAlgorithm(UUID algoId, UUID resourceId);
+    ComputingResource addComputingResourceToAlgorithm(Algorithm algo, ComputingResource resource);
 
-    QuantumResource findResourceById(UUID id);
+    @Transactional
+    ComputingResource addComputingResourceToAlgorithm(UUID algoId, UUID resourceId);
+
+    ComputingResource findResourceById(UUID id);
 }

@@ -19,8 +19,8 @@
 
 package org.planqk.atlas.web.linkassembler;
 
-import org.planqk.atlas.web.controller.QuantumResourceTypeController;
-import org.planqk.atlas.web.dtos.QuantumResourceTypeDto;
+import org.planqk.atlas.web.controller.ComputingResourceTypeController;
+import org.planqk.atlas.web.dtos.ComputingResourceTypeDto;
 
 import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Component;
@@ -29,17 +29,17 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @SuppressWarnings("ConstantConditions")
 @Component
-public class QuantumResourceTypeAssembler extends GenericLinkAssembler<QuantumResourceTypeDto> {
+public class QuantumResourceTypeAssembler extends GenericLinkAssembler<ComputingResourceTypeDto> {
     @Override
-    public void addLinks(EntityModel<QuantumResourceTypeDto> resource) {
-        resource.add(links.linkTo(methodOn(QuantumResourceTypeController.class)
-                .getQuantumResourceType(resource.getContent().getId()))
+    public void addLinks(EntityModel<ComputingResourceTypeDto> resource) {
+        resource.add(links.linkTo(methodOn(ComputingResourceTypeController.class)
+                .getComputingResourceType(resource.getContent().getId()))
                 .withSelfRel());
-        resource.add(links.linkTo(methodOn(QuantumResourceTypeController.class)
+        resource.add(links.linkTo(methodOn(ComputingResourceTypeController.class)
                 .getResourceTypes(1, 50))
                 .withRel("all-types"));
-        resource.add(links.linkTo(methodOn(QuantumResourceTypeController.class)
-                .deleteQuantumResourceType(resource.getContent().getId()))
+        resource.add(links.linkTo(methodOn(ComputingResourceTypeController.class)
+                .deleteComputingResourceType(resource.getContent().getId()))
                 .withRel("delete"));
     }
 }
