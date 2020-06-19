@@ -23,7 +23,7 @@ import java.util.UUID;
 
 import org.planqk.atlas.core.services.ComputingResourceService;
 import org.planqk.atlas.web.Constants;
-import org.planqk.atlas.web.dtos.QuantumResourceTypeDto;
+import org.planqk.atlas.web.dtos.ComputingResourceTypeDto;
 import org.planqk.atlas.web.linkassembler.QuantumResourceTypeAssembler;
 import org.planqk.atlas.web.utils.HateoasUtils;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
@@ -55,7 +55,7 @@ public class ComputingResourceTypeController {
 
     private final QuantumResourceTypeAssembler assembler;
     private final ComputingResourceService service;
-    private final PagedResourcesAssembler<QuantumResourceTypeDto> paginationAssembler;
+    private final PagedResourcesAssembler<ComputingResourceTypeDto> paginationAssembler;
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
@@ -63,9 +63,9 @@ public class ComputingResourceTypeController {
             @ApiResponse(responseCode = "404"),
     })
     @GetMapping("/{id}")
-    public ResponseEntity<EntityModel<QuantumResourceTypeDto>> getQuantumResourceType(@PathVariable UUID id) {
+    public ResponseEntity<EntityModel<ComputingResourceTypeDto>> getComputingResourceType(@PathVariable UUID id) {
         var resourceType = service.findResourceTypeById(id);
-        var resourceTypeDto = ModelMapperUtils.convert(resourceType, QuantumResourceTypeDto.class);
+        var resourceTypeDto = ModelMapperUtils.convert(resourceType, ComputingResourceTypeDto.class);
         var entityModel = HateoasUtils.generateEntityModel(resourceTypeDto);
         assembler.addLinks(entityModel);
         return ResponseEntity.ok(entityModel);
@@ -77,20 +77,20 @@ public class ComputingResourceTypeController {
             @ApiResponse(responseCode = "404"),
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteQuantumResourceType(@PathVariable UUID id) {
+    public ResponseEntity<?> deleteComputingResourceType(@PathVariable UUID id) {
         service.deleteComputingResourceType(id);
         return ResponseEntity.ok().build();
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping("/")
-    public ResponseEntity<PagedModel<EntityModel<QuantumResourceTypeDto>>> getResourceTypes(
+    public ResponseEntity<PagedModel<EntityModel<ComputingResourceTypeDto>>> getResourceTypes(
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size
     ) {
         Pageable p = RestUtils.getPageableFromRequestParams(page, size);
         var types = service.findAllResourceTypes(p);
-        var typeDtoes = ModelMapperUtils.convertPage(types, QuantumResourceTypeDto.class);
+        var typeDtoes = ModelMapperUtils.convertPage(types, ComputingResourceTypeDto.class);
         var pagedModel = paginationAssembler.toModel(typeDtoes);
         assembler.addLinks(pagedModel);
         return ResponseEntity.ok(pagedModel);

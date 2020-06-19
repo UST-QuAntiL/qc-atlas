@@ -36,5 +36,5 @@ public class ComputingResourceDto {
     private UUID id;
     private Object value;
     @NotNull
-    private QuantumResourceTypeDto type;
+    private ComputingResourceTypeDto type;
 }

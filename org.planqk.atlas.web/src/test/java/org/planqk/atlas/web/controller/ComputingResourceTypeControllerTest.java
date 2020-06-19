@@ -28,7 +28,7 @@ import org.planqk.atlas.core.model.ComputingResourceType;
 import org.planqk.atlas.core.services.ComputingResourceService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
-import org.planqk.atlas.web.dtos.QuantumResourceTypeDto;
+import org.planqk.atlas.web.dtos.ComputingResourceTypeDto;
 import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -107,7 +107,7 @@ public class ComputingResourceTypeControllerTest {
 
         var dto = mapper.readValue(
                 result.getResponse().getContentAsString(),
-                new TypeReference<EntityModel<QuantumResourceTypeDto>>() {
+                new TypeReference<EntityModel<ComputingResourceTypeDto>>() {
                 }
         ).getContent();
 
@@ -136,7 +136,7 @@ public class ComputingResourceTypeControllerTest {
         var resultList = ObjectMapperUtils.mapResponseToList(
                 result.getResponse().getContentAsString(),
                 "quantumResourceTypeDtoes",
-                QuantumResourceTypeDto.class
+                ComputingResourceTypeDto.class
         );
         assertThat(resultList.size()).isEqualTo(10);
 

@@ -40,7 +40,7 @@ public class ComputingResourceAssembler extends GenericLinkAssembler<ComputingRe
                 .getComputingResource(resource.getContent().getId()))
                 .withSelfRel());
         resource.add(links.linkTo(methodOn(ComputingResourceTypeController.class)
-                .getQuantumResourceType(resource.getContent().getType().getId()))
+                .getComputingResourceType(resource.getContent().getType().getId()))
                 .withRel("type"));
         // TODO (Maybe) add link to the entities linked to this quantum Resource, e.g. the Quantum Algorithms
     }
