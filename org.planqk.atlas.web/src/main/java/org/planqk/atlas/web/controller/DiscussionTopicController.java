@@ -163,6 +163,7 @@ public class DiscussionTopicController {
             log.debug("Not the matching topic id: {}", id);
             throw new NoSuchElementException();
         }
+        discussionCommentDto.setId(commentId);
         return discussionCommentController.updateDiscussionComment(commentId, discussionCommentDto);
     }
 

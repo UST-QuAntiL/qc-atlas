@@ -24,7 +24,10 @@ import java.util.UUID;
 import javax.validation.Valid;
 
 import org.planqk.atlas.core.model.DiscussionComment;
+import org.planqk.atlas.core.model.DiscussionTopic;
+import org.planqk.atlas.core.repository.DiscussionCommentRepository;
 import org.planqk.atlas.core.services.DiscussionCommentService;
+import org.planqk.atlas.core.services.DiscussionTopicService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.DiscussionCommentDto;
 import org.planqk.atlas.web.linkassembler.DiscussionCommentAssembler;
@@ -66,8 +69,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class DiscussionCommentController {
 
     private DiscussionCommentService discussionCommentService;
+    private DiscussionTopicService discussionTopicService;
     private PagedResourcesAssembler<DiscussionCommentDto> pagedResourcesAssembler;
     private DiscussionCommentAssembler discussionCommentAssembler;
+    private DiscussionCommentRepository discussionCommentRepository;
 
     public HttpEntity<PagedModel<EntityModel<DiscussionCommentDto>>> getDiscussionComments(@PathVariable("topicId") UUID topicId,
                                                                                            @RequestParam(required = false) Integer page,
@@ -107,8 +112,12 @@ public class DiscussionCommentController {
     public HttpEntity<EntityModel<DiscussionCommentDto>> updateDiscussionComment(@PathVariable UUID commentId,
                                                                                  @Valid @RequestBody DiscussionCommentDto discussionCommentDto) {
 
-        DiscussionComment discussionComment = discussionCommentService.update(commentId, ModelMapperUtils.convert(discussionCommentDto, DiscussionComment.class));
-        discussionComment.getDiscussionTopic().getDiscussionComments().add(discussionComment);
+        DiscussionComment discussionCommentObject = discussionCommentRepository.findById(commentId).get();
+        DiscussionComment discussionComment = ModelMapperUtils.convert(discussionCommentDto, DiscussionComment.class);
+        discussionComment.setDiscussionTopic(discussionCommentObject.getDiscussionTopic());
+        DiscussionTopic discussionTopic = discussionCommentObject.getDiscussionTopic();
+        discussionTopic.getDiscussionComments().add(discussionComment);
+        discussionTopicService.update(discussionTopic.getId(), discussionTopic);
         EntityModel<DiscussionCommentDto> discussionCommentDtoEntityModel = HateoasUtils.generateEntityModel(ModelMapperUtils.convert(discussionComment, DiscussionCommentDto.class));
         discussionCommentAssembler.addLinks(discussionCommentDtoEntityModel);
         return new ResponseEntity<>(discussionCommentDtoEntityModel, HttpStatus.OK);

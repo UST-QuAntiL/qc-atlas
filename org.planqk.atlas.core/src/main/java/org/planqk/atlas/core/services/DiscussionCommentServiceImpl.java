@@ -24,7 +24,6 @@ import java.util.UUID;
 
 import org.planqk.atlas.core.model.DiscussionComment;
 import org.planqk.atlas.core.repository.DiscussionCommentRepository;
-import org.planqk.atlas.core.repository.DiscussionTopicRepository;
 
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
