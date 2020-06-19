@@ -135,7 +135,7 @@ public class ComputingResourceTypeControllerTest {
 
         var resultList = ObjectMapperUtils.mapResponseToList(
                 result.getResponse().getContentAsString(),
-                "quantumResourceTypeDtoes",
+                "computingResourceTypeDtoes",
                 ComputingResourceTypeDto.class
         );
         assertThat(resultList.size()).isEqualTo(10);
