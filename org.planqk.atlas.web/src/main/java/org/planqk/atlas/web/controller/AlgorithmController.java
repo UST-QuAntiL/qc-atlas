@@ -217,7 +217,7 @@ public class AlgorithmController {
             description = "algorithm or publication does not exist")},
             description = "Add a reference to an existing publication (that was previously created via a POST on /publications/. If the publication doesn't exist yet, a 404 error is thrown.")
     @PostMapping("/{algoId}/" + Constants.PUBLICATIONS)
-    public HttpEntity<CollectionModel<EntityModel<PublicationDto>>> addPatternRelation(@PathVariable UUID algoId, @Valid @RequestBody PublicationDto publicationDto) {
+    public HttpEntity<CollectionModel<EntityModel<PublicationDto>>> addPublication(@PathVariable UUID algoId, @Valid @RequestBody PublicationDto publicationDto) {
         Algorithm algorithm = algorithmService.findById(algoId);
         Publication publication = ModelMapperUtils.convert(publicationDto, Publication.class);
         // access publication in db to throw NoSuchElementException if it doesn't exist
