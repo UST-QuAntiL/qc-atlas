@@ -34,9 +34,7 @@ import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.ComputingResourceDto;
 import org.planqk.atlas.web.dtos.ImplementationDto;
-
 import org.planqk.atlas.web.linkassembler.ComputingResourceAssembler;
-
 import org.planqk.atlas.web.linkassembler.ImplementationAssembler;
 import org.planqk.atlas.web.utils.HateoasUtils;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
@@ -84,11 +82,8 @@ public class ImplementationController {
     private final ImplementationService implementationService;
     private final AlgorithmService algorithmService;
     private final ImplementationAssembler implementationAssembler;
-    private final TagAssembler tagAssembler;
+//    private final TagAssembler tagAssembler;
 
-    private ImplementationService implementationService;
-    private AlgorithmService algorithmService;
-    private ImplementationAssembler implementationAssembler;
 //    private TagAssembler tagAssembler;
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
