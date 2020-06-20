@@ -32,7 +32,6 @@ import org.planqk.atlas.core.model.Sketch;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -68,7 +67,7 @@ public class AlgorithmDto {
     private String problem;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @Hidden
+    @Schema(accessMode = READ_ONLY)
     private Set<AlgorithmRelationDto> algorithmRelations = new HashSet<>();
 
     private String inputFormat;
@@ -86,6 +85,9 @@ public class AlgorithmDto {
     @NotNull(message = "Computational-Model must not be null!")
     private ComputationModel computationModel;
 
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @Schema(accessMode = READ_ONLY)
+    private Set<PatternRelationDto> relatedPatterns = new HashSet<>();
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @Schema(accessMode = READ_ONLY)

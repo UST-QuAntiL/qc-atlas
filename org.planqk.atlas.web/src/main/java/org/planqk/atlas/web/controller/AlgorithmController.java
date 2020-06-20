@@ -213,9 +213,9 @@ public class AlgorithmController {
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "201")})
-    @PostMapping("/{id}/" + Constants.PUBLICATIONS)
-    public HttpEntity<CollectionModel<EntityModel<PublicationDto>>> addPatternRelations(@PathVariable UUID id, @Valid @RequestBody PublicationDto publicationDto) {
-        Algorithm algorithm = algorithmService.findById(id);
+    @PostMapping("/{algoId}/" + Constants.PUBLICATIONS)
+    public HttpEntity<CollectionModel<EntityModel<PublicationDto>>> addPatternRelations(@PathVariable UUID algoId, @Valid @RequestBody PublicationDto publicationDto) {
+        Algorithm algorithm = algorithmService.findById(algoId);
         Publication publication = ModelMapperUtils.convert(publicationDto, Publication.class);
         // access publication in db to throw NoSuchElementException if it doesn't exist
         publicationService.findById(publication.getId());
@@ -235,9 +235,9 @@ public class AlgorithmController {
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
-    @PutMapping("/{id}/" + Constants.PUBLICATIONS)
-    public HttpEntity<CollectionModel<EntityModel<PublicationDto>>> updatePublications(@PathVariable UUID id, @Valid @RequestBody List<PublicationDto> publications) {
-        Algorithm algorithm = algorithmService.findById(id);
+    @PutMapping("/{algoId}/" + Constants.PUBLICATIONS)
+    public HttpEntity<CollectionModel<EntityModel<PublicationDto>>> updatePublications(@PathVariable UUID algoId, @Valid @RequestBody List<PublicationDto> publications) {
+        Algorithm algorithm = algorithmService.findById(algoId);
         // access publication in db to throw NoSuchElementException if it doesn't exist
         Set<Publication> newPublications = new HashSet<>();
         publications.forEach(publicationDto -> {
@@ -273,9 +273,9 @@ public class AlgorithmController {
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "201")})
-    @PostMapping("/{id}/" + Constants.PROBLEM_TYPES)
-    public HttpEntity<CollectionModel<EntityModel<ProblemTypeDto>>> addProblemType(@PathVariable UUID id, @Valid @RequestBody ProblemTypeDto problemTypeDto) {
-        Algorithm algorithm = algorithmService.findById(id);
+    @PostMapping("/{algoId}/" + Constants.PROBLEM_TYPES)
+    public HttpEntity<CollectionModel<EntityModel<ProblemTypeDto>>> addProblemType(@PathVariable UUID algoId, @Valid @RequestBody ProblemTypeDto problemTypeDto) {
+        Algorithm algorithm = algorithmService.findById(algoId);
         ProblemType problemtype = ModelMapperUtils.convert(problemTypeDto, ProblemType.class);
         // access stored pattern relation -> if it does not exists, this throws a NoSuchElementException
         problemTypeService.findById(problemtype.getId());
@@ -294,9 +294,9 @@ public class AlgorithmController {
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
-    @PutMapping("/{id}/" + Constants.PROBLEM_TYPES)
-    public HttpEntity<CollectionModel<EntityModel<ProblemTypeDto>>> updateProblemTypes(@PathVariable UUID id, @Valid @RequestBody List<ProblemTypeDto> problemTypeDtos) {
-        Algorithm algorithm = algorithmService.findById(id);
+    @PutMapping("/{algoId}/" + Constants.PROBLEM_TYPES)
+    public HttpEntity<CollectionModel<EntityModel<ProblemTypeDto>>> updateProblemTypes(@PathVariable UUID algoId, @Valid @RequestBody List<ProblemTypeDto> problemTypeDtos) {
+        Algorithm algorithm = algorithmService.findById(algoId);
         // access publication in db to throw NoSuchElementException if it doesn't exist
         Set<ProblemType> newProblemTypes = new HashSet<>();
         problemTypeDtos.forEach(problemTypeDto -> {
@@ -332,9 +332,9 @@ public class AlgorithmController {
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "201")})
-    @PostMapping("/{id}/" + Constants.PATTERN_RELATIONS)
-    public HttpEntity<CollectionModel<EntityModel<PatternRelationDto>>> addPatternRelations(@PathVariable UUID id, @Valid @RequestBody PatternRelationDto patternRelationDto) {
-        Algorithm algorithm = algorithmService.findById(id);
+    @PostMapping("/{algoId}/" + Constants.PATTERN_RELATIONS)
+    public HttpEntity<CollectionModel<EntityModel<PatternRelationDto>>> addPatternRelations(@PathVariable UUID algoId, @Valid @RequestBody PatternRelationDto patternRelationDto) {
+        Algorithm algorithm = algorithmService.findById(algoId);
         PatternRelation patternRelation = ModelMapperUtils.convert(patternRelationDto, PatternRelation.class);
 
         // access stored pattern relation -> if it does not exists, this throws a NoSuchElementException
@@ -355,9 +355,9 @@ public class AlgorithmController {
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "201")})
-    @PutMapping("/{id}/" + Constants.PATTERN_RELATIONS)
-    public HttpEntity<CollectionModel<EntityModel<PatternRelationDto>>> updatePatternRelations(@PathVariable UUID id, @Valid @RequestBody List<PatternRelationDto> patternRelationDtos) {
-        Algorithm algorithm = algorithmService.findById(id);
+    @PutMapping("/{algoId}/" + Constants.PATTERN_RELATIONS)
+    public HttpEntity<CollectionModel<EntityModel<PatternRelationDto>>> updatePatternRelations(@PathVariable UUID algoId, @Valid @RequestBody List<PatternRelationDto> patternRelationDtos) {
+        Algorithm algorithm = algorithmService.findById(algoId);
         // access publication in db to throw NoSuchElementException if it doesn't exist
         Set<PatternRelation> newPatternRelations = new HashSet<>();
         patternRelationDtos.forEach(patternRelationDto -> {
