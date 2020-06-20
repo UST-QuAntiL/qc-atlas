@@ -50,8 +50,8 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
 
     @Autowired
     private AlgorithmService algorithmService;
-    @Autowired
-    private TagService tagService;
+    //    @Autowired
+//    private TagService tagService;
     @Autowired
     private ProblemTypeService problemTypeService;
     @Autowired
