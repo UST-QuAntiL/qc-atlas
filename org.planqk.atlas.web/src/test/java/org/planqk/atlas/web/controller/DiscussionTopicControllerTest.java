@@ -67,7 +67,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
+@SpringBootTest(properties = {"spring.datasource.url=jdbc:postgresql://localhost:5432/planqk_test"})
 @ExtendWith( {MockitoExtension.class})
 @AutoConfigureMockMvc
 @EnableLinkAssemblers
