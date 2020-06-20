@@ -125,7 +125,7 @@ public class AlgorithmController {
         return new ResponseEntity<>(outputDto, HttpStatus.OK);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "201")})
+    @Operation(responses = {@ApiResponse(responseCode = "201")}, description = "Define the basic properties of an algorithm. References to subobjects (e.g. a problemtype) can be added via subroutes (e.g. /algorithm/id/problem-types)")
     @PostMapping("/")
     public HttpEntity<EntityModel<AlgorithmDto>> createAlgorithm(@Valid @RequestBody AlgorithmDto algo) {
         LOG.debug("Post to create new algorithm received.");
@@ -139,7 +139,7 @@ public class AlgorithmController {
         return new ResponseEntity<>(dtoOutput, HttpStatus.CREATED);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200")})
+    @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Update the basic properties of an algorithm (e.g. name). References to subobjects (e.g. a problemtype) are not updated via this operation - use the corresponding subroute for updating them (e.g. algorithm/{id}/problem-type).")
     @PutMapping("/{algoId}")
     public HttpEntity<EntityModel<AlgorithmDto>> updateAlgorithm(@PathVariable UUID algoId,
                                                                  @Valid @RequestBody AlgorithmDto algo) {
@@ -195,7 +195,8 @@ public class AlgorithmController {
 //    }
 
     @Operation(responses = {@ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "404", content = @Content)})
+            @ApiResponse(responseCode = "404", content = @Content, description = "algorithm doesn't exist")},
+            description = "Get referenced publications for an algorithm")
     @GetMapping("/{algoId}/" + Constants.PUBLICATIONS)
     public HttpEntity<CollectionModel<EntityModel<PublicationDto>>> getPublications(@PathVariable UUID algoId) {
         Algorithm algorithm = algorithmService.findById(algoId);
@@ -212,7 +213,9 @@ public class AlgorithmController {
         return new ResponseEntity<>(resultCollection, HttpStatus.OK);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "201")})
+    @Operation(responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "404", content = @Content,
+            description = "algorithm or publication does not exist")},
+            description = "Add a reference to an existing publication (that was previously created via a POST on /publications/. If the publication doesn't exist yet, a 404 error is thrown.")
     @PostMapping("/{algoId}/" + Constants.PUBLICATIONS)
     public HttpEntity<CollectionModel<EntityModel<PublicationDto>>> addPatternRelation(@PathVariable UUID algoId, @Valid @RequestBody PublicationDto publicationDto) {
         Algorithm algorithm = algorithmService.findById(algoId);
@@ -255,7 +258,7 @@ public class AlgorithmController {
         return new ResponseEntity<>(resultCollection, HttpStatus.OK);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200")})
+    @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Get the problem types for an algorithm")
     @GetMapping("/{algoId}/" + Constants.PROBLEM_TYPES)
     public HttpEntity<CollectionModel<EntityModel<ProblemTypeDto>>> getProblemTypes(@PathVariable UUID algoId) {
         Algorithm algorithm = algorithmService.findById(algoId);
@@ -272,7 +275,7 @@ public class AlgorithmController {
         return new ResponseEntity<>(resultCollection, HttpStatus.OK);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "201")})
+    @Operation(responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "404", description = "problem type or algorithm does not exists in the database")}, description = "Add a reference to an existing problemType (that was previously created via a POST on /problem-types/. If the problemType doesn't exist yet, a 404 error is thrown.")
     @PostMapping("/{algoId}/" + Constants.PROBLEM_TYPES)
     public HttpEntity<CollectionModel<EntityModel<ProblemTypeDto>>> addProblemType(@PathVariable UUID algoId, @Valid @RequestBody ProblemTypeDto problemTypeDto) {
         Algorithm algorithm = algorithmService.findById(algoId);
@@ -314,7 +317,7 @@ public class AlgorithmController {
         return new ResponseEntity<>(resultCollection, HttpStatus.OK);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400"), @ApiResponse(responseCode = "404")})
+    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400"), @ApiResponse(responseCode = "404")}, description = "Get pattern relations for an algorithms.")
     @GetMapping("/{algoId}/" + Constants.PATTERN_RELATIONS)
     public HttpEntity<CollectionModel<EntityModel<PatternRelationDto>>> getPatternRelations(@PathVariable UUID algoId) {
         Algorithm algorithm = algorithmService.findById(algoId);
@@ -331,7 +334,7 @@ public class AlgorithmController {
         return new ResponseEntity<>(resultCollection, HttpStatus.OK);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "201")})
+    @Operation(responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "404", description = "pattern relation or algorithm doesn't exist in the database")}, description = "Add a reference to an existing pattern relation (that was previously created via a POST on /pattern-relation/. If the pattern relation doesn't exist yet, a 404 error is thrown.\"")
     @PostMapping("/{algoId}/" + Constants.PATTERN_RELATIONS)
     public HttpEntity<CollectionModel<EntityModel<PatternRelationDto>>> addPatternRelations(@PathVariable UUID algoId, @Valid @RequestBody PatternRelationDto patternRelationDto) {
         Algorithm algorithm = algorithmService.findById(algoId);
