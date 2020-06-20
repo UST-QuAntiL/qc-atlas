@@ -104,7 +104,7 @@ public class DiscussionCommentController {
     public HttpEntity<EntityModel<DiscussionCommentDto>> updateDiscussionComment(@PathVariable UUID commentId,
                                                                                  @Valid @RequestBody DiscussionCommentDto discussionCommentDto) {
 
-        DiscussionComment discussionCommentObject = discussionCommentRepository.findById(commentId).get();
+        DiscussionComment discussionCommentObject = discussionCommentService.findById(commentId);
         DiscussionComment discussionComment = ModelMapperUtils.convert(discussionCommentDto, DiscussionComment.class);
         discussionComment.setDiscussionTopic(discussionCommentObject.getDiscussionTopic());
         DiscussionTopic discussionTopic = discussionCommentObject.getDiscussionTopic();
