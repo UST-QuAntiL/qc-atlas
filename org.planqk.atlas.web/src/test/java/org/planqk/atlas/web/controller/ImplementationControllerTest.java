@@ -20,7 +20,6 @@
 package org.planqk.atlas.web.controller;
 
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -28,11 +27,11 @@ import java.util.UUID;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.services.AlgorithmService;
+import org.planqk.atlas.core.services.ComputingResourceService;
 import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
 import org.planqk.atlas.web.dtos.ImplementationDto;
 import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
-import org.planqk.atlas.web.linkassembler.ImplementationAssembler;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -77,6 +76,8 @@ public class ImplementationControllerTest {
     private AlgorithmService algorithmService;
     @MockBean
     private ImplementationService implementationService;
+    @MockBean
+    private ComputingResourceService computingResourceService;
 
     @Autowired
     private MockMvc mockMvc;
@@ -279,7 +280,7 @@ public class ImplementationControllerTest {
 
         MvcResult mvcResult = mockMvc
                 .perform(put(fromMethodCall(uriBuilder,
-                        on(ImplementationController.class).updateImplementation(implId, updateDto)).toUriString())
+                        on(ImplementationController.class).updateImplementation(algoId, implId, updateDto)).toUriString())
                         .content(mapper.writeValueAsString(updateDto))
                         .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();

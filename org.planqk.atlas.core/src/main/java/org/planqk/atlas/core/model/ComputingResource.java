@@ -42,9 +42,17 @@ public class ComputingResource extends HasId {
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     private ComputingResourceType computingResourceType;
 
-    @ManyToOne(cascade = CascadeType.DETACH)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.DETACH)
     @Exclude
     private Algorithm algorithm;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @Exclude
+    private Implementation implementation;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @Exclude
+    private Backend backend;
 
     @Type(type = "jsonb")
     @Column(columnDefinition = "jsonb")

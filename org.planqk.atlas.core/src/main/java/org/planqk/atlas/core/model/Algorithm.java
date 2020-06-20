@@ -63,7 +63,7 @@ public class Algorithm extends AlgorOrImpl {
     @EqualsAndHashCode.Exclude
     private Set<AlgorithmRelation> algorithmRelations = new HashSet<>();
 
-    @OneToMany(mappedBy = "algorithm", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "algorithm", fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, orphanRemoval = true)
     private Set<ComputingResource> requiredComputingResources = new HashSet<>();
 
     private String inputFormat;

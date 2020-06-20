@@ -26,12 +26,15 @@ import java.util.UUID;
 import javax.transaction.Transactional;
 
 import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.Backend;
 import org.planqk.atlas.core.model.ComputingResource;
 import org.planqk.atlas.core.model.ComputingResourceType;
-import org.planqk.atlas.core.model.QuantumAlgorithm;
+import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.repository.AlgorithmRepository;
+import org.planqk.atlas.core.repository.BackendRepository;
 import org.planqk.atlas.core.repository.ComputingResourceRepository;
 import org.planqk.atlas.core.repository.ComputingResourceTypeRepository;
+import org.planqk.atlas.core.repository.ImplementationRepository;
 
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -43,6 +46,8 @@ import org.springframework.stereotype.Service;
 public class ComputingResourceServiceImpl implements ComputingResourceService {
 
     private final AlgorithmRepository algorithmRepository;
+    private final BackendRepository backendRepository;
+    private final ImplementationRepository implementationRepository;
     private final ComputingResourceTypeRepository typeRepository;
     private final ComputingResourceRepository resourceRepository;
 
@@ -79,6 +84,26 @@ public class ComputingResourceServiceImpl implements ComputingResourceService {
     }
 
     @Override
+    public Set<ComputingResource> findAllResourcesByImplementationId(UUID implId) {
+        return resourceRepository.findAllByImplementation_Id(implId);
+    }
+
+    @Override
+    public Page<ComputingResource> findAllResourcesByImplementationId(UUID implId, Pageable pageable) {
+        return resourceRepository.findAllByImplementation_Id(implId, pageable);
+    }
+
+    @Override
+    public Set<ComputingResource> findAllResourcesByBackendId(UUID backendId) {
+        return resourceRepository.findAllByBackend_Id(backendId);
+    }
+
+    @Override
+    public Page<ComputingResource> findAllResourcesByBackendId(UUID backendId, Pageable pageable) {
+        return resourceRepository.findAllByBackend_Id(backendId, pageable);
+    }
+
+    @Override
     @Transactional
     public ComputingResourceType addOrUpdateComputingResourceType(ComputingResourceType resourceType) {
         return typeRepository.save(resourceType);
@@ -109,9 +134,44 @@ public class ComputingResourceServiceImpl implements ComputingResourceService {
     @Transactional
     public ComputingResource addComputingResourceToAlgorithm(UUID algoId, UUID resourceId) {
         var resource = resourceRepository.findById(resourceId).orElseThrow(NoSuchElementException::new);
-        var algorithm = (QuantumAlgorithm) algorithmRepository.findById(algoId).orElseThrow(NoSuchElementException::new);
-
+        var algorithm = (Algorithm) algorithmRepository.findById(algoId).orElseThrow(NoSuchElementException::new);
         return addComputingResourceToAlgorithm(algorithm, resource);
+    }
+
+    @Override
+    public ComputingResource addComputingResourceToImplementation(Implementation impl, ComputingResource resource) {
+        var updatedResource = resource;
+        if (updatedResource.getId() == null) {
+            updatedResource = this.addOrUpdateComputingResource(resource);
+        }
+        updatedResource.setImplementation(impl);
+        return this.resourceRepository.save(updatedResource);
+    }
+
+    @Override
+    public ComputingResource addComputingResourceToImplementation(UUID implId, UUID resourceId) {
+        var resource = resourceRepository.findById(resourceId).orElseThrow(NoSuchElementException::new);
+        var implementation = (Implementation) implementationRepository.findById(implId).orElseThrow(NoSuchElementException::new);
+        return addComputingResourceToImplementation(implementation, resource);
+    }
+
+    @Override
+    @Transactional
+    public ComputingResource addComputingResourceToBackend(Backend backend, ComputingResource resource) {
+        var updatedResource = resource;
+        if (updatedResource.getId() == null) {
+            updatedResource = this.addOrUpdateComputingResource(resource);
+        }
+        updatedResource.setBackend(backend);
+        return this.resourceRepository.save(updatedResource);
+    }
+
+    @Override
+    @Transactional
+    public ComputingResource addComputingResourceToBackend(UUID backendId, UUID resourceId) {
+        var resource = resourceRepository.findById(resourceId).orElseThrow(NoSuchElementException::new);
+        var backend = (Backend) backendRepository.findById(backendId).orElseThrow(NoSuchElementException::new);
+        return addComputingResourceToBackend(backend, resource);
     }
 
     @Override

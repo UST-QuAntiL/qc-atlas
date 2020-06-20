@@ -33,5 +33,4 @@ public class QuantumAlgorithmDto extends AlgorithmDto {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Schema(accessMode = WRITE_ONLY)
     private Set<QuantumImplementation> implementations = new HashSet<>();
-
 }

@@ -1,5 +1,6 @@
 package org.planqk.atlas.web.dtos;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -16,7 +17,7 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @Data
 @NoArgsConstructor
-@JsonSubTypes({ @JsonSubTypes.Type(value = QPUDto.class),
+@JsonSubTypes( {@JsonSubTypes.Type(value = QPUDto.class),
         @JsonSubTypes.Type(value = SimulatorDto.class)})
 public class BackendDto {
     private UUID id;
@@ -25,6 +26,7 @@ public class BackendDto {
     private String name;
     private String vendor;
     private String technology;
+    private Set<ComputingResourceDto> providedQuantumResources = new HashSet<>();
     private QuantumComputationModel quantumComputationModel;
     private Set<BackendProperty> backendProperties;
 }
