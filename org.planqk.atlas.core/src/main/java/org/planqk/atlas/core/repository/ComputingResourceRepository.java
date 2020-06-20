@@ -31,7 +31,16 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 @RepositoryRestResource(exported = false)
 public interface ComputingResourceRepository extends JpaRepository<ComputingResource, UUID> {
+
     Set<ComputingResource> findAllByAlgorithm_Id(UUID algoId);
 
     Page<ComputingResource> findAllByAlgorithm_Id(UUID algoId, Pageable p);
+
+    Set<ComputingResource> findAllByImplementation_Id(UUID backendId);
+
+    Page<ComputingResource> findAllByImplementation_Id(UUID backendId, Pageable p);
+
+    Set<ComputingResource> findAllByBackend_Id(UUID backendId);
+
+    Page<ComputingResource> findAllByBackend_Id(UUID backendId, Pageable p);
 }

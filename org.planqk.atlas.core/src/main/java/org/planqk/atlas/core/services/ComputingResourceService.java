@@ -25,13 +25,16 @@ import java.util.UUID;
 import javax.transaction.Transactional;
 
 import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.Backend;
 import org.planqk.atlas.core.model.ComputingResource;
 import org.planqk.atlas.core.model.ComputingResourceType;
+import org.planqk.atlas.core.model.Implementation;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface ComputingResourceService {
+
     @Transactional
     void deleteComputingResourceType(UUID typeId);
 
@@ -46,6 +49,14 @@ public interface ComputingResourceService {
 
     Page<ComputingResource> findAllResourcesByAlgorithmId(UUID algoid, Pageable pageable);
 
+    Set<ComputingResource> findAllResourcesByImplementationId(UUID implId);
+
+    Page<ComputingResource> findAllResourcesByImplementationId(UUID implId, Pageable pageable);
+
+    Set<ComputingResource> findAllResourcesByBackendId(UUID backendId);
+
+    Page<ComputingResource> findAllResourcesByBackendId(UUID backendId, Pageable pageable);
+
     @Transactional
     ComputingResourceType addOrUpdateComputingResourceType(ComputingResourceType resourceType);
 
@@ -57,6 +68,18 @@ public interface ComputingResourceService {
 
     @Transactional
     ComputingResource addComputingResourceToAlgorithm(UUID algoId, UUID resourceId);
+
+    @Transactional
+    ComputingResource addComputingResourceToImplementation(Implementation implId, ComputingResource resource);
+
+    @Transactional
+    ComputingResource addComputingResourceToImplementation(UUID implId, UUID resourceId);
+
+    @Transactional
+    ComputingResource addComputingResourceToBackend(Backend backend, ComputingResource resource);
+
+    @Transactional
+    ComputingResource addComputingResourceToBackend(UUID backend, UUID resourceId);
 
     ComputingResource findResourceById(UUID id);
 }

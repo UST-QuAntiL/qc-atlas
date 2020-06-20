@@ -1,12 +1,13 @@
 package org.planqk.atlas.web.dtos;
 
-import lombok.*;
+import java.net.URL;
+import java.util.UUID;
 
 import javax.validation.constraints.NotNull;
-import java.net.URL;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @ToString(callSuper = true)
 @Data
@@ -24,8 +25,7 @@ public class SoftwarePlatformDto {
 
     private String licence;
 
-    private Set<BackendDto> supportedBackends = new HashSet<>();
-
-    private Set<CloudServiceDto> supportedCloudServices = new HashSet<>();
-
+//    private Set<BackendDto> supportedBackends = new HashSet<>();
+//
+//    private Set<CloudServiceDto> supportedCloudServices = new HashSet<>();
 }

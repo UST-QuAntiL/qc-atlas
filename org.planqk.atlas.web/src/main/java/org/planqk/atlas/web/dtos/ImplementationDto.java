@@ -20,6 +20,7 @@
 package org.planqk.atlas.web.dtos;
 
 import java.net.URL;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -37,8 +38,7 @@ import lombok.NoArgsConstructor;
 import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.WRITE_ONLY;
 
 /**
- * Data transfer object for the model class Implementation
- * ({@link org.planqk.atlas.core.model.Implementation}).
+ * Data transfer object for the model class Implementation ({@link org.planqk.atlas.core.model.Implementation}).
  */
 @EqualsAndHashCode
 @Data
@@ -67,4 +67,5 @@ public class ImplementationDto {
     @JsonIgnore
     private AlgorithmDto implementedAlgorithm;
 
+    private Set<ComputingResourceDto> requiredComputingResources = new HashSet<>();
 }

@@ -20,6 +20,7 @@
 package org.planqk.atlas.core.services;
 
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Implementation;
@@ -55,6 +56,11 @@ public class ImplementationServiceImpl implements ImplementationService {
     }
 
     @Override
+    public void delete(UUID id) {
+        repository.deleteById(id);
+    }
+
+    @Override
     public Page<Implementation> findAll(Pageable pageable) {
         return repository.findAll(pageable);
     }
@@ -67,8 +73,11 @@ public class ImplementationServiceImpl implements ImplementationService {
     @Transactional
     @Override
     public Implementation update(UUID id, Implementation implementation) {
-        if (repository.existsImplementationById(id)) {
+        Optional<Implementation> implementationOptional = repository.findById(id);
+        if (implementationOptional.isPresent()) {
+            Implementation oldImpl = implementationOptional.get();
             implementation.setId(id);
+            implementation.setImplementedAlgorithm(oldImpl.getImplementedAlgorithm());
             return save(implementation);
         }
         throw new NoSuchElementException();

@@ -23,7 +23,6 @@ public class QuantumAlgorithm extends Algorithm {
 
     private QuantumComputationModel quantumComputationModel;
 
-
     private String speedUp;
 
     @OneToMany(cascade = {CascadeType.MERGE}, fetch = FetchType.LAZY)

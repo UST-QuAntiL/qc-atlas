@@ -496,13 +496,6 @@ public class AlgorithmControllerTest {
     }
 
     @Test
-    void testListComputingResources_AlgoNotFound() throws Exception {
-        when(algorithmService.findById(any())).thenThrow(new NoSuchElementException());
-        var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES + "/";
-        mockMvc.perform(get(path)).andExpect(status().isNotFound());
-    }
-
-    @Test
     void testListComputingResources_ClassicAlgorithm() throws Exception {
         when(algorithmService.findById(any())).thenReturn(new QuantumAlgorithm());
         when(computingResourceService.findAllResourcesByAlgorithmId(any(), any())).thenReturn(Page.empty());
