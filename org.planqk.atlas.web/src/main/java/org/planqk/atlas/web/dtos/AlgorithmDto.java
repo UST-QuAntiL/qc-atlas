@@ -87,10 +87,6 @@ public class AlgorithmDto {
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @Schema(accessMode = READ_ONLY)
-    private Set<PatternRelationDto> relatedPatterns = new HashSet<>();
-
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    @Schema(accessMode = READ_ONLY)
 
     private Set<ProblemTypeDto> problemTypes = new HashSet<>();
 

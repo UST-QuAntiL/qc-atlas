@@ -214,7 +214,7 @@ public class AlgorithmController {
 
     @Operation(responses = {@ApiResponse(responseCode = "201")})
     @PostMapping("/{algoId}/" + Constants.PUBLICATIONS)
-    public HttpEntity<CollectionModel<EntityModel<PublicationDto>>> addPatternRelations(@PathVariable UUID algoId, @Valid @RequestBody PublicationDto publicationDto) {
+    public HttpEntity<CollectionModel<EntityModel<PublicationDto>>> addPatternRelation(@PathVariable UUID algoId, @Valid @RequestBody PublicationDto publicationDto) {
         Algorithm algorithm = algorithmService.findById(algoId);
         Publication publication = ModelMapperUtils.convert(publicationDto, Publication.class);
         // access publication in db to throw NoSuchElementException if it doesn't exist
