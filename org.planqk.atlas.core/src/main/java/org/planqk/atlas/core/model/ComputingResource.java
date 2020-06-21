@@ -42,7 +42,7 @@ public class ComputingResource extends HasId {
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     private ComputingResourceType computingResourceType;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.DETACH)
+    @ManyToOne(fetch = FetchType.LAZY)
     @Exclude
     private Algorithm algorithm;
 

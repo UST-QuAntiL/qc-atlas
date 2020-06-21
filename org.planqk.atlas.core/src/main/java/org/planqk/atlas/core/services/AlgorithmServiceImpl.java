@@ -28,7 +28,6 @@ import java.util.UUID;
 import org.planqk.atlas.core.model.AlgoRelationType;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
-import org.planqk.atlas.core.model.ComputingResource;
 import org.planqk.atlas.core.model.QuantumAlgorithm;
 import org.planqk.atlas.core.repository.AlgorithmRelationRepository;
 import org.planqk.atlas.core.repository.AlgorithmRepository;
@@ -60,27 +59,27 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     @Transactional
     @Override
     public Algorithm save(Algorithm algorithm) {
-        // Persist Tags separately
+//         Persist Tags separately
 //        algorithm.setTags(tagService.createOrUpdateAll(algorithm.getTags()));
         // Persist ProblemTypes separately
-        algorithm.setProblemTypes(problemTypeService.createOrUpdateAll(algorithm.getProblemTypes()));
+//        algorithm.setProblemTypes(problemTypeService.createOrUpdateAll(algorithm.getProblemTypes()));
+//
+//        Set<ComputingResource> adaptedComputingResources = new HashSet<>();
+//        for (ComputingResource computingResource : algorithm.getRequiredComputingResources()) {
+//            computingResource.setAlgorithm(algorithm);
+//            adaptedComputingResources.add(computingResource);
+//        }
+//        algorithm.setRequiredComputingResources(adaptedComputingResources);
+//
+//        // persist Algorithm before adding relations
+//        Set<AlgorithmRelation> inputRelations = algorithm.getAlgorithmRelations();
+//        algorithm.setAlgorithmRelations(new HashSet<>());
+//        Algorithm persistedAlgorithm = persistAlgorithm(algorithm);
+//
+//        // Process algorithm relations and persist relation types on the fly
+//        persistedAlgorithm.setAlgorithmRelations(getValidAlgorithmRelations(persistedAlgorithm, inputRelations));
 
-        Set<ComputingResource> adaptedComputingResources = new HashSet<>();
-        for (ComputingResource computingResource : algorithm.getRequiredComputingResources()) {
-            computingResource.setAlgorithm(algorithm);
-            adaptedComputingResources.add(computingResource);
-        }
-        algorithm.setRequiredComputingResources(adaptedComputingResources);
-
-        // persist Algorithm before adding relations
-        Set<AlgorithmRelation> inputRelations = algorithm.getAlgorithmRelations();
-        algorithm.setAlgorithmRelations(new HashSet<>());
-        Algorithm persistedAlgorithm = persistAlgorithm(algorithm);
-
-        // Process algorithm relations and persist relation types on the fly
-        persistedAlgorithm.setAlgorithmRelations(getValidAlgorithmRelations(persistedAlgorithm, inputRelations));
-
-        return persistAlgorithm(persistedAlgorithm);
+        return persistAlgorithm(algorithm);
     }
 
     private Algorithm persistAlgorithm(Algorithm algorithm) {

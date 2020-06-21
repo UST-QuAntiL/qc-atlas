@@ -20,9 +20,12 @@ package org.planqk.atlas.core.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.ManyToMany;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -43,4 +46,8 @@ public class Publication extends KnowledgeArtifact {
 
     @ElementCollection
     private List<String> authors = new ArrayList<>();
+
+    @ManyToMany(mappedBy = "publications", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @EqualsAndHashCode.Exclude
+    private Set<Algorithm> algorithms;
 }
