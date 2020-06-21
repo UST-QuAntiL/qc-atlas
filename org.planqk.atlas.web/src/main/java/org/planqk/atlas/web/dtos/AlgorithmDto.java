@@ -49,7 +49,6 @@ import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY;
         @JsonSubTypes.Type(value = QuantumAlgorithmDto.class, name = "HYBRID") })
 @Schema(oneOf = {QuantumAlgorithmDto.class, ClassicAlgorithmDto.class}, description = "either a quantum or a classic algorithm", title = "quantum/classic algorithm")
 public class AlgorithmDto {
-    @Schema(accessMode = READ_ONLY)
     private UUID id;
 
     @NotNull(message = "Algorithm-Name must not be null!")
