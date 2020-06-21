@@ -26,7 +26,6 @@ import java.util.UUID;
 import javax.validation.constraints.NotNull;
 
 import org.planqk.atlas.core.model.ComputationModel;
-import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.model.Sketch;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -58,17 +57,9 @@ public class AlgorithmDto {
 
     private String acronym;
 
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    @Schema(accessMode = READ_ONLY)
-    private Set<Publication> publications = new HashSet<>();
-
     private String intent;
 
     private String problem;
-
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @Schema(accessMode = READ_ONLY)
-    private Set<AlgorithmRelationDto> algorithmRelations = new HashSet<>();
 
     private String inputFormat;
 
@@ -87,12 +78,8 @@ public class AlgorithmDto {
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @Schema(accessMode = READ_ONLY)
-
     private Set<ProblemTypeDto> problemTypes = new HashSet<>();
 
     private Set<String> applicationAreas = new HashSet<>();
 
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    @Schema(accessMode = READ_ONLY)
-    private Set<ComputingResourceDto> requiredComputingResources = new HashSet<>();
 }
