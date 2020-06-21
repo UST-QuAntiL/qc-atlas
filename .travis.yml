@@ -9,8 +9,9 @@ services:
 before_script:
   - docker pull postgres:12
   # TODO Consider replacing with planqk/initialized-db:latest once that image becomes mandatory
-  - docker run --rm -d -p 5432:5432 -e POSTGRES_DB=planqk -e POSTGRES_PASSWORD=planqk -e POSTGRES_USER=planqk -d postgres
+  - docker run --rm -d -p 5432:5432 -e POSTGRES_DB=planqk_test -e POSTGRES_PASSWORD=planqk -e POSTGRES_USER=planqk -d postgres
 script:
+  - sed -i -e "s&spring.datasource.url=jdbc:postgresql://localhost:5432/planqk&spring.datasource.url=jdbc:postgresql://localhost:5432/planqk_test&" org.planqk.atlas.web/src/main/resources/application.properties
   - mvn package --fail-at-end
 after_success:
   - bash <(curl -s https://codecov.io/bash)
