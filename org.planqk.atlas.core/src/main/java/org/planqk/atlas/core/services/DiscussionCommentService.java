@@ -32,6 +32,8 @@ public interface DiscussionCommentService {
 
     Page<DiscussionComment> findAll(Pageable pageable);
 
+    Page<DiscussionComment> findAllByTopic(UUID topicId, Pageable pageable);
+
     DiscussionComment findById(UUID id);
 
     DiscussionComment update(UUID id, DiscussionComment comment);
