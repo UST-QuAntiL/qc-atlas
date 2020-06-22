@@ -64,6 +64,7 @@ public class Algorithm extends AlgorOrImpl {
     private Set<AlgorithmRelation> algorithmRelations = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "algorithm", orphanRemoval = true)
+    @EqualsAndHashCode.Exclude
     private Set<ComputingResource> requiredComputingResources = new HashSet<>();
 
     private String inputFormat;
