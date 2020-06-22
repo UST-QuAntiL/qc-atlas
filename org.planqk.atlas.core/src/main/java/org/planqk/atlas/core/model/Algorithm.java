@@ -49,7 +49,7 @@ public class Algorithm extends AlgorOrImpl {
     private String acronym;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinTable(name = "author_book",
+    @JoinTable(name = "algorithm_publication",
             joinColumns = @JoinColumn(name = "publication_id"),
             inverseJoinColumns = @JoinColumn(name = "algorithm_id")
     )
