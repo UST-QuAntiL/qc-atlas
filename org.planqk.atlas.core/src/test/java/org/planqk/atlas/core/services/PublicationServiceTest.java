@@ -106,6 +106,9 @@ public class PublicationServiceTest extends AtlasDatabaseTestBase {
 
         Set<Publication> publications = new HashSet<>();
         Publication publication = getGenericTestPublication("testPublicationTitle");
+        Set<Algorithm> algorithms = new HashSet<>();
+        algorithms.add(algorithm);
+        publication.setAlgorithms(algorithms);
         Publication storedPublication = publicationService.save(publication);
         publications.add(publication);
 

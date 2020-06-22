@@ -25,15 +25,15 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.UUID;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
 import org.planqk.atlas.core.model.ComputationModel;
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.model.exceptions.ConsistencyException;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 
@@ -114,6 +114,7 @@ public class ProblemTypeServiceTest extends AtlasDatabaseTestBase {
     @Test
     void testDeleteProblemType_HasReferences() {
         ProblemType problemType = getGenericProblemType("referencedProblemType");
+        problemTypeService.save(problemType);
         Set<ProblemType> problemTypes = new HashSet<>();
         problemTypes.add(problemType);
 
