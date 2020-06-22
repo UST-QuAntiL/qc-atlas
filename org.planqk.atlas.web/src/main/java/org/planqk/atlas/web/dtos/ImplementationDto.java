@@ -62,10 +62,9 @@ public class ImplementationDto {
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Schema(accessMode = WRITE_ONLY)
-    private Set<Publication> publications;
+    private Set<Publication> publications = new HashSet<>();
 
     @JsonIgnore
     private AlgorithmDto implementedAlgorithm;
 
-    private Set<ComputingResourceDto> requiredComputingResources = new HashSet<>();
 }

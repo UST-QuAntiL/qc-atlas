@@ -20,12 +20,14 @@
 package org.planqk.atlas.core.model;
 
 import java.net.URL;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -49,10 +51,10 @@ public class Implementation extends AlgorOrImpl {
     private URL link;
     private String dependencies;
 
-    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    private Set<Publication> publications;
+    private Set<Publication> publications = new HashSet<>();
 
     @ManyToOne
     @EqualsAndHashCode.Exclude
@@ -64,6 +66,10 @@ public class Implementation extends AlgorOrImpl {
 //    @ToString.Exclude
 //    @JoinTable(name = "implementation_tag", joinColumns = @JoinColumn(name = "implementation_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
 //    private Set<Tag> tags;
+
+    @EqualsAndHashCode.Exclude
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "implementation", orphanRemoval = true)
+    private Set<ComputingResource> requiredComputingResources = new HashSet<>();
 
     public Implementation() {
         super();
