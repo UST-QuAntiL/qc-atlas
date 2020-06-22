@@ -26,6 +26,7 @@ import java.util.UUID;
 
 import javax.validation.Valid;
 
+import org.planqk.atlas.core.model.AlgoRelationType;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.model.ComputingResource;
@@ -389,9 +390,11 @@ public class AlgorithmController {
             @PathVariable UUID algoId,
             @RequestBody AlgorithmRelationDto relationDto
     ) {
-        var resource = ModelMapperUtils.convert(relationDto, AlgorithmRelation.class);
-        var sourceAlgorithm = algorithmService.findById(resource.getSourceAlgorithm().getId());
-        var targetAlgorithm = algorithmService.findById(resource.getTargetAlgorithm().getId());
+        var resource = new AlgorithmRelation();
+        var sourceAlgorithm = algorithmService.findById(relationDto.getSourceAlgorithmId());
+        var targetAlgorithm = algorithmService.findById(relationDto.getTargetAlgorithmId());
+        resource.setAlgoRelationType(ModelMapperUtils.convert(relationDto.getAlgoRelationType(), AlgoRelationType.class));
+        resource.setDescription(relationDto.getDescription());
         resource.setSourceAlgorithm(sourceAlgorithm);
         resource.setTargetAlgorithm(targetAlgorithm);
         var updatedAlgorithm = algoRelationService.save(resource);
