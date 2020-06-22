@@ -19,21 +19,15 @@
 
 package org.planqk.atlas.core;
 
-import org.planqk.atlas.core.model.Tag;
-import org.planqk.atlas.core.repository.TagRepository;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 public class DatabaseTest extends AtlasDatabaseTestBase {
 
     @Autowired
-    private TagRepository repository;
+//    private TagRepository repository;
 
     @Test
     void modelLoads() {
@@ -42,18 +36,18 @@ public class DatabaseTest extends AtlasDatabaseTestBase {
         // attachments
         // In case the tag class gets a major rework and this test no longer works, just
         // comment it out!
-        var inputTag = new Tag();
-        inputTag.setKey("Test");
-        inputTag.setValue("test-value");
-        var t = repository.save(inputTag);
-        assertNotNull(t.getId());
-        System.out.println(t.getId());
-
-        var outputTag = repository.findById(t.getId());
-        assertTrue(outputTag.isPresent());
-        var ot = outputTag.orElseThrow();
-        assertEquals(t.getId(), ot.getId());
-        assertEquals(t.getKey(), ot.getKey());
-        assertEquals(t.getValue(), ot.getValue());
+//        var inputTag = new Tag();
+//        inputTag.setKey("Test");
+//        inputTag.setValue("test-value");
+//        var t = repository.save(inputTag);
+//        assertNotNull(t.getId());
+//        System.out.println(t.getId());
+//
+//        var outputTag = repository.findById(t.getId());
+//        assertTrue(outputTag.isPresent());
+//        var ot = outputTag.orElseThrow();
+//        assertEquals(t.getId(), ot.getId());
+//        assertEquals(t.getKey(), ot.getKey());
+//        assertEquals(t.getValue(), ot.getValue());
     }
 }

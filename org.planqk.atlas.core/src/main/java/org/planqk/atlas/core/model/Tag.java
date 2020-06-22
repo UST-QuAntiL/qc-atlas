@@ -19,13 +19,7 @@
 
 package org.planqk.atlas.core.model;
 
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
-
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.ManyToMany;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -36,30 +30,31 @@ import lombok.NoArgsConstructor;
 @Entity
 @Data
 public class Tag extends HasId {
+// Tags will be used/tested and included in the future
 
-    String key;
-
-    String value;
-
-    @ManyToMany(mappedBy = "tags", cascade = { CascadeType.MERGE, CascadeType.PERSIST })
-    @EqualsAndHashCode.Exclude
-    private Set<Algorithm> algorithms;
-
-    @ManyToMany(mappedBy = "tags", cascade = { CascadeType.MERGE, CascadeType.PERSIST })
-    @EqualsAndHashCode.Exclude
-    private Set<Implementation> implementations;
-
-    public Set<Algorithm> getAlgorithms() {
-        if (Objects.isNull(algorithms)) {
-            return new HashSet<>();
-        }
-        return algorithms;
-    }
-
-    public Set<Implementation> getImplementations() {
-        if (Objects.isNull(implementations)) {
-            return new HashSet<>();
-        }
-        return implementations;
-    }
+//    String key;
+//
+//    String value;
+//
+//    @ManyToMany(mappedBy = "tags", cascade = { CascadeType.MERGE, CascadeType.PERSIST })
+//    @EqualsAndHashCode.Exclude
+//    private Set<Algorithm> algorithms;
+//
+//    @ManyToMany(mappedBy = "tags", cascade = { CascadeType.MERGE, CascadeType.PERSIST })
+//    @EqualsAndHashCode.Exclude
+//    private Set<Implementation> implementations;
+//
+//    public Set<Algorithm> getAlgorithms() {
+//        if (Objects.isNull(algorithms)) {
+//            return new HashSet<>();
+//        }
+//        return algorithms;
+//    }
+//
+//    public Set<Implementation> getImplementations() {
+//        if (Objects.isNull(implementations)) {
+//            return new HashSet<>();
+//        }
+//        return implementations;
+//    }
 }

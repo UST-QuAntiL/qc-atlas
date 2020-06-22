@@ -21,13 +21,10 @@ package org.planqk.atlas.core.model;
 
 import java.net.URL;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -35,7 +32,6 @@ import javax.persistence.OneToMany;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import org.springframework.lang.NonNull;
 
 /**
  * Entity representing an implementation of a certain quantum {@link Algorithm}.
@@ -55,7 +51,7 @@ public class Implementation extends AlgorOrImpl {
     private URL link;
     private String dependencies;
 
-    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Set<Publication> publications = new HashSet<>();
@@ -65,11 +61,11 @@ public class Implementation extends AlgorOrImpl {
     @ToString.Exclude
     private Algorithm implementedAlgorithm;
 
-    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-    @EqualsAndHashCode.Exclude
-    @ToString.Exclude
-    @JoinTable(name = "implementation_tag", joinColumns = @JoinColumn(name = "implementation_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
-    private Set<Tag> tags;
+//    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+//    @EqualsAndHashCode.Exclude
+//    @ToString.Exclude
+//    @JoinTable(name = "implementation_tag", joinColumns = @JoinColumn(name = "implementation_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
+//    private Set<Tag> tags;
 
     @EqualsAndHashCode.Exclude
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "implementation", orphanRemoval = true)
@@ -79,11 +75,11 @@ public class Implementation extends AlgorOrImpl {
         super();
     }
 
-    @NonNull
-    public Set<Tag> getTags() {
-        if (Objects.isNull(tags)) {
-            return new HashSet<>();
-        }
-        return tags;
-    }
+//    @NonNull
+//    public Set<Tag> getTags() {
+//        if (Objects.isNull(tags)) {
+//            return new HashSet<>();
+//        }
+//        return tags;
+//    }
 }

@@ -37,14 +37,14 @@ import org.springframework.transaction.annotation.Transactional;
 public class ImplementationServiceImpl implements ImplementationService {
 
     private final ImplementationRepository repository;
-    private final TagService tagService;
+    //    private final TagService tagService;
     private final PublicationService publicationService;
     private final AlgorithmService algorithmService;
 
     @Transactional
     @Override
     public Implementation save(Implementation implementation) {
-        tagService.createOrUpdateAll(implementation.getTags());
+//        tagService.createOrUpdateAll(implementation.getTags());
 
         publicationService.createOrUpdateAll(implementation.getPublications());
 

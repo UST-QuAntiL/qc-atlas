@@ -28,17 +28,14 @@ import javax.validation.Valid;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.ComputingResource;
 import org.planqk.atlas.core.model.Implementation;
-import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.core.services.ComputingResourceService;
 import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.ComputingResourceDto;
 import org.planqk.atlas.web.dtos.ImplementationDto;
-import org.planqk.atlas.web.dtos.TagDto;
 import org.planqk.atlas.web.linkassembler.ComputingResourceAssembler;
 import org.planqk.atlas.web.linkassembler.ImplementationAssembler;
-import org.planqk.atlas.web.linkassembler.TagAssembler;
 import org.planqk.atlas.web.utils.HateoasUtils;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.RestUtils;
@@ -66,6 +63,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+//import org.planqk.atlas.web.linkassembler.TagAssembler;
+
 /**
  * Controller to access and manipulate implementations of quantum algorithms.
  */
@@ -83,7 +82,9 @@ public class ImplementationController {
     private final ImplementationService implementationService;
     private final AlgorithmService algorithmService;
     private final ImplementationAssembler implementationAssembler;
-    private final TagAssembler tagAssembler;
+//    private final TagAssembler tagAssembler;
+
+//    private TagAssembler tagAssembler;
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping("/")
@@ -134,23 +135,25 @@ public class ImplementationController {
         return new ResponseEntity<>(dtoOutput, HttpStatus.CREATED);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200")})
-    @GetMapping("/{implId}/" + Constants.TAGS)
-    public HttpEntity<CollectionModel<EntityModel<TagDto>>> getTags(@PathVariable UUID algoId, @PathVariable UUID implId) {
-        // Get Implementation
-        Implementation implementation = implementationService.findById(implId);
-        // Get Tags of Implementation
-        Set<Tag> tags = implementation.getTags();
-        // Translate Entity to DTO
-        Set<TagDto> dtoTags = ModelMapperUtils.convertSet(tags, TagDto.class);
-        // Create CollectionModel
-        CollectionModel<EntityModel<TagDto>> resultCollection = HateoasUtils.generateCollectionModel(dtoTags);
-        // Fill EntityModel Links
-        tagAssembler.addLinks(resultCollection);
-        // Fill Collection-Links
-        implementationAssembler.addTagLink(resultCollection, algoId, implId);
-        return new ResponseEntity<>(resultCollection, HttpStatus.OK);
-    }
+
+//    @Operation(responses = { @ApiResponse(responseCode = "200") })
+//    @GetMapping("/{implId}/" + Constants.TAGS)
+//    public HttpEntity<CollectionModel<EntityModel<TagDto>>> getTags(@PathVariable UUID implId) {
+//        // Get Implementation
+//        Implementation implementation = implementationService.findById(implId);
+////        // Get Tags of Implementation
+////        Set<Tag> tags = implementation.getTags();
+//        // Translate Entity to DTO
+////        Set<TagDto> dtoTags = ModelMapperUtils.convertSet(tags, TagDto.class);
+//        // Create CollectionModel
+////        CollectionModel<EntityModel<TagDto>> resultCollection = HateoasUtils.generateCollectionModel(dtoTags);
+//        // Fill EntityModel Links
+////        tagAssembler.addLinks(resultCollection);
+//        // Fill Collection-Links
+//        implementationAssembler.addTagLink(resultCollection, implId);
+//        return new ResponseEntity<>(resultCollection, HttpStatus.OK);
+//    }
+
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
     @DeleteMapping("/{implId}")

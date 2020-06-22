@@ -21,7 +21,7 @@ package org.planqk.atlas.web.dtos;
 
 import java.util.UUID;
 
-import javax.validation.constraints.*;
+import javax.validation.constraints.NotNull;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;

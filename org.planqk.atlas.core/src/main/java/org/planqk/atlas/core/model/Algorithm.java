@@ -48,12 +48,13 @@ public class Algorithm extends AlgorOrImpl {
     private String name;
     private String acronym;
 
-    @ManyToMany(cascade = {CascadeType.MERGE}, fetch = FetchType.LAZY)
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "algorithm_publication",
-            joinColumns = @JoinColumn(name = "algorithm_id"),
-            inverseJoinColumns = @JoinColumn(name = "publication_id"))
+            joinColumns = @JoinColumn(name = "publication_id"),
+            inverseJoinColumns = @JoinColumn(name = "algorithm_id")
+    )
     @EqualsAndHashCode.Exclude
-    private Set<Publication> publications;
+    private Set<Publication> publications = new HashSet<>();
 
     private String intent;
     private String problem;

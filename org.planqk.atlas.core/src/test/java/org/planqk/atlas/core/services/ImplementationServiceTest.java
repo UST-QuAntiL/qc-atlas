@@ -19,17 +19,12 @@
 
 package org.planqk.atlas.core.services;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
 import org.planqk.atlas.core.model.Implementation;
-import org.planqk.atlas.core.model.Tag;
-import org.planqk.atlas.core.repository.TagRepository;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
-import org.planqk.atlas.core.util.SetUtils;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,19 +40,19 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
     @Autowired
     private AlgorithmService algorithmService;
 
-    @Autowired
-    private TagService tagService;
-
-    @Autowired
-    private TagRepository tagRepository;
+//    @Autowired
+//    private TagService tagService;
+    //    @Autowired
+//    private TagRepository tagRepository;
 
     @Test
     void testAddImplementation() {
-        var tag = new Tag();
-        tag.setKey("test");
-        tag.setValue("test");
-        Set<Tag> tags = new HashSet<>();
-        tags.add(tag);
+        // Tags will be used/tested and included in the future
+//        var tag = new Tag();
+//        tag.setKey("test");
+//        tag.setValue("test");
+//        Set<Tag> tags = new HashSet<>();
+//        tags.add(tag);
 
         Algorithm algo = new ClassicAlgorithm();
         algo.setName("test");
@@ -66,21 +61,21 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
         var impl = new Implementation();
         impl.setName("test-impl");
         impl.setImplementedAlgorithm(algo);
-        impl.setTags(tags);
-        tags.forEach(e -> e.setImplementations(SetUtils.hashSetOf(impl)));
+//        impl.setTags(tags);
+//        tags.forEach(e -> e.setImplementations(SetUtils.hashSetOf(impl)));
 
         var returnedImpl = implementationService.save(impl);
 
-        var returnedTag = tagService.getTagById(tag.getId());
-        returnedTag.setImplementations(SetUtils.hashSetOf(impl));
-        returnedImpl.setTags(SetUtils.hashSetOf(tag));
+//        var returnedTag = tagService.getTagById(tag.getId());
+//        returnedTag.setImplementations(SetUtils.hashSetOf(impl));
+//        returnedImpl.setTags(SetUtils.hashSetOf(tag));
 
         implementationService.save(returnedImpl);
 
         var dbImpl = implementationService.findById(returnedImpl.getId());
         assertThat(dbImpl.getName()).isEqualTo(impl.getName());
         assertThat(dbImpl.getImplementedAlgorithm().getName()).isEqualTo(algo.getName());
-        assertThat(dbImpl.getTags().size()).isEqualTo(1);
+//        assertThat(dbImpl.getTags().size()).isEqualTo(1);
     }
 
     @Test

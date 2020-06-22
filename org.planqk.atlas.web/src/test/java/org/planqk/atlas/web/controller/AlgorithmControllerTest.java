@@ -40,6 +40,9 @@ import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.model.QuantumAlgorithm;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.core.services.ComputingResourceService;
+import org.planqk.atlas.core.services.PatternRelationService;
+import org.planqk.atlas.core.services.ProblemTypeService;
+import org.planqk.atlas.core.services.PublicationService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
@@ -95,6 +98,12 @@ public class AlgorithmControllerTest {
     private AlgorithmService algorithmService;
     @MockBean
     private ComputingResourceService computingResourceService;
+    @MockBean
+    private PatternRelationService patternRelationService;
+    @MockBean
+    private ProblemTypeService problemTypeService;
+    @MockBean
+    private PublicationService publicationService;
     @Autowired
     private MockMvc mockMvc;
     private ObjectMapper mapper;

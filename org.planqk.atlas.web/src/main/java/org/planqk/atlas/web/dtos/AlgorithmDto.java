@@ -26,7 +26,6 @@ import java.util.UUID;
 import javax.validation.constraints.NotNull;
 
 import org.planqk.atlas.core.model.ComputationModel;
-import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.model.Sketch;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -36,7 +35,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.WRITE_ONLY;
+import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY;
 
 /**
  * Data transfer object for Algorithms
@@ -50,7 +49,6 @@ import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.WRITE_ONLY;
         @JsonSubTypes.Type(value = QuantumAlgorithmDto.class, name = "HYBRID") })
 @Schema(oneOf = {QuantumAlgorithmDto.class, ClassicAlgorithmDto.class}, description = "either a quantum or a classic algorithm", title = "quantum/classic algorithm")
 public class AlgorithmDto {
-
     private UUID id;
 
     @NotNull(message = "Algorithm-Name must not be null!")
@@ -58,17 +56,9 @@ public class AlgorithmDto {
 
     private String acronym;
 
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @Schema(accessMode = WRITE_ONLY)
-    private Set<Publication> publications = new HashSet<>();
-
     private String intent;
 
     private String problem;
-
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @Schema(accessMode = WRITE_ONLY)
-    private Set<AlgorithmRelationDto> algorithmRelations = new HashSet<>();
 
     private String inputFormat;
 
@@ -85,23 +75,10 @@ public class AlgorithmDto {
     @NotNull(message = "Computational-Model must not be null!")
     private ComputationModel computationModel;
 
-//    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-//    @Schema(accessMode = WRITE_ONLY)
-//    private Set<PatternRelationDto> relatedPatterns = new HashSet<>();
-
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @Schema(accessMode = WRITE_ONLY)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @Schema(accessMode = READ_ONLY)
     private Set<ProblemTypeDto> problemTypes = new HashSet<>();
 
     private Set<String> applicationAreas = new HashSet<>();
 
-    // we do not embedded tags into the object (via @jsonInclude) - instead, we add
-    // a hateoas link to the associated tags
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    // annotate this for swagger as well, because swagger doesn't recognize the json
-    // property annotation
-    @Schema(accessMode = WRITE_ONLY)
-    private Set<TagDto> tags = new HashSet<>();
-
-    private Set<ComputingResourceDto> requiredComputingResources = new HashSet<>();
 }
