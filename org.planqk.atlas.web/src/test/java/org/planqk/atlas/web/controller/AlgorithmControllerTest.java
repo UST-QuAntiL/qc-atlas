@@ -38,6 +38,7 @@ import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.model.PatternRelationType;
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.model.QuantumAlgorithm;
+import org.planqk.atlas.core.services.AlgoRelationService;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.core.services.ComputingResourceService;
 import org.planqk.atlas.core.services.PatternRelationService;
@@ -104,6 +105,8 @@ public class AlgorithmControllerTest {
     private ProblemTypeService problemTypeService;
     @MockBean
     private PublicationService publicationService;
+    @MockBean
+    private AlgoRelationService algoRelationService;
     @Autowired
     private MockMvc mockMvc;
     private ObjectMapper mapper;
@@ -438,6 +441,8 @@ public class AlgorithmControllerTest {
         initializeAlgorithms();
         when(algorithmService.addOrUpdateAlgorithmRelation(any(UUID.class), any(AlgorithmRelation.class)))
                 .thenReturn(algorithmRelation1);
+        List<AlgorithmRelationDto> list = new ArrayList<>();
+        list.add(algorithmRelation1Dto);
 
         MvcResult result = mockMvc
                 .perform(put("/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS,
