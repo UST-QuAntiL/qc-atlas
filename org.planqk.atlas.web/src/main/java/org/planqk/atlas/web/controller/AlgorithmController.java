@@ -457,6 +457,21 @@ public class AlgorithmController {
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
+    @PutMapping("/{algoId}/" + Constants.ALGORITHM_RELATIONS + "/{relationId}")
+    public HttpEntity<EntityModel<AlgorithmRelationDto>> updateAlgorithmRelation(@PathVariable UUID algoId, @PathVariable UUID relationId,
+                                                                                 @Valid @RequestBody AlgorithmRelationDto relation) {
+        LOG.debug("Put to update algorithm relations with Id {} received.", relationId);
+        Algorithm algorithm = algorithmService.findById(algoId);
+        AlgorithmRelation algorithmRelation = algorithmService.addOrUpdateAlgorithmRelation(algoId,
+                ModelMapperUtils.convert(relation, AlgorithmRelation.class));
+        algorithm.getAlgorithmRelations().add(algorithmRelation);
+
+        EntityModel<AlgorithmRelationDto> resultDto = HateoasUtils.generateEntityModel(relation);
+        algorithmRelationAssembler.addLinks(resultDto);
+        return new ResponseEntity<>(resultDto, HttpStatus.OK);
+    }
+
+    @Operation(responses = {@ApiResponse(responseCode = "200")})
     @DeleteMapping("/{algoId}/" + Constants.ALGORITHM_RELATIONS + "/{relationId}")
     public HttpEntity<AlgorithmRelationDto> deleteAlgorithmRelation(@PathVariable UUID algoId,
                                                                     @PathVariable UUID relationId) {

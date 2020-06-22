@@ -430,8 +430,8 @@ public class AlgorithmControllerTest {
         when(algorithmService.addOrUpdateAlgorithmRelation(any(UUID.class), any(AlgorithmRelation.class)))
                 .thenThrow(new NoSuchElementException());
 
-        mockMvc.perform(put("/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS,
-                UUID.randomUUID()).content(mapper.writeValueAsString(algorithmRelation1Dto))
+        mockMvc.perform(put("/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS + "/{relationId}",
+                UUID.randomUUID(), UUID.randomUUID()).content(mapper.writeValueAsString(algorithmRelation1Dto))
                 .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
@@ -445,8 +445,8 @@ public class AlgorithmControllerTest {
         list.add(algorithmRelation1Dto);
 
         MvcResult result = mockMvc
-                .perform(put("/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS,
-                        algorithm1.getId()).content(mapper.writeValueAsString(algorithmRelation1Dto))
+                .perform(put("/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS + "/{relationId}",
+                        algorithm1.getId(), algorithmRelation1Dto.getId()).content(mapper.writeValueAsString(algorithmRelation1Dto))
                         .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
