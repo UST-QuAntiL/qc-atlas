@@ -130,6 +130,9 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
         List<String> publicationAuthors = new ArrayList<>();
         publicationAuthors.add("test publication author");
         publication.setAuthors(publicationAuthors);
+        Set<Algorithm> publicationAlgorithms = new HashSet<>();
+        publicationAlgorithms.add(algorithm);
+        publication.setAlgorithms(publicationAlgorithms);
         publication = publicationService.save(publication);
         publications.add(publication);
         algorithm.setPublications(publications);
@@ -297,9 +300,9 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
 //        storedAlgorithm.getTags().forEach(t ->
 //            Assertions.assertDoesNotThrow(() -> tagService.getTagById(t.getId())));
         storedAlgorithm.getProblemTypes().forEach(pt ->
-            Assertions.assertDoesNotThrow(() -> problemTypeService.findById(pt.getId())));
+                Assertions.assertDoesNotThrow(() -> problemTypeService.findById(pt.getId())));
         storedAlgorithm.getPublications().forEach(pub ->
-            Assertions.assertDoesNotThrow(() -> publicationService.findById(pub.getId())));
+                Assertions.assertDoesNotThrow(() -> publicationService.findById(pub.getId())));
 
         algorithmService.delete(storedAlgorithm.getId());
 
@@ -365,13 +368,13 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
 
     @Test
     void testDeleteAlgorithmRelation_ElementsNotFound() {
-        Assertions.assertThrows(NoSuchElementException.class ,() ->
+        Assertions.assertThrows(NoSuchElementException.class, () ->
                 algorithmService.deleteAlgorithmRelation(UUID.randomUUID(), UUID.randomUUID()));
 
         Algorithm sourceAlgorithm = getGenericAlgorithmWithoutReferences("sourceAlgorithm");
         Algorithm storedSourceAlgorithm = algorithmService.save(sourceAlgorithm);
 
-        Assertions.assertThrows(NoSuchElementException.class ,() ->
+        Assertions.assertThrows(NoSuchElementException.class, () ->
                 algorithmService.deleteAlgorithmRelation(storedSourceAlgorithm.getId(), UUID.randomUUID()));
     }
 
@@ -450,5 +453,4 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
         algorithm.setApplicationAreas(applicationAreas);
         return algorithm;
     }
-
 }
