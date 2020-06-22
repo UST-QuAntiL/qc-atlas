@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.model.Backend;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
 import org.planqk.atlas.core.model.PatternRelation;
@@ -11,6 +12,7 @@ import org.planqk.atlas.core.model.Qpu;
 import org.planqk.atlas.core.model.QuantumAlgorithm;
 import org.planqk.atlas.core.model.Simulator;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
+import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
 import org.planqk.atlas.web.dtos.BackendDto;
 import org.planqk.atlas.web.dtos.ClassicAlgorithmDto;
 import org.planqk.atlas.web.dtos.PatternRelationDto;
@@ -66,6 +68,11 @@ public class ModelMapperUtils {
         // Map Algorithm of PatternRelation to correct Subclass when mapping to PatternRelationDto
         TypeMap<PatternRelation, PatternRelationDto> typeMap = mapper.createTypeMap(PatternRelation.class, PatternRelationDto.class);
         typeMap.addMappings(mappingContext -> mappingContext.map(src -> src.getAlgorithm(), PatternRelationDto::setAlgorithm));
+
+        // Map Algorithm Ids in AlgorithmRelation
+        TypeMap<AlgorithmRelation, AlgorithmRelationDto> algoRelationMap = mapper.createTypeMap(AlgorithmRelation.class, AlgorithmRelationDto.class);
+        algoRelationMap.addMappings(mappingContext -> mappingContext.map(src -> src.getSourceAlgorithm().getId(), AlgorithmRelationDto::setSourceAlgorithmId));
+        algoRelationMap.addMappings(mappingContext -> mappingContext.map(src -> src.getTargetAlgorithm().getId(), AlgorithmRelationDto::setTargetAlgorithmId));
 
         return mapper;
     }

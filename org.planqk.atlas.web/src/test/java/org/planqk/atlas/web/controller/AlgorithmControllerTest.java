@@ -39,6 +39,7 @@ import org.planqk.atlas.core.model.PatternRelationType;
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.model.QuantumAlgorithm;
 import org.planqk.atlas.core.services.AlgoRelationService;
+import org.planqk.atlas.core.services.AlgoRelationTypeService;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.core.services.ComputingResourceService;
 import org.planqk.atlas.core.services.PatternRelationService;
@@ -107,6 +108,8 @@ public class AlgorithmControllerTest {
     private PublicationService publicationService;
     @MockBean
     private AlgoRelationService algoRelationService;
+    @MockBean
+    private AlgoRelationTypeService algoRelationTypeService;
     @Autowired
     private MockMvc mockMvc;
     private ObjectMapper mapper;
@@ -396,39 +399,9 @@ public class AlgorithmControllerTest {
     }
 
     @Test
-    public void updateAlgorithmRelation_returnBadRequest() throws Exception {
-        initializeAlgorithms();
-        Algorithm algo = new Algorithm();
-        mockMvc.perform(
-                put("/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS, algo.getId())
-                        .content(mapper.writeValueAsString(this.algorithmRelation1Dto))
-                        .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-
-        AlgorithmRelationDto algoRelationDto = new AlgorithmRelationDto();
-        mockMvc.perform(put("/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS,
-                algorithm1.getId()).content(mapper.writeValueAsString(algoRelationDto))
-                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-
-        algoRelationDto.setSourceAlgorithm(algorithm1Dto);
-        mockMvc.perform(put("/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS,
-                algorithm1.getId()).content(mapper.writeValueAsString(algoRelationDto))
-                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-
-        algoRelationDto.setTargetAlgorithm(algorithm2Dto);
-        mockMvc.perform(put("/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS,
-                algorithm1.getId()).content(mapper.writeValueAsString(algoRelationDto))
-                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
     public void updateAlgorithmRelation_returnNotFound() throws Exception {
         initializeAlgorithms();
-        when(algorithmService.addOrUpdateAlgorithmRelation(any(UUID.class), any(AlgorithmRelation.class)))
-                .thenThrow(new NoSuchElementException());
+        when(algoRelationService.findById(any(UUID.class))).thenThrow(new NoSuchElementException());
 
         mockMvc.perform(put("/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS + "/{relationId}",
                 UUID.randomUUID(), UUID.randomUUID()).content(mapper.writeValueAsString(algorithmRelation1Dto))
@@ -439,10 +412,8 @@ public class AlgorithmControllerTest {
     @Test
     public void updateAlgorithmRelation_returnAlgorithmRelation() throws Exception {
         initializeAlgorithms();
-        when(algorithmService.addOrUpdateAlgorithmRelation(any(UUID.class), any(AlgorithmRelation.class)))
-                .thenReturn(algorithmRelation1);
-        List<AlgorithmRelationDto> list = new ArrayList<>();
-        list.add(algorithmRelation1Dto);
+        when(algoRelationService.findById(any(UUID.class))).thenReturn(algorithmRelation1);
+        when(algoRelationService.save(any(AlgorithmRelation.class))).thenReturn(algorithmRelation1);
 
         MvcResult result = mockMvc
                 .perform(put("/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS + "/{relationId}",
@@ -453,7 +424,7 @@ public class AlgorithmControllerTest {
         EntityModel<AlgorithmRelationDto> response = mapper.readValue(result.getResponse().getContentAsString(),
                 new TypeReference<EntityModel<AlgorithmRelationDto>>() {
                 });
-        assertEquals(response.getContent().getSourceAlgorithm().getName(), algorithm1Dto.getName());
+        assertEquals(algorithmRelation1.getSourceAlgorithm().getId(), response.getContent().getSourceAlgorithmId());
     }
 
 //    @Test
