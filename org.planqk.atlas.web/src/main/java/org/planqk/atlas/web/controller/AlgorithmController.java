@@ -245,8 +245,8 @@ public class AlgorithmController {
         // access publication in db to throw NoSuchElementException if it doesn't exist
         Set<Publication> newPublications = new HashSet<>();
         publications.forEach(publicationDto -> {
-            publicationService.findById(publicationDto.getId());
-            newPublications.add(ModelMapperUtils.convert(publicationDto, Publication.class));
+            Publication publication = publicationService.findById(publicationDto.getId());
+            newPublications.add(publication);
         });
         // update and return update list:
         algorithm.setPublications(newPublications);
@@ -280,13 +280,12 @@ public class AlgorithmController {
     @PostMapping("/{algoId}/" + Constants.PROBLEM_TYPES)
     public HttpEntity<CollectionModel<EntityModel<ProblemTypeDto>>> addProblemType(@PathVariable UUID algoId, @Valid @RequestBody ProblemTypeDto problemTypeDto) {
         Algorithm algorithm = algorithmService.findById(algoId);
-        ProblemType problemtype = ModelMapperUtils.convert(problemTypeDto, ProblemType.class);
         // access stored pattern relation -> if it does not exists, this throws a NoSuchElementException
-        problemTypeService.findById(problemtype.getId());
+        ProblemType problemType = problemTypeService.findById(problemTypeDto.getId());
         // Get ProblemTypes of Algorithm
         Set<ProblemType> problemTypes = algorithm.getProblemTypes();
         // add new problemtype
-        problemTypes.add(problemtype);
+        problemTypes.add(problemType);
         // update and return update list:
         algorithm.setProblemTypes(problemTypes);
         Set<ProblemType> updatedProblemTypes = algorithmService.save(algorithm).getProblemTypes();
@@ -304,8 +303,8 @@ public class AlgorithmController {
         // access publication in db to throw NoSuchElementException if it doesn't exist
         Set<ProblemType> newProblemTypes = new HashSet<>();
         problemTypeDtos.forEach(problemTypeDto -> {
-            problemTypeService.findById(problemTypeDto.getId());
-            newProblemTypes.add(ModelMapperUtils.convert(problemTypeDto, ProblemType.class));
+            ProblemType problemType = problemTypeService.findById(problemTypeDto.getId());
+            newProblemTypes.add(problemType);
         });
         // update and return update list:
         algorithm.setProblemTypes(newProblemTypes);
@@ -342,12 +341,12 @@ public class AlgorithmController {
         PatternRelation patternRelation = ModelMapperUtils.convert(patternRelationDto, PatternRelation.class);
 
         // access stored pattern relation -> if it does not exists, this throws a NoSuchElementException
-        patternRelationService.findById(patternRelation.getId());
+        PatternRelation loadedPatternRelation = patternRelationService.findById(patternRelation.getId());
 
         // Get ProblemTypes of Algorithm
         Set<PatternRelation> relatedPatterns = algorithm.getRelatedPatterns();
         // add new problemtype
-        relatedPatterns.add(patternRelation);
+        relatedPatterns.add(loadedPatternRelation);
         // update and return update list:
         algorithm.setRelatedPatterns(relatedPatterns);
         Set<PatternRelation> updatedPatternRelations = algorithmService.save(algorithm).getRelatedPatterns();
@@ -365,8 +364,8 @@ public class AlgorithmController {
         // access publication in db to throw NoSuchElementException if it doesn't exist
         Set<PatternRelation> newPatternRelations = new HashSet<>();
         patternRelationDtos.forEach(patternRelationDto -> {
-            patternRelationService.findById(patternRelationDto.getId());
-            newPatternRelations.add(ModelMapperUtils.convert(patternRelationDto, PatternRelation.class));
+            PatternRelation patternRelation = patternRelationService.findById(patternRelationDto.getId());
+            newPatternRelations.add(patternRelation);
         });
         // update and return update list:
         algorithm.setRelatedPatterns(newPatternRelations);
