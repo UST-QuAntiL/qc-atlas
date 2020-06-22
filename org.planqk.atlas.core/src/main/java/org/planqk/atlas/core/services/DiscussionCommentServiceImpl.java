@@ -47,6 +47,11 @@ public class DiscussionCommentServiceImpl implements DiscussionCommentService {
     }
 
     @Override
+    public Page<DiscussionComment> findAllByTopic(UUID topicId, Pageable pageable) {
+        return repository.findByDiscussionTopic_Id(topicId, pageable);
+    }
+
+    @Override
     public DiscussionComment findById(UUID id) {
 
         if (!this.existsDiscussionCommentById(id)) {

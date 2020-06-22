@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import javax.validation.constraints.NotNull;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -19,6 +20,7 @@ public class SoftwarePlatformDto {
     @NotNull(message = "SoftwarePlatform name must not be null!")
     private String name;
 
+    @Schema(description = "URL", example = "https://qiskit.org/", required = false)
     private URL link;
 
     private String version;
