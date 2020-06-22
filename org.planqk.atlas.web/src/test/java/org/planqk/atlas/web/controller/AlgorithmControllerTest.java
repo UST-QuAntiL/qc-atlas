@@ -110,6 +110,7 @@ public class AlgorithmControllerTest {
     private AlgoRelationService algoRelationService;
     @MockBean
     private AlgoRelationTypeService algoRelationTypeService;
+
     @Autowired
     private MockMvc mockMvc;
     private ObjectMapper mapper;
