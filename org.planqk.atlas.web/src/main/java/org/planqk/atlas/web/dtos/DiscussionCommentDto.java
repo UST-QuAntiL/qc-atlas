@@ -24,6 +24,7 @@ import java.util.UUID;
 
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -41,5 +42,6 @@ public class DiscussionCommentDto {
     private DiscussionCommentDto replyTo;
 
     //@NotNull(message = "Discussion-Comment must have a referenced Discussion-Topic")
+    @JsonIgnore
     private DiscussionTopicDto discussionTopic;
 }

@@ -21,10 +21,8 @@ package org.planqk.atlas.web.linkassembler;
 
 import java.util.UUID;
 
-import org.planqk.atlas.web.controller.DiscussionCommentController;
 import org.planqk.atlas.web.controller.DiscussionTopicController;
 import org.planqk.atlas.web.dtos.DiscussionCommentDto;
-import org.planqk.atlas.web.dtos.DiscussionTopicDto;
 
 import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Component;
