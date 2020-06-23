@@ -31,6 +31,7 @@ import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.model.ComputingResource;
 import org.planqk.atlas.core.model.PatternRelation;
+import org.planqk.atlas.core.model.PatternRelationType;
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.services.AlgoRelationService;
@@ -38,6 +39,7 @@ import org.planqk.atlas.core.services.AlgoRelationTypeService;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.core.services.ComputingResourceService;
 import org.planqk.atlas.core.services.PatternRelationService;
+import org.planqk.atlas.core.services.PatternRelationTypeService;
 import org.planqk.atlas.core.services.ProblemTypeService;
 import org.planqk.atlas.core.services.PublicationService;
 import org.planqk.atlas.web.Constants;
@@ -102,6 +104,7 @@ public class AlgorithmController {
     private final AlgoRelationTypeService algoRelationTypeService;
     private final ComputingResourceService computingResourceService;
     private final PatternRelationService patternRelationService;
+    private final PatternRelationTypeService patternRelationTypeService;
     private final ProblemTypeService problemTypeService;
     private final PublicationService publicationService;
 
@@ -338,27 +341,30 @@ public class AlgorithmController {
         return new ResponseEntity<>(resultCollection, HttpStatus.OK);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "404", description = "pattern relation or algorithm doesn't exist in the database")}, description = "Add a reference to an existing pattern relation (that was previously created via a POST on /pattern-relation/. If the pattern relation doesn't exist yet, a 404 error is thrown.\"")
+    @Operation(responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "404", description = "Algorithm or Pattern Type doesn't exist in the database")}, description = "Add a Pattern Relation from this Algorithm to a given Pattern.\"")
     @PostMapping("/{algoId}/" + Constants.PATTERN_RELATIONS)
-    public HttpEntity<CollectionModel<EntityModel<PatternRelationDto>>> addPatternRelations(@PathVariable UUID algoId, @Valid @RequestBody PatternRelationDto patternRelationDto) {
+    public HttpEntity<EntityModel<PatternRelationDto>> createPatternRelation(@PathVariable UUID algoId,
+                                                                             @RequestBody PatternRelationDto relationDto) {
+        LOG.debug("Post to create new PatternRelation received.");
+
+        // Convert Dto to PatternRelation by using content from the database
         Algorithm algorithm = algorithmService.findById(algoId);
-        PatternRelation patternRelation = ModelMapperUtils.convert(patternRelationDto, PatternRelation.class);
+        PatternRelationType patternRelationType = patternRelationTypeService.findById(relationDto.getPatternRelationType().getId());
+        PatternRelation patternRelation = new PatternRelation();
+        patternRelation.setAlgorithm(algorithm);
+        patternRelation.setPattern(relationDto.getPattern());
+        patternRelation.setDescription(relationDto.getDescription());
+        patternRelation.setPatternRelationType(patternRelationType);
 
-        // access stored pattern relation -> if it does not exists, this throws a NoSuchElementException
-        PatternRelation loadedPatternRelation = patternRelationService.findById(patternRelation.getId());
+        // Store and return PatternRelation
+        PatternRelation savedRelation = patternRelationService.save(patternRelation);
 
-        // Get ProblemTypes of Algorithm
-        Set<PatternRelation> relatedPatterns = algorithm.getRelatedPatterns();
-        // add new problemtype
-        relatedPatterns.add(loadedPatternRelation);
-        // update and return update list:
-        algorithm.setRelatedPatterns(relatedPatterns);
-        Set<PatternRelation> updatedPatternRelations = algorithmService.save(algorithm).getRelatedPatterns();
-        Set<PatternRelationDto> result = ModelMapperUtils.convertSet(updatedPatternRelations, PatternRelationDto.class);
-        CollectionModel<EntityModel<PatternRelationDto>> resultCollection = HateoasUtils.generateCollectionModel(result);
-        // Fill EntityModel Links
-        patternRelationAssembler.addLinks(resultCollection);
-        return new ResponseEntity<>(resultCollection, HttpStatus.OK);
+        // Convert To EntityModel and add links
+        EntityModel<PatternRelationDto> dtoOutput = HateoasUtils
+                .generateEntityModel(ModelMapperUtils.convert(savedRelation, PatternRelationDto.class));
+        patternRelationAssembler.addLinks(dtoOutput);
+
+        return new ResponseEntity<>(dtoOutput, HttpStatus.CREATED);
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "201")}, description = "Update all references to existing pattern relations (that were previously created via a POST on /pattern-relations/). The values (e.g. type) of each pattern relations are not changes through this operation. If one of the pattern relations doesn't exist yet, a 404 error is thrown.")

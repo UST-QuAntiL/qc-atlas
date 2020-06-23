@@ -66,8 +66,9 @@ public class ModelMapperUtils {
                 .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), Simulator.class));
 
         // Map Algorithm of PatternRelation to correct Subclass when mapping to PatternRelationDto
-        TypeMap<PatternRelation, PatternRelationDto> typeMap = mapper.createTypeMap(PatternRelation.class, PatternRelationDto.class);
-        typeMap.addMappings(mappingContext -> mappingContext.map(src -> src.getAlgorithm(), PatternRelationDto::setAlgorithm));
+        TypeMap<PatternRelation, PatternRelationDto> patternRelationMap = mapper.createTypeMap(PatternRelation.class, PatternRelationDto.class);
+        patternRelationMap.addMappings(mappingContext -> mappingContext.map(src -> src.getAlgorithm(), PatternRelationDto::setAlgorithm));
+        patternRelationMap.addMappings(mappingContext -> mappingContext.map(src -> src.getAlgorithm().getId(), PatternRelationDto::setAlgorithmId));
 
         // Map Algorithm Ids in AlgorithmRelation
         TypeMap<AlgorithmRelation, AlgorithmRelationDto> algoRelationMap = mapper.createTypeMap(AlgorithmRelation.class, AlgorithmRelationDto.class);

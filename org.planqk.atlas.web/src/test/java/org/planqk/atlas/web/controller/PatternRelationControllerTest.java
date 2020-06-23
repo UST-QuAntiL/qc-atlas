@@ -1,33 +1,18 @@
 package org.planqk.atlas.web.controller;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
-import org.mockito.junit.jupiter.MockitoExtension;
-
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.ComputationModel;
 import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.model.PatternRelationType;
+import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.core.services.PatternRelationService;
+import org.planqk.atlas.core.services.PatternRelationTypeService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
@@ -37,6 +22,14 @@ import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
 import org.planqk.atlas.web.utils.HateoasUtils;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -52,28 +45,39 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(PatternRelationController.class)
 @ExtendWith(MockitoExtension.class)
 @AutoConfigureMockMvc
 @EnableLinkAssemblers
 public class PatternRelationControllerTest {
+    private final int page = 0;
+    private final int size = 2;
+    private final Pageable pageable = PageRequest.of(page, size);
+    List<PatternRelation> relationList;
+    Page<PatternRelation> relationPage;
+    Page<PatternRelationDto> relationPageDto;
     @MockBean
     private PatternRelationService patternRelationService;
     @MockBean
     private PagedResourcesAssembler<PatternRelationDto> paginationAssembler;
-
+    @MockBean
+    private AlgorithmService algorithmService;
+    @MockBean
+    private PatternRelationTypeService patternRelationTypeService;
     @Autowired
     private MockMvc mockMvc;
-
     private ObjectMapper mapper;
-
-    private final int page = 0;
-    private final int size = 2;
-    private final Pageable pageable = PageRequest.of(page, size);
-
     private PatternRelation relation1;
     private PatternRelation relation2;
     private PatternRelation missingReqParamRelation;
@@ -82,20 +86,14 @@ public class PatternRelationControllerTest {
     private PatternRelationDto relation2Dto;
     private PatternRelationDto missingReqParamRelationDto;
     private PatternRelationDto relationUpdatedDto;
-
     private PatternRelationType type1;
     private PatternRelationType type2;
     private PatternRelationTypeDto type1Dto;
     private PatternRelationTypeDto type2Dto;
-
     private Algorithm algorithm1;
     private Algorithm algorithm2;
     private AlgorithmDto algorithm1Dto;
     private AlgorithmDto algorithm2Dto;
-
-    List<PatternRelation> relationList;
-    Page<PatternRelation> relationPage;
-    Page<PatternRelationDto> relationPageDto;
 
     @BeforeEach
     public void initialize() {
@@ -156,7 +154,9 @@ public class PatternRelationControllerTest {
         missingReqParamRelation = new PatternRelation();
 
         relation1Dto = ModelMapperUtils.convert(relation1, PatternRelationDto.class);
+        relation1Dto.setAlgorithmId(algorithm1.getId());
         relation2Dto = ModelMapperUtils.convert(relation2, PatternRelationDto.class);
+        relation2Dto.setAlgorithmId(algorithm2.getId());
         missingReqParamRelationDto = ModelMapperUtils.convert(missingReqParamRelation, PatternRelationDto.class);
         relationUpdatedDto = ModelMapperUtils.convert(relationUpdated, PatternRelationDto.class);
 
@@ -170,6 +170,9 @@ public class PatternRelationControllerTest {
 
     @Test
     public void createRelation_returnRelation() throws Exception {
+        // Ignore annontations when writing Java objects to Json to enable writing WRITE_ONLY field which are required as input
+        mapper.configure(MapperFeature.USE_ANNOTATIONS, false);
+
         when(patternRelationService.save(any())).thenReturn(relation1);
 
         MvcResult result = mockMvc
@@ -177,6 +180,7 @@ public class PatternRelationControllerTest {
                         .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated()).andReturn();
 
+        mapper.configure(MapperFeature.USE_ANNOTATIONS, true);
         EntityModel<PatternRelationDto> response = mapper.readValue(result.getResponse().getContentAsString(),
                 new TypeReference<EntityModel<PatternRelationDto>>() {
                 });
@@ -193,6 +197,9 @@ public class PatternRelationControllerTest {
 
     @Test
     public void createRelation_returnAlgorithmNotFound() throws Exception {
+        // Ignore annontations when writing Java objects to Json to enable writing WRITE_ONLY field which are required as input
+        mapper.configure(MapperFeature.USE_ANNOTATIONS, false);
+
         when(patternRelationService.save(any())).thenThrow(NoSuchElementException.class);
 
         mockMvc.perform(post("/" + Constants.PATTERN_RELATIONS + "/").content(mapper.writeValueAsString(relation2Dto))
@@ -218,8 +225,10 @@ public class PatternRelationControllerTest {
         assertEquals(resultList.size(), 2);
         assertEquals(resultList.get(0).getDescription(), relation1Dto.getDescription());
         assertEquals(resultList.get(1).getDescription(), relation2Dto.getDescription());
-        assertEquals(resultList.get(0).getAlgorithm().getName(), algorithm1Dto.getName());
-        assertEquals(resultList.get(1).getAlgorithm().getName(), algorithm2Dto.getName());
+        assertEquals(resultList.get(0).getPatternRelationType().getName(), relation1Dto.getPatternRelationType().getName());
+        assertEquals(resultList.get(1).getPatternRelationType().getName(), relation2Dto.getPatternRelationType().getName());
+        assertEquals(resultList.get(0).getPattern(), relation1Dto.getPattern());
+        assertEquals(resultList.get(1).getPattern(), relation2Dto.getPattern());
     }
 
     @Test
@@ -238,7 +247,6 @@ public class PatternRelationControllerTest {
         assertEquals(response.getContent().getId(), relation1Dto.getId());
         assertEquals(response.getContent().getDescription(), relation1Dto.getDescription());
         assertEquals(response.getContent().getPattern(), relation1Dto.getPattern());
-        assertEquals(response.getContent().getAlgorithm().getName(), relation1Dto.getAlgorithm().getName());
     }
 
     @Test
@@ -251,12 +259,16 @@ public class PatternRelationControllerTest {
 
     @Test
     public void updateRelation_returnRelation() throws Exception {
-        when(patternRelationService.update(relation1.getId(), relation1)).thenReturn(relationUpdated);
+        // Ignore annontations when writing Java objects to Json to enable writing WRITE_ONLY field which are required as input
+        mapper.configure(MapperFeature.USE_ANNOTATIONS, false);
+
+        when(patternRelationService.save(any())).thenReturn(relationUpdated);
 
         MvcResult result = mockMvc.perform(put("/" + Constants.PATTERN_RELATIONS + "/{id}", relation1.getId())
                 .content(mapper.writeValueAsString(relation1Dto)).contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
+                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isCreated()).andReturn();
 
+        mapper.configure(MapperFeature.USE_ANNOTATIONS, true);
         EntityModel<PatternRelationDto> response = mapper.readValue(result.getResponse().getContentAsString(),
                 new TypeReference<EntityModel<PatternRelationDto>>() {
                 });
@@ -278,7 +290,10 @@ public class PatternRelationControllerTest {
 
     @Test
     public void updateRelation_returnNotFound() throws Exception {
-        when(patternRelationService.update(any(), any())).thenThrow(NoSuchElementException.class);
+        // Ignore annontations when writing Java objects to Json to enable writing WRITE_ONLY field which are required as input
+        mapper.configure(MapperFeature.USE_ANNOTATIONS, false);
+
+        when(patternRelationService.save(any())).thenThrow(NoSuchElementException.class);
 
         mockMvc.perform(put("/" + Constants.PATTERN_RELATIONS + "/{id}", UUID.randomUUID())
                 .content(mapper.writeValueAsString(relation1Dto)).contentType(MediaType.APPLICATION_JSON)

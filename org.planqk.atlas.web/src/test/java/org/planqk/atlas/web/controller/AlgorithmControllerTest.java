@@ -43,6 +43,7 @@ import org.planqk.atlas.core.services.AlgoRelationTypeService;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.core.services.ComputingResourceService;
 import org.planqk.atlas.core.services.PatternRelationService;
+import org.planqk.atlas.core.services.PatternRelationTypeService;
 import org.planqk.atlas.core.services.ProblemTypeService;
 import org.planqk.atlas.core.services.PublicationService;
 import org.planqk.atlas.web.Constants;
@@ -56,6 +57,7 @@ import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -102,6 +104,8 @@ public class AlgorithmControllerTest {
     private ComputingResourceService computingResourceService;
     @MockBean
     private PatternRelationService patternRelationService;
+    @MockBean
+    private PatternRelationTypeService patternRelationTypeService;
     @MockBean
     private ProblemTypeService problemTypeService;
     @MockBean
@@ -401,6 +405,9 @@ public class AlgorithmControllerTest {
 
     @Test
     public void updateAlgorithmRelation_returnNotFound() throws Exception {
+        // Ignore annontations when writing Java objects to Json to enable writing WRITE_ONLY field which are required as input
+        mapper.configure(MapperFeature.USE_ANNOTATIONS, false);
+
         initializeAlgorithms();
         when(algoRelationService.findById(any(UUID.class))).thenThrow(new NoSuchElementException());
 
@@ -412,6 +419,9 @@ public class AlgorithmControllerTest {
 
     @Test
     public void updateAlgorithmRelation_returnAlgorithmRelation() throws Exception {
+        // Ignore annontations when writing Java objects to Json to enable writing WRITE_ONLY field which are required as input
+        mapper.configure(MapperFeature.USE_ANNOTATIONS, false);
+
         initializeAlgorithms();
         when(algoRelationService.findById(any(UUID.class))).thenReturn(algorithmRelation1);
         when(algoRelationService.save(any(AlgorithmRelation.class))).thenReturn(algorithmRelation1);
@@ -422,10 +432,11 @@ public class AlgorithmControllerTest {
                         .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
+        mapper.configure(MapperFeature.USE_ANNOTATIONS, true);
         EntityModel<AlgorithmRelationDto> response = mapper.readValue(result.getResponse().getContentAsString(),
                 new TypeReference<EntityModel<AlgorithmRelationDto>>() {
                 });
-        assertEquals(algorithmRelation1.getSourceAlgorithm().getId(), response.getContent().getSourceAlgorithmId());
+        assertEquals(algorithmRelation1.getDescription(), response.getContent().getDescription());
     }
 
 //    @Test
