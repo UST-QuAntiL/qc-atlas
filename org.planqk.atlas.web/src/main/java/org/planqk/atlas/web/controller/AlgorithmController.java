@@ -159,6 +159,24 @@ public class AlgorithmController {
         return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
     }
 
+
+//    @Operation(responses = {@ApiResponse(responseCode = "200")})
+//    @GetMapping("/{id}/" + Constants.TAGS)
+//    public HttpEntity<CollectionModel<EntityModel<TagDto>>> getTags(@PathVariable UUID id) {
+//        Algorithm algorithm = algorithmService.findById(id);
+//        // Get Tags of Algorithm
+//        Set<Tag> tags = algorithm.getTags();
+//        // Translate Entity to DTO
+//        Set<TagDto> dtoTags = ModelMapperUtils.convertSet(tags, TagDto.class);
+//        // Create CollectionModel
+//        CollectionModel<EntityModel<TagDto>> resultCollection = HateoasUtils.generateCollectionModel(dtoTags);
+//        // Fill EntityModel Links
+//        tagAssembler.addLinks(resultCollection);
+//        // Fill Collection-Links
+//        algorithmAssembler.addTagLink(resultCollection, id);
+//        return new ResponseEntity<>(resultCollection, HttpStatus.OK);
+//    }
+
     @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Delete an algorithm. This also deletes all entities that depend on it (e.g., the algorith's relation to another algorithm.")
     @DeleteMapping("/{algoId}")
     public HttpEntity<?> deleteAlgorithm(@PathVariable UUID algoId) {
@@ -181,24 +199,6 @@ public class AlgorithmController {
 
         return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
     }
-
-
-//    @Operation(responses = {@ApiResponse(responseCode = "200")})
-//    @GetMapping("/{id}/" + Constants.TAGS)
-//    public HttpEntity<CollectionModel<EntityModel<TagDto>>> getTags(@PathVariable UUID id) {
-//        Algorithm algorithm = algorithmService.findById(id);
-//        // Get Tags of Algorithm
-//        Set<Tag> tags = algorithm.getTags();
-//        // Translate Entity to DTO
-//        Set<TagDto> dtoTags = ModelMapperUtils.convertSet(tags, TagDto.class);
-//        // Create CollectionModel
-//        CollectionModel<EntityModel<TagDto>> resultCollection = HateoasUtils.generateCollectionModel(dtoTags);
-//        // Fill EntityModel Links
-//        tagAssembler.addLinks(resultCollection);
-//        // Fill Collection-Links
-//        algorithmAssembler.addTagLink(resultCollection, id);
-//        return new ResponseEntity<>(resultCollection, HttpStatus.OK);
-//    }
 
     @Operation(responses = {@ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "404", content = @Content, description = "algorithm doesn't exist")},
@@ -321,7 +321,7 @@ public class AlgorithmController {
         // Fill EntityModel Links
         problemTypeAssembler.addLinks(resultCollection);
         return new ResponseEntity<>(resultCollection, HttpStatus.OK);
-    }
+    })
 
     @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Get the problem types for an algorithm")
     @GetMapping("/{algoId}/" + Constants.APPLICATION_AREAS)
@@ -338,6 +338,18 @@ public class AlgorithmController {
         // Fill Collection-Links
         algorithmAssembler.addApplicationAreaLink(resultCollection, algoId);
         return new ResponseEntity<>(resultCollection, HttpStatus.OK);
+    })
+
+    @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Get the problem types for an algorithm")
+    @GetMapping("/{algoId}/" + Constants.APPLICATION_AREAS + "/{applicationAreaId}")
+    public HttpEntity<EntityModel<ApplicationAreaDto>> getApplicationArea(@PathVariable UUID algoId, @PathVariable UUID applicationAreaId) {
+        ApplicationArea applicationArea = applicationAreaService.findById(applicationAreaId);
+
+        // Convert To EntityModel
+        EntityModel<ApplicationAreaDto> dtoOutput = HateoasUtils.generateEntityModel(ModelMapperUtils.convert(applicationArea, ApplicationAreaDto.class));
+        // Fill EntityModel with links
+        applicationAreaAssembler.addLinks(dtoOutput);
+        return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "404", description = "problem type or algorithm does not exists in the database")}, description = "Add a reference to an existing applicationArea (that was previously created via a POST on /application-area/. If the problemType doesn't exist yet, a 404 error is thrown.")

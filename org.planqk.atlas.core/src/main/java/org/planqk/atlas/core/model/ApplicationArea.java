@@ -39,7 +39,7 @@ public class ApplicationArea extends HasId {
 
     @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    @ManyToMany(mappedBy = "problemTypes")
+    @ManyToMany(mappedBy = "applicationAreas")
     @EqualsAndHashCode.Exclude
     private Set<Algorithm> algorithms = new HashSet<>();
 }
