@@ -86,7 +86,7 @@ public class ImplementationController {
 
 //    private TagAssembler tagAssembler;
 
-    @Operation(responses = {@ApiResponse(responseCode = "200")})
+    @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Retrieve all implementations for the algorithm")
     @GetMapping("/")
     public HttpEntity<CollectionModel<EntityModel<ImplementationDto>>> getImplementations(@PathVariable UUID algoId) {
         LOG.debug("Get to retrieve all implementations of algorithm with Id {} received.", algoId);
@@ -104,7 +104,7 @@ public class ImplementationController {
         return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200")})
+    @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Retrieve a specific implemention of the algorithm")
     @GetMapping("/{implId}")
     public HttpEntity<EntityModel<ImplementationDto>> getImplementation(@PathVariable UUID algoId, @PathVariable UUID implId) {
         LOG.debug("Get to retrieve implementation with id: {}.", implId);
@@ -118,7 +118,7 @@ public class ImplementationController {
         return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "201")})
+    @Operation(responses = {@ApiResponse(responseCode = "201")}, description = "Create a new implementation for the algorithm")
     @PostMapping("/")
     public HttpEntity<EntityModel<ImplementationDto>> createImplementation(@PathVariable UUID algoId, @Valid @RequestBody ImplementationDto impl) {
         LOG.debug("Post to create new implementation received.");
