@@ -1,4 +1,4 @@
-/********************************************************************************
+/*******************************************************************************
  * Copyright (c) 2020 University of Stuttgart
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -17,31 +17,21 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.planqk.atlas.core.services;
+package org.planqk.atlas.core.repository;
 
+import java.util.Optional;
 import java.util.UUID;
 
-import org.planqk.atlas.core.model.ProblemType;
+import org.planqk.atlas.core.model.ApplicationArea;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
-public interface ProblemTypeService {
+/**
+ * Repository to access {@link ApplicationArea}s available in the data base with different queries.
+ */
+@RepositoryRestResource(exported = false)
+public interface ApplicationAreaRepository extends JpaRepository<ApplicationArea, UUID> {
 
-    @Transactional
-    ProblemType save(ProblemType problemType);
-
-    @Transactional
-    ProblemType update(UUID id, ProblemType problemType);
-
-    @Transactional
-    void delete(ProblemType problemType);
-
-    ProblemType findById(UUID id);
-
-    ProblemType findByName(String name);
-
-    Page<ProblemType> findAll(Pageable pageable);
-
+    Optional<ApplicationArea> findByName(String name);
 }

@@ -317,6 +317,23 @@ public class AlgorithmController {
         return new ResponseEntity<>(resultCollection, HttpStatus.OK);
     }
 
+    @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Get the problem types for an algorithm")
+    @GetMapping("/{algoId}/" + Constants.APPLICATION_AREAS)
+    public HttpEntity<CollectionModel<EntityModel<ProblemTypeDto>>> getApplicationAreas(@PathVariable UUID algoId) {
+        Algorithm algorithm = algorithmService.findById(algoId);
+        // Get ProblemTypes of Algorithm
+        Set<ProblemType> problemTypes = algorithm.getProblemTypes();
+        // Translate Entity to DTO
+        Set<ProblemTypeDto> dtoTypes = ModelMapperUtils.convertSet(problemTypes, ProblemTypeDto.class);
+        // Create CollectionModel
+        CollectionModel<EntityModel<ProblemTypeDto>> resultCollection = HateoasUtils.generateCollectionModel(dtoTypes);
+        // Fill EntityModel Links
+        problemTypeAssembler.addLinks(resultCollection);
+        // Fill Collection-Links
+        algorithmAssembler.addProblemTypeLink(resultCollection, algoId);
+        return new ResponseEntity<>(resultCollection, HttpStatus.OK);
+    }
+
     @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400"), @ApiResponse(responseCode = "404")}, description = "Get pattern relations for an algorithms.")
     @GetMapping("/{algoId}/" + Constants.PATTERN_RELATIONS)
     public HttpEntity<CollectionModel<EntityModel<PatternRelationDto>>> getPatternRelations(@PathVariable UUID algoId) {

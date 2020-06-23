@@ -24,6 +24,8 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.ApplicationArea;
+import org.planqk.atlas.core.model.ProblemType;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -41,9 +43,6 @@ public interface AlgorithmRepository extends JpaRepository<Algorithm, UUID> {
 
     boolean existsAlgorithmById (UUID id);
 
-    @Query("SELECT COUNT(alg) FROM Algorithm alg JOIN alg.problemTypes probType WHERE probType.id = :problemTypeId")
-    long countAlgorithmsUsingProblemType(@Param("problemTypeId") UUID problemTypeId);
-
     @Query("SELECT alg FROM Algorithm alg JOIN alg.publications publication WHERE publication.id = :publicationId")
     Set<Algorithm> getAlgorithmsWithPublicationId(@Param("publicationId") UUID publicationId);
 
@@ -55,4 +54,8 @@ public interface AlgorithmRepository extends JpaRepository<Algorithm, UUID> {
     @Modifying
     @Query(nativeQuery = true, value = "DELETE FROM algorithm_publication WHERE algorithm_publication.algorithm_id = :algorithmId")
     void deleteAssociationsOfAlgorithm(@Param("algorithmId") UUID algorithmId);
+
+    Set<Algorithm> findAllByProblemTypes(ProblemType problemType);
+
+    Set<Algorithm> findAllByApplicationAreas(ApplicationArea applicationArea);
 }

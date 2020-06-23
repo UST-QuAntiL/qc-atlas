@@ -1,4 +1,4 @@
-/********************************************************************************
+/*******************************************************************************
  * Copyright (c) 2020 University of Stuttgart
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -17,31 +17,26 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.planqk.atlas.core.services;
+package org.planqk.atlas.web.dtos;
 
 import java.util.UUID;
 
-import org.planqk.atlas.core.model.ProblemType;
+import javax.validation.constraints.NotNull;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.transaction.annotation.Transactional;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-public interface ProblemTypeService {
+import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY;
 
-    @Transactional
-    ProblemType save(ProblemType problemType);
+@EqualsAndHashCode
+@Data
+public class ApplicationAreasDto {
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @Schema(accessMode = READ_ONLY)
+    private UUID id;
 
-    @Transactional
-    ProblemType update(UUID id, ProblemType problemType);
-
-    @Transactional
-    void delete(ProblemType problemType);
-
-    ProblemType findById(UUID id);
-
-    ProblemType findByName(String name);
-
-    Page<ProblemType> findAll(Pageable pageable);
-
+    @NotNull(message = "ApplicationArea-Name must not be null!")
+    private String name;
 }

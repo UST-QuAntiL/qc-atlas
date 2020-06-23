@@ -80,8 +80,10 @@ public class Algorithm extends AlgorOrImpl {
     @EqualsAndHashCode.Exclude
     private Set<PatternRelation> relatedPatterns = new HashSet<>();
 
-    @ManyToMany(cascade = {CascadeType.MERGE})
-    @JoinTable(name = "algorithm_problem_type", joinColumns = @JoinColumn(name = "algorithm_id"), inverseJoinColumns = @JoinColumn(name = "problem_type_id"))
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "algorithm_problem_types",
+            joinColumns = @JoinColumn(name = "algorithm_id"),
+            inverseJoinColumns = @JoinColumn(name = "problem_type_id"))
     @EqualsAndHashCode.Exclude
     private Set<ProblemType> problemTypes = new HashSet<>();
 

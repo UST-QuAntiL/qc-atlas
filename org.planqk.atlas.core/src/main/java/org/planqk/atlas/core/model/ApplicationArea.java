@@ -1,4 +1,4 @@
-/********************************************************************************
+/*******************************************************************************
  * Copyright (c) 2020 University of Stuttgart
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -17,31 +17,29 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.planqk.atlas.core.services;
+package org.planqk.atlas.core.model;
 
-import java.util.UUID;
+import java.util.HashSet;
+import java.util.Set;
 
-import org.planqk.atlas.core.model.ProblemType;
+import javax.persistence.Entity;
+import javax.persistence.ManyToMany;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.transaction.annotation.Transactional;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-public interface ProblemTypeService {
+@EqualsAndHashCode(callSuper = true)
+@Data
+@Entity
+public class ApplicationArea extends HasId {
 
-    @Transactional
-    ProblemType save(ProblemType problemType);
+    private String name;
 
-    @Transactional
-    ProblemType update(UUID id, ProblemType problemType);
-
-    @Transactional
-    void delete(ProblemType problemType);
-
-    ProblemType findById(UUID id);
-
-    ProblemType findByName(String name);
-
-    Page<ProblemType> findAll(Pageable pageable);
-
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @ManyToMany(mappedBy = "problemTypes")
+    @EqualsAndHashCode.Exclude
+    private Set<Algorithm> algorithms = new HashSet<>();
 }
