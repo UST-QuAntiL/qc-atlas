@@ -21,6 +21,7 @@ package org.planqk.atlas.web.controller;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -33,10 +34,13 @@ import org.planqk.atlas.core.model.ComputingResource;
 import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.model.Publication;
+import org.planqk.atlas.core.services.AlgoRelationService;
+import org.planqk.atlas.core.services.AlgoRelationTypeService;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.core.services.ApplicationAreaService;
 import org.planqk.atlas.core.services.ComputingResourceService;
 import org.planqk.atlas.core.services.PatternRelationService;
+import org.planqk.atlas.core.services.PatternRelationTypeService;
 import org.planqk.atlas.core.services.ProblemTypeService;
 import org.planqk.atlas.core.services.PublicationService;
 import org.planqk.atlas.web.Constants;
@@ -99,11 +103,16 @@ public class AlgorithmController {
     final private static Logger LOG = LoggerFactory.getLogger(AlgorithmController.class);
 
     private final AlgorithmService algorithmService;
+    private final AlgoRelationService algoRelationService;
+    private final AlgoRelationTypeService algoRelationTypeService;
     private final ComputingResourceService computingResourceService;
     private final PatternRelationService patternRelationService;
+    private final PatternRelationTypeService patternRelationTypeService;
     private final ProblemTypeService problemTypeService;
     private final ApplicationAreaService applicationAreaService;
     private final PublicationService publicationService;
+
+    private final PatternRelationController patternRelationController;
 
     private final PagedResourcesAssembler<AlgorithmDto> algorithmPaginationAssembler;
     private final PagedResourcesAssembler<ComputingResourceDto> computingResourcePaginationAssembler;
@@ -199,7 +208,7 @@ public class AlgorithmController {
 
         return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
     }
-
+    
     @Operation(responses = {@ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "404", content = @Content, description = "algorithm doesn't exist")},
             description = "Get referenced publications for an algorithm")
@@ -223,7 +232,7 @@ public class AlgorithmController {
             description = "algorithm or publication does not exist")},
             description = "Add a reference to an existing publication (that was previously created via a POST on /publications/. If the publication doesn't exist yet, a 404 error is thrown.")
     @PostMapping("/{algoId}/" + Constants.PUBLICATIONS)
-    public HttpEntity<CollectionModel<EntityModel<PublicationDto>>> addPublication(@PathVariable UUID algoId, @Valid @RequestBody PublicationDto publicationDto) {
+    public HttpEntity<CollectionModel<EntityModel<PublicationDto>>> addPublication(@PathVariable UUID algoId, @RequestBody PublicationDto publicationDto) {
         Algorithm algorithm = algorithmService.findById(algoId);
         Publication publication = ModelMapperUtils.convert(publicationDto, Publication.class);
         // access publication in db to throw NoSuchElementException if it doesn't exist
@@ -404,48 +413,71 @@ public class AlgorithmController {
         return new ResponseEntity<>(resultCollection, HttpStatus.OK);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "404", description = "pattern relation or algorithm doesn't exist in the database")}, description = "Add a reference to an existing pattern relation (that was previously created via a POST on /pattern-relation/. If the pattern relation doesn't exist yet, a 404 error is thrown.\"")
+    @Operation(responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "404", description = "Algorithm or Pattern Type doesn't exist in the database")}, description = "Add a Pattern Relation from this Algorithm to a given Pattern.\"")
     @PostMapping("/{algoId}/" + Constants.PATTERN_RELATIONS)
-    public HttpEntity<CollectionModel<EntityModel<PatternRelationDto>>> addPatternRelations(@PathVariable UUID algoId, @Valid @RequestBody PatternRelationDto patternRelationDto) {
-        Algorithm algorithm = algorithmService.findById(algoId);
-        PatternRelation patternRelation = ModelMapperUtils.convert(patternRelationDto, PatternRelation.class);
-
-        // access stored pattern relation -> if it does not exists, this throws a NoSuchElementException
-        PatternRelation loadedPatternRelation = patternRelationService.findById(patternRelation.getId());
-
-        // Get ProblemTypes of Algorithm
-        Set<PatternRelation> relatedPatterns = algorithm.getRelatedPatterns();
-        // add new problemtype
-        relatedPatterns.add(loadedPatternRelation);
-        // update and return update list:
-        algorithm.setRelatedPatterns(relatedPatterns);
-        Set<PatternRelation> updatedPatternRelations = algorithmService.save(algorithm).getRelatedPatterns();
-        Set<PatternRelationDto> result = ModelMapperUtils.convertSet(updatedPatternRelations, PatternRelationDto.class);
-        CollectionModel<EntityModel<PatternRelationDto>> resultCollection = HateoasUtils.generateCollectionModel(result);
-        // Fill EntityModel Links
-        patternRelationAssembler.addLinks(resultCollection);
-        return new ResponseEntity<>(resultCollection, HttpStatus.OK);
+    public HttpEntity<EntityModel<PatternRelationDto>> createPatternRelation(@PathVariable UUID algoId,
+                                                                             @RequestBody PatternRelationDto relationDto) {
+        LOG.debug("Post to create new PatternRelation received.");
+        relationDto.setAlgorithmId(algoId);
+        EntityModel<PatternRelationDto> updatedRelationDto = patternRelationController.handlePatternRelationUpdate(relationDto, null);
+        patternRelationAssembler.addLinks(updatedRelationDto);
+        return new ResponseEntity<>(updatedRelationDto, HttpStatus.CREATED);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "201")}, description = "Update all references to existing pattern relations (that were previously created via a POST on /pattern-relations/). The values (e.g. type) of each pattern relations are not changes through this operation. If one of the pattern relations doesn't exist yet, a 404 error is thrown.")
-    @PutMapping("/{algoId}/" + Constants.PATTERN_RELATIONS)
-    public HttpEntity<CollectionModel<EntityModel<PatternRelationDto>>> updatePatternRelations(@PathVariable UUID algoId, @Valid @RequestBody List<PatternRelationDto> patternRelationDtos) {
-        Algorithm algorithm = algorithmService.findById(algoId);
-        // access publication in db to throw NoSuchElementException if it doesn't exist
-        Set<PatternRelation> newPatternRelations = new HashSet<>();
-        patternRelationDtos.forEach(patternRelationDto -> {
-            PatternRelation patternRelation = patternRelationService.findById(patternRelationDto.getId());
-            newPatternRelations.add(patternRelation);
-        });
-        // update and return update list:
-        algorithm.setRelatedPatterns(newPatternRelations);
-        Set<PatternRelation> updatedPatternRelations = algorithmService.save(algorithm).getRelatedPatterns();
-        Set<PatternRelationDto> patternRelationseDtosResult = ModelMapperUtils.convertSet(updatedPatternRelations, PatternRelationDto.class);
-        // Create CollectionModel
-        CollectionModel<EntityModel<PatternRelationDto>> resultCollection = HateoasUtils.generateCollectionModel(patternRelationseDtosResult);
-        // Fill EntityModel Links
-        patternRelationAssembler.addLinks(resultCollection);
-        return new ResponseEntity<>(resultCollection, HttpStatus.OK);
+    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400", description = "PatternRelation doesn't belong to this algorithm"), @ApiResponse(responseCode = "404")}, description = "Get a certain pattern relation for an algorithm.")
+    @GetMapping("/{algoId}/" + Constants.PATTERN_RELATIONS + "/{relationId}/")
+    public HttpEntity<EntityModel<PatternRelationDto>> getPatternRelation(@PathVariable UUID algoId, @PathVariable UUID relationId) {
+        LOG.debug("Get to retrieve PatternRelation with Id {} received.", relationId);
+        PatternRelation patternRelation = patternRelationService.findById(relationId);
+        if (!patternRelation.getAlgorithm().getId().equals(algoId)) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        PatternRelationDto dto = ModelMapperUtils.convert(patternRelation, PatternRelationDto.class);
+        EntityModel<PatternRelationDto> dtoOutput = HateoasUtils
+                .generateEntityModel(ModelMapperUtils.convert(dto, PatternRelationDto.class));
+        patternRelationAssembler.addLinks(dtoOutput);
+        return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
+    }
+
+    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400", description = "PatternRelation doesn't belong to this algorithm")}, description = "Update a references to a pattern.")
+    @PutMapping("/{algoId}/" + Constants.PATTERN_RELATIONS + "/{relationId}")
+    public HttpEntity<EntityModel<PatternRelationDto>> updatePatternRelations(@PathVariable UUID algoId, @PathVariable UUID relationId, @Valid @RequestBody PatternRelationDto relationDto) {
+        LOG.debug("Put to update pattern relation with Id {} received.", relationId);
+        PatternRelation patternRelation = patternRelationService.findById(relationId);
+        if (!patternRelation.getAlgorithm().getId().equals(algoId)) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        relationDto.setAlgorithmId(algoId);
+        EntityModel<PatternRelationDto> updatedRelationDto = patternRelationController.handlePatternRelationUpdate(relationDto, relationId);
+        patternRelationAssembler.addLinks(updatedRelationDto);
+        return new ResponseEntity<>(updatedRelationDto, HttpStatus.OK);
+    }
+
+    @Operation(responses = {@ApiResponse(responseCode = "200")})
+    @DeleteMapping("/{algoId}/" + Constants.PATTERN_RELATIONS + "/{relationId}")
+    public HttpEntity<AlgorithmRelationDto> deleteAPatternRelation(@PathVariable UUID algoId,
+                                                                   @PathVariable UUID relationId) {
+        LOG.debug("Delete received to remove pattern relation with id {}.", relationId);
+        patternRelationService.deleteById(relationId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404")
+    })
+    @PostMapping("/{algoId}/" + Constants.ALGORITHM_RELATIONS)
+    public ResponseEntity<EntityModel<AlgorithmRelationDto>> addAlgorithmRelation(
+            @PathVariable UUID algoId,
+            @RequestBody AlgorithmRelationDto relationDto
+    ) {
+        LOG.debug("Post to create algorithm relations received.");
+        EntityModel<AlgorithmRelationDto> updatedRelationDto = handleRelationUpdate(relationDto, null);
+        algorithmRelationAssembler.addLinks(updatedRelationDto);
+        return new ResponseEntity<>(updatedRelationDto, HttpStatus.OK);
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Retrieve all relations for an algorithm.")
@@ -455,11 +487,11 @@ public class AlgorithmController {
         // get AlgorithmRelations of Algorithm
         Set<AlgorithmRelation> algorithmRelations = algorithmService.getAlgorithmRelations(algoId);
         // Get AlgorithmRelationDTOs of Algorithm
-        Set<AlgorithmRelationDto> dtoALgorithmRelation = ModelMapperUtils.convertSet(algorithmRelations,
+        Set<AlgorithmRelationDto> dtoAlgorithmRelation = ModelMapperUtils.convertSet(algorithmRelations,
                 AlgorithmRelationDto.class);
         // Generate CollectionModel
         CollectionModel<EntityModel<AlgorithmRelationDto>> resultCollection = HateoasUtils
-                .generateCollectionModel(dtoALgorithmRelation);
+                .generateCollectionModel(dtoAlgorithmRelation);
         // Fill EntityModel Links
         algorithmRelationAssembler.addLinks(resultCollection);
         // Fill Collection-Links
@@ -467,18 +499,32 @@ public class AlgorithmController {
         return new ResponseEntity<>(resultCollection, HttpStatus.OK);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Add an relation to the algorithm")
-    @PutMapping("/{algoId}/" + Constants.ALGORITHM_RELATIONS)
-    public HttpEntity<EntityModel<AlgorithmRelationDto>> updateAlgorithmRelation(@PathVariable UUID algoId,
-                                                                                 @Valid @RequestBody AlgorithmRelationDto relation) {
-        LOG.debug("Post to add algorithm relation received.");
+    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400", description = "AlgorithmRelation doesn't belong to this algorithm"), @ApiResponse(responseCode = "404")})
+    @GetMapping("/{algoId}/" + Constants.ALGORITHM_RELATIONS + "/{relationId}")
+    public HttpEntity<EntityModel<AlgorithmRelationDto>> getAlgorithmRelation(
+            @PathVariable UUID algoId, @PathVariable UUID relationId) {
+        AlgorithmRelation algorithmRelation = algoRelationService.findById(relationId);
+        if (!algorithmRelation.getSourceAlgorithm().getId().equals(algoId) && !algorithmRelation.getTargetAlgorithm().getId().equals(algoId)) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
 
-        AlgorithmRelation algorithmRelation = algorithmService.addOrUpdateAlgorithmRelation(algoId,
-                ModelMapperUtils.convert(relation, AlgorithmRelation.class));
-        AlgorithmRelationDto dtoOutput = ModelMapperUtils.convert(algorithmRelation, AlgorithmRelationDto.class);
-        EntityModel<AlgorithmRelationDto> entityDto = HateoasUtils.generateEntityModel(dtoOutput);
-        algorithmRelationAssembler.addLinks(entityDto);
-        return new ResponseEntity<>(entityDto, HttpStatus.OK);
+        EntityModel<AlgorithmRelationDto> dtoOutput = HateoasUtils
+                .generateEntityModel(ModelMapperUtils.convert(algorithmRelation, AlgorithmRelationDto.class));
+
+        // Fill EntityModel Links
+        algorithmRelationAssembler.addLinks(dtoOutput);
+        return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
+    }
+
+    @Operation(responses = {@ApiResponse(responseCode = "200")})
+    @PutMapping("/{algoId}/" + Constants.ALGORITHM_RELATIONS + "/{relationId}")
+    public HttpEntity<EntityModel<AlgorithmRelationDto>> updateAlgorithmRelation(@PathVariable UUID algoId, @PathVariable UUID relationId,
+                                                                                 @Valid @RequestBody AlgorithmRelationDto relation) {
+        LOG.debug("Put to update algorithm relations with Id {} received.", relationId);
+        algoRelationService.findById(relationId);
+        EntityModel<AlgorithmRelationDto> updatedRelationDto = handleRelationUpdate(relation, relationId);
+        algorithmRelationAssembler.addLinks(updatedRelationDto);
+        return new ResponseEntity<>(updatedRelationDto, HttpStatus.OK);
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Delete a relation of the algorithm")
@@ -486,7 +532,7 @@ public class AlgorithmController {
     public HttpEntity<AlgorithmRelationDto> deleteAlgorithmRelation(@PathVariable UUID algoId,
                                                                     @PathVariable UUID relationId) {
         LOG.debug("Delete received to remove algorithm relation with id {}.", relationId);
-        algorithmService.deleteAlgorithmRelation(algoId, relationId);
+        algoRelationService.delete(relationId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -528,5 +574,19 @@ public class AlgorithmController {
                 ModelMapperUtils.convert(updatedAlgorithm, AlgorithmDto.class));
         algorithmAssembler.addLinks(algoDto);
         return ResponseEntity.ok(algoDto);
+    }
+
+    private EntityModel<AlgorithmRelationDto> handleRelationUpdate(AlgorithmRelationDto relationDto, UUID relationId) {
+        AlgorithmRelation resource = new AlgorithmRelation();
+        if (Objects.nonNull(relationId)) {
+            resource.setId(relationId);
+        }
+        resource.setAlgoRelationType(algoRelationTypeService.findById(relationDto.getAlgoRelationType().getId()));
+        resource.setSourceAlgorithm(algorithmService.findById(relationDto.getSourceAlgorithmId()));
+        resource.setTargetAlgorithm(algorithmService.findById(relationDto.getTargetAlgorithmId()));
+        resource.setDescription(relationDto.getDescription());
+        AlgorithmRelation updatedRelation = algoRelationService.save(resource);
+        return HateoasUtils.generateEntityModel(
+                ModelMapperUtils.convert(updatedRelation, AlgorithmRelationDto.class));
     }
 }

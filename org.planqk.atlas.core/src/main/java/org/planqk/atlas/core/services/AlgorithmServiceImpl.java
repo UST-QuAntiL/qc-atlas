@@ -232,6 +232,8 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 
     @Override
     public Set<AlgorithmRelation> getAlgorithmRelations(UUID sourceAlgorithmId) {
-        return algorithmRelationRepository.findBySourceAlgorithmId(sourceAlgorithmId);
+        Set<AlgorithmRelation> relations = algorithmRelationRepository.findBySourceAlgorithmId(sourceAlgorithmId);
+        relations.addAll(algorithmRelationRepository.findByTargetAlgorithmId(sourceAlgorithmId));
+        return relations;
     }
 }
