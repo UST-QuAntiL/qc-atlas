@@ -26,11 +26,11 @@ public class AlgorithmRelationAssembler extends GenericLinkAssembler<AlgorithmRe
     }
 
     private UUID getSourceAlgorithmId(EntityModel<AlgorithmRelationDto> resource) {
-        return resource.getContent().getSourceAlgorithm().getId();
+        return resource.getContent().getSourceAlgorithmId();
     }
 
     private UUID getTargetAlgorithmId(EntityModel<AlgorithmRelationDto> resource) {
-        return resource.getContent().getTargetAlgorithm().getId();
+        return resource.getContent().getTargetAlgorithmId();
     }
 
     private UUID getAlgoRelationTypeId(EntityModel<AlgorithmRelationDto> resource) {
