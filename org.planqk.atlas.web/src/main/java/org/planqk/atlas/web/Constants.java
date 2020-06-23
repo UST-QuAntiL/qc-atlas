@@ -41,6 +41,7 @@ public class Constants {
     public static final String PATTERN_RELATIONS = "pattern-relations";
     public static final String COMPUTING_RESOURCES = "computing-resources";
     public static final String COMPUTING_RESOURCE_TYPES = "computing-resource-types";
+    public static final String APPLICATION_AREAS = "application-areas";
 
     // link names
     public static final String ALGORITHM_LINK = "implementedAlgorithm";
