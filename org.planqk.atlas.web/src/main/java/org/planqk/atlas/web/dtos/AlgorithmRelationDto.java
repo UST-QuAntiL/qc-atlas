@@ -23,9 +23,14 @@ import java.util.UUID;
 
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+
+import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY;
+import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.WRITE_ONLY;
 
 /**
  * Data transfer object for Algorithms ({@link org.planqk.atlas.core.model.Algorithm}).
@@ -36,13 +41,27 @@ public class AlgorithmRelationDto {
 
     private UUID id;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Schema(accessMode = WRITE_ONLY)
     @NotNull(message = "ID of the source Algorithm must not be null!")
     @EqualsAndHashCode.Exclude
     private UUID sourceAlgorithmId;
 
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @Schema(accessMode = READ_ONLY)
+    @EqualsAndHashCode.Exclude
+    private AlgorithmDto sourceAlgorithm;
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Schema(accessMode = WRITE_ONLY)
     @NotNull(message = "ID of the target Algorithm must not be null!")
     @EqualsAndHashCode.Exclude
     private UUID targetAlgorithmId;
+
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @Schema(accessMode = READ_ONLY)
+    @EqualsAndHashCode.Exclude
+    private AlgorithmDto targetAlgorithm;
 
     @NotNull(message = "AlgorithmRelationType must not be null!")
     private AlgoRelationTypeDto algoRelationType;
