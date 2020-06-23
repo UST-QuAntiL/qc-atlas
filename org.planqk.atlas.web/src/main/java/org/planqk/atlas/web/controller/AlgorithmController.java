@@ -284,7 +284,7 @@ public class AlgorithmController {
 
     @Operation(responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "404", description = "problem type or algorithm does not exists in the database")}, description = "Add a reference to an existing problemType (that was previously created via a POST on /problem-types/. If the problemType doesn't exist yet, a 404 error is thrown.")
     @PostMapping("/{algoId}/" + Constants.PROBLEM_TYPES)
-    public HttpEntity<CollectionModel<EntityModel<ProblemTypeDto>>> addProblemType(@PathVariable UUID algoId, @Valid @RequestBody ProblemTypeDto problemTypeDto) {
+    public HttpEntity<CollectionModel<EntityModel<ProblemTypeDto>>> addProblemType(@PathVariable UUID algoId, @RequestBody ProblemTypeDto problemTypeDto) {
         Algorithm algorithm = algorithmService.findById(algoId);
         // access stored pattern relation -> if it does not exists, this throws a NoSuchElementException
         ProblemType problemType = problemTypeService.findById(problemTypeDto.getId());
@@ -300,6 +300,36 @@ public class AlgorithmController {
         // Fill EntityModel Links
         problemTypeAssembler.addLinks(resultCollection);
         return new ResponseEntity<>(resultCollection, HttpStatus.OK);
+    }
+
+    @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Get a specific problem type for an algorithm")
+    @GetMapping("/{algoId}/" + Constants.PROBLEM_TYPES + "/{problemTypeId}")
+    public HttpEntity<EntityModel<ProblemTypeDto>> getSpecificProblemTypes(@PathVariable UUID algoId, @PathVariable UUID problemTypeId) {
+        ProblemType problemType = problemTypeService.findById(problemTypeId);
+        Algorithm algorithm = algorithmService.findById(algoId);
+        // Get ProblemTypes of Algorithm
+        Set<ProblemType> problemTypes = algorithm.getProblemTypes();
+        if (!problemTypes.contains(problemType)) {
+            LOG.info("Trying to get ApplicationArea that not referenced by the algorithm");
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        // Create CollectionModel
+        EntityModel<ProblemTypeDto> dtoOutput = HateoasUtils.generateEntityModel(ModelMapperUtils.convert(problemType, ProblemTypeDto.class));
+        // Fill EntityModel Links
+        problemTypeAssembler.addLinks(dtoOutput);
+        return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
+    }
+
+    @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Delete a reference to a problem types of the algorithm")
+    @DeleteMapping("/{algoId}/" + Constants.PROBLEM_TYPES + "/{problemTypeId}")
+    public HttpEntity<EntityModel<ProblemTypeDto>> deleteReferenceToProblemTypes(@PathVariable UUID algoId, @PathVariable UUID problemTypeId) {
+        Algorithm algorithm = algorithmService.findById(algoId);
+        // Get ProblemTypes of Algorithm
+        Set<ProblemType> problemTypes = algorithm.getProblemTypes();
+        problemTypes.removeIf(problemType -> problemType.getId().equals(problemTypeId));
+        algorithm.setProblemTypes(problemTypes);
+        algorithmService.save(algorithm);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Get the problem types for an algorithm")
