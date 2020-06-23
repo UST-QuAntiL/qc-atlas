@@ -302,27 +302,6 @@ public class AlgorithmController {
         return new ResponseEntity<>(resultCollection, HttpStatus.OK);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Update all references to existing problemTypes (that were previously created via a POST on /problem-types/). The values (e.g. name) of each problem-types are not changes through this operation. If one of the problemType doesn't exist yet, a 404 error is thrown.")
-    @PutMapping("/{algoId}/" + Constants.PROBLEM_TYPES)
-    public HttpEntity<CollectionModel<EntityModel<ProblemTypeDto>>> updateProblemTypes(@PathVariable UUID algoId, @Valid @RequestBody List<ProblemTypeDto> problemTypeDtos) {
-        Algorithm algorithm = algorithmService.findById(algoId);
-        // access publication in db to throw NoSuchElementException if it doesn't exist
-        Set<ProblemType> newProblemTypes = new HashSet<>();
-        problemTypeDtos.forEach(problemTypeDto -> {
-            ProblemType problemType = problemTypeService.findById(problemTypeDto.getId());
-            newProblemTypes.add(problemType);
-        });
-        // update and return update list:
-        algorithm.setProblemTypes(newProblemTypes);
-        Set<ProblemType> updatedProblemTypes = algorithmService.save(algorithm).getProblemTypes();
-        Set<ProblemTypeDto> problemTypeDtosResult = ModelMapperUtils.convertSet(updatedProblemTypes, ProblemTypeDto.class);
-        // Create CollectionModel
-        CollectionModel<EntityModel<ProblemTypeDto>> resultCollection = HateoasUtils.generateCollectionModel(problemTypeDtosResult);
-        // Fill EntityModel Links
-        problemTypeAssembler.addLinks(resultCollection);
-        return new ResponseEntity<>(resultCollection, HttpStatus.OK);
-    }
-
     @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Get the problem types for an algorithm")
     @GetMapping("/{algoId}/" + Constants.APPLICATION_AREAS)
     public HttpEntity<CollectionModel<EntityModel<ApplicationAreaDto>>> getApplicationAreas(@PathVariable UUID algoId) {
