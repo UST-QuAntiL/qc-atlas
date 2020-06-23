@@ -136,18 +136,20 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         if (!algorithmOptional.isPresent()) {
             return;
         }
-
         Algorithm algorithm = algorithmOptional.get();
+
+        // delete related implementations
         implementationRepository.findByImplementedAlgorithm(algorithm).stream().forEach(implementationRepository::delete);
+
+        // delete ingoing and outgoing algorithm relations
         Set<AlgorithmRelation> linkedAsTargetRelations = algorithmRelationRepository.findByTargetAlgorithmId(id);
+        linkedAsTargetRelations.addAll(algorithmRelationRepository.findBySourceAlgorithmId(id));
         for (AlgorithmRelation relation : linkedAsTargetRelations) {
             deleteAlgorithmRelation(relation.getSourceAlgorithm().getId(), relation.getId());
         }
 
-        //Remove all publications and associations that refer only to this single algorithm
-        Set<String> publicationIds = algorithmRepository.getPublicationIdsOfAlgorithm(id);
+        //Remove all publications associations
         algorithmRepository.deleteAssociationsOfAlgorithm(id);
-        publicationIds.stream().map(publicationId -> UUID.fromString(publicationId)).forEach(publicationService::deleteById);
 
         algorithmRepository.deleteById(id);
     }
