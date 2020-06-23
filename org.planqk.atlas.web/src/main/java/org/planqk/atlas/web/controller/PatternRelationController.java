@@ -118,7 +118,8 @@ public class PatternRelationController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    private EntityModel<PatternRelationDto> handlePatternRelationUpdate(PatternRelationDto relationDto, UUID relationId) {
+    protected EntityModel<PatternRelationDto> handlePatternRelationUpdate(PatternRelationDto relationDto, UUID relationId) {
+        LOG.debug("Handling addition/update of pattern relation with Id: {}", relationId);
         PatternRelation patternRelation = new PatternRelation();
         if (Objects.nonNull(relationId)) {
             patternRelation.setId(relationId);

@@ -114,6 +114,8 @@ public class AlgorithmControllerTest {
     private AlgoRelationService algoRelationService;
     @MockBean
     private AlgoRelationTypeService algoRelationTypeService;
+    @MockBean
+    private PatternRelationController patternRelationController;
 
     @Autowired
     private MockMvc mockMvc;
