@@ -119,7 +119,7 @@ public class AlgorithmController {
     private final ComputingResourceAssembler computingResourceAssembler;
     private final PatternRelationAssembler patternRelationAssembler;
 
-    @Operation(responses = {@ApiResponse(responseCode = "200")})
+    @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Retrieve all algorithms (quantum, hybrid and classic)")
     @GetMapping("/")
     public HttpEntity<PagedModel<EntityModel<AlgorithmDto>>> getAlgorithms(@RequestParam(required = false) Integer page,
                                                                            @RequestParam(required = false) Integer size) {
@@ -162,7 +162,7 @@ public class AlgorithmController {
         return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200")})
+    @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Delete an algorithm. This also deletes all entities that depend on it (e.g., the algorith's relation to another algorithm.")
     @DeleteMapping("/{algoId}")
     public HttpEntity<?> deleteAlgorithm(@PathVariable UUID algoId) {
         LOG.debug("Delete to remove algorithm with id: {}.", algoId);
@@ -170,7 +170,7 @@ public class AlgorithmController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200")})
+    @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Retrieve an specific algorithm and its basic properties")
     @GetMapping("/{algoId}")
     public HttpEntity<EntityModel<AlgorithmDto>> getAlgorithm(@PathVariable UUID algoId) {
         LOG.debug("Get to retrieve algorithm with id: {}.", algoId);
@@ -409,7 +409,7 @@ public class AlgorithmController {
         return new ResponseEntity<>(updatedRelationDto, HttpStatus.OK);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200")})
+    @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Retrieve all relations for an algorithm.")
     @GetMapping("/{algoId}/" + Constants.ALGORITHM_RELATIONS)
     public HttpEntity<CollectionModel<EntityModel<AlgorithmRelationDto>>> getAlgorithmRelations(
             @PathVariable UUID algoId) {
@@ -456,7 +456,7 @@ public class AlgorithmController {
         return new ResponseEntity<>(updatedRelationDto, HttpStatus.OK);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200")})
+    @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Delete a relation of the algorithm")
     @DeleteMapping("/{algoId}/" + Constants.ALGORITHM_RELATIONS + "/{relationId}")
     public HttpEntity<AlgorithmRelationDto> deleteAlgorithmRelation(@PathVariable UUID algoId,
                                                                     @PathVariable UUID relationId) {
@@ -469,7 +469,7 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404")
-    })
+    }, description = "Retrieve the required computing resources of an algorithm")
     @GetMapping("/{algoId}/" + Constants.COMPUTING_RESOURCES)
     public ResponseEntity<PagedModel<EntityModel<ComputingResourceDto>>> getComputingResources(
             @PathVariable UUID algoId,
@@ -487,7 +487,7 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404")
-    })
+    }, description = "Add a computing resource (e.g. a certain number of qubits) that is requiered by an algorithm")
     @PostMapping("/{algoId}/" + Constants.COMPUTING_RESOURCES)
     public ResponseEntity<EntityModel<AlgorithmDto>> addComputingResource(
             @PathVariable UUID algoId,
