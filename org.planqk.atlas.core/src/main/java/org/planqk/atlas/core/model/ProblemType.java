@@ -26,4 +26,23 @@ public class ProblemType extends HasId {
     @EqualsAndHashCode.Exclude
     private Set<Algorithm> algorithms = new HashSet<>();
 
+    public Set<Algorithm> getAlgorithms() {
+        return new HashSet<Algorithm>(algorithms);
+    }
+
+    public void addAlgorithm(Algorithm algorithm) {
+        if (algorithms.contains(algorithm)) {
+            return;
+        }
+        algorithms.add(algorithm);
+        algorithm.addProblemType(this);
+    }
+
+    public void removeAlgorithm(Algorithm algorithm) {
+        if (!algorithms.contains(algorithm)) {
+            return;
+        }
+        algorithms.remove(algorithm);
+        algorithm.removeProblemType(this);
+    }
 }

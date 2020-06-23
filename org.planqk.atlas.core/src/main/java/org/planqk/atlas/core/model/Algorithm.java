@@ -120,4 +120,44 @@ public class Algorithm extends AlgorOrImpl {
     public void addComputingResource(@lombok.NonNull ComputingResource resource) {
         this.requiredComputingResources.add(resource);
     }
+
+    public Set<ApplicationArea> getApplicationAreas() {
+        return new HashSet<ApplicationArea>(applicationAreas);
+    }
+
+    public void addApplicationArea(ApplicationArea applicationArea) {
+        if (applicationAreas.contains(applicationArea)) {
+            return;
+        }
+        applicationAreas.add(applicationArea);
+        applicationArea.addAlgorithm(this);
+    }
+
+    public void removeApplicationArea(ApplicationArea applicationArea) {
+        if (!applicationAreas.contains(applicationArea)) {
+            return;
+        }
+        applicationAreas.remove(applicationArea);
+        applicationArea.removeAlgorithm(this);
+    }
+
+    public Set<ProblemType> getProblemTypes() {
+        return new HashSet<ProblemType>(problemTypes);
+    }
+
+    public void addProblemType(ProblemType problemType) {
+        if (problemTypes.contains(problemType)) {
+            return;
+        }
+        problemTypes.add(problemType);
+        problemType.addAlgorithm(this);
+    }
+
+    public void removeProblemType(ProblemType problemType) {
+        if (!problemTypes.contains(problemType)) {
+            return;
+        }
+        problemTypes.remove(problemType);
+        problemType.removeAlgorithm(this);
+    }
 }

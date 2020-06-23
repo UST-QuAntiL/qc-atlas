@@ -114,7 +114,6 @@ public class ProblemTypeServiceTest extends AtlasDatabaseTestBase {
     @Test
     void testDeleteProblemType_HasReferences() {
         ProblemType problemType = getGenericProblemType("referencedProblemType");
-        problemTypeService.save(problemType);
         Set<ProblemType> problemTypes = new HashSet<>();
         problemTypes.add(problemType);
 
