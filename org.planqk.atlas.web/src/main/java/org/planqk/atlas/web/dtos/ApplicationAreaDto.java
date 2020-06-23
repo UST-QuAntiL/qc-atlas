@@ -23,18 +23,12 @@ import java.util.UUID;
 
 import javax.validation.constraints.NotNull;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
-import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY;
 
 @EqualsAndHashCode
 @Data
 public class ApplicationAreaDto {
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    @Schema(accessMode = READ_ONLY)
     private UUID id;
 
     @NotNull(message = "ApplicationArea-Name must not be null!")

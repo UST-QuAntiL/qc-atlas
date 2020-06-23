@@ -321,7 +321,7 @@ public class AlgorithmController {
         // Fill EntityModel Links
         problemTypeAssembler.addLinks(resultCollection);
         return new ResponseEntity<>(resultCollection, HttpStatus.OK);
-    })
+    }
 
     @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Get the problem types for an algorithm")
     @GetMapping("/{algoId}/" + Constants.APPLICATION_AREAS)
@@ -338,13 +338,17 @@ public class AlgorithmController {
         // Fill Collection-Links
         algorithmAssembler.addApplicationAreaLink(resultCollection, algoId);
         return new ResponseEntity<>(resultCollection, HttpStatus.OK);
-    })
+    }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Get the problem types for an algorithm")
+    @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Get a specific applicationArea of an algorithm")
     @GetMapping("/{algoId}/" + Constants.APPLICATION_AREAS + "/{applicationAreaId}")
     public HttpEntity<EntityModel<ApplicationAreaDto>> getApplicationArea(@PathVariable UUID algoId, @PathVariable UUID applicationAreaId) {
         ApplicationArea applicationArea = applicationAreaService.findById(applicationAreaId);
-
+        Set<ApplicationArea> applicationAreas = algorithmService.findById(algoId).getApplicationAreas();
+        if (!applicationAreas.contains(applicationArea)) {
+            LOG.info("Trying to get ApplicationArea that not referenced by the algorithm");
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
         // Convert To EntityModel
         EntityModel<ApplicationAreaDto> dtoOutput = HateoasUtils.generateEntityModel(ModelMapperUtils.convert(applicationArea, ApplicationAreaDto.class));
         // Fill EntityModel with links
@@ -352,9 +356,20 @@ public class AlgorithmController {
         return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "404", description = "problem type or algorithm does not exists in the database")}, description = "Add a reference to an existing applicationArea (that was previously created via a POST on /application-area/. If the problemType doesn't exist yet, a 404 error is thrown.")
+    @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Delete a reference to a applicationArea of an algorithm")
+    @DeleteMapping("/{algoId}/" + Constants.APPLICATION_AREAS + "/{applicationAreaId}")
+    public HttpEntity<EntityModel<ApplicationAreaDto>> deleteReferenceToApplicationArea(@PathVariable UUID algoId, @PathVariable UUID applicationAreaId) {
+        Algorithm algorithm = algorithmService.findById(algoId);
+        Set<ApplicationArea> applicationAreas = algorithm.getApplicationAreas();
+        applicationAreas.removeIf(applicationArea -> applicationArea.getId().equals(applicationAreaId));
+        algorithm.setApplicationAreas(applicationAreas);
+        algorithmService.save(algorithm);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Operation(responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "404", description = "problem type or algorithm does not exists in the database")}, description = "Add a reference to an existing applicationArea (that was previously created via a POST on /application-area/. If the applicationArea doesn't exist yet, a 404 error is thrown.")
     @PostMapping("/{algoId}/" + Constants.APPLICATION_AREAS)
-    public HttpEntity<CollectionModel<EntityModel<ApplicationAreaDto>>> add(@PathVariable UUID algoId, @Valid @RequestBody ApplicationAreaDto applicationAreaDto) {
+    public HttpEntity<CollectionModel<EntityModel<ApplicationAreaDto>>> add(@PathVariable UUID algoId, @RequestBody ApplicationAreaDto applicationAreaDto) {
         Algorithm algorithm = algorithmService.findById(algoId);
         // access stored pattern relation -> if it does not exists, this throws a NoSuchElementException
         ApplicationArea applicationArea = applicationAreaService.findById(applicationAreaDto.getId());
