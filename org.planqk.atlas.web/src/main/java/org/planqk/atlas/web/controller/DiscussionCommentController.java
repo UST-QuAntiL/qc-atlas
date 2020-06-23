@@ -25,7 +25,6 @@ import javax.validation.Valid;
 
 import org.planqk.atlas.core.model.DiscussionComment;
 import org.planqk.atlas.core.model.DiscussionTopic;
-import org.planqk.atlas.core.repository.DiscussionCommentRepository;
 import org.planqk.atlas.core.services.DiscussionCommentService;
 import org.planqk.atlas.core.services.DiscussionTopicService;
 import org.planqk.atlas.web.dtos.DiscussionCommentDto;
@@ -64,7 +63,6 @@ public class DiscussionCommentController {
     private DiscussionTopicService discussionTopicService;
     private PagedResourcesAssembler<DiscussionCommentDto> pagedResourcesAssembler;
     private DiscussionCommentAssembler discussionCommentAssembler;
-    private DiscussionCommentRepository discussionCommentRepository;
 
     public HttpEntity<PagedModel<EntityModel<DiscussionCommentDto>>> getDiscussionComments(@PathVariable("topicId") UUID topicId,
                                                                                            @RequestParam(required = false) Integer page,

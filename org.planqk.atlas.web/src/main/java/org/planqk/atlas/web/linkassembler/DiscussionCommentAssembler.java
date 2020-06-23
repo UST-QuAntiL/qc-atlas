@@ -22,7 +22,9 @@ package org.planqk.atlas.web.linkassembler;
 import java.util.UUID;
 
 import org.planqk.atlas.web.controller.DiscussionCommentController;
+import org.planqk.atlas.web.controller.DiscussionTopicController;
 import org.planqk.atlas.web.dtos.DiscussionCommentDto;
+import org.planqk.atlas.web.dtos.DiscussionTopicDto;
 
 import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Component;
@@ -34,12 +36,16 @@ public class DiscussionCommentAssembler extends GenericLinkAssembler<DiscussionC
 
     @Override
     public void addLinks(EntityModel<DiscussionCommentDto> resource) {
-        resource.add(links.linkTo(methodOn(DiscussionCommentController.class).getDiscussionComment(this.getID(resource))).withSelfRel());
-        resource.add(links.linkTo(methodOn(DiscussionCommentController.class).deleteDiscussionComment(this.getID(resource))).withRel("delete"));
-        resource.add(links.linkTo(methodOn(DiscussionCommentController.class).updateDiscussionComment(this.getID(resource), getContent(resource))).withRel("update"));
+        resource.add(links.linkTo(methodOn(DiscussionTopicController.class).getDiscussionComment(getTopicId(resource), getID(resource))).withSelfRel());
+        resource.add(links.linkTo(methodOn(DiscussionTopicController.class).deleteDiscussionComment(getTopicId(resource), getID(resource))).withRel("delete"));
+        resource.add(links.linkTo(methodOn(DiscussionTopicController.class).updateDiscussionComment(getTopicId(resource), getID(resource), getContent(resource))).withRel("update"));
     }
 
     private UUID getID(EntityModel<DiscussionCommentDto> resource) {
         return resource.getContent().getId();
+    }
+
+    public UUID getTopicId(EntityModel<DiscussionCommentDto> resource) {
+        return resource.getContent().getDiscussionTopic().getId();
     }
 }
