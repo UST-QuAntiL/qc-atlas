@@ -114,7 +114,6 @@ public class ProblemTypeServiceTest extends AtlasDatabaseTestBase {
     @Test
     void testDeleteProblemType_HasReferences() {
         ProblemType problemType = getGenericProblemType("referencedProblemType");
-        problemTypeService.save(problemType);
         Set<ProblemType> problemTypes = new HashSet<>();
         problemTypes.add(problemType);
 
@@ -128,7 +127,7 @@ public class ProblemTypeServiceTest extends AtlasDatabaseTestBase {
         Set<ProblemType> storedProblemTypes = storedAlgorithm.getProblemTypes();
         storedProblemTypes.forEach(pt -> {
             Assertions.assertDoesNotThrow(() -> problemTypeService.findById(pt.getId()));
-            Assertions.assertThrows(ConsistencyException.class, () -> problemTypeService.delete(pt.getId()));
+            Assertions.assertThrows(ConsistencyException.class, () -> problemTypeService.delete(pt));
             Assertions.assertDoesNotThrow(() -> problemTypeService.findById(pt.getId()));
         });
     }
@@ -140,7 +139,7 @@ public class ProblemTypeServiceTest extends AtlasDatabaseTestBase {
 
         Assertions.assertDoesNotThrow(() -> problemTypeService.findById(storedProblemType.getId()));
 
-        problemTypeService.delete(storedProblemType.getId());
+        problemTypeService.delete(storedProblemType);
 
         Assertions.assertThrows(NoSuchElementException.class, () -> problemTypeService.findById(storedProblemType.getId()));
     }

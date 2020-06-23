@@ -23,7 +23,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -80,13 +79,19 @@ public class Algorithm extends AlgorOrImpl {
     @EqualsAndHashCode.Exclude
     private Set<PatternRelation> relatedPatterns = new HashSet<>();
 
-    @ManyToMany(cascade = {CascadeType.MERGE})
-    @JoinTable(name = "algorithm_problem_type", joinColumns = @JoinColumn(name = "algorithm_id"), inverseJoinColumns = @JoinColumn(name = "problem_type_id"))
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "algorithm_problem_type",
+            joinColumns = @JoinColumn(name = "algorithm_id"),
+            inverseJoinColumns = @JoinColumn(name = "problem_type_id"))
     @EqualsAndHashCode.Exclude
     private Set<ProblemType> problemTypes = new HashSet<>();
 
-    @ElementCollection
-    private Set<String> applicationAreas = new HashSet<>();
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "algorithm_application_area",
+            joinColumns = @JoinColumn(name = "algorithm_id"),
+            inverseJoinColumns = @JoinColumn(name = "application_area_id"))
+    @EqualsAndHashCode.Exclude
+    private Set<ApplicationArea> applicationAreas = new HashSet<>();
 
     @ManyToMany(cascade = {CascadeType.MERGE})
     @JoinTable(name = "algorithm_tag", joinColumns = @JoinColumn(name = "algorithm_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
@@ -114,5 +119,45 @@ public class Algorithm extends AlgorOrImpl {
 
     public void addComputingResource(@lombok.NonNull ComputingResource resource) {
         this.requiredComputingResources.add(resource);
+    }
+
+    public Set<ApplicationArea> getApplicationAreas() {
+        return new HashSet<ApplicationArea>(applicationAreas);
+    }
+
+    public void addApplicationArea(ApplicationArea applicationArea) {
+        if (applicationAreas.contains(applicationArea)) {
+            return;
+        }
+        applicationAreas.add(applicationArea);
+        applicationArea.addAlgorithm(this);
+    }
+
+    public void removeApplicationArea(ApplicationArea applicationArea) {
+        if (!applicationAreas.contains(applicationArea)) {
+            return;
+        }
+        applicationAreas.remove(applicationArea);
+        applicationArea.removeAlgorithm(this);
+    }
+
+    public Set<ProblemType> getProblemTypes() {
+        return new HashSet<ProblemType>(problemTypes);
+    }
+
+    public void addProblemType(ProblemType problemType) {
+        if (problemTypes.contains(problemType)) {
+            return;
+        }
+        problemTypes.add(problemType);
+        problemType.addAlgorithm(this);
+    }
+
+    public void removeProblemType(ProblemType problemType) {
+        if (!problemTypes.contains(problemType)) {
+            return;
+        }
+        problemTypes.remove(problemType);
+        problemType.removeAlgorithm(this);
     }
 }

@@ -83,7 +83,8 @@ public class ProblemTypeController {
     @Operation(responses = { @ApiResponse(responseCode = "200") })
     @DeleteMapping("/{id}")
     public HttpEntity<ProblemTypeDto> deleteProblemType(@PathVariable UUID id) {
-        problemTypeService.delete(id);
+        ProblemType problemType = problemTypeService.findById(id);
+        problemTypeService.delete(problemType);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

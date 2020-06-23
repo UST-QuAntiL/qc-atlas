@@ -30,6 +30,7 @@ import java.util.UUID;
 import org.planqk.atlas.core.model.AlgoRelationType;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
+import org.planqk.atlas.core.model.ApplicationArea;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
 import org.planqk.atlas.core.model.ComputationModel;
 import org.planqk.atlas.core.model.ProblemType;
@@ -100,14 +101,11 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
         ProblemType problemType = new ProblemType();
         problemType.setName("testProblemType");
         problemType.setParentProblemType(UUID.randomUUID());
-        problemType = problemTypeService.save(problemType);
         problemTypes.add(problemType);
         ProblemType problemType2 = new ProblemType();
         problemType2.setName("testProblemType");
         problemType2.setParentProblemType(UUID.randomUUID());
-        problemType2 = problemTypeService.save(problemType2);
-        ProblemType storedProblemType = problemTypeService.save(problemType2);
-        problemTypes.add(storedProblemType);
+        problemTypes.add(problemType2);
         algorithm.setProblemTypes(problemTypes);
 
         Algorithm storedAlgorithm = algorithmService.save(algorithm);
@@ -137,6 +135,11 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
         publication.setAlgorithms(publicationAlgorithms);
         publications.add(publication);
         algorithm.setPublications(publications);
+        Set<ApplicationArea> applicationAreas = new HashSet<>();
+        ApplicationArea applicationArea = new ApplicationArea();
+        applicationArea.setName("test");
+        applicationAreas.add(applicationArea);
+        algorithm.setApplicationAreas(applicationAreas);
 
         Algorithm storedAlgorithm = algorithmService.save(algorithm);
 
@@ -180,7 +183,8 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
         assertThat(editedAlgorithm.getSolution()).isEqualTo(compareAlgorithm.getSolution());
         assertThat(editedAlgorithm.getAssumptions()).isEqualTo(compareAlgorithm.getAssumptions());
         assertThat(editedAlgorithm.getComputationModel()).isEqualTo(compareAlgorithm.getComputationModel());
-        assertThat(editedAlgorithm.getApplicationAreas()).isEqualTo(compareAlgorithm.getApplicationAreas());
+        // application areas now contains a reference to an algorithm, so check for the name:
+        assertThat(editedAlgorithm.getApplicationAreas().iterator().next().getName()).isEqualTo(compareAlgorithm.getApplicationAreas().iterator().next().getName());
     }
 
     @Test
@@ -280,7 +284,6 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
         ProblemType problemType = new ProblemType();
         problemType.setName("testProblemType");
         problemType.setParentProblemType(UUID.randomUUID());
-        problemType = problemTypeService.save(problemType);
         problemTypes.add(problemType);
         algorithm.setProblemTypes(problemTypes);
 
@@ -453,8 +456,10 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
         algorithm.setSolution("testSolution");
         algorithm.setAssumptions("testAssumptions");
         algorithm.setComputationModel(ComputationModel.CLASSIC);
-        Set<String> applicationAreas = new HashSet<>();
-        applicationAreas.add("testApplicationArea");
+        Set<ApplicationArea> applicationAreas = new HashSet<>();
+        ApplicationArea applicationArea = new ApplicationArea();
+        applicationArea.setName("test");
+        applicationAreas.add(applicationArea);
         algorithm.setApplicationAreas(applicationAreas);
         return algorithm;
     }

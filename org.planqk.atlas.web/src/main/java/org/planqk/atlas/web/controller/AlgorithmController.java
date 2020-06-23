@@ -29,6 +29,7 @@ import javax.validation.Valid;
 
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
+import org.planqk.atlas.core.model.ApplicationArea;
 import org.planqk.atlas.core.model.ComputingResource;
 import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.model.ProblemType;
@@ -36,6 +37,7 @@ import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.services.AlgoRelationService;
 import org.planqk.atlas.core.services.AlgoRelationTypeService;
 import org.planqk.atlas.core.services.AlgorithmService;
+import org.planqk.atlas.core.services.ApplicationAreaService;
 import org.planqk.atlas.core.services.ComputingResourceService;
 import org.planqk.atlas.core.services.PatternRelationService;
 import org.planqk.atlas.core.services.PatternRelationTypeService;
@@ -44,12 +46,14 @@ import org.planqk.atlas.core.services.PublicationService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
+import org.planqk.atlas.web.dtos.ApplicationAreaDto;
 import org.planqk.atlas.web.dtos.ComputingResourceDto;
 import org.planqk.atlas.web.dtos.PatternRelationDto;
 import org.planqk.atlas.web.dtos.ProblemTypeDto;
 import org.planqk.atlas.web.dtos.PublicationDto;
 import org.planqk.atlas.web.linkassembler.AlgorithmAssembler;
 import org.planqk.atlas.web.linkassembler.AlgorithmRelationAssembler;
+import org.planqk.atlas.web.linkassembler.ApplicationAreaAssembler;
 import org.planqk.atlas.web.linkassembler.ComputingResourceAssembler;
 import org.planqk.atlas.web.linkassembler.PatternRelationAssembler;
 import org.planqk.atlas.web.linkassembler.ProblemTypeAssembler;
@@ -105,6 +109,7 @@ public class AlgorithmController {
     private final PatternRelationService patternRelationService;
     private final PatternRelationTypeService patternRelationTypeService;
     private final ProblemTypeService problemTypeService;
+    private final ApplicationAreaService applicationAreaService;
     private final PublicationService publicationService;
 
     private final PatternRelationController patternRelationController;
@@ -112,6 +117,7 @@ public class AlgorithmController {
     private final PagedResourcesAssembler<AlgorithmDto> algorithmPaginationAssembler;
     private final PagedResourcesAssembler<ComputingResourceDto> computingResourcePaginationAssembler;
     private final ProblemTypeAssembler problemTypeAssembler;
+    private final ApplicationAreaAssembler applicationAreaAssembler;
     //    private final TagAssembler tagAssembler;
     private final AlgorithmAssembler algorithmAssembler;
     private final AlgorithmRelationAssembler algorithmRelationAssembler;
@@ -162,6 +168,24 @@ public class AlgorithmController {
         return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
     }
 
+
+//    @Operation(responses = {@ApiResponse(responseCode = "200")})
+//    @GetMapping("/{id}/" + Constants.TAGS)
+//    public HttpEntity<CollectionModel<EntityModel<TagDto>>> getTags(@PathVariable UUID id) {
+//        Algorithm algorithm = algorithmService.findById(id);
+//        // Get Tags of Algorithm
+//        Set<Tag> tags = algorithm.getTags();
+//        // Translate Entity to DTO
+//        Set<TagDto> dtoTags = ModelMapperUtils.convertSet(tags, TagDto.class);
+//        // Create CollectionModel
+//        CollectionModel<EntityModel<TagDto>> resultCollection = HateoasUtils.generateCollectionModel(dtoTags);
+//        // Fill EntityModel Links
+//        tagAssembler.addLinks(resultCollection);
+//        // Fill Collection-Links
+//        algorithmAssembler.addTagLink(resultCollection, id);
+//        return new ResponseEntity<>(resultCollection, HttpStatus.OK);
+//    }
+
     @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Delete an algorithm. This also deletes all entities that depend on it (e.g., the algorith's relation to another algorithm.")
     @DeleteMapping("/{algoId}")
     public HttpEntity<?> deleteAlgorithm(@PathVariable UUID algoId) {
@@ -184,24 +208,7 @@ public class AlgorithmController {
 
         return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
     }
-
-//    @Operation(responses = {@ApiResponse(responseCode = "200")})
-//    @GetMapping("/{id}/" + Constants.TAGS)
-//    public HttpEntity<CollectionModel<EntityModel<TagDto>>> getTags(@PathVariable UUID id) {
-//        Algorithm algorithm = algorithmService.findById(id);
-//        // Get Tags of Algorithm
-//        Set<Tag> tags = algorithm.getTags();
-//        // Translate Entity to DTO
-//        Set<TagDto> dtoTags = ModelMapperUtils.convertSet(tags, TagDto.class);
-//        // Create CollectionModel
-//        CollectionModel<EntityModel<TagDto>> resultCollection = HateoasUtils.generateCollectionModel(dtoTags);
-//        // Fill EntityModel Links
-//        tagAssembler.addLinks(resultCollection);
-//        // Fill Collection-Links
-//        algorithmAssembler.addTagLink(resultCollection, id);
-//        return new ResponseEntity<>(resultCollection, HttpStatus.OK);
-//    }
-
+    
     @Operation(responses = {@ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "404", content = @Content, description = "algorithm doesn't exist")},
             description = "Get referenced publications for an algorithm")
@@ -322,6 +329,70 @@ public class AlgorithmController {
         CollectionModel<EntityModel<ProblemTypeDto>> resultCollection = HateoasUtils.generateCollectionModel(problemTypeDtosResult);
         // Fill EntityModel Links
         problemTypeAssembler.addLinks(resultCollection);
+        return new ResponseEntity<>(resultCollection, HttpStatus.OK);
+    }
+
+    @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Get the problem types for an algorithm")
+    @GetMapping("/{algoId}/" + Constants.APPLICATION_AREAS)
+    public HttpEntity<CollectionModel<EntityModel<ApplicationAreaDto>>> getApplicationAreas(@PathVariable UUID algoId) {
+        Algorithm algorithm = algorithmService.findById(algoId);
+        // Get ProblemTypes of Algorithm
+        Set<ApplicationArea> applicationAreas = algorithm.getApplicationAreas();
+        // Translate Entity to DTO
+        Set<ApplicationAreaDto> dtoTypes = ModelMapperUtils.convertSet(applicationAreas, ApplicationAreaDto.class);
+        // Create CollectionModel
+        CollectionModel<EntityModel<ApplicationAreaDto>> resultCollection = HateoasUtils.generateCollectionModel(dtoTypes);
+        // Fill EntityModel Links
+        applicationAreaAssembler.addLinks(resultCollection);
+        // Fill Collection-Links
+        algorithmAssembler.addApplicationAreaLink(resultCollection, algoId);
+        return new ResponseEntity<>(resultCollection, HttpStatus.OK);
+    }
+
+    @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Get a specific applicationArea of an algorithm")
+    @GetMapping("/{algoId}/" + Constants.APPLICATION_AREAS + "/{applicationAreaId}")
+    public HttpEntity<EntityModel<ApplicationAreaDto>> getApplicationArea(@PathVariable UUID algoId, @PathVariable UUID applicationAreaId) {
+        ApplicationArea applicationArea = applicationAreaService.findById(applicationAreaId);
+        Set<ApplicationArea> applicationAreas = algorithmService.findById(algoId).getApplicationAreas();
+        if (!applicationAreas.contains(applicationArea)) {
+            LOG.info("Trying to get ApplicationArea that not referenced by the algorithm");
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        // Convert To EntityModel
+        EntityModel<ApplicationAreaDto> dtoOutput = HateoasUtils.generateEntityModel(ModelMapperUtils.convert(applicationArea, ApplicationAreaDto.class));
+        // Fill EntityModel with links
+        applicationAreaAssembler.addLinks(dtoOutput);
+        return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
+    }
+
+    @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Delete a reference to a applicationArea of an algorithm")
+    @DeleteMapping("/{algoId}/" + Constants.APPLICATION_AREAS + "/{applicationAreaId}")
+    public HttpEntity<EntityModel<ApplicationAreaDto>> deleteReferenceToApplicationArea(@PathVariable UUID algoId, @PathVariable UUID applicationAreaId) {
+        Algorithm algorithm = algorithmService.findById(algoId);
+        Set<ApplicationArea> applicationAreas = algorithm.getApplicationAreas();
+        applicationAreas.removeIf(applicationArea -> applicationArea.getId().equals(applicationAreaId));
+        algorithm.setApplicationAreas(applicationAreas);
+        algorithmService.save(algorithm);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Operation(responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "404", description = "problem type or algorithm does not exists in the database")}, description = "Add a reference to an existing applicationArea (that was previously created via a POST on /application-area/. If the applicationArea doesn't exist yet, a 404 error is thrown.")
+    @PostMapping("/{algoId}/" + Constants.APPLICATION_AREAS)
+    public HttpEntity<CollectionModel<EntityModel<ApplicationAreaDto>>> add(@PathVariable UUID algoId, @RequestBody ApplicationAreaDto applicationAreaDto) {
+        Algorithm algorithm = algorithmService.findById(algoId);
+        // access stored pattern relation -> if it does not exists, this throws a NoSuchElementException
+        ApplicationArea applicationArea = applicationAreaService.findById(applicationAreaDto.getId());
+        // Get ProblemTypes of Algorithm
+        Set<ApplicationArea> applicationAreas = algorithm.getApplicationAreas();
+        // add new problemtype
+        applicationAreas.add(applicationArea);
+        // update and return update list:
+        algorithm.setApplicationAreas(applicationAreas);
+        Set<ApplicationArea> updatedApplicationAreas = algorithmService.save(algorithm).getApplicationAreas();
+        Set<ApplicationAreaDto> dtos = ModelMapperUtils.convertSet(updatedApplicationAreas, ApplicationAreaDto.class);
+        CollectionModel<EntityModel<ApplicationAreaDto>> resultCollection = HateoasUtils.generateCollectionModel(dtos);
+        // Fill EntityModel Links
+        applicationAreaAssembler.addLinks(resultCollection);
         return new ResponseEntity<>(resultCollection, HttpStatus.OK);
     }
 

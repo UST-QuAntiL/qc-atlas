@@ -1,4 +1,4 @@
-/********************************************************************************
+/*******************************************************************************
  * Copyright (c) 2020 University of Stuttgart
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -21,27 +21,26 @@ package org.planqk.atlas.core.services;
 
 import java.util.UUID;
 
-import org.planqk.atlas.core.model.ProblemType;
+import org.planqk.atlas.core.model.ApplicationArea;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
-public interface ProblemTypeService {
+public interface ApplicationAreaService {
 
     @Transactional
-    ProblemType save(ProblemType problemType);
+    ApplicationArea save(ApplicationArea applicationArea);
 
     @Transactional
-    ProblemType update(UUID id, ProblemType problemType);
+    ApplicationArea update(UUID id, ApplicationArea applicationArea);
 
     @Transactional
-    void delete(ProblemType problemType);
+    void delete(ApplicationArea applicationArea);
 
-    ProblemType findById(UUID id);
+    ApplicationArea findById(UUID id);
 
-    ProblemType findByName(String name);
+    ApplicationArea findByName(String name);
 
-    Page<ProblemType> findAll(Pageable pageable);
-
+    Page<ApplicationArea> findAll(Pageable pageable);
 }

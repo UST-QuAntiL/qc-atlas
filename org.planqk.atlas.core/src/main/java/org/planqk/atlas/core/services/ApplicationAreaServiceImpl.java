@@ -1,4 +1,4 @@
-/********************************************************************************
+/*******************************************************************************
  * Copyright (c) 2020 University of Stuttgart
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -24,10 +24,10 @@ import java.util.UUID;
 
 import javax.transaction.Transactional;
 
-import org.planqk.atlas.core.model.ProblemType;
+import org.planqk.atlas.core.model.ApplicationArea;
 import org.planqk.atlas.core.model.exceptions.ConsistencyException;
 import org.planqk.atlas.core.repository.AlgorithmRepository;
-import org.planqk.atlas.core.repository.ProblemTypeRepository;
+import org.planqk.atlas.core.repository.ApplicationAreaRepository;
 
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
@@ -38,55 +38,52 @@ import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
-public class ProblemTypeServiceImpl implements ProblemTypeService {
+public class ApplicationAreaServiceImpl implements ApplicationAreaService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ProblemTypeServiceImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ApplicationAreaServiceImpl.class);
 
-    private final ProblemTypeRepository repo;
+    private final ApplicationAreaRepository repo;
     private final AlgorithmRepository algRepo;
 
     @Override
     @Transactional
-    public ProblemType save(ProblemType problemType) {
-        return repo.save(problemType);
+    public ApplicationArea save(ApplicationArea applicationArea) {
+        return repo.save(applicationArea);
     }
 
     @Override
     @Transactional
-    public ProblemType update(UUID id, ProblemType problemType) {
-        // Get existing ProblemType if it exists
-        ProblemType persistedType = findById(id);
+    public ApplicationArea update(UUID id, ApplicationArea problemType) {
+        // Get existing ApplicationArea if it exists
+        ApplicationArea persistedType = findById(id);
         // Update fields
         persistedType.setName(problemType.getName());
-        persistedType.setParentProblemType(problemType.getParentProblemType());
-        // Save and return updated object
         return save(persistedType);
     }
 
     @Override
     @Transactional
-    public void delete(ProblemType problemType) {
-        if (this.algRepo.findAllByProblemTypes(problemType).size() > 0) {
-            LOG.info("Trying to delete ProblemType that is used by at least 1 algorithm");
-            throw new ConsistencyException("Cannot delete ProbemType, since it is used by existing algorithms!");
+    public void delete(ApplicationArea applicationArea) {
+        if (algRepo.findAllByApplicationAreas(applicationArea).size() > 0) {
+            LOG.info("Trying to delete applicationArea that is used by at least 1 algorithm");
+            throw new ConsistencyException("Cannot delete applicationArea, since it is used by existing algorithms!");
         }
-        repo.deleteById(problemType.getId());
+
+        repo.delete(applicationArea);
     }
 
     @Override
-    public ProblemType findById(UUID id) {
+    public ApplicationArea findById(UUID id) {
         return repo.findById(id).orElseThrow(NoSuchElementException::new);
     }
 
     @Override
-    public ProblemType findByName(String name) {
+    public ApplicationArea findByName(String name) {
         return repo.findByName(name).orElseThrow(NoSuchElementException::new);
     }
 
     @Override
-    public Page<ProblemType> findAll(Pageable pageable) {
+    public Page<ApplicationArea> findAll(Pageable pageable) {
         return repo.findAll(pageable);
     }
-
-
 }
