@@ -30,6 +30,7 @@ import java.util.UUID;
 import org.planqk.atlas.core.model.AlgoRelationType;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
+import org.planqk.atlas.core.model.ApplicationArea;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
 import org.planqk.atlas.core.model.ComputationModel;
 import org.planqk.atlas.core.model.ProblemType;
@@ -453,8 +454,10 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
         algorithm.setSolution("testSolution");
         algorithm.setAssumptions("testAssumptions");
         algorithm.setComputationModel(ComputationModel.CLASSIC);
-        Set<String> applicationAreas = new HashSet<>();
-        applicationAreas.add("testApplicationArea");
+        Set<ApplicationArea> applicationAreas = new HashSet<>();
+        ApplicationArea applicationAreaTest = new ApplicationArea();
+        applicationAreaTest.setName("testApplicationArea");
+        applicationAreas.add(applicationAreaTest);
         algorithm.setApplicationAreas(applicationAreas);
         return algorithm;
     }

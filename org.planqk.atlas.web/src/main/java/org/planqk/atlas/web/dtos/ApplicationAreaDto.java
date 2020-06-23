@@ -32,7 +32,7 @@ import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY;
 
 @EqualsAndHashCode
 @Data
-public class ApplicationAreasDto {
+public class ApplicationAreaDto {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @Schema(accessMode = READ_ONLY)
     private UUID id;

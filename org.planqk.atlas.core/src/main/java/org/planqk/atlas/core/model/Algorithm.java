@@ -23,7 +23,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -81,14 +80,18 @@ public class Algorithm extends AlgorOrImpl {
     private Set<PatternRelation> relatedPatterns = new HashSet<>();
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinTable(name = "algorithm_problem_types",
+    @JoinTable(name = "algorithm_problem_type",
             joinColumns = @JoinColumn(name = "algorithm_id"),
             inverseJoinColumns = @JoinColumn(name = "problem_type_id"))
     @EqualsAndHashCode.Exclude
     private Set<ProblemType> problemTypes = new HashSet<>();
 
-    @ElementCollection
-    private Set<String> applicationAreas = new HashSet<>();
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "algorithm_application_area",
+            joinColumns = @JoinColumn(name = "algorithm_id"),
+            inverseJoinColumns = @JoinColumn(name = "application_area_id"))
+    @EqualsAndHashCode.Exclude
+    private Set<ApplicationArea> applicationAreas = new HashSet<>();
 
     @ManyToMany(cascade = {CascadeType.MERGE})
     @JoinTable(name = "algorithm_tag", joinColumns = @JoinColumn(name = "algorithm_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))

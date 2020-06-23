@@ -26,7 +26,7 @@ import javax.validation.Valid;
 import org.planqk.atlas.core.model.ApplicationArea;
 import org.planqk.atlas.core.services.ApplicationAreaService;
 import org.planqk.atlas.web.Constants;
-import org.planqk.atlas.web.dtos.ApplicationAreasDto;
+import org.planqk.atlas.web.dtos.ApplicationAreaDto;
 import org.planqk.atlas.web.linkassembler.ApplicationAreaAssembler;
 import org.planqk.atlas.web.utils.HateoasUtils;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
@@ -62,21 +62,21 @@ import org.springframework.web.bind.annotation.RestController;
 public class ApplicationAreaController {
 
     private ApplicationAreaService applicationAreaService;
-    private PagedResourcesAssembler<ApplicationAreasDto> paginationAssembler;
+    private PagedResourcesAssembler<ApplicationAreaDto> paginationAssembler;
     private ApplicationAreaAssembler applicationAreaAssembler;
 
     @Operation(responses = {@ApiResponse(responseCode = "201")})
     @PostMapping("/")
-    public HttpEntity<EntityModel<ApplicationAreasDto>> createApplicationArea(
-            @Valid @RequestBody ApplicationAreasDto applicationAreaDto) {
+    public HttpEntity<EntityModel<ApplicationAreaDto>> createApplicationArea(
+            @Valid @RequestBody ApplicationAreaDto applicationAreaDto) {
         // Convert DTO to Entity
         ApplicationArea entityInput = ModelMapperUtils.convert(applicationAreaDto, ApplicationArea.class);
         // Save Entity
         ApplicationArea savedApplicationArea = applicationAreaService.save(entityInput);
         // Convert Entity to DTO
-        ApplicationAreasDto dtoOutput = ModelMapperUtils.convert(savedApplicationArea, ApplicationAreasDto.class);
+        ApplicationAreaDto dtoOutput = ModelMapperUtils.convert(savedApplicationArea, ApplicationAreaDto.class);
         // Generate EntityModel
-        EntityModel<ApplicationAreasDto> entityDto = HateoasUtils.generateEntityModel(dtoOutput);
+        EntityModel<ApplicationAreaDto> entityDto = HateoasUtils.generateEntityModel(dtoOutput);
         // Add Links
         applicationAreaAssembler.addLinks(entityDto);
         return new ResponseEntity<>(entityDto, HttpStatus.CREATED);
@@ -84,16 +84,16 @@ public class ApplicationAreaController {
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
     @PutMapping("/{id}")
-    public HttpEntity<EntityModel<ApplicationAreasDto>> updateApplicationArea(@PathVariable UUID id,
-                                                                              @Valid @RequestBody ApplicationAreasDto applicationAreaDto) {
+    public HttpEntity<EntityModel<ApplicationAreaDto>> updateApplicationArea(@PathVariable UUID id,
+                                                                             @Valid @RequestBody ApplicationAreaDto applicationAreaDto) {
         // Convert DTO to Entity
         ApplicationArea entityInput = ModelMapperUtils.convert(applicationAreaDto, ApplicationArea.class);
         // Update Entity
         ApplicationArea updatedEntity = applicationAreaService.update(id, entityInput);
         // Convert Entity to DTO
-        ApplicationAreasDto dtoOutput = ModelMapperUtils.convert(updatedEntity, ApplicationAreasDto.class);
+        ApplicationAreaDto dtoOutput = ModelMapperUtils.convert(updatedEntity, ApplicationAreaDto.class);
         // Generate EntityModel
-        EntityModel<ApplicationAreasDto> entityDto = HateoasUtils.generateEntityModel(dtoOutput);
+        EntityModel<ApplicationAreaDto> entityDto = HateoasUtils.generateEntityModel(dtoOutput);
         // Add Links
         applicationAreaAssembler.addLinks(entityDto);
         return new ResponseEntity<>(entityDto, HttpStatus.OK);
@@ -101,7 +101,7 @@ public class ApplicationAreaController {
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
     @DeleteMapping("/{id}")
-    public HttpEntity<ApplicationAreasDto> deleteApplicationArea(@PathVariable UUID id) {
+    public HttpEntity<ApplicationAreaDto> deleteApplicationArea(@PathVariable UUID id) {
         ApplicationArea applicationArea = applicationAreaService.findById(id);
         applicationAreaService.delete(applicationArea);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -109,16 +109,16 @@ public class ApplicationAreaController {
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping("/")
-    public HttpEntity<PagedModel<EntityModel<ApplicationAreasDto>>> getApplicationAreas(
+    public HttpEntity<PagedModel<EntityModel<ApplicationAreaDto>>> getApplicationAreas(
             @RequestParam(required = false) Integer page, @RequestParam(required = false) Integer size) {
         // Generate Pageable
         Pageable p = RestUtils.getPageableFromRequestParams(page, size);
         // Get Entities using pagable
         Page<ApplicationArea> entities = applicationAreaService.findAll(p);
         // Convert to DTO-Pageable
-        Page<ApplicationAreasDto> dtos = ModelMapperUtils.convertPage(entities, ApplicationAreasDto.class);
+        Page<ApplicationAreaDto> dtos = ModelMapperUtils.convertPage(entities, ApplicationAreaDto.class);
         // Generate PagedModel with page links
-        PagedModel<EntityModel<ApplicationAreasDto>> pagedEntityOutput = paginationAssembler.toModel(dtos);
+        PagedModel<EntityModel<ApplicationAreaDto>> pagedEntityOutput = paginationAssembler.toModel(dtos);
         // Add DTO links
         applicationAreaAssembler.addLinks(pagedEntityOutput.getContent());
         return new ResponseEntity<>(pagedEntityOutput, HttpStatus.OK);
@@ -126,12 +126,12 @@ public class ApplicationAreaController {
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping("/{id}")
-    public HttpEntity<EntityModel<ApplicationAreasDto>> getApplicationAreaById(@PathVariable UUID id) {
+    public HttpEntity<EntityModel<ApplicationAreaDto>> getApplicationAreaById(@PathVariable UUID id) {
         ApplicationArea applicationArea = applicationAreaService.findById(id);
         // Convert Entity to DTO
-        ApplicationAreasDto dtoOutput = ModelMapperUtils.convert(applicationArea, ApplicationAreasDto.class);
+        ApplicationAreaDto dtoOutput = ModelMapperUtils.convert(applicationArea, ApplicationAreaDto.class);
         // Generate EntityModel
-        EntityModel<ApplicationAreasDto> entityDto = HateoasUtils.generateEntityModel(dtoOutput);
+        EntityModel<ApplicationAreaDto> entityDto = HateoasUtils.generateEntityModel(dtoOutput);
         // Add Links
         applicationAreaAssembler.addLinks(entityDto);
         return new ResponseEntity<>(entityDto, HttpStatus.OK);

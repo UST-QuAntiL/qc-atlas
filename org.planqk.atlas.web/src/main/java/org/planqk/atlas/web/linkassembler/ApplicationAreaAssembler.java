@@ -22,7 +22,7 @@ package org.planqk.atlas.web.linkassembler;
 import java.util.UUID;
 
 import org.planqk.atlas.web.controller.ApplicationAreaController;
-import org.planqk.atlas.web.dtos.ApplicationAreasDto;
+import org.planqk.atlas.web.dtos.ApplicationAreaDto;
 
 import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Component;
@@ -30,10 +30,10 @@ import org.springframework.stereotype.Component;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Component
-public class ApplicationAreaAssembler extends GenericLinkAssembler<ApplicationAreasDto> {
+public class ApplicationAreaAssembler extends GenericLinkAssembler<ApplicationAreaDto> {
 
     @Override
-    public void addLinks(EntityModel<ApplicationAreasDto> resource) {
+    public void addLinks(EntityModel<ApplicationAreaDto> resource) {
         resource.add(links.linkTo(methodOn(ApplicationAreaController.class).getApplicationAreaById(getId(resource))).withSelfRel());
         resource.add(
                 links.linkTo(methodOn(ApplicationAreaController.class).updateApplicationArea(getId(resource), getContent(resource)))
@@ -42,7 +42,7 @@ public class ApplicationAreaAssembler extends GenericLinkAssembler<ApplicationAr
                 links.linkTo(methodOn(ApplicationAreaController.class).deleteApplicationArea(getId(resource))).withRel("delete"));
     }
 
-    private UUID getId(EntityModel<ApplicationAreasDto> resource) {
+    private UUID getId(EntityModel<ApplicationAreaDto> resource) {
         return resource.getContent().getId();
     }
 }

@@ -28,11 +28,13 @@ import javax.validation.Valid;
 
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
+import org.planqk.atlas.core.model.ApplicationArea;
 import org.planqk.atlas.core.model.ComputingResource;
 import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.services.AlgorithmService;
+import org.planqk.atlas.core.services.ApplicationAreaService;
 import org.planqk.atlas.core.services.ComputingResourceService;
 import org.planqk.atlas.core.services.PatternRelationService;
 import org.planqk.atlas.core.services.ProblemTypeService;
@@ -40,12 +42,14 @@ import org.planqk.atlas.core.services.PublicationService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
+import org.planqk.atlas.web.dtos.ApplicationAreaDto;
 import org.planqk.atlas.web.dtos.ComputingResourceDto;
 import org.planqk.atlas.web.dtos.PatternRelationDto;
 import org.planqk.atlas.web.dtos.ProblemTypeDto;
 import org.planqk.atlas.web.dtos.PublicationDto;
 import org.planqk.atlas.web.linkassembler.AlgorithmAssembler;
 import org.planqk.atlas.web.linkassembler.AlgorithmRelationAssembler;
+import org.planqk.atlas.web.linkassembler.ApplicationAreaAssembler;
 import org.planqk.atlas.web.linkassembler.ComputingResourceAssembler;
 import org.planqk.atlas.web.linkassembler.PatternRelationAssembler;
 import org.planqk.atlas.web.linkassembler.ProblemTypeAssembler;
@@ -98,11 +102,13 @@ public class AlgorithmController {
     private final ComputingResourceService computingResourceService;
     private final PatternRelationService patternRelationService;
     private final ProblemTypeService problemTypeService;
+    private final ApplicationAreaService applicationAreaService;
     private final PublicationService publicationService;
 
     private final PagedResourcesAssembler<AlgorithmDto> algorithmPaginationAssembler;
     private final PagedResourcesAssembler<ComputingResourceDto> computingResourcePaginationAssembler;
     private final ProblemTypeAssembler problemTypeAssembler;
+    private final ApplicationAreaAssembler applicationAreaAssembler;
     //    private final TagAssembler tagAssembler;
     private final AlgorithmAssembler algorithmAssembler;
     private final AlgorithmRelationAssembler algorithmRelationAssembler;
@@ -319,18 +325,38 @@ public class AlgorithmController {
 
     @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Get the problem types for an algorithm")
     @GetMapping("/{algoId}/" + Constants.APPLICATION_AREAS)
-    public HttpEntity<CollectionModel<EntityModel<ProblemTypeDto>>> getApplicationAreas(@PathVariable UUID algoId) {
+    public HttpEntity<CollectionModel<EntityModel<ApplicationAreaDto>>> getApplicationAreas(@PathVariable UUID algoId) {
         Algorithm algorithm = algorithmService.findById(algoId);
         // Get ProblemTypes of Algorithm
-        Set<ProblemType> problemTypes = algorithm.getProblemTypes();
+        Set<ApplicationArea> applicationAreas = algorithm.getApplicationAreas();
         // Translate Entity to DTO
-        Set<ProblemTypeDto> dtoTypes = ModelMapperUtils.convertSet(problemTypes, ProblemTypeDto.class);
+        Set<ApplicationAreaDto> dtoTypes = ModelMapperUtils.convertSet(applicationAreas, ApplicationAreaDto.class);
         // Create CollectionModel
-        CollectionModel<EntityModel<ProblemTypeDto>> resultCollection = HateoasUtils.generateCollectionModel(dtoTypes);
+        CollectionModel<EntityModel<ApplicationAreaDto>> resultCollection = HateoasUtils.generateCollectionModel(dtoTypes);
         // Fill EntityModel Links
-        problemTypeAssembler.addLinks(resultCollection);
+        applicationAreaAssembler.addLinks(resultCollection);
         // Fill Collection-Links
-        algorithmAssembler.addProblemTypeLink(resultCollection, algoId);
+        algorithmAssembler.addApplicationAreaLink(resultCollection, algoId);
+        return new ResponseEntity<>(resultCollection, HttpStatus.OK);
+    }
+
+    @Operation(responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "404", description = "problem type or algorithm does not exists in the database")}, description = "Add a reference to an existing applicationArea (that was previously created via a POST on /application-area/. If the problemType doesn't exist yet, a 404 error is thrown.")
+    @PostMapping("/{algoId}/" + Constants.APPLICATION_AREAS)
+    public HttpEntity<CollectionModel<EntityModel<ProblemTypeDto>>> add(@PathVariable UUID algoId, @Valid @RequestBody ApplicationAreaDto applicationAreaDto) {
+        Algorithm algorithm = algorithmService.findById(algoId);
+        // access stored pattern relation -> if it does not exists, this throws a NoSuchElementException
+        ApplicationArea applicationArea = applicationAreaService.findById(applicationAreaDto.getId());
+        // Get ProblemTypes of Algorithm
+        Set<ApplicationArea> applicationAreas = algorithm.getApplicationAreas();
+        // add new problemtype
+        applicationAreas.add(applicationArea);
+        // update and return update list:
+        algorithm.setApplicationAreas(applicationAreas);
+        Set<ApplicationArea> updatedApplicationAreas = algorithmService.save(algorithm).getApplicationAreas();
+        Set<ApplicationAreaDto> dtos = ModelMapperUtils.convertSet(updatedApplicationAreas, ApplicationAreaDto.class);
+        CollectionModel<EntityModel<ApplicationAreaDto>> resultCollection = HateoasUtils.generateCollectionModel(dtos);
+        // Fill EntityModel Links
+        applicationAreaAssembler.addLinks(resultCollection);
         return new ResponseEntity<>(resultCollection, HttpStatus.OK);
     }
 
