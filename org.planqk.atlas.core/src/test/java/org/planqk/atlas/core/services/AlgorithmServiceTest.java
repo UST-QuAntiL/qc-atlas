@@ -181,7 +181,8 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
         assertThat(editedAlgorithm.getSolution()).isEqualTo(compareAlgorithm.getSolution());
         assertThat(editedAlgorithm.getAssumptions()).isEqualTo(compareAlgorithm.getAssumptions());
         assertThat(editedAlgorithm.getComputationModel()).isEqualTo(compareAlgorithm.getComputationModel());
-        assertThat(editedAlgorithm.getApplicationAreas()).isEqualTo(compareAlgorithm.getApplicationAreas());
+        // application areas now contains a reference to an algorithm, so check for the name: 
+        assertThat(editedAlgorithm.getApplicationAreas().iterator().next().getName()).isEqualTo(compareAlgorithm.getApplicationAreas().iterator().next().getName());
     }
 
     @Test
