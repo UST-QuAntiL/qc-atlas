@@ -19,8 +19,6 @@
 
 package org.planqk.atlas.web.controller;
 
-import java.util.HashSet;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -211,7 +209,7 @@ public class AlgorithmController {
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "404", content = @Content, description = "algorithm doesn't exist")},
+            @ApiResponse(responseCode = "404", content = @Content, description = "Algorithm doesn't exist")},
             description = "Get referenced publications for an algorithm")
     @GetMapping("/{algoId}/" + Constants.PUBLICATIONS)
     public HttpEntity<CollectionModel<EntityModel<PublicationDto>>> getPublications(@PathVariable UUID algoId) {
@@ -253,26 +251,31 @@ public class AlgorithmController {
         return new ResponseEntity<>(resultCollection, HttpStatus.OK);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200")},
-            description = "Update all references to existing publication (that were previously created via a POST on /publications/). The values (e.g. type) of each publication are not changes through this operation. If one of the publications doesn't exist yet, a 404 error is thrown.")
-    @PutMapping("/{algoId}/" + Constants.PUBLICATIONS)
-    public HttpEntity<CollectionModel<EntityModel<PublicationDto>>> updatePublications(@PathVariable UUID algoId, @Valid @RequestBody List<PublicationDto> publications) {
+    @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Get a specific referenced publication of an algorithm")
+    @GetMapping("/{algoId}/" + Constants.PUBLICATIONS + "/{publicationId}")
+    public HttpEntity<EntityModel<PublicationDto>> getPublication(@PathVariable UUID algoId, @PathVariable UUID publicationId) {
+        Publication publication = publicationService.findById(publicationId);
+        Set<Publication> publications = algorithmService.findById(algoId).getPublications();
+        if (!publications.contains(publication)) {
+            LOG.info("Trying to get Publication that is not referenced by the algorithm");
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        // Convert To EntityModel
+        EntityModel<PublicationDto> dtoOutput = HateoasUtils.generateEntityModel(ModelMapperUtils.convert(publication, PublicationDto.class));
+        // Fill EntityModel with links
+        publicationAssembler.addLinks(dtoOutput);
+        return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
+    }
+
+    @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Delete a reference to a Publication of the algorithm")
+    @DeleteMapping("/{algoId}/" + Constants.PUBLICATIONS + "/{publicationId}")
+    public HttpEntity<EntityModel<ProblemTypeDto>> deleteReferenceToPublication(@PathVariable UUID algoId, @PathVariable UUID publicationId) {
         Algorithm algorithm = algorithmService.findById(algoId);
-        // access publication in db to throw NoSuchElementException if it doesn't exist
-        Set<Publication> newPublications = new HashSet<>();
-        publications.forEach(publicationDto -> {
-            Publication publication = publicationService.findById(publicationDto.getId());
-            newPublications.add(publication);
-        });
-        // update and return update list:
-        algorithm.setPublications(newPublications);
-        Set<Publication> updatedPublications = algorithmService.save(algorithm).getPublications();
-        Set<PublicationDto> dtoPublications = ModelMapperUtils.convertSet(updatedPublications, PublicationDto.class);
-        // Create CollectionModel
-        CollectionModel<EntityModel<PublicationDto>> resultCollection = HateoasUtils.generateCollectionModel(dtoPublications);
-        // Fill EntityModel Links
-        publicationAssembler.addLinks(resultCollection);
-        return new ResponseEntity<>(resultCollection, HttpStatus.OK);
+        Set<Publication> publications = algorithm.getPublications();
+        publications.removeIf(publication -> publication.getId().equals(publicationId));
+        algorithm.setPublications(publications);
+        algorithmService.save(algorithm);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Get the problem types for an algorithm")
