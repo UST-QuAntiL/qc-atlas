@@ -26,11 +26,11 @@ import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Implementation;
-import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.core.services.ComputingResourceService;
 import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.core.services.PublicationService;
+import org.planqk.atlas.core.services.SoftwarePlatformService;
 import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
 import org.planqk.atlas.web.dtos.ImplementationDto;
 import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
@@ -82,6 +82,8 @@ public class ImplementationControllerTest {
     private ComputingResourceService computingResourceService;
     @MockBean
     private PublicationService publicationService;
+    @MockBean
+    private SoftwarePlatformService softwarePlatformService;
 
     @Autowired
     private MockMvc mockMvc;

@@ -10,10 +10,10 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * A software platform e.g. qiskit has a number of supported backends and a number of supported cloud services which
@@ -25,6 +25,7 @@ import lombok.Data;
 @Entity
 @Table(name = "software_platforms")
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class SoftwarePlatform extends HasId {
 
     private String name;
@@ -40,6 +41,7 @@ public class SoftwarePlatform extends HasId {
     @JoinTable(name = "software_platform_cloud_services", joinColumns = @JoinColumn(name = "software_platform_id"), inverseJoinColumns = @JoinColumn(name = "cloud_service_id"))
     private Set<CloudService> supportedCloudServices = new HashSet<>();
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "usedSoftwarePlatform", orphanRemoval = true)
+    @ManyToMany(mappedBy = "softwarePlatforms", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @EqualsAndHashCode.Exclude
     private Set<Implementation> implementations = new HashSet<>();
 }
