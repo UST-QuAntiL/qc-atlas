@@ -25,6 +25,7 @@ import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -71,8 +72,31 @@ public class Implementation extends AlgorOrImpl {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "implementation", orphanRemoval = true)
     private Set<ComputingResource> requiredComputingResources = new HashSet<>();
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    private SoftwarePlatform usedSoftwarePlatform;
+
     public Implementation() {
         super();
+    }
+
+    public Set<Publication> getPublications() {
+        return new HashSet<Publication>(publications);
+    }
+
+    public void addPublication(Publication publication) {
+        if (publications.contains(publication)) {
+            return;
+        }
+        publications.add(publication);
+        publication.addImplementation(this);
+    }
+
+    public void removePublication(Publication publication) {
+        if (!publications.contains(publication)) {
+            return;
+        }
+        publications.remove(publication);
+        publication.removeImplementation(this);
     }
 
 //    @NonNull

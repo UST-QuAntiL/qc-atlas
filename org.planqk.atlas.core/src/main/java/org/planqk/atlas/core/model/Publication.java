@@ -51,4 +51,48 @@ public class Publication extends KnowledgeArtifact {
     @ManyToMany(mappedBy = "publications", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @EqualsAndHashCode.Exclude
     private Set<Algorithm> algorithms = new HashSet<>();
+
+    @ManyToMany(mappedBy = "publications", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @EqualsAndHashCode.Exclude
+    private Set<Implementation> implementations = new HashSet<>();
+
+    public Set<Algorithm> getAlgorithms() {
+        return new HashSet<Algorithm>(algorithms);
+    }
+
+    public void addAlgorithm(Algorithm algorithm) {
+        if (algorithms.contains(algorithm)) {
+            return;
+        }
+        algorithms.add(algorithm);
+        algorithm.addPublication(this);
+    }
+
+    public void removeAlgorithm(Algorithm algorithm) {
+        if (!algorithms.contains(algorithm)) {
+            return;
+        }
+        algorithms.remove(algorithm);
+        algorithm.removePublication(this);
+    }
+
+    public Set<Implementation> getImplementations() {
+        return new HashSet<Implementation>(implementations);
+    }
+
+    public void addImplementation(Implementation implementation) {
+        if (implementations.contains(implementation)) {
+            return;
+        }
+        implementations.add(implementation);
+        implementation.addPublication(this);
+    }
+
+    public void removeImplementation(Implementation implementation) {
+        if (!implementations.contains(implementation)) {
+            return;
+        }
+        implementations.remove(implementation);
+        implementation.removePublication(this);
+    }
 }
