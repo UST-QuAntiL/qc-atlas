@@ -79,6 +79,26 @@ public class Implementation extends AlgorOrImpl {
         super();
     }
 
+    public Set<Publication> getPublications() {
+        return new HashSet<Publication>(publications);
+    }
+
+    public void addPublication(Publication publication) {
+        if (publications.contains(publication)) {
+            return;
+        }
+        publications.add(publication);
+        publication.addImplementation(this);
+    }
+
+    public void removePublication(Publication publication) {
+        if (!publications.contains(publication)) {
+            return;
+        }
+        publications.remove(publication);
+        publication.removeImplementation(this);
+    }
+
 //    @NonNull
 //    public Set<Tag> getTags() {
 //        if (Objects.isNull(tags)) {
