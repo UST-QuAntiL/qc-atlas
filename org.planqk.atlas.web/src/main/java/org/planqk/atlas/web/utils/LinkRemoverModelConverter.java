@@ -27,9 +27,7 @@ import io.swagger.v3.core.converter.ModelConverterContext;
 import io.swagger.v3.core.util.Json;
 import io.swagger.v3.oas.models.media.Schema;
 import lombok.RequiredArgsConstructor;
-import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.PagedModel;
+import org.springframework.hateoas.RepresentationModel;
 
 /**
  * Removes `_links` from CollectionModel, PagedModel, ...
@@ -46,17 +44,17 @@ public class LinkRemoverModelConverter implements ModelConverter {
         }
         if (type != null) {
             final var cls = type.getRawClass();
-            if (CollectionModel.class.isAssignableFrom(cls) ||
-                    PagedModel.class.isAssignableFrom(cls) ||
-                    EntityModel.class.isAssignableFrom(cls)) {
-                final var schema = chain.next().resolve(annotatedType, context, chain);
-                if (schema == null)
-                    return null;
-                if (schema.getProperties() == null) {
+            if (RepresentationModel.class.isAssignableFrom(cls)) {
+                if (annotatedType.isResolveAsRef()) {
                     // Call resolve() with resolveAsRef = false, so this method here is called again
                     // and we get to edit the type's real schema.
                     context.resolve(annotatedType.resolveAsRef(false));
-                } else {
+                    annotatedType.resolveAsRef(true);
+                }
+                final var schema = chain.next().resolve(annotatedType, context, chain);
+                if (schema == null)
+                    return null;
+                if (schema.getProperties() != null) {
                     schema.getProperties().remove("_links");
                 }
                 return schema;
