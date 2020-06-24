@@ -483,6 +483,7 @@ public class AlgorithmController {
             @RequestBody AlgorithmRelationDto relationDto
     ) {
         LOG.debug("Post to create algorithm relations received.");
+        algorithmService.findById(algoId);
         if (!relationDto.getSourceAlgorithm().getId().equals(algoId) && !relationDto.getTargetAlgorithm().getId().equals(algoId)) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }

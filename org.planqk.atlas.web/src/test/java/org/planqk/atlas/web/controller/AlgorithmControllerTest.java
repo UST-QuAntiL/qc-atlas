@@ -29,7 +29,6 @@ import java.util.UUID;
 import org.planqk.atlas.core.model.AlgoRelationType;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
-import org.planqk.atlas.core.model.ApplicationArea;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
 import org.planqk.atlas.core.model.ComputationModel;
 import org.planqk.atlas.core.model.ComputingResource;
@@ -411,9 +410,6 @@ public class AlgorithmControllerTest {
 
     @Test
     public void updateAlgorithmRelation_returnNotFound() throws Exception {
-        // Ignore annontations when writing Java objects to Json to enable writing WRITE_ONLY field which are required as input
-        mapper.configure(MapperFeature.USE_ANNOTATIONS, false);
-
         initializeAlgorithms();
         when(algoRelationService.findById(any(UUID.class))).thenThrow(new NoSuchElementException());
 
@@ -424,10 +420,17 @@ public class AlgorithmControllerTest {
     }
 
     @Test
-    public void updateAlgorithmRelation_returnAlgorithmRelation() throws Exception {
-        // Ignore annontations when writing Java objects to Json to enable writing WRITE_ONLY field which are required as input
-        mapper.configure(MapperFeature.USE_ANNOTATIONS, false);
+    public void addAlgorithmRelation_returnBadRequest() throws Exception {
+        initializeAlgorithms();
 
+        mockMvc.perform(post("/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS,
+                UUID.randomUUID()).content(mapper.writeValueAsString(algorithmRelation1Dto))
+                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void updateAlgorithmRelation_returnAlgorithmRelation() throws Exception {
         initializeAlgorithms();
         when(algoRelationService.findById(any(UUID.class))).thenReturn(algorithmRelation1);
         when(algoRelationService.save(any(AlgorithmRelation.class))).thenReturn(algorithmRelation1);
@@ -438,11 +441,10 @@ public class AlgorithmControllerTest {
                         .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
-        mapper.configure(MapperFeature.USE_ANNOTATIONS, true);
         EntityModel<AlgorithmRelationDto> response = mapper.readValue(result.getResponse().getContentAsString(),
                 new TypeReference<EntityModel<AlgorithmRelationDto>>() {
                 });
-        assertEquals(algorithmRelation1.getDescription(), response.getContent().getDescription());
+        assertEquals(algorithmRelation1.getSourceAlgorithm().getId(), response.getContent().getSourceAlgorithm().getId());
     }
 
 //    @Test
