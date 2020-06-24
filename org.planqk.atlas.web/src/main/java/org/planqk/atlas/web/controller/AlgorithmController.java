@@ -233,9 +233,8 @@ public class AlgorithmController {
     @PostMapping("/{algoId}/" + Constants.PUBLICATIONS)
     public HttpEntity<CollectionModel<EntityModel<PublicationDto>>> addPublication(@PathVariable UUID algoId, @RequestBody PublicationDto publicationDto) {
         Algorithm algorithm = algorithmService.findById(algoId);
-        Publication publication = ModelMapperUtils.convert(publicationDto, Publication.class);
         // access publication in db to throw NoSuchElementException if it doesn't exist
-        publicationService.findById(publication.getId());
+        Publication publication = publicationService.findById(publicationDto.getId());
         // Get ProblemTypes of Algorithm
         Set<Publication> publications = algorithm.getPublications();
         // add new problemtype
