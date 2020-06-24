@@ -56,7 +56,7 @@ public class BackendController {
     private PagedResourcesAssembler<BackendDto> paginationAssembler;
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
-    @GetMapping("/")
+    @GetMapping()
     public HttpEntity<PagedModel<EntityModel<BackendDto>>> getBackends(@RequestParam(required = false) Integer page,
                                                                        @RequestParam(required = false) Integer size) {
         LOG.debug("Get to retrieve all Backends received.");
@@ -67,7 +67,7 @@ public class BackendController {
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "201")})
-    @PostMapping("/")
+    @PostMapping()
     public HttpEntity<EntityModel<BackendDto>> createBackend(@Valid @RequestBody BackendDto backendDto) {
         LOG.debug("Post to add a single Backend received.");
         Backend backend = backendService.saveOrUpdate(ModelMapperUtils.convert(backendDto, Backend.class));

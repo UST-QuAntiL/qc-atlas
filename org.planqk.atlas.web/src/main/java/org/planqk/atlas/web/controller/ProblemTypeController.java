@@ -47,7 +47,7 @@ public class ProblemTypeController {
     private ProblemTypeAssembler problemTypeAssembler;
 
     @Operation(responses = { @ApiResponse(responseCode = "201") })
-    @PostMapping("/")
+    @PostMapping()
     public HttpEntity<EntityModel<ProblemTypeDto>> createProblemType(
             @Valid @RequestBody ProblemTypeDto problemTypeDto) {
         // Convert DTO to Entity
@@ -89,7 +89,7 @@ public class ProblemTypeController {
     }
 
     @Operation(responses = { @ApiResponse(responseCode = "200") })
-    @GetMapping("/")
+    @GetMapping()
     public HttpEntity<PagedModel<EntityModel<ProblemTypeDto>>> getProblemTypes(
             @RequestParam(required = false) Integer page, @RequestParam(required = false) Integer size) {
         // Generate Pageable

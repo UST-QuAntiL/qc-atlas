@@ -66,7 +66,7 @@ public class ApplicationAreaController {
     private ApplicationAreaAssembler applicationAreaAssembler;
 
     @Operation(responses = {@ApiResponse(responseCode = "201")})
-    @PostMapping("/")
+    @PostMapping()
     public HttpEntity<EntityModel<ApplicationAreaDto>> createApplicationArea(
             @Valid @RequestBody ApplicationAreaDto applicationAreaDto) {
         // Convert DTO to Entity
@@ -108,7 +108,7 @@ public class ApplicationAreaController {
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
-    @GetMapping("/")
+    @GetMapping()
     public HttpEntity<PagedModel<EntityModel<ApplicationAreaDto>>> getApplicationAreas(
             @RequestParam(required = false) Integer page, @RequestParam(required = false) Integer size) {
         // Generate Pageable

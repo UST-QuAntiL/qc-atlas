@@ -53,7 +53,7 @@ public class SoftwarePlatformController {
 
     @Operation(responses = { @ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", content = @Content),
             @ApiResponse(responseCode = "500", content = @Content) })
-    @GetMapping("/")
+    @GetMapping()
     public HttpEntity<PagedModel<EntityModel<SoftwarePlatformDto>>> getSoftwarePlatforms(@RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size) {
         Page<SoftwarePlatform> platforms = softwarePlatformService
@@ -77,7 +77,7 @@ public class SoftwarePlatformController {
 
     @Operation(responses = { @ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "400", content = @Content),
             @ApiResponse(responseCode = "500", content = @Content) })
-    @PostMapping("/")
+    @PostMapping()
     public HttpEntity<EntityModel<SoftwarePlatformDto>> addSoftwarePlatform(
             @Valid @RequestBody SoftwarePlatformDto platformDto) {
         SoftwarePlatform savedPlatform = softwarePlatformService
