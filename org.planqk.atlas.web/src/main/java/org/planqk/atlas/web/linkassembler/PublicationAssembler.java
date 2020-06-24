@@ -39,14 +39,14 @@ public class PublicationAssembler extends GenericLinkAssembler<PublicationDto> {
         resource.add(links.linkTo(methodOn(PublicationController.class).getPublication(this.getId(resource))).withSelfRel());
         resource.add(links.linkTo(methodOn(PublicationController.class).updatePublication(this.getId(resource), this.getContent(resource))).withRel("update"));
         resource.add(links.linkTo(methodOn(PublicationController.class).deletePublication(this.getId(resource))).withRel("delete"));
-        resource.add(links.linkTo(methodOn(PublicationController.class).getAlgorithms(this.getId(resource))).withRel(Constants.ALGORITHMS));
+//        resource.add(links.linkTo(methodOn(PublicationController.class).getAlgorithms(this.getId(resource))).withRel(Constants.ALGORITHMS));
     }
 
     private UUID getId(EntityModel<PublicationDto> resource) {
         return resource.getContent().getId();
     }
 
-    public void addAlgorithmLink(CollectionModel<EntityModel<AlgorithmDto>> ressources, UUID id) {
-        ressources.add(links.linkTo(methodOn(PublicationController.class).getAlgorithms(id)).withSelfRel());
-    }
+//    public void addAlgorithmLink(CollectionModel<EntityModel<AlgorithmDto>> ressources, UUID id) {
+//        ressources.add(links.linkTo(methodOn(PublicationController.class).getAlgorithms(id)).withSelfRel());
+//    }
 }
