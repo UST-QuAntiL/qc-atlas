@@ -106,7 +106,7 @@ public class PublicationController {
     @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400"), @ApiResponse(responseCode = "404")})
     @PutMapping("/{id}")
     public HttpEntity<EntityModel<PublicationDto>> updatePublication(@PathVariable UUID id, @Validated @RequestBody PublicationDto pub) {
-        log.debug("Put to update algorithm with id: {}", id);
+        log.debug("Put to update publication with id: {}", id);
         Publication publication = publicationService.update(id, ModelMapperUtils.convert(pub, Publication.class));
         EntityModel<PublicationDto> dtoEntityModel = HateoasUtils.generateEntityModel(ModelMapperUtils.convert(publication, PublicationDto.class));
         publicationAssembler.addLinks(dtoEntityModel);
@@ -116,7 +116,9 @@ public class PublicationController {
     @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400"), @ApiResponse(responseCode = "404")})
     @DeleteMapping("/{id}")
     public HttpEntity<AlgorithmDto> deletePublication(@PathVariable UUID id) {
-        log.debug("Delete to remove algorithm with id: {}", id);
+        log.debug("Delete to remove publication with id: {}", id);
+        Publication publication = publicationService.findById(id);
+        publication.getAlgorithms().forEach(algorithm -> algorithm.removePublication(publication));
         publicationService.deleteById(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }

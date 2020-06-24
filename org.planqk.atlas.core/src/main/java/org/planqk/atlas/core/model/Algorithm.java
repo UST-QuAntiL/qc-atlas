@@ -121,6 +121,26 @@ public class Algorithm extends AlgorOrImpl {
         this.requiredComputingResources.add(resource);
     }
 
+    public Set<Publication> getPublications() {
+        return new HashSet<Publication>(publications);
+    }
+
+    public void addPublication(Publication publication) {
+        if (publications.contains(publication)) {
+            return;
+        }
+        publications.add(publication);
+        publication.addAlgorithm(this);
+    }
+
+    public void removePublication(Publication publication) {
+        if (!publications.contains(publication)) {
+            return;
+        }
+        publications.remove(publication);
+        publication.removeAlgorithm(this);
+    }
+
     public Set<ApplicationArea> getApplicationAreas() {
         return new HashSet<ApplicationArea>(applicationAreas);
     }
