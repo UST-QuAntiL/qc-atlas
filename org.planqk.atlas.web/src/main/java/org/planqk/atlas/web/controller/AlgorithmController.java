@@ -431,7 +431,7 @@ public class AlgorithmController {
 
         // always use current state of this algorithm/pattern type and do not overwrite when saving relations
         Algorithm algorithm = algorithmService.findById(algoId);
-        PatternRelationType patternRelationType = patternRelationTypeService.findById(relationDto.getId());
+        PatternRelationType patternRelationType = patternRelationTypeService.findById(relationDto.getPatternRelationType().getId());
         relationDto.setAlgorithm(ModelMapperUtils.convert(algorithm, AlgorithmDto.class));
         relationDto.setPatternRelationType(ModelMapperUtils.convert(patternRelationType, PatternRelationTypeDto.class));
 
@@ -471,7 +471,7 @@ public class AlgorithmController {
 
         // always use current state of this algorithm/pattern type and do not overwrite when saving relations
         Algorithm algorithm = algorithmService.findById(algoId);
-        PatternRelationType patternRelationType = patternRelationTypeService.findById(relationDto.getId());
+        PatternRelationType patternRelationType = patternRelationTypeService.findById(relationDto.getPatternRelationType().getId());
         relationDto.setAlgorithm(ModelMapperUtils.convert(algorithm, AlgorithmDto.class));
         relationDto.setPatternRelationType(ModelMapperUtils.convert(patternRelationType, PatternRelationTypeDto.class));
 
