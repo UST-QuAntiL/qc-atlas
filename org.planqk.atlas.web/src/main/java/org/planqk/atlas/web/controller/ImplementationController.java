@@ -237,7 +237,7 @@ public class ImplementationController {
         Implementation implementation = implementationService.findById(implId);
         Publication publication = publicationService.findById(publicationDto.getId());
 
-        // update publication rerference list of implementation
+        // update publication reference list of implementation
         Set<Publication> publications = implementation.getPublications();
         publications.add(publication);
         implementation.setPublications(publications);

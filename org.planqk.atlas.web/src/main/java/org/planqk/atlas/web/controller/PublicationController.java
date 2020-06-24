@@ -119,6 +119,7 @@ public class PublicationController {
         log.debug("Delete to remove publication with id: {}", id);
         Publication publication = publicationService.findById(id);
         publication.getAlgorithms().forEach(algorithm -> algorithm.removePublication(publication));
+        publication.getImplementations().forEach(implementation -> implementation.removePublication(publication));
         publicationService.deleteById(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
