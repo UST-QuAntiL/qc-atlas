@@ -116,14 +116,14 @@ public class PatternRelationController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    protected EntityModel<PatternRelationDto> handlePatternRelationUpdate(PatternRelationDto relationDto, UUID relationId) {
+    private EntityModel<PatternRelationDto> handlePatternRelationUpdate(PatternRelationDto relationDto, UUID relationId) {
         PatternRelation patternRelation = new PatternRelation();
         if (Objects.nonNull(relationId)) {
             patternRelation.setId(relationId);
         }
 
         // Convert Dto to PatternRelation by using content from the database
-        Algorithm algorithm = algorithmService.findById(relationDto.getAlgorithmId());
+        Algorithm algorithm = algorithmService.findById(relationDto.getAlgorithm().getId());
         PatternRelationType patternRelationType = patternRelationTypeService.findById(relationDto.getPatternRelationType().getId());
         patternRelation.setAlgorithm(algorithm);
         patternRelation.setPattern(relationDto.getPattern());

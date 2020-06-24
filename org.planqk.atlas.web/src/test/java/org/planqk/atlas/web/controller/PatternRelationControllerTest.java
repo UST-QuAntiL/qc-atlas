@@ -154,9 +154,7 @@ public class PatternRelationControllerTest {
         missingReqParamRelation = new PatternRelation();
 
         relation1Dto = ModelMapperUtils.convert(relation1, PatternRelationDto.class);
-        relation1Dto.setAlgorithmId(algorithm1.getId());
         relation2Dto = ModelMapperUtils.convert(relation2, PatternRelationDto.class);
-        relation2Dto.setAlgorithmId(algorithm2.getId());
         missingReqParamRelationDto = ModelMapperUtils.convert(missingReqParamRelation, PatternRelationDto.class);
         relationUpdatedDto = ModelMapperUtils.convert(relationUpdated, PatternRelationDto.class);
 
