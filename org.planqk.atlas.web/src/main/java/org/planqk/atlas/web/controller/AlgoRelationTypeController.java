@@ -47,7 +47,7 @@ public class AlgoRelationTypeController {
     private AlgoRelationTypeAssembler algoRelationTypeAssembler;
 
     @Operation(responses = { @ApiResponse(responseCode = "201") })
-    @PostMapping("/")
+    @PostMapping()
     public HttpEntity<EntityModel<AlgoRelationTypeDto>> createAlgoRelationType(
             @Valid @RequestBody AlgoRelationTypeDto algoRelationTypeDto) {
         // Convert DTO to entity
@@ -87,7 +87,7 @@ public class AlgoRelationTypeController {
     }
 
     @Operation(responses = { @ApiResponse(responseCode = "200") })
-    @GetMapping("/")
+    @GetMapping()
     public HttpEntity<PagedModel<EntityModel<AlgoRelationTypeDto>>> getAlgoRelationTypes(
             @RequestParam(required = false) Integer page, @RequestParam(required = false) Integer size) {
         // Generate pageable

@@ -51,7 +51,7 @@ public class PatternRelationTypeController {
     private PatternRelationTypeAssembler patternRelationTypeAssembler;
 
     @Operation(responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "400")})
-    @PostMapping("/")
+    @PostMapping()
     public HttpEntity<EntityModel<PatternRelationTypeDto>> createPatternRelationType(
             @Valid @RequestBody PatternRelationTypeDto typeDto) {
         LOG.debug("Post to create new PatternRelationTypes received.");
@@ -67,7 +67,7 @@ public class PatternRelationTypeController {
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
-    @GetMapping("/")
+    @GetMapping()
     public HttpEntity<PagedModel<EntityModel<PatternRelationTypeDto>>> getPatternRelationTypes(
             @RequestParam(required = false) Integer page, @RequestParam(required = false) Integer size) {
         LOG.debug("Get to retrieve all PatternRelationTypes received.");

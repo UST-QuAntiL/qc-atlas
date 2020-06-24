@@ -83,7 +83,7 @@ public class ComputingResourceTypeController {
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
-    @GetMapping("/")
+    @GetMapping()
     public ResponseEntity<PagedModel<EntityModel<ComputingResourceTypeDto>>> getResourceTypes(
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size
