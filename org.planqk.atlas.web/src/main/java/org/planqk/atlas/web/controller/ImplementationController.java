@@ -253,8 +253,9 @@ public class ImplementationController {
     @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Get a specific referenced publication of an implementation")
     @GetMapping("/{implId}/" + Constants.PUBLICATIONS + "/{publicationId}")
     public HttpEntity<EntityModel<PublicationDto>> getPublication(@PathVariable UUID implId, @PathVariable UUID publicationId) {
+        LOG.debug("Get to retrieve referenced publication with Id {} from implementation with Id {}", publicationId, implId);
         Publication publication = publicationService.findById(publicationId);
-        Set<Publication> publications = algorithmService.findById(implId).getPublications();
+        Set<Publication> publications = implementationService.findById(implId).getPublications();
         if (!publications.contains(publication)) {
             LOG.info("Trying to get Publication that is not referenced by the implementation");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
