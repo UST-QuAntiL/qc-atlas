@@ -18,10 +18,8 @@
  *******************************************************************************/
 package org.planqk.atlas.web.controller;
 
-import java.util.Set;
 import java.util.UUID;
 
-import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.services.PublicationService;
 import org.planqk.atlas.web.Constants;
@@ -40,7 +38,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpEntity;
@@ -124,17 +121,17 @@ public class PublicationController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400"), @ApiResponse(responseCode = "404")})
-    @GetMapping("/{id}/" + Constants.ALGORITHMS)
-    public HttpEntity<CollectionModel<EntityModel<AlgorithmDto>>> getAlgorithms(@PathVariable UUID id) {
-        log.debug("Get algorithms of Publication with id {}", id);
-        Set<Algorithm> algorithms = publicationService.findPublicationAlgorithms(id);
-        Set<AlgorithmDto> algorithmDtos = ModelMapperUtils.convertSet(algorithms, AlgorithmDto.class);
-        CollectionModel<EntityModel<AlgorithmDto>> resultCollection = HateoasUtils.generateCollectionModel(algorithmDtos);
-        algorithmAssembler.addLinks(resultCollection);
-        publicationAssembler.addAlgorithmLink(resultCollection, id);
-        return new ResponseEntity<>(resultCollection, HttpStatus.OK);
-    }
+//    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400"), @ApiResponse(responseCode = "404")})
+//    @GetMapping("/{id}/" + Constants.ALGORITHMS)
+//    public HttpEntity<CollectionModel<EntityModel<AlgorithmDto>>> getAlgorithms(@PathVariable UUID id) {
+//        log.debug("Get algorithms of Publication with id {}", id);
+//        Set<Algorithm> algorithms = publicationService.findPublicationAlgorithms(id);
+//        Set<AlgorithmDto> algorithmDtos = ModelMapperUtils.convertSet(algorithms, AlgorithmDto.class);
+//        CollectionModel<EntityModel<AlgorithmDto>> resultCollection = HateoasUtils.generateCollectionModel(algorithmDtos);
+//        algorithmAssembler.addLinks(resultCollection);
+//        publicationAssembler.addAlgorithmLink(resultCollection, id);
+//        return new ResponseEntity<>(resultCollection, HttpStatus.OK);
+//    }
 }
 
 
