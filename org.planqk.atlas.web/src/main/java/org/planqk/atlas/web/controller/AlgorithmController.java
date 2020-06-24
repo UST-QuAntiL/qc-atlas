@@ -585,6 +585,7 @@ public class AlgorithmController {
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size
     ) {
+        algorithmService.findById(algoId);
         var resources = computingResourceService.findAllResourcesByAlgorithmId(algoId, RestUtils.getPageableFromRequestParams(page, size));
         var typeDtoes = ModelMapperUtils.convertPage(resources, ComputingResourceDto.class);
         var pagedModel = computingResourcePaginationAssembler.toModel(typeDtoes);
@@ -594,24 +595,54 @@ public class AlgorithmController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404")
+            @ApiResponse(responseCode = "400", description = "Id of the passed computing resource type is null"),
+            @ApiResponse(responseCode = "404", description = "Computing resource type  or algorithm can not be found with the given Ids")
     }, description = "Add a computing resource (e.g. a certain number of qubits) that is requiered by an algorithm")
     @PostMapping("/{algoId}/" + Constants.COMPUTING_RESOURCES)
-    public ResponseEntity<EntityModel<AlgorithmDto>> addComputingResource(
+    public ResponseEntity<EntityModel<ComputingResourceDto>> addComputingResource(
             @PathVariable UUID algoId,
             @Valid @RequestBody ComputingResourceDto resourceDto
     ) {
         var algorithm = algorithmService.findById(algoId);
+
+        if (Objects.isNull(resourceDto.getType().getId())) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        computingResourceService.findResourceTypeById(resourceDto.getType().getId());
         var resource = ModelMapperUtils.convert(resourceDto, ComputingResource.class);
-        var updatedAlgorithm = computingResourceService.addComputingResourceToAlgorithm(
+        var updatedComputeResource = computingResourceService.addComputingResourceToAlgorithm(
                 algorithm,
                 resource
         );
-        EntityModel<AlgorithmDto> algoDto = HateoasUtils.generateEntityModel(
-                ModelMapperUtils.convert(updatedAlgorithm, AlgorithmDto.class));
-        algorithmAssembler.addLinks(algoDto);
-        return ResponseEntity.ok(algoDto);
+        EntityModel<ComputingResourceDto> dto = HateoasUtils.generateEntityModel(
+                ModelMapperUtils.convert(updatedComputeResource, ComputingResourceDto.class));
+        return ResponseEntity.ok(dto);
+    }
+
+    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400", description = "Resource doesn't belong to this algorithm"), @ApiResponse(responseCode = "404")})
+    @GetMapping("/{algoId}/" + Constants.COMPUTING_RESOURCES + "/{resourceId}")
+    public HttpEntity<EntityModel<ComputingResourceDto>> getComputingResource(
+            @PathVariable UUID algoId, @PathVariable UUID resourceId) {
+        ComputingResource computingResource = computingResourceService.findResourceById(resourceId);
+        if (!Objects.isNull(computingResource.getAlgorithm()) || !computingResource.getAlgorithm().getId().equals(algoId)) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        EntityModel<ComputingResourceDto> dtoOutput = HateoasUtils.generateEntityModel(ModelMapperUtils.convert(computingResource, ComputingResourceDto.class));
+        return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
+    }
+
+    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400")}, description = "Delete a computing resource of the algorithm")
+    @DeleteMapping("/{algoId}/" + Constants.COMPUTING_RESOURCES + "/{resourceId}")
+    public HttpEntity<AlgorithmRelationDto> deleteComputingResource(@PathVariable UUID algoId,
+                                                                    @PathVariable UUID resourceId) {
+        LOG.debug("Delete received to remove computing resource with id {}.", resourceId);
+        ComputingResource computingResource = computingResourceService.findResourceById(resourceId);
+        if (!Objects.isNull(computingResource.getAlgorithm()) || !computingResource.getAlgorithm().getId().equals(algoId)) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        computingResourceService.deleteComputingResource(resourceId);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     private EntityModel<AlgorithmRelationDto> handleRelationUpdate(AlgorithmRelationDto relationDto, UUID relationId) {
