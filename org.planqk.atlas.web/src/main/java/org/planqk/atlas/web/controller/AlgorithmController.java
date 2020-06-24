@@ -126,7 +126,7 @@ public class AlgorithmController {
     private final PatternRelationAssembler patternRelationAssembler;
 
     @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Retrieve all algorithms (quantum, hybrid and classic)")
-    @GetMapping("/")
+    @GetMapping()
     public HttpEntity<PagedModel<EntityModel<AlgorithmDto>>> getAlgorithms(@RequestParam(required = false) Integer page,
                                                                            @RequestParam(required = false) Integer size) {
         LOG.debug("Get to retrieve all algorithms received.");
@@ -141,7 +141,7 @@ public class AlgorithmController {
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "201")}, description = "Define the basic properties of an algorithm. References to subobjects (e.g. a problemtype) can be added via subroutes (e.g. /algorithm/id/problem-types)")
-    @PostMapping("/")
+    @PostMapping()
     public HttpEntity<EntityModel<AlgorithmDto>> createAlgorithm(@Valid @RequestBody AlgorithmDto algo) {
         LOG.debug("Post to create new algorithm received.");
         // store and return algorithm
@@ -434,7 +434,7 @@ public class AlgorithmController {
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400", description = "PatternRelation doesn't belong to this algorithm"), @ApiResponse(responseCode = "404")}, description = "Get a certain pattern relation for an algorithm.")
-    @GetMapping("/{algoId}/" + Constants.PATTERN_RELATIONS + "/{relationId}/")
+    @GetMapping("/{algoId}/" + Constants.PATTERN_RELATIONS + "/{relationId}")
     public HttpEntity<EntityModel<PatternRelationDto>> getPatternRelation(@PathVariable UUID algoId, @PathVariable UUID relationId) {
         LOG.debug("Get to retrieve PatternRelation with Id {} received.", relationId);
         PatternRelation patternRelation = patternRelationService.findById(relationId);

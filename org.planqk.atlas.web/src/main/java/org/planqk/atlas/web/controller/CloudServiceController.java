@@ -49,7 +49,7 @@ public class CloudServiceController {
 
     @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", content = @Content),
             @ApiResponse(responseCode = "500", content = @Content)})
-    @GetMapping("/")
+    @GetMapping()
     public HttpEntity<PagedModel<EntityModel<CloudServiceDto>>> getCloudServices(@RequestParam(required = false) Integer page,
                                                                                  @RequestParam(required = false) Integer size) {
         Page<CloudService> cloudServices = cloudServiceService
@@ -73,7 +73,7 @@ public class CloudServiceController {
 
     @Operation(responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "400", content = @Content),
             @ApiResponse(responseCode = "500", content = @Content)})
-    @PostMapping("/")
+    @PostMapping()
     public HttpEntity<EntityModel<CloudServiceDto>> addCloudService(
             @Valid @RequestBody CloudServiceDto cloudServiceDto) {
         CloudService savedCloudService = cloudServiceService

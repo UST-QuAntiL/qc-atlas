@@ -87,7 +87,7 @@ public class ImplementationController {
 //    private TagAssembler tagAssembler;
 
     @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Retrieve all implementations for the algorithm")
-    @GetMapping("/")
+    @GetMapping()
     public HttpEntity<CollectionModel<EntityModel<ImplementationDto>>> getImplementations(@PathVariable UUID algoId) {
         LOG.debug("Get to retrieve all implementations of algorithm with Id {} received.", algoId);
         Set<ImplementationDto> dtoList = new HashSet<ImplementationDto>();
@@ -119,7 +119,7 @@ public class ImplementationController {
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "201")}, description = "Create a new implementation for the algorithm")
-    @PostMapping("/")
+    @PostMapping()
     public HttpEntity<EntityModel<ImplementationDto>> createImplementation(@PathVariable UUID algoId, @Valid @RequestBody ImplementationDto impl) {
         LOG.debug("Post to create new implementation received.");
         // Get Algorithm

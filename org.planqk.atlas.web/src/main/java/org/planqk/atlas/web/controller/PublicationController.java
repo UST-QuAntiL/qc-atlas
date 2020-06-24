@@ -72,7 +72,7 @@ public class PublicationController {
     private PagedResourcesAssembler<PublicationDto> paginationAssembler;
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
-    @GetMapping("/")
+    @GetMapping()
     public HttpEntity<PagedModel<EntityModel<PublicationDto>>> getPublications(@RequestParam(required = false) Integer page,
                                                                                @RequestParam(required = false) Integer size) {
         log.debug("Get all publications");
@@ -84,7 +84,7 @@ public class PublicationController {
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "400"), @ApiResponse(responseCode = "404")})
-    @PostMapping("/")
+    @PostMapping()
     public HttpEntity<EntityModel<PublicationDto>> createPublication(@Validated @RequestBody PublicationDto publicationDto) {
         log.debug("Create publication");
         Publication publication = publicationService.save(ModelMapperUtils.convert(publicationDto, Publication.class));

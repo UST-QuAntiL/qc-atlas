@@ -78,7 +78,7 @@ public class DiscussionTopicController {
     private DiscussionCommentController discussionCommentController;
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
-    @GetMapping("/")
+    @GetMapping()
     public HttpEntity<PagedModel<EntityModel<DiscussionTopicDto>>> getDiscussionTopics(@RequestParam(required = false) Integer page,
                                                                                        @RequestParam(required = false) Integer size) {
         log.debug("Received request to retrieve all DiscussionTopics");
@@ -110,7 +110,7 @@ public class DiscussionTopicController {
 
     @Operation(responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "400", content = @Content),
             @ApiResponse(responseCode = "404")})
-    @PostMapping("/")
+    @PostMapping()
     public HttpEntity<EntityModel<DiscussionTopicDto>> createDiscussionTopic(
             @Valid @RequestBody DiscussionTopicDto discussionTopicDto) {
 
