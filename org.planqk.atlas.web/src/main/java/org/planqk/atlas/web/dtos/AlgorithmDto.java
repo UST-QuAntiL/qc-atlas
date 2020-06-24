@@ -25,6 +25,7 @@ import java.util.UUID;
 
 import javax.validation.constraints.NotNull;
 
+import org.planqk.atlas.core.model.ApplicationArea;
 import org.planqk.atlas.core.model.ComputationModel;
 import org.planqk.atlas.core.model.Sketch;
 
@@ -79,6 +80,8 @@ public class AlgorithmDto {
     @Schema(accessMode = READ_ONLY)
     private Set<ProblemTypeDto> problemTypes = new HashSet<>();
 
-    private Set<String> applicationAreas = new HashSet<>();
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @Schema(accessMode = READ_ONLY)
+    private Set<ApplicationArea> applicationAreas = new HashSet<>();
 
 }
