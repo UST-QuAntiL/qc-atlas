@@ -237,7 +237,7 @@ public class AlgorithmController {
         Publication publication = publicationService.findById(publicationDto.getId());
         // Get ProblemTypes of Algorithm
         Set<Publication> publications = algorithm.getPublications();
-        // add new problemtype
+        // add new publication reference
         publications.add(publication);
         // update and return update list:
         algorithm.setPublications(publications);

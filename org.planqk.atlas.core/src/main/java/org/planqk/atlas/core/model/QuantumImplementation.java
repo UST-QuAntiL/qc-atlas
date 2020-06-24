@@ -21,10 +21,4 @@ public class QuantumImplementation extends Implementation {
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private QuantumAlgorithm algorithm;
-
-    @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
-    private Set<ComputingResource> requiredComputingResources;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    private SoftwarePlatform usedSoftwarePlatform;
 }
