@@ -44,7 +44,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class RootController {
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
-    @GetMapping()
+    @GetMapping("/")
     public HttpEntity<RepresentationModel<?>> root() {
         // EntityModel can unfortunately not be used here because it requires non null content
         // OpenAPI does not care about ? in this case because we only provide links anyway
