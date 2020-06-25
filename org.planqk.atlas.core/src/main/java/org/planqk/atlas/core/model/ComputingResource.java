@@ -20,7 +20,6 @@
 package org.planqk.atlas.core.model;
 
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -29,7 +28,6 @@ import javax.persistence.ManyToOne;
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
 import static lombok.EqualsAndHashCode.Exclude;
@@ -55,7 +53,5 @@ public class ComputingResource extends HasId {
     @Exclude
     private Backend backend;
 
-    @Type(type = "jsonb")
-    @Column(columnDefinition = "jsonb")
-    private Object value;
+    private String value;
 }
