@@ -87,6 +87,7 @@ public class ProblemTypeController {
     @DeleteMapping("/{id}")
     public HttpEntity<ProblemTypeDto> deleteProblemType(@PathVariable UUID id) {
         ProblemType problemType = problemTypeService.findById(id);
+        problemType.getAlgorithms().forEach(algorithm -> algorithm.removeProblemType(problemType));
         problemTypeService.delete(problemType);
         return new ResponseEntity<>(HttpStatus.OK);
     }

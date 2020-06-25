@@ -103,6 +103,7 @@ public class ApplicationAreaController {
     @DeleteMapping("/{id}")
     public HttpEntity<ApplicationAreaDto> deleteApplicationArea(@PathVariable UUID id) {
         ApplicationArea applicationArea = applicationAreaService.findById(id);
+        applicationArea.getAlgorithms().forEach(algorithm -> algorithm.removeApplicationArea(applicationArea));
         applicationAreaService.delete(applicationArea);
         return new ResponseEntity<>(HttpStatus.OK);
     }

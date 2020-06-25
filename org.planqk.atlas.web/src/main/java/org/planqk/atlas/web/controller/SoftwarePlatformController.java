@@ -104,7 +104,8 @@ public class SoftwarePlatformController {
             @ApiResponse(responseCode = "404", description = "Software platform with given id doesn't exist")})
     @DeleteMapping("/{id}")
     public HttpEntity<SoftwarePlatformDto> deleteSoftwarePlatform(@PathVariable UUID id) {
-        softwarePlatformService.findById(id);
+        SoftwarePlatform softwarePlatform = softwarePlatformService.findById(id);
+        softwarePlatform.getImplementations().forEach(implementation -> implementation.removeSoftwarePlatform(softwarePlatform));
         softwarePlatformService.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }

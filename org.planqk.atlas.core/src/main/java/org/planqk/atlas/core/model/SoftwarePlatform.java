@@ -44,4 +44,24 @@ public class SoftwarePlatform extends HasId {
     @ManyToMany(mappedBy = "softwarePlatforms", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @EqualsAndHashCode.Exclude
     private Set<Implementation> implementations = new HashSet<>();
+
+    public Set<Implementation> getImplementations() {
+        return new HashSet<Implementation>(implementations);
+    }
+
+    public void addImplementation(Implementation implementation) {
+        if (implementations.contains(implementation)) {
+            return;
+        }
+        implementations.add(implementation);
+        implementation.addSoftwarePlatform(this);
+    }
+
+    public void removeImplementation(Implementation implementation) {
+        if (!implementations.contains(implementation)) {
+            return;
+        }
+        implementations.remove(implementation);
+        implementation.removeSoftwarePlatform(this);
+    }
 }
