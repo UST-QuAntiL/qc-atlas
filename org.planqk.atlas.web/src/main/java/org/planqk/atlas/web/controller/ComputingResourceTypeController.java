@@ -91,7 +91,7 @@ public class ComputingResourceTypeController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200")})
+    @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Custom ID will be ignored.")
     @PutMapping("/{id}")
     public HttpEntity<EntityModel<ComputingResourceTypeDto>> updateComputingResourceType(@PathVariable UUID id,
                                                                                          @Valid @RequestBody ComputingResourceTypeDto computingResourceTypeDto) {
@@ -117,7 +117,7 @@ public class ComputingResourceTypeController {
         return ResponseEntity.ok(pagedModel);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "201")})
+    @Operation(responses = {@ApiResponse(responseCode = "201")}, description = "Custom ID will be ignored.")
     @PostMapping()
     public HttpEntity<EntityModel<ComputingResourceTypeDto>> createResourceTypeType(
             @Valid @RequestBody ComputingResourceTypeDto resourceTypeDto) {

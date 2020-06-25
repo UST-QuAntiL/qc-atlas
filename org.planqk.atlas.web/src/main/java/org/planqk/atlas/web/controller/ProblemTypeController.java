@@ -46,7 +46,7 @@ public class ProblemTypeController {
     private PagedResourcesAssembler<ProblemTypeDto> paginationAssembler;
     private ProblemTypeAssembler problemTypeAssembler;
 
-    @Operation(responses = {@ApiResponse(responseCode = "201")})
+    @Operation(responses = {@ApiResponse(responseCode = "201")}, description = "Custom ID will be ignored.")
     @PostMapping()
     public HttpEntity<EntityModel<ProblemTypeDto>> createProblemType(
             @Valid @RequestBody ProblemTypeDto problemTypeDto) {
@@ -63,7 +63,7 @@ public class ProblemTypeController {
         return new ResponseEntity<>(entityDto, HttpStatus.CREATED);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200")})
+    @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Custom ID will be ignored.")
     @PutMapping("/{id}")
     public HttpEntity<EntityModel<ProblemTypeDto>> updateProblemType(@PathVariable UUID id,
                                                                      @Valid @RequestBody ProblemTypeDto problemTypeDto) {

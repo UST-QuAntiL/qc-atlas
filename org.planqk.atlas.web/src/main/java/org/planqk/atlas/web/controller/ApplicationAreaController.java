@@ -65,7 +65,7 @@ public class ApplicationAreaController {
     private PagedResourcesAssembler<ApplicationAreaDto> paginationAssembler;
     private ApplicationAreaAssembler applicationAreaAssembler;
 
-    @Operation(responses = {@ApiResponse(responseCode = "201")})
+    @Operation(responses = {@ApiResponse(responseCode = "201")}, description = "Custom ID will be ignored.")
     @PostMapping()
     public HttpEntity<EntityModel<ApplicationAreaDto>> createApplicationArea(
             @Valid @RequestBody ApplicationAreaDto applicationAreaDto) {
@@ -82,7 +82,7 @@ public class ApplicationAreaController {
         return new ResponseEntity<>(entityDto, HttpStatus.CREATED);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200")})
+    @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Custom ID will be ignored.")
     @PutMapping("/{id}")
     public HttpEntity<EntityModel<ApplicationAreaDto>> updateApplicationArea(@PathVariable UUID id,
                                                                              @Valid @RequestBody ApplicationAreaDto applicationAreaDto) {

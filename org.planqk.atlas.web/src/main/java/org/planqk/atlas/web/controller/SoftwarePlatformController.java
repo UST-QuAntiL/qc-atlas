@@ -76,7 +76,7 @@ public class SoftwarePlatformController {
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "400", content = @Content),
-            @ApiResponse(responseCode = "500", content = @Content)})
+            @ApiResponse(responseCode = "500", content = @Content)}, description = "Custom ID will be ignored.")
     @PostMapping()
     public HttpEntity<EntityModel<SoftwarePlatformDto>> addSoftwarePlatform(
             @Valid @RequestBody SoftwarePlatformDto platformDto) {
@@ -88,7 +88,7 @@ public class SoftwarePlatformController {
         return new ResponseEntity<>(platformDtoEntity, HttpStatus.CREATED);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404")})
+    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404")}, description = "Custom ID will be ignored.")
     @PutMapping("/{id}")
     public HttpEntity<EntityModel<SoftwarePlatformDto>> updateSoftwarePlatform(@PathVariable UUID id,
                                                                                @Valid @RequestBody SoftwarePlatformDto softwarePlatformDto) {
