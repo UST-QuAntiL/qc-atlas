@@ -29,15 +29,18 @@ import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.ComputingResource;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Publication;
+import org.planqk.atlas.core.model.SoftwarePlatform;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.core.services.ComputingResourceService;
 import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.core.services.PublicationService;
+import org.planqk.atlas.core.services.SoftwarePlatformService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.ComputingResourceDto;
 import org.planqk.atlas.web.dtos.ImplementationDto;
 import org.planqk.atlas.web.dtos.ProblemTypeDto;
 import org.planqk.atlas.web.dtos.PublicationDto;
+import org.planqk.atlas.web.dtos.SoftwarePlatformDto;
 import org.planqk.atlas.web.linkassembler.ComputingResourceAssembler;
 import org.planqk.atlas.web.linkassembler.ImplementationAssembler;
 import org.planqk.atlas.web.linkassembler.PublicationAssembler;
@@ -90,6 +93,7 @@ public class ImplementationController {
     private final ImplementationAssembler implementationAssembler;
     private final PublicationAssembler publicationAssembler;
     private final PublicationService publicationService;
+    private final SoftwarePlatformService softwarePlatformService;
 //    private final TagAssembler tagAssembler;
 
 //    private TagAssembler tagAssembler;
@@ -274,6 +278,63 @@ public class ImplementationController {
         Set<Publication> publications = implementation.getPublications();
         publications.removeIf(publication -> publication.getId().equals(publicationId));
         implementation.setPublications(publications);
+        implementationService.save(implementation);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Operation(responses = {@ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", content = @Content, description = "Implementation doesn't exist")},
+            description = "Get referenced software platform for an implementation")
+    @GetMapping("/{implId}/" + Constants.SOFTWARE_PLATFORMS)
+    public HttpEntity<CollectionModel<EntityModel<SoftwarePlatformDto>>> getSoftwarePlatforms(@PathVariable UUID implId) {
+        Implementation implementation = implementationService.findById(implId);
+        Set<SoftwarePlatform> softwarePlatforms = implementation.getSoftwarePlatforms();
+        Set<SoftwarePlatformDto> softwarePlatformDtos = ModelMapperUtils.convertSet(softwarePlatforms, SoftwarePlatformDto.class);
+        CollectionModel<EntityModel<SoftwarePlatformDto>> resultCollection = HateoasUtils.generateCollectionModel(softwarePlatformDtos);
+        return new ResponseEntity<>(resultCollection, HttpStatus.OK);
+    }
+
+    @Operation(responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "404", content = @Content,
+            description = "Software platform or publication does not exist")},
+            description = "Add a reference to an existing software platform (that was previously created via a POST on /software-platforms/). If the software platform doesn't exist yet, a 404 error is thrown.")
+    @PostMapping("/{implId}/" + Constants.SOFTWARE_PLATFORMS)
+    public HttpEntity<CollectionModel<EntityModel<SoftwarePlatformDto>>> addSoftwarePlatform(@PathVariable UUID implId, @RequestBody SoftwarePlatformDto softwarePlatformDto) {
+        Implementation implementation = implementationService.findById(implId);
+        SoftwarePlatform softwarePlatform = softwarePlatformService.findById(softwarePlatformDto.getId());
+
+        // update software platform reference list of implementation
+        Set<SoftwarePlatform> softwarePlatforms = implementation.getSoftwarePlatforms();
+        softwarePlatforms.add(softwarePlatform);
+        implementation.setSoftwarePlatforms(softwarePlatforms);
+
+        Set<SoftwarePlatform> updatedSoftwarePlatforms = implementationService.save(implementation).getSoftwarePlatforms();
+        Set<SoftwarePlatformDto> dtoSoftwarePlatforms = ModelMapperUtils.convertSet(updatedSoftwarePlatforms, SoftwarePlatformDto.class);
+        CollectionModel<EntityModel<SoftwarePlatformDto>> resultCollection = HateoasUtils.generateCollectionModel(dtoSoftwarePlatforms);
+
+        return new ResponseEntity<>(resultCollection, HttpStatus.OK);
+    }
+
+    @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Get a specific referenced software platform of an implementation")
+    @GetMapping("/{implId}/" + Constants.SOFTWARE_PLATFORMS + "/{platformId}")
+    public HttpEntity<EntityModel<SoftwarePlatformDto>> getSoftwarePlatform(@PathVariable UUID implId, @PathVariable UUID platformId) {
+        LOG.debug("Get to retrieve referenced software platform with Id {} from implementation with Id {}", platformId, implId);
+        SoftwarePlatform platform = softwarePlatformService.findById(platformId);
+        Set<SoftwarePlatform> softwarePlatforms = implementationService.findById(implId).getSoftwarePlatforms();
+        if (!softwarePlatforms.contains(platform)) {
+            LOG.info("Trying to get software platform that is not referenced by the implementation");
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        EntityModel<SoftwarePlatformDto> dtoOutput = HateoasUtils.generateEntityModel(ModelMapperUtils.convert(platform, SoftwarePlatformDto.class));
+        return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
+    }
+
+    @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Delete a reference to a software platform of the implementation")
+    @DeleteMapping("/{implId}/" + Constants.SOFTWARE_PLATFORMS + "/{platformId}")
+    public HttpEntity<EntityModel<SoftwarePlatformDto>> deleteReferenceToSoftwarePlatform(@PathVariable UUID implId, @PathVariable UUID platformId) {
+        Implementation implementation = implementationService.findById(implId);
+        Set<SoftwarePlatform> softwarePlatforms = implementation.getSoftwarePlatforms();
+        softwarePlatforms.removeIf(platform -> platform.getId().equals(platformId));
+        implementation.setSoftwarePlatforms(softwarePlatforms);
         implementationService.save(implementation);
         return new ResponseEntity<>(HttpStatus.OK);
     }

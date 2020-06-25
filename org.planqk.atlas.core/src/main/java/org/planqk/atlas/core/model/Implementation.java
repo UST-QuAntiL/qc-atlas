@@ -72,8 +72,10 @@ public class Implementation extends AlgorOrImpl {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "implementation", orphanRemoval = true)
     private Set<ComputingResource> requiredComputingResources = new HashSet<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private SoftwarePlatform usedSoftwarePlatform;
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private Set<SoftwarePlatform> softwarePlatforms = new HashSet<>();
 
     public Implementation() {
         super();
