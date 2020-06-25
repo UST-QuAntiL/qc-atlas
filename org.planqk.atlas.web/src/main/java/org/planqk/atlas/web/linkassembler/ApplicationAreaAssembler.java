@@ -35,11 +35,6 @@ public class ApplicationAreaAssembler extends GenericLinkAssembler<ApplicationAr
     @Override
     public void addLinks(EntityModel<ApplicationAreaDto> resource) {
         resource.add(links.linkTo(methodOn(ApplicationAreaController.class).getApplicationAreaById(getId(resource))).withSelfRel());
-        resource.add(
-                links.linkTo(methodOn(ApplicationAreaController.class).updateApplicationArea(getId(resource), getContent(resource)))
-                        .withRel("update"));
-        resource.add(
-                links.linkTo(methodOn(ApplicationAreaController.class).deleteApplicationArea(getId(resource))).withRel("delete"));
     }
 
     private UUID getId(EntityModel<ApplicationAreaDto> resource) {

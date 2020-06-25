@@ -17,10 +17,6 @@ public class PatternRelationTypeAssembler extends GenericLinkAssembler<PatternRe
     public void addLinks(EntityModel<PatternRelationTypeDto> resource) {
         resource.add(links.linkTo(methodOn(PatternRelationTypeController.class).getPatternRelationType(getId(resource)))
                 .withSelfRel());
-        resource.add(links.linkTo(methodOn(PatternRelationTypeController.class).updatePatternRelationType(getId(resource),
-                getContent(resource))).withRel("update"));
-        resource.add(links.linkTo(methodOn(PatternRelationTypeController.class).deletePatternRelationType(getId(resource)))
-                .withRel("delete"));
     }
 
     private UUID getId(EntityModel<PatternRelationTypeDto> resource) {

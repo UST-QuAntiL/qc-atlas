@@ -34,9 +34,6 @@ public class ComputingResourceAssembler extends GenericLinkAssembler<ComputingRe
     @Override
     public void addLinks(EntityModel<ComputingResourceDto> resource) {
         resource.add(links.linkTo(methodOn(ComputingResourceController.class)
-                .deleteComputingResource(resource.getContent().getId()))
-                .withRel("delete"));
-        resource.add(links.linkTo(methodOn(ComputingResourceController.class)
                 .getComputingResource(resource.getContent().getId()))
                 .withSelfRel());
         resource.add(links.linkTo(methodOn(ComputingResourceTypeController.class)
