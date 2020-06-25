@@ -311,10 +311,15 @@ public class AlgorithmController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "201"),
+            @ApiResponse(responseCode = "400", description = "The id of the problem type to reference is null"),
             @ApiResponse(responseCode = "404", description = "Problem type or algorithm does not exists in the database")},
             description = "Add a reference to an existing problemType (that was previously created via a POST on /problem-types/). If the problemType doesn't exist yet, a 404 error is thrown.")
     @PostMapping("/{algoId}/" + Constants.PROBLEM_TYPES)
     public HttpEntity<CollectionModel<EntityModel<ProblemTypeDto>>> addProblemType(@PathVariable UUID algoId, @RequestBody ProblemTypeDto problemTypeDto) {
+        if (Objects.isNull(problemTypeDto.getId())) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
         Algorithm algorithm = algorithmService.findById(algoId);
         // access stored pattern relation -> if it does not exists, this throws a NoSuchElementException
         ProblemType problemType = problemTypeService.findById(problemTypeDto.getId());
