@@ -237,7 +237,7 @@ public class AlgorithmController {
         Algorithm algorithm = algorithmService.findById(algoId);
         // access publication in db to throw NoSuchElementException if it doesn't exist
         Publication publication = publicationService.findById(publicationDto.getId());
-        // Get ProblemTypes of Algorithm
+        // Get publications of Algorithm
         Set<Publication> publications = algorithm.getPublications();
         // add new publication reference
         publications.add(publication);
@@ -268,12 +268,18 @@ public class AlgorithmController {
         return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Delete a reference to a Publication of the algorithm")
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", description = "Algorithm or publication with given ids do not exist or no relation between algorithm and publication")},
+            description = "Delete a reference to a Publication of the algorithm")
     @DeleteMapping("/{algoId}/" + Constants.PUBLICATIONS + "/{publicationId}")
     public HttpEntity<EntityModel<ProblemTypeDto>> deleteReferenceToPublication(@PathVariable UUID algoId, @PathVariable UUID publicationId) {
         Algorithm algorithm = algorithmService.findById(algoId);
+        publicationService.findById(publicationId);
         Set<Publication> publications = algorithm.getPublications();
-        publications.removeIf(publication -> publication.getId().equals(publicationId));
+        if (!publications.removeIf(publication -> publication.getId().equals(publicationId))) {
+            new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
         algorithm.setPublications(publications);
         algorithmService.save(algorithm);
         return new ResponseEntity<>(HttpStatus.OK);
