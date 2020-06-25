@@ -85,9 +85,9 @@ public class ComputingResourceTypeController {
             @ApiResponse(responseCode = "404"),
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteComputingResourceType(@PathVariable UUID id) {
+    public ResponseEntity<EntityModel<ComputingResourceTypeDto>> deleteComputingResourceType(@PathVariable UUID id) {
         service.deleteComputingResourceType(id);
-        return ResponseEntity.ok().build();
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
