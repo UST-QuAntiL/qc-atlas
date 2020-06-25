@@ -17,10 +17,6 @@ public class AlgoRelationTypeAssembler extends GenericLinkAssembler<AlgoRelation
     public void addLinks(EntityModel<AlgoRelationTypeDto> resource) {
         resource.add(links.linkTo(methodOn(AlgoRelationTypeController.class).getAlgoRelationTypeById(getId(resource)))
                 .withSelfRel());
-        resource.add(links.linkTo(methodOn(AlgoRelationTypeController.class).updateAlgoRelationType(getId(resource),
-                getContent(resource))).withRel("update"));
-        resource.add(links.linkTo(methodOn(AlgoRelationTypeController.class).deleteAlgoRelationType(getId(resource)))
-                .withRel("delete"));
     }
 
     private UUID getId(EntityModel<AlgoRelationTypeDto> resource) {

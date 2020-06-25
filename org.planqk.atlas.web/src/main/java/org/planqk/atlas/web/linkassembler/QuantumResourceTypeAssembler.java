@@ -35,11 +35,5 @@ public class QuantumResourceTypeAssembler extends GenericLinkAssembler<Computing
         resource.add(links.linkTo(methodOn(ComputingResourceTypeController.class)
                 .getComputingResourceType(resource.getContent().getId()))
                 .withSelfRel());
-        resource.add(links.linkTo(methodOn(ComputingResourceTypeController.class)
-                .getResourceTypes(1, 50))
-                .withRel("all-types"));
-        resource.add(links.linkTo(methodOn(ComputingResourceTypeController.class)
-                .deleteComputingResourceType(resource.getContent().getId()))
-                .withRel("delete"));
     }
 }

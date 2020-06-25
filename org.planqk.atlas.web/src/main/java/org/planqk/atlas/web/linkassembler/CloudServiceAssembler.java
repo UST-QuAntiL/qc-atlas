@@ -18,9 +18,6 @@ public class CloudServiceAssembler extends GenericLinkAssembler<CloudServiceDto>
     @Override
     public void addLinks(EntityModel<CloudServiceDto> resource) {
         resource.add(links.linkTo(methodOn(CloudServiceController.class).getCloudService(getId(resource))).withSelfRel());
-
-        resource.add(
-                links.linkTo(methodOn(CloudServiceController.class).deleteCloudService(getId(resource))).withRel("delete"));
     }
 
     public void addLinks(Collection<EntityModel<CloudServiceDto>> content) {

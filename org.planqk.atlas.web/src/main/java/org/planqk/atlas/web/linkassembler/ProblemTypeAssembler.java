@@ -16,11 +16,6 @@ public class ProblemTypeAssembler extends GenericLinkAssembler<ProblemTypeDto> {
     @Override
     public void addLinks(EntityModel<ProblemTypeDto> resource) {
         resource.add(links.linkTo(methodOn(ProblemTypeController.class).getProblemTypeById(getId(resource))).withSelfRel());
-        resource.add(
-                links.linkTo(methodOn(ProblemTypeController.class).updateProblemType(getId(resource), getContent(resource)))
-                        .withRel("update"));
-        resource.add(
-                links.linkTo(methodOn(ProblemTypeController.class).deleteProblemType(getId(resource))).withRel("delete"));
     }
 
     private UUID getId(EntityModel<ProblemTypeDto> resource) {
