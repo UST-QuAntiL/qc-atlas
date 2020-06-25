@@ -187,10 +187,14 @@ public class AlgorithmController {
 //        return new ResponseEntity<>(resultCollection, HttpStatus.OK);
 //    }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Delete an algorithm. This also deletes all entities that depend on it (e.g., the algorith's relation to another algorithm).")
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", description = "Algorithm with given id doesn't exist")},
+            description = "Delete an algorithm. This also deletes all entities that depend on it (e.g., the algorith's relation to another algorithm).")
     @DeleteMapping("/{algoId}")
     public HttpEntity<?> deleteAlgorithm(@PathVariable UUID algoId) {
         LOG.debug("Delete to remove algorithm with id: {}.", algoId);
+        algorithmService.findById(algoId);
         algorithmService.delete(algoId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
