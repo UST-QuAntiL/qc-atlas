@@ -101,10 +101,11 @@ public class ImplementationController {
 
 //    private TagAssembler tagAssembler;
 
-    @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Retrieve all implementations for the algorithm")
+    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", description = "Algorithm doesn't exist")}, description = "Retrieve all implementations for the algorithm")
     @GetMapping()
     public HttpEntity<CollectionModel<EntityModel<ImplementationDto>>> getImplementations(@PathVariable UUID algoId) {
         LOG.debug("Get to retrieve all implementations of algorithm with Id {} received.", algoId);
+        algorithmService.findById(algoId);
         Set<ImplementationDto> dtoList = new HashSet<ImplementationDto>();
         // Add all available implementations to the response
         for (Implementation impl : implementationService.findAll(RestUtils.getAllPageable())) {
