@@ -21,6 +21,9 @@ package org.planqk.atlas.web.controller;
 
 import java.util.UUID;
 
+import javax.validation.Valid;
+
+import org.planqk.atlas.core.model.ComputingResourceType;
 import org.planqk.atlas.core.services.ComputingResourceService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.ComputingResourceTypeDto;
@@ -37,11 +40,16 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -83,6 +91,18 @@ public class ComputingResourceTypeController {
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
+    @PutMapping("/{id}")
+    public HttpEntity<EntityModel<ComputingResourceTypeDto>> updateComputingResourceType(@PathVariable UUID id,
+                                                                                         @Valid @RequestBody ComputingResourceTypeDto computingResourceTypeDto) {
+        computingResourceTypeDto.setId(id);
+        ComputingResourceType computingResourceType = ModelMapperUtils.convert(computingResourceTypeDto, ComputingResourceType.class);
+        ComputingResourceType savedComputingResourceType = service.addOrUpdateComputingResourceType(computingResourceType);
+        ComputingResourceTypeDto dtoOutput = ModelMapperUtils.convert(savedComputingResourceType, ComputingResourceTypeDto.class);
+        EntityModel<ComputingResourceTypeDto> entityDto = HateoasUtils.generateEntityModel(dtoOutput);
+        return new ResponseEntity<>(entityDto, HttpStatus.OK);
+    }
+
+    @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping()
     public ResponseEntity<PagedModel<EntityModel<ComputingResourceTypeDto>>> getResourceTypes(
             @RequestParam(required = false) Integer page,
@@ -94,5 +114,16 @@ public class ComputingResourceTypeController {
         var pagedModel = paginationAssembler.toModel(typeDtoes);
         assembler.addLinks(pagedModel);
         return ResponseEntity.ok(pagedModel);
+    }
+
+    @Operation(responses = {@ApiResponse(responseCode = "201")})
+    @PostMapping()
+    public HttpEntity<EntityModel<ComputingResourceTypeDto>> createResourceTypeType(
+            @Valid @RequestBody ComputingResourceTypeDto resourceTypeDto) {
+        ComputingResourceType resourceType = ModelMapperUtils.convert(resourceTypeDto, ComputingResourceType.class);
+        ComputingResourceType savedResourceType = service.addOrUpdateComputingResourceType(resourceType);
+        ComputingResourceTypeDto dtoOutput = ModelMapperUtils.convert(savedResourceType, ComputingResourceTypeDto.class);
+        EntityModel<ComputingResourceTypeDto> entityDto = HateoasUtils.generateEntityModel(dtoOutput);
+        return new ResponseEntity<>(entityDto, HttpStatus.CREATED);
     }
 }

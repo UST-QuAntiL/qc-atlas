@@ -58,7 +58,6 @@ import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -569,6 +568,7 @@ public class AlgorithmControllerTest {
         algorithm.setComputationModel(ComputationModel.CLASSIC);
 
         when(algorithmService.findById(any())).thenReturn(algorithm);
+        when(computingResourceService.findResourceTypeById(any())).thenReturn(new ComputingResourceType());
         when(computingResourceService.addComputingResourceToAlgorithm(any(Algorithm.class), any(ComputingResource.class))).thenReturn(new ComputingResource());
         var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES + "/";
         mockMvc.perform(post(path).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsBytes(getValidResourceInput())))
@@ -643,6 +643,7 @@ public class AlgorithmControllerTest {
         algorithmRelation2.setAlgoRelationType(relType1);
 
         when(algorithmService.findById(any())).thenReturn(algorithm1);
+        when(computingResourceService.findResourceTypeById(any())).thenReturn(new ComputingResourceType());
         when(computingResourceService.addComputingResourceToAlgorithm(any(QuantumAlgorithm.class), any(ComputingResource.class))).thenReturn(new ComputingResource());
         var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES + "/";
         mockMvc.perform(post(path).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsBytes(getValidResourceInput())))
