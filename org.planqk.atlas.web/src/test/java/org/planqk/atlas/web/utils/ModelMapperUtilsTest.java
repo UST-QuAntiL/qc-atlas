@@ -90,8 +90,6 @@ public class ModelMapperUtilsTest {
         problemTypesDto.add(type1Dto);
         problemTypesDto.add(type2Dto);
 
-        algorithmDto.setProblemTypes(problemTypesDto);
-
         // Generate Page objects
         pagedProblemTypes = new PageImpl<ProblemType>(new ArrayList<>(problemTypes), pageable, problemTypes.size());
         pagedProblemTypesDto = new PageImpl<ProblemTypeDto>(new ArrayList<>(problemTypesDto), pageable,
@@ -106,8 +104,6 @@ public class ModelMapperUtilsTest {
         assertEquals(mappedDto.getName(), algorithmDto.getName());
         assertEquals(mappedDto.getProblem(), algorithmDto.getProblem());
         assertEquals(mappedDto.getComputationModel(), algorithmDto.getComputationModel());
-        assertEquals(mappedDto.getProblemTypes().size(), algorithmDto.getProblemTypes().size());
-        assertEquals(mappedDto.getProblemTypes(), algorithmDto.getProblemTypes());
     }
 
     @Test
