@@ -267,7 +267,7 @@ public class ImplementationController {
                 ModelMapperUtils.convert(updatedComputeResource, ComputingResourceDto.class));
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
-    
+
     @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400")}, description = "Delete a computing resource of the implementation")
     @DeleteMapping("/{implId}/" + Constants.COMPUTING_RESOURCES + "/{resourceId}")
     public HttpEntity<ComputingResourceDto> deleteComputingResource(@PathVariable UUID implId,
