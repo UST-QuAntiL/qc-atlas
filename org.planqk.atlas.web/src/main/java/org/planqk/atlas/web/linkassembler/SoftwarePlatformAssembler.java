@@ -19,9 +19,6 @@ public class SoftwarePlatformAssembler extends GenericLinkAssembler<SoftwarePlat
     public void addLinks(EntityModel<SoftwarePlatformDto> resource) {
         resource.add(
                 links.linkTo(methodOn(SoftwarePlatformController.class).getSoftwarePlatform(getId(resource))).withSelfRel());
-
-        resource.add(links.linkTo(methodOn(SoftwarePlatformController.class).deleteSoftwarePlatform(getId(resource)))
-                .withRel("delete"));
     }
 
     public void addLinks(Collection<EntityModel<SoftwarePlatformDto>> content) {
