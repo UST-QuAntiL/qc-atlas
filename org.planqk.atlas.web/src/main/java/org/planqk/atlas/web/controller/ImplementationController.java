@@ -276,11 +276,17 @@ public class ImplementationController {
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400")}, description = "Delete a computing resource of the implementation")
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", description = "Algorithm, Implementation or computing resource with given id doesn't exist")
+    }, description = "Delete a computing resource of the implementation")
     @DeleteMapping("/{implId}/" + Constants.COMPUTING_RESOURCES + "/{resourceId}")
-    public HttpEntity<ComputingResourceDto> deleteComputingResource(@PathVariable UUID implId,
+    public HttpEntity<ComputingResourceDto> deleteComputingResource(@PathVariable UUID algoId, @PathVariable UUID implId,
                                                                     @PathVariable UUID resourceId) {
         LOG.debug("Delete received to remove computing resource with id {}.", resourceId);
+        algorithmService.findById(algoId);
+        implementationService.findById(implId);
         ComputingResource computingResource = computingResourceService.findResourceById(resourceId);
         if (Objects.isNull(computingResource.getImplementation()) || !computingResource.getImplementation().getId().equals(implId)) {
             LOG.debug("Implementation is not referenced from the computing resource to delete!");

@@ -487,11 +487,13 @@ public class AlgorithmController {
         return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200")})
+    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", description = "Pattern relation or algorithm with given id doesn't exist")})
     @DeleteMapping("/{algoId}/" + Constants.PATTERN_RELATIONS + "/{relationId}")
-    public HttpEntity<AlgorithmRelationDto> deleteAPatternRelation(@PathVariable UUID algoId,
-                                                                   @PathVariable UUID relationId) {
+    public HttpEntity<PatternRelationDto> deletePatternRelation(@PathVariable UUID algoId,
+                                                                @PathVariable UUID relationId) {
         LOG.debug("Delete received to remove pattern relation with id {}.", relationId);
+        algorithmService.findById(algoId);
+        patternRelationService.findById(relationId);
         patternRelationService.deleteById(relationId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -499,7 +501,7 @@ public class AlgorithmController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400", description = "AlgorithmRelation doesn't contain this algorithm as source or target"),
-            @ApiResponse(responseCode = "404")
+            @ApiResponse(responseCode = "404", description = "Algorithm with given id doesn't exist")
     })
     @PostMapping("/{algoId}/" + Constants.ALGORITHM_RELATIONS)
     public ResponseEntity<EntityModel<AlgorithmRelationDto>> addAlgorithmRelation(
@@ -567,11 +569,13 @@ public class AlgorithmController {
         return new ResponseEntity<>(updatedRelationDto, HttpStatus.OK);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Delete a relation of the algorithm")
+    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", description = "Algorithm relation or algorithm with given id doesn't exist")}, description = "Delete a relation of the algorithm")
     @DeleteMapping("/{algoId}/" + Constants.ALGORITHM_RELATIONS + "/{relationId}")
     public HttpEntity<AlgorithmRelationDto> deleteAlgorithmRelation(@PathVariable UUID algoId,
                                                                     @PathVariable UUID relationId) {
         LOG.debug("Delete received to remove algorithm relation with id {}.", relationId);
+        algorithmService.findById(algoId);
+        algoRelationService.findById(relationId);
         algoRelationService.delete(relationId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -660,11 +664,15 @@ public class AlgorithmController {
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400")}, description = "Delete a computing resource of the algorithm")
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400", description = "Computing resource with the given id doesn't belong to this algorithm"),
+            @ApiResponse(responseCode = "404", description = "Algorithm or computing resource with given id doesn't exist")}, description = "Delete a computing resource of the algorithm")
     @DeleteMapping("/{algoId}/" + Constants.COMPUTING_RESOURCES + "/{resourceId}")
     public HttpEntity<ComputingResourceDto> deleteComputingResource(@PathVariable UUID algoId,
                                                                     @PathVariable UUID resourceId) {
         LOG.debug("Delete received to remove computing resource with id {}.", resourceId);
+        algorithmService.findById(algoId);
         ComputingResource computingResource = computingResourceService.findResourceById(resourceId);
         if (Objects.isNull(computingResource.getAlgorithm()) || !computingResource.getAlgorithm().getId().equals(algoId)) {
             LOG.debug("Algorithm is not referenced from the computing resource to delete!");

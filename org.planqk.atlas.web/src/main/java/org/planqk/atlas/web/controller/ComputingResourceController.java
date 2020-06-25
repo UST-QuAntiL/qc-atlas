@@ -69,10 +69,11 @@ public class ComputingResourceController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404"),
+            @ApiResponse(responseCode = "404", description = "Computing resource with given id doesn't exist"),
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteComputingResource(@PathVariable UUID id) {
+        service.findResourceById(id);
         service.deleteComputingResource(id);
         return ResponseEntity.ok().build();
     }
