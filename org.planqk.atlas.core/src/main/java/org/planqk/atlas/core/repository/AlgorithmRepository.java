@@ -36,12 +36,12 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 /**
  * Repository to access {@link Algorithm}s available in the data base with different queries.
  */
-//@RepositoryRestResource(exported = false)
+@RepositoryRestResource(exported = false)
 public interface AlgorithmRepository extends JpaRepository<Algorithm, UUID> {
 
     Optional<Algorithm> findByName(String name);
 
-    boolean existsAlgorithmById (UUID id);
+    boolean existsAlgorithmById(UUID id);
 
     @Query("SELECT alg FROM Algorithm alg JOIN alg.publications publication WHERE publication.id = :publicationId")
     Set<Algorithm> getAlgorithmsWithPublicationId(@Param("publicationId") UUID publicationId);
