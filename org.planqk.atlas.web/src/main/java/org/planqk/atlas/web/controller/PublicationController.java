@@ -113,7 +113,10 @@ public class PublicationController {
         return new ResponseEntity<>(dtoEntityModel, HttpStatus.OK);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400"), @ApiResponse(responseCode = "404")})
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", description = "Publication with given id doesn't exist")})
     @DeleteMapping("/{id}")
     public HttpEntity<AlgorithmDto> deletePublication(@PathVariable UUID id) {
         log.debug("Delete to remove publication with id: {}", id);

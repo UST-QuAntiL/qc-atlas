@@ -109,10 +109,14 @@ public class PatternRelationController {
         return new ResponseEntity<>(updatedRelationDto, HttpStatus.CREATED);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400"), @ApiResponse(responseCode = "404")})
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", description = "Pattern relation with given id doesn't exist")})
     @DeleteMapping("/{id}")
     public HttpEntity<?> deletePatternRelation(@PathVariable UUID id) {
         LOG.debug("Delete to remove PatternRelation with id: {}.", id);
+        patternRelationService.findById(id);
         patternRelationService.deleteById(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }

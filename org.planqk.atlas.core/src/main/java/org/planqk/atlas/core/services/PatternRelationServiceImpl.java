@@ -21,18 +21,19 @@ package org.planqk.atlas.core.services;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.transaction.Transactional;
 
 import org.planqk.atlas.core.model.PatternRelation;
+import org.planqk.atlas.core.repository.AlgorithmRepository;
 import org.planqk.atlas.core.repository.PatternRelationRepository;
 
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 @Service
@@ -41,8 +42,8 @@ public class PatternRelationServiceImpl implements PatternRelationService {
     private final String NO_RELATION_ERROR = "PatternRelation does not exist!";
 
     private final PatternRelationRepository repo;
-    private final AlgorithmService algorithmService;
     private final PatternRelationTypeService patternRelationTypeService;
+    private final AlgorithmRepository algorithmRepository;
 
     @Override
     @Transactional
@@ -60,6 +61,11 @@ public class PatternRelationServiceImpl implements PatternRelationService {
     @Override
     public Page<PatternRelation> findAll(Pageable pageable) {
         return repo.findAll(pageable);
+    }
+
+    @Override
+    public Set<PatternRelation> findByAlgorithmId(UUID algoId) {
+        return repo.findByAlgorithmId(algoId);
     }
 
     @Override
@@ -81,11 +87,10 @@ public class PatternRelationServiceImpl implements PatternRelationService {
 
     private void validatePatternRelation(PatternRelation relation) {
         // Can't create PatternRelation if Algorithm is not described
-        if (Objects.isNull(relation.getAlgorithm().getId())) {
+        if (Objects.isNull(relation.getAlgorithm().getId()) || algorithmRepository.findById(relation.getAlgorithm().getId()).isEmpty()) {
             throw new NoSuchElementException("Algorithm for pattern relation does not exist!");
         }
 
-        relation.setAlgorithm(algorithmService.findById(relation.getAlgorithm().getId()));
         relation.setPatternRelationType(patternRelationTypeService.createOrGet(relation.getPatternRelationType()));
     }
 }

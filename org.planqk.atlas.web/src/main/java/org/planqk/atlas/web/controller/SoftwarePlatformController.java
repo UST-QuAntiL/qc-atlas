@@ -51,11 +51,11 @@ public class SoftwarePlatformController {
     private final SoftwarePlatformAssembler softwarePlatformAssembler;
     private final PagedResourcesAssembler<SoftwarePlatformDto> paginationAssembler;
 
-    @Operation(responses = { @ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", content = @Content),
-            @ApiResponse(responseCode = "500", content = @Content) })
+    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", content = @Content),
+            @ApiResponse(responseCode = "500", content = @Content)})
     @GetMapping()
     public HttpEntity<PagedModel<EntityModel<SoftwarePlatformDto>>> getSoftwarePlatforms(@RequestParam(required = false) Integer page,
-            @RequestParam(required = false) Integer size) {
+                                                                                         @RequestParam(required = false) Integer size) {
         Page<SoftwarePlatform> platforms = softwarePlatformService
                 .findAll(RestUtils.getPageableFromRequestParams(page, size));
         Page<SoftwarePlatformDto> platformDtos = ModelMapperUtils.convertPage(platforms, SoftwarePlatformDto.class);
@@ -64,8 +64,8 @@ public class SoftwarePlatformController {
         return new ResponseEntity<>(pagedPlatformDtos, HttpStatus.OK);
     }
 
-    @Operation(responses = { @ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", content = @Content),
-            @ApiResponse(responseCode = "500", content = @Content) })
+    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", content = @Content),
+            @ApiResponse(responseCode = "500", content = @Content)})
     @GetMapping("/{id}")
     public HttpEntity<EntityModel<SoftwarePlatformDto>> getSoftwarePlatform(@PathVariable UUID id) {
         SoftwarePlatformDto platformDto = ModelMapperUtils.convert(softwarePlatformService.findById(id),
@@ -75,8 +75,8 @@ public class SoftwarePlatformController {
         return new ResponseEntity<>(platformDtoEntity, HttpStatus.OK);
     }
 
-    @Operation(responses = { @ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "400", content = @Content),
-            @ApiResponse(responseCode = "500", content = @Content) }, description = "Custom ID will be ignored.")
+    @Operation(responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "400", content = @Content),
+            @ApiResponse(responseCode = "500", content = @Content)}, description = "Custom ID will be ignored.")
     @PostMapping()
     public HttpEntity<EntityModel<SoftwarePlatformDto>> addSoftwarePlatform(
             @Valid @RequestBody SoftwarePlatformDto platformDto) {
@@ -91,7 +91,7 @@ public class SoftwarePlatformController {
     @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404")}, description = "Custom ID will be ignored.")
     @PutMapping("/{id}")
     public HttpEntity<EntityModel<SoftwarePlatformDto>> updateSoftwarePlatform(@PathVariable UUID id,
-                                                                            @Valid @RequestBody SoftwarePlatformDto softwarePlatformDto) {
+                                                                               @Valid @RequestBody SoftwarePlatformDto softwarePlatformDto) {
         LOG.debug("Put to update software platform with id {}.", id);
         SoftwarePlatform updatedSoftwarePlatform = softwarePlatformService.update(id, ModelMapperUtils.convert(softwarePlatformDto, SoftwarePlatform.class));
         EntityModel<SoftwarePlatformDto> dtoOutput = HateoasUtils.generateEntityModel(ModelMapperUtils.convert(updatedSoftwarePlatform, SoftwarePlatformDto.class));
@@ -99,10 +99,13 @@ public class SoftwarePlatformController {
         return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
     }
 
-    @Operation(responses = { @ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", content = @Content),
-            @ApiResponse(responseCode = "500", content = @Content) })
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", description = "Software platform with given id doesn't exist")})
     @DeleteMapping("/{id}")
     public HttpEntity<SoftwarePlatformDto> deleteSoftwarePlatform(@PathVariable UUID id) {
+        SoftwarePlatform softwarePlatform = softwarePlatformService.findById(id);
+        softwarePlatform.getImplementations().forEach(implementation -> implementation.removeSoftwarePlatform(softwarePlatform));
         softwarePlatformService.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }

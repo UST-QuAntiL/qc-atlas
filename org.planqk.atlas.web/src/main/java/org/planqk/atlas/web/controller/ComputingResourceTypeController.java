@@ -68,7 +68,7 @@ public class ComputingResourceTypeController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404"),
+            @ApiResponse(responseCode = "404", description = "Computing resource type with given id doesn't exist"),
     })
     @GetMapping("/{id}")
     public ResponseEntity<EntityModel<ComputingResourceTypeDto>> getComputingResourceType(@PathVariable UUID id) {
@@ -82,12 +82,13 @@ public class ComputingResourceTypeController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404"),
+            @ApiResponse(responseCode = "404", description = "Computing resource type with given id doesn't exist"),
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteComputingResourceType(@PathVariable UUID id) {
+    public ResponseEntity<EntityModel<ComputingResourceTypeDto>> deleteComputingResourceType(@PathVariable UUID id) {
+        service.findResourceTypeById(id);
         service.deleteComputingResourceType(id);
-        return ResponseEntity.ok().build();
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Custom ID will be ignored.")

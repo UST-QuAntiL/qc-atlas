@@ -46,7 +46,7 @@ public class ProblemTypeController {
     private PagedResourcesAssembler<ProblemTypeDto> paginationAssembler;
     private ProblemTypeAssembler problemTypeAssembler;
 
-    @Operation(responses = { @ApiResponse(responseCode = "201") }, description = "Custom ID will be ignored.")
+    @Operation(responses = {@ApiResponse(responseCode = "201")}, description = "Custom ID will be ignored.")
     @PostMapping()
     public HttpEntity<EntityModel<ProblemTypeDto>> createProblemType(
             @Valid @RequestBody ProblemTypeDto problemTypeDto) {
@@ -63,10 +63,10 @@ public class ProblemTypeController {
         return new ResponseEntity<>(entityDto, HttpStatus.CREATED);
     }
 
-    @Operation(responses = { @ApiResponse(responseCode = "200") }, description = "Custom ID will be ignored.")
+    @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Custom ID will be ignored.")
     @PutMapping("/{id}")
     public HttpEntity<EntityModel<ProblemTypeDto>> updateProblemType(@PathVariable UUID id,
-            @Valid @RequestBody ProblemTypeDto problemTypeDto) {
+                                                                     @Valid @RequestBody ProblemTypeDto problemTypeDto) {
         // Convert DTO to Entity
         ProblemType entityInput = ModelMapperUtils.convert(problemTypeDto, ProblemType.class);
         // Update Entity
@@ -80,15 +80,19 @@ public class ProblemTypeController {
         return new ResponseEntity<>(entityDto, HttpStatus.OK);
     }
 
-    @Operation(responses = { @ApiResponse(responseCode = "200") })
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", description = "Problem type with given id doesn't exist")
+    })
     @DeleteMapping("/{id}")
     public HttpEntity<ProblemTypeDto> deleteProblemType(@PathVariable UUID id) {
         ProblemType problemType = problemTypeService.findById(id);
+        problemType.getAlgorithms().forEach(algorithm -> algorithm.removeProblemType(problemType));
         problemTypeService.delete(problemType);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @Operation(responses = { @ApiResponse(responseCode = "200") })
+    @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping()
     public HttpEntity<PagedModel<EntityModel<ProblemTypeDto>>> getProblemTypes(
             @RequestParam(required = false) Integer page, @RequestParam(required = false) Integer size) {
@@ -105,7 +109,7 @@ public class ProblemTypeController {
         return new ResponseEntity<>(pagedEntityOutput, HttpStatus.OK);
     }
 
-    @Operation(responses = { @ApiResponse(responseCode = "200") })
+    @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping("/{id}")
     public HttpEntity<EntityModel<ProblemTypeDto>> getProblemTypeById(@PathVariable UUID id) {
         ProblemType problemType = problemTypeService.findById(id);

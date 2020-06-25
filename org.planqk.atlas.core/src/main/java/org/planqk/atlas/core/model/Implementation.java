@@ -101,6 +101,26 @@ public class Implementation extends AlgorOrImpl {
         publication.removeImplementation(this);
     }
 
+    public Set<SoftwarePlatform> getSoftwarePlatforms() {
+        return new HashSet<SoftwarePlatform>(softwarePlatforms);
+    }
+
+    public void addSoftwarePlatform(SoftwarePlatform softwarePlatform) {
+        if (softwarePlatforms.contains(softwarePlatform)) {
+            return;
+        }
+        softwarePlatforms.add(softwarePlatform);
+        softwarePlatform.addImplementation(this);
+    }
+
+    public void removeSoftwarePlatform(SoftwarePlatform softwarePlatform) {
+        if (!softwarePlatforms.contains(softwarePlatform)) {
+            return;
+        }
+        softwarePlatforms.remove(softwarePlatform);
+        softwarePlatform.removeImplementation(this);
+    }
+
 //    @NonNull
 //    public Set<Tag> getTags() {
 //        if (Objects.isNull(tags)) {

@@ -111,7 +111,11 @@ public class PatternRelationTypeController {
         return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400"), @ApiResponse(responseCode = "404")})
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", description = "Pattern relation type with given id doesn't exist")
+    })
     @DeleteMapping("/{id}")
     public HttpEntity<?> deletePatternRelationType(@PathVariable UUID id) {
         LOG.debug("Delete to remove PatternRelationType with id: {}.", id);

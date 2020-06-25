@@ -34,6 +34,8 @@ import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.RestUtils;
 
 import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -85,7 +87,13 @@ public class DiscussionCommentController {
         return new ResponseEntity<>(discussionCommentDtoEntityModel, HttpStatus.OK);
     }
 
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", description = "Discussion comment with given id doesn't exist")
+    })
     public HttpEntity<?> deleteDiscussionComment(@PathVariable UUID commentId) {
+        discussionCommentService.findById(commentId);
         discussionCommentService.deleteById(commentId);
         return new ResponseEntity<>(HttpStatus.OK);
     }

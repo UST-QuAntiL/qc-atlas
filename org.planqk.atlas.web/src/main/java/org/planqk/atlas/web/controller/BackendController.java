@@ -76,12 +76,13 @@ public class BackendController {
         return new ResponseEntity<>(outputDto, HttpStatus.CREATED);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200")})
+    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", description = "Backend with given id doesn't exist")})
     @DeleteMapping("/{id}")
     public HttpEntity<EntityModel<BackendDto>> deleteBackend(@PathVariable UUID id) {
         LOG.debug("Delete to remove the Backend with id {} received.", id);
         // only deletes if not used in any CloudService or SoftwarePlatform
         // we have to decide if this is acceptable behavior - TODO
+        backendService.findById(id);
         backendService.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }

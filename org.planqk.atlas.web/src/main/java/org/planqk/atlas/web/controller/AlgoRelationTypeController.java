@@ -46,7 +46,7 @@ public class AlgoRelationTypeController {
     private PagedResourcesAssembler<AlgoRelationTypeDto> paginationAssembler;
     private AlgoRelationTypeAssembler algoRelationTypeAssembler;
 
-    @Operation(responses = { @ApiResponse(responseCode = "201") }, description = "Custom ID will be ignored.")
+    @Operation(responses = {@ApiResponse(responseCode = "201")}, description = "Custom ID will be ignored.")
     @PostMapping()
     public HttpEntity<EntityModel<AlgoRelationTypeDto>> createAlgoRelationType(
             @Valid @RequestBody AlgoRelationTypeDto algoRelationTypeDto) {
@@ -62,10 +62,10 @@ public class AlgoRelationTypeController {
         return new ResponseEntity<>(entityDto, HttpStatus.CREATED);
     }
 
-    @Operation(responses = { @ApiResponse(responseCode = "200") }, description = "Custom ID will be ignored.")
+    @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Custom ID will be ignored.")
     @PutMapping("/{id}")
     public HttpEntity<EntityModel<AlgoRelationTypeDto>> updateAlgoRelationType(@PathVariable UUID id,
-            @Valid @RequestBody AlgoRelationTypeDto algoRelationTypeDto) {
+                                                                               @Valid @RequestBody AlgoRelationTypeDto algoRelationTypeDto) {
         // Convert DTO to entity
         AlgoRelationType entityInput = ModelMapperUtils.convert(algoRelationTypeDto, AlgoRelationType.class);
         // update entity
@@ -78,15 +78,16 @@ public class AlgoRelationTypeController {
         return new ResponseEntity<>(entityDto, HttpStatus.OK);
     }
 
-    @Operation(responses = { @ApiResponse(responseCode = "200") })
+    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", description = "Algorithm relation with given id doesn't exist")})
     @DeleteMapping("/{id}")
     public HttpEntity<AlgoRelationTypeDto> deleteAlgoRelationType(@PathVariable UUID id) {
         // delete entity by id
+        algoRelationTypeService.findById(id);
         algoRelationTypeService.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @Operation(responses = { @ApiResponse(responseCode = "200") })
+    @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping()
     public HttpEntity<PagedModel<EntityModel<AlgoRelationTypeDto>>> getAlgoRelationTypes(
             @RequestParam(required = false) Integer page, @RequestParam(required = false) Integer size) {
@@ -103,7 +104,7 @@ public class AlgoRelationTypeController {
         return new ResponseEntity<>(pagedEntityOutput, HttpStatus.OK);
     }
 
-    @Operation(responses = { @ApiResponse(responseCode = "200") })
+    @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping("/{id}")
     public HttpEntity<EntityModel<AlgoRelationTypeDto>> getAlgoRelationTypeById(@PathVariable UUID id) {
         AlgoRelationType algoRelationType = algoRelationTypeService.findById(id);

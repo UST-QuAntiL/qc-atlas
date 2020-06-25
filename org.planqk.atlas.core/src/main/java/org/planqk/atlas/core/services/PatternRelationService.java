@@ -19,6 +19,7 @@
 
 package org.planqk.atlas.core.services;
 
+import java.util.Set;
 import java.util.UUID;
 
 import javax.transaction.Transactional;
@@ -36,6 +37,8 @@ public interface PatternRelationService {
     PatternRelation findById(UUID id);
 
     Page<PatternRelation> findAll(Pageable pageable);
+
+    Set<PatternRelation> findByAlgorithmId(UUID algoId);
 
     @Transactional
     PatternRelation update(UUID id, PatternRelation relation);
