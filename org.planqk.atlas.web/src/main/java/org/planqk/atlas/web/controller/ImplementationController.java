@@ -235,7 +235,7 @@ public class ImplementationController {
             @PathVariable UUID implId, @PathVariable UUID resourceId) {
         LOG.debug("Get received to retrieve computing resource with id {}.", resourceId);
         ComputingResource computingResource = computingResourceService.findResourceById(resourceId);
-        if (Objects.isNull(computingResource.getImplementation()) || !computingResource.getAlgorithm().getId().equals(implId)) {
+        if (Objects.isNull(computingResource.getImplementation()) || !computingResource.getImplementation().getId().equals(implId)) {
             LOG.debug("Implementation is not referenced from the computing resource to retrieve!");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
