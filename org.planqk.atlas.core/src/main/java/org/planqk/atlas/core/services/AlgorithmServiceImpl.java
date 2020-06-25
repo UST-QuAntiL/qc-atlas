@@ -145,7 +145,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         Set<AlgorithmRelation> linkedAsTargetRelations = algorithmRelationRepository.findByTargetAlgorithmId(id);
         linkedAsTargetRelations.addAll(algorithmRelationRepository.findBySourceAlgorithmId(id));
         for (AlgorithmRelation relation : linkedAsTargetRelations) {
-            deleteAlgorithmRelation(relation.getSourceAlgorithm().getId(), relation.getId());
+            algorithmRelationRepository.delete(relation);
         }
 
         //Remove all publications associations
