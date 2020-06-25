@@ -398,7 +398,7 @@ public class AlgorithmController {
 
     @Operation(responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "404", description = "problem type or algorithm does not exists in the database")}, description = "Add a reference to an existing applicationArea (that was previously created via a POST on /application-area/. If the applicationArea doesn't exist yet, a 404 error is thrown.")
     @PostMapping("/{algoId}/" + Constants.APPLICATION_AREAS)
-    public HttpEntity<CollectionModel<EntityModel<ApplicationAreaDto>>> add(@PathVariable UUID algoId, @RequestBody ApplicationAreaDto applicationAreaDto) {
+    public HttpEntity<CollectionModel<EntityModel<ApplicationAreaDto>>> addApplicationArea(@PathVariable UUID algoId, @RequestBody ApplicationAreaDto applicationAreaDto) {
         Algorithm algorithm = algorithmService.findById(algoId);
         // access stored pattern relation -> if it does not exists, this throws a NoSuchElementException
         ApplicationArea applicationArea = applicationAreaService.findById(applicationAreaDto.getId());
@@ -548,6 +548,7 @@ public class AlgorithmController {
     @GetMapping("/{algoId}/" + Constants.ALGORITHM_RELATIONS + "/{relationId}")
     public HttpEntity<EntityModel<AlgorithmRelationDto>> getAlgorithmRelation(
             @PathVariable UUID algoId, @PathVariable UUID relationId) {
+        algorithmService.findById(algoId);
         AlgorithmRelation algorithmRelation = algoRelationService.findById(relationId);
         if (!algorithmRelation.getSourceAlgorithm().getId().equals(algoId) && !algorithmRelation.getTargetAlgorithm().getId().equals(algoId)) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
