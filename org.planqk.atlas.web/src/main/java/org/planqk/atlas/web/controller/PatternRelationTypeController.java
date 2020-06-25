@@ -50,7 +50,7 @@ public class PatternRelationTypeController {
     private PagedResourcesAssembler<PatternRelationTypeDto> paginationAssembler;
     private PatternRelationTypeAssembler patternRelationTypeAssembler;
 
-    @Operation(responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "400")})
+    @Operation(responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "400")}, description = "Custom ID will be ignored.")
     @PostMapping()
     public HttpEntity<EntityModel<PatternRelationTypeDto>> createPatternRelationType(
             @Valid @RequestBody PatternRelationTypeDto typeDto) {
@@ -96,7 +96,7 @@ public class PatternRelationTypeController {
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404")})
+            @ApiResponse(responseCode = "404")}, description = "Custom ID will be ignored.")
     @PutMapping("/{id}")
     public HttpEntity<EntityModel<PatternRelationTypeDto>> updatePatternRelationType(@PathVariable UUID id,
                                                                                      @Valid @RequestBody PatternRelationTypeDto typeDto) {
