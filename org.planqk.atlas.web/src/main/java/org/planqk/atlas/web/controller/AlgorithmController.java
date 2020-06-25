@@ -19,6 +19,7 @@
 
 package org.planqk.atlas.web.controller;
 
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -572,7 +573,8 @@ public class AlgorithmController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        EntityModel<AlgorithmRelationDto> updatedRelationDto = handleRelationUpdate(relationDto, null);
+        AlgorithmRelation updatedRelation = handleRelationUpdate(relationDto, null);
+        EntityModel<AlgorithmRelationDto> updatedRelationDto = HateoasUtils.generateEntityModel(getAlgoRealtionDto(updatedRelation));
         algorithmRelationAssembler.addLinks(updatedRelationDto);
         return new ResponseEntity<>(updatedRelationDto, HttpStatus.OK);
     }
@@ -587,9 +589,10 @@ public class AlgorithmController {
         algorithmService.findById(algoId);
         Set<AlgorithmRelation> algorithmRelations = algorithmService.getAlgorithmRelations(algoId);
         // Get AlgorithmRelationDTOs of Algorithm
-        Set<AlgorithmRelationDto> dtoAlgorithmRelation = ModelMapperUtils.convertSet(algorithmRelations,
-                AlgorithmRelationDto.class);
-        // Generate CollectionModel
+        Set<AlgorithmRelationDto> dtoAlgorithmRelation = new HashSet<>();
+        for (AlgorithmRelation algorithmRelation : algorithmRelations) {
+            dtoAlgorithmRelation.add(getAlgoRealtionDto(algorithmRelation));
+        }
         CollectionModel<EntityModel<AlgorithmRelationDto>> resultCollection = HateoasUtils
                 .generateCollectionModel(dtoAlgorithmRelation);
         // Fill EntityModel Links
@@ -606,13 +609,14 @@ public class AlgorithmController {
     @GetMapping("/{algoId}/" + Constants.ALGORITHM_RELATIONS + "/{relationId}")
     public HttpEntity<EntityModel<AlgorithmRelationDto>> getAlgorithmRelation(
             @PathVariable UUID algoId, @PathVariable UUID relationId) {
+        LOG.debug("Retrieving algorithm relation with id {} for algorithm with id {}", relationId, algoId);
         algorithmService.findById(algoId);
         AlgorithmRelation algorithmRelation = algoRelationService.findById(relationId);
         if (!algorithmRelation.getSourceAlgorithm().getId().equals(algoId) && !algorithmRelation.getTargetAlgorithm().getId().equals(algoId)) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        EntityModel<AlgorithmRelationDto> dtoOutput = HateoasUtils.generateEntityModel(ModelMapperUtils.convert(algorithmRelation, AlgorithmRelationDto.class));
+        EntityModel<AlgorithmRelationDto> dtoOutput = HateoasUtils.generateEntityModel(getAlgoRealtionDto(algorithmRelation));
         algorithmRelationAssembler.addLinks(dtoOutput);
         return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
     }
@@ -633,7 +637,8 @@ public class AlgorithmController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        EntityModel<AlgorithmRelationDto> updatedRelationDto = handleRelationUpdate(relationDto, relationId);
+        AlgorithmRelation updatedRelation = handleRelationUpdate(relationDto, relationId);
+        EntityModel<AlgorithmRelationDto> updatedRelationDto = HateoasUtils.generateEntityModel(getAlgoRealtionDto(updatedRelation));
         algorithmRelationAssembler.addLinks(updatedRelationDto);
         return new ResponseEntity<>(updatedRelationDto, HttpStatus.OK);
     }
@@ -650,6 +655,20 @@ public class AlgorithmController {
         algoRelationService.findById(relationId);
         algoRelationService.delete(relationId);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /**
+     * Transform an AlgorithmRelation to a AlgorithmRelationDto and separately transform the source and target
+     * algorithms to their Dto representation. By directly using the ModelMapperUtils for the transformation the quantum
+     * specfific attributes of an algorithm are lost at the moment.
+     * <p>
+     * FIXME: move back to usgae of ModelMapperUtils
+     */
+    private AlgorithmRelationDto getAlgoRealtionDto(AlgorithmRelation algorithmRelation) {
+        AlgorithmRelationDto relationDto = ModelMapperUtils.convert(algorithmRelation, AlgorithmRelationDto.class);
+        relationDto.setSourceAlgorithm(ModelMapperUtils.convert(algorithmRelation.getSourceAlgorithm(), AlgorithmDto.class));
+        relationDto.setTargetAlgorithm(ModelMapperUtils.convert(algorithmRelation.getTargetAlgorithm(), AlgorithmDto.class));
+        return relationDto;
     }
 
     @Operation(responses = {
@@ -763,7 +782,7 @@ public class AlgorithmController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    private EntityModel<AlgorithmRelationDto> handleRelationUpdate(AlgorithmRelationDto relationDto, UUID relationId) {
+    private AlgorithmRelation handleRelationUpdate(AlgorithmRelationDto relationDto, UUID relationId) {
         AlgorithmRelation resource = new AlgorithmRelation();
         if (Objects.nonNull(relationId)) {
             resource.setId(relationId);
@@ -772,8 +791,6 @@ public class AlgorithmController {
         resource.setSourceAlgorithm(algorithmService.findById(relationDto.getSourceAlgorithm().getId()));
         resource.setTargetAlgorithm(algorithmService.findById(relationDto.getTargetAlgorithm().getId()));
         resource.setDescription(relationDto.getDescription());
-        AlgorithmRelation updatedRelation = algoRelationService.save(resource);
-        return HateoasUtils.generateEntityModel(
-                ModelMapperUtils.convert(updatedRelation, AlgorithmRelationDto.class));
+        return algoRelationService.save(resource);
     }
 }
