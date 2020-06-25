@@ -49,12 +49,9 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 
     private final AlgorithmRepository algorithmRepository;
     private final AlgorithmRelationRepository algorithmRelationRepository;
+    private final PatternRelationService patternRelationService;
     private final AlgoRelationTypeService relationTypeService;
     private final ImplementationRepository implementationRepository;
-
-    //    private final TagService tagService;
-    private final ProblemTypeService problemTypeService;
-    private final PublicationService publicationService;
 
     @Transactional
     @Override
@@ -133,20 +130,23 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     @Transactional
     public void delete(UUID id) {
         Optional<Algorithm> algorithmOptional = algorithmRepository.findById(id);
-        if (!algorithmOptional.isPresent()) {
+        if (algorithmOptional.isEmpty()) {
             return;
         }
         Algorithm algorithm = algorithmOptional.get();
 
         // delete related implementations
-        implementationRepository.findByImplementedAlgorithm(algorithm).stream().forEach(implementationRepository::delete);
+        implementationRepository.findByImplementedAlgorithm(algorithm).forEach(implementationRepository::delete);
 
         // delete ingoing and outgoing algorithm relations
         Set<AlgorithmRelation> linkedAsTargetRelations = algorithmRelationRepository.findByTargetAlgorithmId(id);
         linkedAsTargetRelations.addAll(algorithmRelationRepository.findBySourceAlgorithmId(id));
         for (AlgorithmRelation relation : linkedAsTargetRelations) {
-            deleteAlgorithmRelation(relation.getSourceAlgorithm().getId(), relation.getId());
+            algorithmRelationRepository.delete(relation);
         }
+
+        // delete related pattern relations
+        patternRelationService.findByAlgorithmId(id).forEach(patternRelation -> patternRelationService.deleteById(patternRelation.getId()));
 
         //Remove all publications associations
         algorithmRepository.deleteAssociationsOfAlgorithm(id);

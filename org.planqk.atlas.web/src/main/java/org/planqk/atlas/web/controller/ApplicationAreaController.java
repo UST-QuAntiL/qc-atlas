@@ -99,10 +99,11 @@ public class ApplicationAreaController {
         return new ResponseEntity<>(entityDto, HttpStatus.OK);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200")})
+    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", description = "Application area with given id doesn't exist")})
     @DeleteMapping("/{id}")
     public HttpEntity<ApplicationAreaDto> deleteApplicationArea(@PathVariable UUID id) {
         ApplicationArea applicationArea = applicationAreaService.findById(id);
+        applicationArea.getAlgorithms().forEach(algorithm -> algorithm.removeApplicationArea(applicationArea));
         applicationAreaService.delete(applicationArea);
         return new ResponseEntity<>(HttpStatus.OK);
     }

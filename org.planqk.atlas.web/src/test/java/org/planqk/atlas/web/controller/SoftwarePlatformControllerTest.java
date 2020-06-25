@@ -1,5 +1,17 @@
 package org.planqk.atlas.web.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.UUID;
+
+import org.planqk.atlas.core.model.SoftwarePlatform;
+import org.planqk.atlas.core.services.SoftwarePlatformService;
+import org.planqk.atlas.web.Constants;
+import org.planqk.atlas.web.dtos.SoftwarePlatformDto;
+import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
+import org.planqk.atlas.web.utils.ModelMapperUtils;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -8,12 +20,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.planqk.atlas.core.model.SoftwarePlatform;
-import org.planqk.atlas.core.services.SoftwarePlatformService;
-import org.planqk.atlas.web.Constants;
-import org.planqk.atlas.web.dtos.SoftwarePlatformDto;
-import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
-import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -28,37 +34,30 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import java.util.*;
-
-import static org.mockito.ArgumentMatchers.any;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(controllers = { SoftwarePlatformController.class })
-@ExtendWith({ MockitoExtension.class })
+@WebMvcTest(controllers = {SoftwarePlatformController.class})
+@ExtendWith( {MockitoExtension.class})
 @AutoConfigureMockMvc
 @EnableLinkAssemblers
 public class SoftwarePlatformControllerTest {
-    @MockBean
-    private SoftwarePlatformService softwarePlatformService;
-
-    @Autowired
-    private MockMvc mockMvc;
-
-    private ObjectMapper mapper;
-
     private final int page = 0;
     private final int size = 10;
     private final Pageable pageable = PageRequest.of(page, size);
-
     private final String softwarePlatformDtoJSONName = "softwarePlatformDtoes";
+    @MockBean
+    private SoftwarePlatformService softwarePlatformService;
+    @Autowired
+    private MockMvc mockMvc;
+    private ObjectMapper mapper;
 
     @BeforeEach
     public void init() {
@@ -206,7 +205,7 @@ public class SoftwarePlatformControllerTest {
     @Test
     public void deleteSoftwarePlatform_returnNotFound() throws Exception {
         UUID testId = UUID.randomUUID();
-        doThrow(new NoSuchElementException()).when(softwarePlatformService).delete(testId);
+        doThrow(new NoSuchElementException()).when(softwarePlatformService).findById(testId);
 
         mockMvc.perform(delete("/" + Constants.SOFTWARE_PLATFORMS + "/" + testId).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
@@ -214,10 +213,12 @@ public class SoftwarePlatformControllerTest {
 
     @Test
     public void deleteSoftwarePlatform_returnOk() throws Exception {
-        UUID testId = UUID.randomUUID();
-        doNothing().when(softwarePlatformService).delete(testId);
+        SoftwarePlatform softwarePlatform = new SoftwarePlatform();
+        softwarePlatform.setId(UUID.randomUUID());
+        softwarePlatform.setName("test software platform");
+        when(softwarePlatformService.findById(softwarePlatform.getId())).thenReturn(softwarePlatform);
 
-        mockMvc.perform(delete("/" + Constants.SOFTWARE_PLATFORMS + "/" + testId).accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(delete("/" + Constants.SOFTWARE_PLATFORMS + "/" + softwarePlatform.getId()).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 }

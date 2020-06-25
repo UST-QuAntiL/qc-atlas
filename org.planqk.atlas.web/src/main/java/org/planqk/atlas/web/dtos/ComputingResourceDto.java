@@ -34,7 +34,7 @@ import lombok.ToString;
 @NoArgsConstructor
 public class ComputingResourceDto {
     private UUID id;
-    private Object value;
+    private String value;
     @NotNull
     private ComputingResourceTypeDto type;
 }
