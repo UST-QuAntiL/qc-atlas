@@ -114,8 +114,6 @@ public class ModelMapperUtilsTest {
         assertEquals(mappedEntity.getName(), algorithm.getName());
         assertEquals(mappedEntity.getProblem(), algorithm.getProblem());
         assertEquals(mappedEntity.getComputationModel(), algorithm.getComputationModel());
-        assertEquals(mappedEntity.getProblemTypes().size(), algorithm.getProblemTypes().size());
-        assertEquals(mappedEntity.getProblemTypes(), algorithm.getProblemTypes());
     }
 
     @Test
