@@ -83,7 +83,7 @@ public class PublicationController {
         return new ResponseEntity<>(outputModel, HttpStatus.OK);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "400"), @ApiResponse(responseCode = "404")})
+    @Operation(responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "400"), @ApiResponse(responseCode = "404")}, description = "Custom ID will be ignored.")
     @PostMapping()
     public HttpEntity<EntityModel<PublicationDto>> createPublication(@Validated @RequestBody PublicationDto publicationDto) {
         log.debug("Create publication");
@@ -103,7 +103,7 @@ public class PublicationController {
         return new ResponseEntity<>(dtoEntityModel, HttpStatus.OK);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400"), @ApiResponse(responseCode = "404")})
+    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400"), @ApiResponse(responseCode = "404")}, description = "Custom ID will be ignored.")
     @PutMapping("/{id}")
     public HttpEntity<EntityModel<PublicationDto>> updatePublication(@PathVariable UUID id, @Validated @RequestBody PublicationDto pub) {
         log.debug("Put to update publication with id: {}", id);

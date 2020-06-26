@@ -32,9 +32,9 @@ import lombok.ToString;
 @EqualsAndHashCode
 @ToString
 @NoArgsConstructor
-public class ComputingResourceDto {
+public class ComputingResourcePropertyDto {
     private UUID id;
     private String value;
     @NotNull
-    private ComputingResourceTypeDto type;
+    private ComputingResourcePropertyTypeDto type;
 }

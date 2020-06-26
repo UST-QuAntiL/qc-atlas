@@ -30,7 +30,7 @@ public class Backend extends HasId {
     private String technology;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
-    private Set<ComputingResource> providedQuantumResources = new HashSet<>();
+    private Set<ComputingResourceProperty> providedQuantumResources = new HashSet<>();
 
     private QuantumComputationModel quantumComputationModel;
 

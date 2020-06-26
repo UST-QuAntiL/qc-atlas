@@ -26,7 +26,7 @@ public class BackendDto {
     private String name;
     private String vendor;
     private String technology;
-    private Set<ComputingResourceDto> providedQuantumResources = new HashSet<>();
+    private Set<ComputingResourcePropertyDto> providedQuantumResources = new HashSet<>();
     private QuantumComputationModel quantumComputationModel;
     private Set<BackendProperty> backendProperties;
 }

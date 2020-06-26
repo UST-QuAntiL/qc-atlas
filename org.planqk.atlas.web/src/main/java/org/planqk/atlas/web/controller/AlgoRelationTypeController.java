@@ -46,7 +46,7 @@ public class AlgoRelationTypeController {
     private PagedResourcesAssembler<AlgoRelationTypeDto> paginationAssembler;
     private AlgoRelationTypeAssembler algoRelationTypeAssembler;
 
-    @Operation(responses = {@ApiResponse(responseCode = "201")})
+    @Operation(responses = {@ApiResponse(responseCode = "201")}, description = "Custom ID will be ignored.")
     @PostMapping()
     public HttpEntity<EntityModel<AlgoRelationTypeDto>> createAlgoRelationType(
             @Valid @RequestBody AlgoRelationTypeDto algoRelationTypeDto) {
@@ -62,7 +62,7 @@ public class AlgoRelationTypeController {
         return new ResponseEntity<>(entityDto, HttpStatus.CREATED);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200")})
+    @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Custom ID will be ignored.")
     @PutMapping("/{id}")
     public HttpEntity<EntityModel<AlgoRelationTypeDto>> updateAlgoRelationType(@PathVariable UUID id,
                                                                                @Valid @RequestBody AlgoRelationTypeDto algoRelationTypeDto) {

@@ -19,25 +19,29 @@
 
 package org.planqk.atlas.web.dtos;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.UUID;
 
-import org.planqk.atlas.core.model.QuantumAlgorithm;
-import org.planqk.atlas.core.model.SoftwarePlatform;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
+import org.planqk.atlas.core.model.ComputingResourcePropertyDataType;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-@EqualsAndHashCode(callSuper = true)
-@ToString(callSuper = true)
 @Data
-public class QuantumImplementationDto extends ImplementationDto {
+@EqualsAndHashCode
+@ToString
+@NoArgsConstructor
+public class ComputingResourcePropertyTypeDto {
 
-    private QuantumAlgorithm algorithm;
+    private UUID id;
 
-    private Set<ComputingResourcePropertyDto> requiredQuantumResources = new HashSet<>();
-
-    private SoftwarePlatform usedSoftwarePlatform;
-
+    @NotEmpty
+    private String name;
+    @NotNull
+    private ComputingResourcePropertyDataType datatype;
+    private String description;
 }

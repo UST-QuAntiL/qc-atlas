@@ -21,10 +21,10 @@ package org.planqk.atlas.web.controller;
 
 import java.util.UUID;
 
-import org.planqk.atlas.core.services.ComputingResourceService;
+import org.planqk.atlas.core.services.ComputingResourcePropertyService;
 import org.planqk.atlas.web.Constants;
-import org.planqk.atlas.web.dtos.ComputingResourceDto;
-import org.planqk.atlas.web.linkassembler.ComputingResourceAssembler;
+import org.planqk.atlas.web.dtos.ComputingResourcePropertyDto;
+import org.planqk.atlas.web.linkassembler.ComputingResourcePropertyAssembler;
 import org.planqk.atlas.web.utils.HateoasUtils;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 
@@ -43,14 +43,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @Hidden
-@Tag(name = "compute-resource")
+@Tag(name = "compute-resource-properties")
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
-@RequestMapping("/" + Constants.API_VERSION + "/" + Constants.COMPUTING_RESOURCES)
+@RequestMapping("/" + Constants.API_VERSION + "/" + Constants.COMPUTING_RESOURCES_PROPERTIES)
 @AllArgsConstructor
-public class ComputingResourceController {
-    private final ComputingResourceAssembler assembler;
-    private final ComputingResourceService service;
+public class ComputingResourcePropertyController {
+    private final ComputingResourcePropertyAssembler assembler;
+    private final ComputingResourcePropertyService service;
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
@@ -58,9 +58,9 @@ public class ComputingResourceController {
             @ApiResponse(responseCode = "404"),
     })
     @GetMapping("/{id}")
-    public ResponseEntity<EntityModel<ComputingResourceDto>> getComputingResource(@PathVariable UUID id) {
-        var resource = service.findResourceById(id);
-        var resourceDto = ModelMapperUtils.convert(resource, ComputingResourceDto.class);
+    public ResponseEntity<EntityModel<ComputingResourcePropertyDto>> getComputingResourceProperty(@PathVariable UUID id) {
+        var resource = service.findComputingResourcePropertyById(id);
+        var resourceDto = ModelMapperUtils.convert(resource, ComputingResourcePropertyDto.class);
         var entityModel = HateoasUtils.generateEntityModel(resourceDto);
         assembler.addLinks(entityModel);
         return ResponseEntity.ok(entityModel);
@@ -72,9 +72,9 @@ public class ComputingResourceController {
             @ApiResponse(responseCode = "404", description = "Computing resource with given id doesn't exist"),
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteComputingResource(@PathVariable UUID id) {
-        service.findResourceById(id);
-        service.deleteComputingResource(id);
+    public ResponseEntity<?> deleteComputingResourceProperty(@PathVariable UUID id) {
+        service.findComputingResourcePropertyById(id);
+        service.deleteComputingResourceProperty(id);
         return ResponseEntity.ok().build();
     }
 }

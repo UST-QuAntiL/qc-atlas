@@ -65,7 +65,7 @@ public class Algorithm extends AlgorOrImpl {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "algorithm", orphanRemoval = true)
     @EqualsAndHashCode.Exclude
-    private Set<ComputingResource> requiredComputingResources = new HashSet<>();
+    private Set<ComputingResourceProperty> requiredComputingResourceProperties = new HashSet<>();
 
     private String inputFormat;
     private String algoParameter;
@@ -117,8 +117,8 @@ public class Algorithm extends AlgorOrImpl {
         }
     }
 
-    public void addComputingResource(@lombok.NonNull ComputingResource resource) {
-        this.requiredComputingResources.add(resource);
+    public void addComputingResource(@lombok.NonNull ComputingResourceProperty resource) {
+        this.requiredComputingResourceProperties.add(resource);
     }
 
     public Set<Publication> getPublications() {
