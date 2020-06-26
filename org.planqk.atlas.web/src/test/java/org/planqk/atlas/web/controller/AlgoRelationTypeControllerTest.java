@@ -95,7 +95,7 @@ public class AlgoRelationTypeControllerTest {
         algoRelationTypeDto.setId(UUID.randomUUID());
 
         mockMvc.perform(
-                post("/" + Constants.ALGO_RELATION_TYPES + "/").content(mapper.writeValueAsString(algoRelationTypeDto))
+                post("/" + Constants.API_VERSION + "/" + Constants.ALGO_RELATION_TYPES + "/").content(mapper.writeValueAsString(algoRelationTypeDto))
                         .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
@@ -106,7 +106,7 @@ public class AlgoRelationTypeControllerTest {
         doNothing().when(algoRelationTypeAssembler).addLinks(ArgumentMatchers.<EntityModel<AlgoRelationTypeDto>>any());
 
         MvcResult result = mockMvc
-                .perform(post("/" + Constants.ALGO_RELATION_TYPES + "/")
+                .perform(post("/" + Constants.API_VERSION + "/" + Constants.ALGO_RELATION_TYPES + "/")
                         .content(mapper.writeValueAsString(algoRelationType1Dto))
                         .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated()).andReturn();
@@ -122,7 +122,7 @@ public class AlgoRelationTypeControllerTest {
         AlgoRelationTypeDto algoRelationTypeDto = new AlgoRelationTypeDto();
         algoRelationTypeDto.setId(UUID.randomUUID());
 
-        mockMvc.perform(put("/" + Constants.ALGO_RELATION_TYPES + "/{id}", algoRelationTypeDto.getId())
+        mockMvc.perform(put("/" + Constants.API_VERSION + "/" + Constants.ALGO_RELATION_TYPES + "/{id}", algoRelationTypeDto.getId())
                 .content(mapper.writeValueAsString(algoRelationTypeDto)).contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
     }
@@ -134,7 +134,7 @@ public class AlgoRelationTypeControllerTest {
         doNothing().when(algoRelationTypeAssembler).addLinks(ArgumentMatchers.<EntityModel<AlgoRelationTypeDto>>any());
 
         MvcResult result = mockMvc
-                .perform(put("/" + Constants.ALGO_RELATION_TYPES + "/{id}", algoRelationType1.getId())
+                .perform(put("/" + Constants.API_VERSION + "/" + Constants.ALGO_RELATION_TYPES + "/{id}", algoRelationType1.getId())
                         .content(mapper.writeValueAsString(algoRelationType1Dto))
                         .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
@@ -154,7 +154,7 @@ public class AlgoRelationTypeControllerTest {
                 .addLinks(ArgumentMatchers.<Collection<EntityModel<AlgoRelationTypeDto>>>any());
 
         MvcResult result = mockMvc
-                .perform(get("/" + Constants.ALGO_RELATION_TYPES + "/")
+                .perform(get("/" + Constants.API_VERSION + "/" + Constants.ALGO_RELATION_TYPES + "/")
                         .queryParam(Constants.PAGE, Integer.toString(page))
                         .queryParam(Constants.SIZE, Integer.toString(size)).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
@@ -181,7 +181,7 @@ public class AlgoRelationTypeControllerTest {
                 .addLinks(ArgumentMatchers.<Collection<EntityModel<AlgoRelationTypeDto>>>any());
 
         MvcResult result = mockMvc
-                .perform(get("/" + Constants.ALGO_RELATION_TYPES + "/")
+                .perform(get("/" + Constants.API_VERSION + "/" + Constants.ALGO_RELATION_TYPES + "/")
                         .queryParam(Constants.PAGE, Integer.toString(page))
                         .queryParam(Constants.SIZE, Integer.toString(size)).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
@@ -195,7 +195,7 @@ public class AlgoRelationTypeControllerTest {
     public void getAlgoRelationTypeById_returnNotFound() throws Exception {
         when(algoRelationTypeService.findById(algoRelationType1.getId())).thenThrow(NoSuchElementException.class);
 
-        mockMvc.perform(get("/" + Constants.ALGO_RELATION_TYPES + "/{id}", algoRelationType1.getId())
+        mockMvc.perform(get("/" + Constants.API_VERSION + "/" + Constants.ALGO_RELATION_TYPES + "/{id}", algoRelationType1.getId())
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
     }
 
@@ -204,7 +204,7 @@ public class AlgoRelationTypeControllerTest {
         when(algoRelationTypeService.findById(algoRelationType1.getId())).thenReturn(algoRelationType1);
         doNothing().when(algoRelationTypeAssembler).addLinks(ArgumentMatchers.<EntityModel<AlgoRelationTypeDto>>any());
 
-        MvcResult result = mockMvc.perform(get("/" + Constants.ALGO_RELATION_TYPES + "/{id}", algoRelationType1.getId())
+        MvcResult result = mockMvc.perform(get("/" + Constants.API_VERSION + "/" + Constants.ALGO_RELATION_TYPES + "/{id}", algoRelationType1.getId())
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
 
         EntityModel<AlgorithmRelationDto> algoRelationTypeDto = mapper.readValue(result.getResponse().getContentAsString(),
@@ -217,13 +217,13 @@ public class AlgoRelationTypeControllerTest {
     public void deleteAlgoRelationType_returnNotFound() throws Exception {
         doThrow(NoSuchElementException.class).when(algoRelationTypeService).delete(algoRelationType1.getId());
 
-        mockMvc.perform(delete("/" + Constants.ALGO_RELATION_TYPES + "/{id}", algoRelationType1.getId())
+        mockMvc.perform(delete("/" + Constants.API_VERSION + "/" + Constants.ALGO_RELATION_TYPES + "/{id}", algoRelationType1.getId())
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
     }
 
     @Test
     public void deleteAlgoRelationType_returnOk() throws Exception {
-        mockMvc.perform(delete("/" + Constants.ALGO_RELATION_TYPES + "/{id}", algoRelationType1.getId())
+        mockMvc.perform(delete("/" + Constants.API_VERSION + "/" + Constants.ALGO_RELATION_TYPES + "/{id}", algoRelationType1.getId())
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
     }
 }

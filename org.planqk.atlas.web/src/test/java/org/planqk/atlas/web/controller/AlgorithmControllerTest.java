@@ -223,7 +223,7 @@ public class AlgorithmControllerTest {
         initializeAlgorithms();
         when(algorithmService.findAll(Pageable.unpaged())).thenReturn(Page.empty());
 
-        mockMvc.perform(get("/" + Constants.ALGORITHMS + "/").accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/" + Constants.API_VERSION + "/" + Constants.ALGORITHMS + "/").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 
@@ -233,7 +233,7 @@ public class AlgorithmControllerTest {
         when(algorithmService.findAll(pageable)).thenReturn(Page.empty());
 
         MvcResult result = mockMvc
-                .perform(get("/" + Constants.ALGORITHMS + "/").queryParam(Constants.PAGE, Integer.toString(page))
+                .perform(get("/" + Constants.API_VERSION + "/" + Constants.ALGORITHMS + "/").queryParam(Constants.PAGE, Integer.toString(page))
                         .queryParam(Constants.SIZE, Integer.toString(size)).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
@@ -255,7 +255,7 @@ public class AlgorithmControllerTest {
         when(algorithmService.findAll(pageable)).thenReturn(pageAlg);
 
         MvcResult result = mockMvc
-                .perform(get("/" + Constants.ALGORITHMS + "/").queryParam(Constants.PAGE, Integer.toString(page))
+                .perform(get("/" + Constants.API_VERSION + "/" + Constants.ALGORITHMS + "/").queryParam(Constants.PAGE, Integer.toString(page))
                         .queryParam(Constants.SIZE, Integer.toString(size)).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON)).andReturn();
 
@@ -269,7 +269,7 @@ public class AlgorithmControllerTest {
         initializeAlgorithms();
         when(algorithmService.findById(any(UUID.class))).thenThrow(new NoSuchElementException());
 
-        mockMvc.perform(get("/" + Constants.ALGORITHMS + "/" + UUID.randomUUID()).accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/" + Constants.API_VERSION + "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID()).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
 
@@ -279,7 +279,7 @@ public class AlgorithmControllerTest {
         when(algorithmService.findById(any(UUID.class))).thenReturn(algorithm1);
 
         MvcResult result = mockMvc
-                .perform(get("/" + Constants.ALGORITHMS + "/" + algorithm1.getId()).accept(MediaType.APPLICATION_JSON))
+                .perform(get("/" + Constants.API_VERSION + "/" + Constants.ALGORITHMS + "/" + algorithm1.getId()).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
         EntityModel<AlgorithmDto> response = mapper.readValue(result.getResponse().getContentAsString(),
@@ -293,12 +293,12 @@ public class AlgorithmControllerTest {
         initializeAlgorithms();
         AlgorithmDto algoDto = new AlgorithmDto();
         algoDto.setId(UUID.randomUUID());
-        mockMvc.perform(post("/" + Constants.ALGORITHMS + "/").content(mapper.writeValueAsString(algoDto))
+        mockMvc.perform(post("/" + Constants.API_VERSION + "/" + Constants.ALGORITHMS + "/").content(mapper.writeValueAsString(algoDto))
                 .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
 
         algoDto.setName("algoDto");
-        mockMvc.perform(post("/" + Constants.ALGORITHMS + "/").content(mapper.writeValueAsString(algoDto))
+        mockMvc.perform(post("/" + Constants.API_VERSION + "/" + Constants.ALGORITHMS + "/").content(mapper.writeValueAsString(algoDto))
                 .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
@@ -309,7 +309,7 @@ public class AlgorithmControllerTest {
         when(algorithmService.save(algorithm1)).thenReturn(algorithm1);
 
         MvcResult result = mockMvc
-                .perform(post("/" + Constants.ALGORITHMS + "/").content(mapper.writeValueAsString(algorithm1Dto))
+                .perform(post("/" + Constants.API_VERSION + "/" + Constants.ALGORITHMS + "/").content(mapper.writeValueAsString(algorithm1Dto))
                         .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated()).andReturn();
 
@@ -326,13 +326,13 @@ public class AlgorithmControllerTest {
         algoDto.setId(UUID.randomUUID());
 
         mockMvc.perform(
-                put("/" + Constants.ALGORITHMS + "/{id}", algoDto.getId()).content(mapper.writeValueAsString(algoDto))
+                put("/" + Constants.API_VERSION + "/" + Constants.ALGORITHMS + "/{id}", algoDto.getId()).content(mapper.writeValueAsString(algoDto))
                         .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
 
         algoDto.setName("algoDto");
 
-        mockMvc.perform(post("/" + Constants.ALGORITHMS + "/").content(mapper.writeValueAsString(algoDto))
+        mockMvc.perform(post("/" + Constants.API_VERSION + "/" + Constants.ALGORITHMS + "/").content(mapper.writeValueAsString(algoDto))
                 .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
@@ -342,7 +342,7 @@ public class AlgorithmControllerTest {
         initializeAlgorithms();
         when(algorithmService.update(algorithm1.getId(), algorithm1)).thenReturn(algorithm1);
 
-        MvcResult result = mockMvc.perform(put("/" + Constants.ALGORITHMS + "/{id}", algorithm1.getId())
+        MvcResult result = mockMvc.perform(put("/" + Constants.API_VERSION + "/" + Constants.ALGORITHMS + "/{id}", algorithm1.getId())
                 .content(mapper.writeValueAsString(algorithm1Dto)).contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
 
@@ -357,14 +357,14 @@ public class AlgorithmControllerTest {
         initializeAlgorithms();
         doThrow(new NoSuchElementException()).when(algorithmService).delete(any(UUID.class));
 
-        mockMvc.perform(delete("/" + Constants.ALGORITHMS + "/{id}", UUID.randomUUID()))
+        mockMvc.perform(delete("/" + Constants.API_VERSION + "/" + Constants.ALGORITHMS + "/{id}", UUID.randomUUID()))
                 .andExpect(status().isNotFound());
     }
 
     @Test
     public void deleteAlgorithm_returnOk() throws Exception {
         initializeAlgorithms();
-        mockMvc.perform(delete("/" + Constants.ALGORITHMS + "/{id}", this.algorithm1.getId()))
+        mockMvc.perform(delete("/" + Constants.API_VERSION + "/" + Constants.ALGORITHMS + "/{id}", this.algorithm1.getId()))
                 .andExpect(status().isOk()).andReturn();
     }
 
@@ -373,7 +373,7 @@ public class AlgorithmControllerTest {
         initializeAlgorithms();
         when(algorithmService.getAlgorithmRelations(any(UUID.class))).thenThrow(new NoSuchElementException());
 
-        mockMvc.perform(get("/" + Constants.ALGORITHMS + "/{id}/" + Constants.ALGORITHM_RELATIONS, UUID.randomUUID()))
+        mockMvc.perform(get("/" + Constants.API_VERSION + "/" + Constants.ALGORITHMS + "/{id}/" + Constants.ALGORITHM_RELATIONS, UUID.randomUUID()))
                 .andExpect(status().isNotFound());
     }
 
@@ -383,7 +383,7 @@ public class AlgorithmControllerTest {
         when(algorithmService.getAlgorithmRelations(any(UUID.class))).thenReturn(new HashSet<>());
 
         MvcResult result = mockMvc
-                .perform(get("/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS,
+                .perform(get("/" + Constants.API_VERSION + "/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS,
                         algorithm2.getId()).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
@@ -398,7 +398,7 @@ public class AlgorithmControllerTest {
         when(algorithmService.getAlgorithmRelations(any(UUID.class))).thenReturn(algorithm1.getAlgorithmRelations());
 
         MvcResult result = mockMvc
-                .perform(get("/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS,
+                .perform(get("/" + Constants.API_VERSION + "/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS,
                         algorithm1.getId()).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON)).andReturn();
 
@@ -412,7 +412,7 @@ public class AlgorithmControllerTest {
         initializeAlgorithms();
         when(algoRelationService.findById(any(UUID.class))).thenThrow(new NoSuchElementException());
 
-        mockMvc.perform(put("/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS + "/{relationId}",
+        mockMvc.perform(put("/" + Constants.API_VERSION + "/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS + "/{relationId}",
                 UUID.randomUUID(), UUID.randomUUID()).content(mapper.writeValueAsString(algorithmRelation1Dto))
                 .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
@@ -422,7 +422,7 @@ public class AlgorithmControllerTest {
     public void addAlgorithmRelation_returnBadRequest() throws Exception {
         initializeAlgorithms();
 
-        mockMvc.perform(post("/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS,
+        mockMvc.perform(post("/" + Constants.API_VERSION + "/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS,
                 UUID.randomUUID()).content(mapper.writeValueAsString(algorithmRelation1Dto))
                 .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
@@ -435,7 +435,7 @@ public class AlgorithmControllerTest {
         when(algoRelationService.save(any(AlgorithmRelation.class))).thenReturn(algorithmRelation1);
 
         MvcResult result = mockMvc
-                .perform(put("/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS + "/{relationId}",
+                .perform(put("/" + Constants.API_VERSION + "/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS + "/{relationId}",
                         algorithm1.getId(), algorithmRelation1Dto.getId()).content(mapper.writeValueAsString(algorithmRelation1Dto))
                         .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
@@ -461,7 +461,7 @@ public class AlgorithmControllerTest {
         initializeAlgorithms();
         doNothing().when(algorithmService).deleteAlgorithmRelation(algorithm1.getId(), algorithmRelation1.getId());
 
-        mockMvc.perform(delete("/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS
+        mockMvc.perform(delete("/" + Constants.API_VERSION + "/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS
                 + "/{relation_id}", algorithm1.getId(), algorithmRelation1.getId())).andExpect(status().isOk())
                 .andReturn();
     }
@@ -472,7 +472,7 @@ public class AlgorithmControllerTest {
         when(algorithmService.findById(any())).thenReturn(algorithm1);
 
         MvcResult result = mockMvc.perform(
-                get("/" + Constants.ALGORITHMS + "/{id}/" + Constants.PATTERN_RELATIONS, UUID.randomUUID()).accept(MediaType.APPLICATION_JSON))
+                get("/" + Constants.API_VERSION + "/" + Constants.ALGORITHMS + "/{id}/" + Constants.PATTERN_RELATIONS, UUID.randomUUID()).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
         var resultList = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(),
@@ -486,7 +486,7 @@ public class AlgorithmControllerTest {
         when(algorithmService.findById(any())).thenThrow(NoSuchElementException.class);
 
         mockMvc.perform(
-                get("/" + Constants.ALGORITHMS + "/{id}/" + Constants.PATTERN_RELATIONS, algorithm1.getId()).accept(MediaType.APPLICATION_JSON))
+                get("/" + Constants.API_VERSION + "/" + Constants.ALGORITHMS + "/{id}/" + Constants.PATTERN_RELATIONS, algorithm1.getId()).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
 
@@ -494,7 +494,7 @@ public class AlgorithmControllerTest {
     void testListComputingResources_ClassicAlgorithm() throws Exception {
         when(algorithmService.findById(any())).thenReturn(new QuantumAlgorithm());
         when(computingResourceService.findAllResourcesByAlgorithmId(any(), any())).thenReturn(Page.empty());
-        var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES + "/";
+        var path = "/" + Constants.API_VERSION + "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES + "/";
         mockMvc.perform(get(path)).andExpect(status().isOk());
     }
 
@@ -504,7 +504,7 @@ public class AlgorithmControllerTest {
         algo.setRequiredComputingResources(new HashSet<>());
         when(algorithmService.findById(any())).thenReturn(algo);
         when(computingResourceService.findAllResourcesByAlgorithmId(any(), any())).thenReturn(Page.empty());
-        var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES + "/";
+        var path = "/" + Constants.API_VERSION + "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES + "/";
         var result = mockMvc.perform(get(path)).andExpect(status().isOk()).andReturn();
 
         var resultList = ObjectMapperUtils.mapResponseToList(
@@ -537,7 +537,7 @@ public class AlgorithmControllerTest {
 
         when(algorithmService.findById(any())).thenReturn(algo);
         when(computingResourceService.findAllResourcesByAlgorithmId(any(), any())).thenReturn(new PageImpl<>(resources));
-        var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES + "/";
+        var path = "/" + Constants.API_VERSION + "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES + "/";
         var result = mockMvc.perform(get(path)).andExpect(status().isOk()).andReturn();
 
         var resultList = ObjectMapperUtils.mapResponseToList(
@@ -554,7 +554,7 @@ public class AlgorithmControllerTest {
     @Test
     void testAddQuantumResource_AlgoNotFound() throws Exception {
         when(algorithmService.findById(any())).thenThrow(new NoSuchElementException());
-        var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES + "/";
+        var path = "/" + Constants.API_VERSION + "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES + "/";
         mockMvc.perform(post(path).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsBytes(getValidResourceInput())))
                 .andExpect(status().isNotFound());
     }
@@ -570,7 +570,7 @@ public class AlgorithmControllerTest {
         when(algorithmService.findById(any())).thenReturn(algorithm);
         when(computingResourceService.findResourceTypeById(any())).thenReturn(new ComputingResourceType());
         when(computingResourceService.addComputingResourceToAlgorithm(any(Algorithm.class), any(ComputingResource.class))).thenReturn(new ComputingResource());
-        var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES + "/";
+        var path = "/" + Constants.API_VERSION + "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES + "/";
         mockMvc.perform(post(path).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsBytes(getValidResourceInput())))
                 .andExpect(status().isOk());
     }
@@ -581,7 +581,7 @@ public class AlgorithmControllerTest {
         resource.setId(UUID.randomUUID());
 
         when(algorithmService.findById(any())).thenReturn(new ClassicAlgorithm());
-        var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES + "/";
+        var path = "/" + Constants.API_VERSION + "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES + "/";
         mockMvc.perform(post(path).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsBytes(resource)))
                 .andExpect(status().isBadRequest());
     }
@@ -645,7 +645,7 @@ public class AlgorithmControllerTest {
         when(algorithmService.findById(any())).thenReturn(algorithm1);
         when(computingResourceService.findResourceTypeById(any())).thenReturn(new ComputingResourceType());
         when(computingResourceService.addComputingResourceToAlgorithm(any(QuantumAlgorithm.class), any(ComputingResource.class))).thenReturn(new ComputingResource());
-        var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES + "/";
+        var path = "/" + Constants.API_VERSION + "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES + "/";
         mockMvc.perform(post(path).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsBytes(getValidResourceInput())))
                 .andExpect(status().isOk());
     }

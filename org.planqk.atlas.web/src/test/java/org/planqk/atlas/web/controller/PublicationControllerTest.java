@@ -107,7 +107,7 @@ public class PublicationControllerTest {
         when(publicationService.findAll(pageable)).thenReturn(pagePublication);
 
         MvcResult result = mockMvc
-                .perform(get("/" + Constants.PUBLICATIONS + "/").queryParam(Constants.PAGE, Integer.toString(page))
+                .perform(get("/" + Constants.API_VERSION + "/" + Constants.PUBLICATIONS + "/").queryParam(Constants.PAGE, Integer.toString(page))
                         .queryParam(Constants.SIZE, Integer.toString(size)).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON)).andReturn();
 
@@ -123,7 +123,7 @@ public class PublicationControllerTest {
     public void getPublications_emptyPublicationList() throws Exception {
         when(publicationService.findAll(pageable)).thenReturn(Page.empty());
 
-        MvcResult mvcResult = mockMvc.perform(get("/" + Constants.PUBLICATIONS + "/").queryParam(Constants.PAGE, Integer.toString(page))
+        MvcResult mvcResult = mockMvc.perform(get("/" + Constants.API_VERSION + "/" + Constants.PUBLICATIONS + "/").queryParam(Constants.PAGE, Integer.toString(page))
                 .queryParam(Constants.SIZE, Integer.toString(size)).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
@@ -139,7 +139,7 @@ public class PublicationControllerTest {
     public void createPublication_returnPublication() throws Exception {
         when(publicationService.save(publication)).thenReturn(publication);
         MvcResult result = mockMvc
-                .perform(post("/" + Constants.PUBLICATIONS + "/").content(mapper.writeValueAsString(publicationDto))
+                .perform(post("/" + Constants.API_VERSION + "/" + Constants.PUBLICATIONS + "/").content(mapper.writeValueAsString(publicationDto))
                         .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated()).andReturn();
 

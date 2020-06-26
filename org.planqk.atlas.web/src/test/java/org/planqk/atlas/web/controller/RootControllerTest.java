@@ -45,7 +45,7 @@ public class RootControllerTest {
 
     @Test
     public void testGetHateoasLinks() throws Exception {
-        MvcResult result = mockMvc.perform(get("/").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+        MvcResult result = mockMvc.perform(get("/" + Constants.API_VERSION + "/").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
                 .andReturn();
 
         var responseObject = new JSONObject(result.getResponse().getContentAsString());
