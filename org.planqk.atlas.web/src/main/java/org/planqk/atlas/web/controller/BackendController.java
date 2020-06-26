@@ -5,14 +5,14 @@ import java.util.UUID;
 import javax.validation.Valid;
 
 import org.planqk.atlas.core.model.Backend;
-import org.planqk.atlas.core.model.ComputingResource;
+import org.planqk.atlas.core.model.ComputingResourceProperty;
 import org.planqk.atlas.core.services.BackendService;
-import org.planqk.atlas.core.services.ComputingResourceService;
+import org.planqk.atlas.core.services.ComputingResourcePropertyService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.BackendDto;
-import org.planqk.atlas.web.dtos.ComputingResourceDto;
+import org.planqk.atlas.web.dtos.ComputingResourcePropertyDto;
 import org.planqk.atlas.web.linkassembler.BackendAssembler;
-import org.planqk.atlas.web.linkassembler.ComputingResourceAssembler;
+import org.planqk.atlas.web.linkassembler.ComputingResourcePropertyAssembler;
 import org.planqk.atlas.web.utils.HateoasUtils;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.RestUtils;
@@ -48,9 +48,9 @@ public class BackendController {
 
     final private static Logger LOG = LoggerFactory.getLogger(BackendController.class);
 
-    private final ComputingResourceService quantumResourceService;
-    private final PagedResourcesAssembler<ComputingResourceDto> quantumResourcePaginationAssembler;
-    private final ComputingResourceAssembler quantumResourceAssembler;
+    private final ComputingResourcePropertyService quantumResourceService;
+    private final PagedResourcesAssembler<ComputingResourcePropertyDto> quantumResourcePaginationAssembler;
+    private final ComputingResourcePropertyAssembler quantumResourceAssembler;
     private BackendService backendService;
     private BackendAssembler backendAssembler;
     private PagedResourcesAssembler<BackendDto> paginationAssembler;
@@ -112,15 +112,15 @@ public class BackendController {
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404")
     })
-    @GetMapping("/{id}/" + Constants.COMPUTING_RESOURCES)
-    public ResponseEntity<PagedModel<EntityModel<ComputingResourceDto>>> getQuantumResources(
+    @GetMapping("/{id}/" + Constants.COMPUTING_RESOURCES_PROPERTIES)
+    public ResponseEntity<PagedModel<EntityModel<ComputingResourcePropertyDto>>> getQuantumResources(
             @PathVariable UUID id,
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size
     ) {
-        var resources = quantumResourceService.findAllResourcesByBackendId(id,
+        var resources = quantumResourceService.findAllComputingResourcesPropertiesByBackendId(id,
                 RestUtils.getPageableFromRequestParams(page, size));
-        var typeDtoes = ModelMapperUtils.convertPage(resources, ComputingResourceDto.class);
+        var typeDtoes = ModelMapperUtils.convertPage(resources, ComputingResourcePropertyDto.class);
         var pagedModel = quantumResourcePaginationAssembler.toModel(typeDtoes);
         quantumResourceAssembler.addLinks(pagedModel);
         return ResponseEntity.ok(pagedModel);
@@ -131,14 +131,14 @@ public class BackendController {
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404")
     })
-    @PostMapping("/{id}/" + Constants.COMPUTING_RESOURCES)
+    @PostMapping("/{id}/" + Constants.COMPUTING_RESOURCES_PROPERTIES)
     public ResponseEntity<EntityModel<BackendDto>> addQuantumResource(
             @PathVariable UUID id,
-            @Valid @RequestBody ComputingResourceDto resourceDto
+            @Valid @RequestBody ComputingResourcePropertyDto resourceDto
     ) {
         var backend = backendService.findById(id);
-        var resource = ModelMapperUtils.convert(resourceDto, ComputingResource.class);
-        var updatedBackend = quantumResourceService.addComputingResourceToBackend(backend, resource);
+        var resource = ModelMapperUtils.convert(resourceDto, ComputingResourceProperty.class);
+        var updatedBackend = quantumResourceService.addComputingResourcePropertyToBackend(backend, resource);
         EntityModel<BackendDto> backendDto = HateoasUtils.generateEntityModel(
                 ModelMapperUtils.convert(updatedBackend, BackendDto.class));
         backendAssembler.addLinks(backendDto);

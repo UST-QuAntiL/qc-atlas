@@ -17,23 +17,19 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.planqk.atlas.web.linkassembler;
+package org.planqk.atlas.core.model;
 
-import org.planqk.atlas.web.controller.ComputingResourceTypeController;
-import org.planqk.atlas.web.dtos.ComputingResourceTypeDto;
+import javax.persistence.Entity;
 
-import org.springframework.hateoas.EntityModel;
-import org.springframework.stereotype.Component;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+@EqualsAndHashCode(callSuper = true)
+@Data
+@Entity
+public class ComputingResourcePropertyType extends HasId {
 
-@SuppressWarnings("ConstantConditions")
-@Component
-public class QuantumResourceTypeAssembler extends GenericLinkAssembler<ComputingResourceTypeDto> {
-    @Override
-    public void addLinks(EntityModel<ComputingResourceTypeDto> resource) {
-        resource.add(links.linkTo(methodOn(ComputingResourceTypeController.class)
-                .getComputingResourceType(resource.getContent().getId()))
-                .withSelfRel());
-    }
+    private String name;
+    private ComputingResourcePropertyDataType datatype;
+    private String description;
 }

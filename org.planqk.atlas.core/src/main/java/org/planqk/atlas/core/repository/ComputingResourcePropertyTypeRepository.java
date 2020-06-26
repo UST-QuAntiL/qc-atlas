@@ -17,9 +17,15 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.planqk.atlas.core.model;
+package org.planqk.atlas.core.repository;
 
-public enum ComputingResourceDataType {
+import java.util.UUID;
 
-    INTEGER, STRING, FLOAT
+import org.planqk.atlas.core.model.ComputingResourcePropertyType;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+
+@RepositoryRestResource
+public interface ComputingResourcePropertyTypeRepository extends JpaRepository<ComputingResourcePropertyType, UUID> {
 }
