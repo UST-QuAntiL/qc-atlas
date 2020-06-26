@@ -73,21 +73,21 @@ public class ComputingResourcePropertyControllerTest {
     @Test
     void test_deleteResource() throws Exception {
         doNothing().when(resourceService).deleteComputingResourceProperty(any());
-        var url = "/" + Constants.COMPUTING_RESOURCES_PROPERTIES + "/" + UUID.randomUUID().toString();
+        var url = "/" + Constants.API_VERSION + "/" + Constants.COMPUTING_RESOURCES_PROPERTIES + "/" + UUID.randomUUID().toString();
         mockMvc.perform(delete(url)).andExpect(status().isOk());
     }
 
     @Test
     void test_deleteResource_InvalidId() throws Exception {
         doThrow(new NoSuchElementException()).when(resourceService).deleteComputingResourceProperty(any());
-        var url = "/" + Constants.COMPUTING_RESOURCES_PROPERTIES + "/" + UUID.randomUUID().toString();
+        var url = "/" + Constants.API_VERSION + "/" + Constants.COMPUTING_RESOURCES_PROPERTIES + "/" + UUID.randomUUID().toString();
         mockMvc.perform(delete(url)).andExpect(status().isNotFound());
     }
 
     @Test
     void test_getResource_InvalidId() throws Exception {
         when(resourceService.findComputingResourcePropertyById(any())).thenThrow(new NoSuchElementException());
-        var url = "/" + Constants.COMPUTING_RESOURCES_PROPERTIES + "/" + UUID.randomUUID().toString();
+        var url = "/" + Constants.API_VERSION + "/" + Constants.COMPUTING_RESOURCES_PROPERTIES + "/" + UUID.randomUUID().toString();
         mockMvc.perform(get(url)).andExpect(status().isNotFound());
     }
 
@@ -103,7 +103,7 @@ public class ComputingResourcePropertyControllerTest {
         sampleResource.setComputingResourcePropertyType(sampleType);
 
         when(resourceService.findComputingResourcePropertyById(any())).thenReturn(sampleResource);
-        var url = "/" + Constants.COMPUTING_RESOURCES_PROPERTIES + "/" + UUID.randomUUID().toString();
+        var url = "/" + Constants.API_VERSION + "/" + Constants.COMPUTING_RESOURCES_PROPERTIES + "/" + UUID.randomUUID().toString();
         var result = mockMvc.perform(get(url)).andExpect(status().isOk()).andReturn();
 
         var dto = mapper.readValue(

@@ -63,7 +63,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @AllArgsConstructor
-@RequestMapping("/" + Constants.PUBLICATIONS)
+@RequestMapping("/" + Constants.API_VERSION + "/" + Constants.PUBLICATIONS)
 public class PublicationController {
 
     private PublicationService publicationService;

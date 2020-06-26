@@ -18,6 +18,7 @@
  *******************************************************************************/
 package org.planqk.atlas.web.linkassembler;
 
+import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.RootController;
 
 import org.junit.jupiter.api.Test;
@@ -38,6 +39,6 @@ public class LinkBuilderServiceIntegrationTest {
     public void resolvesAsUnversioned() {
         var link = service.linkTo(methodOn(RootController.class).root()).withSelfRel();
         assertEquals(IanaLinkRelations.SELF, link.getRel());
-        assertEquals("/", link.getHref());
+        assertEquals("/" + Constants.API_VERSION + "/", link.getHref());
     }
 }

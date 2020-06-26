@@ -40,7 +40,7 @@ import org.springframework.web.bind.annotation.RestController;
 @io.swagger.v3.oas.annotations.tags.Tag(name = "pattern-relation-type")
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
-@RequestMapping("/" + Constants.PATTERN_RELATION_TYPES)
+@RequestMapping("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATION_TYPES)
 @AllArgsConstructor
 public class PatternRelationTypeController {
 

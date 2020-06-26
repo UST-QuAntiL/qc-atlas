@@ -126,7 +126,7 @@ public class PatternRelationTypeControllerTest {
         when(patternRelationTypeService.save(type1)).thenReturn(type1);
 
         MvcResult result = mockMvc
-                .perform(post("/" + Constants.PATTERN_RELATION_TYPES + "/").content(mapper.writeValueAsString(type1Dto))
+                .perform(post("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATION_TYPES + "/").content(mapper.writeValueAsString(type1Dto))
                         .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated()).andReturn();
 
@@ -142,7 +142,7 @@ public class PatternRelationTypeControllerTest {
         when(patternRelationTypeService.save(type1)).thenReturn(type1);
 
         mockMvc.perform(
-                post("/" + Constants.PATTERN_RELATION_TYPES + "/").content(mapper.writeValueAsString(noReqParamDto))
+                post("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATION_TYPES + "/").content(mapper.writeValueAsString(noReqParamDto))
                         .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
@@ -154,7 +154,7 @@ public class PatternRelationTypeControllerTest {
                 .thenReturn(HateoasUtils.generatePagedModel(typePageDto));
 
         MvcResult result = mockMvc
-                .perform(get("/" + Constants.PATTERN_RELATION_TYPES + "/")
+                .perform(get("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATION_TYPES + "/")
                         .queryParam(Constants.PAGE, Integer.toString(page))
                         .queryParam(Constants.SIZE, Integer.toString(size)).accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
@@ -173,7 +173,7 @@ public class PatternRelationTypeControllerTest {
         when(patternRelationTypeService.findById(type1.getId())).thenReturn(type1);
 
         MvcResult result = mockMvc.perform(
-                get("/" + Constants.PATTERN_RELATION_TYPES + "/" + type1.getId()).accept(MediaType.APPLICATION_JSON))
+                get("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATION_TYPES + "/" + type1.getId()).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
         EntityModel<PatternRelationTypeDto> response = new ObjectMapper().readValue(
@@ -187,7 +187,7 @@ public class PatternRelationTypeControllerTest {
         when(patternRelationTypeService.findById(any())).thenThrow(NoSuchElementException.class);
 
         mockMvc.perform(
-                get("/" + Constants.PATTERN_RELATION_TYPES + "/" + type1.getId()).accept(MediaType.APPLICATION_JSON))
+                get("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATION_TYPES + "/" + type1.getId()).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
 
@@ -195,7 +195,7 @@ public class PatternRelationTypeControllerTest {
     public void updateType_returnType() throws Exception {
         when(patternRelationTypeService.update(type1.getId(), type1)).thenReturn(type1Updated);
 
-        MvcResult result = mockMvc.perform(put("/" + Constants.PATTERN_RELATION_TYPES + "/{id}", type1.getId())
+        MvcResult result = mockMvc.perform(put("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATION_TYPES + "/{id}", type1.getId())
                 .content(mapper.writeValueAsString(type1Dto)).contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
 
@@ -210,7 +210,7 @@ public class PatternRelationTypeControllerTest {
     public void updateType_returnBadRequest() throws Exception {
         when(patternRelationTypeService.update(type1.getId(), type1)).thenReturn(type1Updated);
 
-        mockMvc.perform(put("/" + Constants.PATTERN_RELATION_TYPES + "/{id}", type1.getId())
+        mockMvc.perform(put("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATION_TYPES + "/{id}", type1.getId())
                 .content(mapper.writeValueAsString(noReqParamDto)).contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
     }
@@ -219,7 +219,7 @@ public class PatternRelationTypeControllerTest {
     public void updateType_returnNotFound() throws Exception {
         when(patternRelationTypeService.update(any(), any())).thenThrow(NoSuchElementException.class);
 
-        mockMvc.perform(put("/" + Constants.PATTERN_RELATION_TYPES + "/{id}", UUID.randomUUID())
+        mockMvc.perform(put("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATION_TYPES + "/{id}", UUID.randomUUID())
                 .content(mapper.writeValueAsString(type1Dto)).contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
     }
@@ -228,7 +228,7 @@ public class PatternRelationTypeControllerTest {
     public void deleteType_returnOk() throws Exception {
         doNothing().when(patternRelationTypeService).deleteById(type1.getId());
 
-        mockMvc.perform(delete("/" + Constants.PATTERN_RELATION_TYPES + "/{id}", type1.getId())
+        mockMvc.perform(delete("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATION_TYPES + "/{id}", type1.getId())
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
     }
 
@@ -236,7 +236,7 @@ public class PatternRelationTypeControllerTest {
     public void deleteType_returnNotFound() throws Exception {
         doThrow(EmptyResultDataAccessException.class).when(patternRelationTypeService).deleteById(any());
 
-        mockMvc.perform(delete("/" + Constants.PATTERN_RELATION_TYPES + "/{id}", UUID.randomUUID())
+        mockMvc.perform(delete("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATION_TYPES + "/{id}", UUID.randomUUID())
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
     }
 }

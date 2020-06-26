@@ -42,7 +42,7 @@ import org.springframework.web.bind.annotation.RestController;
 @io.swagger.v3.oas.annotations.tags.Tag(name = "software-platform")
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
-@RequestMapping("/" + Constants.SOFTWARE_PLATFORMS)
+@RequestMapping("/" + Constants.API_VERSION + "/" + Constants.SOFTWARE_PLATFORMS)
 @AllArgsConstructor
 public class SoftwarePlatformController {
     final private static Logger LOG = LoggerFactory.getLogger(SoftwarePlatformController.class);

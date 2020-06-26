@@ -22,7 +22,7 @@ package org.planqk.atlas.web.controller;
 //@io.swagger.v3.oas.annotations.tags.Tag(name = "tag")
 //@RestController
 //@CrossOrigin(allowedHeaders = "*", origins = "*")
-//@RequestMapping("/" + Constants.TAGS)
+//@RequestMapping("/" + Constants.API_VERSION + "/" + Constants.TAGS)
 //@AllArgsConstructor
 public class TagController {
 

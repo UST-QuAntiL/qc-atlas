@@ -114,7 +114,7 @@ public class DiscussionTopicControllerTest {
         when(discussionTopicService.save(any())).thenReturn(discussionTopic);
 
         MvcResult result = mockMvc
-                .perform(post("/" + Constants.DISCUSSION_TOPICS + "/").content(mapper.writeValueAsString(discussionTopicDto))
+                .perform(post("/" + Constants.API_VERSION + "/" + Constants.DISCUSSION_TOPICS + "/").content(mapper.writeValueAsString(discussionTopicDto))
                         .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated()).andReturn();
 
@@ -132,7 +132,7 @@ public class DiscussionTopicControllerTest {
     public void createDiscussionTopic_returnBadRequest() throws Exception {
         // Missing required attribute
         discussionTopicDto.setDate(null);
-        mockMvc.perform(post("/" + Constants.DISCUSSION_TOPICS + "/")
+        mockMvc.perform(post("/" + Constants.API_VERSION + "/" + Constants.DISCUSSION_TOPICS + "/")
                 .content(mapper.writeValueAsString(discussionTopicDto)).contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
     }
@@ -144,7 +144,7 @@ public class DiscussionTopicControllerTest {
                 .thenReturn(HateoasUtils.generatePagedModel(discussionTopicPageDto));
 
         MvcResult result = mockMvc
-                .perform(get("/" + Constants.DISCUSSION_TOPICS + "/").queryParam(Constants.PAGE, Integer.toString(page))
+                .perform(get("/" + Constants.API_VERSION + "/" + Constants.DISCUSSION_TOPICS + "/").queryParam(Constants.PAGE, Integer.toString(page))
                         .queryParam(Constants.SIZE, Integer.toString(size)).accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
@@ -163,7 +163,7 @@ public class DiscussionTopicControllerTest {
     public void deleteDiscussionTopic_returnNotFound() throws Exception {
         UUID id = UUID.randomUUID();
         doThrow(new NoSuchElementException()).when(discussionTopicService).deleteById(id);
-        mockMvc.perform(delete("/" + Constants.DISCUSSION_TOPICS + "/" + id).accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
+        mockMvc.perform(delete("/" + Constants.API_VERSION + "/" + Constants.DISCUSSION_TOPICS + "/" + id).accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
     }
 
     @Test
@@ -171,7 +171,7 @@ public class DiscussionTopicControllerTest {
         when(discussionTopicService.findById(discussionTopic.getId())).thenReturn(discussionTopic);
 
         MvcResult result = mockMvc.perform(
-                get("/" + Constants.DISCUSSION_TOPICS + "/" + discussionTopic.getId()).accept(MediaType.APPLICATION_JSON))
+                get("/" + Constants.API_VERSION + "/" + Constants.DISCUSSION_TOPICS + "/" + discussionTopic.getId()).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
         EntityModel<DiscussionTopicDto> response = mapper.readValue(
@@ -188,20 +188,20 @@ public class DiscussionTopicControllerTest {
     public void getDiscussionTopic_returnNotFound() throws Exception {
         when(discussionTopicService.findById(any(UUID.class))).thenThrow(new NoSuchElementException());
 
-        mockMvc.perform(get("/" + Constants.DISCUSSION_TOPICS + "/" + UUID.randomUUID()).accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/" + Constants.API_VERSION + "/" + Constants.DISCUSSION_TOPICS + "/" + UUID.randomUUID()).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
 
     @Test
     public void deleteDiscussionTopic_returnOK() throws Exception {
-        mockMvc.perform(delete("/" + Constants.DISCUSSION_TOPICS + "/{id}", this.discussionTopic.getId()))
+        mockMvc.perform(delete("/" + Constants.API_VERSION + "/" + Constants.DISCUSSION_TOPICS + "/{id}", this.discussionTopic.getId()))
                 .andExpect(status().isOk()).andReturn();
     }
 
     @Test
     public void updateDiscussionTopic_returnDiscussionTopic() throws Exception {
         when(discussionTopicService.update(discussionTopic.getId(), discussionTopic)).thenReturn(discussionTopic);
-        MvcResult result = mockMvc.perform(put("/" + Constants.DISCUSSION_TOPICS + "/" + discussionTopic.getId())
+        MvcResult result = mockMvc.perform(put("/" + Constants.API_VERSION + "/" + Constants.DISCUSSION_TOPICS + "/" + discussionTopic.getId())
                 .content(mapper.writeValueAsString(discussionTopicDto)).contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
 
@@ -222,7 +222,7 @@ public class DiscussionTopicControllerTest {
         discussionTopic.setDate(null);
         when(discussionTopicService.update(discussionTopic.getId(), discussionTopic)).thenReturn(discussionTopic);
 
-        mockMvc.perform(put("/" + Constants.DISCUSSION_TOPICS + "/" + discussionTopic.getId())
+        mockMvc.perform(put("/" + Constants.API_VERSION + "/" + Constants.DISCUSSION_TOPICS + "/" + discussionTopic.getId())
                 .content(mapper.writeValueAsString(discussionTopic)).contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
     }

@@ -75,21 +75,21 @@ public class ComputingResourcePropertyTypeControllerTest {
     @Test
     void test_deleteType() throws Exception {
         doNothing().when(resourceService).deleteComputingResourcePropertyType(any());
-        var url = "/" + Constants.COMPUTING_RESOURCE_PROPERTY_TYPES + "/" + UUID.randomUUID().toString();
+        var url = "/" + Constants.API_VERSION + "/" + Constants.COMPUTING_RESOURCE_PROPERTY_TYPES + "/" + UUID.randomUUID().toString();
         mockMvc.perform(delete(url)).andExpect(status().isOk());
     }
 
     @Test
     void test_deleteType_InvalidId() throws Exception {
         doThrow(new NoSuchElementException()).when(resourceService).deleteComputingResourcePropertyType(any());
-        var url = "/" + Constants.COMPUTING_RESOURCE_PROPERTY_TYPES + "/" + UUID.randomUUID().toString();
+        var url = "/" + Constants.API_VERSION + "/" + Constants.COMPUTING_RESOURCE_PROPERTY_TYPES + "/" + UUID.randomUUID().toString();
         mockMvc.perform(delete(url)).andExpect(status().isNotFound());
     }
 
     @Test
     void test_getType_InvalidId() throws Exception {
         when(resourceService.findComputingResourcePropertyTypeById(any())).thenThrow(new NoSuchElementException());
-        var url = "/" + Constants.COMPUTING_RESOURCE_PROPERTY_TYPES + "/" + UUID.randomUUID().toString();
+        var url = "/" + Constants.API_VERSION + "/" + Constants.COMPUTING_RESOURCE_PROPERTY_TYPES + "/" + UUID.randomUUID().toString();
         mockMvc.perform(get(url)).andExpect(status().isNotFound());
     }
 
@@ -102,7 +102,7 @@ public class ComputingResourcePropertyTypeControllerTest {
         sampleType.setDescription("Test");
 
         when(resourceService.findComputingResourcePropertyTypeById(any())).thenReturn(sampleType);
-        var url = "/" + Constants.COMPUTING_RESOURCE_PROPERTY_TYPES + "/" + UUID.randomUUID().toString();
+        var url = "/" + Constants.API_VERSION + "/" + Constants.COMPUTING_RESOURCE_PROPERTY_TYPES + "/" + UUID.randomUUID().toString();
         var result = mockMvc.perform(get(url)).andExpect(status().isOk()).andReturn();
 
         var dto = mapper.readValue(
@@ -130,7 +130,7 @@ public class ComputingResourcePropertyTypeControllerTest {
         }
 
         when(resourceService.findAllComputingResourcePropertyTypes(any())).thenReturn(new PageImpl<>(types));
-        var url = "/" + Constants.COMPUTING_RESOURCE_PROPERTY_TYPES + "/";
+        var url = "/" + Constants.API_VERSION + "/" + Constants.COMPUTING_RESOURCE_PROPERTY_TYPES + "/";
         var result = mockMvc.perform(get(url)).andExpect(status().isOk()).andReturn();
 
         var resultList = ObjectMapperUtils.mapResponseToList(

@@ -71,7 +71,7 @@ public class SoftwarePlatformControllerTest {
         softwarePlatform.setId(UUID.randomUUID());
 
         mockMvc.perform(
-                post("/" + Constants.SOFTWARE_PLATFORMS + "/").content(mapper.writeValueAsString(softwarePlatform))
+                post("/" + Constants.API_VERSION + "/" + Constants.SOFTWARE_PLATFORMS + "/").content(mapper.writeValueAsString(softwarePlatform))
                         .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
@@ -86,7 +86,7 @@ public class SoftwarePlatformControllerTest {
         when(softwarePlatformService.save(any(SoftwarePlatform.class))).thenReturn(softwarePlatform);
 
         MvcResult result = mockMvc.perform(
-                post("/" + Constants.SOFTWARE_PLATFORMS + "/").content(mapper.writeValueAsString(softwarePlatformDto))
+                post("/" + Constants.API_VERSION + "/" + Constants.SOFTWARE_PLATFORMS + "/").content(mapper.writeValueAsString(softwarePlatformDto))
                         .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated()).andReturn();
 
@@ -104,7 +104,7 @@ public class SoftwarePlatformControllerTest {
 
         MvcResult result = mockMvc
                 .perform(
-                        get("/" + Constants.SOFTWARE_PLATFORMS + "/").queryParam(Constants.PAGE, Integer.toString(page))
+                        get("/" + Constants.API_VERSION + "/" + Constants.SOFTWARE_PLATFORMS + "/").queryParam(Constants.PAGE, Integer.toString(page))
                                 .queryParam(Constants.SIZE, Integer.toString(size)).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
@@ -129,7 +129,7 @@ public class SoftwarePlatformControllerTest {
 
         MvcResult result = mockMvc
                 .perform(
-                        get("/" + Constants.SOFTWARE_PLATFORMS + "/").queryParam(Constants.PAGE, Integer.toString(page))
+                        get("/" + Constants.API_VERSION + "/" + Constants.SOFTWARE_PLATFORMS + "/").queryParam(Constants.PAGE, Integer.toString(page))
                                 .queryParam(Constants.SIZE, Integer.toString(size)).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
@@ -160,7 +160,7 @@ public class SoftwarePlatformControllerTest {
 
         MvcResult result = mockMvc
                 .perform(
-                        get("/" + Constants.SOFTWARE_PLATFORMS + "/").queryParam(Constants.PAGE, Integer.toString(page))
+                        get("/" + Constants.API_VERSION + "/" + Constants.SOFTWARE_PLATFORMS + "/").queryParam(Constants.PAGE, Integer.toString(page))
                                 .queryParam(Constants.SIZE, Integer.toString(size)).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
@@ -180,7 +180,7 @@ public class SoftwarePlatformControllerTest {
         when(softwarePlatformService.findById(testId)).thenThrow(NoSuchElementException.class);
 
         mockMvc.perform(
-                get("/" + Constants.SOFTWARE_PLATFORMS + "/" + testId.toString()).accept(MediaType.APPLICATION_JSON))
+                get("/" + Constants.API_VERSION + "/" + Constants.SOFTWARE_PLATFORMS + "/" + testId.toString()).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
 
@@ -191,7 +191,7 @@ public class SoftwarePlatformControllerTest {
         softwarePlatform.setName("test software platform");
         when(softwarePlatformService.findById(softwarePlatform.getId())).thenReturn(softwarePlatform);
 
-        MvcResult result = mockMvc.perform(get("/" + Constants.SOFTWARE_PLATFORMS + "/" + softwarePlatform.getId())
+        MvcResult result = mockMvc.perform(get("/" + Constants.API_VERSION + "/" + Constants.SOFTWARE_PLATFORMS + "/" + softwarePlatform.getId())
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
 
         EntityModel<SoftwarePlatformDto> softwarePlatformDtoEntity = mapper
@@ -207,7 +207,7 @@ public class SoftwarePlatformControllerTest {
         UUID testId = UUID.randomUUID();
         doThrow(new NoSuchElementException()).when(softwarePlatformService).findById(testId);
 
-        mockMvc.perform(delete("/" + Constants.SOFTWARE_PLATFORMS + "/" + testId).accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(delete("/" + Constants.API_VERSION + "/" + Constants.SOFTWARE_PLATFORMS + "/" + testId).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
 
@@ -218,7 +218,7 @@ public class SoftwarePlatformControllerTest {
         softwarePlatform.setName("test software platform");
         when(softwarePlatformService.findById(softwarePlatform.getId())).thenReturn(softwarePlatform);
 
-        mockMvc.perform(delete("/" + Constants.SOFTWARE_PLATFORMS + "/" + softwarePlatform.getId()).accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(delete("/" + Constants.API_VERSION + "/" + Constants.SOFTWARE_PLATFORMS + "/" + softwarePlatform.getId()).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 }
