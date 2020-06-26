@@ -46,7 +46,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "compute-resource")
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
-@RequestMapping("/" + Constants.COMPUTING_RESOURCES)
+@RequestMapping("/" + Constants.API_VERSION + "/" + Constants.COMPUTING_RESOURCES)
 @AllArgsConstructor
 public class ComputingResourceController {
     private final ComputingResourceAssembler assembler;

@@ -38,7 +38,7 @@ import org.springframework.web.bind.annotation.RestController;
 @io.swagger.v3.oas.annotations.tags.Tag(name = "algorithm-relation-type")
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
-@RequestMapping("/" + Constants.ALGO_RELATION_TYPES)
+@RequestMapping("/" + Constants.API_VERSION + "/" + Constants.ALGO_RELATION_TYPES)
 @AllArgsConstructor
 public class AlgoRelationTypeController {
 

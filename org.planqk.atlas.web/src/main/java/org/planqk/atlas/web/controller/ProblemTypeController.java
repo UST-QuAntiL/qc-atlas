@@ -38,7 +38,7 @@ import org.springframework.web.bind.annotation.RestController;
 @io.swagger.v3.oas.annotations.tags.Tag(name = "problem-type")
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
-@RequestMapping("/" + Constants.PROBLEM_TYPES)
+@RequestMapping("/" + Constants.API_VERSION + "/" + Constants.PROBLEM_TYPES)
 @AllArgsConstructor
 public class ProblemTypeController {
 

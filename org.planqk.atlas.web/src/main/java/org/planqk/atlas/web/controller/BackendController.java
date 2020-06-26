@@ -41,7 +41,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 //@io.swagger.v3.oas.annotations.tags.Tag(name = "backend")
 //@RestController
 //@CrossOrigin(allowedHeaders = "*", origins = "*")
-//@RequestMapping("/" + Constants.BACKENDS)
+//@RequestMapping("/" + Constants.API_VERSION + "/" + Constants.BACKENDS)
 @AllArgsConstructor
 //@io.swagger.v3.oas.annotations.tags.Tag(name = "backend")
 public class BackendController {

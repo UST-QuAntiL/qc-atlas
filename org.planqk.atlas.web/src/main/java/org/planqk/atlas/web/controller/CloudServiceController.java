@@ -38,7 +38,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 //@io.swagger.v3.oas.annotations.tags.Tag(name = "cloud-services")
 //@RestController
 //@CrossOrigin(allowedHeaders = "*", origins = "*")
-//@RequestMapping("/" + Constants.CLOUD_SERVICES)
+//@RequestMapping("/" + Constants.API_VERSION + "/" + Constants.CLOUD_SERVICES)
 @AllArgsConstructor
 public class CloudServiceController {
     final private static Logger LOG = LoggerFactory.getLogger(CloudServiceController.class);

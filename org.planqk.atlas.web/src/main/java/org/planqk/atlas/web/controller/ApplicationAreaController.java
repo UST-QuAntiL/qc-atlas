@@ -57,7 +57,7 @@ import org.springframework.web.bind.annotation.RestController;
 @io.swagger.v3.oas.annotations.tags.Tag(name = "application-areas")
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
-@RequestMapping("/" + Constants.APPLICATION_AREAS)
+@RequestMapping("/" + Constants.API_VERSION + "/" + Constants.APPLICATION_AREAS)
 @AllArgsConstructor
 public class ApplicationAreaController {
 

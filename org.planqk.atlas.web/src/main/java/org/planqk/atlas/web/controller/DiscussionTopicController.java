@@ -64,7 +64,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Hidden
 @io.swagger.v3.oas.annotations.tags.Tag(name = "discussion-topic")
 @CrossOrigin(allowedHeaders = "*", origins = "*")
-@RequestMapping("/" + Constants.DISCUSSION_TOPICS)
+@RequestMapping("/" + Constants.API_VERSION + "/" + Constants.DISCUSSION_TOPICS)
 @Slf4j
 @AllArgsConstructor
 @RestController
