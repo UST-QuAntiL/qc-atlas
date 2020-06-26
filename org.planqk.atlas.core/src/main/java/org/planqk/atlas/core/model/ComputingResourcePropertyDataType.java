@@ -17,31 +17,9 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.planqk.atlas.web.dtos;
+package org.planqk.atlas.core.model;
 
-import java.util.UUID;
+public enum ComputingResourcePropertyDataType {
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-
-import org.planqk.atlas.core.model.ComputingResourceDataType;
-
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
-
-@Data
-@EqualsAndHashCode
-@ToString
-@NoArgsConstructor
-public class ComputingResourceTypeDto {
-
-    private UUID id;
-
-    @NotEmpty
-    private String name;
-    @NotNull
-    private ComputingResourceDataType datatype;
-    private String description;
+    INTEGER, STRING, FLOAT
 }

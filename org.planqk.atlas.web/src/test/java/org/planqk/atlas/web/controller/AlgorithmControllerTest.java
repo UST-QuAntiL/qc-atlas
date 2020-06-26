@@ -31,9 +31,9 @@ import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
 import org.planqk.atlas.core.model.ComputationModel;
-import org.planqk.atlas.core.model.ComputingResource;
-import org.planqk.atlas.core.model.ComputingResourceDataType;
-import org.planqk.atlas.core.model.ComputingResourceType;
+import org.planqk.atlas.core.model.ComputingResourceProperty;
+import org.planqk.atlas.core.model.ComputingResourcePropertyDataType;
+import org.planqk.atlas.core.model.ComputingResourcePropertyType;
 import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.model.PatternRelationType;
 import org.planqk.atlas.core.model.ProblemType;
@@ -42,7 +42,7 @@ import org.planqk.atlas.core.services.AlgoRelationService;
 import org.planqk.atlas.core.services.AlgoRelationTypeService;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.core.services.ApplicationAreaService;
-import org.planqk.atlas.core.services.ComputingResourceService;
+import org.planqk.atlas.core.services.ComputingResourcePropertyService;
 import org.planqk.atlas.core.services.PatternRelationService;
 import org.planqk.atlas.core.services.PatternRelationTypeService;
 import org.planqk.atlas.core.services.ProblemTypeService;
@@ -51,8 +51,8 @@ import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
-import org.planqk.atlas.web.dtos.ComputingResourceDto;
-import org.planqk.atlas.web.dtos.ComputingResourceTypeDto;
+import org.planqk.atlas.web.dtos.ComputingResourcePropertyDto;
+import org.planqk.atlas.web.dtos.ComputingResourcePropertyTypeDto;
 import org.planqk.atlas.web.dtos.PatternRelationDto;
 import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
@@ -103,7 +103,7 @@ public class AlgorithmControllerTest {
     @MockBean
     private AlgorithmService algorithmService;
     @MockBean
-    private ComputingResourceService computingResourceService;
+    private ComputingResourcePropertyService computingResourcePropertyService;
     @MockBean
     private PatternRelationService patternRelationService;
     @MockBean
@@ -493,57 +493,57 @@ public class AlgorithmControllerTest {
     @Test
     void testListComputingResources_ClassicAlgorithm() throws Exception {
         when(algorithmService.findById(any())).thenReturn(new QuantumAlgorithm());
-        when(computingResourceService.findAllResourcesByAlgorithmId(any(), any())).thenReturn(Page.empty());
-        var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES + "/";
+        when(computingResourcePropertyService.findAllComputingResourcesPropertyByAlgorithmId(any(), any())).thenReturn(Page.empty());
+        var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES_PROPERTIES + "/";
         mockMvc.perform(get(path)).andExpect(status().isOk());
     }
 
     @Test
     void testListComputingResources_ValidAlgo_NoResources() throws Exception {
         var algo = new QuantumAlgorithm();
-        algo.setRequiredComputingResources(new HashSet<>());
+        algo.setRequiredComputingResourceProperties(new HashSet<>());
         when(algorithmService.findById(any())).thenReturn(algo);
-        when(computingResourceService.findAllResourcesByAlgorithmId(any(), any())).thenReturn(Page.empty());
-        var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES + "/";
+        when(computingResourcePropertyService.findAllComputingResourcesPropertyByAlgorithmId(any(), any())).thenReturn(Page.empty());
+        var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES_PROPERTIES + "/";
         var result = mockMvc.perform(get(path)).andExpect(status().isOk()).andReturn();
 
         var resultList = ObjectMapperUtils.mapResponseToList(
                 result.getResponse().getContentAsString(),
                 "computingResourceDtoes",
-                ComputingResourceDto.class
+                ComputingResourcePropertyDto.class
         );
         assertThat(resultList.size()).isEqualTo(0);
     }
 
     @Test
     void testListComputingResources_ValidAlgo_ResourcesIncluded() throws Exception {
-        var type = new ComputingResourceType();
-        type.setDatatype(ComputingResourceDataType.FLOAT);
+        var type = new ComputingResourcePropertyType();
+        type.setDatatype(ComputingResourcePropertyDataType.FLOAT);
         type.setName("test-type");
         type.setId(UUID.randomUUID());
 
         var algo = new QuantumAlgorithm();
-        algo.setRequiredComputingResources(new HashSet<>());
+        algo.setRequiredComputingResourceProperties(new HashSet<>());
         algo.setId(UUID.randomUUID());
-        var resources = new ArrayList<ComputingResource>();
+        var resources = new ArrayList<ComputingResourceProperty>();
 
         for (int i = 0; i < 10; i++) {
-            var resource = new ComputingResource();
-            resource.setComputingResourceType(type);
+            var resource = new ComputingResourceProperty();
+            resource.setComputingResourcePropertyType(type);
             resource.setId(UUID.randomUUID());
             resources.add(resource);
             algo.addComputingResource(resource);
         }
 
         when(algorithmService.findById(any())).thenReturn(algo);
-        when(computingResourceService.findAllResourcesByAlgorithmId(any(), any())).thenReturn(new PageImpl<>(resources));
-        var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES + "/";
+        when(computingResourcePropertyService.findAllComputingResourcesPropertyByAlgorithmId(any(), any())).thenReturn(new PageImpl<>(resources));
+        var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES_PROPERTIES + "/";
         var result = mockMvc.perform(get(path)).andExpect(status().isOk()).andReturn();
 
         var resultList = ObjectMapperUtils.mapResponseToList(
                 result.getResponse().getContentAsString(),
                 "computingResourceDtoes",
-                ComputingResourceDto.class
+                ComputingResourcePropertyDto.class
         );
         assertThat(resultList.size()).isEqualTo(10);
 
@@ -554,7 +554,7 @@ public class AlgorithmControllerTest {
     @Test
     void testAddQuantumResource_AlgoNotFound() throws Exception {
         when(algorithmService.findById(any())).thenThrow(new NoSuchElementException());
-        var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES + "/";
+        var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES_PROPERTIES + "/";
         mockMvc.perform(post(path).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsBytes(getValidResourceInput())))
                 .andExpect(status().isNotFound());
     }
@@ -568,40 +568,40 @@ public class AlgorithmControllerTest {
         algorithm.setComputationModel(ComputationModel.CLASSIC);
 
         when(algorithmService.findById(any())).thenReturn(algorithm);
-        when(computingResourceService.findResourceTypeById(any())).thenReturn(new ComputingResourceType());
-        when(computingResourceService.addComputingResourceToAlgorithm(any(Algorithm.class), any(ComputingResource.class))).thenReturn(new ComputingResource());
-        var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES + "/";
+        when(computingResourcePropertyService.findComputingResourcePropertyTypeById(any())).thenReturn(new ComputingResourcePropertyType());
+        when(computingResourcePropertyService.addComputingResourcePropertyToAlgorithm(any(Algorithm.class), any(ComputingResourceProperty.class))).thenReturn(new ComputingResourceProperty());
+        var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES_PROPERTIES + "/";
         mockMvc.perform(post(path).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsBytes(getValidResourceInput())))
                 .andExpect(status().isOk());
     }
 
     @Test
     void testAddQuantumResource_InvalidInput_NoType() throws Exception {
-        var resource = new ComputingResourceDto();
+        var resource = new ComputingResourcePropertyDto();
         resource.setId(UUID.randomUUID());
 
         when(algorithmService.findById(any())).thenReturn(new ClassicAlgorithm());
-        var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES + "/";
+        var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES_PROPERTIES + "/";
         mockMvc.perform(post(path).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsBytes(resource)))
                 .andExpect(status().isBadRequest());
     }
 
     // TODO: We want to test this case
-    private ComputingResourceDto getInvalidInputResource() {
-        var type = new ComputingResourceTypeDto();
+    private ComputingResourcePropertyDto getInvalidInputResource() {
+        var type = new ComputingResourcePropertyTypeDto();
         type.setId(UUID.randomUUID());
-        var resource = new ComputingResourceDto();
+        var resource = new ComputingResourcePropertyDto();
         resource.setType(type);
         resource.setId(UUID.randomUUID());
         return resource;
     }
 
-    private ComputingResourceDto getValidResourceInput() {
-        var type = new ComputingResourceTypeDto();
-        type.setDatatype(ComputingResourceDataType.FLOAT);
+    private ComputingResourcePropertyDto getValidResourceInput() {
+        var type = new ComputingResourcePropertyTypeDto();
+        type.setDatatype(ComputingResourcePropertyDataType.FLOAT);
         type.setName("test-type");
         type.setId(UUID.randomUUID());
-        var resource = new ComputingResourceDto();
+        var resource = new ComputingResourcePropertyDto();
         resource.setType(type);
         resource.setId(UUID.randomUUID());
         return resource;
@@ -643,9 +643,9 @@ public class AlgorithmControllerTest {
         algorithmRelation2.setAlgoRelationType(relType1);
 
         when(algorithmService.findById(any())).thenReturn(algorithm1);
-        when(computingResourceService.findResourceTypeById(any())).thenReturn(new ComputingResourceType());
-        when(computingResourceService.addComputingResourceToAlgorithm(any(QuantumAlgorithm.class), any(ComputingResource.class))).thenReturn(new ComputingResource());
-        var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES + "/";
+        when(computingResourcePropertyService.findComputingResourcePropertyTypeById(any())).thenReturn(new ComputingResourcePropertyType());
+        when(computingResourcePropertyService.addComputingResourcePropertyToAlgorithm(any(QuantumAlgorithm.class), any(ComputingResourceProperty.class))).thenReturn(new ComputingResourceProperty());
+        var path = "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID().toString() + "/" + Constants.COMPUTING_RESOURCES_PROPERTIES + "/";
         mockMvc.perform(post(path).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsBytes(getValidResourceInput())))
                 .andExpect(status().isOk());
     }
