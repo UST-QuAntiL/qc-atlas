@@ -25,6 +25,7 @@ package org.planqk.atlas.web;
 public class Constants {
 
     // URL snippets
+    public static final String API_VERSION = "v1";
     public static final String IMPLEMENTATIONS = "implementations";
     public static final String ALGORITHMS = "algorithms";
     public static final String TAGS = "tags";
