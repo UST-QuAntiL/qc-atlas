@@ -15,7 +15,7 @@ This is similar to [Angular's CHANGELOG.md](https://github.com/angular/angular/b
 ### Changed
 
 
-## [v0.1.0] - 2020-26-06
+## [v0.1.0](https://github.com/PlanQK/qc-atlas/releases/tag/v0.1.0) - 2020-26-06
 
 This is the inital code contribution.
 
