@@ -2,7 +2,7 @@ dist: bionic
 sudo: required
 language: java
 jdk:
-  - oraclejdk11
+  - openjdk11
 services:
   - docker
 
