@@ -18,19 +18,15 @@
  *******************************************************************************/
 package org.planqk.atlas.web.utils;
 
-import java.lang.reflect.Type;
 import java.util.Iterator;
-import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.ResolvedType;
 import com.fasterxml.jackson.databind.JavaType;
 import io.swagger.v3.core.converter.AnnotatedType;
 import io.swagger.v3.core.converter.ModelConverter;
 import io.swagger.v3.core.converter.ModelConverterContext;
 import io.swagger.v3.core.util.Json;
 import io.swagger.v3.oas.models.media.Schema;
-import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Links;
 
@@ -42,10 +38,7 @@ import org.springframework.hateoas.Links;
  * lost in the process. This wrapper aims to fix that by copying the DTO's schema and then manually adding the
  * EntityModel-specific fields (for now, just _links).
  */
-@RequiredArgsConstructor
 public class EntityModelConverter implements ModelConverter {
-    private final Map<Type, Type> contentOverrides;
-
     @Override
     public Schema resolve(AnnotatedType annotatedType, ModelConverterContext context, Iterator<ModelConverter> chain) {
         final JavaType type;
@@ -68,11 +61,10 @@ public class EntityModelConverter implements ModelConverter {
     }
 
     private Schema resolveEntityModel(JavaType type, ModelConverterContext context) {
-        final var boundEntityType = type.getBindings().getBoundType(0);
-        final var actualEntityType = applyOverrides(boundEntityType);
-        final Schema resolved = context.resolve(new AnnotatedType().type(actualEntityType).resolveAsRef(false));
+        final var entityType = type.getBindings().getBoundType(0);
+        final Schema resolved = context.resolve(new AnnotatedType().type(entityType).resolveAsRef(false));
         if (resolved == null)
-            throw new RuntimeException(String.format("Cannot resolve %s", actualEntityType.getTypeName()));
+            throw new RuntimeException(String.format("Cannot resolve %s", entityType.getTypeName()));
 
         try {
             final Schema wrapper = clone(resolved);
@@ -94,20 +86,5 @@ public class EntityModelConverter implements ModelConverter {
         property = Json.mapper().readValue(Json.pretty(property), Schema.class);
         property.setName(cloneName);
         return property;
-    }
-
-    private Type applyOverrides(Type type) {
-        final var clazz = classFromType(type);
-        if (clazz != null)
-            return contentOverrides.getOrDefault(clazz, type);
-        return type;
-    }
-
-    private static Class<?> classFromType(Type type) {
-        if (type instanceof Class<?>)
-            return (Class<?>) type;
-        if (type instanceof ResolvedType)
-            return ((ResolvedType) type).getRawClass();
-        return null;
     }
 }

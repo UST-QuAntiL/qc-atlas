@@ -25,15 +25,13 @@ import javax.validation.constraints.NotNull;
 
 import io.swagger.v3.core.converter.AnnotatedType;
 import io.swagger.v3.core.converter.ModelConverters;
-import io.swagger.v3.core.util.Json;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Test;
-import org.springframework.hateoas.EntityModel;
 
 import static org.junit.Assert.assertEquals;
 
-public class EntityModelConverterTest {
+public class OverrideModelConverterTest {
     @NoArgsConstructor
     @Data
     private static class SimpleDto {
@@ -42,19 +40,21 @@ public class EntityModelConverterTest {
         private String nullable;
     }
 
+    @NoArgsConstructor
+    @Data
+    private static class SimpleDtoOverride {
+        @NotNull
+        private String otherField;
+    }
+
     @Test
-    void verifySchema() {
+    void verifySchemaOverride() {
         final var converters = new ModelConverters();
-        converters.addConverter(new EntityModelConverter());
+        converters.addConverter(new OverrideModelConverter(Map.of(SimpleDto.class, SimpleDtoOverride.class)));
 
-        final var normal = converters.resolveAsResolvedSchema(new AnnotatedType().type(SimpleDto.class).resolveAsRef(false));
-        assertEquals(List.of("notNull"), normal.schema.getRequired());
-        assertEquals(2, normal.schema.getProperties().size());
-
-        final var wrapped = converters.resolveAsResolvedSchema(new AnnotatedType().type(
-                Json.mapper().getTypeFactory().constructParametricType(EntityModel.class, SimpleDto.class))
+        final var wrapped = converters.resolveAsResolvedSchema(new AnnotatedType().type(SimpleDto.class)
                 .resolveAsRef(false));
-        assertEquals(List.of("notNull"), wrapped.schema.getRequired());
-        assertEquals(3, wrapped.schema.getProperties().size());
+        assertEquals(List.of("otherField"), wrapped.schema.getRequired());
+        assertEquals(1, wrapped.schema.getProperties().size());
     }
 }

@@ -25,12 +25,14 @@ import org.planqk.atlas.web.dtos.ClassicAlgorithmDto;
 import org.planqk.atlas.web.dtos.QuantumAlgorithmDto;
 import org.planqk.atlas.web.utils.EntityModelConverter;
 import org.planqk.atlas.web.utils.LinkRemoverModelConverter;
+import org.planqk.atlas.web.utils.OverrideModelConverter;
 
 import io.swagger.v3.core.converter.ModelConverters;
 import io.swagger.v3.oas.annotations.media.DiscriminatorMapping;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Lazy;
 
 /**
@@ -50,10 +52,20 @@ public class SwaggerConfiguration {
 
     @Bean
     @Lazy(false)
+    @DependsOn("linkRemoverModelConverter")
     public EntityModelConverter entityModelConverter() {
-        final var converter = new EntityModelConverter(Map.of(
+        final var converter = new EntityModelConverter();
+        ModelConverters.getInstance().addConverter(converter);
+        return converter;
+    }
+
+    @Bean
+    @Lazy(false)
+    @DependsOn("entityModelConverter")
+    public OverrideModelConverter overrideModelConverter() {
+        final var converter = new OverrideModelConverter(Map.of(
                 AlgorithmDto.class, AlgorithmSchema.class
-                ));
+        ));
         ModelConverters.getInstance().addConverter(converter);
         return converter;
     }
