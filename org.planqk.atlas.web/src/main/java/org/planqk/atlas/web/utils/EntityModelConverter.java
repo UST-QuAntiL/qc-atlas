@@ -47,7 +47,7 @@ public class EntityModelConverter implements ModelConverter {
         } else {
             type = Json.mapper().constructType(annotatedType.getType());
         }
-        if (type != null && annotatedType.isResolveAsRef()) {
+        if (type != null) {
             final var cls = type.getRawClass();
             if (EntityModel.class.isAssignableFrom(cls)) {
                 return resolveEntityModel(type, context);
