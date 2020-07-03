@@ -27,6 +27,7 @@ import java.util.UUID;
 
 import org.planqk.atlas.core.model.DiscussionTopic;
 import org.planqk.atlas.core.model.Status;
+import org.planqk.atlas.core.services.DiscussionCommentService;
 import org.planqk.atlas.core.services.DiscussionTopicService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
@@ -45,7 +46,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -67,8 +68,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
-@ExtendWith( {MockitoExtension.class})
+@WebMvcTest({DiscussionCommentController.class, DiscussionTopicController.class})
+@ExtendWith(MockitoExtension.class)
 @AutoConfigureMockMvc
 @EnableLinkAssemblers
 public class DiscussionTopicControllerTest {
@@ -76,6 +77,8 @@ public class DiscussionTopicControllerTest {
     private PagedResourcesAssembler<DiscussionTopicDto> paginationAssembler;
     @MockBean
     private DiscussionTopicService discussionTopicService;
+    @MockBean
+    private DiscussionCommentService discussionCommentService;
 
     @Autowired
     private MockMvc mockMvc;
