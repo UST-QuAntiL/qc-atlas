@@ -28,10 +28,12 @@ import org.planqk.atlas.core.model.SoftwarePlatform;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import org.springframework.hateoas.server.core.Relation;
 
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @Data
+@Relation(itemRelation = "implementation", collectionRelation = "implementations")
 public class QuantumImplementationDto extends ImplementationDto {
 
     private QuantumAlgorithm algorithm;

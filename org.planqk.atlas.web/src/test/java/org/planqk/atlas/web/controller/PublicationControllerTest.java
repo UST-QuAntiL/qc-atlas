@@ -113,7 +113,7 @@ public class PublicationControllerTest {
 
         var resultList = ObjectMapperUtils.mapResponseToList(
                 result.getResponse().getContentAsString(),
-                "publicationDtoes",
+                "publications",
                 PublicationDto.class
         );
         assertThat(resultList.size()).isEqualTo(1);
@@ -129,7 +129,7 @@ public class PublicationControllerTest {
 
         var resultList = ObjectMapperUtils.mapResponseToList(
                 mvcResult.getResponse().getContentAsString(),
-                "publicationDtoes",
+                "publications",
                 PublicationDto.class
         );
         assertThat(resultList.size()).isEqualTo(0);

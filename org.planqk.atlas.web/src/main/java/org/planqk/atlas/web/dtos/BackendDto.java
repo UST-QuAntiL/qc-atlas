@@ -13,12 +13,14 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.springframework.hateoas.server.core.Relation;
 
 @ToString(callSuper = true)
 @Data
 @NoArgsConstructor
 @JsonSubTypes( {@JsonSubTypes.Type(value = QPUDto.class),
         @JsonSubTypes.Type(value = SimulatorDto.class)})
+@Relation(itemRelation = "backend", collectionRelation = "backends")
 public class BackendDto {
     private UUID id;
 

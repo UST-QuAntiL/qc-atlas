@@ -153,7 +153,7 @@ public class DiscussionTopicControllerTest {
                 .andExpect(status().isOk()).andReturn();
 
         JSONObject rootObject = new JSONObject(result.getResponse().getContentAsString());
-        var embeddedJSONObjects = rootObject.getJSONObject("_embedded").getJSONArray("discussionTopicDtoes");
+        var embeddedJSONObjects = rootObject.getJSONObject("_embedded").getJSONArray("discussionTopics");
         var resultObject = mapper.readValue(embeddedJSONObjects.getJSONObject(0).toString(), DiscussionTopicDto.class);
 
         assertEquals(1, embeddedJSONObjects.length());

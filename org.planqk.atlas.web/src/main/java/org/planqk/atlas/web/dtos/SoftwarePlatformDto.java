@@ -9,10 +9,12 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.springframework.hateoas.server.core.Relation;
 
 @ToString(callSuper = true)
 @Data
 @NoArgsConstructor
+@Relation(itemRelation = "softwarePlatform", collectionRelation = "softwarePlatforms")
 public class SoftwarePlatformDto {
 
     private UUID id;

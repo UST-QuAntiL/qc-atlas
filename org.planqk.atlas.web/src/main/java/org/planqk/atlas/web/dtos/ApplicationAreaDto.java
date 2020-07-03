@@ -25,9 +25,11 @@ import javax.validation.constraints.NotNull;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.springframework.hateoas.server.core.Relation;
 
 @EqualsAndHashCode
 @Data
+@Relation(itemRelation = "applicationArea", collectionRelation = "applicationAreas")
 public class ApplicationAreaDto {
     private UUID id;
 

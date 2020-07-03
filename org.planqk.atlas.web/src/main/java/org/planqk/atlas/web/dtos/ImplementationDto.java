@@ -29,6 +29,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.springframework.hateoas.server.core.Relation;
 
 /**
  * Data transfer object for the model class Implementation ({@link org.planqk.atlas.core.model.Implementation}).
@@ -36,6 +37,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode
 @Data
 @NoArgsConstructor
+@Relation(itemRelation = "implementation", collectionRelation = "implementations")
 public class ImplementationDto {
 
     private UUID id;

@@ -120,7 +120,7 @@ public class ImplementationControllerTest {
                 .andExpect(status().isOk()).andReturn();
 
         var resultList = ObjectMapperUtils.mapResponseToList(mvcResult.getResponse().getContentAsString(),
-                "implementationDtoes", ImplementationDto.class);
+                "implementations", ImplementationDto.class);
 
         assertEquals(implementation.getId(), resultList.get(0).getId());
         assertEquals(1, resultList.size());
@@ -153,7 +153,7 @@ public class ImplementationControllerTest {
                 .andExpect(status().isOk()).andReturn();
 
         var resultList = ObjectMapperUtils.mapResponseToList(mvcResult.getResponse().getContentAsString(),
-                "implementationDtoes", ImplementationDto.class);
+                "implementations", ImplementationDto.class);
         assertTrue(
                 resultList.stream().map(impl -> impl.getId()).allMatch(id -> id.equals(implId1) || id.equals(implId2)));
         assertEquals(resultList.size(), implementationList.size());

@@ -26,12 +26,14 @@ import javax.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.springframework.hateoas.server.core.Relation;
 
 /**
  * Data transfer object for Algorithms ({@link org.planqk.atlas.core.model.Algorithm}).
  */
 @NoArgsConstructor
 @Data
+@Relation(itemRelation = "algorithmRelation", collectionRelation = "algorithmRelations")
 public class AlgorithmRelationDto {
 
     private UUID id;

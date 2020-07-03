@@ -21,6 +21,7 @@ package org.planqk.atlas.web.dtos;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.springframework.hateoas.server.core.Relation;
 
 import java.util.UUID;
 
@@ -28,6 +29,7 @@ import javax.validation.constraints.NotNull;
 
 @EqualsAndHashCode
 @Data
+@Relation(itemRelation = "tag", collectionRelation = "tags")
 public class TagDto {
 
     @NotNull(message = "Tag key must not be null!")

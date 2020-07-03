@@ -29,10 +29,12 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.URL;
+import org.springframework.hateoas.server.core.Relation;
 
 @EqualsAndHashCode
 @Data
 @NoArgsConstructor
+@Relation(itemRelation = "publication", collectionRelation = "publications")
 public class PublicationDto {
 
     private UUID id;

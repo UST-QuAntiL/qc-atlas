@@ -30,11 +30,13 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.springframework.hateoas.server.core.Relation;
 
 @Data
 @EqualsAndHashCode
 @ToString
 @NoArgsConstructor
+@Relation(itemRelation = "computingResourcePropertyType", collectionRelation = "computingResourcePropertyTypes")
 public class ComputingResourcePropertyTypeDto {
 
     private UUID id;

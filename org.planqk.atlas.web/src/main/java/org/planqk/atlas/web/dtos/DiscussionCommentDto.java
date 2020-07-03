@@ -28,10 +28,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.springframework.hateoas.server.core.Relation;
 
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode
+@Relation(itemRelation = "discussionComment", collectionRelation = "discussionComments")
 public class DiscussionCommentDto {
     private UUID id;
     @NotNull(message = "Text must not be null!")

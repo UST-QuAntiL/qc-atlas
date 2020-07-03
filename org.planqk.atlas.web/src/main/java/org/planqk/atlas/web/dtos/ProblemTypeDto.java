@@ -4,11 +4,13 @@ import java.util.UUID;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.springframework.hateoas.server.core.Relation;
 
 import javax.validation.constraints.*;
 
 @EqualsAndHashCode
 @Data
+@Relation(itemRelation = "problemType", collectionRelation = "problemTypes")
 public class ProblemTypeDto {
     private UUID id;
 
