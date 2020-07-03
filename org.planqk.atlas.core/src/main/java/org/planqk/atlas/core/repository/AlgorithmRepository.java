@@ -45,7 +45,7 @@ public interface AlgorithmRepository extends JpaRepository<Algorithm, UUID> {
 
     boolean existsAlgorithmById(UUID id);
 
-    Page<Algorithm> findByNameLikeIgnoreCase(Pageable pageable, String name);
+    Page<Algorithm> findByNameContainingIgnoreCaseOrAcronymContainingIgnoreCaseOrProblemContainingIgnoreCase(String name, String acronym, String problem, Pageable pageable);
 
     @Query("SELECT alg FROM Algorithm alg JOIN alg.publications publication WHERE publication.id = :publicationId")
     Set<Algorithm> getAlgorithmsWithPublicationId(@Param("publicationId") UUID publicationId);

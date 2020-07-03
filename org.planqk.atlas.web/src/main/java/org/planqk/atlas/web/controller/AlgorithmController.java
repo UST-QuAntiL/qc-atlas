@@ -134,12 +134,12 @@ public class AlgorithmController {
                                                                            @RequestParam(required = true, defaultValue = "50") Integer size,
                                                                            @RequestParam(required = false, defaultValue = "desc") String sort,
                                                                            @RequestParam(required = false) String sortBy,
-                                                                           @RequestParam(required = false) String searchQuery) {
+                                                                           @RequestParam(required = false) String search) {
         LOG.debug("Get to retrieve all algorithms received.");
         // Generate Pageable
         Pageable p = RestUtils.getPageableFromRequestParams(page, size, sort, sortBy);
         // Get Page of DTOs
-        Page<AlgorithmDto> pageDto = ModelMapperUtils.convertPage(algorithmService.findAll(p, searchQuery), AlgorithmDto.class);
+        Page<AlgorithmDto> pageDto = ModelMapperUtils.convertPage(algorithmService.findAll(p, search), AlgorithmDto.class);
         // Generate PagedModel
         PagedModel<EntityModel<AlgorithmDto>> outputDto = algorithmPaginationAssembler.toModel(pageDto);
         algorithmAssembler.addLinks(outputDto.getContent());
