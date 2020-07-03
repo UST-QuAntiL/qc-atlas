@@ -130,12 +130,14 @@ public class AlgorithmController {
 
     @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Retrieve all algorithms (quantum, hybrid and classic).")
     @GetMapping()
-    public HttpEntity<PagedModel<EntityModel<AlgorithmDto>>> getAlgorithms(@RequestParam(required = false) Integer page,
-                                                                           @RequestParam(required = false) Integer size,
+    public HttpEntity<PagedModel<EntityModel<AlgorithmDto>>> getAlgorithms(@RequestParam(required = true, defaultValue = "0") Integer page,
+                                                                           @RequestParam(required = true, defaultValue = "50") Integer size,
+                                                                           @RequestParam(required = false, defaultValue = "desc") String sort,
+                                                                           @RequestParam(required = false) String sortBy,
                                                                            @RequestParam(required = false) String searchQuery) {
         LOG.debug("Get to retrieve all algorithms received.");
         // Generate Pageable
-        Pageable p = RestUtils.getPageableFromRequestParams(page, size);
+        Pageable p = RestUtils.getPageableFromRequestParams(page, size, sort, sortBy);
         // Get Page of DTOs
         Page<AlgorithmDto> pageDto = ModelMapperUtils.convertPage(algorithmService.findAll(p, searchQuery), AlgorithmDto.class);
         // Generate PagedModel

@@ -219,15 +219,6 @@ public class AlgorithmControllerTest {
     }
 
     @Test
-    public void getAlgorithms_withoutPagination() throws Exception {
-        initializeAlgorithms();
-        when(algorithmService.findAll(Pageable.unpaged(), null)).thenReturn(Page.empty());
-
-        mockMvc.perform(get("/" + Constants.API_VERSION + "/" + Constants.ALGORITHMS + "/").accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-    }
-
-    @Test
     public void getAlgorithms_withEmptyAlgorithmList() throws Exception {
         initializeAlgorithms();
         when(algorithmService.findAll(pageable, null)).thenReturn(Page.empty());

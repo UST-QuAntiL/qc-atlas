@@ -23,6 +23,7 @@ import org.planqk.atlas.web.Constants;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 /**
  * Utility class for the REST API functionality
@@ -30,22 +31,41 @@ import org.springframework.data.domain.Pageable;
 public class RestUtils {
 
     /**
-     * Return a (default) pageable from the provided Requestparams for an endpoint
-     * that can be used with pagination
+     * Return a (default) pageable from the provided Requestparams for an endpoint that can be used with pagination.
      *
-     * @param size the size of a page
-     * @param page the number of the page that should be returned
-     * @return construct the <code>Pageable</code> if suitable parameters are given,
-     *         <code>Pageable.unpaged()</code> (no Pagination) otherwise
+     * @param page
+     * @param size
+     * @return pageable
      */
     public static Pageable getPageableFromRequestParams(Integer page, Integer size) {
-        if (size != null && page != null) {
-            return PageRequest.of(page, size);
+        if (page == null || size == null)
+            return getAllPageable();
+
+        return PageRequest.of(page, size);
+    }
+
+    /**
+     * Return a (default) pageable from the provided Requestparams for an endpoint that can be used with pagination.
+     *
+     * @param page
+     * @param size
+     * @param sortType
+     * @param sortVariable
+     * @return pageable
+     */
+    public static Pageable getPageableFromRequestParams(Integer page, Integer size, String sortType, String sortVariable) {
+        if (sortVariable == null || sortVariable.isEmpty() || sortType == null || sortType.isEmpty())
+            return getPageableFromRequestParams(page, size);
+
+        // Add sorting to Pageable object if necessary information available
+        if (sortType.equals("asc")) {
+            return PageRequest.of(page, size, Sort.by(sortVariable).ascending());
         }
-        if (size != null) { // default start page to 0
-            return PageRequest.of(0, size);
-        } // default if no pagination params are set:
-        return Pageable.unpaged();
+        if (sortType.equals("desc")) {
+            return PageRequest.of(page, size, Sort.by(sortVariable).descending());
+        }
+
+        return PageRequest.of(page, size);
     }
 
     /**

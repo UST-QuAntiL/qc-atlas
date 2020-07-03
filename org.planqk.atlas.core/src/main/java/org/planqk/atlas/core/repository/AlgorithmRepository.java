@@ -45,8 +45,7 @@ public interface AlgorithmRepository extends JpaRepository<Algorithm, UUID> {
 
     boolean existsAlgorithmById(UUID id);
 
-    @Query("SELECT alg FROM Algorithm alg WHERE alg.name LIKE :searchQuery OR alg.problem LIKE :searchQuery")
-    Page<Algorithm> findAll(@Param("searchQuery") String searchQuery, Pageable pageable);
+    Page<Algorithm> findByNameLikeIgnoreCase(Pageable pageable, String name);
 
     @Query("SELECT alg FROM Algorithm alg JOIN alg.publications publication WHERE publication.id = :publicationId")
     Set<Algorithm> getAlgorithmsWithPublicationId(@Param("publicationId") UUID publicationId);
