@@ -221,7 +221,7 @@ public class AlgorithmControllerTest {
     @Test
     public void getAlgorithms_withoutPagination() throws Exception {
         initializeAlgorithms();
-        when(algorithmService.findAll(Pageable.unpaged())).thenReturn(Page.empty());
+        when(algorithmService.findAll(Pageable.unpaged(), null)).thenReturn(Page.empty());
 
         mockMvc.perform(get("/" + Constants.API_VERSION + "/" + Constants.ALGORITHMS + "/").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
@@ -230,7 +230,7 @@ public class AlgorithmControllerTest {
     @Test
     public void getAlgorithms_withEmptyAlgorithmList() throws Exception {
         initializeAlgorithms();
-        when(algorithmService.findAll(pageable)).thenReturn(Page.empty());
+        when(algorithmService.findAll(pageable, null)).thenReturn(Page.empty());
 
         MvcResult result = mockMvc
                 .perform(get("/" + Constants.API_VERSION + "/" + Constants.ALGORITHMS + "/").queryParam(Constants.PAGE, Integer.toString(page))
@@ -252,7 +252,7 @@ public class AlgorithmControllerTest {
         Page<Algorithm> pageAlg = new PageImpl<>(algorithmList);
         Page<AlgorithmDto> pageAlgDto = ModelMapperUtils.convertPage(pageAlg, AlgorithmDto.class);
 
-        when(algorithmService.findAll(pageable)).thenReturn(pageAlg);
+        when(algorithmService.findAll(pageable, null)).thenReturn(pageAlg);
 
         MvcResult result = mockMvc
                 .perform(get("/" + Constants.API_VERSION + "/" + Constants.ALGORITHMS + "/").queryParam(Constants.PAGE, Integer.toString(page))

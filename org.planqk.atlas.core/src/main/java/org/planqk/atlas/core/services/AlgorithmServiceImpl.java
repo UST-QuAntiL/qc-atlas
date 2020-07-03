@@ -21,6 +21,7 @@ package org.planqk.atlas.core.services;
 
 import java.util.HashSet;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -155,7 +156,10 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     }
 
     @Override
-    public Page<Algorithm> findAll(Pageable pageable) {
+    public Page<Algorithm> findAll(Pageable pageable, String searchQuery) {
+        if (!Objects.isNull(searchQuery)) {
+
+        }
         return algorithmRepository.findAll(pageable);
     }
 
