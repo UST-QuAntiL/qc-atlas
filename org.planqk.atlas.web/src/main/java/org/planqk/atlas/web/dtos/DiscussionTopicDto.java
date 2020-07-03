@@ -28,9 +28,11 @@ import org.planqk.atlas.core.model.Status;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.hateoas.server.core.Relation;
 
 @Data
 @NoArgsConstructor
+@Relation(itemRelation = "discussionTopic", collectionRelation = "discussionTopics")
 public class DiscussionTopicDto {
 
     private UUID id;

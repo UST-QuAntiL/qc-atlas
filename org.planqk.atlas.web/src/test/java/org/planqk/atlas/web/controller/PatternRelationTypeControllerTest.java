@@ -161,7 +161,7 @@ public class PatternRelationTypeControllerTest {
                 .andExpect(status().isOk()).andReturn();
 
         var resultList = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(),
-                "patternRelationTypeDtoes", PatternRelationTypeDto.class);
+                "patternRelationTypes", PatternRelationTypeDto.class);
 
         assertEquals(resultList.size(), 2);
         assertTrue(resultList.contains(type1Dto));

@@ -160,7 +160,7 @@ public class AlgoRelationTypeControllerTest {
                 .andExpect(status().isOk()).andReturn();
 
         var providers = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(),
-                "algoRelationTypeDtoes", AlgorithmRelationDto.class);
+                "algoRelationTypes", AlgorithmRelationDto.class);
         assertEquals(providers.size(), 0);
     }
 
@@ -187,7 +187,7 @@ public class AlgoRelationTypeControllerTest {
                 .andExpect(status().isOk()).andReturn();
 
         var providers = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(),
-                "algoRelationTypeDtoes", AlgorithmRelationDto.class);
+                "algoRelationTypes", AlgorithmRelationDto.class);
         assertEquals(providers.size(), 2);
     }
 

@@ -6,9 +6,11 @@ import javax.validation.constraints.*;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.hateoas.server.core.Relation;
 
 @Data
 @NoArgsConstructor
+@Relation(itemRelation = "algoRelationType", collectionRelation = "algoRelationTypes")
 public class AlgoRelationTypeDto {
 
     private UUID id;

@@ -52,7 +52,7 @@ public class SoftwarePlatformControllerTest {
     private final int page = 0;
     private final int size = 10;
     private final Pageable pageable = PageRequest.of(page, size);
-    private final String softwarePlatformDtoJSONName = "softwarePlatformDtoes";
+    private final String softwarePlatformDtoJSONName = "softwarePlatforms";
     @MockBean
     private SoftwarePlatformService softwarePlatformService;
     @Autowired

@@ -218,7 +218,7 @@ public class PatternRelationControllerTest {
                 .andExpect(status().isOk()).andReturn();
 
         var resultList = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(),
-                "patternRelationDtoes", PatternRelationDto.class);
+                "patternRelations", PatternRelationDto.class);
 
         assertEquals(resultList.size(), 2);
         assertEquals(resultList.get(0).getDescription(), relation1Dto.getDescription());

@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import org.springframework.hateoas.server.core.Relation;
 
 import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.WRITE_ONLY;
 
@@ -22,6 +23,7 @@ import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.WRITE_ONLY;
 @ToString(callSuper = true)
 @Data
 @JsonTypeName("QUANTUM")
+@Relation(itemRelation = "algorithm", collectionRelation = "algorithms")
 public class QuantumAlgorithmDto extends AlgorithmDto {
 
     private boolean nisqReady;
