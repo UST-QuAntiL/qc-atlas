@@ -55,7 +55,7 @@ public class RootController {
         // add links to sub-controllers
         responseEntity.add(linkTo(methodOn(RootController.class).root()).withSelfRel());
         responseEntity.add(linkTo(methodOn(AlgorithmController.class).getAlgorithms(Constants.DEFAULT_PAGE_NUMBER,
-                Constants.DEFAULT_PAGE_SIZE)).withRel(Constants.ALGORITHMS));
+                Constants.DEFAULT_PAGE_SIZE, "")).withRel(Constants.ALGORITHMS));
         // This controller will be used/tested and included in the future
 //        responseEntity.add(linkTo(
 //                methodOn(TagController.class).getTags(Constants.DEFAULT_PAGE_NUMBER, Constants.DEFAULT_PAGE_SIZE))

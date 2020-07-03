@@ -158,7 +158,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     @Override
     public Page<Algorithm> findAll(Pageable pageable, String searchQuery) {
         if (!Objects.isNull(searchQuery)) {
-
+            algorithmRepository.findAll(searchQuery,pageable);
         }
         return algorithmRepository.findAll(pageable);
     }
