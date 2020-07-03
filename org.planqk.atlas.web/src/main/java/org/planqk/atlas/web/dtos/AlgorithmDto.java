@@ -28,9 +28,9 @@ import org.planqk.atlas.core.model.Sketch;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.hateoas.server.core.Relation;
 
 /**
  * Data transfer object for Algorithms ({@link org.planqk.atlas.core.model.Algorithm}).
@@ -41,6 +41,7 @@ import lombok.NoArgsConstructor;
 @JsonSubTypes( {@JsonSubTypes.Type(value = QuantumAlgorithmDto.class, name = "QUANTUM"),
         @JsonSubTypes.Type(value = ClassicAlgorithmDto.class, name = "CLASSIC"),
         @JsonSubTypes.Type(value = QuantumAlgorithmDto.class, name = "HYBRID")})
+@Relation(itemRelation = "algorithm", collectionRelation = "algorithms")
 public class AlgorithmDto {
     private UUID id;
 
