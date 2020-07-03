@@ -238,7 +238,7 @@ public class AlgorithmControllerTest {
                 .andExpect(status().isOk()).andReturn();
 
         var resultList = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(),
-                "algorithmDtoes", AlgorithmDto.class);
+                "algorithms", AlgorithmDto.class);
         assertEquals(0, resultList.size());
     }
 
@@ -260,7 +260,7 @@ public class AlgorithmControllerTest {
                 .andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON)).andReturn();
 
         var resultList = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(),
-                "classicAlgorithmDtoes", AlgorithmDto.class);
+                "algorithms", AlgorithmDto.class);
         assertEquals(2, resultList.size());
     }
 
