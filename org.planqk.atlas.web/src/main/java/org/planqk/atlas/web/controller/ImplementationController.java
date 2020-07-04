@@ -50,6 +50,7 @@ import org.planqk.atlas.web.linkassembler.PublicationAssembler;
 import org.planqk.atlas.web.utils.HateoasUtils;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.RestUtils;
+import org.planqk.atlas.web.utils.ValidationUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -228,6 +229,9 @@ public class ImplementationController {
         }
         ComputingResourcePropertyType type = computingResourcePropertyService.findComputingResourcePropertyTypeById(resourceDto.getType().getId());
         resourceDto.setType(ModelMapperUtils.convert(type, ComputingResourcePropertyTypeDto.class));
+
+        ValidationUtils.validateComputingResourceProperty(resourceDto);
+
         ComputingResourceProperty updatedComputeResource = computingResourcePropertyService.addComputingResourcePropertyToImplementation(
                 implementation,
                 ModelMapperUtils.convert(resourceDto, ComputingResourceProperty.class)
@@ -267,6 +271,9 @@ public class ImplementationController {
         ComputingResourcePropertyType type = computingResourcePropertyService.findComputingResourcePropertyTypeById(resourceDto.getType().getId());
         resourceDto.setType(ModelMapperUtils.convert(type, ComputingResourcePropertyTypeDto.class));
         resourceDto.setId(resourceId);
+
+        ValidationUtils.validateComputingResourceProperty(resourceDto);
+
         ComputingResourceProperty updatedComputeResource = computingResourcePropertyService.addComputingResourcePropertyToImplementation(
                 implementation,
                 ModelMapperUtils.convert(resourceDto, ComputingResourceProperty.class)
