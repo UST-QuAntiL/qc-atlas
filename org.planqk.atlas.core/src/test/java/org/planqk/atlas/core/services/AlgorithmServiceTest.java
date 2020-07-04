@@ -250,7 +250,7 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
         Algorithm algorithm2 = getGenericAlgorithmWithoutReferences("testAlgorithm2");
         algorithmService.save(algorithm2);
 
-        List<Algorithm> algorithms = algorithmService.findAll(Pageable.unpaged()).getContent();
+        List<Algorithm> algorithms = algorithmService.findAll(Pageable.unpaged(), null).getContent();
 
         assertThat(algorithms.size()).isEqualTo(2);
     }

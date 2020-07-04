@@ -130,13 +130,16 @@ public class AlgorithmController {
 
     @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Retrieve all algorithms (quantum, hybrid and classic).")
     @GetMapping()
-    public HttpEntity<PagedModel<EntityModel<AlgorithmDto>>> getAlgorithms(@RequestParam(required = false) Integer page,
-                                                                           @RequestParam(required = false) Integer size) {
+    public HttpEntity<PagedModel<EntityModel<AlgorithmDto>>> getAlgorithms(@RequestParam(required = true, defaultValue = "0") Integer page,
+                                                                           @RequestParam(required = true, defaultValue = "50") Integer size,
+                                                                           @RequestParam(required = false, defaultValue = "desc") String sort,
+                                                                           @RequestParam(required = false) String sortBy,
+                                                                           @RequestParam(required = false) String search) {
         LOG.debug("Get to retrieve all algorithms received.");
         // Generate Pageable
-        Pageable p = RestUtils.getPageableFromRequestParams(page, size);
+        Pageable p = RestUtils.getPageableFromRequestParams(page, size, sort, sortBy);
         // Get Page of DTOs
-        Page<AlgorithmDto> pageDto = ModelMapperUtils.convertPage(algorithmService.findAll(p), AlgorithmDto.class);
+        Page<AlgorithmDto> pageDto = ModelMapperUtils.convertPage(algorithmService.findAll(p, search), AlgorithmDto.class);
         // Generate PagedModel
         PagedModel<EntityModel<AlgorithmDto>> outputDto = algorithmPaginationAssembler.toModel(pageDto);
         algorithmAssembler.addLinks(outputDto.getContent());
@@ -561,7 +564,7 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400", description = "AlgorithmRelation doesn't contain this algorithm as source or target"),
             @ApiResponse(responseCode = "404", description = "Algorithm with given id doesn't exist")},
-               description = "Add an algorithm relation from this algorithm to another given algorithm. Custom ID will be ignored. For algorithm relation type only ID is required, other algorithm relation type attributes will not change.")
+            description = "Add an algorithm relation from this algorithm to another given algorithm. Custom ID will be ignored. For algorithm relation type only ID is required, other algorithm relation type attributes will not change.")
     @PostMapping("/{algoId}/" + Constants.ALGORITHM_RELATIONS)
     public ResponseEntity<EntityModel<AlgorithmRelationDto>> addAlgorithmRelation(
             @PathVariable UUID algoId,
@@ -625,7 +628,7 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400", description = "AlgorithmRelation doesn't contain this algorithm as source or target"),
             @ApiResponse(responseCode = "404", description = "Algorithm with the given id doesn't exist")},
-              description = "Change an algorithm relation from this algorithm to another given algorithm. Custom ID will be ignored. For algorithm relation type only ID is required, other algorithm relation type attributes will not change.")
+            description = "Change an algorithm relation from this algorithm to another given algorithm. Custom ID will be ignored. For algorithm relation type only ID is required, other algorithm relation type attributes will not change.")
     @PutMapping("/{algoId}/" + Constants.ALGORITHM_RELATIONS + "/{relationId}")
     public HttpEntity<EntityModel<AlgorithmRelationDto>> updateAlgorithmRelation(@PathVariable UUID algoId, @PathVariable UUID relationId,
                                                                                  @Valid @RequestBody AlgorithmRelationDto relationDto) {

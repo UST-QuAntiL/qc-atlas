@@ -44,7 +44,7 @@ public interface AlgorithmService {
     @Transactional
     void deleteAlgorithmRelation(UUID algoId, UUID relationId);
 
-    Page<Algorithm> findAll(Pageable pageable);
+    Page<Algorithm> findAll(Pageable pageable, String search);
 
     Algorithm findById(UUID algoId);
 
@@ -54,5 +54,4 @@ public interface AlgorithmService {
     AlgorithmRelation addOrUpdateAlgorithmRelation(UUID sourceAlgorithm_id, AlgorithmRelation relation);
 
     Set<AlgorithmRelation> getAlgorithmRelations(UUID sourceAlgorithm_id);
-
 }

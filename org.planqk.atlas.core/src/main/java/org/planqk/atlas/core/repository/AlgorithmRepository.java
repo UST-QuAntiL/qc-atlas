@@ -27,6 +27,8 @@ import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.ApplicationArea;
 import org.planqk.atlas.core.model.ProblemType;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -42,6 +44,12 @@ public interface AlgorithmRepository extends JpaRepository<Algorithm, UUID> {
     Optional<Algorithm> findByName(String name);
 
     boolean existsAlgorithmById(UUID id);
+
+    default Page<Algorithm> findAll(String search, Pageable pageable) {
+        return findByNameContainingIgnoreCaseOrAcronymContainingIgnoreCaseOrProblemContainingIgnoreCase(search, search, search, pageable);
+    }
+
+    Page<Algorithm> findByNameContainingIgnoreCaseOrAcronymContainingIgnoreCaseOrProblemContainingIgnoreCase(String name, String acronym, String problem, Pageable pageable);
 
     @Query("SELECT alg FROM Algorithm alg JOIN alg.publications publication WHERE publication.id = :publicationId")
     Set<Algorithm> getAlgorithmsWithPublicationId(@Param("publicationId") UUID publicationId);
