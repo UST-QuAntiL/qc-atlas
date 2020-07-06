@@ -23,11 +23,8 @@ import java.util.UUID;
 import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.services.PublicationService;
 import org.planqk.atlas.web.Constants;
-import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.PublicationDto;
-import org.planqk.atlas.web.linkassembler.AlgorithmAssembler;
 import org.planqk.atlas.web.linkassembler.PublicationAssembler;
-import org.planqk.atlas.web.utils.HateoasUtils;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.RestUtils;
 
@@ -35,9 +32,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpEntity;
@@ -68,8 +63,6 @@ public class PublicationController {
 
     private PublicationService publicationService;
     private PublicationAssembler publicationAssembler;
-    private AlgorithmAssembler algorithmAssembler;
-    private PagedResourcesAssembler<PublicationDto> paginationAssembler;
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping()
@@ -77,10 +70,8 @@ public class PublicationController {
                                                                                @RequestParam(required = false) Integer size) {
         log.debug("Get all publications");
         Pageable pageable = RestUtils.getPageableFromRequestParams(page, size);
-        Page<PublicationDto> dtoPage = ModelMapperUtils.convertPage(publicationService.findAll(pageable), PublicationDto.class);
-        PagedModel<EntityModel<PublicationDto>> outputModel = paginationAssembler.toModel(dtoPage);
-        publicationAssembler.addLinks(outputModel.getContent());
-        return new ResponseEntity<>(outputModel, HttpStatus.OK);
+        var entities = publicationService.findAll(pageable);
+        return ResponseEntity.ok(publicationAssembler.toModel(entities));
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "400"), @ApiResponse(responseCode = "404")}, description = "Custom ID will be ignored.")
@@ -88,9 +79,7 @@ public class PublicationController {
     public HttpEntity<EntityModel<PublicationDto>> createPublication(@Validated @RequestBody PublicationDto publicationDto) {
         log.debug("Create publication");
         Publication publication = publicationService.save(ModelMapperUtils.convert(publicationDto, Publication.class));
-        EntityModel<PublicationDto> dtoEntityModel = HateoasUtils.generateEntityModel(ModelMapperUtils.convert(publication, PublicationDto.class));
-        publicationAssembler.addLinks(dtoEntityModel);
-        return new ResponseEntity<>(dtoEntityModel, HttpStatus.CREATED);
+        return new ResponseEntity<>(publicationAssembler.toModel(publication), HttpStatus.CREATED);
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400"), @ApiResponse(responseCode = "404")})
@@ -98,9 +87,7 @@ public class PublicationController {
     public HttpEntity<EntityModel<PublicationDto>> getPublication(@PathVariable UUID id) {
         log.debug("Get publication with id: {}", id);
         Publication publication = publicationService.findById(id);
-        EntityModel<PublicationDto> dtoEntityModel = HateoasUtils.generateEntityModel(ModelMapperUtils.convert(publication, PublicationDto.class));
-        publicationAssembler.addLinks(dtoEntityModel);
-        return new ResponseEntity<>(dtoEntityModel, HttpStatus.OK);
+        return new ResponseEntity<>(publicationAssembler.toModel(publication), HttpStatus.OK);
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400"), @ApiResponse(responseCode = "404")}, description = "Custom ID will be ignored.")
@@ -108,9 +95,7 @@ public class PublicationController {
     public HttpEntity<EntityModel<PublicationDto>> updatePublication(@PathVariable UUID id, @Validated @RequestBody PublicationDto pub) {
         log.debug("Put to update publication with id: {}", id);
         Publication publication = publicationService.update(id, ModelMapperUtils.convert(pub, Publication.class));
-        EntityModel<PublicationDto> dtoEntityModel = HateoasUtils.generateEntityModel(ModelMapperUtils.convert(publication, PublicationDto.class));
-        publicationAssembler.addLinks(dtoEntityModel);
-        return new ResponseEntity<>(dtoEntityModel, HttpStatus.OK);
+        return new ResponseEntity<>(publicationAssembler.toModel(publication), HttpStatus.OK);
     }
 
     @Operation(responses = {
@@ -118,7 +103,7 @@ public class PublicationController {
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Publication with given id doesn't exist")})
     @DeleteMapping("/{id}")
-    public HttpEntity<AlgorithmDto> deletePublication(@PathVariable UUID id) {
+    public HttpEntity<Void> deletePublication(@PathVariable UUID id) {
         log.debug("Delete to remove publication with id: {}", id);
         Publication publication = publicationService.findById(id);
         publication.getAlgorithms().forEach(algorithm -> algorithm.removePublication(publication));

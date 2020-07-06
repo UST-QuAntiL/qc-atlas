@@ -264,7 +264,7 @@ public class PatternRelationControllerTest {
 
         MvcResult result = mockMvc.perform(put("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATIONS + "/{id}", relation1.getId())
                 .content(mapper.writeValueAsString(relation1Dto)).contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isCreated()).andReturn();
+                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
 
         mapper.configure(MapperFeature.USE_ANNOTATIONS, true);
         EntityModel<PatternRelationDto> response = mapper.readValue(result.getResponse().getContentAsString(),

@@ -37,7 +37,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpEntity;
@@ -62,46 +61,29 @@ import org.springframework.web.bind.annotation.RestController;
 public class ApplicationAreaController {
 
     private ApplicationAreaService applicationAreaService;
-    private PagedResourcesAssembler<ApplicationAreaDto> paginationAssembler;
     private ApplicationAreaAssembler applicationAreaAssembler;
 
     @Operation(responses = {@ApiResponse(responseCode = "201")}, description = "Custom ID will be ignored.")
     @PostMapping()
     public HttpEntity<EntityModel<ApplicationAreaDto>> createApplicationArea(
             @Valid @RequestBody ApplicationAreaDto applicationAreaDto) {
-        // Convert DTO to Entity
-        ApplicationArea entityInput = ModelMapperUtils.convert(applicationAreaDto, ApplicationArea.class);
-        // Save Entity
-        ApplicationArea savedApplicationArea = applicationAreaService.save(entityInput);
-        // Convert Entity to DTO
-        ApplicationAreaDto dtoOutput = ModelMapperUtils.convert(savedApplicationArea, ApplicationAreaDto.class);
-        // Generate EntityModel
-        EntityModel<ApplicationAreaDto> entityDto = HateoasUtils.generateEntityModel(dtoOutput);
-        // Add Links
-        applicationAreaAssembler.addLinks(entityDto);
-        return new ResponseEntity<>(entityDto, HttpStatus.CREATED);
+        var entityInput = ModelMapperUtils.convert(applicationAreaDto, ApplicationArea.class);
+        var savedEntity = applicationAreaService.save(entityInput);
+        return new ResponseEntity<>(applicationAreaAssembler.toModel(savedEntity), HttpStatus.CREATED);
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Custom ID will be ignored.")
     @PutMapping("/{id}")
     public HttpEntity<EntityModel<ApplicationAreaDto>> updateApplicationArea(@PathVariable UUID id,
                                                                              @Valid @RequestBody ApplicationAreaDto applicationAreaDto) {
-        // Convert DTO to Entity
-        ApplicationArea entityInput = ModelMapperUtils.convert(applicationAreaDto, ApplicationArea.class);
-        // Update Entity
-        ApplicationArea updatedEntity = applicationAreaService.update(id, entityInput);
-        // Convert Entity to DTO
-        ApplicationAreaDto dtoOutput = ModelMapperUtils.convert(updatedEntity, ApplicationAreaDto.class);
-        // Generate EntityModel
-        EntityModel<ApplicationAreaDto> entityDto = HateoasUtils.generateEntityModel(dtoOutput);
-        // Add Links
-        applicationAreaAssembler.addLinks(entityDto);
-        return new ResponseEntity<>(entityDto, HttpStatus.OK);
+        var entityInput = ModelMapperUtils.convert(applicationAreaDto, ApplicationArea.class);
+        var savedEntity = applicationAreaService.update(id, entityInput);
+        return ResponseEntity.ok(applicationAreaAssembler.toModel(savedEntity));
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", description = "Application area with given id doesn't exist")})
     @DeleteMapping("/{id}")
-    public HttpEntity<ApplicationAreaDto> deleteApplicationArea(@PathVariable UUID id) {
+    public HttpEntity<Void> deleteApplicationArea(@PathVariable UUID id) {
         ApplicationArea applicationArea = applicationAreaService.findById(id);
         applicationArea.getAlgorithms().forEach(algorithm -> algorithm.removeApplicationArea(applicationArea));
         applicationAreaService.delete(applicationArea);
@@ -112,29 +94,15 @@ public class ApplicationAreaController {
     @GetMapping()
     public HttpEntity<PagedModel<EntityModel<ApplicationAreaDto>>> getApplicationAreas(
             @RequestParam(required = false) Integer page, @RequestParam(required = false) Integer size) {
-        // Generate Pageable
         Pageable p = RestUtils.getPageableFromRequestParams(page, size);
-        // Get Entities using pagable
         Page<ApplicationArea> entities = applicationAreaService.findAll(p);
-        // Convert to DTO-Pageable
-        Page<ApplicationAreaDto> dtos = ModelMapperUtils.convertPage(entities, ApplicationAreaDto.class);
-        // Generate PagedModel with page links
-        PagedModel<EntityModel<ApplicationAreaDto>> pagedEntityOutput = paginationAssembler.toModel(dtos);
-        // Add DTO links
-        applicationAreaAssembler.addLinks(pagedEntityOutput.getContent());
-        return new ResponseEntity<>(pagedEntityOutput, HttpStatus.OK);
+        return new ResponseEntity<>(applicationAreaAssembler.toModel(entities), HttpStatus.OK);
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping("/{id}")
     public HttpEntity<EntityModel<ApplicationAreaDto>> getApplicationAreaById(@PathVariable UUID id) {
         ApplicationArea applicationArea = applicationAreaService.findById(id);
-        // Convert Entity to DTO
-        ApplicationAreaDto dtoOutput = ModelMapperUtils.convert(applicationArea, ApplicationAreaDto.class);
-        // Generate EntityModel
-        EntityModel<ApplicationAreaDto> entityDto = HateoasUtils.generateEntityModel(dtoOutput);
-        // Add Links
-        applicationAreaAssembler.addLinks(entityDto);
-        return new ResponseEntity<>(entityDto, HttpStatus.OK);
+        return new ResponseEntity<>(applicationAreaAssembler.toModel(applicationArea), HttpStatus.OK);
     }
 }

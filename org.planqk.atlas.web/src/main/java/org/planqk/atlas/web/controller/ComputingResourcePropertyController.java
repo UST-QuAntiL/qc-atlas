@@ -60,10 +60,7 @@ public class ComputingResourcePropertyController {
     @GetMapping("/{id}")
     public ResponseEntity<EntityModel<ComputingResourcePropertyDto>> getComputingResourceProperty(@PathVariable UUID id) {
         var resource = service.findComputingResourcePropertyById(id);
-        var resourceDto = ModelMapperUtils.convert(resource, ComputingResourcePropertyDto.class);
-        var entityModel = HateoasUtils.generateEntityModel(resourceDto);
-        assembler.addLinks(entityModel);
-        return ResponseEntity.ok(entityModel);
+        return ResponseEntity.ok(assembler.toModel(resource));
     }
 
     @Operation(responses = {
@@ -72,7 +69,7 @@ public class ComputingResourcePropertyController {
             @ApiResponse(responseCode = "404", description = "Computing resource with given id doesn't exist"),
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteComputingResourceProperty(@PathVariable UUID id) {
+    public ResponseEntity<Void> deleteComputingResourceProperty(@PathVariable UUID id) {
         service.findComputingResourcePropertyById(id);
         service.deleteComputingResourceProperty(id);
         return ResponseEntity.ok().build();

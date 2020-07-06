@@ -14,6 +14,7 @@ import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
 import org.planqk.atlas.web.dtos.AlgoRelationTypeDto;
 import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
 import org.planqk.atlas.web.linkassembler.AlgoRelationTypeAssembler;
+import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
 import org.planqk.atlas.web.utils.HateoasUtils;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 
@@ -52,14 +53,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(AlgoRelationTypeController.class)
 @ExtendWith(MockitoExtension.class)
 @AutoConfigureMockMvc
+@EnableLinkAssemblers
 public class AlgoRelationTypeControllerTest {
 
     @MockBean
     private AlgoRelationTypeService algoRelationTypeService;
-    @MockBean
-    private AlgoRelationTypeAssembler algoRelationTypeAssembler;
-    @MockBean
-    private PagedResourcesAssembler<AlgoRelationTypeDto> paginationAssembler;
 
     @Autowired
     private MockMvc mockMvc;
@@ -103,7 +101,6 @@ public class AlgoRelationTypeControllerTest {
     @Test
     public void createAlgoRelationType_returnCreate() throws Exception {
         when(algoRelationTypeService.save(any(AlgoRelationType.class))).thenReturn(algoRelationType1);
-        doNothing().when(algoRelationTypeAssembler).addLinks(ArgumentMatchers.<EntityModel<AlgoRelationTypeDto>>any());
 
         MvcResult result = mockMvc
                 .perform(post("/" + Constants.API_VERSION + "/" + Constants.ALGO_RELATION_TYPES + "/")
@@ -131,7 +128,6 @@ public class AlgoRelationTypeControllerTest {
     public void updateAlgoRelationType_returnOk() throws Exception {
         when(algoRelationTypeService.update(algoRelationType1.getId(), algoRelationType1))
                 .thenReturn(algoRelationType1);
-        doNothing().when(algoRelationTypeAssembler).addLinks(ArgumentMatchers.<EntityModel<AlgoRelationTypeDto>>any());
 
         MvcResult result = mockMvc
                 .perform(put("/" + Constants.API_VERSION + "/" + Constants.ALGO_RELATION_TYPES + "/{id}", algoRelationType1.getId())
@@ -148,10 +144,6 @@ public class AlgoRelationTypeControllerTest {
     @Test
     public void getAlgoRelationTypes_withEmptyAlgoRelationTypeList() throws Exception {
         when(algoRelationTypeService.findAll(pageable)).thenReturn(Page.empty());
-        when(paginationAssembler.toModel(ArgumentMatchers.any()))
-                .thenReturn(HateoasUtils.generatePagedModel(Page.empty()));
-        doNothing().when(algoRelationTypeAssembler)
-                .addLinks(ArgumentMatchers.<Collection<EntityModel<AlgoRelationTypeDto>>>any());
 
         MvcResult result = mockMvc
                 .perform(get("/" + Constants.API_VERSION + "/" + Constants.ALGO_RELATION_TYPES + "/")
@@ -175,10 +167,6 @@ public class AlgoRelationTypeControllerTest {
                 AlgoRelationTypeDto.class);
 
         when(algoRelationTypeService.findAll(pageable)).thenReturn(algoRelationPage);
-        when(paginationAssembler.toModel(ArgumentMatchers.any()))
-                .thenReturn(HateoasUtils.generatePagedModel(algoRelationDtoPage));
-        doNothing().when(algoRelationTypeAssembler)
-                .addLinks(ArgumentMatchers.<Collection<EntityModel<AlgoRelationTypeDto>>>any());
 
         MvcResult result = mockMvc
                 .perform(get("/" + Constants.API_VERSION + "/" + Constants.ALGO_RELATION_TYPES + "/")
@@ -202,11 +190,11 @@ public class AlgoRelationTypeControllerTest {
     @Test
     public void getAlgoRelationTypeById_returnAlgoRelationType() throws Exception {
         when(algoRelationTypeService.findById(algoRelationType1.getId())).thenReturn(algoRelationType1);
-        doNothing().when(algoRelationTypeAssembler).addLinks(ArgumentMatchers.<EntityModel<AlgoRelationTypeDto>>any());
 
         MvcResult result = mockMvc.perform(get("/" + Constants.API_VERSION + "/" + Constants.ALGO_RELATION_TYPES + "/{id}", algoRelationType1.getId())
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
 
+        System.err.println(result.getResponse().getContentAsString());
         EntityModel<AlgorithmRelationDto> algoRelationTypeDto = mapper.readValue(result.getResponse().getContentAsString(),
                 new TypeReference<>() {
                 });

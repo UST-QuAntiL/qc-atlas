@@ -9,16 +9,13 @@ import org.planqk.atlas.core.services.ProblemTypeService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.ProblemTypeDto;
 import org.planqk.atlas.web.linkassembler.ProblemTypeAssembler;
-import org.planqk.atlas.web.utils.HateoasUtils;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.RestUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpEntity;
@@ -43,41 +40,24 @@ import org.springframework.web.bind.annotation.RestController;
 public class ProblemTypeController {
 
     private ProblemTypeService problemTypeService;
-    private PagedResourcesAssembler<ProblemTypeDto> paginationAssembler;
     private ProblemTypeAssembler problemTypeAssembler;
 
     @Operation(responses = {@ApiResponse(responseCode = "201")}, description = "Custom ID will be ignored.")
     @PostMapping()
     public HttpEntity<EntityModel<ProblemTypeDto>> createProblemType(
             @Valid @RequestBody ProblemTypeDto problemTypeDto) {
-        // Convert DTO to Entity
-        ProblemType entityInput = ModelMapperUtils.convert(problemTypeDto, ProblemType.class);
-        // Save Entity
-        ProblemType savedProblemType = problemTypeService.save(entityInput);
-        // Convert Entity to DTO
-        ProblemTypeDto dtoOutput = ModelMapperUtils.convert(savedProblemType, ProblemTypeDto.class);
-        // Generate EntityModel
-        EntityModel<ProblemTypeDto> entityDto = HateoasUtils.generateEntityModel(dtoOutput);
-        // Add Links
-        problemTypeAssembler.addLinks(entityDto);
-        return new ResponseEntity<>(entityDto, HttpStatus.CREATED);
+        var entityInput = ModelMapperUtils.convert(problemTypeDto, ProblemType.class);
+        var savedProblemType = problemTypeService.save(entityInput);
+        return new ResponseEntity<>(problemTypeAssembler.toModel(savedProblemType), HttpStatus.CREATED);
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Custom ID will be ignored.")
     @PutMapping("/{id}")
     public HttpEntity<EntityModel<ProblemTypeDto>> updateProblemType(@PathVariable UUID id,
                                                                      @Valid @RequestBody ProblemTypeDto problemTypeDto) {
-        // Convert DTO to Entity
-        ProblemType entityInput = ModelMapperUtils.convert(problemTypeDto, ProblemType.class);
-        // Update Entity
-        ProblemType updatedEntity = problemTypeService.update(id, entityInput);
-        // Convert Entity to DTO
-        ProblemTypeDto dtoOutput = ModelMapperUtils.convert(updatedEntity, ProblemTypeDto.class);
-        // Generate EntityModel
-        EntityModel<ProblemTypeDto> entityDto = HateoasUtils.generateEntityModel(dtoOutput);
-        // Add Links
-        problemTypeAssembler.addLinks(entityDto);
-        return new ResponseEntity<>(entityDto, HttpStatus.OK);
+        var entityInput = ModelMapperUtils.convert(problemTypeDto, ProblemType.class);
+        var updatedEntity = problemTypeService.update(id, entityInput);
+        return ResponseEntity.ok(problemTypeAssembler.toModel(updatedEntity));
     }
 
     @Operation(responses = {
@@ -85,7 +65,7 @@ public class ProblemTypeController {
             @ApiResponse(responseCode = "404", description = "Problem type with given id doesn't exist")
     })
     @DeleteMapping("/{id}")
-    public HttpEntity<ProblemTypeDto> deleteProblemType(@PathVariable UUID id) {
+    public HttpEntity<Void> deleteProblemType(@PathVariable UUID id) {
         ProblemType problemType = problemTypeService.findById(id);
         problemType.getAlgorithms().forEach(algorithm -> algorithm.removeProblemType(problemType));
         problemTypeService.delete(problemType);
@@ -96,29 +76,15 @@ public class ProblemTypeController {
     @GetMapping()
     public HttpEntity<PagedModel<EntityModel<ProblemTypeDto>>> getProblemTypes(
             @RequestParam(required = false) Integer page, @RequestParam(required = false) Integer size) {
-        // Generate Pageable
         Pageable p = RestUtils.getPageableFromRequestParams(page, size);
-        // Get Entities using pagable
-        Page<ProblemType> entities = problemTypeService.findAll(p);
-        // Convert to DTO-Pageable
-        Page<ProblemTypeDto> dtos = ModelMapperUtils.convertPage(entities, ProblemTypeDto.class);
-        // Generate PagedModel with page links
-        PagedModel<EntityModel<ProblemTypeDto>> pagedEntityOutput = paginationAssembler.toModel(dtos);
-        // Add DTO links
-        problemTypeAssembler.addLinks(pagedEntityOutput.getContent());
-        return new ResponseEntity<>(pagedEntityOutput, HttpStatus.OK);
+        var entities = problemTypeService.findAll(p);
+        return new ResponseEntity<>(problemTypeAssembler.toModel(entities), HttpStatus.OK);
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping("/{id}")
     public HttpEntity<EntityModel<ProblemTypeDto>> getProblemTypeById(@PathVariable UUID id) {
         ProblemType problemType = problemTypeService.findById(id);
-        // Convert Entity to DTO
-        ProblemTypeDto dtoOutput = ModelMapperUtils.convert(problemType, ProblemTypeDto.class);
-        // Generate EntityModel
-        EntityModel<ProblemTypeDto> entityDto = HateoasUtils.generateEntityModel(dtoOutput);
-        // Add Links
-        problemTypeAssembler.addLinks(entityDto);
-        return new ResponseEntity<>(entityDto, HttpStatus.OK);
+        return new ResponseEntity<>(problemTypeAssembler.toModel(problemType), HttpStatus.OK);
     }
 }
