@@ -40,7 +40,6 @@ import org.planqk.atlas.web.controller.mixin.ComputingResourceMixin;
 import org.planqk.atlas.web.controller.mixin.PublicationMixin;
 import org.planqk.atlas.web.dtos.ComputingResourcePropertyDto;
 import org.planqk.atlas.web.dtos.ImplementationDto;
-import org.planqk.atlas.web.dtos.ProblemTypeDto;
 import org.planqk.atlas.web.dtos.PublicationDto;
 import org.planqk.atlas.web.dtos.SoftwarePlatformDto;
 import org.planqk.atlas.web.linkassembler.ComputingResourcePropertyAssembler;
@@ -286,9 +285,9 @@ public class ImplementationController {
 
     @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Delete a reference to a publication of the implementation.")
     @DeleteMapping("/{implId}/" + Constants.PUBLICATIONS + "/{publicationId}")
-    public HttpEntity<EntityModel<ProblemTypeDto>> deleteReferenceToPublication(@PathVariable UUID algoId,
-                                                                                @PathVariable UUID implId,
-                                                                                @PathVariable UUID publicationId) {
+    public HttpEntity<Void> deleteReferenceToPublication(@PathVariable UUID algoId,
+                                                         @PathVariable UUID implId,
+                                                         @PathVariable UUID publicationId) {
         Implementation implementation = implementationService.findById(implId);
         publicationMixin.unlinkPublication(implementation, publicationId);
         implementationService.save(implementation);
