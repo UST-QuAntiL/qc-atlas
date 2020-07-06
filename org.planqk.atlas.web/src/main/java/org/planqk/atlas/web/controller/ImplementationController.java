@@ -47,7 +47,6 @@ import org.planqk.atlas.web.linkassembler.ComputingResourcePropertyAssembler;
 import org.planqk.atlas.web.linkassembler.ImplementationAssembler;
 import org.planqk.atlas.web.linkassembler.PublicationAssembler;
 import org.planqk.atlas.web.linkassembler.SoftwarePlatformAssembler;
-import org.planqk.atlas.web.utils.HateoasUtils;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.RestUtils;
 
@@ -249,13 +248,10 @@ public class ImplementationController {
             @ApiResponse(responseCode = "404", content = @Content, description = "Implementation doesn't exist")},
             description = "Get referenced publications for an implementation")
     @GetMapping("/{implId}/" + Constants.PUBLICATIONS)
-    public HttpEntity<CollectionModel<EntityModel<PublicationDto>>> getPublications(@PathVariable UUID implId) {
+    public HttpEntity<CollectionModel<EntityModel<PublicationDto>>> getPublications(@PathVariable UUID algoId, @PathVariable UUID implId) {
         Implementation implementation = implementationService.findById(implId);
         Set<Publication> publications = implementation.getPublications();
-        Set<PublicationDto> dtoPublications = ModelMapperUtils.convertSet(publications, PublicationDto.class);
-        CollectionModel<EntityModel<PublicationDto>> resultCollection = HateoasUtils.generateCollectionModel(dtoPublications);
-        publicationAssembler.addLinks(resultCollection);
-        return new ResponseEntity<>(resultCollection, HttpStatus.OK);
+        return ResponseEntity.ok(publicationAssembler.toModel(publications));
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "404", content = @Content,
@@ -266,7 +262,7 @@ public class ImplementationController {
         Implementation implementation = implementationService.findById(implId);
         publicationMixin.addPublication(implementation, publicationDto);
         implementation = implementationService.save(implementation);
-        return new ResponseEntity<>(publicationAssembler.toModel(implementation.getPublications()), HttpStatus.OK);
+        return ResponseEntity.ok(publicationAssembler.toModel(implementation.getPublications()));
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Get a specific referenced publication of an implementation.")

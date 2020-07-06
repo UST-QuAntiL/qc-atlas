@@ -25,8 +25,6 @@ import org.planqk.atlas.core.services.ComputingResourcePropertyService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.ComputingResourcePropertyDto;
 import org.planqk.atlas.web.linkassembler.ComputingResourcePropertyAssembler;
-import org.planqk.atlas.web.utils.HateoasUtils;
-import org.planqk.atlas.web.utils.ModelMapperUtils;
 
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;

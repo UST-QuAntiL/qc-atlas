@@ -33,7 +33,6 @@ import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
 import org.planqk.atlas.web.dtos.DiscussionTopicDto;
 import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
-import org.planqk.atlas.web.utils.HateoasUtils;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -42,7 +41,6 @@ import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -52,7 +50,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -68,13 +65,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest({DiscussionCommentController.class, DiscussionTopicController.class})
+@WebMvcTest( {DiscussionCommentController.class, DiscussionTopicController.class})
 @ExtendWith(MockitoExtension.class)
 @AutoConfigureMockMvc
 @EnableLinkAssemblers
 public class DiscussionTopicControllerTest {
-    @MockBean
-    private PagedResourcesAssembler<DiscussionTopicDto> paginationAssembler;
     @MockBean
     private DiscussionTopicService discussionTopicService;
     @MockBean
@@ -92,9 +87,9 @@ public class DiscussionTopicControllerTest {
     private DiscussionTopicDto discussionTopicDto;
     private DiscussionTopic discussionTopic;
 
-    List<DiscussionTopic> discussionTopicList;
-    Page<DiscussionTopic> discussionTopicPage;
-    Page<DiscussionTopicDto> discussionTopicPageDto;
+    private List<DiscussionTopic> discussionTopicList;
+    private Page<DiscussionTopic> discussionTopicPage;
+    private Page<DiscussionTopicDto> discussionTopicPageDto;
 
     @BeforeEach
     public void init() {
@@ -143,9 +138,6 @@ public class DiscussionTopicControllerTest {
     @Test
     public void getDiscussionTopics_returnDiscussionTopics() throws Exception {
         when(discussionTopicService.findAll(pageable)).thenReturn(discussionTopicPage);
-        when(paginationAssembler.toModel(ArgumentMatchers.any()))
-                .thenReturn(HateoasUtils.generatePagedModel(discussionTopicPageDto));
-
         MvcResult result = mockMvc
                 .perform(get("/" + Constants.API_VERSION + "/" + Constants.DISCUSSION_TOPICS + "/").queryParam(Constants.PAGE, Integer.toString(page))
                         .queryParam(Constants.SIZE, Integer.toString(size)).accept(MediaType.APPLICATION_JSON)

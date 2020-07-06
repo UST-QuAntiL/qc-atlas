@@ -13,7 +13,6 @@ import org.planqk.atlas.web.dtos.BackendDto;
 import org.planqk.atlas.web.dtos.ComputingResourcePropertyDto;
 import org.planqk.atlas.web.linkassembler.BackendAssembler;
 import org.planqk.atlas.web.linkassembler.ComputingResourcePropertyAssembler;
-import org.planqk.atlas.web.utils.HateoasUtils;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.RestUtils;
 
@@ -22,9 +21,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpEntity;
@@ -49,11 +46,9 @@ public class BackendController {
     final private static Logger LOG = LoggerFactory.getLogger(BackendController.class);
 
     private final ComputingResourcePropertyService quantumResourceService;
-    private final PagedResourcesAssembler<ComputingResourcePropertyDto> quantumResourcePaginationAssembler;
     private final ComputingResourcePropertyAssembler quantumResourceAssembler;
     private BackendService backendService;
     private BackendAssembler backendAssembler;
-    private PagedResourcesAssembler<BackendDto> paginationAssembler;
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping()
@@ -61,9 +56,8 @@ public class BackendController {
                                                                        @RequestParam(required = false) Integer size) {
         LOG.debug("Get to retrieve all Backends received.");
         Pageable p = RestUtils.getPageableFromRequestParams(page, size);
-        Page<BackendDto> pageDto = ModelMapperUtils.convertPage(backendService.findAll(p), BackendDto.class);
-        PagedModel<EntityModel<BackendDto>> outputDto = paginationAssembler.toModel(pageDto);
-        return new ResponseEntity<>(outputDto, HttpStatus.OK);
+        var entities = backendService.findAll(p);
+        return ResponseEntity.ok(backendAssembler.toModel(entities));
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "201")})
@@ -71,14 +65,12 @@ public class BackendController {
     public HttpEntity<EntityModel<BackendDto>> createBackend(@Valid @RequestBody BackendDto backendDto) {
         LOG.debug("Post to add a single Backend received.");
         Backend backend = backendService.saveOrUpdate(ModelMapperUtils.convert(backendDto, Backend.class));
-        EntityModel<BackendDto> outputDto = HateoasUtils.generateEntityModel(ModelMapperUtils.convert(backend, BackendDto.class));
-        backendAssembler.addLinks(outputDto);
-        return new ResponseEntity<>(outputDto, HttpStatus.CREATED);
+        return new ResponseEntity<>(backendAssembler.toModel(backend), HttpStatus.CREATED);
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", description = "Backend with given id doesn't exist")})
     @DeleteMapping("/{id}")
-    public HttpEntity<EntityModel<BackendDto>> deleteBackend(@PathVariable UUID id) {
+    public HttpEntity<Void> deleteBackend(@PathVariable UUID id) {
         LOG.debug("Delete to remove the Backend with id {} received.", id);
         // only deletes if not used in any CloudService or SoftwarePlatform
         // we have to decide if this is acceptable behavior - TODO
@@ -92,9 +84,7 @@ public class BackendController {
     public HttpEntity<EntityModel<BackendDto>> updateBackend(@PathVariable UUID id, @Valid @RequestBody BackendDto backendDto) {
         LOG.debug("Put to update a single Backend received.");
         Backend backend = backendService.saveOrUpdate(ModelMapperUtils.convert(backendDto, Backend.class));
-        EntityModel<BackendDto> outputDto = HateoasUtils.generateEntityModel(ModelMapperUtils.convert(backend, BackendDto.class));
-        backendAssembler.addLinks(outputDto);
-        return new ResponseEntity<>(outputDto, HttpStatus.CREATED);
+        return new ResponseEntity<>(backendAssembler.toModel(backend), HttpStatus.CREATED);
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404")})
@@ -102,9 +92,7 @@ public class BackendController {
     public HttpEntity<EntityModel<BackendDto>> getBackend(@PathVariable UUID id) {
         LOG.debug("Get to retrieve Backend with id {} received", id);
         Backend backend = backendService.findById(id);
-        EntityModel<BackendDto> dtoOutput = HateoasUtils.generateEntityModel(ModelMapperUtils.convert(backend, BackendDto.class));
-        backendAssembler.addLinks(dtoOutput);
-        return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
+        return new ResponseEntity<>(backendAssembler.toModel(backend), HttpStatus.OK);
     }
 
     @Operation(responses = {
@@ -120,10 +108,7 @@ public class BackendController {
     ) {
         var resources = quantumResourceService.findAllComputingResourcesPropertiesByBackendId(id,
                 RestUtils.getPageableFromRequestParams(page, size));
-        var typeDtoes = ModelMapperUtils.convertPage(resources, ComputingResourcePropertyDto.class);
-        var pagedModel = quantumResourcePaginationAssembler.toModel(typeDtoes);
-        quantumResourceAssembler.addLinks(pagedModel);
-        return ResponseEntity.ok(pagedModel);
+        return ResponseEntity.ok(quantumResourceAssembler.toModel(resources));
     }
 
     @Operation(responses = {
@@ -139,9 +124,6 @@ public class BackendController {
         var backend = backendService.findById(id);
         var resource = ModelMapperUtils.convert(resourceDto, ComputingResourceProperty.class);
         var updatedBackend = quantumResourceService.addComputingResourcePropertyToBackend(backend, resource);
-        EntityModel<BackendDto> backendDto = HateoasUtils.generateEntityModel(
-                ModelMapperUtils.convert(updatedBackend, BackendDto.class));
-        backendAssembler.addLinks(backendDto);
-        return ResponseEntity.ok(backendDto);
+        return ResponseEntity.ok(backendAssembler.toModel(updatedBackend));
     }
 }
