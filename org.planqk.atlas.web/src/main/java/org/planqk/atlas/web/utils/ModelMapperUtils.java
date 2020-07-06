@@ -1,8 +1,5 @@
 package org.planqk.atlas.web.utils;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.model.Backend;
@@ -27,14 +24,6 @@ import org.springframework.data.domain.Page;
 public class ModelMapperUtils {
 
     public static final ModelMapper mapper = initModelMapper();
-
-    public static <D, T> Set<D> convertSet(@NonNull Set<T> entities, @NonNull Class<D> dtoClass) {
-        Set<D> resultSet = new HashSet<D>();
-        for (T entity : entities) {
-            resultSet.add(convert(entity, dtoClass));
-        }
-        return resultSet;
-    }
 
     public static <D, T> Page<D> convertPage(@NonNull Page<T> entities, @NonNull Class<D> dtoClass) {
         return entities.map(objectEntity -> convert(objectEntity, dtoClass));

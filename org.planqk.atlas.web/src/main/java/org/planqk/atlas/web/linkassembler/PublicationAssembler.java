@@ -20,12 +20,9 @@ package org.planqk.atlas.web.linkassembler;
 
 import java.util.UUID;
 
-import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.PublicationController;
-import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.PublicationDto;
 
-import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Component;
 

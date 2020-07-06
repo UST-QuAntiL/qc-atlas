@@ -117,20 +117,6 @@ public class ModelMapperUtilsTest {
     }
 
     @Test
-    public void testModelMapper_entitySetToDtoSet() {
-        Set<ProblemTypeDto> mappedDtoSet = ModelMapperUtils.convertSet(problemTypes, ProblemTypeDto.class);
-
-        assertEquals(mappedDtoSet, problemTypesDto);
-    }
-
-    @Test
-    public void testModelMapper_dtoSetToEntitySet() {
-        Set<ProblemType> mappedSet = ModelMapperUtils.convertSet(problemTypesDto, ProblemType.class);
-
-        assertEquals(mappedSet, problemTypes);
-    }
-
-    @Test
     public void testModelMapper_entityPageToDtoPage() {
         Page<ProblemTypeDto> mappedDtoPage = ModelMapperUtils.convertPage(pagedProblemTypesDto, ProblemTypeDto.class);
 

@@ -7,7 +7,6 @@ import org.planqk.atlas.web.controller.AlgorithmController;
 import org.planqk.atlas.web.controller.ImplementationController;
 import org.planqk.atlas.web.dtos.ImplementationDto;
 
-import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Component;
 
@@ -31,7 +30,6 @@ public class ImplementationAssembler extends GenericLinkAssembler<Implementation
 //    public void addTagLink(CollectionModel<EntityModel<TagDto>> resultCollection, UUID implId) {
 //        resultCollection.add(links.linkTo(methodOn(ImplementationController.class).getTags(implId)).withSelfRel());
 //    }
-
 
     public UUID getId(EntityModel<ImplementationDto> resource) {
         return resource.getContent().getId();
