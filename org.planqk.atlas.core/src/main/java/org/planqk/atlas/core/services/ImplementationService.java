@@ -38,7 +38,7 @@ public interface ImplementationService {
     @Transactional
     Implementation update(UUID id, Implementation implementation);
 
-    Page<Implementation> findAll(Pageable pageable);
+    Page<Implementation> findByImplementedAlgorithm(UUID algoId, Pageable pageable);
 
     Implementation findById(UUID implId);
 }

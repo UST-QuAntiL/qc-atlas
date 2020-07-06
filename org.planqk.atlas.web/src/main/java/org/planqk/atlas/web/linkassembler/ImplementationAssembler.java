@@ -7,6 +7,7 @@ import org.planqk.atlas.web.controller.AlgorithmController;
 import org.planqk.atlas.web.controller.ImplementationController;
 import org.planqk.atlas.web.dtos.ImplementationDto;
 
+import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Component;
 

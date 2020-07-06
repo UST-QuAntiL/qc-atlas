@@ -42,7 +42,7 @@ import org.springframework.lang.NonNull;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
-public class Algorithm extends AlgorOrImpl {
+public class Algorithm extends AlgorOrImpl implements ModelWithPublications {
 
     private String name;
     private String acronym;
@@ -122,7 +122,7 @@ public class Algorithm extends AlgorOrImpl {
     }
 
     public Set<Publication> getPublications() {
-        return new HashSet<Publication>(publications);
+        return new HashSet<>(publications);
     }
 
     public void addPublication(Publication publication) {

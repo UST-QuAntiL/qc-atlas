@@ -31,6 +31,8 @@ import org.planqk.atlas.core.services.ComputingResourcePropertyService;
 import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.core.services.PublicationService;
 import org.planqk.atlas.core.services.SoftwarePlatformService;
+import org.planqk.atlas.web.controller.mixin.ComputingResourceMixin;
+import org.planqk.atlas.web.controller.mixin.PublicationMixin;
 import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
 import org.planqk.atlas.web.dtos.ImplementationDto;
 import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
@@ -47,6 +49,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -60,6 +64,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -68,7 +73,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.fromMethodCall;
 import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.on;
 
-@WebMvcTest(ImplementationController.class)
+@WebMvcTest(controllers = ImplementationController.class, includeFilters = {
+        @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = {PublicationMixin.class, ComputingResourceMixin.class})
+})
 @ExtendWith(MockitoExtension.class)
 @AutoConfigureMockMvc
 @EnableLinkAssemblers
@@ -112,7 +119,7 @@ public class ImplementationControllerTest {
         Page<Implementation> page = new PageImpl<Implementation>(implementationList, pageable,
                 implementationList.size());
 
-        when(implementationService.findAll(any(Pageable.class))).thenReturn(page);
+        when(implementationService.findByImplementedAlgorithm(eq(algoId), any(Pageable.class))).thenReturn(page);
 
         MvcResult mvcResult = mockMvc.perform(get(
                 fromMethodCall(uriBuilder, on(ImplementationController.class).getImplementations(algoId)).toUriString())
@@ -145,7 +152,7 @@ public class ImplementationControllerTest {
         Page<Implementation> page = new PageImpl<Implementation>(implementationList, pageable,
                 implementationList.size());
 
-        when(implementationService.findAll(any(Pageable.class))).thenReturn(page);
+        when(implementationService.findByImplementedAlgorithm(eq(algoId), any(Pageable.class))).thenReturn(page);
 
         MvcResult mvcResult = mockMvc.perform(get(
                 fromMethodCall(uriBuilder, on(ImplementationController.class).getImplementations(algoId)).toUriString())
