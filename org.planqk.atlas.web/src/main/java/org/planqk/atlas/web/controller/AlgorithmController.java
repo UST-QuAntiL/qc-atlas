@@ -151,7 +151,7 @@ public class AlgorithmController {
 //    @GetMapping("/{id}/" + Constants.TAGS)
 //    public HttpEntity<CollectionModel<EntityModel<TagDto>>> getTags(@PathVariable UUID id) {
 //        Algorithm algorithm = algorithmService.findById(id);
-//        return new ResponseEntity<>(tagsAssembler.toModel(algorithm.getTags()), HttpStatus.OK);
+//        return ResponseEntity.ok(tagsAssembler.toModel(algorithm.getTags()));
 //    }
 
     @Operation(responses = {
@@ -410,7 +410,7 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "404", description = "Algorithm with given id doesn't exist")},
             description = "Add an algorithm relation from this algorithm to another given algorithm. Custom ID will be ignored. For algorithm relation type only ID is required, other algorithm relation type attributes will not change.")
     @PostMapping("/{algoId}/" + Constants.ALGORITHM_RELATIONS)
-    public ResponseEntity<EntityModel<AlgorithmRelationDto>> addAlgorithmRelation(
+    public HttpEntity<EntityModel<AlgorithmRelationDto>> addAlgorithmRelation(
             @PathVariable UUID algoId,
             @RequestBody AlgorithmRelationDto relationDto
     ) {
@@ -492,7 +492,7 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "404")
     }, description = "Retrieve the required computing resources of an algorithm")
     @GetMapping("/{algoId}/" + Constants.COMPUTING_RESOURCES_PROPERTIES)
-    public ResponseEntity<PagedModel<EntityModel<ComputingResourcePropertyDto>>> getComputingResources(
+    public HttpEntity<PagedModel<EntityModel<ComputingResourcePropertyDto>>> getComputingResources(
             @PathVariable UUID algoId,
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size
@@ -508,7 +508,7 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "404", description = "Computing resource type  or algorithm can not be found with the given Ids")
     }, description = "Add a computing resource (e.g. a certain number of qubits) that is required by an algorithm. Custom ID will be ignored. For computing resource type only ID is required, other computing resource type attributes will not change.")
     @PostMapping("/{algoId}/" + Constants.COMPUTING_RESOURCES_PROPERTIES)
-    public ResponseEntity<EntityModel<ComputingResourcePropertyDto>> addComputingResource(
+    public HttpEntity<EntityModel<ComputingResourcePropertyDto>> addComputingResource(
             @PathVariable UUID algoId,
             @Valid @RequestBody ComputingResourcePropertyDto resourceDto
     ) {

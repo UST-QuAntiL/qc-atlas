@@ -70,7 +70,7 @@ public class ComputingResourcePropertyTypeController {
             @ApiResponse(responseCode = "404", description = "Computing resource type with given id doesn't exist"),
     })
     @GetMapping("/{id}")
-    public ResponseEntity<EntityModel<ComputingResourcePropertyTypeDto>> getComputingResourcePropertyType(@PathVariable UUID id) {
+    public HttpEntity<EntityModel<ComputingResourcePropertyTypeDto>> getComputingResourcePropertyType(@PathVariable UUID id) {
         var resourceType = service.findComputingResourcePropertyTypeById(id);
         return ResponseEntity.ok(assembler.toModel(resourceType));
     }
@@ -81,7 +81,7 @@ public class ComputingResourcePropertyTypeController {
             @ApiResponse(responseCode = "404", description = "Computing resource type with given id doesn't exist"),
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteComputingResourcePropertyType(@PathVariable UUID id) {
+    public HttpEntity<Void> deleteComputingResourcePropertyType(@PathVariable UUID id) {
         service.findComputingResourcePropertyTypeById(id);
         service.deleteComputingResourcePropertyType(id);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -94,12 +94,12 @@ public class ComputingResourcePropertyTypeController {
         computingResourcePropertyTypeDto.setId(id);
         var inputEntity = ModelMapperUtils.convert(computingResourcePropertyTypeDto, ComputingResourcePropertyType.class);
         var savedEntity = service.addOrUpdateComputingResourcePropertyType(inputEntity);
-        return new ResponseEntity<>(assembler.toModel(savedEntity), HttpStatus.OK);
+        return ResponseEntity.ok(assembler.toModel(savedEntity));
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping()
-    public ResponseEntity<PagedModel<EntityModel<ComputingResourcePropertyTypeDto>>> getResourcePropertyTypes(
+    public HttpEntity<PagedModel<EntityModel<ComputingResourcePropertyTypeDto>>> getResourcePropertyTypes(
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size
     ) {

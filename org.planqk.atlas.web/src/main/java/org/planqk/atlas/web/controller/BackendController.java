@@ -92,7 +92,7 @@ public class BackendController {
     public HttpEntity<EntityModel<BackendDto>> getBackend(@PathVariable UUID id) {
         LOG.debug("Get to retrieve Backend with id {} received", id);
         Backend backend = backendService.findById(id);
-        return new ResponseEntity<>(backendAssembler.toModel(backend), HttpStatus.OK);
+        return ResponseEntity.ok(backendAssembler.toModel(backend));
     }
 
     @Operation(responses = {
@@ -101,7 +101,7 @@ public class BackendController {
             @ApiResponse(responseCode = "404")
     })
     @GetMapping("/{id}/" + Constants.COMPUTING_RESOURCES_PROPERTIES)
-    public ResponseEntity<PagedModel<EntityModel<ComputingResourcePropertyDto>>> getQuantumResources(
+    public HttpEntity<PagedModel<EntityModel<ComputingResourcePropertyDto>>> getQuantumResources(
             @PathVariable UUID id,
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size
@@ -117,7 +117,7 @@ public class BackendController {
             @ApiResponse(responseCode = "404")
     })
     @PostMapping("/{id}/" + Constants.COMPUTING_RESOURCES_PROPERTIES)
-    public ResponseEntity<EntityModel<BackendDto>> addQuantumResource(
+    public HttpEntity<EntityModel<BackendDto>> addQuantumResource(
             @PathVariable UUID id,
             @Valid @RequestBody ComputingResourcePropertyDto resourceDto
     ) {

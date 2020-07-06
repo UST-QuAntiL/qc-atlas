@@ -78,13 +78,13 @@ public class ProblemTypeController {
             @RequestParam(required = false) Integer page, @RequestParam(required = false) Integer size) {
         Pageable p = RestUtils.getPageableFromRequestParams(page, size);
         var entities = problemTypeService.findAll(p);
-        return new ResponseEntity<>(problemTypeAssembler.toModel(entities), HttpStatus.OK);
+        return ResponseEntity.ok(problemTypeAssembler.toModel(entities));
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping("/{id}")
     public HttpEntity<EntityModel<ProblemTypeDto>> getProblemTypeById(@PathVariable UUID id) {
         ProblemType problemType = problemTypeService.findById(id);
-        return new ResponseEntity<>(problemTypeAssembler.toModel(problemType), HttpStatus.OK);
+        return ResponseEntity.ok(problemTypeAssembler.toModel(problemType));
     }
 }

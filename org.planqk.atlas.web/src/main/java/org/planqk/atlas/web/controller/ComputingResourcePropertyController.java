@@ -32,6 +32,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -56,7 +57,7 @@ public class ComputingResourcePropertyController {
             @ApiResponse(responseCode = "404"),
     })
     @GetMapping("/{id}")
-    public ResponseEntity<EntityModel<ComputingResourcePropertyDto>> getComputingResourceProperty(@PathVariable UUID id) {
+    public HttpEntity<EntityModel<ComputingResourcePropertyDto>> getComputingResourceProperty(@PathVariable UUID id) {
         var resource = service.findComputingResourcePropertyById(id);
         return ResponseEntity.ok(assembler.toModel(resource));
     }
@@ -67,7 +68,7 @@ public class ComputingResourcePropertyController {
             @ApiResponse(responseCode = "404", description = "Computing resource with given id doesn't exist"),
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteComputingResourceProperty(@PathVariable UUID id) {
+    public HttpEntity<Void> deleteComputingResourceProperty(@PathVariable UUID id) {
         service.findComputingResourcePropertyById(id);
         service.deleteComputingResourceProperty(id);
         return ResponseEntity.ok().build();

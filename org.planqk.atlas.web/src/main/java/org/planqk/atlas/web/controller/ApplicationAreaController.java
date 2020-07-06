@@ -95,13 +95,13 @@ public class ApplicationAreaController {
             @RequestParam(required = false) Integer page, @RequestParam(required = false) Integer size) {
         Pageable p = RestUtils.getPageableFromRequestParams(page, size);
         Page<ApplicationArea> entities = applicationAreaService.findAll(p);
-        return new ResponseEntity<>(applicationAreaAssembler.toModel(entities), HttpStatus.OK);
+        return ResponseEntity.ok(applicationAreaAssembler.toModel(entities));
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping("/{id}")
     public HttpEntity<EntityModel<ApplicationAreaDto>> getApplicationAreaById(@PathVariable UUID id) {
         ApplicationArea applicationArea = applicationAreaService.findById(id);
-        return new ResponseEntity<>(applicationAreaAssembler.toModel(applicationArea), HttpStatus.OK);
+        return ResponseEntity.ok(applicationAreaAssembler.toModel(applicationArea));
     }
 }

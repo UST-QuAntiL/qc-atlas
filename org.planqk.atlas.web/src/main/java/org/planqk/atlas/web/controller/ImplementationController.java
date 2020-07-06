@@ -135,7 +135,7 @@ public class ImplementationController {
 //    public HttpEntity<CollectionModel<EntityModel<TagDto>>> getTags(@PathVariable UUID algoId, @PathVariable UUID implId) {
 //        Implementation implementation = implementationService.findById(implId);
 //         Set<Tag> tags = implementation.getTags();
-//        return new ResponseEntity<>(tagAssembler.toModel(tags), HttpStatus.OK);
+//        return ResponseEntity.ok(tagAssembler.toModel(tags));
 //    }
 
     @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", description = "Algorithm doesn't exist")})
@@ -163,7 +163,7 @@ public class ImplementationController {
             @ApiResponse(responseCode = "404", description = "Algorithm or implementation doesn't exist")
     }, description = "Retrieve the required computing resources of an implementation")
     @GetMapping("/{implId}/" + Constants.COMPUTING_RESOURCES_PROPERTIES)
-    public ResponseEntity<PagedModel<EntityModel<ComputingResourcePropertyDto>>> getComputingResources(
+    public HttpEntity<PagedModel<EntityModel<ComputingResourcePropertyDto>>> getComputingResources(
             @PathVariable UUID algoId, @PathVariable UUID implId,
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size
@@ -181,7 +181,7 @@ public class ImplementationController {
             @ApiResponse(responseCode = "404", description = "Computing resource type, implementation or algorithm can not be found with the given Ids")
     }, description = "Add a computing resource (e.g. a certain number of qubits) that is requiered by an implementation. Custom ID will be ignored. For computing resource type only ID is required, other computing resource type attributes will not change")
     @PostMapping("/{implId}/" + Constants.COMPUTING_RESOURCES_PROPERTIES)
-    public ResponseEntity<EntityModel<ComputingResourcePropertyDto>> addComputingResource(
+    public HttpEntity<EntityModel<ComputingResourcePropertyDto>> addComputingResource(
             @PathVariable UUID algoId, @PathVariable UUID implId,
             @Valid @RequestBody ComputingResourcePropertyDto resourceDto
     ) {

@@ -166,6 +166,6 @@ public class DiscussionTopicController {
                                                                              @Valid @RequestBody DiscussionTopicDto discussionTopicDto) {
         discussionTopicDto.setId(topicId);
         DiscussionTopic discussionTopic = discussionTopicService.update(topicId, ModelMapperUtils.convert(discussionTopicDto, DiscussionTopic.class));
-        return new ResponseEntity<>(discussionTopicAssembler.toModel(discussionTopic), HttpStatus.OK);
+        return ResponseEntity.ok(discussionTopicAssembler.toModel(discussionTopic));
     }
 }
