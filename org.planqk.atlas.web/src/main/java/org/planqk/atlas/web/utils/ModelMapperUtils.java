@@ -1,9 +1,7 @@
 package org.planqk.atlas.web.utils;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.model.Backend;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
 import org.planqk.atlas.core.model.PatternRelation;
@@ -11,6 +9,7 @@ import org.planqk.atlas.core.model.Qpu;
 import org.planqk.atlas.core.model.QuantumAlgorithm;
 import org.planqk.atlas.core.model.Simulator;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
+import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
 import org.planqk.atlas.web.dtos.BackendDto;
 import org.planqk.atlas.web.dtos.ClassicAlgorithmDto;
 import org.planqk.atlas.web.dtos.PatternRelationDto;
@@ -20,20 +19,11 @@ import org.planqk.atlas.web.dtos.SimulatorDto;
 
 import lombok.NonNull;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeMap;
 import org.springframework.data.domain.Page;
 
 public class ModelMapperUtils {
 
     public static final ModelMapper mapper = initModelMapper();
-
-    public static <D, T> Set<D> convertSet(@NonNull Set<T> entities, @NonNull Class<D> dtoClass) {
-        Set<D> resultSet = new HashSet<D>();
-        for (T entity : entities) {
-            resultSet.add(convert(entity, dtoClass));
-        }
-        return resultSet;
-    }
 
     public static <D, T> Page<D> convertPage(@NonNull Page<T> entities, @NonNull Class<D> dtoClass) {
         return entities.map(objectEntity -> convert(objectEntity, dtoClass));
@@ -64,8 +54,11 @@ public class ModelMapperUtils {
                 .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), Simulator.class));
 
         // Map Algorithm of PatternRelation to correct Subclass when mapping to PatternRelationDto
-        TypeMap<PatternRelation, PatternRelationDto> patternRelationMap = mapper.createTypeMap(PatternRelation.class, PatternRelationDto.class);
-        patternRelationMap.addMappings(mappingContext -> mappingContext.map(src -> src.getAlgorithm(), PatternRelationDto::setAlgorithm));
+        mapper.createTypeMap(PatternRelation.class, PatternRelationDto.class)
+                .addMappings(expression -> expression.map(PatternRelation::getAlgorithm, PatternRelationDto::setAlgorithm));
+        mapper.createTypeMap(AlgorithmRelation.class, AlgorithmRelationDto.class)
+                .addMappings(expression -> expression.map(AlgorithmRelation::getSourceAlgorithm, AlgorithmRelationDto::setSourceAlgorithm))
+                .addMappings(expression -> expression.map(AlgorithmRelation::getTargetAlgorithm, AlgorithmRelationDto::setTargetAlgorithm));
 
         return mapper;
     }

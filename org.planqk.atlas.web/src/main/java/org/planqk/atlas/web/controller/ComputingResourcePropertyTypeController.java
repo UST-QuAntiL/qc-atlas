@@ -28,7 +28,6 @@ import org.planqk.atlas.core.services.ComputingResourcePropertyService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.ComputingResourcePropertyTypeDto;
 import org.planqk.atlas.web.linkassembler.QuantumResourcePropertyTypeAssembler;
-import org.planqk.atlas.web.utils.HateoasUtils;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.RestUtils;
 
@@ -71,12 +70,9 @@ public class ComputingResourcePropertyTypeController {
             @ApiResponse(responseCode = "404", description = "Computing resource type with given id doesn't exist"),
     })
     @GetMapping("/{id}")
-    public ResponseEntity<EntityModel<ComputingResourcePropertyTypeDto>> getComputingResourcePropertyType(@PathVariable UUID id) {
+    public HttpEntity<EntityModel<ComputingResourcePropertyTypeDto>> getComputingResourcePropertyType(@PathVariable UUID id) {
         var resourceType = service.findComputingResourcePropertyTypeById(id);
-        var resourceTypeDto = ModelMapperUtils.convert(resourceType, ComputingResourcePropertyTypeDto.class);
-        var entityModel = HateoasUtils.generateEntityModel(resourceTypeDto);
-        assembler.addLinks(entityModel);
-        return ResponseEntity.ok(entityModel);
+        return ResponseEntity.ok(assembler.toModel(resourceType));
     }
 
     @Operation(responses = {
@@ -85,7 +81,7 @@ public class ComputingResourcePropertyTypeController {
             @ApiResponse(responseCode = "404", description = "Computing resource type with given id doesn't exist"),
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<EntityModel<ComputingResourcePropertyTypeDto>> deleteComputingResourcePropertyType(@PathVariable UUID id) {
+    public HttpEntity<Void> deleteComputingResourcePropertyType(@PathVariable UUID id) {
         service.findComputingResourcePropertyTypeById(id);
         service.deleteComputingResourcePropertyType(id);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -96,35 +92,28 @@ public class ComputingResourcePropertyTypeController {
     public HttpEntity<EntityModel<ComputingResourcePropertyTypeDto>> updateComputingResourcePropertyType(@PathVariable UUID id,
                                                                                                          @Valid @RequestBody ComputingResourcePropertyTypeDto computingResourcePropertyTypeDto) {
         computingResourcePropertyTypeDto.setId(id);
-        ComputingResourcePropertyType computingResourcePropertyType = ModelMapperUtils.convert(computingResourcePropertyTypeDto, ComputingResourcePropertyType.class);
-        ComputingResourcePropertyType savedComputingResourcePropertyType = service.addOrUpdateComputingResourcePropertyType(computingResourcePropertyType);
-        ComputingResourcePropertyTypeDto dtoOutput = ModelMapperUtils.convert(savedComputingResourcePropertyType, ComputingResourcePropertyTypeDto.class);
-        EntityModel<ComputingResourcePropertyTypeDto> entityDto = HateoasUtils.generateEntityModel(dtoOutput);
-        return new ResponseEntity<>(entityDto, HttpStatus.OK);
+        var inputEntity = ModelMapperUtils.convert(computingResourcePropertyTypeDto, ComputingResourcePropertyType.class);
+        var savedEntity = service.addOrUpdateComputingResourcePropertyType(inputEntity);
+        return ResponseEntity.ok(assembler.toModel(savedEntity));
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping()
-    public ResponseEntity<PagedModel<EntityModel<ComputingResourcePropertyTypeDto>>> getResourcePropertyTypes(
+    public HttpEntity<PagedModel<EntityModel<ComputingResourcePropertyTypeDto>>> getResourcePropertyTypes(
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size
     ) {
         Pageable p = RestUtils.getPageableFromRequestParams(page, size);
         var types = service.findAllComputingResourcePropertyTypes(p);
-        var typeDtoes = ModelMapperUtils.convertPage(types, ComputingResourcePropertyTypeDto.class);
-        var pagedModel = paginationAssembler.toModel(typeDtoes);
-        assembler.addLinks(pagedModel);
-        return ResponseEntity.ok(pagedModel);
+        return ResponseEntity.ok(assembler.toModel(types));
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "201")}, description = "Custom ID will be ignored.")
     @PostMapping()
     public HttpEntity<EntityModel<ComputingResourcePropertyTypeDto>> createComputingResourcePropertyType(
             @Valid @RequestBody ComputingResourcePropertyTypeDto resourceTypeDto) {
-        ComputingResourcePropertyType resourceType = ModelMapperUtils.convert(resourceTypeDto, ComputingResourcePropertyType.class);
-        ComputingResourcePropertyType savedResourceType = service.addOrUpdateComputingResourcePropertyType(resourceType);
-        ComputingResourcePropertyTypeDto dtoOutput = ModelMapperUtils.convert(savedResourceType, ComputingResourcePropertyTypeDto.class);
-        EntityModel<ComputingResourcePropertyTypeDto> entityDto = HateoasUtils.generateEntityModel(dtoOutput);
-        return new ResponseEntity<>(entityDto, HttpStatus.CREATED);
+        var resourceType = ModelMapperUtils.convert(resourceTypeDto, ComputingResourcePropertyType.class);
+        var savedResourceType = service.addOrUpdateComputingResourcePropertyType(resourceType);
+        return new ResponseEntity<>(assembler.toModel(savedResourceType), HttpStatus.CREATED);
     }
 }

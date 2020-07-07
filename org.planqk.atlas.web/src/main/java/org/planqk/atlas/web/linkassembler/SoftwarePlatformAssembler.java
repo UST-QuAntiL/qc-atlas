@@ -1,12 +1,10 @@
 package org.planqk.atlas.web.linkassembler;
 
-import java.util.Collection;
 import java.util.UUID;
 
 import org.planqk.atlas.web.controller.SoftwarePlatformController;
 import org.planqk.atlas.web.dtos.SoftwarePlatformDto;
 
-import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Component;
 
@@ -19,10 +17,6 @@ public class SoftwarePlatformAssembler extends GenericLinkAssembler<SoftwarePlat
     public void addLinks(EntityModel<SoftwarePlatformDto> resource) {
         resource.add(
                 links.linkTo(methodOn(SoftwarePlatformController.class).getSoftwarePlatform(getId(resource))).withSelfRel());
-    }
-
-    public void addLinks(Collection<EntityModel<SoftwarePlatformDto>> content) {
-        addLinks(new CollectionModel<>(content));
     }
 
     private UUID getId(EntityModel<SoftwarePlatformDto> resource) {

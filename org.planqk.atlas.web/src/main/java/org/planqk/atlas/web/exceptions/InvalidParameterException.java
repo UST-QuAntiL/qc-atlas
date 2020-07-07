@@ -16,29 +16,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
+package org.planqk.atlas.web.exceptions;
 
-package org.planqk.atlas.core.services;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
-import java.util.UUID;
-
-import org.planqk.atlas.core.model.Implementation;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.transaction.annotation.Transactional;
-
-public interface ImplementationService {
-
-    @Transactional
-    Implementation save(Implementation implementation);
-
-    @Transactional
-    void delete(UUID id);
-
-    @Transactional
-    Implementation update(UUID id, Implementation implementation);
-
-    Page<Implementation> findByImplementedAlgorithm(UUID algoId, Pageable pageable);
-
-    Implementation findById(UUID implId);
+@ResponseStatus(code = HttpStatus.BAD_REQUEST)
+public class InvalidParameterException extends RuntimeException {
+    public InvalidParameterException(String message) {
+        super(message);
+    }
 }

@@ -25,8 +25,6 @@ import org.planqk.atlas.core.services.ComputingResourcePropertyService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.ComputingResourcePropertyDto;
 import org.planqk.atlas.web.linkassembler.ComputingResourcePropertyAssembler;
-import org.planqk.atlas.web.utils.HateoasUtils;
-import org.planqk.atlas.web.utils.ModelMapperUtils;
 
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,6 +32,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -58,12 +57,9 @@ public class ComputingResourcePropertyController {
             @ApiResponse(responseCode = "404"),
     })
     @GetMapping("/{id}")
-    public ResponseEntity<EntityModel<ComputingResourcePropertyDto>> getComputingResourceProperty(@PathVariable UUID id) {
+    public HttpEntity<EntityModel<ComputingResourcePropertyDto>> getComputingResourceProperty(@PathVariable UUID id) {
         var resource = service.findComputingResourcePropertyById(id);
-        var resourceDto = ModelMapperUtils.convert(resource, ComputingResourcePropertyDto.class);
-        var entityModel = HateoasUtils.generateEntityModel(resourceDto);
-        assembler.addLinks(entityModel);
-        return ResponseEntity.ok(entityModel);
+        return ResponseEntity.ok(assembler.toModel(resource));
     }
 
     @Operation(responses = {
@@ -72,7 +68,7 @@ public class ComputingResourcePropertyController {
             @ApiResponse(responseCode = "404", description = "Computing resource with given id doesn't exist"),
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteComputingResourceProperty(@PathVariable UUID id) {
+    public HttpEntity<Void> deleteComputingResourceProperty(@PathVariable UUID id) {
         service.findComputingResourcePropertyById(id);
         service.deleteComputingResourceProperty(id);
         return ResponseEntity.ok().build();

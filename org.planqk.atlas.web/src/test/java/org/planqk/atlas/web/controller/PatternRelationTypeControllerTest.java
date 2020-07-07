@@ -1,5 +1,38 @@
 package org.planqk.atlas.web.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.UUID;
+
+import org.planqk.atlas.core.model.PatternRelationType;
+import org.planqk.atlas.core.services.PatternRelationTypeService;
+import org.planqk.atlas.web.Constants;
+import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
+import org.planqk.atlas.web.dtos.PatternRelationTypeDto;
+import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
+import org.planqk.atlas.web.utils.ModelMapperUtils;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -12,44 +45,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.UUID;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-import org.planqk.atlas.core.model.PatternRelationType;
-import org.planqk.atlas.core.services.PatternRelationTypeService;
-import org.planqk.atlas.web.Constants;
-import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
-import org.planqk.atlas.web.dtos.PatternRelationTypeDto;
-import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
-import org.planqk.atlas.web.utils.HateoasUtils;
-import org.planqk.atlas.web.utils.ModelMapperUtils;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.hateoas.EntityModel;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 @WebMvcTest(PatternRelationTypeController.class)
 @ExtendWith(MockitoExtension.class)
 @AutoConfigureMockMvc
@@ -57,8 +52,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class PatternRelationTypeControllerTest {
     @MockBean
     private PatternRelationTypeService patternRelationTypeService;
-    @MockBean
-    private PagedResourcesAssembler<PatternRelationTypeDto> paginationAssembler;
 
     @Autowired
     private MockMvc mockMvc;
@@ -150,8 +143,6 @@ public class PatternRelationTypeControllerTest {
     @Test
     public void getTypesPaged_returnTypesPaged() throws Exception {
         when(patternRelationTypeService.findAll(pageable)).thenReturn(typePage);
-        when(paginationAssembler.toModel(ArgumentMatchers.any()))
-                .thenReturn(HateoasUtils.generatePagedModel(typePageDto));
 
         MvcResult result = mockMvc
                 .perform(get("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATION_TYPES + "/")

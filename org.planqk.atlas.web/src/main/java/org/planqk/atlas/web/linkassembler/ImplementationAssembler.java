@@ -31,7 +31,6 @@ public class ImplementationAssembler extends GenericLinkAssembler<Implementation
 //        resultCollection.add(links.linkTo(methodOn(ImplementationController.class).getTags(implId)).withSelfRel());
 //    }
 
-
     public UUID getId(EntityModel<ImplementationDto> resource) {
         return resource.getContent().getId();
     }

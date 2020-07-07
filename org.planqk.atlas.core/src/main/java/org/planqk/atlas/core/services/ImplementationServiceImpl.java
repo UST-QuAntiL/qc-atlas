@@ -23,6 +23,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.repository.ImplementationRepository;
 
@@ -61,8 +62,10 @@ public class ImplementationServiceImpl implements ImplementationService {
     }
 
     @Override
-    public Page<Implementation> findAll(Pageable pageable) {
-        return repository.findAll(pageable);
+    public Page<Implementation> findByImplementedAlgorithm(UUID algoId, Pageable pageable) {
+        var algorithm = new Algorithm();
+        algorithm.setId(algoId);
+        return repository.findByImplementedAlgorithm(algorithm, pageable);
     }
 
     @Override

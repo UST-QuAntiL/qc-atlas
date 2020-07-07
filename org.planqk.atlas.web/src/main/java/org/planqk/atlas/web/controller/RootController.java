@@ -64,6 +64,6 @@ public class RootController {
                 methodOn(PublicationController.class).getPublications(Constants.DEFAULT_PAGE_NUMBER, Constants.DEFAULT_PAGE_SIZE))
                 .withRel(Constants.PUBLICATIONS));
 
-        return new ResponseEntity<>(responseEntity, HttpStatus.OK);
+        return ResponseEntity.ok(responseEntity);
     }
 }

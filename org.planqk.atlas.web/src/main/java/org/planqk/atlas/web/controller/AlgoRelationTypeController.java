@@ -9,7 +9,6 @@ import org.planqk.atlas.core.services.AlgoRelationTypeService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.AlgoRelationTypeDto;
 import org.planqk.atlas.web.linkassembler.AlgoRelationTypeAssembler;
-import org.planqk.atlas.web.utils.HateoasUtils;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.RestUtils;
 
@@ -18,7 +17,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpEntity;
@@ -43,44 +41,29 @@ import org.springframework.web.bind.annotation.RestController;
 public class AlgoRelationTypeController {
 
     private AlgoRelationTypeService algoRelationTypeService;
-    private PagedResourcesAssembler<AlgoRelationTypeDto> paginationAssembler;
     private AlgoRelationTypeAssembler algoRelationTypeAssembler;
 
     @Operation(responses = {@ApiResponse(responseCode = "201")}, description = "Custom ID will be ignored.")
     @PostMapping()
     public HttpEntity<EntityModel<AlgoRelationTypeDto>> createAlgoRelationType(
             @Valid @RequestBody AlgoRelationTypeDto algoRelationTypeDto) {
-        // Convert DTO to entity
-        AlgoRelationType entityInput = ModelMapperUtils.convert(algoRelationTypeDto, AlgoRelationType.class);
-        // save entity
-        AlgoRelationType savedAlgoRelationType = algoRelationTypeService.save(entityInput);
-        // convert entity to DTO
-        AlgoRelationTypeDto dtoOutput = ModelMapperUtils.convert(savedAlgoRelationType, AlgoRelationTypeDto.class);
-        // generate EntitiyModel
-        EntityModel<AlgoRelationTypeDto> entityDto = HateoasUtils.generateEntityModel(dtoOutput);
-        algoRelationTypeAssembler.addLinks(entityDto);
-        return new ResponseEntity<>(entityDto, HttpStatus.CREATED);
+        var entityInput = ModelMapperUtils.convert(algoRelationTypeDto, AlgoRelationType.class);
+        var savedAlgoRelationType = algoRelationTypeService.save(entityInput);
+        return new ResponseEntity<>(algoRelationTypeAssembler.toModel(savedAlgoRelationType), HttpStatus.CREATED);
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Custom ID will be ignored.")
     @PutMapping("/{id}")
     public HttpEntity<EntityModel<AlgoRelationTypeDto>> updateAlgoRelationType(@PathVariable UUID id,
                                                                                @Valid @RequestBody AlgoRelationTypeDto algoRelationTypeDto) {
-        // Convert DTO to entity
-        AlgoRelationType entityInput = ModelMapperUtils.convert(algoRelationTypeDto, AlgoRelationType.class);
-        // update entity
-        AlgoRelationType savedAlgoRelationType = algoRelationTypeService.update(id, entityInput);
-        // convert entity to DTO
-        AlgoRelationTypeDto dtoOutput = ModelMapperUtils.convert(savedAlgoRelationType, AlgoRelationTypeDto.class);
-        // generate EntitiyModel
-        EntityModel<AlgoRelationTypeDto> entityDto = HateoasUtils.generateEntityModel(dtoOutput);
-        algoRelationTypeAssembler.addLinks(entityDto);
-        return new ResponseEntity<>(entityDto, HttpStatus.OK);
+        var entityInput = ModelMapperUtils.convert(algoRelationTypeDto, AlgoRelationType.class);
+        var savedAlgoRelationType = algoRelationTypeService.update(id, entityInput);
+        return ResponseEntity.ok(algoRelationTypeAssembler.toModel(savedAlgoRelationType));
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", description = "Algorithm relation with given id doesn't exist")})
     @DeleteMapping("/{id}")
-    public HttpEntity<AlgoRelationTypeDto> deleteAlgoRelationType(@PathVariable UUID id) {
+    public HttpEntity<Void> deleteAlgoRelationType(@PathVariable UUID id) {
         // delete entity by id
         algoRelationTypeService.findById(id);
         algoRelationTypeService.delete(id);
@@ -91,28 +74,15 @@ public class AlgoRelationTypeController {
     @GetMapping()
     public HttpEntity<PagedModel<EntityModel<AlgoRelationTypeDto>>> getAlgoRelationTypes(
             @RequestParam(required = false) Integer page, @RequestParam(required = false) Integer size) {
-        // Generate pageable
         Pageable p = RestUtils.getPageableFromRequestParams(page, size);
-        // Get entities
         Page<AlgoRelationType> entities = algoRelationTypeService.findAll(p);
-        // convert to DTO pageable
-        Page<AlgoRelationTypeDto> dtos = ModelMapperUtils.convertPage(entities, AlgoRelationTypeDto.class);
-        // generate paged model with links
-        PagedModel<EntityModel<AlgoRelationTypeDto>> pagedEntityOutput = paginationAssembler.toModel(dtos);
-        // add links
-        algoRelationTypeAssembler.addLinks(pagedEntityOutput.getContent());
-        return new ResponseEntity<>(pagedEntityOutput, HttpStatus.OK);
+        return ResponseEntity.ok(algoRelationTypeAssembler.toModel(entities));
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping("/{id}")
     public HttpEntity<EntityModel<AlgoRelationTypeDto>> getAlgoRelationTypeById(@PathVariable UUID id) {
-        AlgoRelationType algoRelationType = algoRelationTypeService.findById(id);
-        // convert entity to DTO
-        AlgoRelationTypeDto dtoOutput = ModelMapperUtils.convert(algoRelationType, AlgoRelationTypeDto.class);
-        // generate EntitiyModel
-        EntityModel<AlgoRelationTypeDto> entityDto = HateoasUtils.generateEntityModel(dtoOutput);
-        algoRelationTypeAssembler.addLinks(entityDto);
-        return new ResponseEntity<>(entityDto, HttpStatus.OK);
+        var algoRelationType = algoRelationTypeService.findById(id);
+        return ResponseEntity.ok(algoRelationTypeAssembler.toModel(algoRelationType));
     }
 }

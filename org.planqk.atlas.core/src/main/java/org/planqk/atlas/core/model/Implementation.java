@@ -39,7 +39,7 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
-public class Implementation extends AlgorOrImpl {
+public class Implementation extends AlgorOrImpl implements ModelWithPublications {
 
     private String name;
     private String description;
