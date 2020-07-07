@@ -19,7 +19,37 @@
 
 package org.planqk.atlas.core.model;
 
-public enum ComputingResourcePropertyDataType {
+import java.util.function.Predicate;
 
-    INTEGER, STRING, FLOAT
+public enum ComputingResourcePropertyDataType {
+    INTEGER(e -> {
+        try {
+            Long.parseLong(e);
+            return true;
+        } catch (Exception ex) {
+            return false;
+        }
+    }),
+    STRING(e -> true),
+    FLOAT(e -> {
+        try {
+            Double.parseDouble(e);
+            return true;
+        } catch (Exception ex) {
+            return false;
+        }
+    });
+
+    private final Predicate<String> validator;
+
+    ComputingResourcePropertyDataType(Predicate<String> validator) {
+        this.validator = validator;
+    }
+
+    public boolean isValid(String input) {
+        if(input == null) {
+            return false;
+        }
+        return validator.test(input);
+    }
 }

@@ -60,6 +60,7 @@ import org.planqk.atlas.web.linkassembler.ProblemTypeAssembler;
 import org.planqk.atlas.web.linkassembler.PublicationAssembler;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.RestUtils;
+import org.planqk.atlas.web.utils.ValidationUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -513,6 +514,9 @@ public class AlgorithmController {
             @Valid @RequestBody ComputingResourcePropertyDto resourceDto
     ) {
         var algorithm = algorithmService.findById(algoId);
+
+        ValidationUtils.validateComputingResourceProperty(resourceDto);
+
         var resource = computingResourceMixin.fromDto(resourceDto);
         var updatedResource = computingResourcePropertyService.addComputingResourcePropertyToAlgorithm(algorithm, resource);
         return ResponseEntity.ok(computingResourcePropertyAssembler.toModel(updatedResource));
@@ -553,7 +557,7 @@ public class AlgorithmController {
             LOG.debug("Algorithm is not referenced from the computing resource to update!");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-
+        ValidationUtils.validateComputingResourceProperty(resourceDto);
         var resource = computingResourceMixin.fromDto(resourceDto);
         resource.setId(resourceId);
         var updatedResource = computingResourcePropertyService.addComputingResourcePropertyToAlgorithm(algorithm, resource);

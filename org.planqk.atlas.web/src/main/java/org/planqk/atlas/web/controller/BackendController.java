@@ -15,6 +15,7 @@ import org.planqk.atlas.web.linkassembler.BackendAssembler;
 import org.planqk.atlas.web.linkassembler.ComputingResourcePropertyAssembler;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.RestUtils;
+import org.planqk.atlas.web.utils.ValidationUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -47,8 +48,8 @@ public class BackendController {
 
     private final ComputingResourcePropertyService quantumResourceService;
     private final ComputingResourcePropertyAssembler quantumResourceAssembler;
-    private BackendService backendService;
-    private BackendAssembler backendAssembler;
+    private final BackendService backendService;
+    private final BackendAssembler backendAssembler;
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping()
@@ -122,6 +123,7 @@ public class BackendController {
             @Valid @RequestBody ComputingResourcePropertyDto resourceDto
     ) {
         var backend = backendService.findById(id);
+        ValidationUtils.validateComputingResourceProperty(resourceDto);
         var resource = ModelMapperUtils.convert(resourceDto, ComputingResourceProperty.class);
         var updatedBackend = quantumResourceService.addComputingResourcePropertyToBackend(backend, resource);
         return ResponseEntity.ok(backendAssembler.toModel(updatedBackend));

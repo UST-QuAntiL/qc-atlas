@@ -48,6 +48,7 @@ import org.planqk.atlas.web.linkassembler.PublicationAssembler;
 import org.planqk.atlas.web.linkassembler.SoftwarePlatformAssembler;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.RestUtils;
+import org.planqk.atlas.web.utils.ValidationUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -187,6 +188,7 @@ public class ImplementationController {
     ) {
         algorithmService.findById(algoId);
         var implementation = implementationService.findById(implId);
+        ValidationUtils.validateComputingResourceProperty(resourceDto);
         var resource = computingResourceMixin.fromDto(resourceDto);
         resource = computingResourcePropertyService.addComputingResourcePropertyToImplementation(implementation, resource);
         return ResponseEntity.ok(computingResourcePropertyAssembler.toModel(resource));
@@ -218,6 +220,7 @@ public class ImplementationController {
             LOG.debug("Implementation is not referenced from the computing resource to update!");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+        ValidationUtils.validateComputingResourceProperty(resourceDto);
         var resource = computingResourceMixin.fromDto(resourceDto);
         resource.setId(resourceId);
         resource = computingResourcePropertyService.addComputingResourcePropertyToImplementation(implementation, resource);
