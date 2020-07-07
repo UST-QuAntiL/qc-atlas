@@ -106,10 +106,10 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         persistedAlg.setAssumptions(algorithm.getAssumptions());
         persistedAlg.setComputationModel(algorithm.getComputationModel());
         // persistedAlg.setRelatedPatterns(algorithm.getRelatedPatterns());
-        persistedAlg.setProblemTypes(algorithm.getProblemTypes());
-        persistedAlg.setApplicationAreas(algorithm.getApplicationAreas());
-        persistedAlg.setTags(algorithm.getTags());
-        persistedAlg.setRequiredComputingResourceProperties(persistedAlg.getRequiredComputingResourceProperties());
+        // persistedAlg.setProblemTypes(algorithm.getProblemTypes());
+        // persistedAlg.setApplicationAreas(algorithm.getApplicationAreas());
+        // persistedAlg.setTags(algorithm.getTags());
+        // persistedAlg.setRequiredComputingResourceProperties(persistedAlg.getRequiredComputingResourceProperties());
 
         // If QuantumAlgorithm adjust Quantum fields
         if (algorithm instanceof QuantumAlgorithm) {
