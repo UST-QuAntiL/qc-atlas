@@ -19,6 +19,7 @@
 
 package org.planqk.atlas.core.services;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.ProblemType;
@@ -43,5 +44,7 @@ public interface ProblemTypeService {
     ProblemType findByName(String name);
 
     Page<ProblemType> findAll(Pageable pageable);
+
+    List<ProblemType> getParentTreeList(UUID id);
 
 }

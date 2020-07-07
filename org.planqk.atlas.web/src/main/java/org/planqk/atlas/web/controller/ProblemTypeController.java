@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpEntity;
@@ -86,5 +87,12 @@ public class ProblemTypeController {
     public HttpEntity<EntityModel<ProblemTypeDto>> getProblemTypeById(@PathVariable UUID id) {
         ProblemType problemType = problemTypeService.findById(id);
         return ResponseEntity.ok(problemTypeAssembler.toModel(problemType));
+    }
+
+    @Operation(responses = {@ApiResponse(responseCode = "200")})
+    @GetMapping("/{id}/" + Constants.PROBLEM_TYPE_PARENT_TREE)
+    public HttpEntity<CollectionModel<EntityModel<ProblemTypeDto>>> getProblemTypeParentTree(@PathVariable UUID id) {
+        var entities = problemTypeService.getParentTreeList(id);
+        return ResponseEntity.ok(problemTypeAssembler.toModel(entities));
     }
 }

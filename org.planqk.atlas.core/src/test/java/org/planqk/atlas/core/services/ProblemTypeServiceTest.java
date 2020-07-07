@@ -35,6 +35,7 @@ import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -142,6 +143,30 @@ public class ProblemTypeServiceTest extends AtlasDatabaseTestBase {
         problemTypeService.delete(storedProblemType);
 
         Assertions.assertThrows(NoSuchElementException.class, () -> problemTypeService.findById(storedProblemType.getId()));
+    }
+
+    @Test
+    void testGetParentTreeList_NoParent() {
+        ProblemType problemType = getGenericProblemType("referencedProblemType");
+        ProblemType persistedProblemType = problemTypeService.save(problemType);
+
+        List<ProblemType> problemTypeList = problemTypeService.getParentTreeList(persistedProblemType.getId());
+
+        assertThat(problemTypeList.size()).isEqualTo(1);
+    }
+
+    @Test
+    void testGetParentTreeList_ReturnTwoParents() {
+        ProblemType problemType = getGenericProblemType("referencedProblemType");
+        ProblemType parentProblemType = getGenericProblemType("referencedParentProblemType");
+        ProblemType parentParentProblemType = getGenericProblemType("referencedParentParentProblemType");
+        parentProblemType.setParentProblemType(problemTypeService.save(parentParentProblemType).getId());
+        problemType.setParentProblemType(problemTypeService.save(parentProblemType).getId());
+        ProblemType persistedProblemType = problemTypeService.save(problemType);
+
+        List<ProblemType> problemTypeList = problemTypeService.getParentTreeList(persistedProblemType.getId());
+
+        assertThat(problemTypeList.size()).isEqualTo(3);
     }
 
     private ProblemType getGenericProblemType(String name) {
