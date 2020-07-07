@@ -1,28 +1,25 @@
 package org.planqk.atlas.web.controller;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import org.planqk.atlas.core.model.AlgoRelationType;
 import org.planqk.atlas.core.services.AlgoRelationTypeService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
 import org.planqk.atlas.web.dtos.AlgoRelationTypeDto;
 import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
-import org.planqk.atlas.web.linkassembler.AlgoRelationTypeAssembler;
-import org.planqk.atlas.web.utils.HateoasUtils;
+import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -32,7 +29,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -40,7 +36,6 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -52,14 +47,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(AlgoRelationTypeController.class)
 @ExtendWith(MockitoExtension.class)
 @AutoConfigureMockMvc
+@EnableLinkAssemblers
 public class AlgoRelationTypeControllerTest {
 
     @MockBean
     private AlgoRelationTypeService algoRelationTypeService;
-    @MockBean
-    private AlgoRelationTypeAssembler algoRelationTypeAssembler;
-    @MockBean
-    private PagedResourcesAssembler<AlgoRelationTypeDto> paginationAssembler;
 
     @Autowired
     private MockMvc mockMvc;
@@ -103,7 +95,6 @@ public class AlgoRelationTypeControllerTest {
     @Test
     public void createAlgoRelationType_returnCreate() throws Exception {
         when(algoRelationTypeService.save(any(AlgoRelationType.class))).thenReturn(algoRelationType1);
-        doNothing().when(algoRelationTypeAssembler).addLinks(ArgumentMatchers.<EntityModel<AlgoRelationTypeDto>>any());
 
         MvcResult result = mockMvc
                 .perform(post("/" + Constants.API_VERSION + "/" + Constants.ALGO_RELATION_TYPES + "/")
@@ -131,7 +122,6 @@ public class AlgoRelationTypeControllerTest {
     public void updateAlgoRelationType_returnOk() throws Exception {
         when(algoRelationTypeService.update(algoRelationType1.getId(), algoRelationType1))
                 .thenReturn(algoRelationType1);
-        doNothing().when(algoRelationTypeAssembler).addLinks(ArgumentMatchers.<EntityModel<AlgoRelationTypeDto>>any());
 
         MvcResult result = mockMvc
                 .perform(put("/" + Constants.API_VERSION + "/" + Constants.ALGO_RELATION_TYPES + "/{id}", algoRelationType1.getId())
@@ -148,10 +138,6 @@ public class AlgoRelationTypeControllerTest {
     @Test
     public void getAlgoRelationTypes_withEmptyAlgoRelationTypeList() throws Exception {
         when(algoRelationTypeService.findAll(pageable)).thenReturn(Page.empty());
-        when(paginationAssembler.toModel(ArgumentMatchers.any()))
-                .thenReturn(HateoasUtils.generatePagedModel(Page.empty()));
-        doNothing().when(algoRelationTypeAssembler)
-                .addLinks(ArgumentMatchers.<Collection<EntityModel<AlgoRelationTypeDto>>>any());
 
         MvcResult result = mockMvc
                 .perform(get("/" + Constants.API_VERSION + "/" + Constants.ALGO_RELATION_TYPES + "/")
@@ -175,10 +161,6 @@ public class AlgoRelationTypeControllerTest {
                 AlgoRelationTypeDto.class);
 
         when(algoRelationTypeService.findAll(pageable)).thenReturn(algoRelationPage);
-        when(paginationAssembler.toModel(ArgumentMatchers.any()))
-                .thenReturn(HateoasUtils.generatePagedModel(algoRelationDtoPage));
-        doNothing().when(algoRelationTypeAssembler)
-                .addLinks(ArgumentMatchers.<Collection<EntityModel<AlgoRelationTypeDto>>>any());
 
         MvcResult result = mockMvc
                 .perform(get("/" + Constants.API_VERSION + "/" + Constants.ALGO_RELATION_TYPES + "/")
@@ -202,11 +184,11 @@ public class AlgoRelationTypeControllerTest {
     @Test
     public void getAlgoRelationTypeById_returnAlgoRelationType() throws Exception {
         when(algoRelationTypeService.findById(algoRelationType1.getId())).thenReturn(algoRelationType1);
-        doNothing().when(algoRelationTypeAssembler).addLinks(ArgumentMatchers.<EntityModel<AlgoRelationTypeDto>>any());
 
         MvcResult result = mockMvc.perform(get("/" + Constants.API_VERSION + "/" + Constants.ALGO_RELATION_TYPES + "/{id}", algoRelationType1.getId())
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
 
+        System.err.println(result.getResponse().getContentAsString());
         EntityModel<AlgorithmRelationDto> algoRelationTypeDto = mapper.readValue(result.getResponse().getContentAsString(),
                 new TypeReference<>() {
                 });

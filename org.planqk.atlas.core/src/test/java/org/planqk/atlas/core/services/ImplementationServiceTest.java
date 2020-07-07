@@ -20,6 +20,7 @@
 package org.planqk.atlas.core.services;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
@@ -79,15 +80,21 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void testFindAll() {
+    void testFindByImplementedAlgorithm() {
+        Algorithm algo = new Algorithm();
+        algo.setName("dummy");
+        algo = algorithmService.save(algo);
+
         Implementation implementation1 = new Implementation();
         implementation1.setName("test-impl1");
+        implementation1.setImplementedAlgorithm(algo);
         implementationService.save(implementation1);
         Implementation implementation2 = new Implementation();
         implementation2.setName("test-impl2");
+        implementation2.setImplementedAlgorithm(algo);
         implementationService.save(implementation2);
 
-        List<Implementation> implementations = implementationService.findAll(Pageable.unpaged()).getContent();
+        List<Implementation> implementations = implementationService.findByImplementedAlgorithm(algo.getId(), Pageable.unpaged()).getContent();
 
         assertThat(implementations.size()).isEqualTo(2);
     }

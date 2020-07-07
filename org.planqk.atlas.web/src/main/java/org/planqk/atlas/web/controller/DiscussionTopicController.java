@@ -32,7 +32,6 @@ import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.DiscussionCommentDto;
 import org.planqk.atlas.web.dtos.DiscussionTopicDto;
 import org.planqk.atlas.web.linkassembler.DiscussionTopicAssembler;
-import org.planqk.atlas.web.utils.HateoasUtils;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.RestUtils;
 
@@ -42,9 +41,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpEntity;
@@ -71,7 +68,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class DiscussionTopicController {
 
     private DiscussionTopicService discussionTopicService;
-    private PagedResourcesAssembler<DiscussionTopicDto> pagedResourcesAssembler;
     private DiscussionTopicAssembler discussionTopicAssembler;
     private DiscussionCommentService discussionCommentService;
 
@@ -82,28 +78,22 @@ public class DiscussionTopicController {
     public HttpEntity<PagedModel<EntityModel<DiscussionTopicDto>>> getDiscussionTopics(@RequestParam(required = false) Integer page,
                                                                                        @RequestParam(required = false) Integer size) {
         log.debug("Received request to retrieve all DiscussionTopics");
-
         Pageable pageable = RestUtils.getPageableFromRequestParams(page, size);
-        Page<DiscussionTopicDto> discussionTopicDto = ModelMapperUtils.convertPage(discussionTopicService.findAll(pageable), DiscussionTopicDto.class);
-        PagedModel<EntityModel<DiscussionTopicDto>> pagedModel = pagedResourcesAssembler.toModel(discussionTopicDto);
-        discussionTopicAssembler.addLinks(pagedModel);
-        return new ResponseEntity<>(pagedModel, HttpStatus.OK);
+        var topics = discussionTopicService.findAll(pageable);
+        return ResponseEntity.ok(discussionTopicAssembler.toModel(topics));
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400"), @ApiResponse(responseCode = "404")})
     @GetMapping("/{topicId}")
     public HttpEntity<EntityModel<DiscussionTopicDto>> getDiscussionTopic(@PathVariable UUID topicId) {
         log.debug("Received request to retrieve DiscussionTopic with id: {}", topicId);
-
         DiscussionTopic discussionTopic = discussionTopicService.findById(topicId);
-        EntityModel<DiscussionTopicDto> discussionTopicDtoEntityModel = HateoasUtils.generateEntityModel(ModelMapperUtils.convert(discussionTopic, DiscussionTopicDto.class));
-        discussionTopicAssembler.addLinks(discussionTopicDtoEntityModel);
-        return new ResponseEntity<>(discussionTopicDtoEntityModel, HttpStatus.OK);
+        return ResponseEntity.ok(discussionTopicAssembler.toModel(discussionTopic));
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400"), @ApiResponse(responseCode = "404")})
     @DeleteMapping("/{topicId}")
-    public HttpEntity<DiscussionTopicDto> deleteDiscussionTopic(@PathVariable UUID topicId) {
+    public HttpEntity<Void> deleteDiscussionTopic(@PathVariable UUID topicId) {
         discussionTopicService.deleteById(topicId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -113,11 +103,8 @@ public class DiscussionTopicController {
     @PostMapping()
     public HttpEntity<EntityModel<DiscussionTopicDto>> createDiscussionTopic(
             @Valid @RequestBody DiscussionTopicDto discussionTopicDto) {
-
-        DiscussionTopic discussionTopic = discussionTopicService.save(ModelMapperUtils.convert(discussionTopicDto, DiscussionTopic.class));
-        EntityModel<DiscussionTopicDto> discussionTopicDtoEntityModel = HateoasUtils.generateEntityModel(ModelMapperUtils.convert(discussionTopic, DiscussionTopicDto.class));
-        discussionTopicAssembler.addLinks(discussionTopicDtoEntityModel);
-        return new ResponseEntity<>(discussionTopicDtoEntityModel, HttpStatus.CREATED);
+        var discussionTopic = discussionTopicService.save(ModelMapperUtils.convert(discussionTopicDto, DiscussionTopic.class));
+        return new ResponseEntity<>(discussionTopicAssembler.toModel(discussionTopic), HttpStatus.CREATED);
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400"), @ApiResponse(responseCode = "404")})
@@ -141,7 +128,7 @@ public class DiscussionTopicController {
 
     @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400"), @ApiResponse(responseCode = "404")})
     @DeleteMapping("/{topicId}/" + Constants.DISCUSSION_COMMENTS + "/{commentId}")
-    public HttpEntity<?> deleteDiscussionComment(@PathVariable UUID topicId, @PathVariable UUID commentId) {
+    public HttpEntity<Void> deleteDiscussionComment(@PathVariable UUID topicId, @PathVariable UUID commentId) {
         DiscussionComment discussionComment = discussionCommentService.findById(commentId);
         if (!(discussionComment.getDiscussionTopic().getId().equals(topicId))) {
             log.debug("Not the matching topic id: {}", topicId);
@@ -167,7 +154,7 @@ public class DiscussionTopicController {
     @Operation(responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "400"), @ApiResponse(responseCode = "404")})
     @PostMapping("/{topicId}/" + Constants.DISCUSSION_COMMENTS)
     public HttpEntity<EntityModel<DiscussionCommentDto>> createDiscussionComment(@PathVariable UUID topicId,
-                                                                                             @Valid @RequestBody DiscussionCommentDto discussionCommentDto) {
+                                                                                 @Valid @RequestBody DiscussionCommentDto discussionCommentDto) {
         DiscussionTopic discussionTopic = discussionTopicService.findById(topicId);
         discussionCommentDto.setDiscussionTopic(ModelMapperUtils.convert(discussionTopic, DiscussionTopicDto.class));
         return discussionCommentController.createDiscussionComment(discussionCommentDto);
@@ -179,8 +166,6 @@ public class DiscussionTopicController {
                                                                              @Valid @RequestBody DiscussionTopicDto discussionTopicDto) {
         discussionTopicDto.setId(topicId);
         DiscussionTopic discussionTopic = discussionTopicService.update(topicId, ModelMapperUtils.convert(discussionTopicDto, DiscussionTopic.class));
-        EntityModel<DiscussionTopicDto> discussionTopicDtoEntityModel = HateoasUtils.generateEntityModel(ModelMapperUtils.convert(discussionTopic, DiscussionTopicDto.class));
-        discussionTopicAssembler.addLinks(discussionTopicDtoEntityModel);
-        return new ResponseEntity<>(discussionTopicDtoEntityModel, HttpStatus.OK);
+        return ResponseEntity.ok(discussionTopicAssembler.toModel(discussionTopic));
     }
 }

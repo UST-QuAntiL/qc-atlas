@@ -19,7 +19,6 @@ import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.PatternRelationDto;
 import org.planqk.atlas.web.dtos.PatternRelationTypeDto;
 import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
-import org.planqk.atlas.web.utils.HateoasUtils;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -28,7 +27,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -39,7 +37,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -64,13 +61,11 @@ public class PatternRelationControllerTest {
     private final int page = 0;
     private final int size = 2;
     private final Pageable pageable = PageRequest.of(page, size);
-    List<PatternRelation> relationList;
-    Page<PatternRelation> relationPage;
-    Page<PatternRelationDto> relationPageDto;
+    private List<PatternRelation> relationList;
+    private Page<PatternRelation> relationPage;
+    private Page<PatternRelationDto> relationPageDto;
     @MockBean
     private PatternRelationService patternRelationService;
-    @MockBean
-    private PagedResourcesAssembler<PatternRelationDto> paginationAssembler;
     @MockBean
     private AlgorithmService algorithmService;
     @MockBean
@@ -208,8 +203,6 @@ public class PatternRelationControllerTest {
     @Test
     public void getRelationsPaged_returnRelationsPaged() throws Exception {
         when(patternRelationService.findAll(pageable)).thenReturn(relationPage);
-        when(paginationAssembler.toModel(ArgumentMatchers.any()))
-                .thenReturn(HateoasUtils.generatePagedModel(relationPageDto));
 
         MvcResult result = mockMvc
                 .perform(get("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATIONS + "/").queryParam(Constants.PAGE, Integer.toString(page))
@@ -264,7 +257,7 @@ public class PatternRelationControllerTest {
 
         MvcResult result = mockMvc.perform(put("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATIONS + "/{id}", relation1.getId())
                 .content(mapper.writeValueAsString(relation1Dto)).contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isCreated()).andReturn();
+                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
 
         mapper.configure(MapperFeature.USE_ANNOTATIONS, true);
         EntityModel<PatternRelationDto> response = mapper.readValue(result.getResponse().getContentAsString(),

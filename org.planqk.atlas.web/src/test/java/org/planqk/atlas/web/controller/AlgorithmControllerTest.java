@@ -48,6 +48,8 @@ import org.planqk.atlas.core.services.PatternRelationTypeService;
 import org.planqk.atlas.core.services.ProblemTypeService;
 import org.planqk.atlas.core.services.PublicationService;
 import org.planqk.atlas.web.Constants;
+import org.planqk.atlas.web.controller.mixin.ComputingResourceMixin;
+import org.planqk.atlas.web.controller.mixin.PublicationMixin;
 import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
@@ -67,6 +69,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -89,7 +93,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(AlgorithmController.class)
+@WebMvcTest(value = AlgorithmController.class, includeFilters = {
+        @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = {PublicationMixin.class, ComputingResourceMixin.class})
+})
 @ExtendWith(MockitoExtension.class)
 @AutoConfigureMockMvc
 @EnableLinkAssemblers
@@ -98,6 +104,7 @@ public class AlgorithmControllerTest {
     private final int page = 0;
     private final int size = 2;
     private final Pageable pageable = PageRequest.of(page, size);
+
     @MockBean
     private ApplicationAreaService applicationAreaService;
     @MockBean

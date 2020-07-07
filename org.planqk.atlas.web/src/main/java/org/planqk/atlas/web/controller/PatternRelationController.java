@@ -14,8 +14,6 @@ import org.planqk.atlas.core.services.PatternRelationTypeService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.PatternRelationDto;
 import org.planqk.atlas.web.linkassembler.PatternRelationAssembler;
-import org.planqk.atlas.web.utils.HateoasUtils;
-import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.RestUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,9 +21,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpEntity;
@@ -54,7 +50,6 @@ public class PatternRelationController {
     private AlgorithmService algorithmService;
     private PatternRelationTypeService patternRelationTypeService;
     private PatternRelationService patternRelationService;
-    private PagedResourcesAssembler<PatternRelationDto> paginationAssembler;
     private PatternRelationAssembler patternRelationAssembler;
 
     @Operation(responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "400"),
@@ -63,9 +58,7 @@ public class PatternRelationController {
     public HttpEntity<EntityModel<PatternRelationDto>> createPatternRelation(
             @Valid @RequestBody PatternRelationDto relationDto) {
         LOG.debug("Post to create new PatternRelation received.");
-        EntityModel<PatternRelationDto> updatedRelationDto = handlePatternRelationUpdate(relationDto, null);
-        patternRelationAssembler.addLinks(updatedRelationDto);
-        return new ResponseEntity<>(updatedRelationDto, HttpStatus.CREATED);
+        return new ResponseEntity<>(handlePatternRelationUpdate(relationDto, null), HttpStatus.CREATED);
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
@@ -73,28 +66,17 @@ public class PatternRelationController {
     public HttpEntity<PagedModel<EntityModel<PatternRelationDto>>> getPatternRelationTypes(
             @RequestParam(required = false) Integer page, @RequestParam(required = false) Integer size) {
         LOG.debug("Get to retrieve all PatternRelations received.");
-        // Generate Pageable
         Pageable p = RestUtils.getPageableFromRequestParams(page, size);
-        // Get Page of DTOs
-        Page<PatternRelationDto> pageDto = ModelMapperUtils.convertPage(patternRelationService.findAll(p),
-                PatternRelationDto.class);
-        // Generate PagedModel
-        PagedModel<EntityModel<PatternRelationDto>> outputDto = paginationAssembler.toModel(pageDto);
-        patternRelationAssembler.addLinks(outputDto.getContent());
-        return new ResponseEntity<>(outputDto, HttpStatus.OK);
+        var entities = patternRelationService.findAll(p);
+        return ResponseEntity.ok(patternRelationAssembler.toModel(entities));
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400"), @ApiResponse(responseCode = "404")})
     @GetMapping("/{id}")
     public HttpEntity<EntityModel<PatternRelationDto>> getPatternRelation(@PathVariable UUID id) {
         LOG.debug("Get to retrieve PatternRelation with id: {}.", id);
-        PatternRelation savedPatternRelation = patternRelationService.findById(id);
-        // Convert To EntityModel
-        EntityModel<PatternRelationDto> dtoOutput = HateoasUtils
-                .generateEntityModel(ModelMapperUtils.convert(savedPatternRelation, PatternRelationDto.class));
-        // Fill EntityModel with links
-        patternRelationAssembler.addLinks(dtoOutput);
-        return new ResponseEntity<>(dtoOutput, HttpStatus.OK);
+        var patternRelation = patternRelationService.findById(id);
+        return ResponseEntity.ok(patternRelationAssembler.toModel(patternRelation));
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400"),
@@ -104,9 +86,7 @@ public class PatternRelationController {
     public HttpEntity<EntityModel<PatternRelationDto>> updatePatternRelationType(@PathVariable UUID id,
                                                                                  @Valid @RequestBody PatternRelationDto relationDto) {
         LOG.debug("Put to update PatternRelation with id: {}.", id);
-        EntityModel<PatternRelationDto> updatedRelationDto = handlePatternRelationUpdate(relationDto, id);
-        patternRelationAssembler.addLinks(updatedRelationDto);
-        return new ResponseEntity<>(updatedRelationDto, HttpStatus.CREATED);
+        return ResponseEntity.ok(handlePatternRelationUpdate(relationDto, id));
     }
 
     @Operation(responses = {
@@ -114,7 +94,7 @@ public class PatternRelationController {
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Pattern relation with given id doesn't exist")})
     @DeleteMapping("/{id}")
-    public HttpEntity<?> deletePatternRelation(@PathVariable UUID id) {
+    public HttpEntity<Void> deletePatternRelation(@PathVariable UUID id) {
         LOG.debug("Delete to remove PatternRelation with id: {}.", id);
         patternRelationService.findById(id);
         patternRelationService.deleteById(id);
@@ -137,12 +117,6 @@ public class PatternRelationController {
 
         // Store and return PatternRelation
         PatternRelation savedRelation = patternRelationService.save(patternRelation);
-
-        // Convert To EntityModel and add links
-        EntityModel<PatternRelationDto> dtoOutput = HateoasUtils
-                .generateEntityModel(ModelMapperUtils.convert(savedRelation, PatternRelationDto.class));
-        patternRelationAssembler.addLinks(dtoOutput);
-
-        return dtoOutput;
+        return patternRelationAssembler.toModel(savedRelation);
     }
 }

@@ -25,6 +25,8 @@ import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -39,7 +41,7 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
-public class Implementation extends AlgorOrImpl {
+public class Implementation extends AlgorOrImpl implements ModelWithPublications {
 
     private String name;
     private String description;
@@ -52,6 +54,10 @@ public class Implementation extends AlgorOrImpl {
     private String dependencies;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "implementation_publication",
+            joinColumns = @JoinColumn(name = "publication_id"),
+            inverseJoinColumns = @JoinColumn(name = "implementation_id")
+    )
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Set<Publication> publications = new HashSet<>();
