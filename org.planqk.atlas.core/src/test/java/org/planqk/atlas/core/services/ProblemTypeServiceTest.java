@@ -144,6 +144,30 @@ public class ProblemTypeServiceTest extends AtlasDatabaseTestBase {
         Assertions.assertThrows(NoSuchElementException.class, () -> problemTypeService.findById(storedProblemType.getId()));
     }
 
+    @Test
+    void testGetParentTreeList_NoParent() {
+        ProblemType problemType = getGenericProblemType("referencedProblemType");
+        ProblemType persistedProblemType = problemTypeService.save(problemType);
+
+        List<ProblemType> problemTypeList = problemTypeService.getParentList(persistedProblemType.getId());
+
+        assertThat(problemTypeList.size()).isEqualTo(1);
+    }
+
+    @Test
+    void testGetParentTreeList_ReturnTwoParents() {
+        ProblemType problemType = getGenericProblemType("referencedProblemType");
+        ProblemType parentProblemType = getGenericProblemType("referencedParentProblemType");
+        ProblemType parentParentProblemType = getGenericProblemType("referencedParentParentProblemType");
+        parentProblemType.setParentProblemType(problemTypeService.save(parentParentProblemType).getId());
+        problemType.setParentProblemType(problemTypeService.save(parentProblemType).getId());
+        ProblemType persistedProblemType = problemTypeService.save(problemType);
+
+        List<ProblemType> problemTypeList = problemTypeService.getParentList(persistedProblemType.getId());
+
+        assertThat(problemTypeList.size()).isEqualTo(3);
+    }
+
     private ProblemType getGenericProblemType(String name) {
         ProblemType problemType = new ProblemType();
         problemType.setName(name);

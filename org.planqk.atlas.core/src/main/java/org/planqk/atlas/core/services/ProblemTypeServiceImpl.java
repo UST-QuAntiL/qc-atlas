@@ -19,6 +19,11 @@
 
 package org.planqk.atlas.core.services;
 
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Deque;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
@@ -88,5 +93,27 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
         return repo.findAll(pageable);
     }
 
+    @Override
+    public List<ProblemType> getParentList(UUID id) {
+        List<ProblemType> parentTree = new ArrayList<>();
+        ProblemType requestedProblemType = findById(id);
+        parentTree.add(requestedProblemType);
+        ProblemType parentProblemType = getParent(requestedProblemType);
+        while (parentProblemType != null) {
+            parentTree.add(parentProblemType);
+            parentProblemType = getParent(parentProblemType);
+        }
+        return parentTree;
+    }
 
+    // returns the parent problem type if present, else returns null
+    private ProblemType getParent(ProblemType child) {
+        try {
+            if (child.getParentProblemType() != null) {
+                return findById(child.getParentProblemType());
+            }
+        } catch (NoSuchElementException ignored) {
+        }
+        return null;
+    }
 }

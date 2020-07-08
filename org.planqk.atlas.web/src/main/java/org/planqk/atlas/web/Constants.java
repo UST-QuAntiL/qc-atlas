@@ -32,6 +32,7 @@ public class Constants {
     public static final String SOFTWARE_PLATFORMS = "software-platforms";
     public static final String CLOUD_SERVICES = "cloud-services";
     public static final String PROBLEM_TYPES = "problem-types";
+    public static final String PROBLEM_TYPE_PARENT_LIST = "problem-type-parent-tree";
     public static final String ALGORITHM_RELATIONS = "algorithm-relations";
     public static final String ALGO_RELATION_TYPES = "algorithm-relation-types";
     public static final String PATTERN_RELATION_TYPES = "pattern-relation-types";
