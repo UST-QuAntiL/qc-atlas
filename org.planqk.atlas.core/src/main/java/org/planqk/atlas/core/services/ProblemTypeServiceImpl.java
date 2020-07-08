@@ -94,7 +94,7 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
     }
 
     @Override
-    public List<ProblemType> getParentTreeList(UUID id) {
+    public List<ProblemType> getParentList(UUID id) {
         List<ProblemType> parentTree = new ArrayList<>();
         ProblemType requestedProblemType = findById(id);
         parentTree.add(requestedProblemType);

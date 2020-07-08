@@ -45,6 +45,6 @@ public interface ProblemTypeService {
 
     Page<ProblemType> findAll(Pageable pageable);
 
-    List<ProblemType> getParentTreeList(UUID id);
+    List<ProblemType> getParentList(UUID id);
 
 }

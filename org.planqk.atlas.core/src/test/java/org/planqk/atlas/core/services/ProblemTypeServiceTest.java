@@ -35,7 +35,6 @@ import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -150,7 +149,7 @@ public class ProblemTypeServiceTest extends AtlasDatabaseTestBase {
         ProblemType problemType = getGenericProblemType("referencedProblemType");
         ProblemType persistedProblemType = problemTypeService.save(problemType);
 
-        List<ProblemType> problemTypeList = problemTypeService.getParentTreeList(persistedProblemType.getId());
+        List<ProblemType> problemTypeList = problemTypeService.getParentList(persistedProblemType.getId());
 
         assertThat(problemTypeList.size()).isEqualTo(1);
     }
@@ -164,7 +163,7 @@ public class ProblemTypeServiceTest extends AtlasDatabaseTestBase {
         problemType.setParentProblemType(problemTypeService.save(parentProblemType).getId());
         ProblemType persistedProblemType = problemTypeService.save(problemType);
 
-        List<ProblemType> problemTypeList = problemTypeService.getParentTreeList(persistedProblemType.getId());
+        List<ProblemType> problemTypeList = problemTypeService.getParentList(persistedProblemType.getId());
 
         assertThat(problemTypeList.size()).isEqualTo(3);
     }

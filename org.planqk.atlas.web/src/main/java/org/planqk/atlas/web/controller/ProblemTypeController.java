@@ -90,9 +90,9 @@ public class ProblemTypeController {
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
-    @GetMapping("/{id}/" + Constants.PROBLEM_TYPE_PARENT_TREE)
-    public HttpEntity<CollectionModel<EntityModel<ProblemTypeDto>>> getProblemTypeParentTree(@PathVariable UUID id) {
-        var entities = problemTypeService.getParentTreeList(id);
+    @GetMapping("/{id}/" + Constants.PROBLEM_TYPE_PARENT_LIST)
+    public HttpEntity<CollectionModel<EntityModel<ProblemTypeDto>>> getProblemTypeParentList(@PathVariable UUID id) {
+        var entities = problemTypeService.getParentList(id);
         return ResponseEntity.ok(problemTypeAssembler.toModel(entities));
     }
 }
