@@ -96,13 +96,24 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
     @Override
     public List<ProblemType> getParentTreeList(UUID id) {
         List<ProblemType> parentTree = new ArrayList<>();
-        parentTree.add(findById(id));
+        ProblemType requestedProblemType = findById(id);
+        parentTree.add(requestedProblemType);
+        ProblemType parentProblemType = getParent(requestedProblemType);
+        while (parentProblemType != null) {
+            parentTree.add(parentProblemType);
+            parentProblemType = getParent(parentProblemType);
+        }
+        return parentTree;
+    }
+
+    // returns the parent problem type if present, else returns null
+    private ProblemType getParent(ProblemType child) {
         try {
-            while (parentTree.get(parentTree.size() - 1).getParentProblemType() != null) {
-                parentTree.add(findById(parentTree.get(parentTree.size() - 1).getParentProblemType()));
+            if (child.getParentProblemType() != null) {
+                return findById(child.getParentProblemType());
             }
         } catch (NoSuchElementException ignored) {
         }
-        return parentTree;
+        return null;
     }
 }
