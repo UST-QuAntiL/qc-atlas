@@ -65,6 +65,7 @@ import org.planqk.atlas.web.utils.RestUtils;
 import org.planqk.atlas.web.utils.ValidationUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
@@ -123,7 +124,7 @@ public class AlgorithmController {
     @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Retrieve all algorithms (quantum, hybrid and classic).")
     @GetMapping()
     @ListParametersDoc()
-    public HttpEntity<PagedModel<EntityModel<AlgorithmDto>>> getAlgorithms(ListParameters listParameters) {
+    public HttpEntity<PagedModel<EntityModel<AlgorithmDto>>> getAlgorithms(@Parameter(hidden = true) ListParameters listParameters) {
         LOG.debug("Get to retrieve all algorithms received.");
         return ResponseEntity.ok(algorithmAssembler.toModel(algorithmService.findAll(listParameters.getPageable(),
                 listParameters.getSearch())));

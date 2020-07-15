@@ -45,30 +45,6 @@ public class RestUtils {
     }
 
     /**
-     * Return a (default) pageable from the provided Requestparams for an endpoint that can be used with pagination.
-     *
-     * @param page
-     * @param size
-     * @param sortType
-     * @param sortVariable
-     * @return pageable
-     */
-    public static Pageable getPageableFromRequestParams(Integer page, Integer size, String sortType, String sortVariable) {
-        if (sortVariable == null || sortVariable.isEmpty() || sortType == null || sortType.isEmpty())
-            return getPageableFromRequestParams(page, size);
-
-        // Add sorting to Pageable object if necessary information available
-        if (sortType.equals("asc")) {
-            return PageRequest.of(page, size, Sort.by(sortVariable).ascending());
-        }
-        if (sortType.equals("desc")) {
-            return PageRequest.of(page, size, Sort.by(sortVariable).descending());
-        }
-
-        return PageRequest.of(page, size);
-    }
-
-    /**
      * Returns unpaged Paginationparams
      */
     public static Pageable getAllPageable() {
