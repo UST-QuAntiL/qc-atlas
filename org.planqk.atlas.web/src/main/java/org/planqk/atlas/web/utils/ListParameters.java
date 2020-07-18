@@ -16,45 +16,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-
 package org.planqk.atlas.web.utils;
 
 import org.planqk.atlas.web.Constants;
 
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
 /**
- * Utility class for the REST API functionality
+ * Core parameters for a generic data list
  */
-public class RestUtils {
+@RequiredArgsConstructor
+@Data
+public class ListParameters {
+    private final @NonNull Pageable pageable;
+    private final @Nullable String search;
 
-    /**
-     * Return a (default) pageable from the provided Requestparams for an endpoint that can be used with pagination.
-     *
-     * @param page
-     * @param size
-     * @return pageable
-     */
-    public static Pageable getPageableFromRequestParams(Integer page, Integer size) {
-        if (page == null || size == null)
-            return getAllPageable();
-
-        return PageRequest.of(page, size);
-    }
-
-    /**
-     * Returns unpaged Paginationparams
-     */
-    public static Pageable getAllPageable() {
-        return Pageable.unpaged();
-    }
-
-    /**
-     * Returns default Paginationparams
-     */
-    public static Pageable getDefaultPageable() {
-        return PageRequest.of(Constants.DEFAULT_PAGE_NUMBER, Constants.DEFAULT_PAGE_SIZE);
+    public static ListParameters getDefault() {
+        return new ListParameters(PageRequest.of(Constants.DEFAULT_PAGE_NUMBER, Constants.DEFAULT_PAGE_SIZE), "");
     }
 }

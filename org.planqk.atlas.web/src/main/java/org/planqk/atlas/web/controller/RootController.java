@@ -20,6 +20,8 @@
 package org.planqk.atlas.web.controller;
 
 import org.planqk.atlas.web.Constants;
+import org.planqk.atlas.web.utils.ListParameters;
+import org.planqk.atlas.web.utils.RestUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -54,8 +56,7 @@ public class RootController {
 
         // add links to sub-controllers
         responseEntity.add(linkTo(methodOn(RootController.class).root()).withSelfRel());
-        responseEntity.add(linkTo(methodOn(AlgorithmController.class).getAlgorithms(Constants.DEFAULT_PAGE_NUMBER,
-                Constants.DEFAULT_PAGE_SIZE, "", "", "")).withRel(Constants.ALGORITHMS));
+        responseEntity.add(linkTo(methodOn(AlgorithmController.class).getAlgorithms(ListParameters.getDefault())).withRel(Constants.ALGORITHMS));
         // This controller will be used/tested and included in the future
 //        responseEntity.add(linkTo(
 //                methodOn(TagController.class).getTags(Constants.DEFAULT_PAGE_NUMBER, Constants.DEFAULT_PAGE_SIZE))

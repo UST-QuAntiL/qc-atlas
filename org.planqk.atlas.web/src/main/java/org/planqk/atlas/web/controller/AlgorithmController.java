@@ -58,17 +58,19 @@ import org.planqk.atlas.web.linkassembler.ComputingResourcePropertyAssembler;
 import org.planqk.atlas.web.linkassembler.PatternRelationAssembler;
 import org.planqk.atlas.web.linkassembler.ProblemTypeAssembler;
 import org.planqk.atlas.web.linkassembler.PublicationAssembler;
+import org.planqk.atlas.web.utils.ListParameters;
+import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.RestUtils;
 import org.planqk.atlas.web.utils.ValidationUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
@@ -121,14 +123,11 @@ public class AlgorithmController {
 
     @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Retrieve all algorithms (quantum, hybrid and classic).")
     @GetMapping()
-    public HttpEntity<PagedModel<EntityModel<AlgorithmDto>>> getAlgorithms(@RequestParam(required = true, defaultValue = "0") Integer page,
-                                                                           @RequestParam(required = true, defaultValue = "50") Integer size,
-                                                                           @RequestParam(required = false, defaultValue = "desc") String sort,
-                                                                           @RequestParam(required = false) String sortBy,
-                                                                           @RequestParam(required = false) String search) {
+    @ListParametersDoc()
+    public HttpEntity<PagedModel<EntityModel<AlgorithmDto>>> getAlgorithms(@Parameter(hidden = true) ListParameters listParameters) {
         LOG.debug("Get to retrieve all algorithms received.");
-        Pageable p = RestUtils.getPageableFromRequestParams(page, size, sort, sortBy);
-        return ResponseEntity.ok(algorithmAssembler.toModel(algorithmService.findAll(p, search)));
+        return ResponseEntity.ok(algorithmAssembler.toModel(algorithmService.findAll(listParameters.getPageable(),
+                listParameters.getSearch())));
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "201")}, description = "Define the basic properties of an algorithm. References to subobjects (e.g. a problemtype) can be added via subroutes (e.g. /algorithm/id/problem-types). Custom ID will be ignored.")
