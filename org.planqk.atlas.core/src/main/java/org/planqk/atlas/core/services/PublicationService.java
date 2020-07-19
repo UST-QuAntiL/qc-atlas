@@ -41,7 +41,7 @@ public interface PublicationService {
     @Transactional
     void deleteById(UUID pubId);
 
-    Page<Publication> findAll(Pageable pageable);
+    Page<Publication> findAll(Pageable pageable, String search);
 
     Publication findById(UUID pubId);
 

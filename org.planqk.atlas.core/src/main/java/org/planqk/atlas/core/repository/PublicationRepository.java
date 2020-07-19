@@ -24,6 +24,8 @@ import java.util.UUID;
 
 import org.planqk.atlas.core.model.Publication;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.stereotype.Repository;
@@ -34,6 +36,12 @@ import org.springframework.stereotype.Repository;
 @Repository
 @RepositoryRestResource(exported = false)
 public interface PublicationRepository extends JpaRepository<Publication, UUID> {
+
+    default Page<Publication> findAll(String search, Pageable pageable) {
+        return findByTitleContainingIgnoreCaseOrDoiContainingIgnoreCaseOrUrlContainingIgnoreCaseOrAuthorsContainingIgnoreCase(search, search, search, search, pageable);
+    }
+
+    Page<Publication> findByTitleContainingIgnoreCaseOrDoiContainingIgnoreCaseOrUrlContainingIgnoreCaseOrAuthorsContainingIgnoreCase(String title, String doi, String url, String author, Pageable pageable);
 
     Optional<Publication> findByTitle(String title);
 

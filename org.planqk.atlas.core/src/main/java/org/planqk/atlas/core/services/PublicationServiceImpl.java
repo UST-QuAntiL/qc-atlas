@@ -21,6 +21,7 @@ package org.planqk.atlas.core.services;
 
 import java.util.HashSet;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -65,7 +66,10 @@ public class PublicationServiceImpl implements PublicationService {
     }
 
     @Override
-    public Page<Publication> findAll(Pageable pageable) {
+    public Page<Publication> findAll(Pageable pageable, String search) {
+        if (!Objects.isNull(search) && !search.isEmpty()) {
+            return publicationRepository.findAll(search, pageable);
+        }
         return publicationRepository.findAll(pageable);
     }
 
