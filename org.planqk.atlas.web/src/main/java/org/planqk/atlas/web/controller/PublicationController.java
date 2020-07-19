@@ -23,7 +23,6 @@ import java.util.UUID;
 
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Publication;
-import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.core.services.PublicationService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.mixin.AlgorithmMixin;
@@ -71,7 +70,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class PublicationController {
 
     private final PublicationService publicationService;
-    private final AlgorithmService algorithmService;
     private final PublicationAssembler publicationAssembler;
     private final AlgorithmAssembler algorithmAssembler;
     private final ImplementationAssembler implementationAssembler;
