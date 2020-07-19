@@ -132,7 +132,6 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
         publication.setAuthors(publicationAuthors);
         Set<Algorithm> publicationAlgorithms = new HashSet<>();
         publicationAlgorithms.add(algorithm);
-        publication.setAlgorithms(publicationAlgorithms);
         publications.add(publication);
         algorithm.setPublications(publications);
         Set<ApplicationArea> applicationAreas = new HashSet<>();
