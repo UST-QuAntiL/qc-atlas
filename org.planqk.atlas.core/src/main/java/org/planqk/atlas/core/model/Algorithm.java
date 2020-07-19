@@ -49,8 +49,8 @@ public class Algorithm extends AlgorOrImpl implements ModelWithPublications {
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "algorithm_publication",
-            joinColumns = @JoinColumn(name = "publication_id"),
-            inverseJoinColumns = @JoinColumn(name = "algorithm_id")
+            joinColumns = @JoinColumn(name = "algorithm_id"),
+            inverseJoinColumns = @JoinColumn(name = "publication_id")
     )
     @EqualsAndHashCode.Exclude
     private Set<Publication> publications = new HashSet<>();
