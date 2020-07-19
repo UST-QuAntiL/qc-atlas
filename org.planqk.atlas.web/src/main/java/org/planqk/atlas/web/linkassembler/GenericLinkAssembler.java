@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.data.domain.Page;
