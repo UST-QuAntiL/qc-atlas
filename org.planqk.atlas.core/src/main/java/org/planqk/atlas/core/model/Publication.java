@@ -26,6 +26,8 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 
 import lombok.Data;
@@ -39,7 +41,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 @Data
-public class Publication extends KnowledgeArtifact {
+public class Publication extends KnowledgeArtifact implements ModelWithAlgorithms {
 
     private String doi;
     private String url;
@@ -48,7 +50,11 @@ public class Publication extends KnowledgeArtifact {
     @ElementCollection
     private List<String> authors = new ArrayList<>();
 
-    @ManyToMany(mappedBy = "publications", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "algorithm_publication",
+            joinColumns = @JoinColumn(name = "publication_id"),
+            inverseJoinColumns = @JoinColumn(name = "algorithm_id")
+    )
     @EqualsAndHashCode.Exclude
     private Set<Algorithm> algorithms = new HashSet<>();
 
