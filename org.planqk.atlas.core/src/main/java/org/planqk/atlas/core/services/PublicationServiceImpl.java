@@ -27,8 +27,10 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.repository.AlgorithmRepository;
+import org.planqk.atlas.core.repository.ImplementationRepository;
 import org.planqk.atlas.core.repository.PublicationRepository;
 
 import lombok.AllArgsConstructor;
@@ -43,6 +45,7 @@ public class PublicationServiceImpl implements PublicationService {
 
     private final PublicationRepository publicationRepository;
     private final AlgorithmRepository algorithmRepository;
+    private final ImplementationRepository implementationRepository;
 
     @Override
     @Transactional
@@ -104,6 +107,11 @@ public class PublicationServiceImpl implements PublicationService {
     @Override
     public Set<Algorithm> findPublicationAlgorithms(UUID publicationId) {
         return algorithmRepository.getAlgorithmsWithPublicationId(publicationId);
+    }
+
+    @Override
+    public Set<Implementation> findPublicationImplementations(UUID publicationId) {
+        return implementationRepository.getImplementationsWithPublicationId(publicationId);
     }
 
     @Override

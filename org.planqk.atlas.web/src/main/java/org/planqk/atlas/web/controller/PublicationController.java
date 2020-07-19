@@ -18,12 +18,19 @@
  *******************************************************************************/
 package org.planqk.atlas.web.controller;
 
+import java.util.Set;
 import java.util.UUID;
 
+import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.services.PublicationService;
 import org.planqk.atlas.web.Constants;
+import org.planqk.atlas.web.dtos.AlgorithmDto;
+import org.planqk.atlas.web.dtos.ImplementationDto;
 import org.planqk.atlas.web.dtos.PublicationDto;
+import org.planqk.atlas.web.linkassembler.AlgorithmAssembler;
+import org.planqk.atlas.web.linkassembler.ImplementationAssembler;
 import org.planqk.atlas.web.linkassembler.PublicationAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
@@ -33,6 +40,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpEntity;
@@ -62,6 +70,8 @@ public class PublicationController {
 
     private final PublicationService publicationService;
     private final PublicationAssembler publicationAssembler;
+    private final AlgorithmAssembler algorithmAssembler;
+    private final ImplementationAssembler implementationAssembler;
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping()
@@ -109,17 +119,23 @@ public class PublicationController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-//    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400"), @ApiResponse(responseCode = "404")})
-//    @GetMapping("/{id}/" + Constants.ALGORITHMS)
-//    public HttpEntity<CollectionModel<EntityModel<AlgorithmDto>>> getAlgorithms(@PathVariable UUID id) {
-//        log.debug("Get algorithms of Publication with id {}", id);
-//        Set<Algorithm> algorithms = publicationService.findPublicationAlgorithms(id);
-//        Set<AlgorithmDto> algorithmDtos = ModelMapperUtils.convertSet(algorithms, AlgorithmDto.class);
-//        CollectionModel<EntityModel<AlgorithmDto>> resultCollection = HateoasUtils.generateCollectionModel(algorithmDtos);
-//        algorithmAssembler.addLinks(resultCollection);
-//        publicationAssembler.addAlgorithmLink(resultCollection, id);
-//        return new ResponseEntity<>(resultCollection, HttpStatus.OK);
-//    }
+    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400"), @ApiResponse(responseCode = "404")})
+    @GetMapping("/{id}/" + Constants.ALGORITHMS)
+    public HttpEntity<CollectionModel<EntityModel<AlgorithmDto>>> getAlgorithms(@PathVariable UUID id) {
+        log.debug("Get algorithms of Publication with id {}", id);
+        Set<Algorithm> algorithms = publicationService.findPublicationAlgorithms(id);
+        CollectionModel<EntityModel<AlgorithmDto>> resultCollection = algorithmAssembler.toModel(algorithms);
+        return new ResponseEntity<>(resultCollection, HttpStatus.OK);
+    }
+
+    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400"), @ApiResponse(responseCode = "404")})
+    @GetMapping("/{id}/" + Constants.IMPLEMENTATIONS)
+    public HttpEntity<CollectionModel<EntityModel<ImplementationDto>>> getImplementations(@PathVariable UUID id) {
+        log.debug("Get implementations of Publication with id {}", id);
+        Set<Implementation> implementations = publicationService.findPublicationImplementations(id);
+        CollectionModel<EntityModel<ImplementationDto>> resultCollection = implementationAssembler.toModel(implementations);
+        return new ResponseEntity<>(resultCollection, HttpStatus.OK);
+    }
 }
 
 

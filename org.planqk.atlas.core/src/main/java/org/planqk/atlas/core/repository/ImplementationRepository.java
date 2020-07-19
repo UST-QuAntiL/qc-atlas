@@ -20,6 +20,7 @@
 package org.planqk.atlas.core.repository;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
@@ -28,6 +29,7 @@ import org.planqk.atlas.core.model.Implementation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 /**
@@ -42,4 +44,7 @@ public interface ImplementationRepository extends JpaRepository<Implementation, 
     Page<Implementation> findByImplementedAlgorithm(Algorithm implementedAlgorithm, Pageable pageable);
 
     List<Implementation> findByImplementedAlgorithm(Algorithm implementedAlgorithm);
+
+    @Query("SELECT impl FROM Implementation impl JOIN impl.publications publication WHERE publication.id = :publicationId")
+    Set<Implementation> getImplementationsWithPublicationId(UUID publicationId);
 }
