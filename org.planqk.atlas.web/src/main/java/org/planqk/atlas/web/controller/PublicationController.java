@@ -21,7 +21,6 @@ package org.planqk.atlas.web.controller;
 import java.util.Set;
 import java.util.UUID;
 
-import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.services.AlgorithmService;
@@ -128,8 +127,8 @@ public class PublicationController {
     @GetMapping("/{id}/" + Constants.ALGORITHMS)
     public HttpEntity<CollectionModel<EntityModel<AlgorithmDto>>> getAlgorithms(@PathVariable UUID id) {
         log.debug("Get algorithms of Publication with id {}", id);
-        Set<Algorithm> algorithms = publicationService.findPublicationAlgorithms(id);
-        return new ResponseEntity<>(algorithmAssembler.toModel(algorithms), HttpStatus.OK);
+        var publication = publicationService.findById(id);
+        return new ResponseEntity<>(algorithmAssembler.toModel(publication.getAlgorithms()), HttpStatus.OK);
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Get a specific referenced algorithm of a publication.")

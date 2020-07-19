@@ -116,7 +116,7 @@ public class PublicationServiceTest extends AtlasDatabaseTestBase {
 
         Algorithm storedAlgorithm = algorithmService.save(algorithm);
 
-        Set<Algorithm> publicationAlgorithms = publicationService.findPublicationAlgorithms(storedPublication.getId());
+        Set<Algorithm> publicationAlgorithms = storedPublication.getAlgorithms();
 
         publicationAlgorithms.forEach(algo -> {
             assertThat(algo.getId()).isEqualTo(storedAlgorithm.getId());

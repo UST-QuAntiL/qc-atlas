@@ -19,7 +19,6 @@
 
 package org.planqk.atlas.core.services;
 
-import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Publication;
 
@@ -50,8 +49,6 @@ public interface PublicationService {
 
     @Transactional
     Set<Publication> createOrUpdateAll(Set<Publication> publications);
-
-    Set<Algorithm> findPublicationAlgorithms(UUID publicationId);
 
     Set<Implementation> findPublicationImplementations(UUID publicationId);
 
