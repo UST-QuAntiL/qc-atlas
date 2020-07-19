@@ -33,6 +33,7 @@ import org.planqk.atlas.web.linkassembler.AlgorithmAssembler;
 import org.planqk.atlas.web.linkassembler.ImplementationAssembler;
 import org.planqk.atlas.web.linkassembler.PublicationAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
+import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -77,6 +78,7 @@ public class PublicationController {
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping()
+    @ListParametersDoc()
     public HttpEntity<PagedModel<EntityModel<PublicationDto>>> getPublications(@Parameter(hidden = true) ListParameters listParameters) {
         log.debug("Get all publications");
         var entities = publicationService.findAll(listParameters.getPageable(), listParameters.getSearch());
