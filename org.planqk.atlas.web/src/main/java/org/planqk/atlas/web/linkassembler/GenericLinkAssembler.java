@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.data.domain.Page;
@@ -82,7 +83,9 @@ public abstract class GenericLinkAssembler<T> {
     }
 
     public <U> EntityModel<T> toModel(U entity, Class<T> entityClass) {
-        return new EntityModel<>(ModelMapperUtils.convert(entity, entityClass));
+        EntityModel<T> entityModel = new EntityModel<>(ModelMapperUtils.convert(entity, entityClass));
+        addLinks(entityModel);
+        return entityModel;
     }
 
     public <U> EntityModel<T> toModel(U entity) {
