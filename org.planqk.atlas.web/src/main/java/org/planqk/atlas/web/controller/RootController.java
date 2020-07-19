@@ -21,13 +21,11 @@ package org.planqk.atlas.web.controller;
 
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.utils.ListParameters;
-import org.planqk.atlas.web.utils.RestUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -62,7 +60,7 @@ public class RootController {
 //                methodOn(TagController.class).getTags(Constants.DEFAULT_PAGE_NUMBER, Constants.DEFAULT_PAGE_SIZE))
 //                .withRel(Constants.TAGS));
         responseEntity.add(linkTo(
-                methodOn(PublicationController.class).getPublications(Constants.DEFAULT_PAGE_NUMBER, Constants.DEFAULT_PAGE_SIZE))
+                methodOn(PublicationController.class).getPublications(ListParameters.getDefault()))
                 .withRel(Constants.PUBLICATIONS));
 
         return ResponseEntity.ok(responseEntity);

@@ -173,7 +173,7 @@ public class PublicationServiceTest extends AtlasDatabaseTestBase {
         }
         publicationService.createOrUpdateAll(publications);
 
-        var elements = publicationService.findAll(Pageable.unpaged());
+        var elements = publicationService.findAll(Pageable.unpaged(), null);
 
         assertThat(elements.get().filter(e -> e.getId() != null).count()).isEqualTo(publications.size());
     }

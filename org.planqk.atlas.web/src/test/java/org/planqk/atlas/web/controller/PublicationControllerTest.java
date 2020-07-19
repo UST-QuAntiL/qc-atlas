@@ -104,7 +104,7 @@ public class PublicationControllerTest {
         Page<Publication> pagePublication = new PageImpl<>(publications);
         Page<PublicationDto> pagePublicationDto = ModelMapperUtils.convertPage(pagePublication, PublicationDto.class);
 
-        when(publicationService.findAll(pageable)).thenReturn(pagePublication);
+        when(publicationService.findAll(pageable, null)).thenReturn(pagePublication);
 
         MvcResult result = mockMvc
                 .perform(get("/" + Constants.API_VERSION + "/" + Constants.PUBLICATIONS + "/").queryParam(Constants.PAGE, Integer.toString(page))
@@ -121,7 +121,7 @@ public class PublicationControllerTest {
 
     @Test
     public void getPublications_emptyPublicationList() throws Exception {
-        when(publicationService.findAll(pageable)).thenReturn(Page.empty());
+        when(publicationService.findAll(pageable, null)).thenReturn(Page.empty());
 
         MvcResult mvcResult = mockMvc.perform(get("/" + Constants.API_VERSION + "/" + Constants.PUBLICATIONS + "/").queryParam(Constants.PAGE, Integer.toString(page))
                 .queryParam(Constants.SIZE, Integer.toString(size)).accept(MediaType.APPLICATION_JSON))
