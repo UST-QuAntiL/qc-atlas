@@ -23,9 +23,10 @@ import java.util.UUID;
 
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Publication;
+import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.core.services.PublicationService;
 import org.planqk.atlas.web.Constants;
-import org.planqk.atlas.web.controller.mixin.AlgorithmMixin;
+import org.planqk.atlas.web.controller.mixin.PublicationMixin;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.ImplementationDto;
 import org.planqk.atlas.web.dtos.PublicationDto;
@@ -71,10 +72,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class PublicationController {
 
     private final PublicationService publicationService;
+    private final AlgorithmService algorithmService;
     private final PublicationAssembler publicationAssembler;
     private final AlgorithmAssembler algorithmAssembler;
     private final ImplementationAssembler implementationAssembler;
-    private final AlgorithmMixin algorithmMixin;
+    private final PublicationMixin publicationMixIn;
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping()
@@ -134,8 +136,8 @@ public class PublicationController {
     @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Get a specific referenced algorithm of a publication.")
     @GetMapping("/{id}/" + Constants.ALGORITHMS + "/{algoId}")
     public HttpEntity<EntityModel<AlgorithmDto>> getAlgorithm(@PathVariable UUID id, @PathVariable UUID algoId) {
-        var publication = publicationService.findById(id);
-        return ResponseEntity.ok(algorithmAssembler.toModel(algorithmMixin.getAlgorithm(publication, algoId)));
+        publicationService.findById(id);
+        return ResponseEntity.ok(algorithmAssembler.toModel(algorithmService.findById(algoId)));
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "404", content = @Content,
@@ -143,10 +145,10 @@ public class PublicationController {
             description = "Add a reference to an existing algorithm (that was previously created via a POST on /algorithms/). Custom ID will be ignored. For algorithm only ID is required, other algorithm attributes will not change. If the algorithm doesn't exist yet, a 404 error is thrown.")
     @PostMapping("/{id}/" + Constants.ALGORITHMS + "/{algoId}")
     public HttpEntity<CollectionModel<EntityModel<AlgorithmDto>>> addAlgorithm(@PathVariable UUID id, @PathVariable UUID algoId) {
-        var publication = publicationService.findById(id);
-        algorithmMixin.addAlgorithm(publication, algoId);
-        publication = publicationService.save(publication);
-        return ResponseEntity.ok(algorithmAssembler.toModel(publication.getAlgorithms()));
+        var algorithm = algorithmService.findById(algoId);
+        publicationMixIn.addPublication(algorithm, id);
+        algorithmService.save(algorithm);
+        return ResponseEntity.ok(algorithmAssembler.toModel(publicationService.findById(id).getAlgorithms()));
     }
 
     @Operation(responses = {
@@ -155,9 +157,9 @@ public class PublicationController {
             description = "Delete a reference to a algorithm of the publication.")
     @DeleteMapping("/{id}/" + Constants.ALGORITHMS + "/{algoId}")
     public HttpEntity<Void> deleteReferenceToAlgorithm(@PathVariable UUID id, @PathVariable UUID algoId) {
-        var publication = publicationService.findById(id);
-        algorithmMixin.unlinkAlgorithm(publication, algoId);
-        publicationService.save(publication);
+        var algorithm = algorithmService.findById(algoId);
+        publicationMixIn.unlinkPublication(algorithm, id);
+        algorithmService.save(algorithm);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

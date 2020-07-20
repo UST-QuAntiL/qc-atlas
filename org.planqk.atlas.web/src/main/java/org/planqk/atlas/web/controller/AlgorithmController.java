@@ -188,7 +188,7 @@ public class AlgorithmController {
     @PostMapping("/{algoId}/" + Constants.PUBLICATIONS)
     public HttpEntity<CollectionModel<EntityModel<PublicationDto>>> addPublication(@PathVariable UUID algoId, @RequestBody PublicationDto publicationDto) {
         var algorithm = algorithmService.findById(algoId);
-        publicationMixin.addPublication(algorithm, publicationDto);
+        publicationMixin.addPublication(algorithm, publicationDto.getId());
         algorithm = algorithmService.save(algorithm);
         return ResponseEntity.ok(publicationAssembler.toModel(algorithm.getPublications()));
     }

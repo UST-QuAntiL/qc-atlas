@@ -266,7 +266,7 @@ public class ImplementationController {
                                                                                    @PathVariable UUID implId,
                                                                                    @RequestBody PublicationDto publicationDto) {
         Implementation implementation = implementationService.findById(implId);
-        publicationMixin.addPublication(implementation, publicationDto);
+        publicationMixin.addPublication(implementation, publicationDto.getId());
         implementation = implementationService.save(implementation);
         return ResponseEntity.ok(publicationAssembler.toModel(implementation.getPublications()));
     }

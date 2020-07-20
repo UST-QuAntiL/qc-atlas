@@ -26,8 +26,6 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 
 import lombok.Data;
@@ -50,11 +48,7 @@ public class Publication extends KnowledgeArtifact implements ModelWithAlgorithm
     @ElementCollection
     private List<String> authors = new ArrayList<>();
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinTable(name = "algorithm_publication",
-            joinColumns = @JoinColumn(name = "publication_id"),
-            inverseJoinColumns = @JoinColumn(name = "algorithm_id")
-    )
+    @ManyToMany(mappedBy = "publications", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @EqualsAndHashCode.Exclude
     private Set<Algorithm> algorithms = new HashSet<>();
 
