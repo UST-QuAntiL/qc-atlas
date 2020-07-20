@@ -39,7 +39,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 @Data
-public class Publication extends KnowledgeArtifact implements ModelWithAlgorithms {
+public class Publication extends KnowledgeArtifact {
 
     private String doi;
     private String url;
