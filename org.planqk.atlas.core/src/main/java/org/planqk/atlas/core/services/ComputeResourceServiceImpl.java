@@ -50,19 +50,29 @@ public class ComputeResourceServiceImpl implements ComputeResourceService {
 
     @Override
     @Transactional
-    public ComputeResource saveOrUpdate(ComputeResource computeResource) {
-        if (computeResource.getId() != null) {
-            return update(computeResource.getId(), computeResource);
-        } else {
-            return repo.save(computeResource);
-        }
+    public ComputeResource save(ComputeResource computeResource) {
+        return repo.save(computeResource);
+    }
+
+    @Override
+    @Transactional
+    public ComputeResource update(UUID id, ComputeResource computeResource) {
+        ComputeResource persistedComputeResource = findById(id);
+
+        // update fields that can be changed based on DTO
+        persistedComputeResource.setName(computeResource.getName());
+        persistedComputeResource.setVendor(computeResource.getVendor());
+        persistedComputeResource.setTechnology(computeResource.getTechnology());
+        persistedComputeResource.setQuantumComputationModel(computeResource.getQuantumComputationModel());
+
+        return repo.save(persistedComputeResource);
     }
 
     @Override
     @Transactional
     public Set<ComputeResource> saveOrUpdateAll(Set<ComputeResource> computeResources) {
         for (ComputeResource computeResource : computeResources) {
-            saveOrUpdate(computeResource);
+            save(computeResource);
         }
         return computeResources;
     }
@@ -82,26 +92,15 @@ public class ComputeResourceServiceImpl implements ComputeResourceService {
         return repo.findAll(pageable);
     }
 
-    private ComputeResource update(UUID id, ComputeResource computeResource) {
-        ComputeResource persistedComputeResource = repo.findById(id).orElseThrow(NoSuchElementException::new);
-
-        persistedComputeResource.setQuantumComputationModel(computeResource.getQuantumComputationModel());
-        persistedComputeResource.setTechnology(computeResource.getTechnology());
-        persistedComputeResource.setName(computeResource.getName());
-        persistedComputeResource.setVendor(computeResource.getVendor());
-
-        persistedComputeResource.setProvidedQuantumResources(computeResource.getProvidedQuantumResources());
-
-        return repo.save(persistedComputeResource);
-    }
-
     @Override
     @Transactional
     public void delete(UUID id) {
+        if (!repo.existsById(id)) {
+            throw new NoSuchElementException();
+        }
         // only delete if unused in SoftwarePlatforms and CloudServices
         long count = cloudServiceRepository.countCloudServiceByBackend(id) + softwarePlatformRepository.countSoftwarePlatformByBackend(id);
         if (count == 0) {
-
             repo.deleteById(id);
         } else {
             LOG.info("Trying to delete Backend that is used in a CloudService or SoftwarePlatform");

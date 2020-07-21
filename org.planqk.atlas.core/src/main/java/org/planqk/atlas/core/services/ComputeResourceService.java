@@ -31,7 +31,10 @@ import org.springframework.transaction.annotation.Transactional;
 public interface ComputeResourceService {
 
     @Transactional
-    ComputeResource saveOrUpdate(ComputeResource computeResource);
+    ComputeResource save(ComputeResource computeResource);
+
+    @Transactional
+    ComputeResource update(UUID id, ComputeResource computeResource);
 
     @Transactional
     Set<ComputeResource> saveOrUpdateAll(Set<ComputeResource> computeResources);
