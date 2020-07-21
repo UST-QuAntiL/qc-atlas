@@ -95,12 +95,12 @@ public class ComputingResourcePropertyServiceImpl implements ComputingResourcePr
 
     @Override
     public Set<ComputingResourceProperty> findAllComputingResourcesPropertiesByBackendId(UUID backendId) {
-        return resourceRepository.findAllByBackend_Id(backendId);
+        return resourceRepository.findAllByComputeResource_Id(backendId);
     }
 
     @Override
     public Page<ComputingResourceProperty> findAllComputingResourcesPropertiesByBackendId(UUID backendId, Pageable pageable) {
-        return resourceRepository.findAllByBackend_Id(backendId, pageable);
+        return resourceRepository.findAllByComputeResource_Id(backendId, pageable);
     }
 
     @Override

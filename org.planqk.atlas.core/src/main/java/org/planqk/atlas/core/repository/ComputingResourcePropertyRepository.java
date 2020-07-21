@@ -40,7 +40,7 @@ public interface ComputingResourcePropertyRepository extends JpaRepository<Compu
 
     Page<ComputingResourceProperty> findAllByImplementation_Id(UUID backendId, Pageable p);
 
-    Set<ComputingResourceProperty> findAllByBackend_Id(UUID backendId);
+    Set<ComputingResourceProperty> findAllByComputeResource_Id(UUID backendId);
 
-    Page<ComputingResourceProperty> findAllByBackend_Id(UUID backendId, Pageable p);
+    Page<ComputingResourceProperty> findAllByComputeResource_Id(UUID backendId, Pageable p);
 }
