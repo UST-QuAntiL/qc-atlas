@@ -22,12 +22,15 @@ import java.util.UUID;
 
 import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.services.AlgorithmService;
+import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.core.services.PublicationService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.mixin.PublicationMixin;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
+import org.planqk.atlas.web.dtos.ImplementationDto;
 import org.planqk.atlas.web.dtos.PublicationDto;
 import org.planqk.atlas.web.linkassembler.AlgorithmAssembler;
+import org.planqk.atlas.web.linkassembler.ImplementationAssembler;
 import org.planqk.atlas.web.linkassembler.PublicationAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
@@ -69,8 +72,10 @@ public class PublicationController {
 
     private final PublicationService publicationService;
     private final AlgorithmService algorithmService;
+    private final ImplementationService implementationService;
     private final PublicationAssembler publicationAssembler;
     private final AlgorithmAssembler algorithmAssembler;
+    private final ImplementationAssembler implementationAssembler;
     private final PublicationMixin publicationMixIn;
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
@@ -156,6 +161,21 @@ public class PublicationController {
         publicationMixIn.unlinkPublication(algorithm, id);
         algorithmService.save(algorithm);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400"), @ApiResponse(responseCode = "404")})
+    @GetMapping("/{id}/" + Constants.IMPLEMENTATIONS)
+    public HttpEntity<CollectionModel<EntityModel<ImplementationDto>>> getImplementations(@PathVariable UUID id) {
+        log.debug("Get implementations of Publication with id {}", id);
+        var publication = publicationService.findById(id);
+        return new ResponseEntity<>(implementationAssembler.toModel(publication.getImplementations()), HttpStatus.OK);
+    }
+
+    @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Get a specific referenced implementation of a publication.")
+    @GetMapping("/{id}/" + Constants.IMPLEMENTATIONS + "/{implId}")
+    public HttpEntity<EntityModel<ImplementationDto>> getImplementation(@PathVariable UUID id, @PathVariable UUID implId) {
+        publicationService.findById(id);
+        return ResponseEntity.ok(implementationAssembler.toModel(implementationService.findById(implId)));
     }
 
 }
