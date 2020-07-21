@@ -46,6 +46,6 @@ public interface ImplementationRepository extends JpaRepository<Implementation, 
 
     List<Implementation> findByImplementedAlgorithm(Algorithm implementedAlgorithm);
 
-    @Query("SELECT Implementation FROM Implementation i JOIN i.softwarePlatforms sp WHERE sp.id = :sp")
-    Page<Implementation> findImplementationsBySoftwarePlatformId(@Param("id") UUID sp, Pageable p);
+    @Query("SELECT Implementation FROM Implementation i JOIN i.softwarePlatforms sp WHERE sp.id = :id")
+    Page<Implementation> findImplementationsBySoftwarePlatformId(@Param("id") UUID id, Pageable p);
 }

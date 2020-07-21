@@ -7,7 +7,11 @@ import javax.validation.Valid;
 import org.planqk.atlas.core.model.SoftwarePlatform;
 import org.planqk.atlas.core.services.SoftwarePlatformService;
 import org.planqk.atlas.web.Constants;
+import org.planqk.atlas.web.dtos.ComputeResourceDto;
+import org.planqk.atlas.web.dtos.ImplementationDto;
 import org.planqk.atlas.web.dtos.SoftwarePlatformDto;
+import org.planqk.atlas.web.linkassembler.ComputeResourceAssembler;
+import org.planqk.atlas.web.linkassembler.ImplementationAssembler;
 import org.planqk.atlas.web.linkassembler.SoftwarePlatformAssembler;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.RestUtils;
@@ -41,6 +45,8 @@ public class SoftwarePlatformController {
 
     private final SoftwarePlatformService softwarePlatformService;
     private final SoftwarePlatformAssembler softwarePlatformAssembler;
+    private final ImplementationAssembler implementationAssembler;
+    private final ComputeResourceAssembler computeResourceAssembler;
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
@@ -106,13 +112,13 @@ public class SoftwarePlatformController {
             @ApiResponse(responseCode = "404", description = "Software Platform with given id does not exist"),
     })
     @GetMapping("/{id}/" + Constants.IMPLEMENTATIONS)
-    public ResponseEntity<PagedModel<EntityModel<SoftwarePlatformDto>>> getImplementationsForSoftwarePlatform(
+    public ResponseEntity<PagedModel<EntityModel<ImplementationDto>>> getImplementationsForSoftwarePlatform(
             @PathVariable UUID id,
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size) {
         var pageable = RestUtils.getPageableFromRequestParams(page, size);
         var implementations = softwarePlatformService.findImplementations(id, pageable);
-        return ResponseEntity.ok(softwarePlatformAssembler.toModel(implementations));
+        return ResponseEntity.ok(implementationAssembler.toModel(implementations));
     }
 
     @Operation(responses = {
@@ -134,11 +140,11 @@ public class SoftwarePlatformController {
             @ApiResponse(responseCode = "404", description = "Software Platform with given id does not exist"),
     })
     @GetMapping("/{id}" + Constants.IMPLEMENTATIONS + "/{implId}")
-    public ResponseEntity<EntityModel<SoftwarePlatformDto>> getImplementationForSoftwarePlatform(
+    public ResponseEntity<EntityModel<ImplementationDto>> getImplementationForSoftwarePlatform(
             @PathVariable UUID id,
             @PathVariable UUID implId) {
         var implementation = softwarePlatformService.getImplementation(id, implId);
-        return ResponseEntity.ok(softwarePlatformAssembler.toModel(implementation));
+        return ResponseEntity.ok(implementationAssembler.toModel(implementation));
     }
 
     @Operation(responses = {
@@ -151,6 +157,47 @@ public class SoftwarePlatformController {
             @PathVariable UUID id,
             @PathVariable UUID implId) {
         softwarePlatformService.deleteImplementationReference(id, implId);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", description = "Software Platform with given id does not exist"),
+    })
+    @GetMapping("/{id}/" + Constants.IMPLEMENTATIONS)
+    public ResponseEntity<PagedModel<EntityModel<ComputeResourceDto>>> getComputeResourcesForSoftwarePlatform(
+            @PathVariable UUID id,
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size) {
+        var pageable = RestUtils.getPageableFromRequestParams(page, size);
+        var computeResources = softwarePlatformService.findComputeResources(id, pageable);
+        return ResponseEntity.ok(computeResourceAssembler.toModel(computeResources));
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", description = "Software Platform with given id does not exist"),
+    })
+    @PostMapping("/{id}" + Constants.IMPLEMENTATIONS + "/{implId}")
+    public ResponseEntity<Void> addComputeResourceReferenceToSoftwarePlatform(
+            @PathVariable UUID id,
+            @PathVariable UUID implId) {
+        softwarePlatformService.addComputeResourceReference(id, implId);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", description = "Software Platform with given id does not exist"),
+    })
+    @DeleteMapping("/{id}" + Constants.IMPLEMENTATIONS + "/{implId}")
+    public ResponseEntity<Void> deleteComputeResourceReferenceFromSoftwarePlatform(
+            @PathVariable UUID id,
+            @PathVariable UUID implId) {
+        softwarePlatformService.deleteComputeResourceReference(id, implId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

@@ -51,5 +51,13 @@ public interface SoftwarePlatformService {
     SoftwarePlatform getImplementation(UUID platformId, UUID implId);
 
     @Transactional
-    public void deleteImplementationReference(UUID platformId, UUID implId);
+    void deleteImplementationReference(UUID platformId, UUID implId);
+
+    Page<Implementation> findComputeResources(UUID platformId, Pageable pageable);
+
+    @Transactional
+    void addComputeResourceReference(UUID platformId, UUID resourceId);
+
+    @Transactional
+    void deleteComputeResourceReference(UUID platformId, UUID resourceId);
 }
