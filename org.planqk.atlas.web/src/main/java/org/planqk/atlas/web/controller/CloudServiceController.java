@@ -9,10 +9,12 @@ import org.planqk.atlas.core.services.CloudServiceService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.CloudServiceDto;
 import org.planqk.atlas.web.linkassembler.CloudServiceAssembler;
+import org.planqk.atlas.web.utils.ListParameters;
+import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
-import org.planqk.atlas.web.utils.RestUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +31,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @io.swagger.v3.oas.annotations.tags.Tag(name = Constants.TAG_EXECUTION_ENVIRONMENTS)
@@ -47,10 +48,10 @@ public class CloudServiceController {
             @ApiResponse(responseCode = "200"),
     })
     @GetMapping()
+    @ListParametersDoc
     public HttpEntity<PagedModel<EntityModel<CloudServiceDto>>> getCloudServices(
-            @RequestParam(required = false) Integer page,
-            @RequestParam(required = false) Integer size) {
-        var cloudServices = cloudServiceService.findAll(RestUtils.getPageableFromRequestParams(page, size));
+            @Parameter(hidden = true) ListParameters listParameters) {
+        var cloudServices = cloudServiceService.findAll(listParameters.getPageable());
         return ResponseEntity.ok(cloudServiceAssembler.toModel(cloudServices));
     }
 

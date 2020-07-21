@@ -7,12 +7,20 @@ import javax.validation.Valid;
 import org.planqk.atlas.core.model.SoftwarePlatform;
 import org.planqk.atlas.core.services.SoftwarePlatformService;
 import org.planqk.atlas.web.Constants;
+import org.planqk.atlas.web.dtos.CloudServiceDto;
+import org.planqk.atlas.web.dtos.ComputeResourceDto;
+import org.planqk.atlas.web.dtos.ImplementationDto;
 import org.planqk.atlas.web.dtos.SoftwarePlatformDto;
+import org.planqk.atlas.web.linkassembler.CloudServiceAssembler;
+import org.planqk.atlas.web.linkassembler.ComputeResourceAssembler;
+import org.planqk.atlas.web.linkassembler.ImplementationAssembler;
 import org.planqk.atlas.web.linkassembler.SoftwarePlatformAssembler;
+import org.planqk.atlas.web.utils.ListParameters;
+import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
-import org.planqk.atlas.web.utils.RestUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +36,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @io.swagger.v3.oas.annotations.tags.Tag(name = Constants.TAG_EXECUTION_ENVIRONMENTS)
@@ -41,15 +48,18 @@ public class SoftwarePlatformController {
 
     private final SoftwarePlatformService softwarePlatformService;
     private final SoftwarePlatformAssembler softwarePlatformAssembler;
+    private final ImplementationAssembler implementationAssembler;
+    private final ComputeResourceAssembler computeResourceAssembler;
+    private final CloudServiceAssembler cloudServiceAssembler;
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
     })
     @GetMapping()
+    @ListParametersDoc
     public ResponseEntity<PagedModel<EntityModel<SoftwarePlatformDto>>> getSoftwarePlatforms(
-            @RequestParam(required = false) Integer page,
-            @RequestParam(required = false) Integer size) {
-        var platforms = softwarePlatformService.findAll(RestUtils.getPageableFromRequestParams(page, size));
+            @Parameter(hidden = true) ListParameters listParameters) {
+        var platforms = softwarePlatformService.findAll(listParameters.getPageable());
         return ResponseEntity.ok(softwarePlatformAssembler.toModel(platforms));
     }
 
@@ -103,22 +113,21 @@ public class SoftwarePlatformController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404", description = "Software Platform with given id does not exist"),
+            @ApiResponse(responseCode = "404", description = "Software Platform or Implementation with given id does not exist"),
     })
     @GetMapping("/{id}/" + Constants.IMPLEMENTATIONS)
-    public ResponseEntity<PagedModel<EntityModel<SoftwarePlatformDto>>> getImplementationsForSoftwarePlatform(
+    @ListParametersDoc
+    public ResponseEntity<PagedModel<EntityModel<ImplementationDto>>> getImplementationsForSoftwarePlatform(
             @PathVariable UUID id,
-            @RequestParam(required = false) Integer page,
-            @RequestParam(required = false) Integer size) {
-        var pageable = RestUtils.getPageableFromRequestParams(page, size);
-        var implementations = softwarePlatformService.findImplementations(id, pageable);
-        return ResponseEntity.ok(softwarePlatformAssembler.toModel(implementations));
+            @Parameter(hidden = true) ListParameters listParameters) {
+        var implementations = softwarePlatformService.findImplementations(id, listParameters.getPageable());
+        return ResponseEntity.ok(implementationAssembler.toModel(implementations));
     }
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404", description = "Software Platform with given id does not exist"),
+            @ApiResponse(responseCode = "404", description = "Software Platform or Implementation with given id does not exist"),
     })
     @PostMapping("/{id}" + Constants.IMPLEMENTATIONS + "/{implId}")
     public ResponseEntity<Void> addImplementationReferenceToSoftwarePlatform(
@@ -131,26 +140,106 @@ public class SoftwarePlatformController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404", description = "Software Platform with given id does not exist"),
+            @ApiResponse(responseCode = "404", description = "Software Platform or Implementation with given id does not exist"),
     })
     @GetMapping("/{id}" + Constants.IMPLEMENTATIONS + "/{implId}")
-    public ResponseEntity<EntityModel<SoftwarePlatformDto>> getImplementationForSoftwarePlatform(
+    public ResponseEntity<EntityModel<ImplementationDto>> getImplementationForSoftwarePlatform(
             @PathVariable UUID id,
             @PathVariable UUID implId) {
         var implementation = softwarePlatformService.getImplementation(id, implId);
-        return ResponseEntity.ok(softwarePlatformAssembler.toModel(implementation));
+        return ResponseEntity.ok(implementationAssembler.toModel(implementation));
     }
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404", description = "Software Platform with given id does not exist"),
+            @ApiResponse(responseCode = "404", description = "Software Platform or Implementation with given id does not exist"),
     })
     @DeleteMapping("/{id}" + Constants.IMPLEMENTATIONS + "/{implId}")
     public ResponseEntity<Void> deleteImplementationReferenceFromSoftwarePlatform(
             @PathVariable UUID id,
             @PathVariable UUID implId) {
         softwarePlatformService.deleteImplementationReference(id, implId);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", description = "Software Platform or Cloud Service with given id does not exist"),
+    })
+    @GetMapping("/{id}/" + Constants.CLOUD_SERVICES)
+    @ListParametersDoc()
+    public ResponseEntity<PagedModel<EntityModel<CloudServiceDto>>> getCloudServicesForSoftwarePlatform(
+            @PathVariable UUID id,
+            @Parameter(hidden = true) ListParameters listParameters) {
+        var cloudServices = softwarePlatformService.findCloudServices(id, listParameters.getPageable());
+        return ResponseEntity.ok(cloudServiceAssembler.toModel(cloudServices));
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", description = "Software Platform or Cloud Service with given id does not exist"),
+    })
+    @PostMapping("/{id}" + Constants.CLOUD_SERVICES + "/{csId}")
+    public ResponseEntity<Void> addCloudServiceReferenceToSoftwarePlatform(
+            @PathVariable UUID id,
+            @PathVariable UUID csId) {
+        softwarePlatformService.addCloudServiceReference(id, csId);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", description = "Software Platform or Cloud Service with given id does not exist"),
+    })
+    @DeleteMapping("/{id}" + Constants.CLOUD_SERVICES + "/{csId}")
+    public ResponseEntity<Void> deleteCloudServiceReferenceFromSoftwarePlatform(
+            @PathVariable UUID id,
+            @PathVariable UUID csId) {
+        softwarePlatformService.deleteCloudServiceReference(id, csId);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", description = "Software Platform or Compute Resource with given id does not exist"),
+    })
+    @GetMapping("/{id}/" + Constants.COMPUTE_RESOURCES)
+    @ListParametersDoc()
+    public ResponseEntity<PagedModel<EntityModel<ComputeResourceDto>>> getComputeResourcesForSoftwarePlatform(
+            @PathVariable UUID id,
+            @Parameter(hidden = true) ListParameters listParameters) {
+        var computeResources = softwarePlatformService.findComputeResources(id, listParameters.getPageable());
+        return ResponseEntity.ok(computeResourceAssembler.toModel(computeResources));
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", description = "Software Platform or Compute Resource with given id does not exist"),
+    })
+    @PostMapping("/{id}" + Constants.COMPUTE_RESOURCES + "/{crId}")
+    public ResponseEntity<Void> addComputeResourceReferenceToSoftwarePlatform(
+            @PathVariable UUID id,
+            @PathVariable UUID crId) {
+        softwarePlatformService.addComputeResourceReference(id, crId);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", description = "Software Platform or Compute Resource with given id does not exist"),
+    })
+    @DeleteMapping("/{id}" + Constants.COMPUTE_RESOURCES + "/{crId}")
+    public ResponseEntity<Void> deleteComputeResourceReferenceFromSoftwarePlatform(
+            @PathVariable UUID id,
+            @PathVariable UUID crId) {
+        softwarePlatformService.deleteComputeResourceReference(id, crId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }
