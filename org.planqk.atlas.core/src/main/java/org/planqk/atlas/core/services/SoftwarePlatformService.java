@@ -19,6 +19,7 @@
 
 package org.planqk.atlas.core.services;
 
+import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.SoftwarePlatform;
 
 import org.springframework.data.domain.Page;
@@ -41,4 +42,14 @@ public interface SoftwarePlatformService {
 
     @Transactional
     void delete(UUID platformId);
+
+    Page<Implementation> findImplementations(UUID platformId, Pageable pageable);
+
+    @Transactional
+    void addImplementationReference(UUID platformId, UUID implId);
+
+    SoftwarePlatform getImplementation(UUID platformId, UUID implId);
+
+    @Transactional
+    public void deleteImplementationReference(UUID platformId, UUID implId);
 }

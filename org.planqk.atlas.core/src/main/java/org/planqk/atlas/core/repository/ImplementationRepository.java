@@ -24,10 +24,13 @@ import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Implementation;
+import org.planqk.atlas.core.model.SoftwarePlatform;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 /**
@@ -42,4 +45,7 @@ public interface ImplementationRepository extends JpaRepository<Implementation, 
     Page<Implementation> findByImplementedAlgorithm(Algorithm implementedAlgorithm, Pageable pageable);
 
     List<Implementation> findByImplementedAlgorithm(Algorithm implementedAlgorithm);
+
+    @Query("SELECT Implementation FROM Implementation i JOIN i.softwarePlatforms sp WHERE sp.id = :sp")
+    Page<Implementation> findImplementationsBySoftwarePlatformId(@Param("id") UUID sp, Pageable p);
 }

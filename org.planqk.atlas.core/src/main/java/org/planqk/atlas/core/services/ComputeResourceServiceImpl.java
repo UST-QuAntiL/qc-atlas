@@ -100,7 +100,7 @@ public class ComputeResourceServiceImpl implements ComputeResourceService {
         }
         // TODO remove references
         // only delete if unused in SoftwarePlatforms and CloudServices
-        long count = cloudServiceRepository.countCloudServiceByBackend(id) + softwarePlatformRepository.countSoftwarePlatformByBackend(id);
+        long count = cloudServiceRepository.countCloudServiceByBackend(id) + softwarePlatformRepository.countSoftwarePlatformByComputeResource(id);
         if (count == 0) {
             repo.deleteById(id);
         } else {

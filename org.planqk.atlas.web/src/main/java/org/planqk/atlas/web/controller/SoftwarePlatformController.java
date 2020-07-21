@@ -18,7 +18,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -47,7 +46,7 @@ public class SoftwarePlatformController {
             @ApiResponse(responseCode = "200"),
     })
     @GetMapping()
-    public HttpEntity<PagedModel<EntityModel<SoftwarePlatformDto>>> getSoftwarePlatforms(
+    public ResponseEntity<PagedModel<EntityModel<SoftwarePlatformDto>>> getSoftwarePlatforms(
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size) {
         var platforms = softwarePlatformService.findAll(RestUtils.getPageableFromRequestParams(page, size));
@@ -58,7 +57,7 @@ public class SoftwarePlatformController {
             @ApiResponse(responseCode = "201"),
     }, description = "Custom ID will be ignored.")
     @PostMapping()
-    public HttpEntity<EntityModel<SoftwarePlatformDto>> createSoftwarePlatform(
+    public ResponseEntity<EntityModel<SoftwarePlatformDto>> createSoftwarePlatform(
             @Valid @RequestBody SoftwarePlatformDto platformDto) {
         var savedPlatform = softwarePlatformService.save(ModelMapperUtils.convert(platformDto, SoftwarePlatform.class));
         return new ResponseEntity<>(softwarePlatformAssembler.toModel(savedPlatform), HttpStatus.CREATED);
@@ -70,7 +69,7 @@ public class SoftwarePlatformController {
             @ApiResponse(responseCode = "404", description = "Software Platform with given id does not exist")
     }, description = "Custom ID will be ignored.")
     @PutMapping("/{id}")
-    public HttpEntity<EntityModel<SoftwarePlatformDto>> updateSoftwarePlatform(
+    public ResponseEntity<EntityModel<SoftwarePlatformDto>> updateSoftwarePlatform(
             @PathVariable UUID id,
             @Valid @RequestBody SoftwarePlatformDto softwarePlatformDto) {
         var softwarePlatform = softwarePlatformService.update(
@@ -84,7 +83,7 @@ public class SoftwarePlatformController {
             @ApiResponse(responseCode = "404", description = "Software Platform with given id does not exist")
     })
     @DeleteMapping("/{id}")
-    public HttpEntity<Void> deleteSoftwarePlatform(@PathVariable UUID id) {
+    public ResponseEntity<Void> deleteSoftwarePlatform(@PathVariable UUID id) {
         softwarePlatformService.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -95,9 +94,63 @@ public class SoftwarePlatformController {
             @ApiResponse(responseCode = "404", description = "Software Platform with given id does not exist"),
     })
     @GetMapping("/{id}")
-    public HttpEntity<EntityModel<SoftwarePlatformDto>> getSoftwarePlatform(
+    public ResponseEntity<EntityModel<SoftwarePlatformDto>> getSoftwarePlatform(
             @PathVariable UUID id) {
         var softwarePlatform = softwarePlatformService.findById(id);
         return ResponseEntity.ok(softwarePlatformAssembler.toModel(softwarePlatform));
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", description = "Software Platform with given id does not exist"),
+    })
+    @GetMapping("/{id}/" + Constants.IMPLEMENTATIONS)
+    public ResponseEntity<PagedModel<EntityModel<SoftwarePlatformDto>>> getImplementationsForSoftwarePlatform(
+            @PathVariable UUID id,
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size) {
+        var pageable = RestUtils.getPageableFromRequestParams(page, size);
+        var implementations = softwarePlatformService.findImplementations(id, pageable);
+        return ResponseEntity.ok(softwarePlatformAssembler.toModel(implementations));
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", description = "Software Platform with given id does not exist"),
+    })
+    @PostMapping("/{id}" + Constants.IMPLEMENTATIONS + "/{implId}")
+    public ResponseEntity<Void> addImplementationReferenceToSoftwarePlatform(
+            @PathVariable UUID id,
+            @PathVariable UUID implId) {
+        softwarePlatformService.addImplementationReference(id, implId);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", description = "Software Platform with given id does not exist"),
+    })
+    @GetMapping("/{id}" + Constants.IMPLEMENTATIONS + "/{implId}")
+    public ResponseEntity<EntityModel<SoftwarePlatformDto>> getImplementationForSoftwarePlatform(
+            @PathVariable UUID id,
+            @PathVariable UUID implId) {
+        var implementation = softwarePlatformService.getImplementation(id, implId);
+        return ResponseEntity.ok(softwarePlatformAssembler.toModel(implementation));
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", description = "Software Platform with given id does not exist"),
+    })
+    @DeleteMapping("/{id}" + Constants.IMPLEMENTATIONS + "/{implId}")
+    public ResponseEntity<Void> deleteImplementationReferenceFromSoftwarePlatform(
+            @PathVariable UUID id,
+            @PathVariable UUID implId) {
+        softwarePlatformService.deleteImplementationReference(id, implId);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

@@ -17,5 +17,5 @@ public interface SoftwarePlatformRepository extends JpaRepository<SoftwarePlatfo
             "FROM SoftwarePlatform sp " +
             "JOIN sp.supportedComputeResources computeResource " +
             "WHERE computeResource.id = :computeResourceId")
-    long countSoftwarePlatformByBackend(@Param("computeResourceId") UUID computeResourceId);
+    long countSoftwarePlatformByComputeResource(@Param("computeResourceId") UUID computeResourceId);
 }

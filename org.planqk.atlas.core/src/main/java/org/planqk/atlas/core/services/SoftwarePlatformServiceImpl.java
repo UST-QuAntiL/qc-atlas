@@ -21,7 +21,10 @@ package org.planqk.atlas.core.services;
 
 import lombok.AllArgsConstructor;
 
+import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.SoftwarePlatform;
+import org.planqk.atlas.core.model.exceptions.ConsistencyException;
+import org.planqk.atlas.core.repository.ImplementationRepository;
 import org.planqk.atlas.core.repository.SoftwarePlatformRepository;
 
 import org.springframework.data.domain.Page;
@@ -37,6 +40,8 @@ import java.util.UUID;
 public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
 
     private final SoftwarePlatformRepository softwarePlatformRepository;
+    private final ImplementationRepository implementationRepository;
+    private final ImplementationService implementationService;
 
     @Transactional
     @Override
@@ -56,8 +61,8 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
 
     @Transactional
     @Override
-    public SoftwarePlatform update(UUID id, SoftwarePlatform softwarePlatform) {
-        SoftwarePlatform persistedSoftwarePlatform = findById(id);
+    public SoftwarePlatform update(UUID platformId, SoftwarePlatform softwarePlatform) {
+        SoftwarePlatform persistedSoftwarePlatform = findById(platformId);
 
         // update fields that can be changed based on DTO
         persistedSoftwarePlatform.setName(softwarePlatform.getName());
@@ -76,5 +81,45 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
         }
         // TODO remove references
         softwarePlatformRepository.deleteById(platformId);
+    }
+
+    @Override
+    public Page<Implementation> findImplementations(UUID platformId, Pageable pageable) {
+        if (!softwarePlatformRepository.existsSoftwarePlatformById(platformId)) {
+            throw new NoSuchElementException();
+        }
+        return implementationRepository.findImplementationsBySoftwarePlatformId(platformId, pageable);
+    }
+
+    @Transactional
+    @Override
+    public void addImplementationReference(UUID platformId, UUID implId) {
+        SoftwarePlatform softwarePlatform = findById(platformId);
+        Implementation implementation = implementationService.findById(implId);
+
+        if (softwarePlatform.getImplementations().contains(implementation)) {
+            throw new ConsistencyException("Implementation and software platform are already linked");
+        }
+
+        softwarePlatform.getImplementations().add(implementation);
+        save(softwarePlatform);
+    }
+
+    @Override
+    public SoftwarePlatform getImplementation(UUID platformId, UUID implId) {
+        return null;
+    }
+
+    @Transactional
+    @Override
+    public void deleteImplementationReference(UUID platformId, UUID implId) {
+        SoftwarePlatform softwarePlatform = findById(platformId);
+        Implementation implementation = implementationService.findById(implId);
+
+        if (!softwarePlatform.getImplementations().contains(implementation)) {
+            throw new ConsistencyException("Implementation and software platform are already linked");
+        }
+
+        softwarePlatform.getImplementations().remove(implementation);
     }
 }

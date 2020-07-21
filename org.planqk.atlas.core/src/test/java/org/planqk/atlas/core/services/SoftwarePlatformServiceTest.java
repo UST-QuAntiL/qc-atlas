@@ -57,47 +57,47 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
         assertSoftwarePlatformEquality(storedSoftwarePlatform, softwarePlatform);
     }
 
-    @Test
-    void testAddSoftwarePlatform_WithCloudServices() throws MalformedURLException {
-        SoftwarePlatform softwarePlatform = getGenericTestSoftwarePlatformWithoutRelations("testSoftwarePlatform");
-
-        Set<CloudService> cloudServices = new HashSet<>();
-        CloudService cloudService = new CloudService();
-        cloudService.setName("testCloudService");
-        cloudService.setProvider("testProvider");
-        cloudService.setUrl(new URL("http://example.com"));
-        cloudService.setCostModel("testCostModel");
-        cloudServices.add(cloudService);
-
-        softwarePlatform.setSupportedCloudServices(cloudServices);
-
-        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.save(softwarePlatform);
-        assertSoftwarePlatformEquality(storedSoftwarePlatform, softwarePlatform);
-        assertCloudServiceEquality(storedSoftwarePlatform, cloudService);
-    }
-
-    @Test
-    void testAddSoftwarePlatform_WithBackends() throws MalformedURLException {
-        SoftwarePlatform softwarePlatform = getGenericTestSoftwarePlatformWithoutRelations("testSoftwarePlatform");
-
-        Set<ComputeResource> computeResources = new HashSet<>();
-        ComputeResource computeResource = new ComputeResource();
-        computeResource.setName("testBackend");
-        computeResources.add(computeResource);
-
-        softwarePlatform.setSupportedComputeResources(computeResources);
-
-        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.save(softwarePlatform);
-        assertSoftwarePlatformEquality(storedSoftwarePlatform, softwarePlatform);
-
-        storedSoftwarePlatform.getSupportedComputeResources().forEach(b -> {
-            assertThat(b.getId()).isNotNull();
-            assertThat(b.getName()).isEqualTo(computeResource.getName());
-            Assertions.assertDoesNotThrow(() -> computeResourceService.findById(b.getId()));
-        });
-
-        assertThat(storedSoftwarePlatform.getSupportedComputeResources().size()).isEqualTo(1);
-    }
+//    @Test
+//    void testAddSoftwarePlatform_WithCloudServices() throws MalformedURLException {
+//        SoftwarePlatform softwarePlatform = getGenericTestSoftwarePlatformWithoutRelations("testSoftwarePlatform");
+//
+//        Set<CloudService> cloudServices = new HashSet<>();
+//        CloudService cloudService = new CloudService();
+//        cloudService.setName("testCloudService");
+//        cloudService.setProvider("testProvider");
+//        cloudService.setUrl(new URL("http://example.com"));
+//        cloudService.setCostModel("testCostModel");
+//        cloudServices.add(cloudService);
+//
+//        softwarePlatform.setSupportedCloudServices(cloudServices);
+//
+//        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.save(softwarePlatform);
+//        assertSoftwarePlatformEquality(storedSoftwarePlatform, softwarePlatform);
+//        assertCloudServiceEquality(storedSoftwarePlatform, cloudService);
+//    }
+//
+//    @Test
+//    void testAddSoftwarePlatform_WithBackends() throws MalformedURLException {
+//        SoftwarePlatform softwarePlatform = getGenericTestSoftwarePlatformWithoutRelations("testSoftwarePlatform");
+//
+//        Set<ComputeResource> computeResources = new HashSet<>();
+//        ComputeResource computeResource = new ComputeResource();
+//        computeResource.setName("testBackend");
+//        computeResources.add(computeResource);
+//
+//        softwarePlatform.setSupportedComputeResources(computeResources);
+//
+//        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.save(softwarePlatform);
+//        assertSoftwarePlatformEquality(storedSoftwarePlatform, softwarePlatform);
+//
+//        storedSoftwarePlatform.getSupportedComputeResources().forEach(b -> {
+//            assertThat(b.getId()).isNotNull();
+//            assertThat(b.getName()).isEqualTo(computeResource.getName());
+//            Assertions.assertDoesNotThrow(() -> computeResourceService.findById(b.getId()));
+//        });
+//
+//        assertThat(storedSoftwarePlatform.getSupportedComputeResources().size()).isEqualTo(1);
+//    }
 
     @Test
     void testUpdateSoftwarePlatform_ElementNotFound() {
@@ -166,58 +166,58 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
                 softwarePlatformService.findById(storedSoftwarePlatform.getId()));
     }
 
-    @Test
-    void testDeleteSoftwarePlatform_WithCloudServices() throws MalformedURLException {
-        SoftwarePlatform softwarePlatform = getGenericTestSoftwarePlatformWithoutRelations("testSoftwarePlatform");
-
-        Set<CloudService> cloudServices = new HashSet<>();
-        CloudService cloudService = new CloudService();
-        cloudService.setName("testCloudService");
-        cloudService.setProvider("testProvider");
-        cloudService.setUrl(new URL("http://example.com"));
-        cloudService.setCostModel("testCostModel");
-        cloudServices.add(cloudService);
-        softwarePlatform.setSupportedCloudServices(cloudServices);
-
-        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.save(softwarePlatform);
-
-        Assertions.assertDoesNotThrow(() -> softwarePlatformService.findById(storedSoftwarePlatform.getId()));
-
-        softwarePlatformService.delete(storedSoftwarePlatform.getId());
-
-        Assertions.assertThrows(NoSuchElementException.class, () ->
-                softwarePlatformService.findById(storedSoftwarePlatform.getId()));
-
-        storedSoftwarePlatform.getSupportedCloudServices().forEach(cs ->
-                cloudServiceService.findById(cs.getId()));
-    }
-
-    @Test
-    void testDeleteSoftwarePlatform_WithBackends() throws MalformedURLException {
-        SoftwarePlatform softwarePlatform = getGenericTestSoftwarePlatformWithoutRelations("testSoftwarePlatform");
-
-        Set<ComputeResource> computeResources = new HashSet<>();
-        ComputeResource computeResource = new ComputeResource();
-        computeResource.setName("testBackend");
-        computeResources.add(computeResource);
-
-        softwarePlatform.setSupportedComputeResources(computeResources);
-
-        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.save(softwarePlatform);
-
-        Assertions.assertDoesNotThrow(() -> softwarePlatformService.findById(storedSoftwarePlatform.getId()));
-        storedSoftwarePlatform.getSupportedComputeResources().forEach(b -> {
-            Assertions.assertDoesNotThrow(() -> computeResourceService.findById(b.getId()));
-        });
-
-        softwarePlatformService.delete(storedSoftwarePlatform.getId());
-
-        Assertions.assertThrows(NoSuchElementException.class, () ->
-                softwarePlatformService.findById(storedSoftwarePlatform.getId()));
-        storedSoftwarePlatform.getSupportedComputeResources().forEach(b -> {
-            Assertions.assertDoesNotThrow(() -> computeResourceService.findById(b.getId()));
-        });
-    }
+//    @Test
+//    void testDeleteSoftwarePlatform_WithCloudServices() throws MalformedURLException {
+//        SoftwarePlatform softwarePlatform = getGenericTestSoftwarePlatformWithoutRelations("testSoftwarePlatform");
+//
+//        Set<CloudService> cloudServices = new HashSet<>();
+//        CloudService cloudService = new CloudService();
+//        cloudService.setName("testCloudService");
+//        cloudService.setProvider("testProvider");
+//        cloudService.setUrl(new URL("http://example.com"));
+//        cloudService.setCostModel("testCostModel");
+//        cloudServices.add(cloudService);
+//        softwarePlatform.setSupportedCloudServices(cloudServices);
+//
+//        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.save(softwarePlatform);
+//
+//        Assertions.assertDoesNotThrow(() -> softwarePlatformService.findById(storedSoftwarePlatform.getId()));
+//
+//        softwarePlatformService.delete(storedSoftwarePlatform.getId());
+//
+//        Assertions.assertThrows(NoSuchElementException.class, () ->
+//                softwarePlatformService.findById(storedSoftwarePlatform.getId()));
+//
+//        storedSoftwarePlatform.getSupportedCloudServices().forEach(cs ->
+//                cloudServiceService.findById(cs.getId()));
+//    }
+//
+//    @Test
+//    void testDeleteSoftwarePlatform_WithBackends() throws MalformedURLException {
+//        SoftwarePlatform softwarePlatform = getGenericTestSoftwarePlatformWithoutRelations("testSoftwarePlatform");
+//
+//        Set<ComputeResource> computeResources = new HashSet<>();
+//        ComputeResource computeResource = new ComputeResource();
+//        computeResource.setName("testBackend");
+//        computeResources.add(computeResource);
+//
+//        softwarePlatform.setSupportedComputeResources(computeResources);
+//
+//        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.save(softwarePlatform);
+//
+//        Assertions.assertDoesNotThrow(() -> softwarePlatformService.findById(storedSoftwarePlatform.getId()));
+//        storedSoftwarePlatform.getSupportedComputeResources().forEach(b -> {
+//            Assertions.assertDoesNotThrow(() -> computeResourceService.findById(b.getId()));
+//        });
+//
+//        softwarePlatformService.delete(storedSoftwarePlatform.getId());
+//
+//        Assertions.assertThrows(NoSuchElementException.class, () ->
+//                softwarePlatformService.findById(storedSoftwarePlatform.getId()));
+//        storedSoftwarePlatform.getSupportedComputeResources().forEach(b -> {
+//            Assertions.assertDoesNotThrow(() -> computeResourceService.findById(b.getId()));
+//        });
+//    }
 
     private void assertSoftwarePlatformEquality(SoftwarePlatform dbSoftwarePlatform, SoftwarePlatform compareSoftwarePlatform) {
         assertThat(dbSoftwarePlatform.getId()).isNotNull();
