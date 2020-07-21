@@ -19,6 +19,7 @@
 
 package org.planqk.atlas.core.services;
 
+import org.planqk.atlas.core.model.ComputeResource;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.SoftwarePlatform;
 
@@ -53,7 +54,7 @@ public interface SoftwarePlatformService {
     @Transactional
     void deleteImplementationReference(UUID platformId, UUID implId);
 
-    Page<Implementation> findComputeResources(UUID platformId, Pageable pageable);
+    Page<ComputeResource> findComputeResources(UUID platformId, Pageable pageable);
 
     @Transactional
     void addComputeResourceReference(UUID platformId, UUID resourceId);

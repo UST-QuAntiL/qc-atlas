@@ -128,11 +128,12 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
     }
 
     @Override
-    public Page<Implementation> findComputeResources(UUID platformId, Pageable pageable) {
+    public Page<ComputeResource> findComputeResources(UUID platformId, Pageable pageable) {
         if (!softwarePlatformRepository.existsSoftwarePlatformById(platformId)) {
             throw new NoSuchElementException();
         }
-        return null;
+
+        return computeResourceRepository.findComputeResourceBySoftwarePlatformId(platformId, pageable);
     }
 
     @Override
