@@ -20,6 +20,7 @@ import org.planqk.atlas.web.utils.ValidationUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
+import org.apache.tomcat.util.bcel.Const;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
@@ -43,7 +44,7 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/" + Constants.API_VERSION + "/" + Constants.COMPUTE_RESOURCES)
 @AllArgsConstructor
-@io.swagger.v3.oas.annotations.tags.Tag(name = "execution-environments")
+@io.swagger.v3.oas.annotations.tags.Tag(name = Constants.TAG_EXECUTION_ENVIRONMENTS)
 public class ComputeResourceController {
 
     final private static Logger LOG = LoggerFactory.getLogger(ComputeResourceController.class);
@@ -53,7 +54,9 @@ public class ComputeResourceController {
     private final ComputeResourceService computeResourceService;
     private final ComputeResourceAssembler computeResourceAssembler;
 
-    @Operation(responses = {@ApiResponse(responseCode = "200")})
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200")
+    })
     @GetMapping()
     public HttpEntity<PagedModel<EntityModel<ComputeResourceDto>>> getComputeResources(
             @RequestParam(required = false) Integer page,
@@ -63,7 +66,9 @@ public class ComputeResourceController {
         return ResponseEntity.ok(computeResourceAssembler.toModel(entities));
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "201")})
+    @Operation(responses = {
+            @ApiResponse(responseCode = "201")
+    })
     @PostMapping()
     public HttpEntity<EntityModel<ComputeResourceDto>> createComputeResource(
             @Valid @RequestBody ComputeResourceDto ComputeResourceDto) {
@@ -71,10 +76,13 @@ public class ComputeResourceController {
         return new ResponseEntity<>(computeResourceAssembler.toModel(computeResource), HttpStatus.CREATED);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "404", description = "ComputeResource with given id doesn't exist")})
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", description = "ComputeResource with given id doesn't exist")
+    })
     @DeleteMapping("/{id}")
-    public HttpEntity<Void> deleteComputeResource(@PathVariable UUID id) {
+    public HttpEntity<Void> deleteComputeResource(
+            @PathVariable UUID id) {
         // only deletes if not used in any CloudService or SoftwarePlatform
         // we have to decide if this is acceptable behavior - TODO
         computeResourceService.findById(id);
@@ -82,7 +90,9 @@ public class ComputeResourceController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "201")})
+    @Operation(responses = {
+            @ApiResponse(responseCode = "201")
+    })
     @PutMapping("/{id}")
     public HttpEntity<EntityModel<ComputeResourceDto>> updateComputeResource(
             @PathVariable UUID id,
@@ -91,9 +101,13 @@ public class ComputeResourceController {
         return new ResponseEntity<>(computeResourceAssembler.toModel(computeResource), HttpStatus.CREATED);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404")})
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404")
+    })
     @GetMapping("/{id}")
-    public HttpEntity<EntityModel<ComputeResourceDto>> getComputeResource(@PathVariable UUID id) {
+    public HttpEntity<EntityModel<ComputeResourceDto>> getComputeResource(
+            @PathVariable UUID id) {
         ComputeResource computeResource = computeResourceService.findById(id);
         return ResponseEntity.ok(computeResourceAssembler.toModel(computeResource));
     }

@@ -35,7 +35,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@io.swagger.v3.oas.annotations.tags.Tag(name = "cloud-services")
+@io.swagger.v3.oas.annotations.tags.Tag(name = Constants.TAG_EXECUTION_ENVIRONMENTS)
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/" + Constants.API_VERSION + "/" + Constants.CLOUD_SERVICES)
@@ -48,25 +48,36 @@ public class CloudServiceController {
     private final CloudServiceAssembler cloudServiceAssembler;
     private final PagedResourcesAssembler<CloudServiceDto> paginationAssembler;
 
-    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", content = @Content),
-            @ApiResponse(responseCode = "500", content = @Content)})
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", content = @Content),
+            @ApiResponse(responseCode = "500", content = @Content)
+    })
     @GetMapping()
-    public HttpEntity<PagedModel<EntityModel<CloudServiceDto>>> getCloudServices(@RequestParam(required = false) Integer page,
-                                                                                 @RequestParam(required = false) Integer size) {
+    public HttpEntity<PagedModel<EntityModel<CloudServiceDto>>> getCloudServices(
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size) {
         var cloudServices = cloudServiceService.findAll(RestUtils.getPageableFromRequestParams(page, size));
         return ResponseEntity.ok(cloudServiceAssembler.toModel(cloudServices));
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", content = @Content),
-            @ApiResponse(responseCode = "500", content = @Content)})
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", content = @Content),
+            @ApiResponse(responseCode = "500", content = @Content)
+    })
     @GetMapping("/{id}")
-    public HttpEntity<EntityModel<CloudServiceDto>> getCloudService(@PathVariable UUID id) {
+    public HttpEntity<EntityModel<CloudServiceDto>> getCloudService(
+            @PathVariable UUID id) {
         var cloudServiceDto = ModelMapperUtils.convert(cloudServiceService.findById(id), CloudServiceDto.class);
         return ResponseEntity.ok(cloudServiceAssembler.toModel(cloudServiceDto));
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "400", content = @Content),
-            @ApiResponse(responseCode = "500", content = @Content)})
+    @Operation(responses = {
+            @ApiResponse(responseCode = "201"),
+            @ApiResponse(responseCode = "400", content = @Content),
+            @ApiResponse(responseCode = "500", content = @Content)
+    })
     @PostMapping()
     public HttpEntity<EntityModel<CloudServiceDto>> addCloudService(
             @Valid @RequestBody CloudServiceDto cloudServiceDto) {
@@ -74,19 +85,25 @@ public class CloudServiceController {
         return new ResponseEntity<>(cloudServiceAssembler.toModel(savedCloudService), HttpStatus.CREATED);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", content = @Content),
-            @ApiResponse(responseCode = "500", content = @Content)})
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", content = @Content),
+            @ApiResponse(responseCode = "500", content = @Content)
+    })
     @DeleteMapping("/{id}")
     public HttpEntity<Void> deleteCloudService(@PathVariable UUID id) {
         cloudServiceService.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404")})
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404")
+    })
     @PutMapping("/{id}")
-    public HttpEntity<EntityModel<CloudServiceDto>> updateCloudService(@PathVariable UUID id,
-                                                                       @Valid @RequestBody CloudServiceDto cloudServiceDto) {
-        LOG.debug("Put to update cloud service with id {}.", id);
+    public HttpEntity<EntityModel<CloudServiceDto>> updateCloudService(
+            @PathVariable UUID id,
+            @Valid @RequestBody CloudServiceDto cloudServiceDto) {
         var updatedCloudService = cloudServiceService.save(ModelMapperUtils.convert(cloudServiceDto, CloudService.class));
         return ResponseEntity.ok(cloudServiceAssembler.toModel(updatedCloudService));
     }
