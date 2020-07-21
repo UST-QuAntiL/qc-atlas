@@ -80,13 +80,12 @@ public class ComputeResourceController {
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Compute Resource with given id does not exist")
     })
-    @DeleteMapping("/{id}")
-    public HttpEntity<Void> deleteComputeResource(
-            @PathVariable UUID id) {
-        // only deletes if not used in any CloudService or SoftwarePlatform
-        // we have to decide if this is acceptable behavior - TODO
-        computeResourceService.delete(id);
-        return ResponseEntity.status(HttpStatus.OK).build();
+    @PutMapping("/{id}")
+    public HttpEntity<EntityModel<ComputeResourceDto>> updateComputeResource(
+            @PathVariable UUID id,
+            @Valid @RequestBody ComputeResourceDto computeResourceDto) {
+        ComputeResource computeResource = computeResourceService.update(id, ModelMapperUtils.convert(computeResourceDto, ComputeResource.class));
+        return ResponseEntity.ok(computeResourceAssembler.toModel(computeResource));
     }
 
     @Operation(responses = {
@@ -94,12 +93,13 @@ public class ComputeResourceController {
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Compute Resource with given id does not exist")
     })
-    @PutMapping("/{id}")
-    public HttpEntity<EntityModel<ComputeResourceDto>> updateComputeResource(
-            @PathVariable UUID id,
-            @Valid @RequestBody ComputeResourceDto computeResourceDto) {
-        ComputeResource computeResource = computeResourceService.update(id, ModelMapperUtils.convert(computeResourceDto, ComputeResource.class));
-        return ResponseEntity.ok(computeResourceAssembler.toModel(computeResource));
+    @DeleteMapping("/{id}")
+    public HttpEntity<Void> deleteComputeResource(
+            @PathVariable UUID id) {
+        // only deletes if not used in any CloudService or SoftwarePlatform
+        // we have to decide if this is acceptable behavior - TODO
+        computeResourceService.delete(id);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @Operation(responses = {

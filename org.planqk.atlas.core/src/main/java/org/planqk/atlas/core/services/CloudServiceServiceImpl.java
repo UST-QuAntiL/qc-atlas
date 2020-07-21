@@ -40,11 +40,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class CloudServiceServiceImpl implements CloudServiceService {
 
     private final CloudServiceRepository cloudServiceRepository;
-    private final ComputeResourceService computeResourceService;
 
     @Override
     public CloudService save(CloudService cloudService) {
-        computeResourceService.saveOrUpdateAll(cloudService.getProvidedComputeResources());
         return this.cloudServiceRepository.save(cloudService);
     }
 
@@ -56,11 +54,16 @@ public class CloudServiceServiceImpl implements CloudServiceService {
     @Transactional
     @Override
     public CloudService update(UUID id, CloudService cloudService) {
-        if (cloudServiceRepository.existsCloudServiceById(id)) {
-            cloudService.setId(id);
-            return save(cloudService);
-        }
-        throw new NoSuchElementException();
+        CloudService persistedCloudService = findById(id);
+
+        // update fields that can be changed based on DTO
+        persistedCloudService.setName(cloudService.getName());
+        persistedCloudService.setProvider(cloudService.getProvider());
+        persistedCloudService.setUrl(cloudService.getUrl());
+        persistedCloudService.setDescription(cloudService.getDescription());
+        persistedCloudService.setCostModel(cloudService.getCostModel());
+
+        return save(persistedCloudService);
     }
 
     @Override
@@ -76,6 +79,9 @@ public class CloudServiceServiceImpl implements CloudServiceService {
     @Transactional
     @Override
     public void delete(UUID cloudServiceId) {
+        if (!cloudServiceRepository.existsById(cloudServiceId)) {
+            throw new NoSuchElementException();
+        }
         cloudServiceRepository.deleteById(cloudServiceId);
     }
 }
