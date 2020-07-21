@@ -15,8 +15,7 @@ import org.planqk.atlas.web.utils.RestUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpEntity;
@@ -38,9 +37,8 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/" + Constants.API_VERSION + "/" + Constants.CLOUD_SERVICES)
 @AllArgsConstructor
+@Slf4j
 public class CloudServiceController {
-
-    final private static Logger LOG = LoggerFactory.getLogger(CloudServiceController.class);
 
     private final CloudServiceService cloudServiceService;
     private final CloudServiceAssembler cloudServiceAssembler;

@@ -20,8 +20,7 @@ import org.planqk.atlas.web.utils.ValidationUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
@@ -44,9 +43,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/" + Constants.API_VERSION + "/" + Constants.COMPUTE_RESOURCES)
 @AllArgsConstructor
 @io.swagger.v3.oas.annotations.tags.Tag(name = Constants.TAG_EXECUTION_ENVIRONMENTS)
+@Slf4j
 public class ComputeResourceController {
-
-    final private static Logger LOG = LoggerFactory.getLogger(ComputeResourceController.class);
 
     private final ComputingResourcePropertyService computingResourcePropertyService;
     private final ComputingResourcePropertyAssembler computingResourcePropertyAssembler;
