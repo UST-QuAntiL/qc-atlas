@@ -19,11 +19,14 @@
 
 package org.planqk.atlas.web.controller;
 
+import lombok.extern.slf4j.Slf4j;
+
 //@io.swagger.v3.oas.annotations.tags.Tag(name = "tag")
 //@RestController
 //@CrossOrigin(allowedHeaders = "*", origins = "*")
 //@RequestMapping("/" + Constants.API_VERSION + "/" + Constants.TAGS)
 //@AllArgsConstructor
+@Slf4j
 public class TagController {
 
 //    private TagService tagService;

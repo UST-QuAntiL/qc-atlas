@@ -4,6 +4,7 @@ import java.util.NoSuchElementException;
 
 import org.planqk.atlas.core.model.exceptions.ConsistencyException;
 
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -16,19 +17,18 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
+@Slf4j
 public class RestErrorHandler {
-
-    private final static Logger LOG = LoggerFactory.getLogger(RestErrorHandler.class);
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> handleInvalidRequestBody(MethodArgumentNotValidException e) {
-        LOG.warn("Handling MethodArgumentNotValidException");
+        log.warn("Handling MethodArgumentNotValidException");
         return new ResponseEntity<>(e.getBindingResult().getFieldErrors(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<?> handleInvalidJson(HttpMessageNotReadableException e) {
-        LOG.error(e.getMessage(), e);
+        log.error(e.getMessage(), e);
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
