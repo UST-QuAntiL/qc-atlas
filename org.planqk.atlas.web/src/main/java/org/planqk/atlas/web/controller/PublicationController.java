@@ -18,12 +18,11 @@
  *******************************************************************************/
 package org.planqk.atlas.web.controller;
 
-import java.util.Set;
 import java.util.UUID;
 
-import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.services.AlgorithmService;
+import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.core.services.PublicationService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.mixin.PublicationMixin;
@@ -73,6 +72,7 @@ public class PublicationController {
 
     private final PublicationService publicationService;
     private final AlgorithmService algorithmService;
+    private final ImplementationService implementationService;
     private final PublicationAssembler publicationAssembler;
     private final AlgorithmAssembler algorithmAssembler;
     private final ImplementationAssembler implementationAssembler;
@@ -167,9 +167,38 @@ public class PublicationController {
     @GetMapping("/{id}/" + Constants.IMPLEMENTATIONS)
     public HttpEntity<CollectionModel<EntityModel<ImplementationDto>>> getImplementations(@PathVariable UUID id) {
         log.debug("Get implementations of Publication with id {}", id);
-        Set<Implementation> implementations = publicationService.findPublicationImplementations(id);
-        CollectionModel<EntityModel<ImplementationDto>> resultCollection = implementationAssembler.toModel(implementations);
-        return new ResponseEntity<>(resultCollection, HttpStatus.OK);
+        var publication = publicationService.findById(id);
+        return new ResponseEntity<>(implementationAssembler.toModel(publication.getImplementations()), HttpStatus.OK);
+    }
+
+    @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Get a specific referenced implementation of a publication.")
+    @GetMapping("/{id}/" + Constants.IMPLEMENTATIONS + "/{implId}")
+    public HttpEntity<EntityModel<ImplementationDto>> getImplementation(@PathVariable UUID id, @PathVariable UUID implId) {
+        publicationService.findById(id);
+        return ResponseEntity.ok(implementationAssembler.toModel(implementationService.findById(implId)));
+    }
+
+    @Operation(responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "404", content = @Content,
+            description = "algorithm or publication does not exist")},
+            description = "Add a reference to an existing implementation (that was previously created via a POST on /implementations/). Custom ID will be ignored. For implementation only ID is required, other implementation attributes will not change. If the implementation doesn't exist yet, a 404 error is thrown.")
+    @PostMapping("/{id}/" + Constants.IMPLEMENTATIONS + "/{implId}")
+    public HttpEntity<CollectionModel<EntityModel<ImplementationDto>>> addImplementation(@PathVariable UUID id, @PathVariable UUID implId) {
+        var implementation = implementationService.findById(implId);
+        publicationMixIn.addPublication(implementation, id);
+        implementationService.save(implementation);
+        return ResponseEntity.ok(implementationAssembler.toModel(publicationService.findById(id).getImplementations()));
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", description = "Implementation or publication with given ids do not exist or no relation between implementation and publication")},
+            description = "Delete a reference to a implementation of the publication.")
+    @DeleteMapping("/{id}/" + Constants.IMPLEMENTATIONS + "/{implId}")
+    public HttpEntity<Void> deleteReferenceToImplementation(@PathVariable UUID id, @PathVariable UUID implId) {
+        var implementation = implementationService.findById(implId);
+        publicationMixIn.unlinkPublication(implementation, id);
+        implementationService.save(implementation);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
 

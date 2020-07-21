@@ -19,7 +19,6 @@
 
 package org.planqk.atlas.core.services;
 
-import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Publication;
 
 import org.springframework.data.domain.Page;
@@ -49,8 +48,6 @@ public interface PublicationService {
 
     @Transactional
     Set<Publication> createOrUpdateAll(Set<Publication> publications);
-
-    Set<Implementation> findPublicationImplementations(UUID publicationId);
 
     @Transactional
     void deletePublicationsByIds(Set<UUID> publicationIds);

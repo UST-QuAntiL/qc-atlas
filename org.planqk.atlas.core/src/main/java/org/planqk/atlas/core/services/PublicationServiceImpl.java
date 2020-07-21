@@ -26,9 +26,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Publication;
-import org.planqk.atlas.core.repository.ImplementationRepository;
 import org.planqk.atlas.core.repository.PublicationRepository;
 
 import lombok.AllArgsConstructor;
@@ -42,7 +40,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class PublicationServiceImpl implements PublicationService {
 
     private final PublicationRepository publicationRepository;
-    private final ImplementationRepository implementationRepository;
 
     @Override
     @Transactional
@@ -99,11 +96,6 @@ public class PublicationServiceImpl implements PublicationService {
         persistedPublication.setDoi(updatedPublication.getDoi());
         persistedPublication.setUrl(updatedPublication.getUrl());
         persistedPublication.setAuthors(updatedPublication.getAuthors());
-    }
-
-    @Override
-    public Set<Implementation> findPublicationImplementations(UUID publicationId) {
-        return implementationRepository.getImplementationsWithPublicationId(publicationId);
     }
 
     @Override
