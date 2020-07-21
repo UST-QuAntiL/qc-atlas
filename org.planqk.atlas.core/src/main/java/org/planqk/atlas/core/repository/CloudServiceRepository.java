@@ -12,6 +12,9 @@ import java.util.UUID;
 public interface CloudServiceRepository extends JpaRepository<CloudService, UUID> {
     boolean existsCloudServiceById (UUID id);
 
-    @Query("SELECT COUNT(cs) FROM CloudService cs JOIN cs.providedComputeResources backend WHERE backend.id = :backendId")
-    long countCloudServiceByBackend(@Param("backendId") UUID backendId);
+    @Query("SELECT COUNT(cs) " +
+            "FROM CloudService cs " +
+            "JOIN cs.providedComputeResources computeResource " +
+            "WHERE computeResource.id = :computeResourceId")
+    long countCloudServiceByBackend(@Param("computeResourceId") UUID computeResourceId);
 }

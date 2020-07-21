@@ -17,7 +17,6 @@ import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "cloud_services")
 @Data
 public class CloudService extends HasId {
 
@@ -27,10 +26,12 @@ public class CloudService extends HasId {
     private String description;
     private String costModel;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.MERGE })
-    @JoinTable(name = "cloud_services_backends", joinColumns = @JoinColumn(name = "cloud_service_id"), inverseJoinColumns = @JoinColumn(name = "backend_id"))
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE})
+    @JoinTable(name = "cloud_services_compute_resources",
+            joinColumns = @JoinColumn(name = "cloud_service_id"),
+            inverseJoinColumns = @JoinColumn(name = "compute_resource_id"))
     private Set<ComputeResource> providedComputeResources = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.MERGE }, mappedBy = "supportedCloudServices")
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE}, mappedBy = "supportedCloudServices")
     private Set<SoftwarePlatform> softwarePlatforms = new HashSet<>();
 }

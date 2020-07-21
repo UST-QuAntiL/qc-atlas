@@ -10,7 +10,6 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.Table;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -23,7 +22,6 @@ import lombok.EqualsAndHashCode;
  */
 
 @Entity
-@Table(name = "software_platforms")
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class SoftwarePlatform extends HasId {
@@ -34,14 +32,19 @@ public class SoftwarePlatform extends HasId {
     private String licence;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE})
-    @JoinTable(name = "software_platforms_backends", joinColumns = @JoinColumn(name = "software_platform_id"), inverseJoinColumns = @JoinColumn(name = "backend_id"))
+    @JoinTable(name = "software_platforms_compute_resources",
+            joinColumns = @JoinColumn(name = "software_platform_id"),
+            inverseJoinColumns = @JoinColumn(name = "compute_resource_id"))
     private Set<ComputeResource> supportedComputeResources = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE})
-    @JoinTable(name = "software_platform_cloud_services", joinColumns = @JoinColumn(name = "software_platform_id"), inverseJoinColumns = @JoinColumn(name = "cloud_service_id"))
+    @JoinTable(name = "software_platform_cloud_services",
+            joinColumns = @JoinColumn(name = "software_platform_id"),
+            inverseJoinColumns = @JoinColumn(name = "cloud_service_id"))
     private Set<CloudService> supportedCloudServices = new HashSet<>();
 
-    @ManyToMany(mappedBy = "softwarePlatforms", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @ManyToMany(mappedBy = "softwarePlatforms",
+            cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @EqualsAndHashCode.Exclude
     private Set<Implementation> implementations = new HashSet<>();
 
