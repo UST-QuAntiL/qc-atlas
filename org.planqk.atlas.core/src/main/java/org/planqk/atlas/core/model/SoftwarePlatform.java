@@ -28,8 +28,8 @@ public class SoftwarePlatform extends HasId {
 
     private String name;
     private URL link;
-    private String version;
     private String licence;
+    private String version;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE})
     @JoinTable(name = "software_platforms_compute_resources",

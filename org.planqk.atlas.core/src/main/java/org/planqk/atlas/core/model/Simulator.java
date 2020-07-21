@@ -15,8 +15,4 @@ import lombok.NoArgsConstructor;
 @Data
 public class Simulator extends ComputeResource {
 
-    private boolean localExecution;
-
-    private String licence;
-
 }

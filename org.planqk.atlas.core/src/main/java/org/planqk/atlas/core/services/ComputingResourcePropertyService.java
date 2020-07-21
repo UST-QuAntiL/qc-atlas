@@ -53,9 +53,9 @@ public interface ComputingResourcePropertyService {
 
     Page<ComputingResourceProperty> findAllComputingResourcesPropertiesByImplementationId(UUID implId, Pageable pageable);
 
-    Set<ComputingResourceProperty> findAllComputingResourcesPropertiesByBackendId(UUID backendId);
+    Set<ComputingResourceProperty> findAllComputingResourcesPropertiesByComputeResourceId(UUID backendId);
 
-    Page<ComputingResourceProperty> findAllComputingResourcesPropertiesByBackendId(UUID backendId, Pageable pageable);
+    Page<ComputingResourceProperty> findAllComputingResourcesPropertiesByComputeResourceId(UUID backendId, Pageable pageable);
 
     @Transactional
     ComputingResourcePropertyType addOrUpdateComputingResourcePropertyType(ComputingResourcePropertyType resourceType);

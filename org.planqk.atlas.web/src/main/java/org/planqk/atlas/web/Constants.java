@@ -39,10 +39,10 @@ public class Constants {
     public static final String PUBLICATIONS = "publications";
     public static final String DISCUSSION_TOPICS = "discussion-topics";
     public static final String DISCUSSION_COMMENTS = "discussion-comments";
-    public static final String BACKENDS = "backends";
+    public static final String COMPUTE_RESOURCES = "compute-resources";
     public static final String PATTERN_RELATIONS = "pattern-relations";
     public static final String COMPUTING_RESOURCES_PROPERTIES = "computing-resource-properties";
-    public static final String COMPUTING_RESOURCE_PROPERTY_TYPES = "computing-resource-properties-types";
+    public static final String COMPUTING_RESOURCE_PROPERTY_TYPES = "computing-resource-property-types";
     public static final String APPLICATION_AREAS = "application-areas";
 
     // link names

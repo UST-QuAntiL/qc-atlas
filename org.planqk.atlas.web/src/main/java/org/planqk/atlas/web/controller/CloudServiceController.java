@@ -6,6 +6,7 @@ import javax.validation.Valid;
 
 import org.planqk.atlas.core.model.CloudService;
 import org.planqk.atlas.core.services.CloudServiceService;
+import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.CloudServiceDto;
 import org.planqk.atlas.web.linkassembler.CloudServiceAssembler;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
@@ -23,20 +24,24 @@ import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-//@io.swagger.v3.oas.annotations.tags.Tag(name = "cloud-services")
-//@RestController
-//@CrossOrigin(allowedHeaders = "*", origins = "*")
-//@RequestMapping("/" + Constants.API_VERSION + "/" + Constants.CLOUD_SERVICES)
+@io.swagger.v3.oas.annotations.tags.Tag(name = "cloud-services")
+@RestController
+@CrossOrigin(allowedHeaders = "*", origins = "*")
+@RequestMapping("/" + Constants.API_VERSION + "/" + Constants.CLOUD_SERVICES)
 @AllArgsConstructor
 public class CloudServiceController {
+
     final private static Logger LOG = LoggerFactory.getLogger(CloudServiceController.class);
 
     private final CloudServiceService cloudServiceService;

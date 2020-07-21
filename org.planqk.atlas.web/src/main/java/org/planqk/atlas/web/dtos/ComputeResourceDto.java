@@ -1,7 +1,5 @@
 package org.planqk.atlas.web.dtos;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
 
 import javax.validation.constraints.NotNull;
@@ -21,12 +19,15 @@ import org.springframework.hateoas.server.core.Relation;
         @JsonSubTypes.Type(value = SimulatorDto.class)})
 @Relation(itemRelation = "computeResource", collectionRelation = "computeResources")
 public class ComputeResourceDto {
+
     private UUID id;
 
     @NotNull(message = "Compute Resource Name must not be null!")
     private String name;
+
     private String vendor;
+
     private String technology;
-    private Set<ComputingResourcePropertyDto> providedQuantumResources = new HashSet<>();
+
     private QuantumComputationModel quantumComputationModel;
 }

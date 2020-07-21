@@ -28,20 +28,22 @@ import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-//@io.swagger.v3.oas.annotations.tags.Tag(name = "backend")
-//@RestController
-//@CrossOrigin(allowedHeaders = "*", origins = "*")
-//@RequestMapping("/" + Constants.API_VERSION + "/" + Constants.BACKENDS)
+@RestController
+@CrossOrigin(allowedHeaders = "*", origins = "*")
+@RequestMapping("/" + Constants.API_VERSION + "/" + Constants.COMPUTE_RESOURCES)
 @AllArgsConstructor
-//@io.swagger.v3.oas.annotations.tags.Tag(name = "backend")
+@io.swagger.v3.oas.annotations.tags.Tag(name = "execution-environments")
 public class ComputeResourceController {
 
     final private static Logger LOG = LoggerFactory.getLogger(ComputeResourceController.class);
@@ -53,9 +55,9 @@ public class ComputeResourceController {
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping()
-    public HttpEntity<PagedModel<EntityModel<ComputeResourceDto>>> getComputeResources(@RequestParam(required = false) Integer page,
-                                                                                       @RequestParam(required = false) Integer size) {
-        LOG.debug("Get to retrieve all ComputeResources received.");
+    public HttpEntity<PagedModel<EntityModel<ComputeResourceDto>>> getComputeResources(
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size) {
         Pageable p = RestUtils.getPageableFromRequestParams(page, size);
         var entities = computeResourceService.findAll(p);
         return ResponseEntity.ok(computeResourceAssembler.toModel(entities));
@@ -63,16 +65,16 @@ public class ComputeResourceController {
 
     @Operation(responses = {@ApiResponse(responseCode = "201")})
     @PostMapping()
-    public HttpEntity<EntityModel<ComputeResourceDto>> createComputeResource(@Valid @RequestBody ComputeResourceDto ComputeResourceDto) {
-        LOG.debug("Post to add a single ComputeResource received.");
+    public HttpEntity<EntityModel<ComputeResourceDto>> createComputeResource(
+            @Valid @RequestBody ComputeResourceDto ComputeResourceDto) {
         ComputeResource computeResource = computeResourceService.saveOrUpdate(ModelMapperUtils.convert(ComputeResourceDto, ComputeResource.class));
         return new ResponseEntity<>(computeResourceAssembler.toModel(computeResource), HttpStatus.CREATED);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", description = "ComputeResource with given id doesn't exist")})
+    @Operation(responses = {@ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", description = "ComputeResource with given id doesn't exist")})
     @DeleteMapping("/{id}")
     public HttpEntity<Void> deleteComputeResource(@PathVariable UUID id) {
-        LOG.debug("Delete to remove the ComputeResource with id {} received.", id);
         // only deletes if not used in any CloudService or SoftwarePlatform
         // we have to decide if this is acceptable behavior - TODO
         computeResourceService.findById(id);
@@ -82,8 +84,9 @@ public class ComputeResourceController {
 
     @Operation(responses = {@ApiResponse(responseCode = "201")})
     @PutMapping("/{id}")
-    public HttpEntity<EntityModel<ComputeResourceDto>> updateComputeResource(@PathVariable UUID id, @Valid @RequestBody ComputeResourceDto ComputeResourceDto) {
-        LOG.debug("Put to update a single ComputeResource received.");
+    public HttpEntity<EntityModel<ComputeResourceDto>> updateComputeResource(
+            @PathVariable UUID id,
+            @Valid @RequestBody ComputeResourceDto ComputeResourceDto) {
         ComputeResource computeResource = computeResourceService.saveOrUpdate(ModelMapperUtils.convert(ComputeResourceDto, ComputeResource.class));
         return new ResponseEntity<>(computeResourceAssembler.toModel(computeResource), HttpStatus.CREATED);
     }
@@ -91,7 +94,6 @@ public class ComputeResourceController {
     @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404")})
     @GetMapping("/{id}")
     public HttpEntity<EntityModel<ComputeResourceDto>> getComputeResource(@PathVariable UUID id) {
-        LOG.debug("Get to retrieve ComputeResource with id {} received", id);
         ComputeResource computeResource = computeResourceService.findById(id);
         return ResponseEntity.ok(computeResourceAssembler.toModel(computeResource));
     }
@@ -102,12 +104,12 @@ public class ComputeResourceController {
             @ApiResponse(responseCode = "404")
     })
     @GetMapping("/{id}/" + Constants.COMPUTING_RESOURCES_PROPERTIES)
-    public HttpEntity<PagedModel<EntityModel<ComputingResourcePropertyDto>>> getQuantumResources(
+    public HttpEntity<PagedModel<EntityModel<ComputingResourcePropertyDto>>> getComputingResourcePropertiesForComputeResource(
             @PathVariable UUID id,
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size
     ) {
-        var resources = computingResourcePropertyService.findAllComputingResourcesPropertiesByBackendId(id,
+        var resources = computingResourcePropertyService.findAllComputingResourcesPropertiesByComputeResourceId(id,
                 RestUtils.getPageableFromRequestParams(page, size));
         return ResponseEntity.ok(computingResourcePropertyAssembler.toModel(resources));
     }
@@ -118,7 +120,7 @@ public class ComputeResourceController {
             @ApiResponse(responseCode = "404")
     })
     @PostMapping("/{id}/" + Constants.COMPUTING_RESOURCES_PROPERTIES)
-    public HttpEntity<EntityModel<ComputeResourceDto>> addQuantumResource(
+    public HttpEntity<EntityModel<ComputeResourceDto>> addComputingResourcePropertyToComputeResource(
             @PathVariable UUID id,
             @Valid @RequestBody ComputingResourcePropertyDto resourceDto
     ) {
