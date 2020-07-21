@@ -281,9 +281,9 @@ public class ImplementationController {
     @DeleteMapping("/{implId}/" + Constants.PUBLICATIONS + "/{publicationId}")
     public HttpEntity<Void> deleteReferenceToPublication(@PathVariable UUID algoId,
                                                          @PathVariable UUID implId,
-                                                         @PathVariable UUID publicationId) {
+                                                         @PathVariable UUID publId) {
         Implementation implementation = implementationService.findById(implId);
-        publicationMixin.unlinkPublication(implementation, publicationId);
+        publicationMixin.unlinkPublication(implementation, publId);
         implementationService.save(implementation);
         return new ResponseEntity<>(HttpStatus.OK);
     }
