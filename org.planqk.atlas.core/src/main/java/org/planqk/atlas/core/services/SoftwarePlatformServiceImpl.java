@@ -37,15 +37,10 @@ import java.util.UUID;
 public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
 
     private final SoftwarePlatformRepository softwarePlatformRepository;
-    private final CloudServiceService cloudServiceService;
-    private final ComputeResourceService computeResourceService;
 
     @Transactional
     @Override
     public SoftwarePlatform save(SoftwarePlatform softwarePlatform) {
-        computeResourceService.saveOrUpdateAll(softwarePlatform.getSupportedComputeResources());
-        cloudServiceService.createOrUpdateAll(softwarePlatform.getSupportedCloudServices());
-
         return this.softwarePlatformRepository.save(softwarePlatform);
     }
 
@@ -62,16 +57,24 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
     @Transactional
     @Override
     public SoftwarePlatform update(UUID id, SoftwarePlatform softwarePlatform) {
-        if (softwarePlatformRepository.existsSoftwarePlatformById(id)) {
-            softwarePlatform.setId(id);
-            return save(softwarePlatform);
-        }
-        throw new NoSuchElementException();
+        SoftwarePlatform persistedSoftwarePlatform = findById(id);
+
+        // update fields that can be changed based on DTO
+        persistedSoftwarePlatform.setName(softwarePlatform.getName());
+        persistedSoftwarePlatform.setLink(softwarePlatform.getLink());
+        persistedSoftwarePlatform.setLicence(softwarePlatform.getLicence());
+        persistedSoftwarePlatform.setVersion(softwarePlatform.getVersion());
+
+        return save(softwarePlatform);
     }
 
     @Transactional
     @Override
     public void delete(UUID platformId) {
+        if (!softwarePlatformRepository.existsSoftwarePlatformById(platformId)) {
+            throw new NoSuchElementException();
+        }
+        // TODO remove references
         softwarePlatformRepository.deleteById(platformId);
     }
 }

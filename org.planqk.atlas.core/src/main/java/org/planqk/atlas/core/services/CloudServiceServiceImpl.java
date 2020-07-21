@@ -82,6 +82,7 @@ public class CloudServiceServiceImpl implements CloudServiceService {
         if (!cloudServiceRepository.existsById(cloudServiceId)) {
             throw new NoSuchElementException();
         }
+        // TODO remove references
         cloudServiceRepository.deleteById(cloudServiceId);
     }
 }

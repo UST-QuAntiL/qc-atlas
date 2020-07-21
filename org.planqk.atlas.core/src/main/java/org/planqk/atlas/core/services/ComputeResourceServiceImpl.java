@@ -98,6 +98,7 @@ public class ComputeResourceServiceImpl implements ComputeResourceService {
         if (!repo.existsById(id)) {
             throw new NoSuchElementException();
         }
+        // TODO remove references
         // only delete if unused in SoftwarePlatforms and CloudServices
         long count = cloudServiceRepository.countCloudServiceByBackend(id) + softwarePlatformRepository.countSoftwarePlatformByBackend(id);
         if (count == 0) {
