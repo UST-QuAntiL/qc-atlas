@@ -138,7 +138,7 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
             throw new NoSuchElementException();
         }
 
-        return null;
+        return cloudServiceRepository.findCloudServicesBySoftwarePlatformId(platformId, pageable);
     }
 
     @Override
