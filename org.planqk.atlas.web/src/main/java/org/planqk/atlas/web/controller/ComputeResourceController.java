@@ -13,15 +13,17 @@ import org.planqk.atlas.web.dtos.ComputeResourceDto;
 import org.planqk.atlas.web.dtos.ComputingResourcePropertyDto;
 import org.planqk.atlas.web.linkassembler.ComputeResourceAssembler;
 import org.planqk.atlas.web.linkassembler.ComputingResourcePropertyAssembler;
+import org.planqk.atlas.web.utils.ListParameters;
+import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.RestUtils;
 import org.planqk.atlas.web.utils.ValidationUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpEntity;
@@ -55,11 +57,10 @@ public class ComputeResourceController {
             @ApiResponse(responseCode = "200")
     })
     @GetMapping()
+    @ListParametersDoc
     public ResponseEntity<PagedModel<EntityModel<ComputeResourceDto>>> getComputeResources(
-            @RequestParam(required = false) Integer page,
-            @RequestParam(required = false) Integer size) {
-        Pageable p = RestUtils.getPageableFromRequestParams(page, size);
-        var entities = computeResourceService.findAll(p);
+            @Parameter(hidden = true) ListParameters listParameters) {
+        var entities = computeResourceService.findAll(listParameters.getPageable());
         return ResponseEntity.ok(computeResourceAssembler.toModel(entities));
     }
 

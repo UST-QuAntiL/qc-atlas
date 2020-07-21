@@ -13,10 +13,12 @@ import org.planqk.atlas.web.dtos.SoftwarePlatformDto;
 import org.planqk.atlas.web.linkassembler.ComputeResourceAssembler;
 import org.planqk.atlas.web.linkassembler.ImplementationAssembler;
 import org.planqk.atlas.web.linkassembler.SoftwarePlatformAssembler;
+import org.planqk.atlas.web.utils.ListParameters;
+import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
-import org.planqk.atlas.web.utils.RestUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +34,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @io.swagger.v3.oas.annotations.tags.Tag(name = Constants.TAG_EXECUTION_ENVIRONMENTS)
@@ -52,10 +53,10 @@ public class SoftwarePlatformController {
             @ApiResponse(responseCode = "200"),
     })
     @GetMapping()
+    @ListParametersDoc
     public ResponseEntity<PagedModel<EntityModel<SoftwarePlatformDto>>> getSoftwarePlatforms(
-            @RequestParam(required = false) Integer page,
-            @RequestParam(required = false) Integer size) {
-        var platforms = softwarePlatformService.findAll(RestUtils.getPageableFromRequestParams(page, size));
+            @Parameter(hidden = true) ListParameters listParameters) {
+        var platforms = softwarePlatformService.findAll(listParameters.getPageable());
         return ResponseEntity.ok(softwarePlatformAssembler.toModel(platforms));
     }
 
@@ -112,12 +113,11 @@ public class SoftwarePlatformController {
             @ApiResponse(responseCode = "404", description = "Software Platform with given id does not exist"),
     })
     @GetMapping("/{id}/" + Constants.IMPLEMENTATIONS)
+    @ListParametersDoc
     public ResponseEntity<PagedModel<EntityModel<ImplementationDto>>> getImplementationsForSoftwarePlatform(
             @PathVariable UUID id,
-            @RequestParam(required = false) Integer page,
-            @RequestParam(required = false) Integer size) {
-        var pageable = RestUtils.getPageableFromRequestParams(page, size);
-        var implementations = softwarePlatformService.findImplementations(id, pageable);
+            @Parameter(hidden = true) ListParameters listParameters) {
+        var implementations = softwarePlatformService.findImplementations(id, listParameters.getPageable());
         return ResponseEntity.ok(implementationAssembler.toModel(implementations));
     }
 
@@ -166,12 +166,11 @@ public class SoftwarePlatformController {
             @ApiResponse(responseCode = "404", description = "Software Platform with given id does not exist"),
     })
     @GetMapping("/{id}/" + Constants.IMPLEMENTATIONS)
+    @ListParametersDoc()
     public ResponseEntity<PagedModel<EntityModel<ComputeResourceDto>>> getComputeResourcesForSoftwarePlatform(
             @PathVariable UUID id,
-            @RequestParam(required = false) Integer page,
-            @RequestParam(required = false) Integer size) {
-        var pageable = RestUtils.getPageableFromRequestParams(page, size);
-        var computeResources = softwarePlatformService.findComputeResources(id, pageable);
+            @Parameter(hidden = true) ListParameters listParameters) {
+        var computeResources = softwarePlatformService.findComputeResources(id, listParameters.getPageable());
         return ResponseEntity.ok(computeResourceAssembler.toModel(computeResources));
     }
 

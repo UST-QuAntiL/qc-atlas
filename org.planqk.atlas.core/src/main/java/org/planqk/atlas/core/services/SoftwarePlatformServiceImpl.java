@@ -125,6 +125,7 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
         }
 
         softwarePlatform.getImplementations().remove(implementation);
+        save(softwarePlatform);
     }
 
     @Override
@@ -161,5 +162,6 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
         }
 
         softwarePlatform.getSupportedComputeResources().remove(computeResource);
+        save(softwarePlatform);
     }
 }
