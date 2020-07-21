@@ -19,6 +19,8 @@
 
 package org.planqk.atlas.web;
 
+import javax.annotation.PostConstruct;
+
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Contact;
 import io.swagger.v3.oas.annotations.info.Info;
@@ -39,11 +41,8 @@ public class Application extends SpringBootServletInitializer {
 
     final private static Logger LOG = LoggerFactory.getLogger(Application.class);
 
-    public Application() {
-        logReadyMessage();
-    }
-
-    private static void logReadyMessage() {
+    @PostConstruct
+    private void logReadyMessage() {
         if (LOG.isInfoEnabled()) {
             final String readyMessage = "\n===================================================\n"
                     + "ATLAS IS READY TO USE!\n" + "===================================================";
@@ -55,7 +54,7 @@ public class Application extends SpringBootServletInitializer {
      * Launch the embedded Tomcat server.
      *
      * See `application.properties` for its configuration.
-     * 
+     *
      * @param args
      */
     public static void main(String[] args) {
