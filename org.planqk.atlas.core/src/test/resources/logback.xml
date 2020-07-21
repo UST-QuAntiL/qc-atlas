@@ -12,4 +12,5 @@
     </root>
 
     <logger name="org.planqk" level="DEBUG"/>
+    <logger name="org.hibernate.tool.schema" level="ERROR"/>
 </configuration>
