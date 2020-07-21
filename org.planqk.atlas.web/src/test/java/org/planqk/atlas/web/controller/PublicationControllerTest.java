@@ -75,8 +75,6 @@ public class PublicationControllerTest {
     private PublicationService publicationService;
     @MockBean
     private AlgorithmService algorithmService;
-    @MockBean
-    private ImplementationService implementationService;
 
     @Autowired
     private MockMvc mockMvc;
