@@ -22,7 +22,7 @@ package org.planqk.atlas.core.services;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import org.planqk.atlas.core.model.Backend;
+import org.planqk.atlas.core.model.ComputeResource;
 import org.planqk.atlas.core.model.CloudService;
 import org.planqk.atlas.core.model.SoftwarePlatform;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
@@ -47,7 +47,7 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
     @Autowired
     private CloudServiceService cloudServiceService;
     @Autowired
-    private BackendService backendService;
+    private ComputeResourceService computeResourceService;
 
     @Test
     void testAddSoftwarePlatform_WithoutRelations() throws MalformedURLException {
@@ -80,23 +80,23 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
     void testAddSoftwarePlatform_WithBackends() throws MalformedURLException {
         SoftwarePlatform softwarePlatform = getGenericTestSoftwarePlatformWithoutRelations("testSoftwarePlatform");
 
-        Set<Backend> backends = new HashSet<>();
-        Backend backend = new Backend();
-        backend.setName("testBackend");
-        backends.add(backend);
+        Set<ComputeResource> computeResources = new HashSet<>();
+        ComputeResource computeResource = new ComputeResource();
+        computeResource.setName("testBackend");
+        computeResources.add(computeResource);
 
-        softwarePlatform.setSupportedBackends(backends);
+        softwarePlatform.setSupportedComputeResources(computeResources);
 
         SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.save(softwarePlatform);
         assertSoftwarePlatformEquality(storedSoftwarePlatform, softwarePlatform);
 
-        storedSoftwarePlatform.getSupportedBackends().forEach(b -> {
+        storedSoftwarePlatform.getSupportedComputeResources().forEach(b -> {
             assertThat(b.getId()).isNotNull();
-            assertThat(b.getName()).isEqualTo(backend.getName());
-            Assertions.assertDoesNotThrow(() -> backendService.findById(b.getId()));
+            assertThat(b.getName()).isEqualTo(computeResource.getName());
+            Assertions.assertDoesNotThrow(() -> computeResourceService.findById(b.getId()));
         });
 
-        assertThat(storedSoftwarePlatform.getSupportedBackends().size()).isEqualTo(1);
+        assertThat(storedSoftwarePlatform.getSupportedComputeResources().size()).isEqualTo(1);
     }
 
     @Test
@@ -196,26 +196,26 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
     void testDeleteSoftwarePlatform_WithBackends() throws MalformedURLException {
         SoftwarePlatform softwarePlatform = getGenericTestSoftwarePlatformWithoutRelations("testSoftwarePlatform");
 
-        Set<Backend> backends = new HashSet<>();
-        Backend backend = new Backend();
-        backend.setName("testBackend");
-        backends.add(backend);
+        Set<ComputeResource> computeResources = new HashSet<>();
+        ComputeResource computeResource = new ComputeResource();
+        computeResource.setName("testBackend");
+        computeResources.add(computeResource);
 
-        softwarePlatform.setSupportedBackends(backends);
+        softwarePlatform.setSupportedComputeResources(computeResources);
 
         SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.save(softwarePlatform);
 
         Assertions.assertDoesNotThrow(() -> softwarePlatformService.findById(storedSoftwarePlatform.getId()));
-        storedSoftwarePlatform.getSupportedBackends().forEach(b -> {
-            Assertions.assertDoesNotThrow(() -> backendService.findById(b.getId()));
+        storedSoftwarePlatform.getSupportedComputeResources().forEach(b -> {
+            Assertions.assertDoesNotThrow(() -> computeResourceService.findById(b.getId()));
         });
 
         softwarePlatformService.delete(storedSoftwarePlatform.getId());
 
         Assertions.assertThrows(NoSuchElementException.class, () ->
                 softwarePlatformService.findById(storedSoftwarePlatform.getId()));
-        storedSoftwarePlatform.getSupportedBackends().forEach(b -> {
-            Assertions.assertDoesNotThrow(() -> backendService.findById(b.getId()));
+        storedSoftwarePlatform.getSupportedComputeResources().forEach(b -> {
+            Assertions.assertDoesNotThrow(() -> computeResourceService.findById(b.getId()));
         });
     }
 

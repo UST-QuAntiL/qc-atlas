@@ -20,7 +20,6 @@
 package org.planqk.atlas.core.model;
 
 import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -33,6 +32,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 @Data
-public class Qpu extends Backend {
+public class Qpu extends ComputeResource {
 
 }

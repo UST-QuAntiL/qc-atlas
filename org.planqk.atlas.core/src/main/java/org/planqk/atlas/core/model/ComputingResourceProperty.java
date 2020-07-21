@@ -51,7 +51,7 @@ public class ComputingResourceProperty extends HasId {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @Exclude
-    private Backend backend;
+    private ComputeResource computeResource;
 
     private String value;
 }

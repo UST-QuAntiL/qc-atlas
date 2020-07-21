@@ -32,6 +32,6 @@ public class CloudServiceDto {
 
     private String costModel;
 
-    private Set<BackendDto> providedBackends = new HashSet<>();
+    private Set<ComputeResourceDto> providedBackends = new HashSet<>();
 
 }

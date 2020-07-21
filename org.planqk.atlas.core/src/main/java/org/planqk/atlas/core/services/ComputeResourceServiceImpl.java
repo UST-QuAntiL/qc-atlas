@@ -25,11 +25,9 @@ import java.util.UUID;
 
 import lombok.AllArgsConstructor;
 
-import org.planqk.atlas.core.model.Backend;
+import org.planqk.atlas.core.model.ComputeResource;
 import org.planqk.atlas.core.model.exceptions.ConsistencyException;
-import org.planqk.atlas.core.repository.BackendPropertyRepository;
-import org.planqk.atlas.core.repository.BackendPropertyTypeRepository;
-import org.planqk.atlas.core.repository.BackendRepository;
+import org.planqk.atlas.core.repository.ComputeResourceRepository;
 import org.planqk.atlas.core.repository.CloudServiceRepository;
 import org.planqk.atlas.core.repository.SoftwarePlatformRepository;
 
@@ -42,61 +40,59 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @AllArgsConstructor
-public class BackendServiceImpl implements BackendService {
+public class ComputeResourceServiceImpl implements ComputeResourceService {
 
-    private final static Logger LOG = LoggerFactory.getLogger(BackendServiceImpl.class);
+    private final static Logger LOG = LoggerFactory.getLogger(ComputeResourceServiceImpl.class);
 
-    private final BackendRepository repo;
-    private final BackendPropertyRepository backendPropertyRepository;
-    private final BackendPropertyTypeRepository backendPropertyTypeRepository;
+    private final ComputeResourceRepository repo;
     private final CloudServiceRepository cloudServiceRepository;
     private final SoftwarePlatformRepository softwarePlatformRepository;
 
     @Override
     @Transactional
-    public Backend saveOrUpdate(Backend backend) {
-        if (backend.getId() != null) {
-            return update(backend.getId(), backend);
+    public ComputeResource saveOrUpdate(ComputeResource computeResource) {
+        if (computeResource.getId() != null) {
+            return update(computeResource.getId(), computeResource);
         } else {
-            return repo.save(backend);
+            return repo.save(computeResource);
         }
     }
 
     @Override
     @Transactional
-    public Set<Backend> saveOrUpdateAll(Set<Backend> backends) {
-        for (Backend backend : backends) {
-            saveOrUpdate(backend);
+    public Set<ComputeResource> saveOrUpdateAll(Set<ComputeResource> computeResources) {
+        for (ComputeResource computeResource : computeResources) {
+            saveOrUpdate(computeResource);
         }
-        return backends;
+        return computeResources;
     }
 
     @Override
-    public Backend findById(UUID id) {
+    public ComputeResource findById(UUID id) {
         return repo.findById(id).orElseThrow(NoSuchElementException::new);
     }
 
     @Override
-    public Set<Backend> findByName(String name) {
+    public Set<ComputeResource> findByName(String name) {
         return repo.findByName(name);
     }
 
     @Override
-    public Page<Backend> findAll(Pageable pageable) {
+    public Page<ComputeResource> findAll(Pageable pageable) {
         return repo.findAll(pageable);
     }
 
-    private Backend update(UUID id, Backend backend) {
-        Backend persistedBackend = repo.findById(id).orElseThrow(NoSuchElementException::new);
+    private ComputeResource update(UUID id, ComputeResource computeResource) {
+        ComputeResource persistedComputeResource = repo.findById(id).orElseThrow(NoSuchElementException::new);
 
-        persistedBackend.setQuantumComputationModel(backend.getQuantumComputationModel());
-        persistedBackend.setTechnology(backend.getTechnology());
-        persistedBackend.setName(backend.getName());
-        persistedBackend.setVendor(backend.getVendor());
+        persistedComputeResource.setQuantumComputationModel(computeResource.getQuantumComputationModel());
+        persistedComputeResource.setTechnology(computeResource.getTechnology());
+        persistedComputeResource.setName(computeResource.getName());
+        persistedComputeResource.setVendor(computeResource.getVendor());
 
-        persistedBackend.setProvidedQuantumResources(backend.getProvidedQuantumResources());
+        persistedComputeResource.setProvidedQuantumResources(computeResource.getProvidedQuantumResources());
 
-        return repo.save(persistedBackend);
+        return repo.save(persistedComputeResource);
     }
 
     @Override

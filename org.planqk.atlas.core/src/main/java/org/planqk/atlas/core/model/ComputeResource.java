@@ -9,7 +9,6 @@ import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.OneToMany;
-import javax.persistence.Table;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -20,10 +19,9 @@ import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "backends")
 @Data
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-public class Backend extends HasId {
+public class ComputeResource extends HasId {
 
     private String name;
     private String vendor;

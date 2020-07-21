@@ -40,11 +40,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class CloudServiceServiceImpl implements CloudServiceService {
 
     private final CloudServiceRepository cloudServiceRepository;
-    private final BackendService backendService;
+    private final ComputeResourceService computeResourceService;
 
     @Override
     public CloudService save(CloudService cloudService) {
-        backendService.saveOrUpdateAll(cloudService.getProvidedBackends());
+        computeResourceService.saveOrUpdateAll(cloudService.getProvidedComputeResources());
         return this.cloudServiceRepository.save(cloudService);
     }
 

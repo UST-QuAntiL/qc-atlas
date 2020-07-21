@@ -22,7 +22,7 @@ package org.planqk.atlas.core.services;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import org.planqk.atlas.core.model.Backend;
+import org.planqk.atlas.core.model.ComputeResource;
 import org.planqk.atlas.core.model.CloudService;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +43,7 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
     @Autowired
     private CloudServiceService cloudServiceService;
     @Autowired
-    private BackendService backendService;
+    private ComputeResourceService computeResourceService;
 
     @Test
     void testAddCloudService_WithoutBackends() throws MalformedURLException {
@@ -56,24 +56,24 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
     @Test
     void testAddCloudService_WithBackends() throws MalformedURLException {
         CloudService cloudService = getGenericTestCloudServiceWithoutRelations("testCloudService");
-        Set<Backend> backends = new HashSet<>();
+        Set<ComputeResource> computeResources = new HashSet<>();
 
-        Backend backend = new Backend();
-        backend.setName("testBackend");
-        backends.add(backend);
+        ComputeResource computeResource = new ComputeResource();
+        computeResource.setName("testBackend");
+        computeResources.add(computeResource);
 
-        cloudService.setProvidedBackends(backends);
+        cloudService.setProvidedComputeResources(computeResources);
 
         CloudService storedCloudService = cloudServiceService.save(cloudService);
         assertCloudServiceEquality(storedCloudService, cloudService);
 
-        storedCloudService.getProvidedBackends().forEach(b -> {
+        storedCloudService.getProvidedComputeResources().forEach(b -> {
             assertThat(b.getId()).isNotNull();
-            assertThat(b.getName()).isEqualTo(backend.getName());
-            Assertions.assertDoesNotThrow(() -> backendService.findById(b.getId()));
+            assertThat(b.getName()).isEqualTo(computeResource.getName());
+            Assertions.assertDoesNotThrow(() -> computeResourceService.findById(b.getId()));
         });
 
-        assertThat(storedCloudService.getProvidedBackends().size()).isEqualTo(1);
+        assertThat(storedCloudService.getProvidedComputeResources().size()).isEqualTo(1);
     }
 
     @Test
@@ -147,27 +147,27 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
     @Test
     void testDeleteSoftwarePlatform_WithBackends() throws MalformedURLException {
         CloudService cloudService = getGenericTestCloudServiceWithoutRelations("testCloudService");
-        Set<Backend> backends = new HashSet<>();
+        Set<ComputeResource> computeResources = new HashSet<>();
 
-        Backend backend = new Backend();
-        backend.setName("testBackend");
-        backends.add(backend);
+        ComputeResource computeResource = new ComputeResource();
+        computeResource.setName("testBackend");
+        computeResources.add(computeResource);
 
-        cloudService.setProvidedBackends(backends);
+        cloudService.setProvidedComputeResources(computeResources);
 
         CloudService storedCloudService = cloudServiceService.save(cloudService);
 
         Assertions.assertDoesNotThrow(() -> cloudServiceService.findById(storedCloudService.getId()));
-        storedCloudService.getProvidedBackends().forEach(b -> {
-            Assertions.assertDoesNotThrow(() -> backendService.findById(b.getId()));
+        storedCloudService.getProvidedComputeResources().forEach(b -> {
+            Assertions.assertDoesNotThrow(() -> computeResourceService.findById(b.getId()));
         });
 
         cloudServiceService.delete(storedCloudService.getId());
 
         Assertions.assertThrows(NoSuchElementException.class, () ->
                 cloudServiceService.findById(storedCloudService.getId()));
-        storedCloudService.getProvidedBackends().forEach(b -> {
-            Assertions.assertDoesNotThrow(() -> backendService.findById(b.getId()));
+        storedCloudService.getProvidedComputeResources().forEach(b -> {
+            Assertions.assertDoesNotThrow(() -> computeResourceService.findById(b.getId()));
         });
     }
 

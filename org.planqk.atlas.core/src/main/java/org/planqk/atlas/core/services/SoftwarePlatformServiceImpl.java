@@ -38,12 +38,12 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
 
     private final SoftwarePlatformRepository softwarePlatformRepository;
     private final CloudServiceService cloudServiceService;
-    private final BackendService backendService;
+    private final ComputeResourceService computeResourceService;
 
     @Transactional
     @Override
     public SoftwarePlatform save(SoftwarePlatform softwarePlatform) {
-        backendService.saveOrUpdateAll(softwarePlatform.getSupportedBackends());
+        computeResourceService.saveOrUpdateAll(softwarePlatform.getSupportedComputeResources());
         cloudServiceService.createOrUpdateAll(softwarePlatform.getSupportedCloudServices());
 
         return this.softwarePlatformRepository.save(softwarePlatform);

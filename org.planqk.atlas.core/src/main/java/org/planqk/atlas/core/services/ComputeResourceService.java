@@ -22,24 +22,25 @@ package org.planqk.atlas.core.services;
 import java.util.Set;
 import java.util.UUID;
 
-import org.planqk.atlas.core.model.Backend;
+import org.planqk.atlas.core.model.ComputeResource;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
-public interface BackendService {
+public interface ComputeResourceService {
 
     @Transactional
-    Backend saveOrUpdate(Backend backend);
+    ComputeResource saveOrUpdate(ComputeResource computeResource);
 
     @Transactional
-    Set<Backend> saveOrUpdateAll(Set<Backend> backends);
+    Set<ComputeResource> saveOrUpdateAll(Set<ComputeResource> computeResources);
 
-    Backend findById(UUID id);
+    ComputeResource findById(UUID id);
 
-    Set<Backend> findByName(String name);
+    Set<ComputeResource> findByName(String name);
 
-    Page<Backend> findAll(Pageable pageable);
+    Page<ComputeResource> findAll(Pageable pageable);
 
     @Transactional
     void delete (UUID id);

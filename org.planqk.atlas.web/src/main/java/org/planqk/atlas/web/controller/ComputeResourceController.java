@@ -4,14 +4,14 @@ import java.util.UUID;
 
 import javax.validation.Valid;
 
-import org.planqk.atlas.core.model.Backend;
+import org.planqk.atlas.core.model.ComputeResource;
 import org.planqk.atlas.core.model.ComputingResourceProperty;
-import org.planqk.atlas.core.services.BackendService;
+import org.planqk.atlas.core.services.ComputeResourceService;
 import org.planqk.atlas.core.services.ComputingResourcePropertyService;
 import org.planqk.atlas.web.Constants;
-import org.planqk.atlas.web.dtos.BackendDto;
+import org.planqk.atlas.web.dtos.ComputeResourceDto;
 import org.planqk.atlas.web.dtos.ComputingResourcePropertyDto;
-import org.planqk.atlas.web.linkassembler.BackendAssembler;
+import org.planqk.atlas.web.linkassembler.ComputeResourceAssembler;
 import org.planqk.atlas.web.linkassembler.ComputingResourcePropertyAssembler;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.RestUtils;
@@ -42,58 +42,58 @@ import org.springframework.web.bind.annotation.RequestParam;
 //@RequestMapping("/" + Constants.API_VERSION + "/" + Constants.BACKENDS)
 @AllArgsConstructor
 //@io.swagger.v3.oas.annotations.tags.Tag(name = "backend")
-public class BackendController {
+public class ComputeResourceController {
 
-    final private static Logger LOG = LoggerFactory.getLogger(BackendController.class);
+    final private static Logger LOG = LoggerFactory.getLogger(ComputeResourceController.class);
 
-    private final ComputingResourcePropertyService quantumResourceService;
-    private final ComputingResourcePropertyAssembler quantumResourceAssembler;
-    private final BackendService backendService;
-    private final BackendAssembler backendAssembler;
+    private final ComputingResourcePropertyService computingResourcePropertyService;
+    private final ComputingResourcePropertyAssembler computingResourcePropertyAssembler;
+    private final ComputeResourceService computeResourceService;
+    private final ComputeResourceAssembler computeResourceAssembler;
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping()
-    public HttpEntity<PagedModel<EntityModel<BackendDto>>> getBackends(@RequestParam(required = false) Integer page,
-                                                                       @RequestParam(required = false) Integer size) {
-        LOG.debug("Get to retrieve all Backends received.");
+    public HttpEntity<PagedModel<EntityModel<ComputeResourceDto>>> getComputeResources(@RequestParam(required = false) Integer page,
+                                                                                       @RequestParam(required = false) Integer size) {
+        LOG.debug("Get to retrieve all ComputeResources received.");
         Pageable p = RestUtils.getPageableFromRequestParams(page, size);
-        var entities = backendService.findAll(p);
-        return ResponseEntity.ok(backendAssembler.toModel(entities));
+        var entities = computeResourceService.findAll(p);
+        return ResponseEntity.ok(computeResourceAssembler.toModel(entities));
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "201")})
     @PostMapping()
-    public HttpEntity<EntityModel<BackendDto>> createBackend(@Valid @RequestBody BackendDto backendDto) {
-        LOG.debug("Post to add a single Backend received.");
-        Backend backend = backendService.saveOrUpdate(ModelMapperUtils.convert(backendDto, Backend.class));
-        return new ResponseEntity<>(backendAssembler.toModel(backend), HttpStatus.CREATED);
+    public HttpEntity<EntityModel<ComputeResourceDto>> createComputeResource(@Valid @RequestBody ComputeResourceDto ComputeResourceDto) {
+        LOG.debug("Post to add a single ComputeResource received.");
+        ComputeResource computeResource = computeResourceService.saveOrUpdate(ModelMapperUtils.convert(ComputeResourceDto, ComputeResource.class));
+        return new ResponseEntity<>(computeResourceAssembler.toModel(computeResource), HttpStatus.CREATED);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", description = "Backend with given id doesn't exist")})
+    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", description = "ComputeResource with given id doesn't exist")})
     @DeleteMapping("/{id}")
-    public HttpEntity<Void> deleteBackend(@PathVariable UUID id) {
-        LOG.debug("Delete to remove the Backend with id {} received.", id);
+    public HttpEntity<Void> deleteComputeResource(@PathVariable UUID id) {
+        LOG.debug("Delete to remove the ComputeResource with id {} received.", id);
         // only deletes if not used in any CloudService or SoftwarePlatform
         // we have to decide if this is acceptable behavior - TODO
-        backendService.findById(id);
-        backendService.delete(id);
+        computeResourceService.findById(id);
+        computeResourceService.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "201")})
     @PutMapping("/{id}")
-    public HttpEntity<EntityModel<BackendDto>> updateBackend(@PathVariable UUID id, @Valid @RequestBody BackendDto backendDto) {
-        LOG.debug("Put to update a single Backend received.");
-        Backend backend = backendService.saveOrUpdate(ModelMapperUtils.convert(backendDto, Backend.class));
-        return new ResponseEntity<>(backendAssembler.toModel(backend), HttpStatus.CREATED);
+    public HttpEntity<EntityModel<ComputeResourceDto>> updateComputeResource(@PathVariable UUID id, @Valid @RequestBody ComputeResourceDto ComputeResourceDto) {
+        LOG.debug("Put to update a single ComputeResource received.");
+        ComputeResource computeResource = computeResourceService.saveOrUpdate(ModelMapperUtils.convert(ComputeResourceDto, ComputeResource.class));
+        return new ResponseEntity<>(computeResourceAssembler.toModel(computeResource), HttpStatus.CREATED);
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404")})
     @GetMapping("/{id}")
-    public HttpEntity<EntityModel<BackendDto>> getBackend(@PathVariable UUID id) {
-        LOG.debug("Get to retrieve Backend with id {} received", id);
-        Backend backend = backendService.findById(id);
-        return ResponseEntity.ok(backendAssembler.toModel(backend));
+    public HttpEntity<EntityModel<ComputeResourceDto>> getComputeResource(@PathVariable UUID id) {
+        LOG.debug("Get to retrieve ComputeResource with id {} received", id);
+        ComputeResource computeResource = computeResourceService.findById(id);
+        return ResponseEntity.ok(computeResourceAssembler.toModel(computeResource));
     }
 
     @Operation(responses = {
@@ -107,9 +107,9 @@ public class BackendController {
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size
     ) {
-        var resources = quantumResourceService.findAllComputingResourcesPropertiesByBackendId(id,
+        var resources = computingResourcePropertyService.findAllComputingResourcesPropertiesByBackendId(id,
                 RestUtils.getPageableFromRequestParams(page, size));
-        return ResponseEntity.ok(quantumResourceAssembler.toModel(resources));
+        return ResponseEntity.ok(computingResourcePropertyAssembler.toModel(resources));
     }
 
     @Operation(responses = {
@@ -118,14 +118,14 @@ public class BackendController {
             @ApiResponse(responseCode = "404")
     })
     @PostMapping("/{id}/" + Constants.COMPUTING_RESOURCES_PROPERTIES)
-    public HttpEntity<EntityModel<BackendDto>> addQuantumResource(
+    public HttpEntity<EntityModel<ComputeResourceDto>> addQuantumResource(
             @PathVariable UUID id,
             @Valid @RequestBody ComputingResourcePropertyDto resourceDto
     ) {
-        var backend = backendService.findById(id);
+        var ComputeResource = computeResourceService.findById(id);
         ValidationUtils.validateComputingResourceProperty(resourceDto);
         var resource = ModelMapperUtils.convert(resourceDto, ComputingResourceProperty.class);
-        var updatedBackend = quantumResourceService.addComputingResourcePropertyToBackend(backend, resource);
-        return ResponseEntity.ok(backendAssembler.toModel(updatedBackend));
+        var updatedComputeResource = computingResourcePropertyService.addComputingResourcePropertyToBackend(ComputeResource, resource);
+        return ResponseEntity.ok(computeResourceAssembler.toModel(updatedComputeResource));
     }
 }

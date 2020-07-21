@@ -25,7 +25,7 @@ import java.util.UUID;
 import javax.transaction.Transactional;
 
 import org.planqk.atlas.core.model.Algorithm;
-import org.planqk.atlas.core.model.Backend;
+import org.planqk.atlas.core.model.ComputeResource;
 import org.planqk.atlas.core.model.ComputingResourceProperty;
 import org.planqk.atlas.core.model.ComputingResourcePropertyType;
 import org.planqk.atlas.core.model.Implementation;
@@ -76,7 +76,7 @@ public interface ComputingResourcePropertyService {
     ComputingResourceProperty addComputingResourcePropertyToImplementation(UUID implId, UUID resourceId);
 
     @Transactional
-    ComputingResourceProperty addComputingResourcePropertyToBackend(Backend backend, ComputingResourceProperty resource);
+    ComputingResourceProperty addComputingResourcePropertyToBackend(ComputeResource computeResource, ComputingResourceProperty resource);
 
     @Transactional
     ComputingResourceProperty addComputingResourcePropertyToBackend(UUID backend, UUID resourceId);

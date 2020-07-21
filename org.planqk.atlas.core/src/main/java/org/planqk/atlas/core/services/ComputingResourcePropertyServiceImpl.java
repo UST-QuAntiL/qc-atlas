@@ -26,12 +26,12 @@ import java.util.UUID;
 import javax.transaction.Transactional;
 
 import org.planqk.atlas.core.model.Algorithm;
-import org.planqk.atlas.core.model.Backend;
+import org.planqk.atlas.core.model.ComputeResource;
 import org.planqk.atlas.core.model.ComputingResourceProperty;
 import org.planqk.atlas.core.model.ComputingResourcePropertyType;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.repository.AlgorithmRepository;
-import org.planqk.atlas.core.repository.BackendRepository;
+import org.planqk.atlas.core.repository.ComputeResourceRepository;
 import org.planqk.atlas.core.repository.ComputingResourcePropertyRepository;
 import org.planqk.atlas.core.repository.ComputingResourcePropertyTypeRepository;
 import org.planqk.atlas.core.repository.ImplementationRepository;
@@ -46,7 +46,7 @@ import org.springframework.stereotype.Service;
 public class ComputingResourcePropertyServiceImpl implements ComputingResourcePropertyService {
 
     private final AlgorithmRepository algorithmRepository;
-    private final BackendRepository backendRepository;
+    private final ComputeResourceRepository computeResourceRepository;
     private final ImplementationRepository implementationRepository;
     private final ComputingResourcePropertyTypeRepository typeRepository;
     private final ComputingResourcePropertyRepository resourceRepository;
@@ -157,12 +157,12 @@ public class ComputingResourcePropertyServiceImpl implements ComputingResourcePr
 
     @Override
     @Transactional
-    public ComputingResourceProperty addComputingResourcePropertyToBackend(Backend backend, ComputingResourceProperty resource) {
+    public ComputingResourceProperty addComputingResourcePropertyToBackend(ComputeResource computeResource, ComputingResourceProperty resource) {
         var updatedResource = resource;
         if (updatedResource.getId() == null) {
             updatedResource = this.addOrUpdateComputingResourceProperty(resource);
         }
-        updatedResource.setBackend(backend);
+        updatedResource.setComputeResource(computeResource);
         return this.resourceRepository.save(updatedResource);
     }
 
@@ -170,7 +170,7 @@ public class ComputingResourcePropertyServiceImpl implements ComputingResourcePr
     @Transactional
     public ComputingResourceProperty addComputingResourcePropertyToBackend(UUID backendId, UUID resourceId) {
         var resource = resourceRepository.findById(resourceId).orElseThrow(NoSuchElementException::new);
-        var backend = (Backend) backendRepository.findById(backendId).orElseThrow(NoSuchElementException::new);
+        var backend = (ComputeResource) computeResourceRepository.findById(backendId).orElseThrow(NoSuchElementException::new);
         return addComputingResourcePropertyToBackend(backend, resource);
     }
 
