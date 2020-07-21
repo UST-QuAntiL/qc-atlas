@@ -21,10 +21,12 @@ package org.planqk.atlas.core.services;
 
 import lombok.AllArgsConstructor;
 
+import org.planqk.atlas.core.model.CloudService;
 import org.planqk.atlas.core.model.ComputeResource;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.SoftwarePlatform;
 import org.planqk.atlas.core.model.exceptions.ConsistencyException;
+import org.planqk.atlas.core.repository.CloudServiceRepository;
 import org.planqk.atlas.core.repository.ComputeResourceRepository;
 import org.planqk.atlas.core.repository.ImplementationRepository;
 import org.planqk.atlas.core.repository.SoftwarePlatformRepository;
@@ -46,6 +48,8 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
     private final ImplementationService implementationService;
     private final ComputeResourceRepository computeResourceRepository;
     private final ComputeResourceService computeResourceService;
+    private final CloudServiceRepository cloudServiceRepository;
+    private final CloudServiceService cloudServiceService;
 
     @Override
     @Transactional
@@ -129,6 +133,43 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
     }
 
     @Override
+    public Page<CloudService> findCloudServices(UUID platformId, Pageable pageable) {
+        if (!softwarePlatformRepository.existsSoftwarePlatformById(platformId)) {
+            throw new NoSuchElementException();
+        }
+
+        return null;
+    }
+
+    @Override
+    @Transactional
+    public void addCloudServiceReference(UUID platformId, UUID cloudServiceId) {
+        SoftwarePlatform softwarePlatform = findById(platformId);
+        CloudService cloudService = cloudServiceService.findById(cloudServiceId);
+
+        if (!softwarePlatformRepository.existsSoftwarePlatformById(platformId)) {
+            throw new ConsistencyException("Cloud service and software platform are already linked");
+        }
+
+        softwarePlatform.getSupportedCloudServices().add(cloudService);
+        save(softwarePlatform);
+    }
+
+    @Override
+    @Transactional
+    public void deleteCloudServiceReference(UUID platformId, UUID cloudServiceId) {
+        SoftwarePlatform softwarePlatform = findById(platformId);
+        CloudService cloudService = cloudServiceService.findById(cloudServiceId);
+
+        if (!softwarePlatformRepository.existsSoftwarePlatformById(platformId)) {
+            throw new ConsistencyException("Cloud service and software platform are not linked");
+        }
+
+        softwarePlatform.getSupportedCloudServices().remove(cloudService);
+        save(softwarePlatform);
+    }
+
+    @Override
     public Page<ComputeResource> findComputeResources(UUID platformId, Pageable pageable) {
         if (!softwarePlatformRepository.existsSoftwarePlatformById(platformId)) {
             throw new NoSuchElementException();
@@ -144,7 +185,7 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
         ComputeResource computeResource = computeResourceService.findById(resourceId);
 
         if (!softwarePlatformRepository.existsSoftwarePlatformById(platformId)) {
-            throw new ConsistencyException("Implementation and software platform are already linked");
+            throw new ConsistencyException("Compute resource and software platform are already linked");
         }
 
         softwarePlatform.getSupportedComputeResources().add(computeResource);
@@ -158,7 +199,7 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
         ComputeResource computeResource = computeResourceService.findById(resourceId);
 
         if (!softwarePlatformRepository.existsSoftwarePlatformById(platformId)) {
-            throw new ConsistencyException("Implementation and software platform are not linked");
+            throw new ConsistencyException("Compute resource and software platform are not linked");
         }
 
         softwarePlatform.getSupportedComputeResources().remove(computeResource);

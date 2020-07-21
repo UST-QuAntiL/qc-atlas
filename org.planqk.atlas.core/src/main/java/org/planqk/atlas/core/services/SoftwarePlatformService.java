@@ -19,6 +19,7 @@
 
 package org.planqk.atlas.core.services;
 
+import org.planqk.atlas.core.model.CloudService;
 import org.planqk.atlas.core.model.ComputeResource;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.SoftwarePlatform;
@@ -53,6 +54,14 @@ public interface SoftwarePlatformService {
 
     @Transactional
     void deleteImplementationReference(UUID platformId, UUID implId);
+
+    Page<CloudService> findCloudServices(UUID platformId, Pageable pageable);
+
+    @Transactional
+    void addCloudServiceReference(UUID platformId, UUID cloudServiceId);
+
+    @Transactional
+    void deleteCloudServiceReference(UUID platformId, UUID cloudServiceId);
 
     Page<ComputeResource> findComputeResources(UUID platformId, Pageable pageable);
 
