@@ -12,10 +12,10 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface ComputeResourceRepository extends JpaRepository<ComputeResource, UUID> {
-    @Query("SELECT CloudService FROM CloudService cs JOIN cs.providedComputeResources res WHERE res.id = :csid")
+    @Query("SELECT cs FROM CloudService cs JOIN cs.providedComputeResources res WHERE res.id = :csid")
     Page<ComputeResource> findComputeResourceByCloudServiceId(@Param("csid") UUID csid, Pageable p);
 
-    @Query("SELECT SoftwarePlatform FROM SoftwarePlatform sp JOIN sp.supportedComputeResources res WHERE res.id = :csid")
+    @Query("SELECT sp FROM SoftwarePlatform sp JOIN sp.supportedComputeResources res WHERE res.id = :spid")
     Page<ComputeResource> findComputeResourceBySoftwarePlatformId(@Param("spid") UUID spid, Pageable p);
 
     Set<ComputeResource> findByName(String name);

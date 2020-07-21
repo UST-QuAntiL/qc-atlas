@@ -20,6 +20,8 @@
 package org.planqk.atlas.core.services;
 
 import org.planqk.atlas.core.model.CloudService;
+import org.planqk.atlas.core.model.ComputeResource;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,4 +47,11 @@ public interface CloudServiceService {
     @Transactional
     void delete(UUID cloudServiceId);
 
+    Page<ComputeResource> findComputeResources(UUID serviceId, Pageable pageable);
+
+    @Transactional
+    void addComputeResourceReference(UUID serviceId, UUID resourceId);
+
+    @Transactional
+    void deleteImplementationReference(UUID serviceId, UUID resourceId);
 }

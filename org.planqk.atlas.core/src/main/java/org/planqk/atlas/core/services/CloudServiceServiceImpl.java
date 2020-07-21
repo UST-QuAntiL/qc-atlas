@@ -19,19 +19,22 @@
 
 package org.planqk.atlas.core.services;
 
-import lombok.AllArgsConstructor;
-
-import org.planqk.atlas.core.model.CloudService;
-import org.planqk.atlas.core.repository.CloudServiceRepository;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.planqk.atlas.core.model.CloudService;
+import org.planqk.atlas.core.model.ComputeResource;
+import org.planqk.atlas.core.model.Implementation;
+import org.planqk.atlas.core.model.SoftwarePlatform;
+import org.planqk.atlas.core.model.exceptions.ConsistencyException;
+import org.planqk.atlas.core.repository.CloudServiceRepository;
+import org.planqk.atlas.core.repository.ComputeResourceRepository;
+
+import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,6 +43,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class CloudServiceServiceImpl implements CloudServiceService {
 
     private final CloudServiceRepository cloudServiceRepository;
+    private final ComputeResourceRepository computeResourceRepository;
+    private final ComputeResourceService computeResourceService;
 
     @Override
     public CloudService save(CloudService cloudService) {
@@ -84,5 +89,41 @@ public class CloudServiceServiceImpl implements CloudServiceService {
         }
         // TODO remove references
         cloudServiceRepository.deleteById(cloudServiceId);
+    }
+
+    @Override
+    public Page<ComputeResource> findComputeResources(UUID serviceId, Pageable pageable) {
+        if (!cloudServiceRepository.existsCloudServiceById(serviceId)) {
+            throw new NoSuchElementException();
+        }
+        return computeResourceRepository.findComputeResourceByCloudServiceId(serviceId, pageable);
+    }
+
+    @Transactional
+    @Override
+    public void addComputeResourceReference(UUID serviceId, UUID resourceId) {
+        var cloudService = findById(serviceId);
+        var computeResource = computeResourceService.findById(resourceId);
+
+        if (cloudService.getProvidedComputeResources().contains(computeResource)) {
+            throw new ConsistencyException("Implementation and software platform are already linked");
+        }
+
+        cloudService.getProvidedComputeResources().add(computeResource);
+        save(cloudService);
+    }
+
+    @Transactional
+    @Override
+    public void deleteImplementationReference(UUID serviceId, UUID resourceId) {
+        var cloudService = findById(serviceId);
+        var computeResource = computeResourceService.findById(resourceId);
+
+        if (cloudService.getProvidedComputeResources().contains(computeResource)) {
+            throw new ConsistencyException("Implementation and software platform are already linked");
+        }
+
+        cloudService.getProvidedComputeResources().remove(computeResource);
+        save(cloudService);
     }
 }
