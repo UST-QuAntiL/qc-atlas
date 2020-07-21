@@ -21,8 +21,6 @@ package org.planqk.atlas.core.repository;
 
 import java.util.UUID;
 
-import org.planqk.atlas.core.model.BackendProperty;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface BackendPropertyRepository extends JpaRepository<BackendProperty, UUID> {

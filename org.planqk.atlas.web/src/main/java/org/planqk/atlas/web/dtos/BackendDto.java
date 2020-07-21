@@ -6,7 +6,6 @@ import java.util.UUID;
 
 import javax.validation.constraints.NotNull;
 
-import org.planqk.atlas.core.model.BackendProperty;
 import org.planqk.atlas.core.model.QuantumComputationModel;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;

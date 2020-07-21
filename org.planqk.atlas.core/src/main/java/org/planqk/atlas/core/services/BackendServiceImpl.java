@@ -58,10 +58,6 @@ public class BackendServiceImpl implements BackendService {
         if (backend.getId() != null) {
             return update(backend.getId(), backend);
         } else {
-            backend.getBackendProperties().forEach(backendProperty -> {
-                backendPropertyTypeRepository.save(backendProperty.getType());
-                backendPropertyRepository.save(backendProperty);
-            });
             return repo.save(backend);
         }
     }
@@ -97,11 +93,7 @@ public class BackendServiceImpl implements BackendService {
         persistedBackend.setTechnology(backend.getTechnology());
         persistedBackend.setName(backend.getName());
         persistedBackend.setVendor(backend.getVendor());
-        persistedBackend.setBackendProperties(backend.getBackendProperties());
-        persistedBackend.getBackendProperties().forEach(backendProperty -> {
-            backendPropertyTypeRepository.save(backendProperty.getType());
-            backendPropertyRepository.save(backendProperty);
-        });
+
         persistedBackend.setProvidedQuantumResources(backend.getProvidedQuantumResources());
 
         return repo.save(persistedBackend);

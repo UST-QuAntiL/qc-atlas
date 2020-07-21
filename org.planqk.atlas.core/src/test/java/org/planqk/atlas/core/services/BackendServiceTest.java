@@ -26,8 +26,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Backend;
-import org.planqk.atlas.core.model.BackendProperty;
-import org.planqk.atlas.core.model.BackendPropertyType;
 import org.planqk.atlas.core.model.QuantumComputationModel;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 
@@ -50,30 +48,6 @@ public class BackendServiceTest  extends AtlasDatabaseTestBase {
         Backend storedBackend = backendService.saveOrUpdate(backend);
 
         assertBackendEquality(storedBackend, backend);
-    }
-
-    @Test
-    void testAddBackend_WithBackendProperties() {
-        Backend backend = getGenericTestBackend("testBackend");
-
-        Set<BackendProperty> backendProperties = new HashSet<>();
-        BackendProperty backendProperty = new BackendProperty();
-        // backendProperty.setValue("propertyValue");
-        BackendPropertyType backendPropertyType = new BackendPropertyType();
-        backendPropertyType.setName("backendPropertyTypeName");
-        backendPropertyType.setDescription("backendPropertyTypeDescription");
-        backendProperty.setType(backendPropertyType);
-        backendProperties.add(backendProperty);
-        backend.setBackendProperties(backendProperties);
-
-        Backend storedBackend = backendService.saveOrUpdate(backend);
-
-        assertBackendEquality(storedBackend, backend);
-        storedBackend.getBackendProperties().forEach(property -> {
-            assertThat(property.getValue()).isEqualTo(backendProperty.getValue());
-            assertThat(property.getType().getName()).isEqualTo(backendProperty.getType().getName());
-            assertThat(property.getType().getDescription()).isEqualTo(backendProperty.getType().getDescription());
-        });
     }
 
     @Test
@@ -139,36 +113,6 @@ public class BackendServiceTest  extends AtlasDatabaseTestBase {
         Assertions.assertThrows(NoSuchElementException.class, () ->
                 backendService.findById(storedBackend.getId()));
     }
-
-    @Test
-    void testDeleteBackend_WithBackendProperties() {
-        Backend backend = getGenericTestBackend("testBackend");
-
-        Set<BackendProperty> backendProperties = new HashSet<>();
-        BackendProperty backendProperty = new BackendProperty();
-        // backendProperty.setValue("propertyValue");
-        BackendPropertyType backendPropertyType = new BackendPropertyType();
-        backendPropertyType.setName("backendPropertyTypeName");
-        backendPropertyType.setDescription("backendPropertyTypeDescription");
-        backendProperty.setType(backendPropertyType);
-        backendProperties.add(backendProperty);
-        backend.setBackendProperties(backendProperties);
-
-        Backend storedBackend = backendService.saveOrUpdate(backend);
-
-        Assertions.assertDoesNotThrow(() -> backendService.findById(storedBackend.getId()));
-        storedBackend.getBackendProperties().forEach(property -> {
-            assertThat(property.getValue()).isEqualTo(backendProperty.getValue());
-            assertThat(property.getType().getName()).isEqualTo(backendProperty.getType().getName());
-            assertThat(property.getType().getDescription()).isEqualTo(backendProperty.getType().getDescription());
-        });
-
-        backendService.delete(storedBackend.getId());
-
-        Assertions.assertThrows(NoSuchElementException.class, () ->
-                backendService.findById(storedBackend.getId()));
-    }
-
 
     private void assertBackendEquality(Backend dbBackend, Backend compareBackend) {
         assertThat(dbBackend.getId()).isNotNull();
