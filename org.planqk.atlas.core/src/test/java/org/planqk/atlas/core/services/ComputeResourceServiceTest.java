@@ -26,6 +26,9 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.ComputeResource;
+import org.planqk.atlas.core.model.ComputingResourceProperty;
+import org.planqk.atlas.core.model.ComputingResourcePropertyDataType;
+import org.planqk.atlas.core.model.ComputingResourcePropertyType;
 import org.planqk.atlas.core.model.QuantumComputationModel;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 
@@ -40,10 +43,13 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
 
     @Autowired
     private ComputeResourceService computeResourceService;
+    @Autowired
+    private ComputingResourcePropertyService computingResourcePropertyService;
 
     @Test
-    void testAddComputeResource_WithoutComputeResourceProperties() {
-        ComputeResource computeResource = getGenericTestComputeResource("testComputeResource");
+    void createMinimalComputeResource() {
+        ComputeResource computeResource = new ComputeResource();
+        computeResource.setName("test compute resource");
 
         ComputeResource storedComputeResource = computeResourceService.save(computeResource);
 
@@ -51,13 +57,28 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void testUpdateComputeResource_ElementFound() {
-        ComputeResource computeResource = getGenericTestComputeResource("testComputeResource");
-        ComputeResource storedComputeResource = getGenericTestComputeResource("testComputeResource");
+    void createMaximalComputeResource() {
+        ComputeResource computeResource = getGenericTestComputeResource("test compute resource");
+
+        ComputeResource storedComputeResource = computeResourceService.save(computeResource);
+
+        assertComputeResourceEquality(storedComputeResource, computeResource);
+    }
+
+    @Test
+    void updateComputeResource_ElementNotFound() {
+        Assertions.assertThrows(NoSuchElementException.class, () ->
+                computeResourceService.update(UUID.randomUUID(), null));
+    }
+
+    @Test
+    void updateComputeResource_ElementFound() {
+        ComputeResource computeResource = getGenericTestComputeResource("test compute resource");
+        ComputeResource storedComputeResource = getGenericTestComputeResource("test compute resource");
 
         ComputeResource storedEditedComputeResource = computeResourceService.save(computeResource);
         storedComputeResource.setId(storedEditedComputeResource.getId());
-        String editName = "editedComputeResource";
+        String editName = "edited compute resource";
         storedEditedComputeResource.setName(editName);
         computeResourceService.save(storedEditedComputeResource);
 
@@ -70,14 +91,14 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void testFindComputeResourceById_ElementNotFound() {
+    void findComputeResourceById_ElementNotFound() {
         Assertions.assertThrows(NoSuchElementException.class, () ->
                 computeResourceService.findById(UUID.randomUUID()));
     }
 
     @Test
-    void testFindComputeResourceById_ElementFound() {
-        ComputeResource computeResource = getGenericTestComputeResource("testComputeResource");
+    void findComputeResourceById_ElementFound() {
+        ComputeResource computeResource = getGenericTestComputeResource("test compute resource");
 
         ComputeResource storedComputeResource = computeResourceService.save(computeResource);
 
@@ -87,10 +108,10 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void testFindAll() {
+    void findAll() {
         Set<ComputeResource> computeResources = new HashSet<>();
-        ComputeResource computeResource1 = getGenericTestComputeResource("testComputeResource1");
-        ComputeResource computeResource2 = getGenericTestComputeResource("testComputeResource2");
+        ComputeResource computeResource1 = getGenericTestComputeResource("test compute resource1");
+        ComputeResource computeResource2 = getGenericTestComputeResource("test compute resource2");
         computeResources.add(computeResource1);
         computeResources.add(computeResource2);
         computeResourceService.saveOrUpdateAll(computeResources);
@@ -101,8 +122,8 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void testDeleteComputeResource_WithoutComputeResourceProperties() {
-        ComputeResource computeResource = getGenericTestComputeResource("testComputeResource");
+    void deleteComputeResource_NoReferences() {
+        ComputeResource computeResource = getGenericTestComputeResource("test compute resource");
 
         ComputeResource storedComputeResource = computeResourceService.save(computeResource);
 
@@ -112,6 +133,37 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
 
         Assertions.assertThrows(NoSuchElementException.class, () ->
                 computeResourceService.findById(storedComputeResource.getId()));
+    }
+
+    @Test
+    void deleteComputeResource_HasReferences() {
+        ComputeResource computeResource = getGenericTestComputeResource("test compute resource");
+        ComputeResource storedComputeResource = computeResourceService.save(computeResource);
+
+        Assertions.assertDoesNotThrow(() -> computeResourceService.findById(storedComputeResource.getId()));
+
+        // Add Computing Resource Property Reference
+        var computingResourceProperty = new ComputingResourceProperty();
+        var computingResourcePropertyType = new ComputingResourcePropertyType();
+        computingResourcePropertyType.setName("test name");
+        computingResourcePropertyType.setDatatype(ComputingResourcePropertyDataType.STRING);
+        computingResourcePropertyType.setDescription("test description");
+        var storedType = computingResourcePropertyService.saveComputingResourcePropertyType(computingResourcePropertyType);
+        computingResourceProperty.setComputingResourcePropertyType(storedType);
+        computingResourceProperty.setValue("test value");
+
+        var storedProperty = computingResourcePropertyService.addComputingResourcePropertyToComputeResource(
+                computeResource, computingResourceProperty);
+
+        // Delete
+        computeResourceService.delete(storedComputeResource.getId());
+
+        Assertions.assertThrows(NoSuchElementException.class, () ->
+                computeResourceService.findById(storedComputeResource.getId()));
+
+        // Test if references are removed
+        Assertions.assertThrows(NoSuchElementException.class, () ->
+                computingResourcePropertyService.findComputingResourcePropertyById(storedProperty.getId()));
     }
 
     private void assertComputeResourceEquality(ComputeResource dbComputeResource, ComputeResource compareComputeResource) {
@@ -126,8 +178,8 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
         ComputeResource computeResource = new ComputeResource();
         computeResource.setName(name);
         computeResource.setQuantumComputationModel(QuantumComputationModel.QUANTUM_ANNEALING);
-        computeResource.setTechnology("testTechnology");
-        computeResource.setVendor("testVendor");
+        computeResource.setTechnology("test technology");
+        computeResource.setVendor("test vendor");
         return computeResource;
     }
 }

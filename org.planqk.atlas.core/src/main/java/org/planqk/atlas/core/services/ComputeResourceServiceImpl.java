@@ -44,14 +44,15 @@ public class ComputeResourceServiceImpl implements ComputeResourceService {
 
     private final static Logger LOG = LoggerFactory.getLogger(ComputeResourceServiceImpl.class);
 
-    private final ComputeResourceRepository repo;
+    private final ComputeResourceRepository computeResourceRepository;
     private final CloudServiceRepository cloudServiceRepository;
     private final SoftwarePlatformRepository softwarePlatformRepository;
+    private final ComputingResourcePropertyService computingResourcePropertyService;
 
     @Override
     @Transactional
     public ComputeResource save(ComputeResource computeResource) {
-        return repo.save(computeResource);
+        return computeResourceRepository.save(computeResource);
     }
 
     @Override
@@ -65,7 +66,7 @@ public class ComputeResourceServiceImpl implements ComputeResourceService {
         persistedComputeResource.setTechnology(computeResource.getTechnology());
         persistedComputeResource.setQuantumComputationModel(computeResource.getQuantumComputationModel());
 
-        return repo.save(persistedComputeResource);
+        return computeResourceRepository.save(persistedComputeResource);
     }
 
     @Override
@@ -79,30 +80,33 @@ public class ComputeResourceServiceImpl implements ComputeResourceService {
 
     @Override
     public ComputeResource findById(UUID id) {
-        return repo.findById(id).orElseThrow(NoSuchElementException::new);
+        return computeResourceRepository.findById(id).orElseThrow(NoSuchElementException::new);
     }
 
     @Override
     public Set<ComputeResource> findByName(String name) {
-        return repo.findByName(name);
+        return computeResourceRepository.findByName(name);
     }
 
     @Override
     public Page<ComputeResource> findAll(Pageable pageable) {
-        return repo.findAll(pageable);
+        return computeResourceRepository.findAll(pageable);
     }
 
     @Override
     @Transactional
     public void delete(UUID id) {
-        if (!repo.existsById(id)) {
+        if (!computeResourceRepository.existsById(id)) {
             throw new NoSuchElementException();
         }
-        // TODO remove references
         // only delete if unused in SoftwarePlatforms and CloudServices
-        long count = cloudServiceRepository.countCloudServiceByBackend(id) + softwarePlatformRepository.countSoftwarePlatformByComputeResource(id);
+        long count = cloudServiceRepository.countCloudServiceByComputeResource(id) +
+                softwarePlatformRepository.countSoftwarePlatformByComputeResource(id);
         if (count == 0) {
-            repo.deleteById(id);
+            ComputeResource computeResource = findById(id);
+            computeResource.getProvidedQuantumResources().forEach(computingResourceProperty ->
+                    computingResourcePropertyService.deleteComputingResourceProperty(computingResourceProperty.getId()));
+            computeResourceRepository.deleteById(id);
         } else {
             LOG.info("Trying to delete Backend that is used in a CloudService or SoftwarePlatform");
             throw new ConsistencyException(

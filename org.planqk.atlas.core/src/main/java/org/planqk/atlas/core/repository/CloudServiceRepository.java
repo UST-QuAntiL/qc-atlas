@@ -22,5 +22,5 @@ public interface CloudServiceRepository extends JpaRepository<CloudService, UUID
             "FROM CloudService cs " +
             "JOIN cs.providedComputeResources computeResource " +
             "WHERE computeResource.id = :computeResourceId")
-    long countCloudServiceByBackend(@Param("computeResourceId") UUID computeResourceId);
+    long countCloudServiceByComputeResource(@Param("computeResourceId") UUID computeResourceId);
 }

@@ -97,7 +97,7 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
 
         CloudService storedEditedCloudService = cloudServiceService.save(cloudService);
         storedCloudService.setId(storedEditedCloudService.getId());
-        String editName = "editedCloudService";
+        String editName = "edited cloud service";
         storedEditedCloudService.setName(editName);
         storedEditedCloudService = cloudServiceService.update(storedEditedCloudService.getId(), storedEditedCloudService);
 
@@ -212,11 +212,11 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
     private CloudService getTestCloudService(String name) {
         CloudService cloudService = new CloudService();
         cloudService.setName(name);
-        cloudService.setProvider("testProvider");
+        cloudService.setProvider("test provider");
         try {
             cloudService.setUrl(new URL("http://example.com"));
         } catch (MalformedURLException ignored){}
-        cloudService.setCostModel("testCostModel");
+        cloudService.setCostModel("test cost model");
         return cloudService;
     }
 }

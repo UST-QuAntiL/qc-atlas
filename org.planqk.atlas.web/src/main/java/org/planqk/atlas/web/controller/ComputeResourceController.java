@@ -140,7 +140,7 @@ public class ComputeResourceController {
         var ComputeResource = computeResourceService.findById(id);
         ValidationUtils.validateComputingResourceProperty(resourceDto);
         var resource = ModelMapperUtils.convert(resourceDto, ComputingResourceProperty.class);
-        var updatedComputeResource = computingResourcePropertyService.addComputingResourcePropertyToBackend(ComputeResource, resource);
+        var updatedComputeResource = computingResourcePropertyService.addComputingResourcePropertyToComputeResource(ComputeResource, resource);
         return ResponseEntity.ok(computeResourceAssembler.toModel(updatedComputeResource));
     }
 }

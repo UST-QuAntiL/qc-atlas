@@ -29,7 +29,7 @@ public class ComputeResource extends HasId {
     private String vendor;
     private String technology;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+    @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, orphanRemoval = true)
     private Set<ComputingResourceProperty> providedQuantumResources = new HashSet<>();
 
     private QuantumComputationModel quantumComputationModel;

@@ -63,7 +63,7 @@ public class ComputingResourcePropertyServiceTest extends AtlasDatabaseTestBase 
         var resource = new ComputingResourceProperty();
         resource.setComputingResourcePropertyType(resourceType);
 
-        var storedResource = resourceService.addOrUpdateComputingResourceProperty(resource);
+        var storedResource = resourceService.saveComputingResourceProperty(resource);
 
         resourceService.deleteComputingResourceProperty(resource.getId());
         this.resourceService.deleteComputingResourcePropertyType(storedResource.getComputingResourcePropertyType().getId());
@@ -80,7 +80,7 @@ public class ComputingResourcePropertyServiceTest extends AtlasDatabaseTestBase 
         var resource = new ComputingResourceProperty();
         resource.setComputingResourcePropertyType(resourceType);
 
-        var storedResource = resourceService.addOrUpdateComputingResourceProperty(resource);
+        var storedResource = resourceService.saveComputingResourceProperty(resource);
 
         Assertions.assertThrows(DataIntegrityViolationException.class, () -> {
             this.resourceService.deleteComputingResourcePropertyType(storedResource.getComputingResourcePropertyType().getId());
@@ -157,7 +157,7 @@ public class ComputingResourcePropertyServiceTest extends AtlasDatabaseTestBase 
         algo.setComputationModel(ComputationModel.QUANTUM);
         var storedAlgo = (QuantumAlgorithm) algorithmService.save(algo);
 
-        var storedResource = resourceService.addOrUpdateComputingResourceProperty(resource);
+        var storedResource = resourceService.saveComputingResourceProperty(resource);
 
         resourceService.addComputingResourcePropertyToAlgorithm(storedAlgo.getId(), resource.getId());
 
@@ -205,7 +205,7 @@ public class ComputingResourcePropertyServiceTest extends AtlasDatabaseTestBase 
         resourceType.setName("Test Name");
         resourceType.setDatatype(ComputingResourcePropertyDataType.FLOAT);
 
-        var insertedElem = this.resourceService.addOrUpdateComputingResourcePropertyType(resourceType);
+        var insertedElem = this.resourceService.saveComputingResourcePropertyType(resourceType);
 
         var elements = this.typeRepository.findAll();
         assertEquals(1, elements.size());
@@ -232,7 +232,7 @@ public class ComputingResourcePropertyServiceTest extends AtlasDatabaseTestBase 
         resourceType.setName("Test Name");
         resourceType.setDatatype(ComputingResourcePropertyDataType.FLOAT);
 
-        var insertedElem = this.resourceService.addOrUpdateComputingResourcePropertyType(resourceType);
+        var insertedElem = this.resourceService.saveComputingResourcePropertyType(resourceType);
 
         assertThat(resourceService.findComputingResourcePropertyTypeById(insertedElem.getId()).getDatatype()).isEqualTo(resourceType.getDatatype());
     }

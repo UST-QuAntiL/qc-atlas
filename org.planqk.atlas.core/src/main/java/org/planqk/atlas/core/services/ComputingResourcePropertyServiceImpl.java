@@ -105,15 +105,15 @@ public class ComputingResourcePropertyServiceImpl implements ComputingResourcePr
 
     @Override
     @Transactional
-    public ComputingResourcePropertyType addOrUpdateComputingResourcePropertyType(ComputingResourcePropertyType resourceType) {
+    public ComputingResourcePropertyType saveComputingResourcePropertyType(ComputingResourcePropertyType resourceType) {
         return typeRepository.save(resourceType);
     }
 
     @Override
     @Transactional
-    public ComputingResourceProperty addOrUpdateComputingResourceProperty(ComputingResourceProperty resource) {
+    public ComputingResourceProperty saveComputingResourceProperty(ComputingResourceProperty resource) {
         if (resource.getComputingResourcePropertyType().getId() == null) {
-            var type = addOrUpdateComputingResourcePropertyType(resource.getComputingResourcePropertyType());
+            var type = saveComputingResourcePropertyType(resource.getComputingResourcePropertyType());
             resource.setComputingResourcePropertyType(type);
         }
         return resourceRepository.save(resource);
@@ -124,7 +124,7 @@ public class ComputingResourcePropertyServiceImpl implements ComputingResourcePr
     public ComputingResourceProperty addComputingResourcePropertyToAlgorithm(Algorithm algo, ComputingResourceProperty resource) {
         var updatedResource = resource;
         if (updatedResource.getId() == null) {
-            updatedResource = this.addOrUpdateComputingResourceProperty(resource);
+            updatedResource = this.saveComputingResourceProperty(resource);
         }
         updatedResource.setAlgorithm(algo);
         return this.resourceRepository.save(updatedResource);
@@ -142,7 +142,7 @@ public class ComputingResourcePropertyServiceImpl implements ComputingResourcePr
     public ComputingResourceProperty addComputingResourcePropertyToImplementation(Implementation impl, ComputingResourceProperty resource) {
         var updatedResource = resource;
         if (updatedResource.getId() == null) {
-            updatedResource = this.addOrUpdateComputingResourceProperty(resource);
+            updatedResource = this.saveComputingResourceProperty(resource);
         }
         updatedResource.setImplementation(impl);
         return this.resourceRepository.save(updatedResource);
@@ -157,10 +157,10 @@ public class ComputingResourcePropertyServiceImpl implements ComputingResourcePr
 
     @Override
     @Transactional
-    public ComputingResourceProperty addComputingResourcePropertyToBackend(ComputeResource computeResource, ComputingResourceProperty resource) {
+    public ComputingResourceProperty addComputingResourcePropertyToComputeResource(ComputeResource computeResource, ComputingResourceProperty resource) {
         var updatedResource = resource;
         if (updatedResource.getId() == null) {
-            updatedResource = this.addOrUpdateComputingResourceProperty(resource);
+            updatedResource = this.saveComputingResourceProperty(resource);
         }
         updatedResource.setComputeResource(computeResource);
         return this.resourceRepository.save(updatedResource);
@@ -168,10 +168,10 @@ public class ComputingResourcePropertyServiceImpl implements ComputingResourcePr
 
     @Override
     @Transactional
-    public ComputingResourceProperty addComputingResourcePropertyToBackend(UUID backendId, UUID resourceId) {
-        var resource = resourceRepository.findById(resourceId).orElseThrow(NoSuchElementException::new);
-        var backend = (ComputeResource) computeResourceRepository.findById(backendId).orElseThrow(NoSuchElementException::new);
-        return addComputingResourcePropertyToBackend(backend, resource);
+    public ComputingResourceProperty addComputingResourcePropertyToComputeResource(UUID computeResourceId, UUID propertyId) {
+        var resource = resourceRepository.findById(propertyId).orElseThrow(NoSuchElementException::new);
+        var backend = (ComputeResource) computeResourceRepository.findById(computeResourceId).orElseThrow(NoSuchElementException::new);
+        return addComputingResourcePropertyToComputeResource(backend, resource);
     }
 
     @Override

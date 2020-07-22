@@ -58,10 +58,10 @@ public interface ComputingResourcePropertyService {
     Page<ComputingResourceProperty> findAllComputingResourcesPropertiesByComputeResourceId(UUID backendId, Pageable pageable);
 
     @Transactional
-    ComputingResourcePropertyType addOrUpdateComputingResourcePropertyType(ComputingResourcePropertyType resourceType);
+    ComputingResourcePropertyType saveComputingResourcePropertyType(ComputingResourcePropertyType resourceType);
 
     @Transactional
-    ComputingResourceProperty addOrUpdateComputingResourceProperty(ComputingResourceProperty resource);
+    ComputingResourceProperty saveComputingResourceProperty(ComputingResourceProperty resource);
 
     @Transactional
     ComputingResourceProperty addComputingResourcePropertyToAlgorithm(Algorithm algo, ComputingResourceProperty resource);
@@ -76,10 +76,10 @@ public interface ComputingResourcePropertyService {
     ComputingResourceProperty addComputingResourcePropertyToImplementation(UUID implId, UUID resourceId);
 
     @Transactional
-    ComputingResourceProperty addComputingResourcePropertyToBackend(ComputeResource computeResource, ComputingResourceProperty resource);
+    ComputingResourceProperty addComputingResourcePropertyToComputeResource(ComputeResource computeResource, ComputingResourceProperty resource);
 
     @Transactional
-    ComputingResourceProperty addComputingResourcePropertyToBackend(UUID backend, UUID resourceId);
+    ComputingResourceProperty addComputingResourcePropertyToComputeResource(UUID backend, UUID resourceId);
 
     ComputingResourceProperty findComputingResourcePropertyById(UUID id);
 }
