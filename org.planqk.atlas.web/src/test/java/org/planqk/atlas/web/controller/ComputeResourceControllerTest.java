@@ -172,6 +172,8 @@ public class ComputeResourceControllerTest {
         resource.setId(UUID.randomUUID());
         resource.setName("Test");
 
+        doReturn(resource).when(computeResourceService).findById(any());
+
         mockMvc.perform(
                 get(
                         fromMethodCall(uriBuilder,
