@@ -16,7 +16,6 @@ import org.planqk.atlas.web.linkassembler.ComputingResourcePropertyAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
-import org.planqk.atlas.web.utils.RestUtils;
 import org.planqk.atlas.web.utils.ValidationUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -37,7 +36,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -119,13 +117,13 @@ public class ComputeResourceController {
             @ApiResponse(responseCode = "404", description = "Compute Resource with given id does not exist")
     })
     @GetMapping("/{id}/" + Constants.COMPUTING_RESOURCES_PROPERTIES)
+    @ListParametersDoc
     public HttpEntity<PagedModel<EntityModel<ComputingResourcePropertyDto>>> getComputingResourcePropertiesForComputeResource(
             @PathVariable UUID id,
-            @RequestParam(required = false) Integer page,
-            @RequestParam(required = false) Integer size
+            @Parameter(hidden = true) ListParameters listParameters
     ) {
         var resources = computingResourcePropertyService.findAllComputingResourcesPropertiesByComputeResourceId(id,
-                RestUtils.getPageableFromRequestParams(page, size));
+                listParameters.getPageable());
         return ResponseEntity.ok(computingResourcePropertyAssembler.toModel(resources));
     }
 
