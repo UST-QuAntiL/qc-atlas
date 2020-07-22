@@ -61,6 +61,17 @@ public class PatternRelationController {
         return new ResponseEntity<>(handlePatternRelationUpdate(relationDto, null), HttpStatus.CREATED);
     }
 
+    @Operation(operationId = "getAllPatternRelationTypes",
+            responses = {@ApiResponse(responseCode = "200")})
+    @GetMapping()
+    public HttpEntity<PagedModel<EntityModel<PatternRelationDto>>> getPatternRelationTypes(
+            @RequestParam(required = false) Integer page, @RequestParam(required = false) Integer size) {
+        log.debug("Get to retrieve all PatternRelations received.");
+        Pageable p = RestUtils.getPageableFromRequestParams(page, size);
+        var entities = patternRelationService.findAll(p);
+        return ResponseEntity.ok(patternRelationAssembler.toModel(entities));
+    }
+
     @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400"), @ApiResponse(responseCode = "404")})
     @GetMapping("/{id}")
     public HttpEntity<EntityModel<PatternRelationDto>> getPatternRelation(@PathVariable UUID id) {
