@@ -26,8 +26,6 @@ import java.util.stream.Collectors;
 
 import org.planqk.atlas.core.model.CloudService;
 import org.planqk.atlas.core.model.ComputeResource;
-import org.planqk.atlas.core.model.Implementation;
-import org.planqk.atlas.core.model.SoftwarePlatform;
 import org.planqk.atlas.core.model.exceptions.ConsistencyException;
 import org.planqk.atlas.core.repository.CloudServiceRepository;
 import org.planqk.atlas.core.repository.ComputeResourceRepository;
@@ -96,7 +94,7 @@ public class CloudServiceServiceImpl implements CloudServiceService {
         if (!cloudServiceRepository.existsCloudServiceById(serviceId)) {
             throw new NoSuchElementException();
         }
-        return computeResourceRepository.findComputeResourceByCloudServiceId(serviceId, pageable);
+        return computeResourceRepository.findComputeResourcesByCloudServiceId(serviceId, pageable);
     }
 
     @Transactional

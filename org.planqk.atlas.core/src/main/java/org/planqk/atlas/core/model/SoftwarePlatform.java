@@ -13,6 +13,7 @@ import javax.persistence.ManyToMany;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 /**
  * A software platform e.g. qiskit has a number of supported backends and a number of supported cloud services which
@@ -31,25 +32,30 @@ public class SoftwarePlatform extends HasId {
     private String licence;
     private String version;
 
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE})
     @JoinTable(name = "software_platforms_compute_resources",
             joinColumns = @JoinColumn(name = "software_platform_id"),
             inverseJoinColumns = @JoinColumn(name = "compute_resource_id"))
     private Set<ComputeResource> supportedComputeResources = new HashSet<>();
 
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE})
     @JoinTable(name = "software_platform_cloud_services",
             joinColumns = @JoinColumn(name = "software_platform_id"),
             inverseJoinColumns = @JoinColumn(name = "cloud_service_id"))
     private Set<CloudService> supportedCloudServices = new HashSet<>();
 
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     @ManyToMany(mappedBy = "softwarePlatforms",
             cascade = {CascadeType.MERGE, CascadeType.PERSIST})
-    @EqualsAndHashCode.Exclude
     private Set<Implementation> implementations = new HashSet<>();
 
     public Set<Implementation> getImplementations() {
-        return new HashSet<Implementation>(implementations);
+        return new HashSet<>(implementations);
     }
 
     public void addImplementation(Implementation implementation) {
@@ -66,5 +72,45 @@ public class SoftwarePlatform extends HasId {
         }
         implementations.remove(implementation);
         implementation.removeSoftwarePlatform(this);
+    }
+
+    public Set<CloudService> getSupportedCloudServices() {
+        return new HashSet<>(supportedCloudServices);
+    }
+
+    public void addCloudService(CloudService cloudService) {
+        if (supportedCloudServices.contains(cloudService)) {
+            return;
+        }
+        supportedCloudServices.add(cloudService);
+        cloudService.addSoftwarePlatform(this);
+    }
+
+    public void removeCloudService(CloudService cloudService) {
+        if (!supportedCloudServices.contains(cloudService)) {
+            return;
+        }
+        supportedCloudServices.remove(cloudService);
+        cloudService.removeSoftwarePlatform(this);
+    }
+
+    public Set<ComputeResource> getSupportedComputeResources() {
+        return new HashSet<>(supportedComputeResources);
+    }
+
+    public void addComputeResource(ComputeResource computeResource) {
+        if (supportedComputeResources.contains(computeResource)) {
+            return;
+        }
+        supportedComputeResources.add(computeResource);
+        computeResource.addSoftwarePlatform(this);
+    }
+
+    public void removeComputeResource(ComputeResource computeResource) {
+        if (!supportedComputeResources.contains(computeResource)) {
+            return;
+        }
+        supportedComputeResources.remove(computeResource);
+        computeResource.removeSoftwarePlatform(this);
     }
 }
