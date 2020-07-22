@@ -177,7 +177,7 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
         if (!softwarePlatformRepository.existsSoftwarePlatformById(platformId)) {
             throw new NoSuchElementException();
         }
-        System.out.println(computeResourceRepository.findComputeResourcesBySoftwarePlatformId(platformId, pageable).toSet());
+
         return computeResourceRepository.findComputeResourcesBySoftwarePlatformId(platformId, pageable);
     }
 
