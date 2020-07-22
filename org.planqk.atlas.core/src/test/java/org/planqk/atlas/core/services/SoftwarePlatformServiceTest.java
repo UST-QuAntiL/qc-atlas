@@ -84,7 +84,6 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
         Set<Implementation> implementations = softwarePlatformService.findImplementations(
                 storedSoftwarePlatform.getId(), Pageable.unpaged()).toSet();
 
-        assertSoftwarePlatformEquality(storedSoftwarePlatform, softwarePlatform);
         assertThat(implementations.size()).isEqualTo(1);
         assertThat(implementations.contains(storedImplementation)).isTrue();
     }
@@ -108,7 +107,6 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
         Set<CloudService> cloudServices = softwarePlatformService.findCloudServices(
                 storedSoftwarePlatform.getId(), Pageable.unpaged()).toSet();
 
-        assertSoftwarePlatformEquality(storedSoftwarePlatform, softwarePlatform);
         assertThat(cloudServices.size()).isEqualTo(1);
         assertThat(cloudServices.contains(storedCloudService)).isTrue();
     }
@@ -131,7 +129,6 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
         Set<ComputeResource> computeResources = softwarePlatformService.findComputeResources(
                 storedSoftwarePlatform.getId(), Pageable.unpaged()).toSet();
 
-        assertSoftwarePlatformEquality(storedSoftwarePlatform, softwarePlatform);
         assertThat(computeResources.size()).isEqualTo(1);
         assertThat(computeResources.contains(storedComputeResource)).isTrue();
     }
@@ -158,6 +155,7 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
         assertThat(storedEditedSoftwarePlatform.getName()).isEqualTo(editName);
         assertThat(storedEditedSoftwarePlatform.getLink()).isEqualTo(storedSoftwarePlatform.getLink());
         assertThat(storedEditedSoftwarePlatform.getVersion()).isEqualTo(storedSoftwarePlatform.getVersion());
+        assertThat(storedEditedSoftwarePlatform.getLicence()).isEqualTo(storedSoftwarePlatform.getLicence());
     }
 
     @Test
@@ -273,7 +271,6 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
     @Test
     void deleteSoftwarePlatform_HasReferences() {
         SoftwarePlatform softwarePlatform = getTestSoftwarePlatform("testSoftwarePlatform");
-
         SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.save(softwarePlatform);
 
         Assertions.assertDoesNotThrow(() -> softwarePlatformService.findById(storedSoftwarePlatform.getId()));
@@ -389,6 +386,7 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
         assertThat(dbSoftwarePlatform.getName()).isEqualTo(compareSoftwarePlatform.getName());
         assertThat(dbSoftwarePlatform.getLink()).isEqualTo(compareSoftwarePlatform.getLink());
         assertThat(dbSoftwarePlatform.getVersion()).isEqualTo(compareSoftwarePlatform.getVersion());
+        assertThat(dbSoftwarePlatform.getLicence()).isEqualTo(compareSoftwarePlatform.getLicence());
     }
 
     private SoftwarePlatform getTestSoftwarePlatform(String name){
@@ -398,6 +396,7 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
             softwarePlatform.setLink(new URL("http://example.com"));
         } catch (MalformedURLException ignored) {}
         softwarePlatform.setVersion("v1");
+        softwarePlatform.setLicence("test licence");
         return softwarePlatform;
     }
 }

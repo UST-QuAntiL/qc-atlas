@@ -104,24 +104,22 @@ public class CloudServiceServiceImpl implements CloudServiceService {
         var computeResource = computeResourceService.findById(resourceId);
 
         if (cloudService.getProvidedComputeResources().contains(computeResource)) {
-            throw new ConsistencyException("Implementation and software platform are already linked");
+            throw new ConsistencyException("Compute Resource and software platform are already linked");
         }
 
-        cloudService.getProvidedComputeResources().add(computeResource);
-        save(cloudService);
+        cloudService.addComputeResource(computeResource);
     }
 
     @Transactional
     @Override
-    public void deleteImplementationReference(UUID serviceId, UUID resourceId) {
+    public void deleteComputeResourceReference(UUID serviceId, UUID resourceId) {
         var cloudService = findById(serviceId);
         var computeResource = computeResourceService.findById(resourceId);
 
-        if (cloudService.getProvidedComputeResources().contains(computeResource)) {
-            throw new ConsistencyException("Implementation and software platform are already linked");
+        if (!cloudService.getProvidedComputeResources().contains(computeResource)) {
+            throw new ConsistencyException("Compute Resource and software platform are not linked");
         }
 
-        cloudService.getProvidedComputeResources().remove(computeResource);
-        save(cloudService);
+        cloudService.removeComputeResource(computeResource);
     }
 }

@@ -53,5 +53,5 @@ public interface CloudServiceService {
     void addComputeResourceReference(UUID serviceId, UUID resourceId);
 
     @Transactional
-    void deleteImplementationReference(UUID serviceId, UUID resourceId);
+    void deleteComputeResourceReference(UUID serviceId, UUID resourceId);
 }

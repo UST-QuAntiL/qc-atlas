@@ -22,15 +22,15 @@ package org.planqk.atlas.core.services;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import org.planqk.atlas.core.model.ComputeResource;
 import org.planqk.atlas.core.model.CloudService;
+import org.planqk.atlas.core.model.ComputeResource;
+import org.planqk.atlas.core.model.QuantumComputationModel;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -46,46 +46,54 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
     private ComputeResourceService computeResourceService;
 
     @Test
-    void testAddCloudService_WithoutBackends() throws MalformedURLException {
-        CloudService cloudService = getGenericTestCloudServiceWithoutRelations("testCloudService");
+    void createMinimalCloudService() {
+        CloudService cloudService = new CloudService();
+        cloudService.setName("test cloud service");
 
         CloudService storedCloudService = cloudServiceService.save(cloudService);
         assertCloudServiceEquality(storedCloudService, cloudService);
     }
 
     @Test
-    void testAddCloudService_WithBackends() throws MalformedURLException {
-//        CloudService cloudService = getGenericTestCloudServiceWithoutRelations("testCloudService");
-//        Set<ComputeResource> computeResources = new HashSet<>();
-//
-//        ComputeResource computeResource = new ComputeResource();
-//        computeResource.setName("testBackend");
-//        computeResources.add(computeResource);
-//
-//        cloudService.setProvidedComputeResources(computeResources);
-//
-//        CloudService storedCloudService = cloudServiceService.save(cloudService);
-//        assertCloudServiceEquality(storedCloudService, cloudService);
-//
-//        storedCloudService.getProvidedComputeResources().forEach(b -> {
-//            assertThat(b.getId()).isNotNull();
-//            assertThat(b.getName()).isEqualTo(computeResource.getName());
-//            Assertions.assertDoesNotThrow(() -> computeResourceService.findById(b.getId()));
-//        });
-//
-//        assertThat(storedCloudService.getProvidedComputeResources().size()).isEqualTo(1);
+    void createMaximalCloudService() {
+        CloudService cloudService = getTestCloudService("test cloud service");
+
+        CloudService storedCloudService = cloudServiceService.save(cloudService);
+        assertCloudServiceEquality(storedCloudService, cloudService);
     }
 
     @Test
-    void testUpdateCloudService_ElementNotFound() {
+    void addComputeResourceReference() {
+        CloudService cloudService = getTestCloudService("test cloud service");
+        CloudService storedCloudService = cloudServiceService.save(cloudService);
+
+        ComputeResource computeResource = new ComputeResource();
+        computeResource.setName("test compute resource");
+        computeResource.setVendor("test vendor");
+        computeResource.setTechnology("test technology");
+        computeResource.setQuantumComputationModel(QuantumComputationModel.QUANTUM_ANNEALING);
+        ComputeResource storedComputeResource = computeResourceService.save(computeResource);
+
+        cloudServiceService.addComputeResourceReference(
+                storedCloudService.getId(), storedComputeResource.getId());
+
+        Set<ComputeResource> computeResources = cloudServiceService.findComputeResources(
+                storedCloudService.getId(), Pageable.unpaged()).toSet();
+
+        assertThat(computeResources.size()).isEqualTo(1);
+        assertThat(computeResources.contains(storedComputeResource)).isTrue();
+    }
+
+    @Test
+    void updateCloudService_ElementNotFound() {
         Assertions.assertThrows(NoSuchElementException.class, () ->
                 cloudServiceService.update(UUID.randomUUID(), null));
     }
 
     @Test
-    void testUpdateCloudService_ElementFound() throws MalformedURLException {
-        CloudService cloudService = getGenericTestCloudServiceWithoutRelations("testCloudService");
-        CloudService storedCloudService = getGenericTestCloudServiceWithoutRelations("testCloudService");
+    void updateCloudService_ElementFound() {
+        CloudService cloudService = getTestCloudService("test cloud service");
+        CloudService storedCloudService = getTestCloudService("test cloud service");
 
         CloudService storedEditedCloudService = cloudServiceService.save(cloudService);
         storedCloudService.setId(storedEditedCloudService.getId());
@@ -102,14 +110,14 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void testFindCloudServiceById_ElementNotFound() {
+    void findCloudServiceById_ElementNotFound() {
         Assertions.assertThrows(NoSuchElementException.class, () ->
             cloudServiceService.findById(UUID.randomUUID()));
     }
 
     @Test
-    void testFindCloudServiceById_ElementFound() throws MalformedURLException {
-        CloudService cloudService = getGenericTestCloudServiceWithoutRelations("testCloudService");
+    void findCloudServiceById_ElementFound() {
+        CloudService cloudService = getTestCloudService("test cloud service");
 
         CloudService storedCloudService = cloudServiceService.save(cloudService);
 
@@ -119,10 +127,10 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void testFindAll() throws MalformedURLException {
-        CloudService cloudService1 = getGenericTestCloudServiceWithoutRelations("testCloudService1");
+    void findAll() {
+        CloudService cloudService1 = getTestCloudService("test cloud service1");
         cloudServiceService.save(cloudService1);
-        CloudService cloudService2 = getGenericTestCloudServiceWithoutRelations("testCloudService2");
+        CloudService cloudService2 = getTestCloudService("test cloud service2");
         cloudServiceService.save(cloudService2);
 
         List<CloudService> cloudServices = cloudServiceService.findAll(Pageable.unpaged()).getContent();
@@ -131,8 +139,8 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void testDeleteCloudService_WithoutBackends() throws MalformedURLException {
-        CloudService cloudService = getGenericTestCloudServiceWithoutRelations("testCloudService");
+    void deleteCloudService_NoReferences() {
+        CloudService cloudService = getTestCloudService("test cloud service");
 
         CloudService storedCloudService = cloudServiceService.save(cloudService);
 
@@ -145,30 +153,52 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void testDeleteSoftwarePlatform_WithBackends() throws MalformedURLException {
-//        CloudService cloudService = getGenericTestCloudServiceWithoutRelations("testCloudService");
-//        Set<ComputeResource> computeResources = new HashSet<>();
-//
-//        ComputeResource computeResource = new ComputeResource();
-//        computeResource.setName("testBackend");
-//        computeResources.add(computeResource);
-//
-//        cloudService.setProvidedComputeResources(computeResources);
-//
-//        CloudService storedCloudService = cloudServiceService.save(cloudService);
-//
-//        Assertions.assertDoesNotThrow(() -> cloudServiceService.findById(storedCloudService.getId()));
-//        storedCloudService.getProvidedComputeResources().forEach(b -> {
-//            Assertions.assertDoesNotThrow(() -> computeResourceService.findById(b.getId()));
-//        });
-//
-//        cloudServiceService.delete(storedCloudService.getId());
-//
-//        Assertions.assertThrows(NoSuchElementException.class, () ->
-//                cloudServiceService.findById(storedCloudService.getId()));
-//        storedCloudService.getProvidedComputeResources().forEach(b -> {
-//            Assertions.assertDoesNotThrow(() -> computeResourceService.findById(b.getId()));
-//        });
+    void deleteSoftwarePlatform_HasReferences() {
+        CloudService cloudService = getTestCloudService("test cloud service");
+        CloudService storedCloudService = cloudServiceService.save(cloudService);
+
+        Assertions.assertDoesNotThrow(() -> cloudServiceService.findById(storedCloudService.getId()));
+
+        // Add Compute Resource Reference
+        ComputeResource computeResource = new ComputeResource();
+        computeResource.setName("test compute resource");
+        ComputeResource storedComputeResource = computeResourceService.save(computeResource);
+        cloudServiceService.addComputeResourceReference(storedCloudService.getId(), storedComputeResource.getId());
+
+        // Delete
+        cloudServiceService.delete(storedCloudService.getId());
+        Assertions.assertThrows(NoSuchElementException.class, () ->
+                cloudServiceService.findById(storedCloudService.getId()));
+
+        // Test if references are removed
+        assertThat(computeResourceService.findById(storedComputeResource.getId()).getCloudServices().size()).isEqualTo(0);
+    }
+
+    @Test
+    void deleteComputeResourceReference() {
+        CloudService cloudService = getTestCloudService("test cloud service");
+        CloudService storedCloudService = cloudServiceService.save(cloudService);
+
+        ComputeResource computeResource = new ComputeResource();
+        computeResource.setName("test compute resource");
+        computeResource.setVendor("test vendor");
+        computeResource.setTechnology("test technology");
+        computeResource.setQuantumComputationModel(QuantumComputationModel.QUANTUM_ANNEALING);
+        ComputeResource storedComputeResource = computeResourceService.save(computeResource);
+
+        cloudServiceService.addComputeResourceReference(
+                storedCloudService.getId(), storedComputeResource.getId());
+
+        Set<ComputeResource> computeResources = cloudServiceService.findComputeResources(
+                storedCloudService.getId(), Pageable.unpaged()).toSet();
+        assertThat(computeResources.size()).isEqualTo(1);
+
+        cloudServiceService.deleteComputeResourceReference(
+                storedCloudService.getId(), storedComputeResource.getId());
+
+        computeResources = cloudServiceService.findComputeResources(
+                storedCloudService.getId(), Pageable.unpaged()).toSet();
+        assertThat(computeResources.size()).isEqualTo(0);
     }
 
     private void assertCloudServiceEquality(CloudService dbCloudService, CloudService compareCloudService) {
@@ -179,11 +209,13 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
         assertThat(dbCloudService.getCostModel()).isEqualTo(compareCloudService.getCostModel());
     }
 
-    private CloudService getGenericTestCloudServiceWithoutRelations(String name) throws MalformedURLException {
+    private CloudService getTestCloudService(String name) {
         CloudService cloudService = new CloudService();
         cloudService.setName(name);
         cloudService.setProvider("testProvider");
-        cloudService.setUrl(new URL("http://example.com"));
+        try {
+            cloudService.setUrl(new URL("http://example.com"));
+        } catch (MalformedURLException ignored){}
         cloudService.setCostModel("testCostModel");
         return cloudService;
     }
