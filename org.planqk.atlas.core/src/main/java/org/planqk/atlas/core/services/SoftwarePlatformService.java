@@ -50,7 +50,7 @@ public interface SoftwarePlatformService {
     @Transactional
     void addImplementationReference(UUID platformId, UUID implId);
 
-    SoftwarePlatform getImplementation(UUID platformId, UUID implId);
+    Implementation getImplementation(UUID platformId, UUID implId);
 
     @Transactional
     void deleteImplementationReference(UUID platformId, UUID implId);

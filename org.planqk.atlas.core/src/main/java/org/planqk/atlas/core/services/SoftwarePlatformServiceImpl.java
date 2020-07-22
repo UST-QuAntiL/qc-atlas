@@ -84,10 +84,16 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
     @Override
     @Transactional
     public void delete(UUID platformId) {
-        if (!softwarePlatformRepository.existsSoftwarePlatformById(platformId)) {
-            throw new NoSuchElementException();
-        }
-        // TODO remove references
+        SoftwarePlatform softwarePlatform = findById(platformId);
+
+        // Remove references to avoid key constraints
+        softwarePlatform.getImplementations().forEach(
+                implementation -> implementation.removeSoftwarePlatform(softwarePlatform));
+        softwarePlatform.getSupportedCloudServices().forEach(
+                cloudService -> cloudService.removeSoftwarePlatform(softwarePlatform));
+        softwarePlatform.getSupportedComputeResources().forEach(
+                computeResource -> computeResource.removeSoftwarePlatform(softwarePlatform));
+
         softwarePlatformRepository.deleteById(platformId);
     }
 
@@ -96,6 +102,7 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
         if (!softwarePlatformRepository.existsSoftwarePlatformById(platformId)) {
             throw new NoSuchElementException();
         }
+
         return implementationRepository.findImplementationsBySoftwarePlatformId(platformId, pageable);
     }
 
@@ -109,12 +116,11 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
             throw new ConsistencyException("Implementation and software platform are already linked");
         }
 
-        softwarePlatform.getImplementations().add(implementation);
-        save(softwarePlatform);
+        softwarePlatform.addImplementation(implementation);
     }
 
     @Override
-    public SoftwarePlatform getImplementation(UUID platformId, UUID implId) {
+    public Implementation getImplementation(UUID platformId, UUID implId) {
         return null;
     }
 
@@ -128,8 +134,7 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
             throw new ConsistencyException("Implementation and software platform are not linked");
         }
 
-        softwarePlatform.getImplementations().remove(implementation);
-        save(softwarePlatform);
+        softwarePlatform.removeImplementation(implementation);
     }
 
     @Override
@@ -151,8 +156,7 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
             throw new ConsistencyException("Cloud service and software platform are already linked");
         }
 
-        softwarePlatform.getSupportedCloudServices().add(cloudService);
-        save(softwarePlatform);
+        softwarePlatform.addCloudService(cloudService);
     }
 
     @Override
@@ -165,8 +169,7 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
             throw new ConsistencyException("Cloud service and software platform are not linked");
         }
 
-        softwarePlatform.getSupportedCloudServices().remove(cloudService);
-        save(softwarePlatform);
+        softwarePlatform.removeCloudService(cloudService);
     }
 
     @Override
@@ -174,8 +177,8 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
         if (!softwarePlatformRepository.existsSoftwarePlatformById(platformId)) {
             throw new NoSuchElementException();
         }
-
-        return computeResourceRepository.findComputeResourceBySoftwarePlatformId(platformId, pageable);
+        System.out.println(computeResourceRepository.findComputeResourcesBySoftwarePlatformId(platformId, pageable).toSet());
+        return computeResourceRepository.findComputeResourcesBySoftwarePlatformId(platformId, pageable);
     }
 
     @Override
@@ -188,8 +191,7 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
             throw new ConsistencyException("Compute resource and software platform are already linked");
         }
 
-        softwarePlatform.getSupportedComputeResources().add(computeResource);
-        save(softwarePlatform);
+        softwarePlatform.addComputeResource(computeResource);
     }
 
     @Override
@@ -202,7 +204,6 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
             throw new ConsistencyException("Compute resource and software platform are not linked");
         }
 
-        softwarePlatform.getSupportedComputeResources().remove(computeResource);
-        save(softwarePlatform);
+        softwarePlatform.removeComputeResource(computeResource);
     }
 }
