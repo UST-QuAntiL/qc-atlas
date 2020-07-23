@@ -127,7 +127,7 @@ public class PublicationController {
 
     @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400"), @ApiResponse(responseCode = "404")})
     @GetMapping("/{id}/" + Constants.ALGORITHMS)
-    public HttpEntity<CollectionModel<EntityModel<AlgorithmDto>>> getAlgorithms(@PathVariable UUID id) {
+    public HttpEntity<CollectionModel<EntityModel<AlgorithmDto>>> getPublicationAlgorithms(@PathVariable UUID id) {
         log.debug("Get algorithms of Publication with id {}", id);
         var publication = publicationService.findById(id);
         return new ResponseEntity<>(algorithmAssembler.toModel(publication.getAlgorithms()), HttpStatus.OK);
@@ -135,7 +135,7 @@ public class PublicationController {
 
     @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Get a specific referenced algorithm of a publication.")
     @GetMapping("/{id}/" + Constants.ALGORITHMS + "/{algoId}")
-    public HttpEntity<EntityModel<AlgorithmDto>> getAlgorithm(@PathVariable UUID id, @PathVariable UUID algoId) {
+    public HttpEntity<EntityModel<AlgorithmDto>> getPublicationAlgorithm(@PathVariable UUID id, @PathVariable UUID algoId) {
         publicationService.findById(id);
         return ResponseEntity.ok(algorithmAssembler.toModel(algorithmService.findById(algoId)));
     }
@@ -144,7 +144,7 @@ public class PublicationController {
             description = "algorithm or publication does not exist")},
             description = "Add a reference to an existing algorithm (that was previously created via a POST on /algorithms/). Custom ID will be ignored. For algorithm only ID is required, other algorithm attributes will not change. If the algorithm doesn't exist yet, a 404 error is thrown.")
     @PostMapping("/{id}/" + Constants.ALGORITHMS + "/{algoId}")
-    public HttpEntity<CollectionModel<EntityModel<AlgorithmDto>>> addAlgorithm(@PathVariable UUID id, @PathVariable UUID algoId) {
+    public HttpEntity<CollectionModel<EntityModel<AlgorithmDto>>> linkAlgorithmWithPublication(@PathVariable UUID id, @PathVariable UUID algoId) {
         var algorithm = algorithmService.findById(algoId);
         publicationMixIn.addPublication(algorithm, id);
         algorithmService.save(algorithm);
@@ -156,7 +156,7 @@ public class PublicationController {
             @ApiResponse(responseCode = "404", description = "Algorithm or publication with given ids do not exist or no relation between algorithm and publication")},
             description = "Delete a reference to a algorithm of the publication.")
     @DeleteMapping("/{id}/" + Constants.ALGORITHMS + "/{algoId}")
-    public HttpEntity<Void> deleteReferenceToAlgorithm(@PathVariable UUID id, @PathVariable UUID algoId) {
+    public HttpEntity<Void> unlinkAlgorithmFromPublication(@PathVariable UUID id, @PathVariable UUID algoId) {
         var algorithm = algorithmService.findById(algoId);
         publicationMixIn.unlinkPublication(algorithm, id);
         algorithmService.save(algorithm);
@@ -165,7 +165,7 @@ public class PublicationController {
 
     @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400"), @ApiResponse(responseCode = "404")})
     @GetMapping("/{id}/" + Constants.IMPLEMENTATIONS)
-    public HttpEntity<CollectionModel<EntityModel<ImplementationDto>>> getImplementations(@PathVariable UUID id) {
+    public HttpEntity<CollectionModel<EntityModel<ImplementationDto>>> getPublicationImplementations(@PathVariable UUID id) {
         log.debug("Get implementations of Publication with id {}", id);
         var publication = publicationService.findById(id);
         return new ResponseEntity<>(implementationAssembler.toModel(publication.getImplementations()), HttpStatus.OK);
@@ -173,7 +173,7 @@ public class PublicationController {
 
     @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Get a specific referenced implementation of a publication.")
     @GetMapping("/{id}/" + Constants.IMPLEMENTATIONS + "/{implId}")
-    public HttpEntity<EntityModel<ImplementationDto>> getImplementation(@PathVariable UUID id, @PathVariable UUID implId) {
+    public HttpEntity<EntityModel<ImplementationDto>> getPublicationImplementation(@PathVariable UUID id, @PathVariable UUID implId) {
         publicationService.findById(id);
         return ResponseEntity.ok(implementationAssembler.toModel(implementationService.findById(implId)));
     }
