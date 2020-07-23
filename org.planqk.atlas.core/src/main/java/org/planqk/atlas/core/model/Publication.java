@@ -52,7 +52,7 @@ public class Publication extends KnowledgeArtifact {
     @EqualsAndHashCode.Exclude
     private Set<Algorithm> algorithms = new HashSet<>();
 
-    @ManyToMany(mappedBy = "publications", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @ManyToMany(mappedBy = "publications", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @EqualsAndHashCode.Exclude
     private Set<Implementation> implementations = new HashSet<>();
 

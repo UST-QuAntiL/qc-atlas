@@ -55,8 +55,8 @@ public class Implementation extends AlgorOrImpl implements ModelWithPublications
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "implementation_publication",
-            joinColumns = @JoinColumn(name = "publication_id"),
-            inverseJoinColumns = @JoinColumn(name = "implementation_id")
+            joinColumns = @JoinColumn(name = "implementation_id"),
+            inverseJoinColumns = @JoinColumn(name = "publication_id")
     )
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
