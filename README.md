@@ -3,6 +3,11 @@
 [![Build Status](https://api.travis-ci.org/planqk/qc-atlas.svg?branch=master)](https://travis-ci.org/planqk/qc-atlas)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
+## Git Workflow
+We use the Git-flow-Workflow as our Git-Workflow.
+A detailed description about the workflow can be found [here](https://www.atlassian.com/de/git/tutorials/comparing-workflows/gitflow-workflow).
+
+
 ## Build
 
 1. Run `mvn package -DskipTests` inside the root folder.
