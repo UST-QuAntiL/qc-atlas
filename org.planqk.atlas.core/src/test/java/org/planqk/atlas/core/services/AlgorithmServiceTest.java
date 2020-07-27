@@ -178,7 +178,7 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
         assertThat(editedAlgorithm.getInputFormat()).isEqualTo(compareAlgorithm.getInputFormat());
         assertThat(editedAlgorithm.getAlgoParameter()).isEqualTo(compareAlgorithm.getAlgoParameter());
         assertThat(editedAlgorithm.getOutputFormat()).isEqualTo(compareAlgorithm.getOutputFormat());
-        assertThat(editedAlgorithm.getSketch()).isEqualTo(compareAlgorithm.getSketch());
+        assertThat(editedAlgorithm.getSolution()).isEqualTo(compareAlgorithm.getSketches());
         assertThat(editedAlgorithm.getSolution()).isEqualTo(compareAlgorithm.getSolution());
         assertThat(editedAlgorithm.getAssumptions()).isEqualTo(compareAlgorithm.getAssumptions());
         assertThat(editedAlgorithm.getComputationModel()).isEqualTo(compareAlgorithm.getComputationModel());
@@ -416,7 +416,7 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
         assertThat(dbAlgorithm.getInputFormat()).isEqualTo(compareAlgorithm.getInputFormat());
         assertThat(dbAlgorithm.getAlgoParameter()).isEqualTo(compareAlgorithm.getAlgoParameter());
         assertThat(dbAlgorithm.getOutputFormat()).isEqualTo(compareAlgorithm.getOutputFormat());
-        assertThat(dbAlgorithm.getSketch()).isEqualTo(compareAlgorithm.getSketch());
+        assertThat(dbAlgorithm.getSketches()).isEqualTo(compareAlgorithm.getSketches());
         assertThat(dbAlgorithm.getSolution()).isEqualTo(compareAlgorithm.getSolution());
         assertThat(dbAlgorithm.getAssumptions()).isEqualTo(compareAlgorithm.getAssumptions());
         assertThat(dbAlgorithm.getComputationModel()).isEqualTo(compareAlgorithm.getComputationModel());
@@ -451,7 +451,7 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
         algorithm.setInputFormat("testInputFormat");
         algorithm.setAlgoParameter("testAlgoParameter");
         algorithm.setOutputFormat("testOutputFormat");
-        algorithm.setSketch(Sketch.CIRCUIT);
+        algorithm.setSketches(new ArrayList<>());
         algorithm.setSolution("testSolution");
         algorithm.setAssumptions("testAssumptions");
         algorithm.setComputationModel(ComputationModel.CLASSIC);

@@ -19,6 +19,7 @@
 
 package org.planqk.atlas.web.dtos;
 
+import java.util.List;
 import java.util.UUID;
 
 import javax.validation.constraints.NotNull;
@@ -60,7 +61,7 @@ public class AlgorithmDto {
 
     private String outputFormat;
 
-    private Sketch sketch;
+    private List<Sketch> sketches;
 
     private String solution;
 
