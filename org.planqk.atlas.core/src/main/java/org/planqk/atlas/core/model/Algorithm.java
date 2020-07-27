@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -55,7 +56,10 @@ public class Algorithm extends AlgorOrImpl implements ModelWithPublications {
     @EqualsAndHashCode.Exclude
     private Set<Publication> publications = new HashSet<>();
 
+    @Column(columnDefinition = "text")
     private String intent;
+
+    @Column(columnDefinition = "text")
     private String problem;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, orphanRemoval = true)
@@ -67,10 +71,17 @@ public class Algorithm extends AlgorOrImpl implements ModelWithPublications {
     @EqualsAndHashCode.Exclude
     private Set<ComputingResourceProperty> requiredComputingResourceProperties = new HashSet<>();
 
+    @Column(columnDefinition = "text")
     private String inputFormat;
+
+    @Column(columnDefinition = "text")
     private String algoParameter;
+
+    @Column(columnDefinition = "text")
     private String outputFormat;
     private Sketch sketch;
+
+    @Column(columnDefinition = "text")
     private String solution;
     private String assumptions;
     private ComputationModel computationModel;
