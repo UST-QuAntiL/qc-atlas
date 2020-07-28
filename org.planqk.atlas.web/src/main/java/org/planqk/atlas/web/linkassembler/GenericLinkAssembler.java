@@ -82,7 +82,9 @@ public abstract class GenericLinkAssembler<T> {
     }
 
     public <U> EntityModel<T> toModel(U entity, Class<T> entityClass) {
-        return new EntityModel<>(ModelMapperUtils.convert(entity, entityClass));
+        EntityModel<T> entityModel = new EntityModel<>(ModelMapperUtils.convert(entity, entityClass));
+        addLinks(entityModel);
+        return entityModel;
     }
 
     public <U> EntityModel<T> toModel(U entity) {

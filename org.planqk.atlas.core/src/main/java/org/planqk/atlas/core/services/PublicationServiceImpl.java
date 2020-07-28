@@ -21,13 +21,12 @@ package org.planqk.atlas.core.services;
 
 import java.util.HashSet;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Publication;
-import org.planqk.atlas.core.repository.AlgorithmRepository;
 import org.planqk.atlas.core.repository.PublicationRepository;
 
 import lombok.AllArgsConstructor;
@@ -41,7 +40,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class PublicationServiceImpl implements PublicationService {
 
     private final PublicationRepository publicationRepository;
-    private final AlgorithmRepository algorithmRepository;
 
     @Override
     @Transactional
@@ -65,7 +63,10 @@ public class PublicationServiceImpl implements PublicationService {
     }
 
     @Override
-    public Page<Publication> findAll(Pageable pageable) {
+    public Page<Publication> findAll(Pageable pageable, String search) {
+        if (!Objects.isNull(search) && !search.isEmpty()) {
+            return publicationRepository.findAll(search, pageable);
+        }
         return publicationRepository.findAll(pageable);
     }
 
@@ -95,11 +96,6 @@ public class PublicationServiceImpl implements PublicationService {
         persistedPublication.setDoi(updatedPublication.getDoi());
         persistedPublication.setUrl(updatedPublication.getUrl());
         persistedPublication.setAuthors(updatedPublication.getAuthors());
-    }
-
-    @Override
-    public Set<Algorithm> findPublicationAlgorithms(UUID publicationId) {
-        return algorithmRepository.getAlgorithmsWithPublicationId(publicationId);
     }
 
     @Override

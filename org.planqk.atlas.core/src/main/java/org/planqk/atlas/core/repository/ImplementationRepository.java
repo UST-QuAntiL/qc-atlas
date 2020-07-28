@@ -42,4 +42,5 @@ public interface ImplementationRepository extends JpaRepository<Implementation, 
     Page<Implementation> findByImplementedAlgorithm(Algorithm implementedAlgorithm, Pageable pageable);
 
     List<Implementation> findByImplementedAlgorithm(Algorithm implementedAlgorithm);
+
 }

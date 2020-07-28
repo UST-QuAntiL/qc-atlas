@@ -42,8 +42,8 @@ public class PublicationMixin {
                 .findFirst().orElseThrow(NoSuchElementException::new);
     }
 
-    public void addPublication(ModelWithPublications model, PublicationDto dto) {
-        var publication = publicationService.findById(dto.getId());
+    public void addPublication(ModelWithPublications model, UUID publicationId) {
+        var publication = publicationService.findById(publicationId);
         if (!model.getPublications().contains(publication)) {
             var publications = model.getPublications();
             publications.add(publication);
