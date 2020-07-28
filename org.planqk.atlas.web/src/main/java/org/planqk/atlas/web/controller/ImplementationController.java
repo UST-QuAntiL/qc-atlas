@@ -28,12 +28,10 @@ import javax.validation.Valid;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.ComputingResourceProperty;
 import org.planqk.atlas.core.model.Implementation;
-import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.model.SoftwarePlatform;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.core.services.ComputingResourcePropertyService;
 import org.planqk.atlas.core.services.ImplementationService;
-import org.planqk.atlas.core.services.PublicationService;
 import org.planqk.atlas.core.services.SoftwarePlatformService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.mixin.ComputingResourceMixin;
@@ -55,8 +53,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
@@ -90,7 +86,6 @@ public class ImplementationController {
     private final ComputingResourcePropertyService computingResourcePropertyService;
     private final ImplementationService implementationService;
     private final AlgorithmService algorithmService;
-    private final PublicationService publicationService;
     private final SoftwarePlatformService softwarePlatformService;
 
     private final ImplementationAssembler implementationAssembler;
@@ -259,48 +254,42 @@ public class ImplementationController {
     public HttpEntity<CollectionModel<EntityModel<PublicationDto>>> getPublications(@PathVariable UUID algoId,
                                                                                     @PathVariable UUID implId) {
         Implementation implementation = implementationService.findById(implId);
-        Set<Publication> publications = implementation.getPublications();
-        return ResponseEntity.ok(publicationAssembler.toModel(publications));
+        return ResponseEntity.ok(publicationAssembler.toModel(implementation.getPublications()));
     }
 
     @Operation(operationId = "addPublicationByImplementation",
             responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "404", content = @Content,
                     description = "Implementation or publication does not exist.")},
             description = "Add a reference to an existing publication (that was previously created via a POST on /publications/). Custom ID will be ignored. For publication only ID is required, other publication attributes will not change. If the publication doesn't exist yet, a 404 error is thrown.")
-    @PostMapping("/{implId}/" + Constants.PUBLICATIONS)
+    @PostMapping("/{implId}/" + Constants.PUBLICATIONS + "/{publId}")
     public HttpEntity<CollectionModel<EntityModel<PublicationDto>>> addPublication(@PathVariable UUID algoId,
                                                                                    @PathVariable UUID implId,
-                                                                                   @RequestBody PublicationDto publicationDto) {
+                                                                                   @PathVariable UUID publId) {
         Implementation implementation = implementationService.findById(implId);
-        publicationMixin.addPublication(implementation, publicationDto);
+        publicationMixin.addPublication(implementation, publId);
         implementation = implementationService.save(implementation);
         return ResponseEntity.ok(publicationAssembler.toModel(implementation.getPublications()));
     }
 
     @Operation(operationId = "getPublicationByImplementation",
             responses = {@ApiResponse(responseCode = "200")}, description = "Get a specific referenced publication of an implementation.")
-    @GetMapping("/{implId}/" + Constants.PUBLICATIONS + "/{publicationId}")
+    @GetMapping("/{implId}/" + Constants.PUBLICATIONS + "/{publId}")
     public HttpEntity<EntityModel<PublicationDto>> getPublication(@PathVariable UUID algoId,
                                                                   @PathVariable UUID implId,
-                                                                  @PathVariable UUID publicationId) {
-        log.debug("Get to retrieve referenced publication with Id {} from implementation with Id {}", publicationId, implId);
-        Publication publication = publicationService.findById(publicationId);
-        Set<Publication> publications = implementationService.findById(implId).getPublications();
-        if (!publications.contains(publication)) {
-            log.info("Trying to get Publication that is not referenced by the implementation");
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        return ResponseEntity.ok(publicationAssembler.toModel(publication));
+                                                                  @PathVariable UUID publId) {
+        log.debug("Get to retrieve referenced publication with Id {} from implementation with Id {}", publId, implId);
+        Implementation implementation = implementationService.findById(implId);
+        return ResponseEntity.ok(publicationAssembler.toModel(publicationMixin.getPublication(implementation, publId)));
     }
 
     @Operation(operationId = "deleteReferenceToPublicationByImplementation",
             responses = {@ApiResponse(responseCode = "200")}, description = "Delete a reference to a publication of the implementation.")
-    @DeleteMapping("/{implId}/" + Constants.PUBLICATIONS + "/{publicationId}")
+    @DeleteMapping("/{implId}/" + Constants.PUBLICATIONS + "/{publId}")
     public HttpEntity<Void> deleteReferenceToPublication(@PathVariable UUID algoId,
                                                          @PathVariable UUID implId,
-                                                         @PathVariable UUID publicationId) {
+                                                         @PathVariable UUID publId) {
         Implementation implementation = implementationService.findById(implId);
-        publicationMixin.unlinkPublication(implementation, publicationId);
+        publicationMixin.unlinkPublication(implementation, publId);
         implementationService.save(implementation);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -364,4 +353,5 @@ public class ImplementationController {
         implementationService.save(implementation);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
 }
