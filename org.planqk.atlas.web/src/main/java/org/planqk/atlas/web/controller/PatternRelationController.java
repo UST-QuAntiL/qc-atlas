@@ -19,6 +19,7 @@ import org.planqk.atlas.web.utils.RestUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
@@ -43,9 +44,8 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATIONS)
 @AllArgsConstructor
+@Slf4j
 public class PatternRelationController {
-
-    final private static Logger LOG = LoggerFactory.getLogger(PatternRelationController.class);
 
     private AlgorithmService algorithmService;
     private PatternRelationTypeService patternRelationTypeService;
@@ -57,15 +57,16 @@ public class PatternRelationController {
     @PostMapping()
     public HttpEntity<EntityModel<PatternRelationDto>> createPatternRelation(
             @Valid @RequestBody PatternRelationDto relationDto) {
-        LOG.debug("Post to create new PatternRelation received.");
+        log.debug("Post to create new PatternRelation received.");
         return new ResponseEntity<>(handlePatternRelationUpdate(relationDto, null), HttpStatus.CREATED);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200")})
+    @Operation(operationId = "getAllPatternRelationTypes",
+            responses = {@ApiResponse(responseCode = "200")})
     @GetMapping()
     public HttpEntity<PagedModel<EntityModel<PatternRelationDto>>> getPatternRelationTypes(
             @RequestParam(required = false) Integer page, @RequestParam(required = false) Integer size) {
-        LOG.debug("Get to retrieve all PatternRelations received.");
+        log.debug("Get to retrieve all PatternRelations received.");
         Pageable p = RestUtils.getPageableFromRequestParams(page, size);
         var entities = patternRelationService.findAll(p);
         return ResponseEntity.ok(patternRelationAssembler.toModel(entities));
@@ -74,18 +75,19 @@ public class PatternRelationController {
     @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400"), @ApiResponse(responseCode = "404")})
     @GetMapping("/{id}")
     public HttpEntity<EntityModel<PatternRelationDto>> getPatternRelation(@PathVariable UUID id) {
-        LOG.debug("Get to retrieve PatternRelation with id: {}.", id);
+        log.debug("Get to retrieve PatternRelation with id: {}.", id);
         var patternRelation = patternRelationService.findById(id);
         return ResponseEntity.ok(patternRelationAssembler.toModel(patternRelation));
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404")},
+    @Operation(operationId = "updatePatternRelationTypeByPattern",
+            responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400"),
+                    @ApiResponse(responseCode = "404")},
             description = "Update a reference to a pattern. Custom ID will be ignored. For pattern relation type only ID is required, other pattern relation type attributes will not change.")
     @PutMapping("/{id}")
     public HttpEntity<EntityModel<PatternRelationDto>> updatePatternRelationType(@PathVariable UUID id,
                                                                                  @Valid @RequestBody PatternRelationDto relationDto) {
-        LOG.debug("Put to update PatternRelation with id: {}.", id);
+        log.debug("Put to update PatternRelation with id: {}.", id);
         return ResponseEntity.ok(handlePatternRelationUpdate(relationDto, id));
     }
 
@@ -95,7 +97,7 @@ public class PatternRelationController {
             @ApiResponse(responseCode = "404", description = "Pattern relation with given id doesn't exist")})
     @DeleteMapping("/{id}")
     public HttpEntity<Void> deletePatternRelation(@PathVariable UUID id) {
-        LOG.debug("Delete to remove PatternRelation with id: {}.", id);
+        log.debug("Delete to remove PatternRelation with id: {}.", id);
         patternRelationService.findById(id);
         patternRelationService.deleteById(id);
         return new ResponseEntity<>(HttpStatus.OK);
