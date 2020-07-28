@@ -29,6 +29,7 @@ import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.ApplicationAreaDto;
 import org.planqk.atlas.web.linkassembler.ApplicationAreaAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
+import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.RestUtils;
 
@@ -95,6 +96,7 @@ public class ApplicationAreaController {
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping()
+    @ListParametersDoc()
     public HttpEntity<PagedModel<EntityModel<ApplicationAreaDto>>> getApplicationAreas(
             @Parameter(hidden = true) ListParameters listParameters) {
         return ResponseEntity.ok(applicationAreaAssembler.toModel(applicationAreaService.findAll(listParameters.getPageable(), listParameters.getSearch())));
