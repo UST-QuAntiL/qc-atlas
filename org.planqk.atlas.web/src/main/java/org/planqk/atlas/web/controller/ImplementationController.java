@@ -284,7 +284,7 @@ public class ImplementationController {
 
     @Operation(operationId = "deleteReferenceToPublicationByImplementation",
             responses = {@ApiResponse(responseCode = "200")}, description = "Delete a reference to a publication of the implementation.")
-    @DeleteMapping("/{implId}/" + Constants.PUBLICATIONS + "/{publicationId}")
+    @DeleteMapping("/{implId}/" + Constants.PUBLICATIONS + "/{publId}")
     public HttpEntity<Void> deleteReferenceToPublication(@PathVariable UUID algoId,
                                                          @PathVariable UUID implId,
                                                          @PathVariable UUID publId) {
