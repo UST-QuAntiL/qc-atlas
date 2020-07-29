@@ -106,7 +106,7 @@ public class ProblemTypeServiceTest extends AtlasDatabaseTestBase {
         ProblemType problemType2 = getGenericProblemType("testProblemType2");
         problemTypeService.save(problemType2);
 
-        List<ProblemType> problemTypes = problemTypeService.findAll(Pageable.unpaged()).getContent();
+        List<ProblemType> problemTypes = problemTypeService.findAll(Pageable.unpaged(), "").getContent();
 
         assertThat(problemTypes.size()).isEqualTo(2);
     }

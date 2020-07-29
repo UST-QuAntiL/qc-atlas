@@ -43,7 +43,7 @@ public interface ProblemTypeService {
 
     ProblemType findByName(String name);
 
-    Page<ProblemType> findAll(Pageable pageable);
+    Page<ProblemType> findAll(Pageable pageable, String search);
 
     List<ProblemType> getParentList(UUID id);
 

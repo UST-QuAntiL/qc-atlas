@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.UUID;
 
 import javax.transaction.Transactional;
@@ -89,7 +90,10 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
     }
 
     @Override
-    public Page<ProblemType> findAll(Pageable pageable) {
+    public Page<ProblemType> findAll(Pageable pageable, String search) {
+        if (!Objects.isNull(search) && !search.isEmpty()) {
+            return repo.findAll(search, pageable);
+        }
         return repo.findAll(pageable);
     }
 
