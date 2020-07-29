@@ -41,6 +41,8 @@ public class DiscussionTopicServiceTest extends AtlasDatabaseTestBase {
 
     @Autowired
     private DiscussionTopicService topicService;
+    @Autowired
+    private PublicationService publicationService;
 
     private DiscussionTopic topic;
     private DiscussionTopic topic2;
@@ -118,7 +120,7 @@ public class DiscussionTopicServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void existsDiscussionTopic_exists(){
+    void existsDiscussionTopic_exists() {
         DiscussionTopic topic = topicService.save(this.topic);
         boolean exists = topicService.existsDiscussionTopicById(topic.getId());
 
@@ -126,9 +128,24 @@ public class DiscussionTopicServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void existsDiscussionTopic_notExists(){
+    void existsDiscussionTopic_notExists() {
 
         boolean exists = topicService.existsDiscussionTopicById(UUID.randomUUID());
         assertThat(exists).isEqualTo(false);
+    }
+
+    @Test
+    void findByKnowledgeArtifact() throws Exception {
+        var pub = PublicationServiceTest.getGenericTestPublication("discussion");
+        pub = publicationService.save(pub);
+
+        topic.setKnowledgeArtifact(pub);
+        topic2.setKnowledgeArtifact(pub);
+
+        topicService.save(topic);
+        topicService.save(topic2);
+
+        var page = topicService.findByKnowledgeArtifact(pub, Pageable.unpaged());
+        assertThat(page.getTotalElements()).isEqualTo(2);
     }
 }

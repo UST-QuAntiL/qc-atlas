@@ -23,6 +23,7 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.DiscussionTopic;
+import org.planqk.atlas.core.model.KnowledgeArtifact;
 import org.planqk.atlas.core.repository.DiscussionTopicRepository;
 
 import lombok.AllArgsConstructor;
@@ -44,6 +45,11 @@ public class DiscussionTopicServiceImpl implements DiscussionTopicService {
     @Override
     public Page<DiscussionTopic> findAll(Pageable pageable) {
         return repository.findAll(pageable);
+    }
+
+    @Override
+    public Page<DiscussionTopic> findByKnowledgeArtifact(KnowledgeArtifact artifact, Pageable pageable) {
+        return repository.findByKnowledgeArtifact(artifact, pageable);
     }
 
     @Override
