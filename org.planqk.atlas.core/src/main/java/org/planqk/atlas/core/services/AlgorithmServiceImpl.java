@@ -30,17 +30,19 @@ import org.planqk.atlas.core.model.AlgoRelationType;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.model.QuantumAlgorithm;
+import org.planqk.atlas.core.model.Sketch;
 import org.planqk.atlas.core.repository.AlgorithmRelationRepository;
 import org.planqk.atlas.core.repository.AlgorithmRepository;
 import org.planqk.atlas.core.repository.ImplementationRepository;
-
-import lombok.AllArgsConstructor;
+import org.planqk.atlas.core.repository.SketchRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import lombok.AllArgsConstructor;
 
 @Service
 @AllArgsConstructor
@@ -49,9 +51,15 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     private final static Logger LOG = LoggerFactory.getLogger(AlgorithmServiceImpl.class);
 
     private final AlgorithmRepository algorithmRepository;
+
+    private final SketchRepository sketchRepository;
+
     private final AlgorithmRelationRepository algorithmRelationRepository;
+
     private final PatternRelationService patternRelationService;
+
     private final AlgoRelationTypeService relationTypeService;
+
     private final ImplementationRepository implementationRepository;
 
     @Transactional
@@ -92,6 +100,18 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         LOG.info("Trying to update algorithm");
         Algorithm persistedAlg = algorithmRepository.findById(id).orElseThrow(NoSuchElementException::new);
 
+        // remove all attached sketches
+        persistedAlg.removeSketches(persistedAlg.getSketches());
+        if (algorithm.getSketches() != null) {
+            algorithm.getSketches().forEach(sketch -> {
+                if (sketch.getId() == null) {
+                    // add sketches one by one
+                    final Sketch savedSketch = sketchRepository.save(sketch);
+                    persistedAlg.addSketch(savedSketch);
+                }
+            });
+        }
+
         persistedAlg.setName(algorithm.getName());
         persistedAlg.setAcronym(algorithm.getAcronym());
         // persistedAlg.setPublications(algorithm.getPublications());
@@ -101,7 +121,6 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         persistedAlg.setInputFormat(algorithm.getInputFormat());
         persistedAlg.setAlgoParameter(algorithm.getAlgoParameter());
         persistedAlg.setOutputFormat(algorithm.getOutputFormat());
-        persistedAlg.setSketch(algorithm.getSketch());
         persistedAlg.setSolution(algorithm.getSolution());
         persistedAlg.setAssumptions(algorithm.getAssumptions());
         persistedAlg.setComputationModel(algorithm.getComputationModel());

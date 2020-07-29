@@ -19,10 +19,12 @@
 
 package org.planqk.atlas.core.model;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
-
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -30,10 +32,11 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 
+import org.springframework.lang.NonNull;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.springframework.lang.NonNull;
 
 /**
  * Entity representing a quantum algorithm, e.g., Shors factorization algorithm.
@@ -45,6 +48,7 @@ import org.springframework.lang.NonNull;
 public class Algorithm extends AlgorOrImpl implements ModelWithPublications {
 
     private String name;
+
     private String acronym;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
@@ -55,7 +59,10 @@ public class Algorithm extends AlgorOrImpl implements ModelWithPublications {
     @EqualsAndHashCode.Exclude
     private Set<Publication> publications = new HashSet<>();
 
+    @Column(columnDefinition = "text")
     private String intent;
+
+    @Column(columnDefinition = "text")
     private String problem;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, orphanRemoval = true)
@@ -67,12 +74,23 @@ public class Algorithm extends AlgorOrImpl implements ModelWithPublications {
     @EqualsAndHashCode.Exclude
     private Set<ComputingResourceProperty> requiredComputingResourceProperties = new HashSet<>();
 
+    @Column(columnDefinition = "text")
     private String inputFormat;
+
+    @Column(columnDefinition = "text")
     private String algoParameter;
+
+    @Column(columnDefinition = "text")
     private String outputFormat;
-    private Sketch sketch;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Sketch> sketches = new ArrayList<>();
+
+    @Column(columnDefinition = "text")
     private String solution;
+
     private String assumptions;
+
     private ComputationModel computationModel;
 
     @OneToMany(mappedBy = "algorithm", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
@@ -180,4 +198,13 @@ public class Algorithm extends AlgorOrImpl implements ModelWithPublications {
         problemTypes.remove(problemType);
         problemType.removeAlgorithm(this);
     }
+
+    public void addSketch(Sketch sketch) {
+        sketches.add(sketch);
+    }
+
+    public void removeSketches(List<Sketch> sketches) {
+        sketches.removeAll(sketches);
+    }
+
 }
