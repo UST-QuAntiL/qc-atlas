@@ -33,6 +33,7 @@ import javax.persistence.OneToMany;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.springframework.lang.NonNull;
 
 /**
@@ -93,9 +94,10 @@ public class Algorithm extends AlgorOrImpl implements ModelWithPublications {
     @EqualsAndHashCode.Exclude
     private Set<ApplicationArea> applicationAreas = new HashSet<>();
 
-    @ManyToMany(cascade = {CascadeType.MERGE})
-    @JoinTable(name = "algorithm_tag", joinColumns = @JoinColumn(name = "algorithm_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "algorithm_tag", joinColumns = @JoinColumn(name = "algorithm_id"), inverseJoinColumns = @JoinColumn(name = "tag_value"))
     @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private Set<Tag> tags = new HashSet<>();
 
     @NonNull
