@@ -19,6 +19,8 @@
 
 package org.planqk.atlas.core.services;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -27,6 +29,8 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.UUID;
 
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.planqk.atlas.core.model.AlgoRelationType;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
@@ -37,24 +41,20 @@ import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.model.QuantumAlgorithm;
 import org.planqk.atlas.core.model.QuantumComputationModel;
-import org.planqk.atlas.core.model.Sketch;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
-
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
 
     @Autowired
     private AlgorithmService algorithmService;
+
     //    @Autowired
 //    private TagService tagService;
     @Autowired
     private ProblemTypeService problemTypeService;
+
     @Autowired
     private PublicationService publicationService;
 
@@ -132,7 +132,6 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
         publication.setAuthors(publicationAuthors);
         Set<Algorithm> publicationAlgorithms = new HashSet<>();
         publicationAlgorithms.add(algorithm);
-        publication.setAlgorithms(publicationAlgorithms);
         publications.add(publication);
         algorithm.setPublications(publications);
         Set<ApplicationArea> applicationAreas = new HashSet<>();
@@ -179,12 +178,14 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
         assertThat(editedAlgorithm.getInputFormat()).isEqualTo(compareAlgorithm.getInputFormat());
         assertThat(editedAlgorithm.getAlgoParameter()).isEqualTo(compareAlgorithm.getAlgoParameter());
         assertThat(editedAlgorithm.getOutputFormat()).isEqualTo(compareAlgorithm.getOutputFormat());
-        assertThat(editedAlgorithm.getSketch()).isEqualTo(compareAlgorithm.getSketch());
+        editedAlgorithm.getSketches().containsAll(compareAlgorithm.getSketches());
+        compareAlgorithm.getSketches().containsAll(editedAlgorithm.getSketches());
         assertThat(editedAlgorithm.getSolution()).isEqualTo(compareAlgorithm.getSolution());
         assertThat(editedAlgorithm.getAssumptions()).isEqualTo(compareAlgorithm.getAssumptions());
         assertThat(editedAlgorithm.getComputationModel()).isEqualTo(compareAlgorithm.getComputationModel());
         // application areas now contains a reference to an algorithm, so check for the name:
-        assertThat(editedAlgorithm.getApplicationAreas().iterator().next().getName()).isEqualTo(compareAlgorithm.getApplicationAreas().iterator().next().getName());
+        assertThat(editedAlgorithm.getApplicationAreas().iterator().next().getName())
+                .isEqualTo(compareAlgorithm.getApplicationAreas().iterator().next().getName());
     }
 
     @Test
@@ -335,7 +336,6 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
         AlgorithmRelation algorithmRelation = getGenericAlgorithmRelation(storedSourceAlgorithm, storedTargetAlgorithm);
 
         algorithmService.addOrUpdateAlgorithmRelation(storedSourceAlgorithm.getId(), algorithmRelation);
-
         Set<AlgorithmRelation> sourceAlgoRelation = algorithmService.getAlgorithmRelations(storedSourceAlgorithm.getId());
         sourceAlgoRelation.forEach(relation -> {
             assertAlgorithmRelationEquality(relation, algorithmRelation);
@@ -417,7 +417,8 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
         assertThat(dbAlgorithm.getInputFormat()).isEqualTo(compareAlgorithm.getInputFormat());
         assertThat(dbAlgorithm.getAlgoParameter()).isEqualTo(compareAlgorithm.getAlgoParameter());
         assertThat(dbAlgorithm.getOutputFormat()).isEqualTo(compareAlgorithm.getOutputFormat());
-        assertThat(dbAlgorithm.getSketch()).isEqualTo(compareAlgorithm.getSketch());
+        dbAlgorithm.getSketches().containsAll(compareAlgorithm.getSketches());
+        compareAlgorithm.getSketches().containsAll(dbAlgorithm.getSketches());
         assertThat(dbAlgorithm.getSolution()).isEqualTo(compareAlgorithm.getSolution());
         assertThat(dbAlgorithm.getAssumptions()).isEqualTo(compareAlgorithm.getAssumptions());
         assertThat(dbAlgorithm.getComputationModel()).isEqualTo(compareAlgorithm.getComputationModel());
@@ -427,8 +428,8 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
     private void assertAlgorithmRelationEquality(AlgorithmRelation dbRelation, AlgorithmRelation compareRelation) {
         assertThat(dbRelation.getId()).isNotNull();
         assertThat(dbRelation.getDescription()).isEqualTo(compareRelation.getDescription());
-        assertThat(dbRelation.getSourceAlgorithm()).isEqualTo(compareRelation.getSourceAlgorithm());
-        assertThat(dbRelation.getTargetAlgorithm()).isEqualTo(compareRelation.getTargetAlgorithm());
+        this.assertAlgorithmEquality(dbRelation.getSourceAlgorithm(), compareRelation.getSourceAlgorithm());
+        this.assertAlgorithmEquality(dbRelation.getTargetAlgorithm(), compareRelation.getTargetAlgorithm());
         assertThat(dbRelation.getAlgoRelationType().getName()).isEqualTo(compareRelation.getAlgoRelationType().getName());
     }
 
@@ -452,7 +453,7 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
         algorithm.setInputFormat("testInputFormat");
         algorithm.setAlgoParameter("testAlgoParameter");
         algorithm.setOutputFormat("testOutputFormat");
-        algorithm.setSketch(Sketch.CIRCUIT);
+        algorithm.setSketches(new ArrayList<>());
         algorithm.setSolution("testSolution");
         algorithm.setAssumptions("testAssumptions");
         algorithm.setComputationModel(ComputationModel.CLASSIC);

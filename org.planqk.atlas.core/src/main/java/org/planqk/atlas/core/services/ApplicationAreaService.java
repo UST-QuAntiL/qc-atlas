@@ -42,5 +42,5 @@ public interface ApplicationAreaService {
 
     ApplicationArea findByName(String name);
 
-    Page<ApplicationArea> findAll(Pageable pageable);
+    Page<ApplicationArea> findAll(Pageable pageable, String search);
 }

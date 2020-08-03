@@ -20,6 +20,7 @@
 package org.planqk.atlas.core.services;
 
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.UUID;
 
 import javax.transaction.Transactional;
@@ -83,7 +84,10 @@ public class ApplicationAreaServiceImpl implements ApplicationAreaService {
     }
 
     @Override
-    public Page<ApplicationArea> findAll(Pageable pageable) {
+    public Page<ApplicationArea> findAll(Pageable pageable, String search) {
+        if (!Objects.isNull(search) && !search.isEmpty()) {
+            return repo.findAll(search, pageable);
+        }
         return repo.findAll(pageable);
     }
 }

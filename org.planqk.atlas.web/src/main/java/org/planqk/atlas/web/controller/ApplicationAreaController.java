@@ -28,10 +28,13 @@ import org.planqk.atlas.core.services.ApplicationAreaService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.ApplicationAreaDto;
 import org.planqk.atlas.web.linkassembler.ApplicationAreaAssembler;
+import org.planqk.atlas.web.utils.ListParameters;
+import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.RestUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -93,11 +96,10 @@ public class ApplicationAreaController {
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping()
+    @ListParametersDoc()
     public HttpEntity<PagedModel<EntityModel<ApplicationAreaDto>>> getApplicationAreas(
-            @RequestParam(required = false) Integer page, @RequestParam(required = false) Integer size) {
-        Pageable p = RestUtils.getPageableFromRequestParams(page, size);
-        Page<ApplicationArea> entities = applicationAreaService.findAll(p);
-        return ResponseEntity.ok(applicationAreaAssembler.toModel(entities));
+            @Parameter(hidden = true) ListParameters listParameters) {
+        return ResponseEntity.ok(applicationAreaAssembler.toModel(applicationAreaService.findAll(listParameters.getPageable(), listParameters.getSearch())));
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})

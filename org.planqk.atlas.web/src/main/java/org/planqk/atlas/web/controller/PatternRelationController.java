@@ -61,7 +61,8 @@ public class PatternRelationController {
         return new ResponseEntity<>(handlePatternRelationUpdate(relationDto, null), HttpStatus.CREATED);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200")})
+    @Operation(operationId = "getAllPatternRelationTypes",
+            responses = {@ApiResponse(responseCode = "200")})
     @GetMapping()
     public HttpEntity<PagedModel<EntityModel<PatternRelationDto>>> getPatternRelationTypes(
             @RequestParam(required = false) Integer page, @RequestParam(required = false) Integer size) {
@@ -79,8 +80,9 @@ public class PatternRelationController {
         return ResponseEntity.ok(patternRelationAssembler.toModel(patternRelation));
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404")},
+    @Operation(operationId = "updatePatternRelationTypeByPattern",
+            responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400"),
+                    @ApiResponse(responseCode = "404")},
             description = "Update a reference to a pattern. Custom ID will be ignored. For pattern relation type only ID is required, other pattern relation type attributes will not change.")
     @PutMapping("/{id}")
     public HttpEntity<EntityModel<PatternRelationDto>> updatePatternRelationType(@PathVariable UUID id,

@@ -19,7 +19,6 @@
 
 package org.planqk.atlas.core.services;
 
-import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Publication;
 
 import org.springframework.data.domain.Page;
@@ -41,7 +40,7 @@ public interface PublicationService {
     @Transactional
     void deleteById(UUID pubId);
 
-    Page<Publication> findAll(Pageable pageable);
+    Page<Publication> findAll(Pageable pageable, String search);
 
     Publication findById(UUID pubId);
 
@@ -49,8 +48,6 @@ public interface PublicationService {
 
     @Transactional
     Set<Publication> createOrUpdateAll(Set<Publication> publications);
-
-    Set<Algorithm> findPublicationAlgorithms(UUID publicationId);
 
     @Transactional
     void deletePublicationsByIds(Set<UUID> publicationIds);
