@@ -40,7 +40,7 @@ public class DiscussionTopic extends KnowledgeArtifact {
 
     private OffsetDateTime date;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @EqualsAndHashCode.Exclude
     private KnowledgeArtifact knowledgeArtifact;
 

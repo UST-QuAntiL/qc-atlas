@@ -24,6 +24,7 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.DiscussionTopic;
+import org.planqk.atlas.core.model.KnowledgeArtifact;
 import org.planqk.atlas.core.model.Status;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 
@@ -44,6 +45,7 @@ public class DiscussionTopicServiceTest extends AtlasDatabaseTestBase {
     @Autowired
     private PublicationService publicationService;
 
+    private KnowledgeArtifact knowledgeArtifact;
     private DiscussionTopic topic;
     private DiscussionTopic topic2;
 
@@ -53,7 +55,7 @@ public class DiscussionTopicServiceTest extends AtlasDatabaseTestBase {
     private final Pageable pageable = PageRequest.of(page, size);
 
     @BeforeEach
-    public void initialize() {
+    public void initialize() throws Exception {
         topic = new DiscussionTopic();
         topic.setDate(OffsetDateTime.now());
         topic.setTitle("Title");
@@ -64,6 +66,13 @@ public class DiscussionTopicServiceTest extends AtlasDatabaseTestBase {
         topic2.setTitle("Title");
         topic2.setDescription("Description");
         topic2.setStatus(Status.CLOSED);
+
+        var pub = PublicationServiceTest.getGenericTestPublication("discussion");
+        pub = publicationService.save(pub);
+
+        topic.setKnowledgeArtifact(pub);
+        topic2.setKnowledgeArtifact(pub);
+        knowledgeArtifact = pub;
     }
 
     @Test
@@ -135,17 +144,11 @@ public class DiscussionTopicServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void findByKnowledgeArtifact() throws Exception {
-        var pub = PublicationServiceTest.getGenericTestPublication("discussion");
-        pub = publicationService.save(pub);
-
-        topic.setKnowledgeArtifact(pub);
-        topic2.setKnowledgeArtifact(pub);
-
+    void findByKnowledgeArtifact() {
         topicService.save(topic);
         topicService.save(topic2);
 
-        var page = topicService.findByKnowledgeArtifact(pub, Pageable.unpaged());
+        var page = topicService.findByKnowledgeArtifact(knowledgeArtifact, Pageable.unpaged());
         assertThat(page.getTotalElements()).isEqualTo(2);
     }
 }
