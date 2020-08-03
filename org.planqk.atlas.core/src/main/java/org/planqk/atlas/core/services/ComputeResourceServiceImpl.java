@@ -105,11 +105,8 @@ public class ComputeResourceServiceImpl implements ComputeResourceService {
                 softwarePlatformRepository.countSoftwarePlatformByComputeResource(id);
         if (count == 0) {
             ComputeResource computeResource = findById(id);
-            System.out.println(computeResource.getProvidedComputingResourceProperties().size());
-            computeResource.getProvidedComputingResourceProperties().forEach(computingResourceProperty -> {
-                computingResourcePropertyService.deleteComputingResourceProperty(computingResourceProperty.getId());
-            });
-            System.out.println(computeResource.getProvidedComputingResourceProperties().size());
+            computeResource.getProvidedComputingResourceProperties().forEach(computingResourceProperty ->
+                computingResourcePropertyService.deleteComputingResourceProperty(computingResourceProperty.getId()));
             computeResourceRepository.deleteById(id);
         } else {
             LOG.info("Trying to delete Compute Resource that is used in a CloudService or SoftwarePlatform");
