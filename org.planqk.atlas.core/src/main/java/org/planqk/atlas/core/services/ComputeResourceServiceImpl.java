@@ -99,18 +99,22 @@ public class ComputeResourceServiceImpl implements ComputeResourceService {
         if (!computeResourceRepository.existsById(id)) {
             throw new NoSuchElementException();
         }
+
         // only delete if unused in SoftwarePlatforms and CloudServices
         long count = cloudServiceRepository.countCloudServiceByComputeResource(id) +
                 softwarePlatformRepository.countSoftwarePlatformByComputeResource(id);
         if (count == 0) {
             ComputeResource computeResource = findById(id);
-            computeResource.getProvidedQuantumResources().forEach(computingResourceProperty ->
-                    computingResourcePropertyService.deleteComputingResourceProperty(computingResourceProperty.getId()));
+            System.out.println(computeResource.getProvidedComputingResourceProperties().size());
+            computeResource.getProvidedComputingResourceProperties().forEach(computingResourceProperty -> {
+                computingResourcePropertyService.deleteComputingResourceProperty(computingResourceProperty.getId());
+            });
+            System.out.println(computeResource.getProvidedComputingResourceProperties().size());
             computeResourceRepository.deleteById(id);
         } else {
-            LOG.info("Trying to delete Backend that is used in a CloudService or SoftwarePlatform");
+            LOG.info("Trying to delete Compute Resource that is used in a CloudService or SoftwarePlatform");
             throw new ConsistencyException(
-                    "Cannot delete Backend since it is used by existing CloudService or SoftwarePlatform");
+                    "Cannot delete Compute Resource since it is used by existing CloudService or SoftwarePlatform");
         }
     }
 }

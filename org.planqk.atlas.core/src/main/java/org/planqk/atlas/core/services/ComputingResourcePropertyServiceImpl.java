@@ -157,21 +157,21 @@ public class ComputingResourcePropertyServiceImpl implements ComputingResourcePr
 
     @Override
     @Transactional
-    public ComputingResourceProperty addComputingResourcePropertyToComputeResource(ComputeResource computeResource, ComputingResourceProperty resource) {
-        var updatedResource = resource;
-        if (updatedResource.getId() == null) {
-            updatedResource = this.saveComputingResourceProperty(resource);
-        }
-        updatedResource.setComputeResource(computeResource);
-        return this.resourceRepository.save(updatedResource);
+    public ComputingResourceProperty addComputingResourcePropertyToComputeResource(
+            ComputeResource computeResource, ComputingResourceProperty computingResourceProperty) {
+        computingResourceProperty.setComputeResource(computeResource);
+
+        this.saveComputingResourceProperty(computingResourceProperty);
+
+        return this.resourceRepository.save(computingResourceProperty);
     }
 
     @Override
     @Transactional
     public ComputingResourceProperty addComputingResourcePropertyToComputeResource(UUID computeResourceId, UUID propertyId) {
         var resource = resourceRepository.findById(propertyId).orElseThrow(NoSuchElementException::new);
-        var backend = (ComputeResource) computeResourceRepository.findById(computeResourceId).orElseThrow(NoSuchElementException::new);
-        return addComputingResourcePropertyToComputeResource(backend, resource);
+        var computeResource = (ComputeResource) computeResourceRepository.findById(computeResourceId).orElseThrow(NoSuchElementException::new);
+        return addComputingResourcePropertyToComputeResource(computeResource, resource);
     }
 
     @Override

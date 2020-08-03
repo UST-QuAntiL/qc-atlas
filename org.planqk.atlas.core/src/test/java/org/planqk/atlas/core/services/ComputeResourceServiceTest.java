@@ -66,6 +66,31 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
+    void createComputeResource_WithComputingResourceProperty() {
+        ComputeResource computeResource = getGenericTestComputeResource("test compute resource");
+        ComputeResource storedComputeResource = computeResourceService.save(computeResource);
+
+        Assertions.assertDoesNotThrow(() -> computeResourceService.findById(storedComputeResource.getId()));
+
+        // Add Computing Resource Property Reference
+        var computingResourceProperty = new ComputingResourceProperty();
+        var computingResourcePropertyType = new ComputingResourcePropertyType();
+        computingResourcePropertyType.setName("test name");
+        computingResourcePropertyType.setDatatype(ComputingResourcePropertyDataType.STRING);
+        computingResourcePropertyType.setDescription("test description");
+        var storedType = computingResourcePropertyService.saveComputingResourcePropertyType(computingResourcePropertyType);
+        computingResourceProperty.setComputingResourcePropertyType(storedType);
+        computingResourceProperty.setValue("test value");
+
+        var storedProperty = computingResourcePropertyService.addComputingResourcePropertyToComputeResource(
+                storedComputeResource, computingResourceProperty);
+
+        var storedComputeResourceWithReference = computeResourceService.findById(storedComputeResource.getId());
+
+        assertThat(storedComputeResourceWithReference.getProvidedComputingResourceProperties().size()).isEqualTo(1);
+    }
+
+    @Test
     void updateComputeResource_ElementNotFound() {
         Assertions.assertThrows(NoSuchElementException.class, () ->
                 computeResourceService.update(UUID.randomUUID(), null));
@@ -153,7 +178,7 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
         computingResourceProperty.setValue("test value");
 
         var storedProperty = computingResourcePropertyService.addComputingResourcePropertyToComputeResource(
-                computeResource, computingResourceProperty);
+                storedComputeResource, computingResourceProperty);
 
         // Delete
         computeResourceService.delete(storedComputeResource.getId());

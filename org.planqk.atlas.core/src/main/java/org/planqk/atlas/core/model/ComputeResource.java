@@ -29,8 +29,8 @@ public class ComputeResource extends HasId {
     private String vendor;
     private String technology;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, orphanRemoval = true)
-    private Set<ComputingResourceProperty> providedQuantumResources = new HashSet<>();
+    @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, mappedBy = "computeResource" ,orphanRemoval = true)
+    private Set<ComputingResourceProperty> providedComputingResourceProperties = new HashSet<>();
 
     private QuantumComputationModel quantumComputationModel;
 
