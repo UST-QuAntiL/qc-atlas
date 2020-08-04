@@ -54,4 +54,5 @@ public interface AlgorithmService {
     AlgorithmRelation addOrUpdateAlgorithmRelation(UUID sourceAlgorithm_id, AlgorithmRelation relation);
 
     Set<AlgorithmRelation> getAlgorithmRelations(UUID sourceAlgorithm_id);
+
 }

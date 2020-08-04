@@ -19,11 +19,11 @@
 
 package org.planqk.atlas.web.controller;
 
+import java.util.Base64;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
-
 import javax.validation.Valid;
 
 import org.planqk.atlas.core.model.Algorithm;
@@ -32,6 +32,8 @@ import org.planqk.atlas.core.model.ApplicationArea;
 import org.planqk.atlas.core.model.ComputingResourceProperty;
 import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.model.ProblemType;
+import org.planqk.atlas.core.model.Sketch;
+import org.planqk.atlas.core.repository.SketchRepository;
 import org.planqk.atlas.core.services.AlgoRelationService;
 import org.planqk.atlas.core.services.AlgoRelationTypeService;
 import org.planqk.atlas.core.services.AlgorithmService;
@@ -40,6 +42,7 @@ import org.planqk.atlas.core.services.ComputingResourcePropertyService;
 import org.planqk.atlas.core.services.PatternRelationService;
 import org.planqk.atlas.core.services.PatternRelationTypeService;
 import org.planqk.atlas.core.services.ProblemTypeService;
+import org.planqk.atlas.core.services.SketchService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.mixin.ComputingResourceMixin;
 import org.planqk.atlas.web.controller.mixin.PublicationMixin;
@@ -63,15 +66,6 @@ import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.RestUtils;
 import org.planqk.atlas.web.utils.ValidationUtils;
-
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
@@ -88,6 +82,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Controller to access and manipulate quantum algorithms.
@@ -101,25 +103,42 @@ import org.springframework.web.bind.annotation.RestController;
 public class AlgorithmController {
 
     private final AlgorithmService algorithmService;
+
+    private final SketchService sketchService;
+
     private final AlgoRelationService algoRelationService;
+
     private final AlgoRelationTypeService algoRelationTypeService;
+
     private final ComputingResourcePropertyService computingResourcePropertyService;
+
     private final PatternRelationService patternRelationService;
+
     private final PatternRelationTypeService patternRelationTypeService;
+
     private final ProblemTypeService problemTypeService;
+
     private final ApplicationAreaService applicationAreaService;
 
     private final ProblemTypeAssembler problemTypeAssembler;
+
     private final ApplicationAreaAssembler applicationAreaAssembler;
+
     //    private final TagAssembler tagAssembler;
     private final AlgorithmAssembler algorithmAssembler;
+
     private final AlgorithmRelationAssembler algorithmRelationAssembler;
+
     private final PublicationAssembler publicationAssembler;
+
     private final ComputingResourcePropertyAssembler computingResourcePropertyAssembler;
+
     private final PatternRelationAssembler patternRelationAssembler;
 
     private final PublicationMixin publicationMixin;
+
     private final ComputingResourceMixin computingResourceMixin;
+
 
     @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Retrieve all algorithms (quantum, hybrid and classic).")
     @GetMapping()
@@ -130,7 +149,8 @@ public class AlgorithmController {
                 listParameters.getSearch())));
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "201")}, description = "Define the basic properties of an algorithm. References to subobjects (e.g. a problemtype) can be added via subroutes (e.g. /algorithm/id/problem-types). Custom ID will be ignored.")
+    @Operation(responses = {
+            @ApiResponse(responseCode = "201")}, description = "Define the basic properties of an algorithm. References to subobjects (e.g. a problemtype) can be added via subroutes (e.g. /algorithm/id/problem-types). Custom ID will be ignored.")
     @PostMapping()
     public HttpEntity<EntityModel<AlgorithmDto>> createAlgorithm(@Valid @RequestBody AlgorithmDto algo) {
         log.debug("Post to create new algorithm received.");
@@ -138,7 +158,8 @@ public class AlgorithmController {
         return new ResponseEntity<>(algorithmAssembler.toModel(algorithm), HttpStatus.CREATED);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Update the basic properties of an algorithm (e.g. name). References to subobjects (e.g. a problemtype) are not updated via this operation - use the corresponding subroute for updating them (e.g. algorithm/{id}/problem-type). Custom ID will be ignored.")
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200")}, description = "Update the basic properties of an algorithm (e.g. name). References to subobjects (e.g. a problemtype) are not updated via this operation - use the corresponding subroute for updating them (e.g. algorithm/{id}/problem-type). Custom ID will be ignored.")
     @PutMapping("/{algoId}")
     public HttpEntity<EntityModel<AlgorithmDto>> updateAlgorithm(@PathVariable UUID algoId,
                                                                  @Valid @RequestBody AlgorithmDto algo) {
@@ -187,7 +208,8 @@ public class AlgorithmController {
             description = "algorithm or publication does not exist")},
             description = "Add a reference to an existing publication (that was previously created via a POST on /publications/). Custom ID will be ignored. For publication only ID is required, other publication attributes will not change. If the publication doesn't exist yet, a 404 error is thrown.")
     @PostMapping("/{algoId}/" + Constants.PUBLICATIONS)
-    public HttpEntity<CollectionModel<EntityModel<PublicationDto>>> addPublication(@PathVariable UUID algoId, @RequestBody PublicationDto publicationDto) {
+    public HttpEntity<CollectionModel<EntityModel<PublicationDto>>> addPublication(@PathVariable UUID algoId,
+                                                                                   @RequestBody PublicationDto publicationDto) {
         var algorithm = algorithmService.findById(algoId);
         publicationMixin.addPublication(algorithm, publicationDto.getId());
         algorithm = algorithmService.save(algorithm);
@@ -231,7 +253,8 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "404", description = "Problem type or algorithm does not exists in the database")},
             description = "Add a reference to an existing problemType (that was previously created via a POST on /problem-types/). Custom ID will be ignored. For problem type only ID is required, other problem type attributes will not change. If the problemType doesn't exist yet, a 404 error is thrown.")
     @PostMapping("/{algoId}/" + Constants.PROBLEM_TYPES)
-    public HttpEntity<CollectionModel<EntityModel<ProblemTypeDto>>> addProblemType(@PathVariable UUID algoId, @RequestBody ProblemTypeDto problemTypeDto) {
+    public HttpEntity<CollectionModel<EntityModel<ProblemTypeDto>>> addProblemType(@PathVariable UUID algoId,
+                                                                                   @RequestBody ProblemTypeDto problemTypeDto) {
         if (Objects.isNull(problemTypeDto.getId())) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -324,7 +347,8 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "404", description = "Problem type or algorithm does not exists in the database")},
             description = "Add a reference to an existing application area (that was previously created via a POST on /application-area/). For application area only ID is required, other attributes will not change. If the applicationArea doesn't exist yet, a 404 error is thrown.")
     @PostMapping("/{algoId}/" + Constants.APPLICATION_AREAS)
-    public HttpEntity<CollectionModel<EntityModel<ApplicationAreaDto>>> addApplicationArea(@PathVariable UUID algoId, @RequestBody ApplicationAreaDto applicationAreaDto) {
+    public HttpEntity<CollectionModel<EntityModel<ApplicationAreaDto>>> addApplicationArea(@PathVariable UUID algoId,
+                                                                                           @RequestBody ApplicationAreaDto applicationAreaDto) {
         Algorithm algorithm = algorithmService.findById(algoId);
         ApplicationArea applicationArea = applicationAreaService.findById(applicationAreaDto.getId());
 
@@ -386,7 +410,8 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "404", description = "Pattern relation or algorithm with given id doesn't exist")},
             description = "Update a references to a pattern. Custom ID will be ignored. For pattern relation type only ID is required, other pattern relation type attributes will not change.")
     @PutMapping("/{algoId}/" + Constants.PATTERN_RELATIONS + "/{relationId}")
-    public HttpEntity<EntityModel<PatternRelationDto>> updatePatternRelations(@PathVariable UUID algoId, @PathVariable UUID relationId, @Valid @RequestBody PatternRelationDto relationDto) {
+    public HttpEntity<EntityModel<PatternRelationDto>> updatePatternRelations(@PathVariable UUID algoId, @PathVariable UUID relationId,
+                                                                              @Valid @RequestBody PatternRelationDto relationDto) {
         log.debug("Put to update pattern relation with Id {} received.", relationId);
         PatternRelation patternRelation = patternRelationService.findById(relationId);
         if (!patternRelation.getAlgorithm().getId().equals(algoId)) {
@@ -506,7 +531,8 @@ public class AlgorithmController {
             @RequestParam(required = false) Integer size
     ) {
         algorithmService.findById(algoId);
-        var resources = computingResourcePropertyService.findAllComputingResourcesPropertyByAlgorithmId(algoId, RestUtils.getPageableFromRequestParams(page, size));
+        var resources = computingResourcePropertyService
+                .findAllComputingResourcesPropertyByAlgorithmId(algoId, RestUtils.getPageableFromRequestParams(page, size));
         return ResponseEntity.ok(computingResourcePropertyAssembler.toModel(resources));
     }
 
@@ -587,6 +613,19 @@ public class AlgorithmController {
         }
         computingResourcePropertyService.deleteComputingResourceProperty(resourceId);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+
+    @PostMapping("/{algoId}/" + Constants.SKETCHES)
+    public ResponseEntity<Sketch> uploadSketch(@PathVariable UUID algoId, @RequestParam("file") MultipartFile file,
+                                             @RequestParam("description") String description) {
+        try {
+            Sketch sketch = sketchService.addSketchToAlgorithm(algoId, file, description);
+            return ResponseEntity.ok(sketch);
+        } catch (Exception e) {
+
+            return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+        }
     }
 
     private AlgorithmRelation handleRelationUpdate(AlgorithmRelationDto relationDto, UUID relationId) {

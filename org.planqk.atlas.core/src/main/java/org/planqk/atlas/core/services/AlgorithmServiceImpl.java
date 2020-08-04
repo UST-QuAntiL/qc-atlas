@@ -100,18 +100,8 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         LOG.info("Trying to update algorithm");
         Algorithm persistedAlg = algorithmRepository.findById(id).orElseThrow(NoSuchElementException::new);
 
-        // remove all attached sketches
-        persistedAlg.removeSketches(persistedAlg.getSketches());
-        if (algorithm.getSketches() != null) {
-            algorithm.getSketches().forEach(sketch -> {
-                if (sketch.getId() == null) {
-                    // add sketches one by one
-                    final Sketch savedSketch = sketchRepository.save(sketch);
-                    persistedAlg.addSketch(savedSketch);
-                }
-            });
-        }
 
+        persistedAlg.setSketches(algorithm.getSketches());
         persistedAlg.setName(algorithm.getName());
         persistedAlg.setAcronym(algorithm.getAcronym());
         // persistedAlg.setPublications(algorithm.getPublications());

@@ -83,7 +83,7 @@ public class Algorithm extends AlgorOrImpl implements ModelWithPublications {
     @Column(columnDefinition = "text")
     private String outputFormat;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "algorithm", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Sketch> sketches = new ArrayList<>();
 
     @Column(columnDefinition = "text")
@@ -199,12 +199,24 @@ public class Algorithm extends AlgorOrImpl implements ModelWithPublications {
         problemType.removeAlgorithm(this);
     }
 
-    public void addSketch(Sketch sketch) {
-        sketches.add(sketch);
+    public void setSketches(List<Sketch> sketches) {
+        this.sketches.clear();
+        if (sketches != null) {
+           sketches.forEach(sketch -> this.addSketch(sketch));
+        }
     }
 
-    public void removeSketches(List<Sketch> sketches) {
-        sketches.removeAll(sketches);
+    public Algorithm addSketch(Sketch sketch) {
+        sketches.add(sketch);
+        sketch.setAlgorithm(this);
+        return this;
     }
+
+    public Algorithm removeSketch(Sketch sketch) {
+        sketches.remove(sketch);
+        sketch.setAlgorithm(null);
+        return this;
+    }
+
 
 }
