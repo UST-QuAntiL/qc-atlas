@@ -30,7 +30,7 @@ public class ComputeResource extends HasId {
     private String technology;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, mappedBy = "computeResource" ,orphanRemoval = true)
-    private Set<ComputingResourceProperty> providedComputingResourceProperties = new HashSet<>();
+    private Set<ComputeResourceProperty> providedComputingResourceProperties = new HashSet<>();
 
     private QuantumComputationModel quantumComputationModel;
 

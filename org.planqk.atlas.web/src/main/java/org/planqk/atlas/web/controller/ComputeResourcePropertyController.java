@@ -21,10 +21,10 @@ package org.planqk.atlas.web.controller;
 
 import java.util.UUID;
 
-import org.planqk.atlas.core.services.ComputingResourcePropertyService;
+import org.planqk.atlas.core.services.ComputeResourcePropertyService;
 import org.planqk.atlas.web.Constants;
-import org.planqk.atlas.web.dtos.ComputingResourcePropertyDto;
-import org.planqk.atlas.web.linkassembler.ComputingResourcePropertyAssembler;
+import org.planqk.atlas.web.dtos.ComputeResourcePropertyDto;
+import org.planqk.atlas.web.linkassembler.ComputeResourcePropertyAssembler;
 
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
@@ -49,9 +49,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/" + Constants.API_VERSION + "/" + Constants.COMPUTING_RESOURCES_PROPERTIES)
 @AllArgsConstructor
 @Slf4j
-public class ComputingResourcePropertyController {
-    private final ComputingResourcePropertyAssembler assembler;
-    private final ComputingResourcePropertyService service;
+public class ComputeResourcePropertyController {
+    private final ComputeResourcePropertyAssembler assembler;
+    private final ComputeResourcePropertyService service;
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
@@ -59,7 +59,7 @@ public class ComputingResourcePropertyController {
             @ApiResponse(responseCode = "404"),
     })
     @GetMapping("/{id}")
-    public HttpEntity<EntityModel<ComputingResourcePropertyDto>> getComputingResourceProperty(@PathVariable UUID id) {
+    public HttpEntity<EntityModel<ComputeResourcePropertyDto>> getComputingResourceProperty(@PathVariable UUID id) {
         var resource = service.findComputingResourcePropertyById(id);
         return ResponseEntity.ok(assembler.toModel(resource));
     }

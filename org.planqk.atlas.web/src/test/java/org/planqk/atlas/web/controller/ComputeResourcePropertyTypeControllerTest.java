@@ -23,12 +23,12 @@ import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
-import org.planqk.atlas.core.model.ComputingResourcePropertyDataType;
-import org.planqk.atlas.core.model.ComputingResourcePropertyType;
-import org.planqk.atlas.core.services.ComputingResourcePropertyService;
+import org.planqk.atlas.core.model.ComputeResourcePropertyDataType;
+import org.planqk.atlas.core.model.ComputeResourcePropertyType;
+import org.planqk.atlas.core.services.ComputeResourcePropertyService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
-import org.planqk.atlas.web.dtos.ComputingResourcePropertyTypeDto;
+import org.planqk.atlas.web.dtos.ComputeResourcePropertyTypeDto;
 import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -54,13 +54,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(ComputingResourcePropertyTypeController.class)
+@WebMvcTest(ComputeResourcePropertyTypeController.class)
 @ExtendWith(MockitoExtension.class)
 @AutoConfigureMockMvc
 @EnableLinkAssemblers
-public class ComputingResourcePropertyTypeControllerTest {
+public class ComputeResourcePropertyTypeControllerTest {
     @MockBean
-    private ComputingResourcePropertyService resourceService;
+    private ComputeResourcePropertyService resourceService;
 
     @Autowired
     private MockMvc mockMvc;
@@ -95,10 +95,10 @@ public class ComputingResourcePropertyTypeControllerTest {
 
     @Test
     void test_getType() throws Exception {
-        var sampleType = new ComputingResourcePropertyType();
+        var sampleType = new ComputeResourcePropertyType();
         sampleType.setId(UUID.randomUUID());
         sampleType.setName("Hello World");
-        sampleType.setDatatype(ComputingResourcePropertyDataType.FLOAT);
+        sampleType.setDatatype(ComputeResourcePropertyDataType.FLOAT);
         sampleType.setDescription("Test");
 
         when(resourceService.findComputingResourcePropertyTypeById(any())).thenReturn(sampleType);
@@ -107,7 +107,7 @@ public class ComputingResourcePropertyTypeControllerTest {
 
         var dto = mapper.readValue(
                 result.getResponse().getContentAsString(),
-                new TypeReference<EntityModel<ComputingResourcePropertyTypeDto>>() {
+                new TypeReference<EntityModel<ComputeResourcePropertyTypeDto>>() {
                 }
         ).getContent();
 
@@ -119,12 +119,12 @@ public class ComputingResourcePropertyTypeControllerTest {
 
     @Test
     void test_getTypes() throws Exception {
-        var types = new ArrayList<ComputingResourcePropertyType>();
+        var types = new ArrayList<ComputeResourcePropertyType>();
         for (int i = 0; i < 10; i++) {
-            var sampleType = new ComputingResourcePropertyType();
+            var sampleType = new ComputeResourcePropertyType();
             sampleType.setId(UUID.randomUUID());
             sampleType.setName("Hello World");
-            sampleType.setDatatype(ComputingResourcePropertyDataType.FLOAT);
+            sampleType.setDatatype(ComputeResourcePropertyDataType.FLOAT);
             sampleType.setDescription("Test");
             types.add(sampleType);
         }
@@ -136,7 +136,7 @@ public class ComputingResourcePropertyTypeControllerTest {
         var resultList = ObjectMapperUtils.mapResponseToList(
                 result.getResponse().getContentAsString(),
                 "computingResourcePropertyTypes",
-                ComputingResourcePropertyTypeDto.class
+                ComputeResourcePropertyTypeDto.class
         );
         assertThat(resultList.size()).isEqualTo(10);
 

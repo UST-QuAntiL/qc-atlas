@@ -27,7 +27,7 @@ import java.util.UUID;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.services.AlgorithmService;
-import org.planqk.atlas.core.services.ComputingResourcePropertyService;
+import org.planqk.atlas.core.services.ComputeResourcePropertyService;
 import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.core.services.PublicationService;
 import org.planqk.atlas.core.services.SoftwarePlatformService;
@@ -86,7 +86,7 @@ public class ImplementationControllerTest {
     @MockBean
     private ImplementationService implementationService;
     @MockBean
-    private ComputingResourcePropertyService computingResourcePropertyService;
+    private ComputeResourcePropertyService computeResourcePropertyService;
     @MockBean
     private PublicationService publicationService;
     @MockBean

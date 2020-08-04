@@ -21,10 +21,7 @@ package org.planqk.atlas.web.dtos;
 
 import java.util.UUID;
 
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-
-import org.planqk.atlas.core.model.ComputingResourcePropertyDataType;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -36,14 +33,10 @@ import org.springframework.hateoas.server.core.Relation;
 @EqualsAndHashCode
 @ToString
 @NoArgsConstructor
-@Relation(itemRelation = "computingResourcePropertyType", collectionRelation = "computingResourcePropertyTypes")
-public class ComputingResourcePropertyTypeDto {
-
+@Relation(itemRelation = "computeResourceProperty", collectionRelation = "computeResourceProperties")
+public class ComputeResourcePropertyDto {
     private UUID id;
-
-    @NotEmpty
-    private String name;
+    private String value;
     @NotNull
-    private ComputingResourcePropertyDataType datatype;
-    private String description;
+    private ComputeResourcePropertyTypeDto type;
 }

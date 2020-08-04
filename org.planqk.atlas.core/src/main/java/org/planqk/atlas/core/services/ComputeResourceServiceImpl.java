@@ -47,7 +47,7 @@ public class ComputeResourceServiceImpl implements ComputeResourceService {
     private final ComputeResourceRepository computeResourceRepository;
     private final CloudServiceRepository cloudServiceRepository;
     private final SoftwarePlatformRepository softwarePlatformRepository;
-    private final ComputingResourcePropertyService computingResourcePropertyService;
+    private final ComputeResourcePropertyService computeResourcePropertyService;
 
     @Override
     @Transactional
@@ -106,7 +106,7 @@ public class ComputeResourceServiceImpl implements ComputeResourceService {
         if (count == 0) {
             ComputeResource computeResource = findById(id);
             computeResource.getProvidedComputingResourceProperties().forEach(computingResourceProperty ->
-                computingResourcePropertyService.deleteComputingResourceProperty(computingResourceProperty.getId()));
+                computeResourcePropertyService.deleteComputingResourceProperty(computingResourceProperty.getId()));
             computeResourceRepository.deleteById(id);
         } else {
             LOG.info("Trying to delete Compute Resource that is used in a CloudService or SoftwarePlatform");

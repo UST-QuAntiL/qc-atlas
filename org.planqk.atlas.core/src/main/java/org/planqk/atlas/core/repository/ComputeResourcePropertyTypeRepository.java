@@ -17,39 +17,15 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.planqk.atlas.core.model;
+package org.planqk.atlas.core.repository;
 
-import java.util.function.Predicate;
+import java.util.UUID;
 
-public enum ComputingResourcePropertyDataType {
-    INTEGER(e -> {
-        try {
-            Long.parseLong(e);
-            return true;
-        } catch (Exception ex) {
-            return false;
-        }
-    }),
-    STRING(e -> true),
-    FLOAT(e -> {
-        try {
-            Double.parseDouble(e);
-            return true;
-        } catch (Exception ex) {
-            return false;
-        }
-    });
+import org.planqk.atlas.core.model.ComputeResourcePropertyType;
 
-    private final Predicate<String> validator;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
-    ComputingResourcePropertyDataType(Predicate<String> validator) {
-        this.validator = validator;
-    }
-
-    public boolean isValid(String input) {
-        if(input == null) {
-            return false;
-        }
-        return validator.test(input);
-    }
+@RepositoryRestResource
+public interface ComputeResourcePropertyTypeRepository extends JpaRepository<ComputeResourcePropertyType, UUID> {
 }

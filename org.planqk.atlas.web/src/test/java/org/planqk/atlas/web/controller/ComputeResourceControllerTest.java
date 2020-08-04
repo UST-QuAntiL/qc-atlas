@@ -5,12 +5,12 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.ComputeResource;
-import org.planqk.atlas.core.model.ComputingResourceProperty;
-import org.planqk.atlas.core.model.ComputingResourcePropertyDataType;
-import org.planqk.atlas.core.model.ComputingResourcePropertyType;
+import org.planqk.atlas.core.model.ComputeResourceProperty;
+import org.planqk.atlas.core.model.ComputeResourcePropertyDataType;
+import org.planqk.atlas.core.model.ComputeResourcePropertyType;
 import org.planqk.atlas.core.model.exceptions.ConsistencyException;
 import org.planqk.atlas.core.services.ComputeResourceService;
-import org.planqk.atlas.core.services.ComputingResourcePropertyService;
+import org.planqk.atlas.core.services.ComputeResourcePropertyService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.mixin.ComputingResourceMixin;
 import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
@@ -57,7 +57,7 @@ public class ComputeResourceControllerTest {
     @MockBean
     private ComputeResourceService computeResourceService;
     @MockBean
-    private ComputingResourcePropertyService computingResourcePropertyService;
+    private ComputeResourcePropertyService computeResourcePropertyService;
     @MockBean
     private ComputingResourceMixin mixin;
     @Autowired
@@ -264,7 +264,7 @@ public class ComputeResourceControllerTest {
     @Test
     @SuppressWarnings("ConstantConditions")
     void listComputationResourceProperties_empty() throws Exception {
-        doReturn(Page.empty()).when(computingResourcePropertyService)
+        doReturn(Page.empty()).when(computeResourcePropertyService)
                 .findAllComputingResourcesPropertiesByComputeResourceId(any(), any());
 
         var mvcResult = mockMvc.perform(
@@ -287,19 +287,19 @@ public class ComputeResourceControllerTest {
     @Test
     @SuppressWarnings("ConstantConditions")
     void listComputationResourceProperties_notEmpty() throws Exception {
-        var inputList = new ArrayList<ComputingResourceProperty>();
-        var type = new ComputingResourcePropertyType();
+        var inputList = new ArrayList<ComputeResourceProperty>();
+        var type = new ComputeResourcePropertyType();
         type.setId(UUID.randomUUID());
         type.setName("test");
-        type.setDatatype(ComputingResourcePropertyDataType.STRING);
+        type.setDatatype(ComputeResourcePropertyDataType.STRING);
         for (int i = 0; i < 50; i++) {
-            var element = new ComputingResourceProperty();
+            var element = new ComputeResourceProperty();
             element.setValue("Test Element " + i);
             element.setId(UUID.randomUUID());
-            element.setComputingResourcePropertyType(type);
+            element.setComputeResourcePropertyType(type);
             inputList.add(element);
         }
-        doReturn(new PageImpl<>(inputList)).when(computingResourcePropertyService)
+        doReturn(new PageImpl<>(inputList)).when(computeResourcePropertyService)
                 .findAllComputingResourcesPropertiesByComputeResourceId(any(), any());
 
         var mvcResult = mockMvc.perform(

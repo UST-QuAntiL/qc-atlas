@@ -19,39 +19,17 @@
 
 package org.planqk.atlas.core.model;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 
-import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.hibernate.annotations.TypeDef;
-
-import static lombok.EqualsAndHashCode.Exclude;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
-@TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
-public class ComputingResourceProperty extends HasId {
+public class ComputeResourcePropertyType extends HasId {
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
-    private ComputingResourcePropertyType computingResourcePropertyType;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "algorithm_id")
-    private Algorithm algorithm;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "implementation_id")
-    private Implementation implementation;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @Exclude
-    private ComputeResource computeResource;
-
-    private String value;
+    private String name;
+    private ComputeResourcePropertyDataType datatype;
+    private String description;
 }

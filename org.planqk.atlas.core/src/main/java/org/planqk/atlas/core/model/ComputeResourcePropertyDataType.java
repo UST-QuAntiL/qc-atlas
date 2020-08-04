@@ -17,26 +17,39 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.planqk.atlas.web.dtos;
+package org.planqk.atlas.core.model;
 
-import java.util.UUID;
+import java.util.function.Predicate;
 
-import javax.validation.constraints.NotNull;
+public enum ComputeResourcePropertyDataType {
+    INTEGER(e -> {
+        try {
+            Long.parseLong(e);
+            return true;
+        } catch (Exception ex) {
+            return false;
+        }
+    }),
+    STRING(e -> true),
+    FLOAT(e -> {
+        try {
+            Double.parseDouble(e);
+            return true;
+        } catch (Exception ex) {
+            return false;
+        }
+    });
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
-import org.springframework.hateoas.server.core.Relation;
+    private final Predicate<String> validator;
 
-@Data
-@EqualsAndHashCode
-@ToString
-@NoArgsConstructor
-@Relation(itemRelation = "computingResourceProperty", collectionRelation = "computingResourceProperties")
-public class ComputingResourcePropertyDto {
-    private UUID id;
-    private String value;
-    @NotNull
-    private ComputingResourcePropertyTypeDto type;
+    ComputeResourcePropertyDataType(Predicate<String> validator) {
+        this.validator = validator;
+    }
+
+    public boolean isValid(String input) {
+        if(input == null) {
+            return false;
+        }
+        return validator.test(input);
+    }
 }

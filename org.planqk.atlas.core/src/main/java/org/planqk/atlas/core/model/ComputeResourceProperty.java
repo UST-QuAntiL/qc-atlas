@@ -17,29 +17,41 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.planqk.atlas.web.dtos;
+package org.planqk.atlas.core.model;
 
-import java.util.HashSet;
-import java.util.Set;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
-import org.planqk.atlas.core.model.QuantumAlgorithm;
-import org.planqk.atlas.core.model.SoftwarePlatform;
-
+import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import org.springframework.hateoas.server.core.Relation;
+import org.hibernate.annotations.TypeDef;
+
+import static lombok.EqualsAndHashCode.Exclude;
 
 @EqualsAndHashCode(callSuper = true)
-@ToString(callSuper = true)
 @Data
-@Relation(itemRelation = "implementation", collectionRelation = "implementations")
-public class QuantumImplementationDto extends ImplementationDto {
+@Entity
+@TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
+public class ComputeResourceProperty extends HasId {
 
-    private QuantumAlgorithm algorithm;
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    private ComputeResourcePropertyType computeResourcePropertyType;
 
-    private Set<ComputeResourcePropertyDto> requiredQuantumResources = new HashSet<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "algorithm_id")
+    private Algorithm algorithm;
 
-    private SoftwarePlatform usedSoftwarePlatform;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "implementation_id")
+    private Implementation implementation;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @Exclude
+    private ComputeResource computeResource;
+
+    private String value;
 }

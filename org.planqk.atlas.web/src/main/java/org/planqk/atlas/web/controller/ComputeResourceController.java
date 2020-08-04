@@ -6,15 +6,15 @@ import java.util.UUID;
 import javax.validation.Valid;
 
 import org.planqk.atlas.core.model.ComputeResource;
-import org.planqk.atlas.core.model.ComputingResourceProperty;
+import org.planqk.atlas.core.model.ComputeResourceProperty;
 import org.planqk.atlas.core.services.ComputeResourceService;
-import org.planqk.atlas.core.services.ComputingResourcePropertyService;
+import org.planqk.atlas.core.services.ComputeResourcePropertyService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.mixin.ComputingResourceMixin;
 import org.planqk.atlas.web.dtos.ComputeResourceDto;
-import org.planqk.atlas.web.dtos.ComputingResourcePropertyDto;
+import org.planqk.atlas.web.dtos.ComputeResourcePropertyDto;
 import org.planqk.atlas.web.linkassembler.ComputeResourceAssembler;
-import org.planqk.atlas.web.linkassembler.ComputingResourcePropertyAssembler;
+import org.planqk.atlas.web.linkassembler.ComputeResourcePropertyAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
@@ -48,8 +48,8 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class ComputeResourceController {
 
-    private final ComputingResourcePropertyService computingResourcePropertyService;
-    private final ComputingResourcePropertyAssembler computingResourcePropertyAssembler;
+    private final ComputeResourcePropertyService computeResourcePropertyService;
+    private final ComputeResourcePropertyAssembler computeResourcePropertyAssembler;
     private final ComputingResourceMixin computingResourceMixin;
     private final ComputeResourceService computeResourceService;
     private final ComputeResourceAssembler computeResourceAssembler;
@@ -128,13 +128,13 @@ public class ComputeResourceController {
     }, description = "Get referenced compute resource properties for a compute resource.")
     @GetMapping("/{id}/" + Constants.COMPUTING_RESOURCES_PROPERTIES)
     @ListParametersDoc
-    public HttpEntity<PagedModel<EntityModel<ComputingResourcePropertyDto>>> getComputingResourcePropertiesForComputeResource(
+    public HttpEntity<PagedModel<EntityModel<ComputeResourcePropertyDto>>> getComputingResourcePropertiesForComputeResource(
             @PathVariable UUID id,
             @Parameter(hidden = true) ListParameters listParameters
     ) {
-        var resources = computingResourcePropertyService.findAllComputingResourcesPropertiesByComputeResourceId(id,
+        var resources = computeResourcePropertyService.findAllComputingResourcesPropertiesByComputeResourceId(id,
                 listParameters.getPageable());
-        return ResponseEntity.ok(computingResourcePropertyAssembler.toModel(resources));
+        return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(resources));
     }
 
     @Operation(responses = {
@@ -147,12 +147,12 @@ public class ComputeResourceController {
     @PostMapping("/{id}/" + Constants.COMPUTING_RESOURCES_PROPERTIES)
     public HttpEntity<EntityModel<ComputeResourceDto>> addComputingResourcePropertyToComputeResource(
             @PathVariable UUID id,
-            @Valid @RequestBody ComputingResourcePropertyDto resourceDto
+            @Valid @RequestBody ComputeResourcePropertyDto resourceDto
     ) {
         var ComputeResource = computeResourceService.findById(id);
         ValidationUtils.validateComputingResourceProperty(resourceDto);
-        var resource = ModelMapperUtils.convert(resourceDto, ComputingResourceProperty.class);
-        var updatedComputeResource = computingResourcePropertyService.addComputingResourcePropertyToComputeResource(ComputeResource, resource);
+        var resource = ModelMapperUtils.convert(resourceDto, ComputeResourceProperty.class);
+        var updatedComputeResource = computeResourcePropertyService.addComputingResourcePropertyToComputeResource(ComputeResource, resource);
         return ResponseEntity.ok(computeResourceAssembler.toModel(updatedComputeResource));
     }
 
@@ -163,21 +163,21 @@ public class ComputeResourceController {
             description = "Update a computing resource of the algorithm. Custom ID will be ignored." +
                     "For computing resource type only ID is required, other computing resource type attributes will not change.")
     @PutMapping("/{crid}/" + Constants.COMPUTING_RESOURCES_PROPERTIES + "/{resourceId}")
-    public HttpEntity<EntityModel<ComputingResourcePropertyDto>> updateComputingResourceResourcePropertyOfComputeResource(
+    public HttpEntity<EntityModel<ComputeResourcePropertyDto>> updateComputingResourceResourcePropertyOfComputeResource(
             @PathVariable UUID crid,
             @PathVariable UUID resourceId,
-            @RequestBody ComputingResourcePropertyDto resourceDto) {
-        ComputingResourceProperty computingResourceProperty = computingResourcePropertyService.findComputingResourcePropertyById(resourceId);
+            @RequestBody ComputeResourcePropertyDto resourceDto) {
+        ComputeResourceProperty computeResourceProperty = computeResourcePropertyService.findComputingResourcePropertyById(resourceId);
         var computeResource = computeResourceService.findById(crid);
-        if (Objects.isNull(computingResourceProperty.getComputeResource()) ||
-                !computingResourceProperty.getComputeResource().getId().equals(crid)) {
+        if (Objects.isNull(computeResourceProperty.getComputeResource()) ||
+                !computeResourceProperty.getComputeResource().getId().equals(crid)) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         ValidationUtils.validateComputingResourceProperty(resourceDto);
         var resource = computingResourceMixin.fromDto(resourceDto);
         resource.setId(resourceId);
-        var updatedResource = computingResourcePropertyService.addComputingResourcePropertyToComputeResource(computeResource, resource);
-        return ResponseEntity.ok(computingResourcePropertyAssembler.toModel(updatedResource));
+        var updatedResource = computeResourcePropertyService.addComputingResourcePropertyToComputeResource(computeResource, resource);
+        return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(updatedResource));
     }
 
     @Operation(responses = {
@@ -190,12 +190,12 @@ public class ComputeResourceController {
             @PathVariable UUID crid,
             @PathVariable UUID resourceId) {
         computeResourceService.findById(crid);
-        var computingResourceProperty = computingResourcePropertyService.findComputingResourcePropertyById(resourceId);
+        var computingResourceProperty = computeResourcePropertyService.findComputingResourcePropertyById(resourceId);
         if (Objects.isNull(computingResourceProperty.getComputeResource()) ||
                 !computingResourceProperty.getComputeResource().getId().equals(crid)) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        computingResourcePropertyService.deleteComputingResourceProperty(resourceId);
+        computeResourcePropertyService.deleteComputingResourceProperty(resourceId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

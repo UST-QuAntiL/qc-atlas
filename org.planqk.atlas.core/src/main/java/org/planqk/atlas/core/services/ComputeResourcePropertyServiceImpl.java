@@ -27,13 +27,13 @@ import javax.transaction.Transactional;
 
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.ComputeResource;
-import org.planqk.atlas.core.model.ComputingResourceProperty;
-import org.planqk.atlas.core.model.ComputingResourcePropertyType;
+import org.planqk.atlas.core.model.ComputeResourceProperty;
+import org.planqk.atlas.core.model.ComputeResourcePropertyType;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.repository.AlgorithmRepository;
 import org.planqk.atlas.core.repository.ComputeResourceRepository;
-import org.planqk.atlas.core.repository.ComputingResourcePropertyRepository;
-import org.planqk.atlas.core.repository.ComputingResourcePropertyTypeRepository;
+import org.planqk.atlas.core.repository.ComputeResourcePropertyRepository;
+import org.planqk.atlas.core.repository.ComputeResourcePropertyTypeRepository;
 import org.planqk.atlas.core.repository.ImplementationRepository;
 
 import lombok.AllArgsConstructor;
@@ -43,13 +43,13 @@ import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
-public class ComputingResourcePropertyServiceImpl implements ComputingResourcePropertyService {
+public class ComputeResourcePropertyServiceImpl implements ComputeResourcePropertyService {
 
     private final AlgorithmRepository algorithmRepository;
     private final ComputeResourceRepository computeResourceRepository;
     private final ImplementationRepository implementationRepository;
-    private final ComputingResourcePropertyTypeRepository typeRepository;
-    private final ComputingResourcePropertyRepository resourceRepository;
+    private final ComputeResourcePropertyTypeRepository typeRepository;
+    private final ComputeResourcePropertyRepository resourceRepository;
 
     @Override
     @Transactional
@@ -64,64 +64,64 @@ public class ComputingResourcePropertyServiceImpl implements ComputingResourcePr
     }
 
     @Override
-    public ComputingResourcePropertyType findComputingResourcePropertyTypeById(UUID resourceTypeId) {
+    public ComputeResourcePropertyType findComputingResourcePropertyTypeById(UUID resourceTypeId) {
         return this.typeRepository.findById(resourceTypeId).orElseThrow(NoSuchElementException::new);
     }
 
     @Override
-    public Page<ComputingResourcePropertyType> findAllComputingResourcePropertyTypes(Pageable pageable) {
+    public Page<ComputeResourcePropertyType> findAllComputingResourcePropertyTypes(Pageable pageable) {
         return typeRepository.findAll(pageable);
     }
 
     @Override
-    public Set<ComputingResourceProperty> findAllComputingResourcesPropertyByAlgorithmId(UUID algoid) {
+    public Set<ComputeResourceProperty> findAllComputingResourcesPropertyByAlgorithmId(UUID algoid) {
         return resourceRepository.findAllByAlgorithm_Id(algoid);
     }
 
     @Override
-    public Page<ComputingResourceProperty> findAllComputingResourcesPropertyByAlgorithmId(UUID algoid, Pageable pageable) {
+    public Page<ComputeResourceProperty> findAllComputingResourcesPropertyByAlgorithmId(UUID algoid, Pageable pageable) {
         return resourceRepository.findAllByAlgorithm_Id(algoid, pageable);
     }
 
     @Override
-    public Set<ComputingResourceProperty> findAllComputingResourcesPropertiesByImplementationId(UUID implId) {
+    public Set<ComputeResourceProperty> findAllComputingResourcesPropertiesByImplementationId(UUID implId) {
         return resourceRepository.findAllByImplementation_Id(implId);
     }
 
     @Override
-    public Page<ComputingResourceProperty> findAllComputingResourcesPropertiesByImplementationId(UUID implId, Pageable pageable) {
+    public Page<ComputeResourceProperty> findAllComputingResourcesPropertiesByImplementationId(UUID implId, Pageable pageable) {
         return resourceRepository.findAllByImplementation_Id(implId, pageable);
     }
 
     @Override
-    public Set<ComputingResourceProperty> findAllComputingResourcesPropertiesByComputeResourceId(UUID backendId) {
+    public Set<ComputeResourceProperty> findAllComputingResourcesPropertiesByComputeResourceId(UUID backendId) {
         return resourceRepository.findAllByComputeResource_Id(backendId);
     }
 
     @Override
-    public Page<ComputingResourceProperty> findAllComputingResourcesPropertiesByComputeResourceId(UUID backendId, Pageable pageable) {
+    public Page<ComputeResourceProperty> findAllComputingResourcesPropertiesByComputeResourceId(UUID backendId, Pageable pageable) {
         return resourceRepository.findAllByComputeResource_Id(backendId, pageable);
     }
 
     @Override
     @Transactional
-    public ComputingResourcePropertyType saveComputingResourcePropertyType(ComputingResourcePropertyType resourceType) {
+    public ComputeResourcePropertyType saveComputingResourcePropertyType(ComputeResourcePropertyType resourceType) {
         return typeRepository.save(resourceType);
     }
 
     @Override
     @Transactional
-    public ComputingResourceProperty saveComputingResourceProperty(ComputingResourceProperty resource) {
-        if (resource.getComputingResourcePropertyType().getId() == null) {
-            var type = saveComputingResourcePropertyType(resource.getComputingResourcePropertyType());
-            resource.setComputingResourcePropertyType(type);
+    public ComputeResourceProperty saveComputingResourceProperty(ComputeResourceProperty resource) {
+        if (resource.getComputeResourcePropertyType().getId() == null) {
+            var type = saveComputingResourcePropertyType(resource.getComputeResourcePropertyType());
+            resource.setComputeResourcePropertyType(type);
         }
         return resourceRepository.save(resource);
     }
 
     @Override
     @Transactional
-    public ComputingResourceProperty addComputingResourcePropertyToAlgorithm(Algorithm algo, ComputingResourceProperty resource) {
+    public ComputeResourceProperty addComputingResourcePropertyToAlgorithm(Algorithm algo, ComputeResourceProperty resource) {
         var updatedResource = resource;
         if (updatedResource.getId() == null) {
             updatedResource = this.saveComputingResourceProperty(resource);
@@ -132,14 +132,14 @@ public class ComputingResourcePropertyServiceImpl implements ComputingResourcePr
 
     @Override
     @Transactional
-    public ComputingResourceProperty addComputingResourcePropertyToAlgorithm(UUID algoId, UUID resourceId) {
+    public ComputeResourceProperty addComputingResourcePropertyToAlgorithm(UUID algoId, UUID resourceId) {
         var resource = resourceRepository.findById(resourceId).orElseThrow(NoSuchElementException::new);
         var algorithm = (Algorithm) algorithmRepository.findById(algoId).orElseThrow(NoSuchElementException::new);
         return addComputingResourcePropertyToAlgorithm(algorithm, resource);
     }
 
     @Override
-    public ComputingResourceProperty addComputingResourcePropertyToImplementation(Implementation impl, ComputingResourceProperty resource) {
+    public ComputeResourceProperty addComputingResourcePropertyToImplementation(Implementation impl, ComputeResourceProperty resource) {
         var updatedResource = resource;
         if (updatedResource.getId() == null) {
             updatedResource = this.saveComputingResourceProperty(resource);
@@ -149,7 +149,7 @@ public class ComputingResourcePropertyServiceImpl implements ComputingResourcePr
     }
 
     @Override
-    public ComputingResourceProperty addComputingResourcePropertyToImplementation(UUID implId, UUID resourceId) {
+    public ComputeResourceProperty addComputingResourcePropertyToImplementation(UUID implId, UUID resourceId) {
         var resource = resourceRepository.findById(resourceId).orElseThrow(NoSuchElementException::new);
         var implementation = (Implementation) implementationRepository.findById(implId).orElseThrow(NoSuchElementException::new);
         return addComputingResourcePropertyToImplementation(implementation, resource);
@@ -157,25 +157,25 @@ public class ComputingResourcePropertyServiceImpl implements ComputingResourcePr
 
     @Override
     @Transactional
-    public ComputingResourceProperty addComputingResourcePropertyToComputeResource(
-            ComputeResource computeResource, ComputingResourceProperty computingResourceProperty) {
-        computingResourceProperty.setComputeResource(computeResource);
+    public ComputeResourceProperty addComputingResourcePropertyToComputeResource(
+            ComputeResource computeResource, ComputeResourceProperty computeResourceProperty) {
+        computeResourceProperty.setComputeResource(computeResource);
 
-        this.saveComputingResourceProperty(computingResourceProperty);
+        this.saveComputingResourceProperty(computeResourceProperty);
 
-        return this.resourceRepository.save(computingResourceProperty);
+        return this.resourceRepository.save(computeResourceProperty);
     }
 
     @Override
     @Transactional
-    public ComputingResourceProperty addComputingResourcePropertyToComputeResource(UUID computeResourceId, UUID propertyId) {
+    public ComputeResourceProperty addComputingResourcePropertyToComputeResource(UUID computeResourceId, UUID propertyId) {
         var resource = resourceRepository.findById(propertyId).orElseThrow(NoSuchElementException::new);
         var computeResource = (ComputeResource) computeResourceRepository.findById(computeResourceId).orElseThrow(NoSuchElementException::new);
         return addComputingResourcePropertyToComputeResource(computeResource, resource);
     }
 
     @Override
-    public ComputingResourceProperty findComputingResourcePropertyById(UUID id) {
+    public ComputeResourceProperty findComputingResourcePropertyById(UUID id) {
         return resourceRepository.findById(id).orElseThrow(NoSuchElementException::new);
     }
 }
