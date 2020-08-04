@@ -541,7 +541,7 @@ public class AlgorithmControllerTest {
 
         var resultList = ObjectMapperUtils.mapResponseToList(
                 result.getResponse().getContentAsString(),
-                "computingResourceProperties",
+                "computeResourceProperties",
                 ComputeResourcePropertyDto.class
         );
         assertThat(resultList.size()).isEqualTo(10);

@@ -135,7 +135,7 @@ public class ComputeResourcePropertyTypeControllerTest {
 
         var resultList = ObjectMapperUtils.mapResponseToList(
                 result.getResponse().getContentAsString(),
-                "computingResourcePropertyTypes",
+                "computeResourcePropertyTypes",
                 ComputeResourcePropertyTypeDto.class
         );
         assertThat(resultList.size()).isEqualTo(10);

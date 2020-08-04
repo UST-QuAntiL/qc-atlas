@@ -315,7 +315,7 @@ public class ComputeResourceControllerTest {
 
         var dtoElements = ObjectMapperUtils.mapResponseToList(
                 mvcResult.getResponse().getContentAsString(),
-                "computingResourceProperties",
+                "computeResourceProperties",
                 ComputeResourceDto.class
         );
         assertThat(dtoElements.size()).isEqualTo(inputList.size());
