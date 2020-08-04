@@ -1,5 +1,6 @@
 package org.planqk.atlas.web.controller;
 
+import java.util.Objects;
 import java.util.UUID;
 
 import javax.validation.Valid;
@@ -9,6 +10,7 @@ import org.planqk.atlas.core.model.ComputingResourceProperty;
 import org.planqk.atlas.core.services.ComputeResourceService;
 import org.planqk.atlas.core.services.ComputingResourcePropertyService;
 import org.planqk.atlas.web.Constants;
+import org.planqk.atlas.web.controller.mixin.ComputingResourceMixin;
 import org.planqk.atlas.web.dtos.ComputeResourceDto;
 import org.planqk.atlas.web.dtos.ComputingResourcePropertyDto;
 import org.planqk.atlas.web.linkassembler.ComputeResourceAssembler;
@@ -48,6 +50,7 @@ public class ComputeResourceController {
 
     private final ComputingResourcePropertyService computingResourcePropertyService;
     private final ComputingResourcePropertyAssembler computingResourcePropertyAssembler;
+    private final ComputingResourceMixin computingResourceMixin;
     private final ComputeResourceService computeResourceService;
     private final ComputeResourceAssembler computeResourceAssembler;
 
@@ -142,5 +145,48 @@ public class ComputeResourceController {
         var resource = ModelMapperUtils.convert(resourceDto, ComputingResourceProperty.class);
         var updatedComputeResource = computingResourcePropertyService.addComputingResourcePropertyToComputeResource(ComputeResource, resource);
         return ResponseEntity.ok(computeResourceAssembler.toModel(updatedComputeResource));
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", description = "Algorithm with the given id doesn't exist")},
+            description = "Update a computing resource of the algorithm. Custom ID will be ignored." +
+                    "For computing resource type only ID is required, other computing resource type attributes will not change.")
+    @PutMapping("/{crid}/" + Constants.COMPUTING_RESOURCES_PROPERTIES + "/{resourceId}")
+    public HttpEntity<EntityModel<ComputingResourcePropertyDto>> updateComputingResourceResourcePropertyOfComputeResource(
+            @PathVariable UUID crid,
+            @PathVariable UUID resourceId,
+            @RequestBody ComputingResourcePropertyDto resourceDto) {
+        ComputingResourceProperty computingResourceProperty = computingResourcePropertyService.findComputingResourcePropertyById(resourceId);
+        var computeResource = computeResourceService.findById(crid);
+        if (Objects.isNull(computingResourceProperty.getComputeResource()) ||
+                !computingResourceProperty.getComputeResource().getId().equals(crid)) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        ValidationUtils.validateComputingResourceProperty(resourceDto);
+        var resource = computingResourceMixin.fromDto(resourceDto);
+        resource.setId(resourceId);
+        var updatedResource = computingResourcePropertyService.addComputingResourcePropertyToComputeResource(computeResource, resource);
+        return ResponseEntity.ok(computingResourcePropertyAssembler.toModel(updatedResource));
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400", description = "Computing resource with the given id doesn't belong to this algorithm"),
+            @ApiResponse(responseCode = "404", description = "Algorithm or computing resource with given id doesn't exist")},
+            description = "Delete a computing resource of the algorithm.")
+    @DeleteMapping("/{crid}/" + Constants.COMPUTING_RESOURCES_PROPERTIES + "/{resourceId}")
+    public HttpEntity<Void> deleteComputingResourcePropertyFromComputeResource(
+            @PathVariable UUID crid,
+            @PathVariable UUID resourceId) {
+        computeResourceService.findById(crid);
+        var computingResourceProperty = computingResourcePropertyService.findComputingResourcePropertyById(resourceId);
+        if (Objects.isNull(computingResourceProperty.getComputeResource()) ||
+                !computingResourceProperty.getComputeResource().getId().equals(crid)) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        computingResourcePropertyService.deleteComputingResourceProperty(resourceId);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

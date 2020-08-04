@@ -8,6 +8,7 @@ import org.planqk.atlas.core.model.ComputeResource;
 import org.planqk.atlas.core.model.ComputingResourceProperty;
 import org.planqk.atlas.core.model.ComputingResourcePropertyDataType;
 import org.planqk.atlas.core.model.ComputingResourcePropertyType;
+import org.planqk.atlas.core.model.exceptions.ConsistencyException;
 import org.planqk.atlas.core.services.ComputeResourceService;
 import org.planqk.atlas.core.services.ComputingResourcePropertyService;
 import org.planqk.atlas.web.Constants;
@@ -33,8 +34,10 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -317,5 +320,41 @@ public class ComputeResourceControllerTest {
         inputList.forEach(e -> {
             assertThat(dtoElements.stream().filter(dtoElem -> e.getId().equals(dtoElem.getId())).count()).isEqualTo(1);
         });
+    }
+
+    @Test
+    void deleteCloudService_returnNotFound() throws Exception {
+        doThrow(new NoSuchElementException()).when(computeResourceService).delete(any());
+        mockMvc.perform(
+                delete(
+                        fromMethodCall(uriBuilder,
+                                on(ComputeResourceController.class).deleteComputeResource(UUID.randomUUID())
+                        ).toUriString()
+                ).accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isNotFound());
+    }
+
+    @Test
+    void deleteCloudService_returnOk() throws Exception {
+        doNothing().when(computeResourceService).delete(any());
+        mockMvc.perform(
+                delete(
+                        fromMethodCall(uriBuilder,
+                                on(ComputeResourceController.class).deleteComputeResource(UUID.randomUUID())
+                        ).toUriString()
+                ).accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isOk());
+    }
+
+    @Test
+    void deleteCloudService_returnBadRequest() throws Exception {
+        doThrow(new ConsistencyException()).when(computeResourceService).delete(any());
+        mockMvc.perform(
+                delete(
+                        fromMethodCall(uriBuilder,
+                                on(ComputeResourceController.class).deleteComputeResource(UUID.randomUUID())
+                        ).toUriString()
+                ).accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isBadRequest());
     }
 }

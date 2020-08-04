@@ -100,7 +100,8 @@ public class CloudServiceController {
     @GetMapping("/{id}")
     public HttpEntity<EntityModel<CloudServiceDto>> getCloudService(
             @PathVariable UUID id) {
-        var cloudServiceDto = ModelMapperUtils.convert(cloudServiceService.findById(id), CloudServiceDto.class);
+        var cloudService = cloudServiceService.findById(id);
+        var cloudServiceDto = ModelMapperUtils.convert(cloudService, CloudServiceDto.class);
         return ResponseEntity.ok(cloudServiceAssembler.toModel(cloudServiceDto));
     }
 
