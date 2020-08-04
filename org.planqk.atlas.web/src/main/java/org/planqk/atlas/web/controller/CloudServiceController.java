@@ -8,7 +8,9 @@ import org.planqk.atlas.core.model.CloudService;
 import org.planqk.atlas.core.services.CloudServiceService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.CloudServiceDto;
+import org.planqk.atlas.web.dtos.ComputeResourceDto;
 import org.planqk.atlas.web.linkassembler.CloudServiceAssembler;
+import org.planqk.atlas.web.linkassembler.ComputeResourceAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
@@ -43,6 +45,7 @@ public class CloudServiceController {
 
     private final CloudServiceService cloudServiceService;
     private final CloudServiceAssembler cloudServiceAssembler;
+    private final ComputeResourceAssembler computeResourceAssembler;
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
@@ -99,5 +102,45 @@ public class CloudServiceController {
             @PathVariable UUID id) {
         var cloudServiceDto = ModelMapperUtils.convert(cloudServiceService.findById(id), CloudServiceDto.class);
         return ResponseEntity.ok(cloudServiceAssembler.toModel(cloudServiceDto));
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", description = "Cloud Service or Compute Resource with given id does not exist"),
+    })
+    @GetMapping("/{id}/" + Constants.COMPUTE_RESOURCES)
+    @ListParametersDoc()
+    public ResponseEntity<PagedModel<EntityModel<ComputeResourceDto>>> getComputeResourcesForCloudService(
+            @PathVariable UUID id,
+            @Parameter(hidden = true) ListParameters listParameters) {
+        var computeResources = cloudServiceService.findComputeResources(id, listParameters.getPageable());
+        return ResponseEntity.ok(computeResourceAssembler.toModel(computeResources));
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", description = "Cloud Service or Compute Resource with given id does not exist"),
+    })
+    @PostMapping("/{id}/" + Constants.COMPUTE_RESOURCES + "/{crId}")
+    public ResponseEntity<Void> addComputeResourceReferenceToCloudService(
+            @PathVariable UUID id,
+            @PathVariable UUID crId) {
+        cloudServiceService.addComputeResourceReference(id, crId);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", description = "Cloud Service or Compute Resource with given id does not exist"),
+    })
+    @DeleteMapping("/{id}/" + Constants.COMPUTE_RESOURCES + "/{crId}")
+    public ResponseEntity<Void> deleteComputeResourceReferenceFromCloudService(
+            @PathVariable UUID id,
+            @PathVariable UUID crId) {
+        cloudServiceService.deleteComputeResourceReference(id, crId);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }
