@@ -49,7 +49,7 @@ public class CloudServiceController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
-    })
+    }, description = "Retrieve all cloud services")
     @GetMapping()
     @ListParametersDoc
     public HttpEntity<PagedModel<EntityModel<CloudServiceDto>>> getCloudServices(
@@ -60,7 +60,10 @@ public class CloudServiceController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "201"),
-    })
+    }, description = "Define the basic properties of a cloud service. " +
+            "References to sub-objects (e.g. a compute resource) " +
+            "can be added via sub-routes (e.g. /cloud-services/{id}/compute-resources). " +
+            "Custom ID will be ignored.")
     @PostMapping()
     public HttpEntity<EntityModel<CloudServiceDto>> createCloudService(
             @Valid @RequestBody CloudServiceDto cloudServiceDto) {
@@ -72,7 +75,10 @@ public class CloudServiceController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Cloud Service with given id does not exist")
-    })
+    }, description = "Update the basic properties of a cloud service (e.g. name). " +
+            "References to sub-objects (e.g. a compute resource) are not updated via this operation - " +
+            "use the corresponding sub-route for updating them (e.g. /cloud-services/{id}/compute-resources). " +
+            "Custom ID will be ignored.")
     @PutMapping("/{id}")
     public HttpEntity<EntityModel<CloudServiceDto>> updateCloudService(
             @PathVariable UUID id,
@@ -85,7 +91,8 @@ public class CloudServiceController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Cloud Service with given id does not exist"),
-    })
+    }, description = "Delete a cloud service. " +
+            "This also removes all references to other entities (e.g. compute resource)")
     @DeleteMapping("/{id}")
     public HttpEntity<Void> deleteCloudService(@PathVariable UUID id) {
         cloudServiceService.delete(id);
@@ -96,7 +103,7 @@ public class CloudServiceController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Cloud Service with given id does not exist"),
-    })
+    }, description = "Retrieve a specific cloud service and its basic properties.")
     @GetMapping("/{id}")
     public HttpEntity<EntityModel<CloudServiceDto>> getCloudService(
             @PathVariable UUID id) {
@@ -108,7 +115,7 @@ public class CloudServiceController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Cloud Service or Compute Resource with given id does not exist"),
-    })
+    }, description = "Get referenced compute resources for a software platform.")
     @GetMapping("/{id}/" + Constants.COMPUTE_RESOURCES)
     @ListParametersDoc()
     public ResponseEntity<PagedModel<EntityModel<ComputeResourceDto>>> getComputeResourcesForCloudService(
@@ -122,7 +129,10 @@ public class CloudServiceController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Cloud Service or Compute Resource with given id does not exist"),
-    })
+    }, description = "Add a reference to an existing compute resource (that was previously created via a POST on /compute-resources/). " +
+            "Custom ID will be ignored. " +
+            "For the compute resource only the ID is required, other compute resource attributes will not change. " +
+            "If the compute resource doesn't exist yet, a 404 error is thrown.")
     @PostMapping("/{id}/" + Constants.COMPUTE_RESOURCES + "/{crId}")
     public ResponseEntity<Void> addComputeResourceReferenceToCloudService(
             @PathVariable UUID id,
@@ -135,7 +145,7 @@ public class CloudServiceController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Cloud Service or Compute Resource with given id does not exist"),
-    })
+    }, description = "Get a specific referenced compute resource of a cloud service.")
     @DeleteMapping("/{id}/" + Constants.COMPUTE_RESOURCES + "/{crId}")
     public ResponseEntity<Void> deleteComputeResourceReferenceFromCloudService(
             @PathVariable UUID id,

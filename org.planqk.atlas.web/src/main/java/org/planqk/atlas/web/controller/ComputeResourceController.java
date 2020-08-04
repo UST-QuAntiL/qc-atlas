@@ -53,7 +53,7 @@ public class ComputeResourceController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200")
-    })
+    }, description = "Retrieve all compute resources")
     @GetMapping()
     @ListParametersDoc
     public ResponseEntity<PagedModel<EntityModel<ComputeResourceDto>>> getComputeResources(
@@ -64,7 +64,10 @@ public class ComputeResourceController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "201")
-    })
+    }, description = "Define the basic properties of a compute resource. " +
+            "References to sub-objects (e.g. a compute resource property) " +
+            "can be added via sub-routes (e.g. /compute-resources/{id}/compute-resource-properties). " +
+            "Custom ID will be ignored.")
     @PostMapping()
     public ResponseEntity<EntityModel<ComputeResourceDto>> createComputeResource(
             @Valid @RequestBody ComputeResourceDto computeResourceDto) {
@@ -76,7 +79,10 @@ public class ComputeResourceController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Compute Resource with given id does not exist")
-    })
+    }, description = "Update the basic properties of a compute resource (e.g. name). " +
+            "References to sub-objects (e.g. a compute resource property) are not updated via this operation - " +
+            "use the corresponding sub-route for updating them (e.g. /compute-resources/{id}/compute-resource-properties). " +
+            "Custom ID will be ignored.")
     @PutMapping("/{id}")
     public HttpEntity<EntityModel<ComputeResourceDto>> updateComputeResource(
             @PathVariable UUID id,
@@ -89,7 +95,8 @@ public class ComputeResourceController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Compute Resource with given id does not exist")
-    })
+    }, description = "Delete a compute resource. " +
+            "This also removes all references to other entities (e.g. software platform)")
     @DeleteMapping("/{id}")
     public HttpEntity<Void> deleteComputeResource(
             @PathVariable UUID id) {
@@ -103,7 +110,7 @@ public class ComputeResourceController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Compute Resource with given id does not exist")
-    })
+    }, description = "Retrieve a specific compute resource and its basic properties.")
     @GetMapping("/{id}")
     public HttpEntity<EntityModel<ComputeResourceDto>> getComputeResource(
             @PathVariable UUID id) {
@@ -115,7 +122,7 @@ public class ComputeResourceController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Compute Resource with given id does not exist")
-    })
+    }, description = "Get referenced compute resource properties for a compute resource.")
     @GetMapping("/{id}/" + Constants.COMPUTING_RESOURCES_PROPERTIES)
     @ListParametersDoc
     public HttpEntity<PagedModel<EntityModel<ComputingResourcePropertyDto>>> getComputingResourcePropertiesForComputeResource(
@@ -131,7 +138,9 @@ public class ComputeResourceController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Compute Resource with given id does not exist")
-    })
+    }, description = "Define the basic properties of a compute resource property and " +
+            "add a reference to the defined compute resource property. " +
+            "Custom ID will be ignored. ")
     @PostMapping("/{id}/" + Constants.COMPUTING_RESOURCES_PROPERTIES)
     public HttpEntity<EntityModel<ComputeResourceDto>> addComputingResourcePropertyToComputeResource(
             @PathVariable UUID id,
