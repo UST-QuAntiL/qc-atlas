@@ -12,7 +12,7 @@ import org.planqk.atlas.core.model.exceptions.ConsistencyException;
 import org.planqk.atlas.core.services.ComputeResourceService;
 import org.planqk.atlas.core.services.ComputeResourcePropertyService;
 import org.planqk.atlas.web.Constants;
-import org.planqk.atlas.web.controller.mixin.ComputingResourceMixin;
+import org.planqk.atlas.web.controller.mixin.ComputeResourcePropertyMixin;
 import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
 import org.planqk.atlas.web.dtos.ComputeResourceDto;
 import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
@@ -59,7 +59,7 @@ public class ComputeResourceControllerTest {
     @MockBean
     private ComputeResourcePropertyService computeResourcePropertyService;
     @MockBean
-    private ComputingResourceMixin mixin;
+    private ComputeResourcePropertyMixin mixin;
     @Autowired
     private MockMvc mockMvc;
     private final ObjectMapper mapper = ObjectMapperUtils.newTestMapper();
@@ -265,7 +265,7 @@ public class ComputeResourceControllerTest {
     @SuppressWarnings("ConstantConditions")
     void listComputationResourceProperties_empty() throws Exception {
         doReturn(Page.empty()).when(computeResourcePropertyService)
-                .findAllComputingResourcesPropertiesByComputeResourceId(any(), any());
+                .findAllComputeResourcesPropertiesByComputeResourceId(any(), any());
 
         var mvcResult = mockMvc.perform(
                 get(
@@ -300,7 +300,7 @@ public class ComputeResourceControllerTest {
             inputList.add(element);
         }
         doReturn(new PageImpl<>(inputList)).when(computeResourcePropertyService)
-                .findAllComputingResourcesPropertiesByComputeResourceId(any(), any());
+                .findAllComputeResourcesPropertiesByComputeResourceId(any(), any());
 
         var mvcResult = mockMvc.perform(
                 get(

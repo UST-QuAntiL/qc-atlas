@@ -53,67 +53,67 @@ public class ComputeResourcePropertyServiceImpl implements ComputeResourceProper
 
     @Override
     @Transactional
-    public void deleteComputingResourcePropertyType(UUID typeId) {
+    public void deleteComputeResourcePropertyType(UUID typeId) {
         this.typeRepository.deleteById(typeId);
     }
 
     @Override
     @Transactional
-    public void deleteComputingResourceProperty(UUID resourceId) {
+    public void deleteComputeResourceProperty(UUID resourceId) {
         resourceRepository.deleteById(resourceId);
     }
 
     @Override
-    public ComputeResourcePropertyType findComputingResourcePropertyTypeById(UUID resourceTypeId) {
+    public ComputeResourcePropertyType findComputeResourcePropertyTypeById(UUID resourceTypeId) {
         return this.typeRepository.findById(resourceTypeId).orElseThrow(NoSuchElementException::new);
     }
 
     @Override
-    public Page<ComputeResourcePropertyType> findAllComputingResourcePropertyTypes(Pageable pageable) {
+    public Page<ComputeResourcePropertyType> findAllComputeResourcePropertyTypes(Pageable pageable) {
         return typeRepository.findAll(pageable);
     }
 
     @Override
-    public Set<ComputeResourceProperty> findAllComputingResourcesPropertyByAlgorithmId(UUID algoid) {
+    public Set<ComputeResourceProperty> findAllComputeResourcesPropertyByAlgorithmId(UUID algoid) {
         return resourceRepository.findAllByAlgorithm_Id(algoid);
     }
 
     @Override
-    public Page<ComputeResourceProperty> findAllComputingResourcesPropertyByAlgorithmId(UUID algoid, Pageable pageable) {
+    public Page<ComputeResourceProperty> findAllComputeResourcesPropertyByAlgorithmId(UUID algoid, Pageable pageable) {
         return resourceRepository.findAllByAlgorithm_Id(algoid, pageable);
     }
 
     @Override
-    public Set<ComputeResourceProperty> findAllComputingResourcesPropertiesByImplementationId(UUID implId) {
+    public Set<ComputeResourceProperty> findAllComputeResourcesPropertiesByImplementationId(UUID implId) {
         return resourceRepository.findAllByImplementation_Id(implId);
     }
 
     @Override
-    public Page<ComputeResourceProperty> findAllComputingResourcesPropertiesByImplementationId(UUID implId, Pageable pageable) {
+    public Page<ComputeResourceProperty> findAllComputeResourcesPropertiesByImplementationId(UUID implId, Pageable pageable) {
         return resourceRepository.findAllByImplementation_Id(implId, pageable);
     }
 
     @Override
-    public Set<ComputeResourceProperty> findAllComputingResourcesPropertiesByComputeResourceId(UUID backendId) {
+    public Set<ComputeResourceProperty> findAllComputeResourcesPropertiesByComputeResourceId(UUID backendId) {
         return resourceRepository.findAllByComputeResource_Id(backendId);
     }
 
     @Override
-    public Page<ComputeResourceProperty> findAllComputingResourcesPropertiesByComputeResourceId(UUID backendId, Pageable pageable) {
+    public Page<ComputeResourceProperty> findAllComputeResourcesPropertiesByComputeResourceId(UUID backendId, Pageable pageable) {
         return resourceRepository.findAllByComputeResource_Id(backendId, pageable);
     }
 
     @Override
     @Transactional
-    public ComputeResourcePropertyType saveComputingResourcePropertyType(ComputeResourcePropertyType resourceType) {
+    public ComputeResourcePropertyType saveComputeResourcePropertyType(ComputeResourcePropertyType resourceType) {
         return typeRepository.save(resourceType);
     }
 
     @Override
     @Transactional
-    public ComputeResourceProperty saveComputingResourceProperty(ComputeResourceProperty resource) {
+    public ComputeResourceProperty saveComputeResourceProperty(ComputeResourceProperty resource) {
         if (resource.getComputeResourcePropertyType().getId() == null) {
-            var type = saveComputingResourcePropertyType(resource.getComputeResourcePropertyType());
+            var type = saveComputeResourcePropertyType(resource.getComputeResourcePropertyType());
             resource.setComputeResourcePropertyType(type);
         }
         return resourceRepository.save(resource);
@@ -121,10 +121,10 @@ public class ComputeResourcePropertyServiceImpl implements ComputeResourceProper
 
     @Override
     @Transactional
-    public ComputeResourceProperty addComputingResourcePropertyToAlgorithm(Algorithm algo, ComputeResourceProperty resource) {
+    public ComputeResourceProperty addComputeResourcePropertyToAlgorithm(Algorithm algo, ComputeResourceProperty resource) {
         var updatedResource = resource;
         if (updatedResource.getId() == null) {
-            updatedResource = this.saveComputingResourceProperty(resource);
+            updatedResource = this.saveComputeResourceProperty(resource);
         }
         updatedResource.setAlgorithm(algo);
         return this.resourceRepository.save(updatedResource);
@@ -132,50 +132,50 @@ public class ComputeResourcePropertyServiceImpl implements ComputeResourceProper
 
     @Override
     @Transactional
-    public ComputeResourceProperty addComputingResourcePropertyToAlgorithm(UUID algoId, UUID resourceId) {
+    public ComputeResourceProperty addComputeResourcePropertyToAlgorithm(UUID algoId, UUID resourceId) {
         var resource = resourceRepository.findById(resourceId).orElseThrow(NoSuchElementException::new);
         var algorithm = (Algorithm) algorithmRepository.findById(algoId).orElseThrow(NoSuchElementException::new);
-        return addComputingResourcePropertyToAlgorithm(algorithm, resource);
+        return addComputeResourcePropertyToAlgorithm(algorithm, resource);
     }
 
     @Override
-    public ComputeResourceProperty addComputingResourcePropertyToImplementation(Implementation impl, ComputeResourceProperty resource) {
+    public ComputeResourceProperty addComputeResourcePropertyToImplementation(Implementation impl, ComputeResourceProperty resource) {
         var updatedResource = resource;
         if (updatedResource.getId() == null) {
-            updatedResource = this.saveComputingResourceProperty(resource);
+            updatedResource = this.saveComputeResourceProperty(resource);
         }
         updatedResource.setImplementation(impl);
         return this.resourceRepository.save(updatedResource);
     }
 
     @Override
-    public ComputeResourceProperty addComputingResourcePropertyToImplementation(UUID implId, UUID resourceId) {
+    public ComputeResourceProperty addComputeResourcePropertyToImplementation(UUID implId, UUID resourceId) {
         var resource = resourceRepository.findById(resourceId).orElseThrow(NoSuchElementException::new);
         var implementation = (Implementation) implementationRepository.findById(implId).orElseThrow(NoSuchElementException::new);
-        return addComputingResourcePropertyToImplementation(implementation, resource);
+        return addComputeResourcePropertyToImplementation(implementation, resource);
     }
 
     @Override
     @Transactional
-    public ComputeResourceProperty addComputingResourcePropertyToComputeResource(
+    public ComputeResourceProperty addComputeResourcePropertyToComputeResource(
             ComputeResource computeResource, ComputeResourceProperty computeResourceProperty) {
         computeResourceProperty.setComputeResource(computeResource);
 
-        this.saveComputingResourceProperty(computeResourceProperty);
+        this.saveComputeResourceProperty(computeResourceProperty);
 
         return this.resourceRepository.save(computeResourceProperty);
     }
 
     @Override
     @Transactional
-    public ComputeResourceProperty addComputingResourcePropertyToComputeResource(UUID computeResourceId, UUID propertyId) {
+    public ComputeResourceProperty addComputeResourcePropertyToComputeResource(UUID computeResourceId, UUID propertyId) {
         var resource = resourceRepository.findById(propertyId).orElseThrow(NoSuchElementException::new);
         var computeResource = (ComputeResource) computeResourceRepository.findById(computeResourceId).orElseThrow(NoSuchElementException::new);
-        return addComputingResourcePropertyToComputeResource(computeResource, resource);
+        return addComputeResourcePropertyToComputeResource(computeResource, resource);
     }
 
     @Override
-    public ComputeResourceProperty findComputingResourcePropertyById(UUID id) {
+    public ComputeResourceProperty findComputeResourcePropertyById(UUID id) {
         return resourceRepository.findById(id).orElseThrow(NoSuchElementException::new);
     }
 }

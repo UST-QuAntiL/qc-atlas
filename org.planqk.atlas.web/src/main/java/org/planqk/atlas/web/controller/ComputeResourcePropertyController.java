@@ -60,7 +60,7 @@ public class ComputeResourcePropertyController {
     })
     @GetMapping("/{id}")
     public HttpEntity<EntityModel<ComputeResourcePropertyDto>> getComputingResourceProperty(@PathVariable UUID id) {
-        var resource = service.findComputingResourcePropertyById(id);
+        var resource = service.findComputeResourcePropertyById(id);
         return ResponseEntity.ok(assembler.toModel(resource));
     }
 
@@ -71,8 +71,8 @@ public class ComputeResourcePropertyController {
     })
     @DeleteMapping("/{id}")
     public HttpEntity<Void> deleteComputingResourceProperty(@PathVariable UUID id) {
-        service.findComputingResourcePropertyById(id);
-        service.deleteComputingResourceProperty(id);
+        service.findComputeResourcePropertyById(id);
+        service.deleteComputeResourceProperty(id);
         return ResponseEntity.ok().build();
     }
 }

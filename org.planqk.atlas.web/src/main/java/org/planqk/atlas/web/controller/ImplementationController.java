@@ -34,7 +34,7 @@ import org.planqk.atlas.core.services.ComputeResourcePropertyService;
 import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.core.services.SoftwarePlatformService;
 import org.planqk.atlas.web.Constants;
-import org.planqk.atlas.web.controller.mixin.ComputingResourceMixin;
+import org.planqk.atlas.web.controller.mixin.ComputeResourcePropertyMixin;
 import org.planqk.atlas.web.controller.mixin.PublicationMixin;
 import org.planqk.atlas.web.dtos.ComputeResourcePropertyDto;
 import org.planqk.atlas.web.dtos.ImplementationDto;
@@ -94,7 +94,7 @@ public class ImplementationController {
     private final SoftwarePlatformAssembler softwarePlatformAssembler;
 
     private final PublicationMixin publicationMixin;
-    private final ComputingResourceMixin computingResourceMixin;
+    private final ComputeResourcePropertyMixin computeResourcePropertyMixin;
 
     @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", description = "Algorithm doesn't exist")}, description = "Retrieve all implementations for the algorithm")
     @GetMapping()
@@ -167,7 +167,7 @@ public class ImplementationController {
         log.debug("Received Get to retrieve all computing resources of implementation with id: {}.", implId);
         algorithmService.findById(algoId);
         implementationService.findById(implId);
-        var resources = computeResourcePropertyService.findAllComputingResourcesPropertiesByImplementationId(implId, RestUtils.getPageableFromRequestParams(page, size));
+        var resources = computeResourcePropertyService.findAllComputeResourcesPropertiesByImplementationId(implId, RestUtils.getPageableFromRequestParams(page, size));
         return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(resources));
     }
 
@@ -185,8 +185,8 @@ public class ImplementationController {
         algorithmService.findById(algoId);
         var implementation = implementationService.findById(implId);
         ValidationUtils.validateComputingResourceProperty(resourceDto);
-        var resource = computingResourceMixin.fromDto(resourceDto);
-        resource = computeResourcePropertyService.addComputingResourcePropertyToImplementation(implementation, resource);
+        var resource = computeResourcePropertyMixin.fromDto(resourceDto);
+        resource = computeResourcePropertyService.addComputeResourcePropertyToImplementation(implementation, resource);
         return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(resource));
     }
 
@@ -196,7 +196,7 @@ public class ImplementationController {
     public HttpEntity<EntityModel<ComputeResourcePropertyDto>> getComputingResource(
             @PathVariable UUID algoId, @PathVariable UUID implId, @PathVariable UUID resourceId) {
         log.debug("Get received to retrieve computing resource with id {}.", resourceId);
-        var computingResourceProperty = computeResourcePropertyService.findComputingResourcePropertyById(resourceId);
+        var computingResourceProperty = computeResourcePropertyService.findComputeResourcePropertyById(resourceId);
         if (Objects.isNull(computingResourceProperty.getImplementation()) || !computingResourceProperty.getImplementation().getId().equals(implId)) {
             log.debug("Implementation is not referenced from the computing resource to retrieve!");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -212,16 +212,16 @@ public class ImplementationController {
                                                                                        @PathVariable UUID resourceId,
                                                                                        @RequestBody ComputeResourcePropertyDto resourceDto) {
         log.debug("Put received to update computing resource with id {}.", resourceId);
-        ComputeResourceProperty computeResourceProperty = computeResourcePropertyService.findComputingResourcePropertyById(resourceId);
+        ComputeResourceProperty computeResourceProperty = computeResourcePropertyService.findComputeResourcePropertyById(resourceId);
         Implementation implementation = implementationService.findById(implId);
         if (Objects.isNull(computeResourceProperty.getImplementation()) || !computeResourceProperty.getImplementation().getId().equals(implId)) {
             log.debug("Implementation is not referenced from the computing resource to update!");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         ValidationUtils.validateComputingResourceProperty(resourceDto);
-        var resource = computingResourceMixin.fromDto(resourceDto);
+        var resource = computeResourcePropertyMixin.fromDto(resourceDto);
         resource.setId(resourceId);
-        resource = computeResourcePropertyService.addComputingResourcePropertyToImplementation(implementation, resource);
+        resource = computeResourcePropertyService.addComputeResourcePropertyToImplementation(implementation, resource);
         return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(resource));
     }
 
@@ -237,12 +237,12 @@ public class ImplementationController {
         log.debug("Delete received to remove computing resource with id {}.", resourceId);
         algorithmService.findById(algoId);
         implementationService.findById(implId);
-        ComputeResourceProperty computeResourceProperty = computeResourcePropertyService.findComputingResourcePropertyById(resourceId);
+        ComputeResourceProperty computeResourceProperty = computeResourcePropertyService.findComputeResourcePropertyById(resourceId);
         if (Objects.isNull(computeResourceProperty.getImplementation()) || !computeResourceProperty.getImplementation().getId().equals(implId)) {
             log.debug("Implementation is not referenced from the computing resource to delete!");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        computeResourcePropertyService.deleteComputingResourceProperty(resourceId);
+        computeResourcePropertyService.deleteComputeResourceProperty(resourceId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

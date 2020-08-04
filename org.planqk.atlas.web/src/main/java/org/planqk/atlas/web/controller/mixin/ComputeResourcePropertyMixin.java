@@ -31,14 +31,14 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class ComputingResourceMixin {
+public class ComputeResourcePropertyMixin {
     private final ComputeResourcePropertyService computeResourcePropertyService;
 
     public ComputeResourceProperty fromDto(ComputeResourcePropertyDto resourceDto) {
         if (Objects.isNull(resourceDto.getType().getId())) {
             throw new InvalidParameterException("empty type ID");
         }
-        var type = computeResourcePropertyService.findComputingResourcePropertyTypeById(resourceDto.getType().getId());
+        var type = computeResourcePropertyService.findComputeResourcePropertyTypeById(resourceDto.getType().getId());
         var resource = ModelMapperUtils.convert(resourceDto, ComputeResourceProperty.class);
         resource.setComputeResourcePropertyType(type);
         return resource;

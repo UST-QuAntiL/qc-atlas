@@ -78,11 +78,11 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
         computingResourcePropertyType.setName("test name");
         computingResourcePropertyType.setDatatype(ComputeResourcePropertyDataType.STRING);
         computingResourcePropertyType.setDescription("test description");
-        var storedType = computeResourcePropertyService.saveComputingResourcePropertyType(computingResourcePropertyType);
+        var storedType = computeResourcePropertyService.saveComputeResourcePropertyType(computingResourcePropertyType);
         computingResourceProperty.setComputeResourcePropertyType(storedType);
         computingResourceProperty.setValue("test value");
 
-        var storedProperty = computeResourcePropertyService.addComputingResourcePropertyToComputeResource(
+        var storedProperty = computeResourcePropertyService.addComputeResourcePropertyToComputeResource(
                 storedComputeResource, computingResourceProperty);
 
         var storedComputeResourceWithReference = computeResourceService.findById(storedComputeResource.getId());
@@ -173,11 +173,11 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
         computingResourcePropertyType.setName("test name");
         computingResourcePropertyType.setDatatype(ComputeResourcePropertyDataType.STRING);
         computingResourcePropertyType.setDescription("test description");
-        var storedType = computeResourcePropertyService.saveComputingResourcePropertyType(computingResourcePropertyType);
+        var storedType = computeResourcePropertyService.saveComputeResourcePropertyType(computingResourcePropertyType);
         computingResourceProperty.setComputeResourcePropertyType(storedType);
         computingResourceProperty.setValue("test value");
 
-        var storedProperty = computeResourcePropertyService.addComputingResourcePropertyToComputeResource(
+        var storedProperty = computeResourcePropertyService.addComputeResourcePropertyToComputeResource(
                 storedComputeResource, computingResourceProperty);
 
         // Delete
@@ -188,7 +188,7 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
 
         // Test if references are removed
         Assertions.assertThrows(NoSuchElementException.class, () ->
-                computeResourcePropertyService.findComputingResourcePropertyById(storedProperty.getId()));
+                computeResourcePropertyService.findComputeResourcePropertyById(storedProperty.getId()));
     }
 
     private void assertComputeResourceEquality(ComputeResource dbComputeResource, ComputeResource compareComputeResource) {

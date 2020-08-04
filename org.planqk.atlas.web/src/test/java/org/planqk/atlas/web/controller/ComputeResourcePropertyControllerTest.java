@@ -72,21 +72,21 @@ public class ComputeResourcePropertyControllerTest {
 
     @Test
     void test_deleteResource() throws Exception {
-        doNothing().when(resourceService).deleteComputingResourceProperty(any());
+        doNothing().when(resourceService).deleteComputeResourceProperty(any());
         var url = "/" + Constants.API_VERSION + "/" + Constants.COMPUTING_RESOURCES_PROPERTIES + "/" + UUID.randomUUID().toString();
         mockMvc.perform(delete(url)).andExpect(status().isOk());
     }
 
     @Test
     void test_deleteResource_InvalidId() throws Exception {
-        doThrow(new NoSuchElementException()).when(resourceService).deleteComputingResourceProperty(any());
+        doThrow(new NoSuchElementException()).when(resourceService).deleteComputeResourceProperty(any());
         var url = "/" + Constants.API_VERSION + "/" + Constants.COMPUTING_RESOURCES_PROPERTIES + "/" + UUID.randomUUID().toString();
         mockMvc.perform(delete(url)).andExpect(status().isNotFound());
     }
 
     @Test
     void test_getResource_InvalidId() throws Exception {
-        when(resourceService.findComputingResourcePropertyById(any())).thenThrow(new NoSuchElementException());
+        when(resourceService.findComputeResourcePropertyById(any())).thenThrow(new NoSuchElementException());
         var url = "/" + Constants.API_VERSION + "/" + Constants.COMPUTING_RESOURCES_PROPERTIES + "/" + UUID.randomUUID().toString();
         mockMvc.perform(get(url)).andExpect(status().isNotFound());
     }
@@ -102,7 +102,7 @@ public class ComputeResourcePropertyControllerTest {
         sampleResource.setId(UUID.randomUUID());
         sampleResource.setComputeResourcePropertyType(sampleType);
 
-        when(resourceService.findComputingResourcePropertyById(any())).thenReturn(sampleResource);
+        when(resourceService.findComputeResourcePropertyById(any())).thenReturn(sampleResource);
         var url = "/" + Constants.API_VERSION + "/" + Constants.COMPUTING_RESOURCES_PROPERTIES + "/" + UUID.randomUUID().toString();
         var result = mockMvc.perform(get(url)).andExpect(status().isOk()).andReturn();
 
