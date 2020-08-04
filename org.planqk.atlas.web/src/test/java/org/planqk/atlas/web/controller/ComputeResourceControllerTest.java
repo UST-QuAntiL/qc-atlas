@@ -12,6 +12,7 @@ import org.planqk.atlas.core.model.exceptions.ConsistencyException;
 import org.planqk.atlas.core.services.ComputeResourceService;
 import org.planqk.atlas.core.services.ComputingResourcePropertyService;
 import org.planqk.atlas.web.Constants;
+import org.planqk.atlas.web.controller.mixin.ComputingResourceMixin;
 import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
 import org.planqk.atlas.web.dtos.ComputeResourceDto;
 import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
@@ -57,6 +58,8 @@ public class ComputeResourceControllerTest {
     private ComputeResourceService computeResourceService;
     @MockBean
     private ComputingResourcePropertyService computingResourcePropertyService;
+    @MockBean
+    private ComputingResourceMixin mixin;
     @Autowired
     private MockMvc mockMvc;
     private final ObjectMapper mapper = ObjectMapperUtils.newTestMapper();
