@@ -72,7 +72,7 @@ public class ImplementationServiceImpl implements ImplementationService {
     }
 
     @Override
-    public Algorithm getImplementingAlgorithm(UUID implId) {
+    public Algorithm getImplementedAlgorithm(UUID implId) {
         return findById(implId).getImplementedAlgorithm();
     }
 

@@ -42,7 +42,7 @@ public interface ImplementationService {
 
     Page<Implementation> findByImplementedAlgorithm(UUID algoId, Pageable pageable);
 
-    Algorithm getImplementingAlgorithm(UUID implId);
+    Algorithm getImplementedAlgorithm(UUID implId);
 
     Page<SoftwarePlatform> findLinkedSoftwarePlatforms(UUID implId, Pageable p);
 
