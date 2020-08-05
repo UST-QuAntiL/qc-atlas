@@ -51,7 +51,7 @@ public class GlobalImplementationController {
     }, description = "Retrieve all implementations")
     @GetMapping()
     @ListParametersDoc
-    public ResponseEntity<PagedModel<EntityModel<ImplementationDto>>> getSoftwarePlatforms(
+    public ResponseEntity<PagedModel<EntityModel<ImplementationDto>>> getAllImplementations(
             @Parameter(hidden = true) ListParameters listParameters) {
         var platforms = implementationService.findAll(listParameters.getPageable());
         return ResponseEntity.ok(implementationAssembler.toModel(platforms));
