@@ -8,4 +8,6 @@ import org.springframework.web.multipart.MultipartFile;
 public interface SketchService {
 
     public Sketch addSketchToAlgorithm(UUID algorithmId, MultipartFile file, String description);
+
+    public void delete(UUID sketchId);
 }

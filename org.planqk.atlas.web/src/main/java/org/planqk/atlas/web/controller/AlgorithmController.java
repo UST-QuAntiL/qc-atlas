@@ -616,6 +616,9 @@ public class AlgorithmController {
     }
 
 
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", description = "Algorithm with the given id doesn't exist")}, description = "Add a Sketch to the algorithm.")
     @PostMapping("/{algoId}/" + Constants.SKETCHES)
     public ResponseEntity<Sketch> uploadSketch(@PathVariable UUID algoId, @RequestParam("file") MultipartFile file,
                                              @RequestParam("description") String description) {
@@ -623,10 +626,22 @@ public class AlgorithmController {
             Sketch sketch = sketchService.addSketchToAlgorithm(algoId, file, description);
             return ResponseEntity.ok(sketch);
         } catch (Exception e) {
-
             return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
         }
     }
+
+
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", description = "Algorithm or sketch with given id doesn't exist")}, description = "Delete a sketch of the algorithm.")
+    @DeleteMapping("/{algoId}/" + Constants.SKETCHES + "/{sketchId}")
+    public ResponseEntity<Void> deleteSketch(@PathVariable UUID algoId, @PathVariable UUID sketchId){
+        sketchService.delete(sketchId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+
 
     private AlgorithmRelation handleRelationUpdate(AlgorithmRelationDto relationDto, UUID relationId) {
         AlgorithmRelation resource = new AlgorithmRelation();

@@ -23,7 +23,7 @@ public class SketchServiceImpl implements SketchService {
     public Sketch addSketchToAlgorithm(UUID algorithmId, MultipartFile file, String description) {
         try {
             byte[] fileContent = file.getBytes();
-            String base64Image = "data:image/" + file.getContentType() + ";base64," + Base64.getEncoder().encodeToString(fileContent);
+            String base64Image = "data:" + file.getContentType() + ";base64," + Base64.getEncoder().encodeToString(fileContent);
             Sketch sketch = new Sketch();
             sketch.setImage(base64Image);
             sketch.setDescription(description);
@@ -32,7 +32,12 @@ public class SketchServiceImpl implements SketchService {
             sketchRepository.save(sketch);
             return sketch;
         } catch (Exception e) {
-            throw new RuntimeException("Could not store the file. Error: " + e.getMessage());
+            throw new RuntimeException("Could not store the Sketch. Error: " + e.getMessage());
         }
+    }
+
+    @Override
+    public void delete(UUID sketchId){
+        sketchRepository.deleteById(sketchId);
     }
 }
