@@ -19,15 +19,16 @@
 
 package org.planqk.atlas.core.services;
 
+import java.util.Set;
+import java.util.UUID;
+
 import org.planqk.atlas.core.model.CloudService;
 import org.planqk.atlas.core.model.ComputeResource;
+import org.planqk.atlas.core.model.SoftwarePlatform;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Set;
-import java.util.UUID;
 
 public interface CloudServiceService {
 
@@ -48,6 +49,8 @@ public interface CloudServiceService {
     void delete(UUID cloudServiceId);
 
     Page<ComputeResource> findComputeResources(UUID serviceId, Pageable pageable);
+
+    Page<SoftwarePlatform> findLinkedSoftwarePlatforms(UUID serviceId, Pageable pageable);
 
     @Transactional
     void addComputeResourceReference(UUID serviceId, UUID resourceId);

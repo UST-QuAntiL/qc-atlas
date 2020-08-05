@@ -18,6 +18,9 @@ public interface CloudServiceRepository extends JpaRepository<CloudService, UUID
     @Query("SELECT cs FROM CloudService cs JOIN cs.softwarePlatforms sp WHERE sp.id = :spid")
     Page<CloudService> findCloudServicesBySoftwarePlatformId(@Param("spid") UUID id, Pageable p);
 
+    @Query("SELECT cs FROM CloudService cs JOIN cs.providedComputeResources cr WHERE cr.id = :spid")
+    Page<CloudService> findCloudServicesByComputeResourceId(@Param("spid") UUID id, Pageable p);
+
     @Query("SELECT COUNT(cs) " +
             "FROM CloudService cs " +
             "JOIN cs.providedComputeResources computeResource " +

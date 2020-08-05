@@ -21,7 +21,9 @@ package org.planqk.atlas.core.services;
 
 import java.util.UUID;
 
+import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Implementation;
+import org.planqk.atlas.core.model.SoftwarePlatform;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -39,6 +41,10 @@ public interface ImplementationService {
     Implementation update(UUID id, Implementation implementation);
 
     Page<Implementation> findByImplementedAlgorithm(UUID algoId, Pageable pageable);
+
+    Algorithm getImplementingAlgorithm(UUID implId);
+
+    Page<SoftwarePlatform> findLinkedSoftwarePlatforms(UUID implId, Pageable p);
 
     Implementation findById(UUID implId);
 }

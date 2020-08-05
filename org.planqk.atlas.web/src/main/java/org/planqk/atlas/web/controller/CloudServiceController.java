@@ -9,17 +9,21 @@ import org.planqk.atlas.core.services.CloudServiceService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.CloudServiceDto;
 import org.planqk.atlas.web.dtos.ComputeResourceDto;
+import org.planqk.atlas.web.dtos.SoftwarePlatformDto;
 import org.planqk.atlas.web.linkassembler.CloudServiceAssembler;
 import org.planqk.atlas.web.linkassembler.ComputeResourceAssembler;
+import org.planqk.atlas.web.linkassembler.SoftwarePlatformAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpEntity;
@@ -46,6 +50,7 @@ public class CloudServiceController {
     private final CloudServiceService cloudServiceService;
     private final CloudServiceAssembler cloudServiceAssembler;
     private final ComputeResourceAssembler computeResourceAssembler;
+    private final SoftwarePlatformAssembler softwarePlatformAssembler;
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
@@ -69,6 +74,20 @@ public class CloudServiceController {
             @Valid @RequestBody CloudServiceDto cloudServiceDto) {
         var savedCloudService = cloudServiceService.save(ModelMapperUtils.convert(cloudServiceDto, CloudService.class));
         return new ResponseEntity<>(cloudServiceAssembler.toModel(savedCloudService), HttpStatus.CREATED);
+    }
+
+    @Operation(
+            responses = {@ApiResponse(responseCode = "200"),
+                    @ApiResponse(responseCode = "404", content = @Content, description = "Resource doesn't exist")},
+            description = "Get referenced software platform for a  cloud service")
+    @GetMapping("/{id}/" + Constants.SOFTWARE_PLATFORMS)
+    @ListParametersDoc
+    public HttpEntity<CollectionModel<EntityModel<SoftwarePlatformDto>>> getSoftwarePlatformsForComputeResource(
+            @PathVariable UUID id,
+            @Parameter(hidden = true) ListParameters listParameters
+    ) {
+        var softwarePlatforms = cloudServiceService.findLinkedSoftwarePlatforms(id, listParameters.getPageable());
+        return ResponseEntity.ok(softwarePlatformAssembler.toModel(softwarePlatforms));
     }
 
     @Operation(responses = {

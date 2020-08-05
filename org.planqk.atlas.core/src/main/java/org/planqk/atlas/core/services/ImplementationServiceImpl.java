@@ -25,7 +25,9 @@ import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Implementation;
+import org.planqk.atlas.core.model.SoftwarePlatform;
 import org.planqk.atlas.core.repository.ImplementationRepository;
+import org.planqk.atlas.core.repository.SoftwarePlatformRepository;
 
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -38,6 +40,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ImplementationServiceImpl implements ImplementationService {
 
     private final ImplementationRepository repository;
+    private final SoftwarePlatformRepository softwarePlatformRepository;
     //    private final TagService tagService;
     private final PublicationService publicationService;
     private final AlgorithmService algorithmService;
@@ -66,6 +69,16 @@ public class ImplementationServiceImpl implements ImplementationService {
         var algorithm = new Algorithm();
         algorithm.setId(algoId);
         return repository.findByImplementedAlgorithm(algorithm, pageable);
+    }
+
+    @Override
+    public Algorithm getImplementingAlgorithm(UUID implId) {
+        return findById(implId).getImplementedAlgorithm();
+    }
+
+    @Override
+    public Page<SoftwarePlatform> findLinkedSoftwarePlatforms(UUID implId, Pageable p) {
+        return softwarePlatformRepository.findSoftwarePlatformsByImplementationId(implId, p);
     }
 
     @Override

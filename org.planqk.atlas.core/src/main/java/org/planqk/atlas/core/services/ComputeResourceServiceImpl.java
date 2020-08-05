@@ -23,16 +23,16 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.UUID;
 
-import lombok.AllArgsConstructor;
-
+import org.planqk.atlas.core.model.CloudService;
 import org.planqk.atlas.core.model.ComputeResource;
+import org.planqk.atlas.core.model.SoftwarePlatform;
 import org.planqk.atlas.core.model.exceptions.ConsistencyException;
-import org.planqk.atlas.core.repository.ComputeResourceRepository;
 import org.planqk.atlas.core.repository.CloudServiceRepository;
+import org.planqk.atlas.core.repository.ComputeResourceRepository;
 import org.planqk.atlas.core.repository.SoftwarePlatformRepository;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -40,9 +40,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class ComputeResourceServiceImpl implements ComputeResourceService {
-
-    private final static Logger LOG = LoggerFactory.getLogger(ComputeResourceServiceImpl.class);
 
     private final ComputeResourceRepository computeResourceRepository;
     private final CloudServiceRepository cloudServiceRepository;
@@ -79,6 +78,16 @@ public class ComputeResourceServiceImpl implements ComputeResourceService {
     }
 
     @Override
+    public Page<CloudService> findLinkedComputeResources(UUID computeresourceid, Pageable p) {
+        return cloudServiceRepository.findCloudServicesByComputeResourceId(computeresourceid, p);
+    }
+
+    @Override
+    public Page<SoftwarePlatform> findLinkedSoftwarePlatforms(UUID id, Pageable p) {
+        return softwarePlatformRepository.findSoftwarePlatformsByComputeResourceId(id, p);
+    }
+
+    @Override
     public ComputeResource findById(UUID id) {
         return computeResourceRepository.findById(id).orElseThrow(NoSuchElementException::new);
     }
@@ -106,10 +115,10 @@ public class ComputeResourceServiceImpl implements ComputeResourceService {
         if (count == 0) {
             ComputeResource computeResource = findById(id);
             computeResource.getProvidedComputingResourceProperties().forEach(computingResourceProperty ->
-                computeResourcePropertyService.deleteComputeResourceProperty(computingResourceProperty.getId()));
+                    computeResourcePropertyService.deleteComputeResourceProperty(computingResourceProperty.getId()));
             computeResourceRepository.deleteById(id);
         } else {
-            LOG.info("Trying to delete Compute Resource that is used in a CloudService or SoftwarePlatform");
+            log.info("Trying to delete Compute Resource that is used in a CloudService or SoftwarePlatform");
             throw new ConsistencyException(
                     "Cannot delete Compute Resource since it is used by existing CloudService or SoftwarePlatform");
         }

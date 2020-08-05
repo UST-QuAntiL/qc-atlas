@@ -26,9 +26,11 @@ import java.util.stream.Collectors;
 
 import org.planqk.atlas.core.model.CloudService;
 import org.planqk.atlas.core.model.ComputeResource;
+import org.planqk.atlas.core.model.SoftwarePlatform;
 import org.planqk.atlas.core.model.exceptions.ConsistencyException;
 import org.planqk.atlas.core.repository.CloudServiceRepository;
 import org.planqk.atlas.core.repository.ComputeResourceRepository;
+import org.planqk.atlas.core.repository.SoftwarePlatformRepository;
 
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -42,6 +44,7 @@ public class CloudServiceServiceImpl implements CloudServiceService {
 
     private final CloudServiceRepository cloudServiceRepository;
     private final ComputeResourceRepository computeResourceRepository;
+    private final SoftwarePlatformRepository softwarePlatformRepository;
     private final ComputeResourceService computeResourceService;
 
     @Override
@@ -95,6 +98,11 @@ public class CloudServiceServiceImpl implements CloudServiceService {
             throw new NoSuchElementException();
         }
         return computeResourceRepository.findComputeResourcesByCloudServiceId(serviceId, pageable);
+    }
+
+    @Override
+    public Page<SoftwarePlatform> findLinkedSoftwarePlatforms(UUID serviceId, Pageable pageable) {
+        return softwarePlatformRepository.findSoftwarePlatformsByCloudServiceId(serviceId, pageable);
     }
 
     @Transactional

@@ -22,7 +22,9 @@ package org.planqk.atlas.core.services;
 import java.util.Set;
 import java.util.UUID;
 
+import org.planqk.atlas.core.model.CloudService;
 import org.planqk.atlas.core.model.ComputeResource;
+import org.planqk.atlas.core.model.SoftwarePlatform;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -39,6 +41,10 @@ public interface ComputeResourceService {
     @Transactional
     Set<ComputeResource> saveOrUpdateAll(Set<ComputeResource> computeResources);
 
+    Page<CloudService> findLinkedComputeResources(UUID id, Pageable p);
+
+    Page<SoftwarePlatform> findLinkedSoftwarePlatforms(UUID id, Pageable p);
+
     ComputeResource findById(UUID id);
 
     Set<ComputeResource> findByName(String name);
@@ -46,5 +52,5 @@ public interface ComputeResourceService {
     Page<ComputeResource> findAll(Pageable pageable);
 
     @Transactional
-    void delete (UUID id);
+    void delete(UUID id);
 }

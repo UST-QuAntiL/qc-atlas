@@ -7,14 +7,18 @@ import javax.validation.Valid;
 
 import org.planqk.atlas.core.model.ComputeResource;
 import org.planqk.atlas.core.model.ComputeResourceProperty;
-import org.planqk.atlas.core.services.ComputeResourceService;
 import org.planqk.atlas.core.services.ComputeResourcePropertyService;
+import org.planqk.atlas.core.services.ComputeResourceService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.mixin.ComputeResourcePropertyMixin;
+import org.planqk.atlas.web.dtos.CloudServiceDto;
 import org.planqk.atlas.web.dtos.ComputeResourceDto;
 import org.planqk.atlas.web.dtos.ComputeResourcePropertyDto;
+import org.planqk.atlas.web.dtos.SoftwarePlatformDto;
+import org.planqk.atlas.web.linkassembler.CloudServiceAssembler;
 import org.planqk.atlas.web.linkassembler.ComputeResourceAssembler;
 import org.planqk.atlas.web.linkassembler.ComputeResourcePropertyAssembler;
+import org.planqk.atlas.web.linkassembler.SoftwarePlatformAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
@@ -22,9 +26,11 @@ import org.planqk.atlas.web.utils.ValidationUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpEntity;
@@ -53,6 +59,8 @@ public class ComputeResourceController {
     private final ComputeResourcePropertyMixin computeResourcePropertyMixin;
     private final ComputeResourceService computeResourceService;
     private final ComputeResourceAssembler computeResourceAssembler;
+    private final SoftwarePlatformAssembler softwarePlatformAssembler;
+    private final CloudServiceAssembler cloudServiceAssembler;
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200")
@@ -107,6 +115,36 @@ public class ComputeResourceController {
         // we have to decide if this is acceptable behavior - TODO
         computeResourceService.delete(id);
         return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @Operation(
+            responses = {@ApiResponse(responseCode = "200"),
+                    @ApiResponse(responseCode = "404", content = @Content, description = "Resource doesn't exist")},
+            description = "Get referenced software platform for a compute resource")
+    @GetMapping("/{id}/" + Constants.SOFTWARE_PLATFORMS)
+    @ListParametersDoc
+    public HttpEntity<CollectionModel<EntityModel<SoftwarePlatformDto>>> getSoftwarePlatformsForComputeResource(
+            @PathVariable UUID id,
+            @Parameter(hidden = true) ListParameters listParameters
+    ) {
+        var softwarePlatforms = computeResourceService.findLinkedSoftwarePlatforms(id, listParameters.getPageable());
+        return ResponseEntity.ok(softwarePlatformAssembler.toModel(softwarePlatforms));
+    }
+
+    @Operation(
+            responses = {@ApiResponse(responseCode = "200"),
+                    @ApiResponse(responseCode = "404",
+                            content = @Content,
+                            description = "Resource doesn't exist")},
+            description = "Get referenced cloud services for a compute resource")
+    @GetMapping("/{id}/" + Constants.CLOUD_SERVICES)
+    @ListParametersDoc
+    public HttpEntity<CollectionModel<EntityModel<CloudServiceDto>>> getCloudServicesForComputeResource(
+            @PathVariable UUID id,
+            @Parameter(hidden = true) ListParameters listParameters
+    ) {
+        var cloudServices = computeResourceService.findLinkedComputeResources(id, listParameters.getPageable());
+        return ResponseEntity.ok(cloudServiceAssembler.toModel(cloudServices));
     }
 
     @Operation(responses = {

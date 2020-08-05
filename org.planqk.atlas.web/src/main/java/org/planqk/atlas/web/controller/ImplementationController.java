@@ -44,11 +44,14 @@ import org.planqk.atlas.web.linkassembler.ComputeResourcePropertyAssembler;
 import org.planqk.atlas.web.linkassembler.ImplementationAssembler;
 import org.planqk.atlas.web.linkassembler.PublicationAssembler;
 import org.planqk.atlas.web.linkassembler.SoftwarePlatformAssembler;
+import org.planqk.atlas.web.utils.ListParameters;
+import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.RestUtils;
 import org.planqk.atlas.web.utils.ValidationUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
@@ -299,10 +302,14 @@ public class ImplementationController {
                     @ApiResponse(responseCode = "404", content = @Content, description = "Implementation doesn't exist")},
             description = "Get referenced software platform for an implementation")
     @GetMapping("/{implId}/" + Constants.SOFTWARE_PLATFORMS)
-    public HttpEntity<CollectionModel<EntityModel<SoftwarePlatformDto>>> getSoftwarePlatforms(@PathVariable UUID algoId,
-                                                                                              @PathVariable UUID implId) {
-        Implementation implementation = implementationService.findById(implId);
-        return ResponseEntity.ok(softwarePlatformAssembler.toModel(implementation.getSoftwarePlatforms()));
+    @ListParametersDoc
+    public HttpEntity<CollectionModel<EntityModel<SoftwarePlatformDto>>> getSoftwarePlatforms(
+            @PathVariable UUID algoId,
+            @PathVariable UUID implId,
+            @Parameter(hidden = true) ListParameters listParameters
+    ) {
+        var softwarePlatforms = implementationService.findLinkedSoftwarePlatforms(implId, listParameters.getPageable());
+        return ResponseEntity.ok(softwarePlatformAssembler.toModel(softwarePlatforms));
     }
 
     @Operation(operationId = "addSoftwarePlatformByImplementation",
@@ -353,5 +360,4 @@ public class ImplementationController {
         implementationService.save(implementation);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
 }
