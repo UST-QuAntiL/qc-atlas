@@ -82,7 +82,7 @@ public class CloudServiceController {
             description = "Get referenced software platform for a  cloud service")
     @GetMapping("/{id}/" + Constants.SOFTWARE_PLATFORMS)
     @ListParametersDoc
-    public HttpEntity<CollectionModel<EntityModel<SoftwarePlatformDto>>> getSoftwarePlatformsForComputeResource(
+    public HttpEntity<CollectionModel<EntityModel<SoftwarePlatformDto>>> getSoftwarePlatformsForCloudService(
             @PathVariable UUID id,
             @Parameter(hidden = true) ListParameters listParameters
     ) {

@@ -47,4 +47,6 @@ public interface ImplementationService {
     Page<SoftwarePlatform> findLinkedSoftwarePlatforms(UUID implId, Pageable p);
 
     Implementation findById(UUID implId);
+
+    Page<Implementation> findAll(Pageable p);
 }
