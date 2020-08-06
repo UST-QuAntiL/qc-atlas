@@ -1,6 +1,7 @@
 package org.planqk.atlas.core.model;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Lob;
@@ -32,6 +33,7 @@ public class Sketch extends KnowledgeArtifact {
     @Type(type = "org.hibernate.type.TextType")
     private String image;
 
+    @Column(columnDefinition = "text")
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
