@@ -147,6 +147,20 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
+    void searchAll() {
+        Set<ComputeResource> computeResources = new HashSet<>();
+        ComputeResource computeResource1 = getGenericTestComputeResource("test compute resource1");
+        ComputeResource computeResource2 = getGenericTestComputeResource("test compute resource2");
+        computeResources.add(computeResource1);
+        computeResources.add(computeResource2);
+        computeResourceService.saveOrUpdateAll(computeResources);
+
+        List<ComputeResource> storedComputeResources = computeResourceService.searchAllByName("1", Pageable.unpaged()).getContent();
+
+        assertThat(storedComputeResources.size()).isEqualTo(1);
+    }
+
+    @Test
     void deleteComputeResource_NoReferences() {
         ComputeResource computeResource = getGenericTestComputeResource("test compute resource");
 

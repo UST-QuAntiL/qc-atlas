@@ -13,6 +13,8 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 @RepositoryRestResource(exported = false)
 public interface CloudServiceRepository extends JpaRepository<CloudService, UUID> {
+    Page<CloudService> findAllByNameContainingIgnoreCase(String name, Pageable p);
+
     boolean existsCloudServiceById(UUID id);
 
     @Query("SELECT cs FROM CloudService cs JOIN cs.softwarePlatforms sp WHERE sp.id = :spid")

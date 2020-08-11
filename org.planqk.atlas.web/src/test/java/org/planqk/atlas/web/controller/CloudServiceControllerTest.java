@@ -209,6 +209,29 @@ public class CloudServiceControllerTest {
 
     @Test
     @SuppressWarnings("ConstantConditions")
+    void searchCloudServices_empty() throws Exception {
+        doReturn(Page.empty()).when(cloudServiceService).searchAllByName(any(), any());
+
+        var mvcResult = mockMvc.perform(
+                get(
+                        fromMethodCall(uriBuilder,
+                                on(CloudServiceController.class)
+                                        .getCloudServices(null)
+                        ).toUriString()
+                ).queryParam(Constants.PAGE, Integer.toString(page))
+                        .queryParam(Constants.SIZE, Integer.toString(size))
+                        .queryParam(Constants.SEARCH, "hello")
+                        .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isOk()).andReturn();
+
+        var page = ObjectMapperUtils.getPageInfo(mvcResult.getResponse().getContentAsString());
+
+        assertThat(page.getSize()).isEqualTo(0);
+        assertThat(page.getNumber()).isEqualTo(0);
+    }
+
+    @Test
+    @SuppressWarnings("ConstantConditions")
     void listCloudService_notEmpty() throws Exception {
         var inputList = new ArrayList<CloudService>();
         for (int i = 0; i < 50; i++) {

@@ -49,6 +49,11 @@ public class ComputeResourceServiceImpl implements ComputeResourceService {
     private final ComputeResourcePropertyService computeResourcePropertyService;
 
     @Override
+    public Page<ComputeResource> searchAllByName(String name, Pageable p) {
+        return computeResourceRepository.findAllByNameContainingIgnoreCase(name, p);
+    }
+
+    @Override
     @Transactional
     public ComputeResource save(ComputeResource computeResource) {
         return computeResourceRepository.save(computeResource);

@@ -58,6 +58,7 @@ public class Constants {
     // query parameter names
     public static final String PAGE = "page";
     public static final String SIZE = "size";
+    public static final String SEARCH = "search";
 
     // Swagger tag names
     public static final String TAG_EXECUTION_ENVIRONMENTS = "execution-environments";

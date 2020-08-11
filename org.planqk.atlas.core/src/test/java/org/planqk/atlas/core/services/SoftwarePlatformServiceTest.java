@@ -19,8 +19,13 @@
 
 package org.planqk.atlas.core.services;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.HashSet;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.UUID;
 
 import org.planqk.atlas.core.model.CloudService;
 import org.planqk.atlas.core.model.ComputeResource;
@@ -29,16 +34,10 @@ import org.planqk.atlas.core.model.QuantumComputationModel;
 import org.planqk.atlas.core.model.SoftwarePlatform;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.HashSet;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Set;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -98,7 +97,8 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
         cloudService.setProvider("testProvider");
         try {
             cloudService.setUrl(new URL("http://example.com"));
-        } catch (MalformedURLException ignored){}
+        } catch (MalformedURLException ignored) {
+        }
         cloudService.setCostModel("testCostModel");
         CloudService storedCloudService = cloudServiceService.save(cloudService);
 
@@ -161,7 +161,7 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
     @Test
     void findSoftwarePlatformById_ElementNotFound() {
         Assertions.assertThrows(NoSuchElementException.class, () ->
-            softwarePlatformService.findById(UUID.randomUUID()));
+                softwarePlatformService.findById(UUID.randomUUID()));
     }
 
     @Test
@@ -187,12 +187,24 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
+    void searchAll() {
+        SoftwarePlatform softwarePlatform1 = getTestSoftwarePlatform("test software platform1");
+        softwarePlatformService.save(softwarePlatform1);
+        SoftwarePlatform softwarePlatform2 = getTestSoftwarePlatform("test software platform2");
+        softwarePlatformService.save(softwarePlatform2);
+
+        List<SoftwarePlatform> softwarePlatforms = softwarePlatformService.searchAllByName("1", Pageable.unpaged()).getContent();
+
+        assertThat(softwarePlatforms.size()).isEqualTo(1);
+    }
+
+    @Test
     void findImplementations() {
         SoftwarePlatform softwarePlatform = getTestSoftwarePlatform("test software platform");
         SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.save(softwarePlatform);
 
         Set<Implementation> storedImplementations = new HashSet<>();
-        for (int i = 0; i < 10; i++){
+        for (int i = 0; i < 10; i++) {
             Implementation implementation = new Implementation();
             implementation.setName("test implementation" + i);
             Implementation storedImplementation = implementationService.save(implementation);
@@ -212,13 +224,14 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
         SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.save(softwarePlatform);
 
         Set<CloudService> storedCloudServices = new HashSet<>();
-        for (int i = 0; i < 10; i++){
+        for (int i = 0; i < 10; i++) {
             CloudService cloudService = new CloudService();
             cloudService.setName("testCloudService" + i);
             cloudService.setProvider("testProvider");
             try {
                 cloudService.setUrl(new URL("http://example.com"));
-            } catch (MalformedURLException ignored){}
+            } catch (MalformedURLException ignored) {
+            }
             cloudService.setCostModel("testCostModel");
             CloudService storedCloudService = cloudServiceService.save(cloudService);
             storedCloudServices.add(storedCloudService);
@@ -237,7 +250,7 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
         SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.save(softwarePlatform);
 
         Set<ComputeResource> storedComputeResources = new HashSet<>();
-        for (int i = 0; i < 10; i++){
+        for (int i = 0; i < 10; i++) {
             ComputeResource computeResource = new ComputeResource();
             computeResource.setName("test compute resource");
             computeResource.setVendor("test vendor");
@@ -337,7 +350,8 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
         cloudService.setProvider("testProvider");
         try {
             cloudService.setUrl(new URL("http://example.com"));
-        } catch (MalformedURLException ignored){}
+        } catch (MalformedURLException ignored) {
+        }
         cloudService.setCostModel("testCostModel");
         CloudService storedCloudService = cloudServiceService.save(cloudService);
 
@@ -389,12 +403,13 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
         assertThat(dbSoftwarePlatform.getLicence()).isEqualTo(compareSoftwarePlatform.getLicence());
     }
 
-    private SoftwarePlatform getTestSoftwarePlatform(String name){
+    private SoftwarePlatform getTestSoftwarePlatform(String name) {
         SoftwarePlatform softwarePlatform = new SoftwarePlatform();
         softwarePlatform.setName(name);
         try {
             softwarePlatform.setLink(new URL("http://example.com"));
-        } catch (MalformedURLException ignored) {}
+        } catch (MalformedURLException ignored) {
+        }
         softwarePlatform.setVersion("v1");
         softwarePlatform.setLicence("test licence");
         return softwarePlatform;

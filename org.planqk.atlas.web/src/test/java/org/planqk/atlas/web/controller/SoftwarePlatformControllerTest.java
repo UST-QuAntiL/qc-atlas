@@ -36,7 +36,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.PagedModel;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -132,11 +131,33 @@ public class SoftwarePlatformControllerTest {
                                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
-        PagedModel<EntityModel<SoftwarePlatformDto>> pagedDtoEntities = mapper
-                .readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
-                });
+        var page = ObjectMapperUtils.getPageInfo(result.getResponse().getContentAsString());
 
-        assertEquals(0, pagedDtoEntities.getContent().size());
+        assertThat(page.getSize()).isEqualTo(0);
+        assertThat(page.getNumber()).isEqualTo(0);
+    }
+
+    @Test
+    @SuppressWarnings("ConstantConditions")
+    public void searchSoftwarePlatforms_withEmptySet() throws Exception {
+        when(softwarePlatformService.searchAllByName(any(), any())).thenReturn(Page.empty());
+
+        MvcResult result = mockMvc
+                .perform(
+                        get(
+                                fromMethodCall(uriBuilder,
+                                        on(SoftwarePlatformController.class).getSoftwarePlatforms(null)
+                                ).toUriString()
+                        ).queryParam(Constants.PAGE, Integer.toString(page))
+                                .queryParam(Constants.SIZE, Integer.toString(size))
+                                .queryParam(Constants.SEARCH, "hellp")
+                                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
+
+        var page = ObjectMapperUtils.getPageInfo(result.getResponse().getContentAsString());
+
+        assertThat(page.getSize()).isEqualTo(0);
+        assertThat(page.getNumber()).isEqualTo(0);
     }
 
     @Test

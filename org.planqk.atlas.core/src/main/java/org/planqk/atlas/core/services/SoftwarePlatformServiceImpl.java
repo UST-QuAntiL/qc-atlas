@@ -19,7 +19,8 @@
 
 package org.planqk.atlas.core.services;
 
-import lombok.AllArgsConstructor;
+import java.util.NoSuchElementException;
+import java.util.UUID;
 
 import org.planqk.atlas.core.model.CloudService;
 import org.planqk.atlas.core.model.ComputeResource;
@@ -31,13 +32,11 @@ import org.planqk.atlas.core.repository.ComputeResourceRepository;
 import org.planqk.atlas.core.repository.ImplementationRepository;
 import org.planqk.atlas.core.repository.SoftwarePlatformRepository;
 
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.NoSuchElementException;
-import java.util.UUID;
 
 @Service
 @AllArgsConstructor
@@ -50,6 +49,11 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
     private final ComputeResourceService computeResourceService;
     private final CloudServiceRepository cloudServiceRepository;
     private final CloudServiceService cloudServiceService;
+
+    @Override
+    public Page<SoftwarePlatform> searchAllByName(String name, Pageable p) {
+        return softwarePlatformRepository.findAllByNameContainingIgnoreCase(name, p);
+    }
 
     @Override
     @Transactional

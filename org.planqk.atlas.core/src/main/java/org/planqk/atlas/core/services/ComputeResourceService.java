@@ -32,6 +32,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 public interface ComputeResourceService {
 
+    Page<ComputeResource> searchAllByName(String name, Pageable p);
+
     @Transactional
     ComputeResource save(ComputeResource computeResource);
 

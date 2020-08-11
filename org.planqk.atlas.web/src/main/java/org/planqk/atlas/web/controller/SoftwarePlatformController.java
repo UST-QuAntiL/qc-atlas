@@ -24,6 +24,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
@@ -59,8 +60,13 @@ public class SoftwarePlatformController {
     @ListParametersDoc
     public ResponseEntity<PagedModel<EntityModel<SoftwarePlatformDto>>> getSoftwarePlatforms(
             @Parameter(hidden = true) ListParameters listParameters) {
-        var platforms = softwarePlatformService.findAll(listParameters.getPageable());
-        return ResponseEntity.ok(softwarePlatformAssembler.toModel(platforms));
+        Page<SoftwarePlatform> entities;
+        if (listParameters.getSearch() == null || listParameters.getSearch().isEmpty()) {
+            entities = softwarePlatformService.findAll(listParameters.getPageable());
+        } else {
+            entities = softwarePlatformService.searchAllByName(listParameters.getSearch(), listParameters.getPageable());
+        }
+        return ResponseEntity.ok(softwarePlatformAssembler.toModel(entities));
     }
 
     @Operation(responses = {

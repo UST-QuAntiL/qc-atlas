@@ -30,6 +30,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
@@ -69,7 +70,12 @@ public class ComputeResourceController {
     @ListParametersDoc
     public ResponseEntity<PagedModel<EntityModel<ComputeResourceDto>>> getComputeResources(
             @Parameter(hidden = true) ListParameters listParameters) {
-        var entities = computeResourceService.findAll(listParameters.getPageable());
+        Page<ComputeResource> entities;
+        if (listParameters.getSearch() == null || listParameters.getSearch().isEmpty()) {
+            entities = computeResourceService.findAll(listParameters.getPageable());
+        } else {
+            entities = computeResourceService.searchAllByName(listParameters.getSearch(), listParameters.getPageable());
+        }
         return ResponseEntity.ok(computeResourceAssembler.toModel(entities));
     }
 

@@ -32,6 +32,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 public interface CloudServiceService {
 
+    Page<CloudService> searchAllByName(String name, Pageable p);
+
     @Transactional
     CloudService save(CloudService cloudService);
 

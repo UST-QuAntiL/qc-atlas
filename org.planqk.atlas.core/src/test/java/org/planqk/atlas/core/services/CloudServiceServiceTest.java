@@ -19,22 +19,22 @@
 
 package org.planqk.atlas.core.services;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
-import org.planqk.atlas.core.model.CloudService;
-import org.planqk.atlas.core.model.ComputeResource;
-import org.planqk.atlas.core.model.QuantumComputationModel;
-import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
-
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.UUID;
+
+import org.planqk.atlas.core.model.CloudService;
+import org.planqk.atlas.core.model.ComputeResource;
+import org.planqk.atlas.core.model.QuantumComputationModel;
+import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -112,7 +112,7 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
     @Test
     void findCloudServiceById_ElementNotFound() {
         Assertions.assertThrows(NoSuchElementException.class, () ->
-            cloudServiceService.findById(UUID.randomUUID()));
+                cloudServiceService.findById(UUID.randomUUID()));
     }
 
     @Test
@@ -139,6 +139,18 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
+    void searchAll() {
+        CloudService cloudService1 = getTestCloudService("test cloud service1");
+        cloudServiceService.save(cloudService1);
+        CloudService cloudService2 = getTestCloudService("test cloud service2");
+        cloudServiceService.save(cloudService2);
+
+        List<CloudService> cloudServices = cloudServiceService.searchAllByName("1", Pageable.unpaged()).getContent();
+
+        assertThat(cloudServices.size()).isEqualTo(1);
+    }
+
+    @Test
     void deleteCloudService_NoReferences() {
         CloudService cloudService = getTestCloudService("test cloud service");
 
@@ -149,7 +161,7 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
         cloudServiceService.delete(storedCloudService.getId());
 
         Assertions.assertThrows(NoSuchElementException.class, () ->
-            cloudServiceService.findById(storedCloudService.getId()));
+                cloudServiceService.findById(storedCloudService.getId()));
     }
 
     @Test
@@ -215,7 +227,8 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
         cloudService.setProvider("test provider");
         try {
             cloudService.setUrl(new URL("http://example.com"));
-        } catch (MalformedURLException ignored){}
+        } catch (MalformedURLException ignored) {
+        }
         cloudService.setCostModel("test cost model");
         return cloudService;
     }

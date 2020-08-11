@@ -23,6 +23,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
@@ -59,8 +60,13 @@ public class CloudServiceController {
     @ListParametersDoc
     public HttpEntity<PagedModel<EntityModel<CloudServiceDto>>> getCloudServices(
             @Parameter(hidden = true) ListParameters listParameters) {
-        var cloudServices = cloudServiceService.findAll(listParameters.getPageable());
-        return ResponseEntity.ok(cloudServiceAssembler.toModel(cloudServices));
+        Page<CloudService> entities;
+        if (listParameters.getSearch() == null || listParameters.getSearch().isEmpty()) {
+            entities = cloudServiceService.findAll(listParameters.getPageable());
+        } else {
+            entities = cloudServiceService.searchAllByName(listParameters.getSearch(), listParameters.getPageable());
+        }
+        return ResponseEntity.ok(cloudServiceAssembler.toModel(entities));
     }
 
     @Operation(responses = {

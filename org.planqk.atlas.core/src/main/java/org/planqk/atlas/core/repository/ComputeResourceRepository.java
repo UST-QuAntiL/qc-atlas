@@ -19,4 +19,6 @@ public interface ComputeResourceRepository extends JpaRepository<ComputeResource
     Page<ComputeResource> findComputeResourcesBySoftwarePlatformId(@Param("spid") UUID spid, Pageable p);
 
     Set<ComputeResource> findByName(String name);
+
+    Page<ComputeResource> findAllByNameContainingIgnoreCase(String name, Pageable p);
 }

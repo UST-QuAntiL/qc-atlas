@@ -9,8 +9,8 @@ import org.planqk.atlas.core.model.ComputeResourceProperty;
 import org.planqk.atlas.core.model.ComputeResourcePropertyDataType;
 import org.planqk.atlas.core.model.ComputeResourcePropertyType;
 import org.planqk.atlas.core.model.exceptions.ConsistencyException;
-import org.planqk.atlas.core.services.ComputeResourceService;
 import org.planqk.atlas.core.services.ComputeResourcePropertyService;
+import org.planqk.atlas.core.services.ComputeResourceService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.mixin.ComputeResourcePropertyMixin;
 import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
@@ -217,6 +217,29 @@ public class ComputeResourceControllerTest {
                         ).toUriString()
                 ).queryParam(Constants.PAGE, Integer.toString(page))
                         .queryParam(Constants.SIZE, Integer.toString(size))
+                        .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isOk()).andReturn();
+
+        var page = ObjectMapperUtils.getPageInfo(mvcResult.getResponse().getContentAsString());
+
+        assertThat(page.getSize()).isEqualTo(0);
+        assertThat(page.getNumber()).isEqualTo(0);
+    }
+
+    @Test
+    @SuppressWarnings("ConstantConditions")
+    void searchComputeResources_empty() throws Exception {
+        doReturn(Page.empty()).when(computeResourceService).searchAllByName(any(), any());
+
+        var mvcResult = mockMvc.perform(
+                get(
+                        fromMethodCall(uriBuilder,
+                                on(ComputeResourceController.class)
+                                        .getComputeResources(null)
+                        ).toUriString()
+                ).queryParam(Constants.PAGE, Integer.toString(page))
+                        .queryParam(Constants.SIZE, Integer.toString(size))
+                        .queryParam(Constants.SEARCH, "hello")
                         .accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk()).andReturn();
 

@@ -19,6 +19,8 @@
 
 package org.planqk.atlas.core.services;
 
+import java.util.UUID;
+
 import org.planqk.atlas.core.model.CloudService;
 import org.planqk.atlas.core.model.ComputeResource;
 import org.planqk.atlas.core.model.Implementation;
@@ -28,9 +30,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.UUID;
-
 public interface SoftwarePlatformService {
+
+    Page<SoftwarePlatform> searchAllByName(String name, Pageable p);
 
     @Transactional
     SoftwarePlatform save(SoftwarePlatform softwarePlatform);

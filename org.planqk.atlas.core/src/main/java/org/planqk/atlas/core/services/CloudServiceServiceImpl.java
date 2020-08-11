@@ -48,6 +48,11 @@ public class CloudServiceServiceImpl implements CloudServiceService {
     private final ComputeResourceService computeResourceService;
 
     @Override
+    public Page<CloudService> searchAllByName(String name, Pageable p) {
+        return cloudServiceRepository.findAllByNameContainingIgnoreCase(name, p);
+    }
+
+    @Override
     public CloudService save(CloudService cloudService) {
         return this.cloudServiceRepository.save(cloudService);
     }
