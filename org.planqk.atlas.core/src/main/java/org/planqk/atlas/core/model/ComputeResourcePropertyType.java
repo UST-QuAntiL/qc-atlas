@@ -19,37 +19,17 @@
 
 package org.planqk.atlas.core.model;
 
-import java.util.function.Predicate;
+import javax.persistence.Entity;
 
-public enum ComputingResourcePropertyDataType {
-    INTEGER(e -> {
-        try {
-            Long.parseLong(e);
-            return true;
-        } catch (Exception ex) {
-            return false;
-        }
-    }),
-    STRING(e -> true),
-    FLOAT(e -> {
-        try {
-            Double.parseDouble(e);
-            return true;
-        } catch (Exception ex) {
-            return false;
-        }
-    });
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-    private final Predicate<String> validator;
+@EqualsAndHashCode(callSuper = true)
+@Data
+@Entity
+public class ComputeResourcePropertyType extends HasId {
 
-    ComputingResourcePropertyDataType(Predicate<String> validator) {
-        this.validator = validator;
-    }
-
-    public boolean isValid(String input) {
-        if(input == null) {
-            return false;
-        }
-        return validator.test(input);
-    }
+    private String name;
+    private ComputeResourcePropertyDataType datatype;
+    private String description;
 }

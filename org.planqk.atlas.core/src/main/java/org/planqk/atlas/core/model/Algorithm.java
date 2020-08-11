@@ -72,7 +72,7 @@ public class Algorithm extends AlgorOrImpl implements ModelWithPublications {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "algorithm", orphanRemoval = true)
     @EqualsAndHashCode.Exclude
-    private Set<ComputingResourceProperty> requiredComputingResourceProperties = new HashSet<>();
+    private Set<ComputeResourceProperty> requiredComputeResourceProperties = new HashSet<>();
 
     @Column(columnDefinition = "text")
     private String inputFormat;
@@ -135,8 +135,8 @@ public class Algorithm extends AlgorOrImpl implements ModelWithPublications {
         }
     }
 
-    public void addComputingResource(@lombok.NonNull ComputingResourceProperty resource) {
-        this.requiredComputingResourceProperties.add(resource);
+    public void addComputeResourceProperty(@lombok.NonNull ComputeResourceProperty resource) {
+        this.requiredComputeResourceProperties.add(resource);
     }
 
     public Set<Publication> getPublications() {

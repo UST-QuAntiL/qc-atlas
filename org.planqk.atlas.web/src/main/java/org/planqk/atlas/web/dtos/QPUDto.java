@@ -9,5 +9,5 @@ import org.springframework.hateoas.server.core.Relation;
 @ToString(callSuper = true)
 @Data
 @Relation(itemRelation = "qpu", collectionRelation = "qpus")
-public class QPUDto extends BackendDto {
+public class QPUDto extends ComputeResourceDto {
 }

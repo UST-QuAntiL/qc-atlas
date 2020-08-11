@@ -17,13 +17,39 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.planqk.atlas.core.repository;
+package org.planqk.atlas.core.model;
 
-import java.util.UUID;
+import java.util.function.Predicate;
 
-import org.planqk.atlas.core.model.BackendProperty;
+public enum ComputeResourcePropertyDataType {
+    INTEGER(e -> {
+        try {
+            Long.parseLong(e);
+            return true;
+        } catch (Exception ex) {
+            return false;
+        }
+    }),
+    STRING(e -> true),
+    FLOAT(e -> {
+        try {
+            Double.parseDouble(e);
+            return true;
+        } catch (Exception ex) {
+            return false;
+        }
+    });
 
-import org.springframework.data.jpa.repository.JpaRepository;
+    private final Predicate<String> validator;
 
-public interface BackendPropertyRepository extends JpaRepository<BackendProperty, UUID> {
+    ComputeResourcePropertyDataType(Predicate<String> validator) {
+        this.validator = validator;
+    }
+
+    public boolean isValid(String input) {
+        if(input == null) {
+            return false;
+        }
+        return validator.test(input);
+    }
 }
