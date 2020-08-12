@@ -74,14 +74,9 @@ public class Algorithm extends AlgorOrImpl implements ModelWithPublications {
     @EqualsAndHashCode.Exclude
     private Set<ComputingResourceProperty> requiredComputingResourceProperties = new HashSet<>();
 
-    @Column(columnDefinition = "text")
-    private String inputFormat;
 
     @Column(columnDefinition = "text")
     private String algoParameter;
-
-    @Column(columnDefinition = "text")
-    private String outputFormat;
 
     @OneToMany(mappedBy = "algorithm", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Sketch> sketches = new ArrayList<>();
