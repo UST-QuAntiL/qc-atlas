@@ -39,6 +39,7 @@ import org.planqk.atlas.web.utils.ModelMapperUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -89,6 +90,7 @@ public class SoftwarePlatformController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "201"),
+            @ApiResponse(responseCode = "400")
     }, description = "Define the basic properties of a software platform. " +
             "References to sub-objects (e.g. a compute resource) " +
             "can be added via sub-routes (e.g. /software-platforms/{id}/compute-resources). " +

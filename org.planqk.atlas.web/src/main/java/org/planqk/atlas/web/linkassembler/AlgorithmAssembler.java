@@ -28,22 +28,22 @@ public class AlgorithmAssembler extends GenericLinkAssembler<AlgorithmDto> {
 //        resource.add(links.linkTo(methodOn(AlgorithmController.class).getTags(getId(resource))).withRel(Constants.TAGS));
         resource.add(links.linkTo(methodOn(ImplementationController.class).getImplementations(getId(resource)))
                 .withRel(Constants.IMPLEMENTATIONS));
-        resource.add(links.linkTo(methodOn(AlgorithmController.class).getProblemTypes(getId(resource)))
+        resource.add(links.linkTo(methodOn(AlgorithmController.class).getProblemTypesForAlgorithm(getId(resource)))
                 .withRel(Constants.PROBLEM_TYPES));
         resource.add(links.linkTo(methodOn(AlgorithmController.class).getAlgorithmRelations(getId(resource)))
                 .withRel(Constants.ALGORITHM_RELATIONS));
-        resource.add(links.linkTo(methodOn(AlgorithmController.class).getPublications(getId(resource)))
+        resource.add(links.linkTo(methodOn(AlgorithmController.class).getPublicationsForAlgorithm(getId(resource)))
                 .withRel(Constants.PUBLICATIONS));
-        resource.add(links.linkTo(methodOn(AlgorithmController.class).getPatternRelations(getId(resource)))
+        resource.add(links.linkTo(methodOn(AlgorithmController.class).getPatternRelationsForAlgorithm(getId(resource)))
                 .withRel(Constants.PATTERN_RELATIONS));
     }
 
     public void addProblemTypeLink(CollectionModel<EntityModel<ProblemTypeDto>> resources, UUID id) {
-        resources.add(links.linkTo(methodOn(AlgorithmController.class).getProblemTypes(id)).withSelfRel());
+        resources.add(links.linkTo(methodOn(AlgorithmController.class).getProblemTypesForAlgorithm(id)).withSelfRel());
     }
 
     public void addApplicationAreaLink(CollectionModel<EntityModel<ApplicationAreaDto>> resources, UUID id) {
-        resources.add(links.linkTo(methodOn(AlgorithmController.class).getApplicationAreas(id)).withSelfRel());
+        resources.add(links.linkTo(methodOn(AlgorithmController.class).getApplicationAreasForAlgorithm(id)).withSelfRel());
     }
 
     public void addTagLink(CollectionModel<EntityModel<TagDto>> resources, UUID id) {
@@ -51,7 +51,7 @@ public class AlgorithmAssembler extends GenericLinkAssembler<AlgorithmDto> {
     }
 
     public void addPublicationLink(CollectionModel<EntityModel<PublicationDto>> resources, UUID id) {
-        resources.add(links.linkTo(methodOn(AlgorithmController.class).getPublications(id)).withSelfRel());
+        resources.add(links.linkTo(methodOn(AlgorithmController.class).getPublicationsForAlgorithm(id)).withSelfRel());
     }
 
     public void addAlgorithmRelationLink(CollectionModel<EntityModel<AlgorithmRelationDto>> resultCollection,
@@ -63,7 +63,7 @@ public class AlgorithmAssembler extends GenericLinkAssembler<AlgorithmDto> {
     public void addPatternRelationLink(CollectionModel<EntityModel<PatternRelationDto>> resultCollection, UUID
             id) {
         resultCollection.add(
-                links.linkTo(methodOn(AlgorithmController.class).getPatternRelations(id)).withSelfRel());
+                links.linkTo(methodOn(AlgorithmController.class).getPatternRelationsForAlgorithm(id)).withSelfRel());
     }
 
     private UUID getId(EntityModel<AlgorithmDto> resource) {

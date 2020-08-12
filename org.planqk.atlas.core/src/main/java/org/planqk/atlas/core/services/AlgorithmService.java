@@ -45,6 +45,30 @@ public interface AlgorithmService {
     void delete(UUID id);
 
     @Transactional
+    void addPublicationReference(UUID algoId, UUID publicationId);
+
+    @Transactional
+    void deletePublicationReference(UUID algoId, UUID publicationId);
+
+    @Transactional
+    void addProblemTypeReference(UUID algoId, UUID problemTypeId);
+
+    @Transactional
+    void deleteProblemTypeReference(UUID algoId, UUID problemTypeId);
+
+    @Transactional
+    void addApplicationAreaReference(UUID algoId, UUID applicationAreaId);
+
+    @Transactional
+    void deleteApplicationAreaReference(UUID algoId, UUID applicationAreaId);
+
+    @Transactional
+    void addPatternRelationReference(UUID algoId, UUID patternRelationId);
+
+    @Transactional
+    void deletePatternRelationReference(UUID algoId, UUID patternRelationId);
+
+    @Transactional
     void deleteAlgorithmRelation(UUID algoId, UUID relationId);
 
     @Transactional

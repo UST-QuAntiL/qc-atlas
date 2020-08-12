@@ -19,7 +19,6 @@
 
 package org.planqk.atlas.core.services;
 
-import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
@@ -29,8 +28,14 @@ import java.util.UUID;
 import org.planqk.atlas.core.model.AlgoRelationType;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
+import org.planqk.atlas.core.model.ApplicationArea;
+import org.planqk.atlas.core.model.PatternRelation;
+import org.planqk.atlas.core.model.ProblemType;
+import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.model.QuantumAlgorithm;
 import org.planqk.atlas.core.model.Sketch;
+import org.planqk.atlas.core.model.exceptions.ConsistencyException;
+import org.planqk.atlas.core.repository.AlgoRelationTypeRepository;
 import org.planqk.atlas.core.repository.AlgorithmRelationRepository;
 import org.planqk.atlas.core.repository.AlgorithmRepository;
 import org.planqk.atlas.core.repository.ImplementationRepository;
@@ -58,9 +63,16 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 
     private final PatternRelationService patternRelationService;
 
-    private final AlgoRelationTypeService relationTypeService;
+    private final AlgoRelationTypeRepository algoRelationTypeRepository;
+    private final AlgoRelationTypeService algoRelationTypeService;
 
     private final ImplementationRepository implementationRepository;
+
+    private final PublicationService publicationService;
+
+    private final ProblemTypeService problemTypeService;
+
+    private final ApplicationAreaService applicationAreaService;
 
     @Transactional
     @Override
@@ -151,30 +163,114 @@ public class AlgorithmServiceImpl implements AlgorithmService {
                 publication -> publication.removeAlgorithm(algorithm));
     }
 
-    private Set<AlgorithmRelation> getValidAlgorithmRelations(Algorithm algorithm, Set<AlgorithmRelation> inputRelations) {
-        // save relations to append after persisting algorithm
+    @Override
+    @Transactional
+    public void addPublicationReference(UUID algoId, UUID publicationId) {
+        Algorithm algorithm = findById(algoId);
+        Publication publication = publicationService.findById(publicationId);
 
-        Set<AlgorithmRelation> validRelations = new HashSet<>();
-
-        for (AlgorithmRelation relation : inputRelations) {
-            // set correct source algorithm
-            relation.setSourceAlgorithm(algorithm);
-            if (algorithmRepository.existsAlgorithmById((relation.getTargetAlgorithm().getId()))) {
-                relation.setAlgoRelationType(getPersistedAlgoRelationType(relation));
-                validRelations.add(relation);
-            }
+        if (algorithm.getPublications().contains(publication)) {
+            throw new ConsistencyException("Publication and algorithm are already linked");
         }
 
-        return validRelations;
+        algorithm.addPublication(publication);
+    }
+
+    @Override
+    @Transactional
+    public void deletePublicationReference(UUID algoId, UUID publicationId) {
+        Algorithm algorithm = findById(algoId);
+        Publication publication = publicationService.findById(publicationId);
+
+        if (!algorithm.getPublications().contains(publication)) {
+            throw new ConsistencyException("Publication and algorithm are not linked");
+        }
+
+        algorithm.removePublication(publication);
+    }
+
+    @Override
+    @Transactional
+    public void addProblemTypeReference(UUID algoId, UUID problemTypeId) {
+        Algorithm algorithm = findById(algoId);
+        ProblemType problemType = problemTypeService.findById(problemTypeId);
+
+        if (algorithm.getProblemTypes().contains(problemType)) {
+            throw new ConsistencyException("Problem type and algorithm are already linked");
+        }
+
+        algorithm.addProblemType(problemType);
+    }
+
+    @Override
+    @Transactional
+    public void deleteProblemTypeReference(UUID algoId, UUID problemTypeId) {
+        Algorithm algorithm = findById(algoId);
+        ProblemType problemType = problemTypeService.findById(problemTypeId);
+
+        if (!algorithm.getProblemTypes().contains(problemType)) {
+            throw new ConsistencyException("Problem type and algorithm are not linked");
+        }
+
+        algorithm.removeProblemType(problemType);
+    }
+
+    @Override
+    @Transactional
+    public void addApplicationAreaReference(UUID algoId, UUID applicationAreaId) {
+        Algorithm algorithm = findById(algoId);
+        ApplicationArea applicationArea = applicationAreaService.findById(applicationAreaId);
+
+        if (algorithm.getApplicationAreas().contains(applicationArea)) {
+            throw new ConsistencyException("Application area and algorithm are already linked");
+        }
+
+        algorithm.addApplicationArea(applicationArea);
+    }
+
+    @Override
+    @Transactional
+    public void deleteApplicationAreaReference(UUID algoId, UUID applicationAreaId) {
+        Algorithm algorithm = findById(algoId);
+        ApplicationArea applicationArea = applicationAreaService.findById(applicationAreaId);
+
+        if (!algorithm.getApplicationAreas().contains(applicationArea)) {
+            throw new ConsistencyException("Application area and algorithm are not linked");
+        }
+
+        algorithm.removeApplicationArea(applicationArea);
+    }
+
+    @Transactional
+    public void addPatternRelationReference(UUID algoId, UUID patternRelationId) {
+        Algorithm algorithm = findById(algoId);
+        PatternRelation patternRelation = patternRelationService.findById(patternRelationId);
+
+        if (algorithm.getRelatedPatterns().contains(patternRelation)) {
+            throw new ConsistencyException("Pattern relation and algorithm are already linked");
+        }
+
+        algorithm.getRelatedPatterns().add(patternRelation);
+    }
+
+    @Transactional
+    public void deletePatternRelationReference(UUID algoId, UUID patternRelationId) {
+        Algorithm algorithm = findById(algoId);
+        PatternRelation patternRelation = patternRelationService.findById(patternRelationId);
+
+        if (!algorithm.getRelatedPatterns().contains(patternRelation)) {
+            throw new ConsistencyException("Pattern relation and algorithm are not linked");
+        }
+
+        algorithm.getRelatedPatterns().remove(patternRelation);
     }
 
     private AlgoRelationType getPersistedAlgoRelationType(AlgorithmRelation relation) {
-        // TODO decide if missing AlgoRelationType causes exception or if it gets created
-        // AlgoRelationType gets created on the fly if it does not exist yet
-        return relationTypeService
-                .findOptionalById(relation.getAlgoRelationType().getId()).isPresent()
-                ? relation.getAlgoRelationType()
-                : relationTypeService.save(relation.getAlgoRelationType());
+        if (algoRelationTypeRepository.existsById(relation.getAlgoRelationType().getId())) {
+            return algoRelationTypeService.findById(relation.getAlgoRelationType().getId());
+        } else {
+            return algoRelationTypeService.save(relation.getAlgoRelationType());
+        }
     }
 
     @Transactional
@@ -185,15 +281,10 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         Algorithm targetAlgorithm = findById(relation.getTargetAlgorithm().getId());
 
         if (relation.getAlgoRelationType().getId() == null) {
-            relationTypeService.save(relation.getAlgoRelationType());
+            algoRelationTypeService.save(relation.getAlgoRelationType());
         }
-        Optional<AlgoRelationType> relationTypeOpt = relationTypeService
-                .findOptionalById(relation.getAlgoRelationType().getId());
 
-        // Create relation type if not exists
-        AlgoRelationType relationType = relationTypeOpt.isPresent()
-                ? relationTypeOpt.get()
-                : relationTypeService.save(relation.getAlgoRelationType());
+        AlgoRelationType relationType = getPersistedAlgoRelationType(relation);
 
         // Check if relation with those two algorithms and the relation type already
         // exists

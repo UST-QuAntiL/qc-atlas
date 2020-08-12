@@ -19,7 +19,6 @@
 
 package org.planqk.atlas.core.services;
 
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -38,8 +37,6 @@ public interface AlgoRelationTypeService {
 
     @Transactional
     void delete(UUID id);
-
-    Optional<AlgoRelationType> findOptionalById(UUID id);
 
     AlgoRelationType findById(UUID id);
 

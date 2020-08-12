@@ -98,7 +98,8 @@ public class ComputeResourceController {
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "201")
+            @ApiResponse(responseCode = "201"),
+            @ApiResponse(responseCode = "400")
     }, description = "Define the basic properties of a compute resource. " +
             "References to sub-objects (e.g. a compute resource property) " +
             "can be added via sub-routes (e.g. /compute-resources/{id}/compute-resource-properties). " +
@@ -141,10 +142,11 @@ public class ComputeResourceController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @Operation(
-            responses = {@ApiResponse(responseCode = "200"),
-                    @ApiResponse(responseCode = "404", content = @Content, description = "Resource doesn't exist")},
-            description = "Get referenced software platform for a compute resource")
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", content = @Content, description = "Resource doesn't exist")
+    }, description = "Get referenced software platform for a compute resource")
     @GetMapping("/{id}/" + Constants.SOFTWARE_PLATFORMS)
     @ListParametersDoc
     public HttpEntity<CollectionModel<EntityModel<SoftwarePlatformDto>>> getSoftwarePlatformsForComputeResource(
@@ -155,12 +157,11 @@ public class ComputeResourceController {
         return ResponseEntity.ok(softwarePlatformAssembler.toModel(softwarePlatforms));
     }
 
-    @Operation(
-            responses = {@ApiResponse(responseCode = "200"),
-                    @ApiResponse(responseCode = "404",
-                            content = @Content,
-                            description = "Resource doesn't exist")},
-            description = "Get referenced cloud services for a compute resource")
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", content = @Content, description = "Resource doesn't exist")
+    }, description = "Get referenced cloud services for a compute resource")
     @GetMapping("/{id}/" + Constants.CLOUD_SERVICES)
     @ListParametersDoc
     public HttpEntity<CollectionModel<EntityModel<CloudServiceDto>>> getCloudServicesForComputeResource(

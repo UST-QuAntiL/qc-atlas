@@ -89,6 +89,7 @@ public class CloudServiceController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "201"),
+            @ApiResponse(responseCode = "400"),
     }, description = "Define the basic properties of a cloud service. " +
             "References to sub-objects (e.g. a compute resource) " +
             "can be added via sub-routes (e.g. /cloud-services/{id}/compute-resources). " +
@@ -100,10 +101,11 @@ public class CloudServiceController {
         return new ResponseEntity<>(cloudServiceAssembler.toModel(savedCloudService), HttpStatus.CREATED);
     }
 
-    @Operation(
-            responses = {@ApiResponse(responseCode = "200"),
-                    @ApiResponse(responseCode = "404", content = @Content, description = "Resource doesn't exist")},
-            description = "Get referenced software platform for a  cloud service")
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", content = @Content, description = "Resource doesn't exist")
+    }, description = "Get referenced software platform for a  cloud service")
     @GetMapping("/{id}/" + Constants.SOFTWARE_PLATFORMS)
     @ListParametersDoc
     public HttpEntity<CollectionModel<EntityModel<SoftwarePlatformDto>>> getSoftwarePlatformsForCloudService(
