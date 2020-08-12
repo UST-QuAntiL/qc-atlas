@@ -90,15 +90,18 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
     public void delete(UUID platformId) {
         SoftwarePlatform softwarePlatform = findById(platformId);
 
-        // Remove references to avoid key constraints
+        removeReferences(softwarePlatform);
+
+        softwarePlatformRepository.deleteById(platformId);
+    }
+
+    private void removeReferences(SoftwarePlatform softwarePlatform) {
         softwarePlatform.getImplementations().forEach(
                 implementation -> implementation.removeSoftwarePlatform(softwarePlatform));
         softwarePlatform.getSupportedCloudServices().forEach(
                 cloudService -> cloudService.removeSoftwarePlatform(softwarePlatform));
         softwarePlatform.getSupportedComputeResources().forEach(
                 computeResource -> computeResource.removeSoftwarePlatform(softwarePlatform));
-
-        softwarePlatformRepository.deleteById(platformId);
     }
 
     @Override

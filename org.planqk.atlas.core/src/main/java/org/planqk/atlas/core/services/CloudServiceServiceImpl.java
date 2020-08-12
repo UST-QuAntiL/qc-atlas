@@ -90,11 +90,18 @@ public class CloudServiceServiceImpl implements CloudServiceService {
     @Transactional
     @Override
     public void delete(UUID cloudServiceId) {
-        if (!cloudServiceRepository.existsById(cloudServiceId)) {
-            throw new NoSuchElementException();
-        }
-        // TODO remove references
+        CloudService cloudService = findById(cloudServiceId);
+
+        removeReferences(cloudService);
+
         cloudServiceRepository.deleteById(cloudServiceId);
+    }
+
+    private void removeReferences(CloudService cloudService) {
+        cloudService.getSoftwarePlatforms().forEach(
+                softwarePlatform -> softwarePlatform.removeCloudService(cloudService));
+        cloudService.getProvidedComputeResources().forEach(
+                computeResource -> computeResource.removeCloudService(cloudService));
     }
 
     @Override

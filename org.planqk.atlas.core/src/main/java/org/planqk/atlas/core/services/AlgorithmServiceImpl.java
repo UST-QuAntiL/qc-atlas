@@ -68,6 +68,89 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         return algorithmRepository.save(algorithm);
     }
 
+    @Override
+    public Page<Algorithm> findAll(Pageable pageable, String search) {
+        if (!Objects.isNull(search) && !search.isEmpty()) {
+            return algorithmRepository.findAll(search, pageable);
+        }
+        return algorithmRepository.findAll(pageable);
+    }
+
+    @Override
+    public Algorithm findById(UUID algoId) {
+        return algorithmRepository.findById(algoId).orElseThrow(NoSuchElementException::new);
+    }
+
+    @Transactional
+    @Override
+    public Algorithm update(UUID id, Algorithm algorithm) {
+        Algorithm persistedAlgorithm = this.findById(id);
+
+        // remove all attached sketches
+        persistedAlgorithm.removeSketches(persistedAlgorithm.getSketches());
+        if (algorithm.getSketches() != null) {
+            algorithm.getSketches().forEach(sketch -> {
+                if (sketch.getId() == null) {
+                    // add sketches one by one
+                    final Sketch savedSketch = sketchRepository.save(sketch);
+                    persistedAlgorithm.addSketch(savedSketch);
+                }
+            });
+        }
+
+        persistedAlgorithm.setName(algorithm.getName());
+        persistedAlgorithm.setAcronym(algorithm.getAcronym());
+        persistedAlgorithm.setIntent(algorithm.getIntent());
+        persistedAlgorithm.setProblem(algorithm.getProblem());
+        persistedAlgorithm.setInputFormat(algorithm.getInputFormat());
+        persistedAlgorithm.setAlgoParameter(algorithm.getAlgoParameter());
+        persistedAlgorithm.setOutputFormat(algorithm.getOutputFormat());
+        persistedAlgorithm.setSolution(algorithm.getSolution());
+        persistedAlgorithm.setAssumptions(algorithm.getAssumptions());
+        persistedAlgorithm.setComputationModel(algorithm.getComputationModel());
+
+        // If QuantumAlgorithm adjust Quantum fields
+        if (algorithm instanceof QuantumAlgorithm) {
+            QuantumAlgorithm quantumAlgorithm = (QuantumAlgorithm) algorithm;
+            QuantumAlgorithm persistedQuantumAlgorithm = (QuantumAlgorithm) persistedAlgorithm;
+
+            persistedQuantumAlgorithm.setNisqReady(quantumAlgorithm.isNisqReady());
+            persistedQuantumAlgorithm.setQuantumComputationModel(quantumAlgorithm.getQuantumComputationModel());
+            persistedQuantumAlgorithm.setSpeedUp(quantumAlgorithm.getSpeedUp());
+
+            return algorithmRepository.save(persistedQuantumAlgorithm);
+        } else {
+            // Else if ClassicAlgorithm no more fields to adjust
+            return algorithmRepository.save(persistedAlgorithm);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void delete(UUID id) {
+        Algorithm algorithm = findById(id);
+
+        removeReferences(algorithm);
+
+        algorithmRepository.deleteById(id);
+    }
+
+    private void removeReferences(Algorithm algorithm) {
+        // delete related implementations
+        implementationRepository.findByImplementedAlgorithm(algorithm).forEach(implementationRepository::delete);
+
+        // delete algorithm relations
+        getAlgorithmRelations(algorithm.getId()).forEach(algorithmRelationRepository::delete);
+
+        // delete related pattern relations
+        patternRelationService.findByAlgorithmId(algorithm.getId()).forEach(
+                patternRelation -> patternRelationService.deleteById(patternRelation.getId()));
+
+        // delete all references to publications
+        algorithm.getPublications().forEach(
+                publication -> publication.removeAlgorithm(algorithm));
+    }
+
     private Set<AlgorithmRelation> getValidAlgorithmRelations(Algorithm algorithm, Set<AlgorithmRelation> inputRelations) {
         // save relations to append after persisting algorithm
 
@@ -92,104 +175,6 @@ public class AlgorithmServiceImpl implements AlgorithmService {
                 .findOptionalById(relation.getAlgoRelationType().getId()).isPresent()
                 ? relation.getAlgoRelationType()
                 : relationTypeService.save(relation.getAlgoRelationType());
-    }
-
-    @Transactional
-    @Override
-    public Algorithm update(UUID id, Algorithm algorithm) {
-        LOG.info("Trying to update algorithm");
-        Algorithm persistedAlg = algorithmRepository.findById(id).orElseThrow(NoSuchElementException::new);
-
-        // remove all attached sketches
-        persistedAlg.removeSketches(persistedAlg.getSketches());
-        if (algorithm.getSketches() != null) {
-            algorithm.getSketches().forEach(sketch -> {
-                if (sketch.getId() == null) {
-                    // add sketches one by one
-                    final Sketch savedSketch = sketchRepository.save(sketch);
-                    persistedAlg.addSketch(savedSketch);
-                }
-            });
-        }
-
-        persistedAlg.setName(algorithm.getName());
-        persistedAlg.setAcronym(algorithm.getAcronym());
-        // persistedAlg.setPublications(algorithm.getPublications());
-        persistedAlg.setIntent(algorithm.getIntent());
-        persistedAlg.setProblem(algorithm.getProblem());
-        // persistedAlg.setAlgorithmRelations(algorithm.getAlgorithmRelations());
-        persistedAlg.setInputFormat(algorithm.getInputFormat());
-        persistedAlg.setAlgoParameter(algorithm.getAlgoParameter());
-        persistedAlg.setOutputFormat(algorithm.getOutputFormat());
-        persistedAlg.setSolution(algorithm.getSolution());
-        persistedAlg.setAssumptions(algorithm.getAssumptions());
-        persistedAlg.setComputationModel(algorithm.getComputationModel());
-        // persistedAlg.setRelatedPatterns(algorithm.getRelatedPatterns());
-        // persistedAlg.setProblemTypes(algorithm.getProblemTypes());
-        // persistedAlg.setApplicationAreas(algorithm.getApplicationAreas());
-        // persistedAlg.setTags(algorithm.getTags());
-        // persistedAlg.setRequiredComputingResourceProperties(persistedAlg.getRequiredComputingResourceProperties());
-
-        // If QuantumAlgorithm adjust Quantum fields
-        if (algorithm instanceof QuantumAlgorithm) {
-            QuantumAlgorithm quantumAlgorithm = (QuantumAlgorithm) algorithm;
-            QuantumAlgorithm persistedQuantumAlg = (QuantumAlgorithm) persistedAlg;
-
-            persistedQuantumAlg.setNisqReady(quantumAlgorithm.isNisqReady());
-            persistedQuantumAlg.setQuantumComputationModel(quantumAlgorithm.getQuantumComputationModel());
-            persistedQuantumAlg.setSpeedUp(quantumAlgorithm.getSpeedUp());
-
-            return algorithmRepository.save(persistedQuantumAlg);
-        } else {
-            // Else if ClassicAlgorithm no more fields to adjust
-            return algorithmRepository.save(persistedAlg);
-        }
-    }
-
-    @Override
-    @Transactional
-    public void delete(UUID id) {
-        Optional<Algorithm> algorithmOptional = algorithmRepository.findById(id);
-        if (algorithmOptional.isEmpty()) {
-            return;
-        }
-        Algorithm algorithm = algorithmOptional.get();
-
-        // delete related implementations
-        implementationRepository.findByImplementedAlgorithm(algorithm).forEach(implementationRepository::delete);
-
-        // delete ingoing and outgoing algorithm relations
-        Set<AlgorithmRelation> linkedAsTargetRelations = algorithmRelationRepository.findByTargetAlgorithmId(id);
-        linkedAsTargetRelations.addAll(algorithmRelationRepository.findBySourceAlgorithmId(id));
-        for (AlgorithmRelation relation : linkedAsTargetRelations) {
-            algorithmRelationRepository.delete(relation);
-        }
-
-        // delete related pattern relations
-        patternRelationService.findByAlgorithmId(id).forEach(patternRelation -> patternRelationService.deleteById(patternRelation.getId()));
-
-        //Remove all publications associations
-        algorithmRepository.deleteAssociationsOfAlgorithm(id);
-
-        algorithmRepository.deleteById(id);
-    }
-
-    @Override
-    public Page<Algorithm> findAll(Pageable pageable, String search) {
-        if (!Objects.isNull(search) && !search.isEmpty()) {
-            return algorithmRepository.findAll(search, pageable);
-        }
-        return algorithmRepository.findAll(pageable);
-    }
-
-    @Override
-    public Algorithm findById(UUID algoId) {
-        return findOptionalById(algoId).orElseThrow(NoSuchElementException::new);
-    }
-
-    @Override
-    public Optional<Algorithm> findOptionalById(UUID algoId) {
-        return algorithmRepository.findById(algoId);
     }
 
     @Transactional
@@ -254,9 +239,9 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     }
 
     @Override
-    public Set<AlgorithmRelation> getAlgorithmRelations(UUID sourceAlgorithmId) {
-        Set<AlgorithmRelation> relations = algorithmRelationRepository.findBySourceAlgorithmId(sourceAlgorithmId);
-        relations.addAll(algorithmRelationRepository.findByTargetAlgorithmId(sourceAlgorithmId));
+    public Set<AlgorithmRelation> getAlgorithmRelations(UUID algorithmId) {
+        Set<AlgorithmRelation> relations = algorithmRelationRepository.findBySourceAlgorithmId(algorithmId);
+        relations.addAll(algorithmRelationRepository.findByTargetAlgorithmId(algorithmId));
         return relations;
     }
 }

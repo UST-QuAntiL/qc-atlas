@@ -133,12 +133,12 @@ public class AlgorithmController {
     @Operation(responses = {
             @ApiResponse(responseCode = "201")
     }, description = "Define the basic properties of an algorithm. " +
-            "References to subobjects (e.g. a problemtype) can be added via " +
-            "subroutes (e.g. /algorithm/id/problem-types). Custom ID will be ignored.")
+            "References to sub-objects (e.g. a ProblemType) can be added via " +
+            "sub-routes (e.g. /algorithm/id/problem-types). Custom ID will be ignored.")
     @PostMapping()
     public HttpEntity<EntityModel<AlgorithmDto>> createAlgorithm(@Valid @RequestBody AlgorithmDto algo) {
-        Algorithm algorithm = algorithmService.save(ModelMapperUtils.convert(algo, Algorithm.class));
-        return new ResponseEntity<>(algorithmAssembler.toModel(algorithm), HttpStatus.CREATED);
+        Algorithm savedAlgorithm = algorithmService.save(ModelMapperUtils.convert(algo, Algorithm.class));
+        return new ResponseEntity<>(algorithmAssembler.toModel(savedAlgorithm), HttpStatus.CREATED);
     }
 
     @Operation(responses = {
@@ -169,7 +169,6 @@ public class AlgorithmController {
             "(e.g., the algorithm's relation to another algorithm).")
     @DeleteMapping("/{algoId}")
     public HttpEntity<Void> deleteAlgorithm(@PathVariable UUID algoId) {
-        log.debug("Delete to remove algorithm with id: {}.", algoId);
         algorithmService.delete(algoId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -179,7 +178,6 @@ public class AlgorithmController {
     }, description = "Retrieve a specific algorithm and its basic properties.")
     @GetMapping("/{algoId}")
     public HttpEntity<EntityModel<AlgorithmDto>> getAlgorithm(@PathVariable UUID algoId) {
-        log.debug("Get to retrieve algorithm with id: {}.", algoId);
         var algorithm = algorithmService.findById(algoId);
         return ResponseEntity.ok(algorithmAssembler.toModel(algorithm));
     }

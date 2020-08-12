@@ -19,7 +19,6 @@
 
 package org.planqk.atlas.core.services;
 
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -35,6 +34,10 @@ public interface AlgorithmService {
     @Transactional
     Algorithm save(Algorithm algorithm);
 
+    Page<Algorithm> findAll(Pageable pageable, String search);
+
+    Algorithm findById(UUID algoId);
+
     @Transactional
     Algorithm update(UUID id, Algorithm algorithm);
 
@@ -43,12 +46,6 @@ public interface AlgorithmService {
 
     @Transactional
     void deleteAlgorithmRelation(UUID algoId, UUID relationId);
-
-    Page<Algorithm> findAll(Pageable pageable, String search);
-
-    Algorithm findById(UUID algoId);
-
-    Optional<Algorithm> findOptionalById(UUID algoId);
 
     @Transactional
     AlgorithmRelation addOrUpdateAlgorithmRelation(UUID sourceAlgorithm_id, AlgorithmRelation relation);

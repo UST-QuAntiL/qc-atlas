@@ -112,8 +112,8 @@ public class SoftwarePlatformController {
     public ResponseEntity<EntityModel<SoftwarePlatformDto>> updateSoftwarePlatform(
             @PathVariable UUID id,
             @Valid @RequestBody SoftwarePlatformDto softwarePlatformDto) {
-        var softwarePlatform = softwarePlatformService.update(
-                id, ModelMapperUtils.convert(softwarePlatformDto, SoftwarePlatform.class));
+        var softwarePlatform = softwarePlatformService
+                .update(id, ModelMapperUtils.convert(softwarePlatformDto, SoftwarePlatform.class));
         return ResponseEntity.ok(softwarePlatformAssembler.toModel(softwarePlatform));
     }
 

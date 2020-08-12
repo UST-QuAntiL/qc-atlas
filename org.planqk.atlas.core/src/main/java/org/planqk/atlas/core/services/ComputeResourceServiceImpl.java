@@ -119,8 +119,9 @@ public class ComputeResourceServiceImpl implements ComputeResourceService {
                 softwarePlatformRepository.countSoftwarePlatformByComputeResource(id);
         if (count == 0) {
             ComputeResource computeResource = findById(id);
-            computeResource.getProvidedComputingResourceProperties().forEach(computingResourceProperty ->
-                    computeResourcePropertyService.deleteComputeResourceProperty(computingResourceProperty.getId()));
+
+            removeReferences(computeResource);
+
             computeResourceRepository.deleteById(id);
         } else {
             log.info("Trying to delete Compute Resource that is used in a CloudService or SoftwarePlatform");
@@ -128,4 +129,15 @@ public class ComputeResourceServiceImpl implements ComputeResourceService {
                     "Cannot delete Compute Resource since it is used by existing CloudService or SoftwarePlatform");
         }
     }
+
+    private void removeReferences(ComputeResource computeResource) {
+        computeResource.getSoftwarePlatforms().forEach(
+                softwarePlatform -> softwarePlatform.removeComputeResource(computeResource));
+        computeResource.getCloudServices().forEach(
+                cloudService -> cloudService.removeComputeResource(computeResource));
+
+        computeResource.getProvidedComputingResourceProperties().forEach(computingResourceProperty ->
+                computeResourcePropertyService.deleteComputeResourceProperty(computingResourceProperty.getId()));
+    }
+
 }
