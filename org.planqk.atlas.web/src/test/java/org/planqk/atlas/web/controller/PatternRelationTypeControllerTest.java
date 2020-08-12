@@ -3,6 +3,7 @@ package org.planqk.atlas.web.controller;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.PatternRelationType;
@@ -32,6 +33,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -56,31 +58,28 @@ public class PatternRelationTypeControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    private ObjectMapper mapper;
+    private final ObjectMapper mapper = ObjectMapperUtils.newTestMapper();
+    private final UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromPath("/");
 
     private final int page = 0;
     private final int size = 2;
     private final Pageable pageable = PageRequest.of(page, size);
 
-    PatternRelationType type1;
-    PatternRelationType type2;
-    PatternRelationType type1Updated;
+    private PatternRelationType type1;
+    private PatternRelationType type2;
+    private PatternRelationType type1Updated;
 
-    PatternRelationTypeDto type1Dto;
-    PatternRelationTypeDto type2Dto;
-    PatternRelationTypeDto noReqParamDto;
-    PatternRelationTypeDto type1DtoUpdated;
+    private PatternRelationTypeDto type1Dto;
+    private PatternRelationTypeDto type2Dto;
+    private PatternRelationTypeDto noReqParamDto;
+    private PatternRelationTypeDto type1DtoUpdated;
 
-    List<PatternRelationType> typeList;
-    Page<PatternRelationType> typePage;
-
-    Page<PatternRelationTypeDto> typePageDto;
+    private List<PatternRelationType> typeList;
+    private Page<PatternRelationType> typePage;
+    private Page<PatternRelationTypeDto> typePageDto;
 
     @BeforeEach
     public void initialize() {
-        // Init Object-Mapper
-        mapper = ObjectMapperUtils.newTestMapper();
-
         // Generate UUIDs
         UUID id1 = UUID.randomUUID();
         UUID id2 = UUID.randomUUID();
@@ -127,7 +126,7 @@ public class PatternRelationTypeControllerTest {
                 new TypeReference<EntityModel<PatternRelationTypeDto>>() {
                 });
 
-        assertEquals(response.getContent().getName(), type1Dto.getName());
+        assertEquals(Objects.requireNonNull(response.getContent()).getName(), type1Dto.getName());
     }
 
     @Test

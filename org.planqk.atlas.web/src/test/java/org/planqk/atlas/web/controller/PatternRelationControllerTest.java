@@ -41,6 +41,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -58,21 +59,28 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @EnableLinkAssemblers
 public class PatternRelationControllerTest {
-    private final int page = 0;
-    private final int size = 2;
-    private final Pageable pageable = PageRequest.of(page, size);
-    private List<PatternRelation> relationList;
-    private Page<PatternRelation> relationPage;
-    private Page<PatternRelationDto> relationPageDto;
+
     @MockBean
     private PatternRelationService patternRelationService;
     @MockBean
     private AlgorithmService algorithmService;
     @MockBean
     private PatternRelationTypeService patternRelationTypeService;
+
     @Autowired
     private MockMvc mockMvc;
-    private ObjectMapper mapper;
+
+    private final ObjectMapper mapper = ObjectMapperUtils.newTestMapper();
+    private final UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromPath("/");
+
+    private final int page = 0;
+    private final int size = 2;
+    private final Pageable pageable = PageRequest.of(page, size);
+
+    private List<PatternRelation> relationList;
+    private Page<PatternRelation> relationPage;
+    private Page<PatternRelationDto> relationPageDto;
+
     private PatternRelation relation1;
     private PatternRelation relation2;
     private PatternRelation missingReqParamRelation;
@@ -92,9 +100,6 @@ public class PatternRelationControllerTest {
 
     @BeforeEach
     public void initialize() {
-        // Init Object-Mapper
-        mapper = ObjectMapperUtils.newTestMapper();
-
         // Generate UUIDs
         UUID relationId1 = UUID.randomUUID();
         UUID relationId2 = UUID.randomUUID();

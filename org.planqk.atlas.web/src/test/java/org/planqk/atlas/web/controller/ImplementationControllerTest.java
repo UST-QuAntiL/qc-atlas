@@ -41,7 +41,6 @@ import org.planqk.atlas.web.utils.ModelMapperUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.core.util.Json;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -95,14 +94,8 @@ public class ImplementationControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    private ObjectMapper mapper;
-    private UriComponentsBuilder uriBuilder;
-
-    @BeforeEach
-    public void initialize() {
-        this.mapper = ObjectMapperUtils.newTestMapper();
-        uriBuilder = UriComponentsBuilder.fromPath("/");
-    }
+    private final ObjectMapper mapper = ObjectMapperUtils.newTestMapper();
+    private final UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromPath("/");
 
     @Test
     public void getOneImplForAlgo() throws Exception {

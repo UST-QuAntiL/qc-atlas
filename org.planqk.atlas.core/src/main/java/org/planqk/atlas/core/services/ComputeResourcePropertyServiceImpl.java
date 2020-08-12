@@ -54,6 +54,7 @@ public class ComputeResourcePropertyServiceImpl implements ComputeResourceProper
     @Override
     @Transactional
     public void deleteComputeResourcePropertyType(UUID typeId) {
+        // TODO throw consistency exception if object is still linked!
         this.typeRepository.deleteById(typeId);
     }
 
