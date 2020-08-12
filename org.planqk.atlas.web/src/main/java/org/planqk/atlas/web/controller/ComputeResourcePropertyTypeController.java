@@ -37,7 +37,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpEntity;
@@ -64,13 +63,12 @@ public class ComputeResourcePropertyTypeController {
 
     private final ComputeResourcePropertyTypeAssembler computeResourcePropertyTypeAssembler;
     private final ComputeResourcePropertyService computeResourcePropertyService;
-    private final PagedResourcesAssembler<ComputeResourcePropertyTypeDto> paginationAssembler;
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Computing resource type with given id doesn't exist"),
-    })
+    }, description = "")
     @GetMapping("/{id}")
     public HttpEntity<EntityModel<ComputeResourcePropertyTypeDto>> getComputingResourcePropertyType(@PathVariable UUID id) {
         var resourceType = computeResourcePropertyService.findComputeResourcePropertyTypeById(id);
@@ -81,7 +79,7 @@ public class ComputeResourcePropertyTypeController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Computing resource type with given id doesn't exist"),
-    })
+    }, description = "")
     @DeleteMapping("/{id}")
     public HttpEntity<Void> deleteComputingResourcePropertyType(@PathVariable UUID id) {
         computeResourcePropertyService.findComputeResourcePropertyTypeById(id);
@@ -89,17 +87,22 @@ public class ComputeResourcePropertyTypeController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Custom ID will be ignored.")
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200")
+    }, description = "Custom ID will be ignored.")
     @PutMapping("/{id}")
-    public HttpEntity<EntityModel<ComputeResourcePropertyTypeDto>> updateComputingResourcePropertyType(@PathVariable UUID id,
-                                                                                                       @Valid @RequestBody ComputeResourcePropertyTypeDto computeResourcePropertyTypeDto) {
+    public HttpEntity<EntityModel<ComputeResourcePropertyTypeDto>> updateComputingResourcePropertyType(
+            @PathVariable UUID id,
+            @Valid @RequestBody ComputeResourcePropertyTypeDto computeResourcePropertyTypeDto) {
         computeResourcePropertyTypeDto.setId(id);
         var inputEntity = ModelMapperUtils.convert(computeResourcePropertyTypeDto, ComputeResourcePropertyType.class);
         var savedEntity = computeResourcePropertyService.saveComputeResourcePropertyType(inputEntity);
         return ResponseEntity.ok(computeResourcePropertyTypeAssembler.toModel(savedEntity));
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200")})
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200")
+    }, description = "")
     @GetMapping()
     public HttpEntity<PagedModel<EntityModel<ComputeResourcePropertyTypeDto>>> getResourcePropertyTypes(
             @RequestParam(required = false) Integer page,
@@ -110,7 +113,9 @@ public class ComputeResourcePropertyTypeController {
         return ResponseEntity.ok(computeResourcePropertyTypeAssembler.toModel(types));
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "201")}, description = "Custom ID will be ignored.")
+    @Operation(responses = {
+            @ApiResponse(responseCode = "201")
+    }, description = "Custom ID will be ignored.")
     @PostMapping()
     public HttpEntity<EntityModel<ComputeResourcePropertyTypeDto>> createComputingResourcePropertyType(
             @Valid @RequestBody ComputeResourcePropertyTypeDto resourceTypeDto) {

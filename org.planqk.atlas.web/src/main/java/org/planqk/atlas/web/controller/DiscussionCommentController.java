@@ -62,6 +62,9 @@ public class DiscussionCommentController {
     private final DiscussionTopicService discussionTopicService;
     private final DiscussionCommentAssembler discussionCommentAssembler;
 
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200")
+    }, description = "")
     public HttpEntity<PagedModel<EntityModel<DiscussionCommentDto>>> getDiscussionComments(
             @PathVariable("topicId") UUID topicId,
             @RequestParam(required = false) Integer page,
@@ -71,6 +74,9 @@ public class DiscussionCommentController {
         return ResponseEntity.ok(discussionCommentAssembler.toModel(result));
     }
 
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200")
+    }, description = "")
     public HttpEntity<EntityModel<DiscussionCommentDto>> getDiscussionComment(@PathVariable UUID commentId) {
         var discussionComment = discussionCommentService.findById(commentId);
         return ResponseEntity.ok(discussionCommentAssembler.toModel(discussionComment));
@@ -87,12 +93,18 @@ public class DiscussionCommentController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @Operation(responses = {
+            @ApiResponse(responseCode = "201")
+    }, description = "")
     public HttpEntity<EntityModel<DiscussionCommentDto>> createDiscussionComment(
             @Valid @RequestBody DiscussionCommentDto discussionCommentDto) {
         var comment = discussionCommentService.save(ModelMapperUtils.convert(discussionCommentDto, DiscussionComment.class));
         return new ResponseEntity<>(discussionCommentAssembler.toModel(comment), HttpStatus.CREATED);
     }
 
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200")
+    }, description = "")
     public HttpEntity<EntityModel<DiscussionCommentDto>> updateDiscussionComment(
             @PathVariable UUID commentId,
             @Valid @RequestBody DiscussionCommentDto discussionCommentDto) {

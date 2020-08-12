@@ -164,9 +164,9 @@ public class AlgorithmController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "404", description = "Algorithm with given id doesn't exist")},
-            description = "Delete an algorithm. This also deletes all entities that depend on it " +
-                    "(e.g., the algorithm's relation to another algorithm).")
+            @ApiResponse(responseCode = "404", description = "Algorithm with given id doesn't exist")
+    }, description = "Delete an algorithm. This also deletes all entities that depend on it " +
+            "(e.g., the algorithm's relation to another algorithm).")
     @DeleteMapping("/{algoId}")
     public HttpEntity<Void> deleteAlgorithm(@PathVariable UUID algoId) {
         log.debug("Delete to remove algorithm with id: {}.", algoId);
@@ -184,11 +184,10 @@ public class AlgorithmController {
         return ResponseEntity.ok(algorithmAssembler.toModel(algorithm));
     }
 
-    @Operation(operationId = "getPublicationsByAlgorithm",
-            responses = {
-                    @ApiResponse(responseCode = "200"),
-                    @ApiResponse(responseCode = "404", content = @Content, description = "Algorithm doesn't exist")
-            }, description = "Get referenced publications for an algorithm.")
+    @Operation(operationId = "getPublicationsByAlgorithm", responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", content = @Content, description = "Algorithm doesn't exist")
+    }, description = "Get referenced publications for an algorithm.")
     @GetMapping("/{algoId}/" + Constants.PUBLICATIONS)
     public HttpEntity<CollectionModel<EntityModel<PublicationDto>>> getPublications(@PathVariable UUID algoId) {
         Algorithm algorithm = algorithmService.findById(algoId);
@@ -213,10 +212,9 @@ public class AlgorithmController {
         return ResponseEntity.ok(publicationAssembler.toModel(algorithm.getPublications()));
     }
 
-    @Operation(operationId = "getPublicationByAlgorithm",
-            responses = {
-                    @ApiResponse(responseCode = "200")
-            }, description = "Get a specific referenced publication of an algorithm.")
+    @Operation(operationId = "getPublicationByAlgorithm", responses = {
+            @ApiResponse(responseCode = "200")
+    }, description = "Get a specific referenced publication of an algorithm.")
     @GetMapping("/{algoId}/" + Constants.PUBLICATIONS + "/{publicationId}")
     public HttpEntity<EntityModel<PublicationDto>> getPublication(
             @PathVariable UUID algoId,
@@ -227,7 +225,8 @@ public class AlgorithmController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "404", description = "Algorithm or publication with given ids do not exist or " +
+            @ApiResponse(responseCode = "404",
+                    description = "Algorithm or publication with given ids do not exist or " +
                     "no relation between algorithm and publication")
     }, description = "Delete a reference to a publication of the algorithm.")
     @DeleteMapping("/{algoId}/" + Constants.PUBLICATIONS + "/{publicationId}")
@@ -240,11 +239,10 @@ public class AlgorithmController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @Operation(operationId = "getProblemTypesByAlgorithm",
-            responses = {
-                    @ApiResponse(responseCode = "200"),
-                    @ApiResponse(responseCode = "404", description = "Algorithm does not exists in the database")},
-            description = "Get the problem types for an algorithm.")
+    @Operation(operationId = "getProblemTypesByAlgorithm", responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", description = "Algorithm does not exists in the database")
+    }, description = "Get the problem types for an algorithm.")
     @GetMapping("/{algoId}/" + Constants.PROBLEM_TYPES)
     public HttpEntity<CollectionModel<EntityModel<ProblemTypeDto>>> getProblemTypes(
             @PathVariable UUID algoId) {
@@ -255,8 +253,12 @@ public class AlgorithmController {
     @Operation(responses = {
             @ApiResponse(responseCode = "201"),
             @ApiResponse(responseCode = "400", description = "The id of the problem type to reference is null"),
-            @ApiResponse(responseCode = "404", description = "Problem type or algorithm does not exists in the database")},
-            description = "Add a reference to an existing problemType (that was previously created via a POST on /problem-types/). Custom ID will be ignored. For problem type only ID is required, other problem type attributes will not change. If the problemType doesn't exist yet, a 404 error is thrown.")
+            @ApiResponse(responseCode = "404", description = "Problem type or algorithm does not exists in the database")
+    }, description = "Add a reference to an existing problemType " +
+            "(that was previously created via a POST on /problem-types/). " +
+            "Custom ID will be ignored. For problem type only ID is required, " +
+            "other problem type attributes will not change. " +
+            "If the problemType doesn't exist yet, a 404 error is thrown.")
     @PostMapping("/{algoId}/" + Constants.PROBLEM_TYPES)
     public HttpEntity<CollectionModel<EntityModel<ProblemTypeDto>>> addProblemType(
             @PathVariable UUID algoId,
@@ -279,8 +281,9 @@ public class AlgorithmController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "404", description = "Algorithm or problem type does not exists in the database")},
-            description = "Get a specific problem type for an algorithm.")
+            @ApiResponse(responseCode = "404",
+                    description = "Algorithm or problem type does not exists in the database")
+    }, description = "Get a specific problem type for an algorithm.")
     @GetMapping("/{algoId}/" + Constants.PROBLEM_TYPES + "/{problemTypeId}")
     public HttpEntity<EntityModel<ProblemTypeDto>> getSpecificProblemTypes(
             @PathVariable UUID algoId,
@@ -296,8 +299,9 @@ public class AlgorithmController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "404", description = "Algorithm or problem type does not exists in the database")},
-            description = "Delete a reference to a problem types of the algorithm.")
+            @ApiResponse(responseCode = "404",
+                    description = "Algorithm or problem type does not exists in the database")
+    }, description = "Delete a reference to a problem types of the algorithm.")
     @DeleteMapping("/{algoId}/" + Constants.PROBLEM_TYPES + "/{problemTypeId}")
     public HttpEntity<Void> deleteReferenceToProblemTypes(
             @PathVariable UUID algoId,
@@ -311,11 +315,10 @@ public class AlgorithmController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @Operation(operationId = "getApplicationAreasByAlgorithm",
-            responses = {
-                    @ApiResponse(responseCode = "200"),
-                    @ApiResponse(responseCode = "404", description = "Algorithm does not exists in the database")},
-            description = "Get the problem types for an algorithm.")
+    @Operation(operationId = "getApplicationAreasByAlgorithm", responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", description = "Algorithm does not exists in the database")
+    }, description = "Get the problem types for an algorithm.")
     @GetMapping("/{algoId}/" + Constants.APPLICATION_AREAS)
     public HttpEntity<CollectionModel<EntityModel<ApplicationAreaDto>>> getApplicationAreas(@PathVariable UUID algoId) {
         Algorithm algorithm = algorithmService.findById(algoId);
@@ -325,7 +328,8 @@ public class AlgorithmController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "404", description = "Algorithm or application area does not exists in the database")
+            @ApiResponse(responseCode = "404",
+                    description = "Algorithm or application area does not exists in the database")
     }, description = "Get a specific applicationArea of an algorithm.")
     @GetMapping("/{algoId}/" + Constants.APPLICATION_AREAS + "/{applicationAreaId}")
     public HttpEntity<EntityModel<ApplicationAreaDto>> getApplicationArea(
@@ -342,7 +346,8 @@ public class AlgorithmController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "404", description = "Algorithm does not exists in the database")
+            @ApiResponse(responseCode = "404",
+                    description = "Algorithm does not exists in the database")
     }, description = "Delete a reference to a applicationArea of an algorithm.")
     @DeleteMapping("/{algoId}/" + Constants.APPLICATION_AREAS + "/{applicationAreaId}")
     public HttpEntity<Void> deleteReferenceToApplicationArea(
@@ -358,8 +363,12 @@ public class AlgorithmController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "201"),
-            @ApiResponse(responseCode = "404", description = "Problem type or algorithm does not exists in the database")
-    }, description = "Add a reference to an existing application area (that was previously created via a POST on /application-area/). For application area only ID is required, other attributes will not change. If the applicationArea doesn't exist yet, a 404 error is thrown.")
+            @ApiResponse(responseCode = "404",
+                    description = "Problem type or algorithm does not exists in the database")
+    }, description = "Add a reference to an existing application area " +
+            "(that was previously created via a POST on /application-area/). " +
+            "For application area only ID is required, other attributes will not change. " +
+            "If the applicationArea doesn't exist yet, a 404 error is thrown.")
     @PostMapping("/{algoId}/" + Constants.APPLICATION_AREAS)
     public HttpEntity<CollectionModel<EntityModel<ApplicationAreaDto>>> addApplicationArea(
             @PathVariable UUID algoId,
@@ -378,7 +387,8 @@ public class AlgorithmController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404", description = "Algorithm or Pattern Type doesn't exist in the database")
+            @ApiResponse(responseCode = "404",
+                    description = "Algorithm or Pattern Type doesn't exist in the database")
     }, description = "Get pattern relations for an algorithms.")
     @GetMapping("/{algoId}/" + Constants.PATTERN_RELATIONS)
     public HttpEntity<CollectionModel<EntityModel<PatternRelationDto>>> getPatternRelations(@PathVariable UUID algoId) {
@@ -389,8 +399,11 @@ public class AlgorithmController {
     @Operation(operationId = "createPatternRelationByAlgorithm",
             responses = {
                     @ApiResponse(responseCode = "201"),
-                    @ApiResponse(responseCode = "404", description = "Algorithm or pattern type doesn't exist in the database")},
-            description = "Add a Pattern Relation from this Algorithm to a given Pattern. Custom ID will be ignored. For pattern relation type only ID is required, other pattern relation type attributes will not change.")
+                    @ApiResponse(responseCode = "404",
+                            description = "Algorithm or pattern type doesn't exist in the database")},
+            description = "Add a Pattern Relation from this Algorithm to a given Pattern. " +
+                    "Custom ID will be ignored. For pattern relation type only ID is required, " +
+                    "other pattern relation type attributes will not change.")
     @PostMapping("/{algoId}/" + Constants.PATTERN_RELATIONS)
     public HttpEntity<EntityModel<PatternRelationDto>> createPatternRelation(
             @PathVariable UUID algoId,
@@ -403,12 +416,13 @@ public class AlgorithmController {
         return new ResponseEntity<>(patternRelationAssembler.toModel(saved), HttpStatus.CREATED);
     }
 
-    @Operation(operationId = "getPatternRelationByAlgorithm",
-            responses = {
-                    @ApiResponse(responseCode = "200"),
-                    @ApiResponse(responseCode = "400", description = "PatternRelation doesn't belong to this algorithm"),
-                    @ApiResponse(responseCode = "404", description = "Pattern relation or algorithm with given id doesn't exist")},
-            description = "Get a certain pattern relation for an algorithm.")
+    @Operation(operationId = "getPatternRelationByAlgorithm", responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400",
+                    description = "PatternRelation doesn't belong to this algorithm"),
+            @ApiResponse(responseCode = "404",
+                    description = "Pattern relation or algorithm with given id doesn't exist")
+    }, description = "Get a certain pattern relation for an algorithm.")
     @GetMapping("/{algoId}/" + Constants.PATTERN_RELATIONS + "/{relationId}")
     public HttpEntity<EntityModel<PatternRelationDto>> getPatternRelation(
             @PathVariable UUID algoId,
@@ -421,9 +435,12 @@ public class AlgorithmController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400", description = "PatternRelation doesn't belong to this algorithm"),
-            @ApiResponse(responseCode = "404", description = "Pattern relation or algorithm with given id doesn't exist")},
-            description = "Update a references to a pattern. Custom ID will be ignored. For pattern relation type only ID is required, other pattern relation type attributes will not change.")
+            @ApiResponse(responseCode = "400",
+                    description = "PatternRelation doesn't belong to this algorithm"),
+            @ApiResponse(responseCode = "404",
+                    description = "Pattern relation or algorithm with given id doesn't exist")
+    }, description = "Update a references to a pattern. Custom ID will be ignored. " +
+            "For pattern relation type only ID is required, other pattern relation type attributes will not change.")
     @PutMapping("/{algoId}/" + Constants.PATTERN_RELATIONS + "/{relationId}")
     public HttpEntity<EntityModel<PatternRelationDto>> updatePatternRelations(
             @PathVariable UUID algoId,
@@ -438,10 +455,11 @@ public class AlgorithmController {
         return ResponseEntity.ok(patternRelationAssembler.toModel(saved));
     }
 
-    @Operation(operationId = "deletePatternRelationByAlgorithm",
-            responses = {
-                    @ApiResponse(responseCode = "200"),
-                    @ApiResponse(responseCode = "404", description = "Pattern relation or algorithm with given id doesn't exist")})
+    @Operation(operationId = "deletePatternRelationByAlgorithm", responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404",
+                    description = "Pattern relation or algorithm with given id doesn't exist")
+    }, description = "")
     @DeleteMapping("/{algoId}/" + Constants.PATTERN_RELATIONS + "/{relationId}")
     public HttpEntity<Void> deletePatternRelation(
             @PathVariable UUID algoId,
@@ -454,14 +472,17 @@ public class AlgorithmController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400", description = "AlgorithmRelation doesn't contain this algorithm as source or target"),
-            @ApiResponse(responseCode = "404", description = "Algorithm with given id doesn't exist")},
-            description = "Add an algorithm relation from this algorithm to another given algorithm. Custom ID will be ignored. For algorithm relation type only ID is required, other algorithm relation type attributes will not change.")
+            @ApiResponse(responseCode = "400",
+                    description = "AlgorithmRelation doesn't contain this algorithm as source or target"),
+            @ApiResponse(responseCode = "404",
+                    description = "Algorithm with given id doesn't exist")
+    }, description = "Add an algorithm relation from this algorithm to another given algorithm. " +
+            "Custom ID will be ignored. For algorithm relation type only ID is required, other " +
+            "algorithm relation type attributes will not change.")
     @PostMapping("/{algoId}/" + Constants.ALGORITHM_RELATIONS)
     public HttpEntity<EntityModel<AlgorithmRelationDto>> addAlgorithmRelation(
             @PathVariable UUID algoId,
-            @RequestBody AlgorithmRelationDto relationDto
-    ) {
+            @RequestBody AlgorithmRelationDto relationDto) {
         algorithmService.findById(algoId);
         if (!relationDto.getSourceAlgorithm().getId().equals(algoId) && !relationDto.getTargetAlgorithm().getId().equals(algoId)) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -472,8 +493,9 @@ public class AlgorithmController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "404", description = "Algorithm with the given id doesn't exist")},
-            description = "Retrieve all relations for an algorithm.")
+            @ApiResponse(responseCode = "404",
+                    description = "Algorithm with the given id doesn't exist")
+    }, description = "Retrieve all relations for an algorithm.")
     @GetMapping("/{algoId}/" + Constants.ALGORITHM_RELATIONS)
     public HttpEntity<CollectionModel<EntityModel<AlgorithmRelationDto>>> getAlgorithmRelations(
             @PathVariable UUID algoId) {
@@ -484,8 +506,11 @@ public class AlgorithmController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400", description = "AlgorithmRelation doesn't belong to this algorithm"),
-            @ApiResponse(responseCode = "404", description = "Algorithm with the given id doesn't exist")})
+            @ApiResponse(responseCode = "400",
+                    description = "AlgorithmRelation doesn't belong to this algorithm"),
+            @ApiResponse(responseCode = "404",
+                    description = "Algorithm with the given id doesn't exist")
+    }, description = "")
     @GetMapping("/{algoId}/" + Constants.ALGORITHM_RELATIONS + "/{relationId}")
     public HttpEntity<EntityModel<AlgorithmRelationDto>> getAlgorithmRelation(
             @PathVariable UUID algoId, @PathVariable UUID relationId) {
@@ -500,15 +525,18 @@ public class AlgorithmController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400", description = "AlgorithmRelation doesn't contain this algorithm as source or target"),
-            @ApiResponse(responseCode = "404", description = "Algorithm with the given id doesn't exist")},
-            description = "Change an algorithm relation from this algorithm to another given algorithm. Custom ID will be ignored. For algorithm relation type only ID is required, other algorithm relation type attributes will not change.")
+            @ApiResponse(responseCode = "400",
+                    description = "AlgorithmRelation doesn't contain this algorithm as source or target"),
+            @ApiResponse(responseCode = "404",
+                    description = "Algorithm with the given id doesn't exist")
+    }, description = "Change an algorithm relation from this algorithm to another given algorithm. " +
+            "Custom ID will be ignored. For algorithm relation type only ID is required, " +
+            "other algorithm relation type attributes will not change.")
     @PutMapping("/{algoId}/" + Constants.ALGORITHM_RELATIONS + "/{relationId}")
     public HttpEntity<EntityModel<AlgorithmRelationDto>> updateAlgorithmRelation(
             @PathVariable UUID algoId,
             @PathVariable UUID relationId,
             @Valid @RequestBody AlgorithmRelationDto relationDto) {
-
         // check if relation exists and if it uses this algorithm as source or target
         algorithmService.findById(algoId);
         algoRelationService.findById(relationId);
@@ -522,8 +550,9 @@ public class AlgorithmController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "404", description = "Algorithm relation or algorithm with given id doesn't exist")},
-            description = "Delete a relation of the algorithm.")
+            @ApiResponse(responseCode = "404",
+                    description = "Algorithm relation or algorithm with given id doesn't exist")
+    }, description = "Delete a relation of the algorithm.")
     @DeleteMapping("/{algoId}/" + Constants.ALGORITHM_RELATIONS + "/{relationId}")
     public HttpEntity<Void> deleteAlgorithmRelation(
             @PathVariable UUID algoId,
@@ -534,18 +563,16 @@ public class AlgorithmController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @Operation(operationId = "getComputingResourcesByAlgorithm",
-            responses = {
-                    @ApiResponse(responseCode = "200"),
-                    @ApiResponse(responseCode = "400"),
-                    @ApiResponse(responseCode = "404")
-            }, description = "Retrieve the required computing resources of an algorithm")
+    @Operation(operationId = "getComputingResourcesByAlgorithm", responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404")
+    }, description = "Retrieve the required computing resources of an algorithm")
     @GetMapping("/{algoId}/" + Constants.COMPUTING_RESOURCES_PROPERTIES)
     public HttpEntity<PagedModel<EntityModel<ComputeResourcePropertyDto>>> getComputingResources(
             @PathVariable UUID algoId,
             @RequestParam(required = false) Integer page,
-            @RequestParam(required = false) Integer size
-    ) {
+            @RequestParam(required = false) Integer size) {
         algorithmService.findById(algoId);
         var resources = computeResourcePropertyService
                 .findAllComputeResourcesPropertyByAlgorithmId(algoId, RestUtils.getPageableFromRequestParams(page, size));
@@ -554,14 +581,17 @@ public class AlgorithmController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400", description = "Id of the passed computing resource type is null"),
-            @ApiResponse(responseCode = "404", description = "Computing resource type  or algorithm can not be found with the given Ids")
-    }, description = "Add a computing resource (e.g. a certain number of qubits) that is required by an algorithm. Custom ID will be ignored. For computing resource type only ID is required, other computing resource type attributes will not change.")
+            @ApiResponse(responseCode = "400",
+                    description = "Id of the passed computing resource type is null"),
+            @ApiResponse(responseCode = "404",
+                    description = "Computing resource type  or algorithm can not be found with the given Ids")
+    }, description = "Add a computing resource (e.g. a certain number of qubits) that is required by an algorithm. " +
+            "Custom ID will be ignored. For computing resource type only ID is required, " +
+            "other computing resource type attributes will not change.")
     @PostMapping("/{algoId}/" + Constants.COMPUTING_RESOURCES_PROPERTIES)
     public HttpEntity<EntityModel<ComputeResourcePropertyDto>> addComputingResource(
             @PathVariable UUID algoId,
-            @Valid @RequestBody ComputeResourcePropertyDto resourceDto
-    ) {
+            @Valid @RequestBody ComputeResourcePropertyDto resourceDto) {
         var algorithm = algorithmService.findById(algoId);
 
         ValidationUtils.validateComputingResourceProperty(resourceDto);
@@ -573,13 +603,15 @@ public class AlgorithmController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400", description = "Resource doesn't belong to this algorithm"),
-            @ApiResponse(responseCode = "404", description = "Algorithm with the given id doesn't exist")})
+            @ApiResponse(responseCode = "400",
+                    description = "Resource doesn't belong to this algorithm"),
+            @ApiResponse(responseCode = "404",
+                    description = "Algorithm with the given id doesn't exist")
+    }, description = "")
     @GetMapping("/{algoId}/" + Constants.COMPUTING_RESOURCES_PROPERTIES + "/{resourceId}")
     public HttpEntity<EntityModel<ComputeResourcePropertyDto>> getComputingResource(
             @PathVariable UUID algoId,
             @PathVariable UUID resourceId) {
-
         algorithmService.findById(algoId);
         ComputeResourceProperty computeResourceProperty = computeResourcePropertyService
                 .findComputeResourcePropertyById(resourceId);
@@ -595,8 +627,10 @@ public class AlgorithmController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404", description = "Algorithm with the given id doesn't exist")},
-            description = "Update a computing resource of the algorithm. Custom ID will be ignored. For computing resource type only ID is required, other computing resource type attributes will not change.")
+            @ApiResponse(responseCode = "404",
+                    description = "Algorithm with the given id doesn't exist")
+    }, description = "Update a computing resource of the algorithm. Custom ID will be ignored. " +
+            "For computing resource type only ID is required, other computing resource type attributes will not change.")
     @PutMapping("/{algoId}/" + Constants.COMPUTING_RESOURCES_PROPERTIES + "/{resourceId}")
     public HttpEntity<EntityModel<ComputeResourcePropertyDto>> updateComputingResource(
             @PathVariable UUID algoId,
@@ -619,8 +653,11 @@ public class AlgorithmController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400", description = "Computing resource with the given id doesn't belong to this algorithm"),
-            @ApiResponse(responseCode = "404", description = "Algorithm or computing resource with given id doesn't exist")}, description = "Delete a computing resource of the algorithm.")
+            @ApiResponse(responseCode = "400",
+                    description = "Computing resource with the given id doesn't belong to this algorithm"),
+            @ApiResponse(responseCode = "404",
+                    description = "Algorithm or computing resource with given id doesn't exist")
+    }, description = "Delete a computing resource of the algorithm.")
     @DeleteMapping("/{algoId}/" + Constants.COMPUTING_RESOURCES_PROPERTIES + "/{resourceId}")
     public HttpEntity<Void> deleteComputingResource(
             @PathVariable UUID algoId,

@@ -1,3 +1,21 @@
+/*******************************************************************************
+ * Copyright (c) 2020 University of Stuttgart
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *******************************************************************************/
 package org.planqk.atlas.web.controller;
 
 import java.util.UUID;
@@ -71,7 +89,7 @@ public class ProblemTypeController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "404", description = "Problem type with given id doesn't exist")
-    })
+    }, description = "")
     @DeleteMapping("/{id}")
     public HttpEntity<Void> deleteProblemType(@PathVariable UUID id) {
         ProblemType problemType = problemTypeService.findById(id);
@@ -80,7 +98,9 @@ public class ProblemTypeController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200")})
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200")
+    }, description = "")
     @GetMapping()
     public HttpEntity<PagedModel<EntityModel<ProblemTypeDto>>> getProblemTypes(
             @RequestParam(required = false) Integer page,
@@ -90,14 +110,18 @@ public class ProblemTypeController {
         return ResponseEntity.ok(problemTypeAssembler.toModel(entities));
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200")})
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200")
+    }, description = "")
     @GetMapping("/{id}")
     public HttpEntity<EntityModel<ProblemTypeDto>> getProblemTypeById(@PathVariable UUID id) {
         ProblemType problemType = problemTypeService.findById(id);
         return ResponseEntity.ok(problemTypeAssembler.toModel(problemType));
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200")})
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200")
+    }, description = "")
     @GetMapping("/{id}/" + Constants.PROBLEM_TYPE_PARENT_LIST)
     public HttpEntity<CollectionModel<EntityModel<ProblemTypeDto>>> getProblemTypeParentList(@PathVariable UUID id) {
         var entities = problemTypeService.getParentList(id);

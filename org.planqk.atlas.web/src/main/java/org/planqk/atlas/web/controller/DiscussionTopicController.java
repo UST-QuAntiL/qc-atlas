@@ -73,7 +73,9 @@ public class DiscussionTopicController {
 
     private final DiscussionCommentController discussionCommentController;
 
-    @Operation(responses = {@ApiResponse(responseCode = "200")})
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200")
+    }, description = "")
     @GetMapping()
     public HttpEntity<PagedModel<EntityModel<DiscussionTopicDto>>> getDiscussionTopics(
             @RequestParam(required = false) Integer page,
@@ -87,7 +89,7 @@ public class DiscussionTopicController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404")
-    })
+    }, description = "")
     @GetMapping("/{topicId}")
     public HttpEntity<EntityModel<DiscussionTopicDto>> getDiscussionTopic(@PathVariable UUID topicId) {
         DiscussionTopic discussionTopic = discussionTopicService.findById(topicId);
@@ -98,7 +100,7 @@ public class DiscussionTopicController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404")
-    })
+    }, description = "")
     @DeleteMapping("/{topicId}")
     public HttpEntity<Void> deleteDiscussionTopic(@PathVariable UUID topicId) {
         discussionTopicService.deleteById(topicId);
@@ -109,7 +111,7 @@ public class DiscussionTopicController {
             @ApiResponse(responseCode = "201"),
             @ApiResponse(responseCode = "400", content = @Content),
             @ApiResponse(responseCode = "404")
-    })
+    }, description = "")
     @PostMapping()
     public HttpEntity<EntityModel<DiscussionTopicDto>> createDiscussionTopic(
             @Valid @RequestBody DiscussionTopicDto discussionTopicDto) {
@@ -121,7 +123,7 @@ public class DiscussionTopicController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404")
-    })
+    }, description = "")
     @GetMapping("/{topicId}/" + Constants.DISCUSSION_COMMENTS)
     public HttpEntity<PagedModel<EntityModel<DiscussionCommentDto>>> getDiscussionComments(
             @PathVariable UUID topicId,
@@ -134,7 +136,7 @@ public class DiscussionTopicController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404")
-    })
+    }, description = "")
     @GetMapping("/{topicId}/" + Constants.DISCUSSION_COMMENTS + "/{commentId}")
     public HttpEntity<EntityModel<DiscussionCommentDto>> getDiscussionComment(
             @PathVariable UUID topicId,
@@ -151,7 +153,7 @@ public class DiscussionTopicController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404")
-    })
+    }, description = "")
     @DeleteMapping("/{topicId}/" + Constants.DISCUSSION_COMMENTS + "/{commentId}")
     public HttpEntity<Void> deleteDiscussionComment(@PathVariable UUID topicId, @PathVariable UUID commentId) {
         DiscussionComment discussionComment = discussionCommentService.findById(commentId);
@@ -166,7 +168,7 @@ public class DiscussionTopicController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404")
-    })
+    }, description = "")
     @PutMapping("/{topicId}/" + Constants.DISCUSSION_COMMENTS + "/{commentId}")
     public HttpEntity<EntityModel<DiscussionCommentDto>> updateDiscussionComment(
             @PathVariable UUID topicId,
@@ -185,7 +187,7 @@ public class DiscussionTopicController {
             @ApiResponse(responseCode = "201"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404")
-    })
+    }, description = "")
     @PostMapping("/{topicId}/" + Constants.DISCUSSION_COMMENTS)
     public HttpEntity<EntityModel<DiscussionCommentDto>> createDiscussionComment(
             @PathVariable UUID topicId,
@@ -199,7 +201,7 @@ public class DiscussionTopicController {
             @ApiResponse(responseCode = "201"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404")
-    })
+    }, description = "")
     @PutMapping("/{topicId}")
     public HttpEntity<EntityModel<DiscussionTopicDto>> updateDiscussionTopic(
             @PathVariable UUID topicId,

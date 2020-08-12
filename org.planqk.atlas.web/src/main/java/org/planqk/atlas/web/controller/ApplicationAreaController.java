@@ -63,7 +63,9 @@ public class ApplicationAreaController {
     private final ApplicationAreaService applicationAreaService;
     private final ApplicationAreaAssembler applicationAreaAssembler;
 
-    @Operation(responses = {@ApiResponse(responseCode = "201")}, description = "Custom ID will be ignored.")
+    @Operation(responses = {
+            @ApiResponse(responseCode = "201")
+    }, description = "Custom ID will be ignored.")
     @PostMapping()
     public HttpEntity<EntityModel<ApplicationAreaDto>> createApplicationArea(
             @Valid @RequestBody ApplicationAreaDto applicationAreaDto) {
@@ -72,16 +74,22 @@ public class ApplicationAreaController {
         return new ResponseEntity<>(applicationAreaAssembler.toModel(savedEntity), HttpStatus.CREATED);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Custom ID will be ignored.")
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200")
+    }, description = "Custom ID will be ignored.")
     @PutMapping("/{id}")
-    public HttpEntity<EntityModel<ApplicationAreaDto>> updateApplicationArea(@PathVariable UUID id,
-                                                                             @Valid @RequestBody ApplicationAreaDto applicationAreaDto) {
+    public HttpEntity<EntityModel<ApplicationAreaDto>> updateApplicationArea(
+            @PathVariable UUID id,
+            @Valid @RequestBody ApplicationAreaDto applicationAreaDto) {
         var entityInput = ModelMapperUtils.convert(applicationAreaDto, ApplicationArea.class);
         var savedEntity = applicationAreaService.update(id, entityInput);
         return ResponseEntity.ok(applicationAreaAssembler.toModel(savedEntity));
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", description = "Application area with given id doesn't exist")})
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", description = "Application area with given id doesn't exist")
+    }, description = "")
     @DeleteMapping("/{id}")
     public HttpEntity<Void> deleteApplicationArea(@PathVariable UUID id) {
         ApplicationArea applicationArea = applicationAreaService.findById(id);
@@ -90,15 +98,20 @@ public class ApplicationAreaController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200")})
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200")
+    }, description = "")
     @GetMapping()
     @ListParametersDoc()
     public HttpEntity<PagedModel<EntityModel<ApplicationAreaDto>>> getApplicationAreas(
             @Parameter(hidden = true) ListParameters listParameters) {
-        return ResponseEntity.ok(applicationAreaAssembler.toModel(applicationAreaService.findAll(listParameters.getPageable(), listParameters.getSearch())));
+        return ResponseEntity.ok(applicationAreaAssembler
+                .toModel(applicationAreaService.findAll(listParameters.getPageable(), listParameters.getSearch())));
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200")})
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200")
+    }, description = "")
     @GetMapping("/{id}")
     public HttpEntity<EntityModel<ApplicationAreaDto>> getApplicationAreaById(@PathVariable UUID id) {
         ApplicationArea applicationArea = applicationAreaService.findById(id);
