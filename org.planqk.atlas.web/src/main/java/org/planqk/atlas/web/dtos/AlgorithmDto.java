@@ -19,6 +19,7 @@
 
 package org.planqk.atlas.web.dtos;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -45,6 +46,10 @@ import org.springframework.hateoas.server.core.Relation;
 @Relation(itemRelation = "algorithm", collectionRelation = "algorithms")
 public class AlgorithmDto {
     private UUID id;
+
+    public Date creationDate;
+
+    public Date lastModifiedAt;
 
     @NotNull(message = "Algorithm-Name must not be null!")
     private String name;
