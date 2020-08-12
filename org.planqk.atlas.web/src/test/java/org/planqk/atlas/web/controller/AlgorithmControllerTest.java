@@ -61,7 +61,6 @@ import org.planqk.atlas.web.utils.ModelMapperUtils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -79,6 +78,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -92,6 +92,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.fromMethodCall;
+import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.on;
 
 @WebMvcTest(value = AlgorithmController.class, includeFilters = {
         @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = {PublicationMixin.class, ComputeResourcePropertyMixin.class})
@@ -128,7 +130,10 @@ public class AlgorithmControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
-    private ObjectMapper mapper;
+
+    private final ObjectMapper mapper = ObjectMapperUtils.newTestMapper();
+    private final UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromPath("/");
+
     private Algorithm algorithm1;
     private Algorithm algorithm2;
     private AlgorithmRelation algorithmRelation1;
@@ -137,11 +142,6 @@ public class AlgorithmControllerTest {
     private AlgorithmDto algorithm2Dto;
     private Set<AlgorithmRelation> algorithmRelations;
     private Set<PatternRelation> patternRelations;
-
-    @BeforeEach
-    public void initialize() {
-        mapper = ObjectMapperUtils.newTestMapper();
-    }
 
     private void initializeAlgorithms() {
         Set<ProblemType> problemTypes = new HashSet<>();
@@ -230,10 +230,13 @@ public class AlgorithmControllerTest {
         initializeAlgorithms();
         when(algorithmService.findAll(pageable, null)).thenReturn(Page.empty());
 
-        MvcResult result = mockMvc
-                .perform(get("/" + Constants.API_VERSION + "/" + Constants.ALGORITHMS + "/").queryParam(Constants.PAGE, Integer.toString(page))
-                        .queryParam(Constants.SIZE, Integer.toString(size)).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk()).andReturn();
+        var url = fromMethodCall(uriBuilder, on(AlgorithmController.class)
+                .getAlgorithms(null)).toUriString();
+        MvcResult result = mockMvc.perform(get(url)
+                .queryParam(Constants.PAGE, Integer.toString(page))
+                .queryParam(Constants.SIZE, Integer.toString(size))
+                .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isOk()).andReturn();
 
         var resultList = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(),
                 "algorithms", AlgorithmDto.class);
@@ -252,10 +255,15 @@ public class AlgorithmControllerTest {
 
         when(algorithmService.findAll(pageable, null)).thenReturn(pageAlg);
 
-        MvcResult result = mockMvc
-                .perform(get("/" + Constants.API_VERSION + "/" + Constants.ALGORITHMS + "/").queryParam(Constants.PAGE, Integer.toString(page))
-                        .queryParam(Constants.SIZE, Integer.toString(size)).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON)).andReturn();
+        var url = fromMethodCall(uriBuilder, on(AlgorithmController.class)
+                .getAlgorithms(null)).toUriString();
+        MvcResult result = mockMvc.perform(get(url)
+                .queryParam(Constants.PAGE, Integer.toString(page))
+                .queryParam(Constants.SIZE, Integer.toString(size))
+                .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn();
 
         var resultList = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(),
                 "algorithms", AlgorithmDto.class);
@@ -265,54 +273,69 @@ public class AlgorithmControllerTest {
     @Test
     public void getAlgorithm_returnNotFound() throws Exception {
         initializeAlgorithms();
-        when(algorithmService.findById(any(UUID.class))).thenThrow(new NoSuchElementException());
+        when(algorithmService.findById(any())).thenThrow(new NoSuchElementException());
 
-        mockMvc.perform(get("/" + Constants.API_VERSION + "/" + Constants.ALGORITHMS + "/" + UUID.randomUUID()).accept(MediaType.APPLICATION_JSON))
+        var url = fromMethodCall(uriBuilder, on(AlgorithmController.class)
+                .getAlgorithm(UUID.randomUUID())).toUriString();
+
+        mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
 
     @Test
     public void getAlgorithm_returnAlgorithm() throws Exception {
         initializeAlgorithms();
-        when(algorithmService.findById(any(UUID.class))).thenReturn(algorithm1);
+        when(algorithmService.findById(any())).thenReturn(algorithm1);
 
-        MvcResult result = mockMvc
-                .perform(get("/" + Constants.API_VERSION + "/" + Constants.ALGORITHMS + "/" + algorithm1.getId()).accept(MediaType.APPLICATION_JSON))
+        var url = fromMethodCall(uriBuilder, on(AlgorithmController.class)
+                .getAlgorithm(UUID.randomUUID())).toUriString();
+        MvcResult result = mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
         EntityModel<AlgorithmDto> response = mapper.readValue(result.getResponse().getContentAsString(),
-                new TypeReference<EntityModel<AlgorithmDto>>() {
+                new TypeReference<>() {
                 });
         assertEquals(response.getContent().getId(), algorithm1Dto.getId());
     }
 
     @Test
     public void createAlgorithm_returnBadRequest() throws Exception {
-        initializeAlgorithms();
         AlgorithmDto algoDto = new AlgorithmDto();
         algoDto.setId(UUID.randomUUID());
-        mockMvc.perform(post("/" + Constants.API_VERSION + "/" + Constants.ALGORITHMS + "/").content(mapper.writeValueAsString(algoDto))
-                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+
+        var url = fromMethodCall(uriBuilder, on(AlgorithmController.class)
+                .createAlgorithm(null)).toUriString();
+
+        mockMvc.perform(post(url)
+                .content(mapper.writeValueAsString(algoDto))
+                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isBadRequest());
 
         algoDto.setName("algoDto");
-        mockMvc.perform(post("/" + Constants.API_VERSION + "/" + Constants.ALGORITHMS + "/").content(mapper.writeValueAsString(algoDto))
-                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+
+        mockMvc.perform(post(url)
+                .content(mapper.writeValueAsString(algoDto))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isBadRequest());
     }
 
     @Test
     public void createAlgorithm_returnAlgorithm() throws Exception {
         initializeAlgorithms();
-        when(algorithmService.save(algorithm1)).thenReturn(algorithm1);
+        when(algorithmService.save(any())).thenReturn(algorithm1);
 
-        MvcResult result = mockMvc
-                .perform(post("/" + Constants.API_VERSION + "/" + Constants.ALGORITHMS + "/").content(mapper.writeValueAsString(algorithm1Dto))
-                        .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated()).andReturn();
+        var url = fromMethodCall(uriBuilder, on(AlgorithmController.class)
+                .createAlgorithm(null)).toUriString();
+
+        MvcResult result = mockMvc.perform(post(url)
+                .content(mapper.writeValueAsString(algorithm1Dto))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isCreated()).andReturn();
 
         EntityModel<AlgorithmDto> response = mapper.readValue(result.getResponse().getContentAsString(),
-                new TypeReference<EntityModel<AlgorithmDto>>() {
+                new TypeReference<>() {
                 });
         assertEquals(response.getContent().getName(), this.algorithm1Dto.getName());
     }
@@ -323,14 +346,10 @@ public class AlgorithmControllerTest {
         AlgorithmDto algoDto = new AlgorithmDto();
         algoDto.setId(UUID.randomUUID());
 
-        mockMvc.perform(
-                put("/" + Constants.API_VERSION + "/" + Constants.ALGORITHMS + "/{id}", algoDto.getId()).content(mapper.writeValueAsString(algoDto))
-                        .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+        var url = fromMethodCall(uriBuilder, on(AlgorithmController.class)
+                .updateAlgorithm(UUID.randomUUID(), null)).toUriString();
 
-        algoDto.setName("algoDto");
-
-        mockMvc.perform(post("/" + Constants.API_VERSION + "/" + Constants.ALGORITHMS + "/").content(mapper.writeValueAsString(algoDto))
+        mockMvc.perform(put(url).content(mapper.writeValueAsString(algoDto))
                 .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
@@ -340,7 +359,10 @@ public class AlgorithmControllerTest {
         initializeAlgorithms();
         when(algorithmService.update(algorithm1.getId(), algorithm1)).thenReturn(algorithm1);
 
-        MvcResult result = mockMvc.perform(put("/" + Constants.API_VERSION + "/" + Constants.ALGORITHMS + "/{id}", algorithm1.getId())
+        var url = fromMethodCall(uriBuilder, on(AlgorithmController.class)
+                .updateAlgorithm(UUID.randomUUID(), null)).toUriString();
+
+        MvcResult result = mockMvc.perform(put(url)
                 .content(mapper.writeValueAsString(algorithm1Dto)).contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
 

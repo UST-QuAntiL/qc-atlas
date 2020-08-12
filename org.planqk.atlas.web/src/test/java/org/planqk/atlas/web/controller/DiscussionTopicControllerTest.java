@@ -54,6 +54,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -78,7 +79,8 @@ public class DiscussionTopicControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    private ObjectMapper mapper;
+    private final ObjectMapper mapper = ObjectMapperUtils.newTestMapper();
+    private final UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromPath("/");
 
     private final int page = 0;
     private final int size = 1;
@@ -93,7 +95,6 @@ public class DiscussionTopicControllerTest {
 
     @BeforeEach
     public void init() {
-        mapper = ObjectMapperUtils.newTestMapper();
         discussionTopic = new DiscussionTopic();
         discussionTopic.setDescription("Description");
         discussionTopic.setTitle("Topic");
