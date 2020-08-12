@@ -84,6 +84,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -357,10 +358,11 @@ public class AlgorithmControllerTest {
     @Test
     public void updateAlgorithm_returnAlgorithm() throws Exception {
         initializeAlgorithms();
-        when(algorithmService.update(algorithm1.getId(), algorithm1)).thenReturn(algorithm1);
+
+        doReturn(algorithm1).when(algorithmService).update(any(), any());
 
         var url = fromMethodCall(uriBuilder, on(AlgorithmController.class)
-                .updateAlgorithm(UUID.randomUUID(), null)).toUriString();
+                .updateAlgorithm(algorithm1.getId(), null)).toUriString();
 
         MvcResult result = mockMvc.perform(put(url)
                 .content(mapper.writeValueAsString(algorithm1Dto)).contentType(MediaType.APPLICATION_JSON)
