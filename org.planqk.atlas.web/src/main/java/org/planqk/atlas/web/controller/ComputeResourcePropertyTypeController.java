@@ -27,7 +27,7 @@ import org.planqk.atlas.core.model.ComputeResourcePropertyType;
 import org.planqk.atlas.core.services.ComputeResourcePropertyService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.ComputeResourcePropertyTypeDto;
-import org.planqk.atlas.web.linkassembler.QuantumResourcePropertyTypeAssembler;
+import org.planqk.atlas.web.linkassembler.ComputeResourcePropertyTypeAssembler;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.RestUtils;
 
@@ -54,7 +54,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name = "compute-resource-property-types")
+@Tag(name = Constants.TAG_COMPUTE_RESOURCE_PROPERTY_TYPES)
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/" + Constants.API_VERSION + "/" + Constants.COMPUTING_RESOURCE_PROPERTY_TYPES)
@@ -62,8 +62,8 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class ComputeResourcePropertyTypeController {
 
-    private final QuantumResourcePropertyTypeAssembler assembler;
-    private final ComputeResourcePropertyService service;
+    private final ComputeResourcePropertyTypeAssembler computeResourcePropertyTypeAssembler;
+    private final ComputeResourcePropertyService computeResourcePropertyService;
     private final PagedResourcesAssembler<ComputeResourcePropertyTypeDto> paginationAssembler;
 
     @Operation(responses = {
@@ -73,8 +73,8 @@ public class ComputeResourcePropertyTypeController {
     })
     @GetMapping("/{id}")
     public HttpEntity<EntityModel<ComputeResourcePropertyTypeDto>> getComputingResourcePropertyType(@PathVariable UUID id) {
-        var resourceType = service.findComputeResourcePropertyTypeById(id);
-        return ResponseEntity.ok(assembler.toModel(resourceType));
+        var resourceType = computeResourcePropertyService.findComputeResourcePropertyTypeById(id);
+        return ResponseEntity.ok(computeResourcePropertyTypeAssembler.toModel(resourceType));
     }
 
     @Operation(responses = {
@@ -84,8 +84,8 @@ public class ComputeResourcePropertyTypeController {
     })
     @DeleteMapping("/{id}")
     public HttpEntity<Void> deleteComputingResourcePropertyType(@PathVariable UUID id) {
-        service.findComputeResourcePropertyTypeById(id);
-        service.deleteComputeResourcePropertyType(id);
+        computeResourcePropertyService.findComputeResourcePropertyTypeById(id);
+        computeResourcePropertyService.deleteComputeResourcePropertyType(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -95,8 +95,8 @@ public class ComputeResourcePropertyTypeController {
                                                                                                        @Valid @RequestBody ComputeResourcePropertyTypeDto computeResourcePropertyTypeDto) {
         computeResourcePropertyTypeDto.setId(id);
         var inputEntity = ModelMapperUtils.convert(computeResourcePropertyTypeDto, ComputeResourcePropertyType.class);
-        var savedEntity = service.saveComputeResourcePropertyType(inputEntity);
-        return ResponseEntity.ok(assembler.toModel(savedEntity));
+        var savedEntity = computeResourcePropertyService.saveComputeResourcePropertyType(inputEntity);
+        return ResponseEntity.ok(computeResourcePropertyTypeAssembler.toModel(savedEntity));
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
@@ -106,8 +106,8 @@ public class ComputeResourcePropertyTypeController {
             @RequestParam(required = false) Integer size
     ) {
         Pageable p = RestUtils.getPageableFromRequestParams(page, size);
-        var types = service.findAllComputeResourcePropertyTypes(p);
-        return ResponseEntity.ok(assembler.toModel(types));
+        var types = computeResourcePropertyService.findAllComputeResourcePropertyTypes(p);
+        return ResponseEntity.ok(computeResourcePropertyTypeAssembler.toModel(types));
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "201")}, description = "Custom ID will be ignored.")
@@ -115,7 +115,7 @@ public class ComputeResourcePropertyTypeController {
     public HttpEntity<EntityModel<ComputeResourcePropertyTypeDto>> createComputingResourcePropertyType(
             @Valid @RequestBody ComputeResourcePropertyTypeDto resourceTypeDto) {
         var resourceType = ModelMapperUtils.convert(resourceTypeDto, ComputeResourcePropertyType.class);
-        var savedResourceType = service.saveComputeResourcePropertyType(resourceType);
-        return new ResponseEntity<>(assembler.toModel(savedResourceType), HttpStatus.CREATED);
+        var savedResourceType = computeResourcePropertyService.saveComputeResourcePropertyType(resourceType);
+        return new ResponseEntity<>(computeResourcePropertyTypeAssembler.toModel(savedResourceType), HttpStatus.CREATED);
     }
 }

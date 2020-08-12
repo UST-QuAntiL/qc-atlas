@@ -31,15 +31,12 @@ import org.planqk.atlas.web.linkassembler.ApplicationAreaAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
-import org.planqk.atlas.web.utils.RestUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpEntity;
@@ -53,10 +50,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@io.swagger.v3.oas.annotations.tags.Tag(name = "application-areas")
+@io.swagger.v3.oas.annotations.tags.Tag(name = Constants.TAG_APPLICATION_AREAS)
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/" + Constants.API_VERSION + "/" + Constants.APPLICATION_AREAS)
@@ -64,8 +60,8 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class ApplicationAreaController {
 
-    private ApplicationAreaService applicationAreaService;
-    private ApplicationAreaAssembler applicationAreaAssembler;
+    private final ApplicationAreaService applicationAreaService;
+    private final ApplicationAreaAssembler applicationAreaAssembler;
 
     @Operation(responses = {@ApiResponse(responseCode = "201")}, description = "Custom ID will be ignored.")
     @PostMapping()

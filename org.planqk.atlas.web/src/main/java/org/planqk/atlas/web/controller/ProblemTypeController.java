@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@io.swagger.v3.oas.annotations.tags.Tag(name = "problem-type")
+@io.swagger.v3.oas.annotations.tags.Tag(name = Constants.TAG_PROBLEM_TYPE)
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/" + Constants.API_VERSION + "/" + Constants.PROBLEM_TYPES)
@@ -42,10 +42,12 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class ProblemTypeController {
 
-    private ProblemTypeService problemTypeService;
-    private ProblemTypeAssembler problemTypeAssembler;
+    private final ProblemTypeService problemTypeService;
+    private final ProblemTypeAssembler problemTypeAssembler;
 
-    @Operation(responses = {@ApiResponse(responseCode = "201")}, description = "Custom ID will be ignored.")
+    @Operation(responses = {
+            @ApiResponse(responseCode = "201")
+    }, description = "Custom ID will be ignored.")
     @PostMapping()
     public HttpEntity<EntityModel<ProblemTypeDto>> createProblemType(
             @Valid @RequestBody ProblemTypeDto problemTypeDto) {
@@ -54,10 +56,13 @@ public class ProblemTypeController {
         return new ResponseEntity<>(problemTypeAssembler.toModel(savedProblemType), HttpStatus.CREATED);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Custom ID will be ignored.")
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200")
+    }, description = "Custom ID will be ignored.")
     @PutMapping("/{id}")
-    public HttpEntity<EntityModel<ProblemTypeDto>> updateProblemType(@PathVariable UUID id,
-                                                                     @Valid @RequestBody ProblemTypeDto problemTypeDto) {
+    public HttpEntity<EntityModel<ProblemTypeDto>> updateProblemType(
+            @PathVariable UUID id,
+            @Valid @RequestBody ProblemTypeDto problemTypeDto) {
         var entityInput = ModelMapperUtils.convert(problemTypeDto, ProblemType.class);
         var updatedEntity = problemTypeService.update(id, entityInput);
         return ResponseEntity.ok(problemTypeAssembler.toModel(updatedEntity));
@@ -78,7 +83,8 @@ public class ProblemTypeController {
     @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping()
     public HttpEntity<PagedModel<EntityModel<ProblemTypeDto>>> getProblemTypes(
-            @RequestParam(required = false) Integer page, @RequestParam(required = false) Integer size) {
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size) {
         Pageable p = RestUtils.getPageableFromRequestParams(page, size);
         var entities = problemTypeService.findAll(p);
         return ResponseEntity.ok(problemTypeAssembler.toModel(entities));

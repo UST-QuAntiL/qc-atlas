@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@io.swagger.v3.oas.annotations.tags.Tag(name = "algorithm")
+@io.swagger.v3.oas.annotations.tags.Tag(name = Constants.TAG_ALGORITHM)
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/" + Constants.API_VERSION + "/" + Constants.IMPLEMENTATIONS)
@@ -38,8 +38,8 @@ public class GlobalImplementationController {
     private final ImplementationAssembler implementationAssembler;
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "200")},
-            description = "Retrieve a specific algorithm and its basic properties.")
+            @ApiResponse(responseCode = "200")
+    }, description = "Retrieve a specific algorithm and its basic properties.")
     @GetMapping("/{id}")
     public HttpEntity<EntityModel<AlgorithmDto>> getImplementedAlgorithm(@PathVariable UUID id) {
         var algorithm = implementationService.getImplementedAlgorithm(id);

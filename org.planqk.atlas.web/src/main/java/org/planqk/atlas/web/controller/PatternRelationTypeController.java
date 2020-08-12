@@ -16,8 +16,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
@@ -35,7 +33,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@io.swagger.v3.oas.annotations.tags.Tag(name = "pattern-relation-type")
+@io.swagger.v3.oas.annotations.tags.Tag(name = Constants.TAG_PATTERN_RELATION_TYPE)
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATION_TYPES)
@@ -43,43 +41,54 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class PatternRelationTypeController {
 
-    private PatternRelationTypeService patternRelationTypeService;
-    private PatternRelationTypeAssembler patternRelationTypeAssembler;
+    private final PatternRelationTypeService patternRelationTypeService;
+    private final PatternRelationTypeAssembler patternRelationTypeAssembler;
 
-    @Operation(responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "400")}, description = "Custom ID will be ignored.")
+    @Operation(responses = {
+            @ApiResponse(responseCode = "201"),
+            @ApiResponse(responseCode = "400")
+    }, description = "Custom ID will be ignored.")
     @PostMapping()
     public HttpEntity<EntityModel<PatternRelationTypeDto>> createPatternRelationType(
             @Valid @RequestBody PatternRelationTypeDto typeDto) {
-        log.debug("Post to create new PatternRelationTypes received.");
         PatternRelationType savedRelationType = patternRelationTypeService
                 .save(ModelMapperUtils.convert(typeDto, PatternRelationType.class));
         return new ResponseEntity<>(patternRelationTypeAssembler.toModel(savedRelationType), HttpStatus.CREATED);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200")})
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200")
+    })
     @GetMapping()
     public HttpEntity<PagedModel<EntityModel<PatternRelationTypeDto>>> getPatternRelationTypes(
-            @RequestParam(required = false) Integer page, @RequestParam(required = false) Integer size) {
-        log.debug("Get to retrieve all PatternRelationTypes received.");
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size
+    ) {
         Pageable p = RestUtils.getPageableFromRequestParams(page, size);
         var entities = patternRelationTypeService.findAll(p);
         return ResponseEntity.ok(patternRelationTypeAssembler.toModel(entities));
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400"), @ApiResponse(responseCode = "404")})
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404")
+    })
     @GetMapping("/{id}")
     public HttpEntity<EntityModel<PatternRelationTypeDto>> getPatternRelationType(@PathVariable UUID id) {
-        log.debug("Get to retrieve PatternRelationType with id: {}.", id);
         var patternRelationType = patternRelationTypeService.findById(id);
         return ResponseEntity.ok(patternRelationTypeAssembler.toModel(patternRelationType));
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404")}, description = "Custom ID will be ignored.")
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404")
+    }, description = "Custom ID will be ignored.")
     @PutMapping("/{id}")
-    public HttpEntity<EntityModel<PatternRelationTypeDto>> updatePatternRelationType(@PathVariable UUID id,
-                                                                                     @Valid @RequestBody PatternRelationTypeDto typeDto) {
-        log.debug("Put to update PatternRelationType with id: {}.", id);
+    public HttpEntity<EntityModel<PatternRelationTypeDto>> updatePatternRelationType(
+            @PathVariable UUID id,
+            @Valid @RequestBody PatternRelationTypeDto typeDto) {
         var relationType = patternRelationTypeService.update(id, ModelMapperUtils.convert(typeDto, PatternRelationType.class));
         return ResponseEntity.ok(patternRelationTypeAssembler.toModel(relationType));
     }

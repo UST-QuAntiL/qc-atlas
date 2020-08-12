@@ -62,4 +62,15 @@ public class Constants {
 
     // Swagger tag names
     public static final String TAG_EXECUTION_ENVIRONMENTS = "execution-environments";
+    public static final String TAG_DISCUSSION_TOPIC = "discussion-topic";
+    public static final String TAG_PROBLEM_TYPE = "problem-type";
+    public static final String TAG_PATTERN_RELATION = "pattern-relation";
+    public static final String TAG_PATTERN_RELATION_TYPE = "pattern-relation-type";
+    public static final String TAG_ALGORITHM = "algorithm";
+    public static final String TAG_COMPUTE_RESOURCE_PROPERTY_TYPES = "compute-resource-property-types";
+    public static final String TAG_COMPUTE_RESOURCE_PROPERTIES = "compute-resource-properties";
+    public static final String TAG_APPLICATION_AREAS = "application-areas";
+    public static final String TAG_ALGORITHM_RELATION_TYPE = "algorithm-relation-type";
+    public static final String TAG_PUBLICATION = "publication";
+    public static final String TAG_ROOT = "root";
 }

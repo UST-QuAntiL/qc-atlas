@@ -26,6 +26,7 @@ import javax.validation.Valid;
 import org.planqk.atlas.core.model.DiscussionComment;
 import org.planqk.atlas.core.services.DiscussionCommentService;
 import org.planqk.atlas.core.services.DiscussionTopicService;
+import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.DiscussionCommentDto;
 import org.planqk.atlas.web.linkassembler.DiscussionCommentAssembler;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
@@ -50,28 +51,27 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Hidden
-@Tag(name = "discussion-topic")
+@Tag(name = Constants.TAG_DISCUSSION_TOPIC)
 @RestController("discussion-comment")
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @AllArgsConstructor
 @Slf4j
 public class DiscussionCommentController {
 
-    private DiscussionCommentService discussionCommentService;
-    private DiscussionTopicService discussionTopicService;
-    private DiscussionCommentAssembler discussionCommentAssembler;
+    private final DiscussionCommentService discussionCommentService;
+    private final DiscussionTopicService discussionTopicService;
+    private final DiscussionCommentAssembler discussionCommentAssembler;
 
-    public HttpEntity<PagedModel<EntityModel<DiscussionCommentDto>>> getDiscussionComments(@PathVariable("topicId") UUID topicId,
-                                                                                           @RequestParam(required = false) Integer page,
-                                                                                           @RequestParam(required = false) Integer size) {
-        log.debug("Received request to retrieve all DiscussionComments");
+    public HttpEntity<PagedModel<EntityModel<DiscussionCommentDto>>> getDiscussionComments(
+            @PathVariable("topicId") UUID topicId,
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size) {
         Pageable pageable = RestUtils.getPageableFromRequestParams(page, size);
         var result = discussionCommentService.findAllByTopic(topicId, pageable);
         return ResponseEntity.ok(discussionCommentAssembler.toModel(result));
     }
 
     public HttpEntity<EntityModel<DiscussionCommentDto>> getDiscussionComment(@PathVariable UUID commentId) {
-        log.debug("Received request to retrieve DiscussionTopic with id: {}", commentId);
         var discussionComment = discussionCommentService.findById(commentId);
         return ResponseEntity.ok(discussionCommentAssembler.toModel(discussionComment));
     }
@@ -93,9 +93,9 @@ public class DiscussionCommentController {
         return new ResponseEntity<>(discussionCommentAssembler.toModel(comment), HttpStatus.CREATED);
     }
 
-    public HttpEntity<EntityModel<DiscussionCommentDto>> updateDiscussionComment(@PathVariable UUID commentId,
-                                                                                 @Valid @RequestBody DiscussionCommentDto discussionCommentDto) {
-
+    public HttpEntity<EntityModel<DiscussionCommentDto>> updateDiscussionComment(
+            @PathVariable UUID commentId,
+            @Valid @RequestBody DiscussionCommentDto discussionCommentDto) {
         var discussionCommentObject = discussionCommentService.findById(commentId);
         var discussionComment = ModelMapperUtils.convert(discussionCommentDto, DiscussionComment.class);
         discussionComment.setDiscussionTopic(discussionCommentObject.getDiscussionTopic());

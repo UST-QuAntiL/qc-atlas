@@ -29,7 +29,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @SuppressWarnings("ConstantConditions")
 @Component
-public class QuantumResourcePropertyTypeAssembler extends GenericLinkAssembler<ComputeResourcePropertyTypeDto> {
+public class ComputeResourcePropertyTypeAssembler extends GenericLinkAssembler<ComputeResourcePropertyTypeDto> {
     @Override
     public void addLinks(EntityModel<ComputeResourcePropertyTypeDto> resource) {
         resource.add(links.linkTo(methodOn(ComputeResourcePropertyTypeController.class)

@@ -10,7 +10,6 @@ import org.springframework.web.filter.CommonsRequestLoggingFilter;
 public class LoggingConfiguration {
     @Bean
     public CommonsRequestLoggingFilter loggingFilter() {
-        log.info("Loading Request Logging Filter..");
         var filter = new CommonsRequestLoggingFilter();
         filter.setIncludeClientInfo(true);
         filter.setIncludeQueryString(true);

@@ -62,7 +62,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * Controller to access and manipulate publication algorithms.
  */
-@io.swagger.v3.oas.annotations.tags.Tag(name = "publication")
+@io.swagger.v3.oas.annotations.tags.Tag(name = Constants.TAG_PUBLICATION)
 @Slf4j
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")

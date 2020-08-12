@@ -43,15 +43,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @Hidden
-@Tag(name = "compute-resource-properties")
+@Tag(name = Constants.TAG_COMPUTE_RESOURCE_PROPERTIES)
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/" + Constants.API_VERSION + "/" + Constants.COMPUTING_RESOURCES_PROPERTIES)
 @AllArgsConstructor
 @Slf4j
 public class ComputeResourcePropertyController {
-    private final ComputeResourcePropertyAssembler assembler;
-    private final ComputeResourcePropertyService service;
+    private final ComputeResourcePropertyAssembler computeResourcePropertyAssembler;
+    private final ComputeResourcePropertyService computeResourcePropertyService;
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
@@ -60,8 +60,8 @@ public class ComputeResourcePropertyController {
     })
     @GetMapping("/{id}")
     public HttpEntity<EntityModel<ComputeResourcePropertyDto>> getComputingResourceProperty(@PathVariable UUID id) {
-        var resource = service.findComputeResourcePropertyById(id);
-        return ResponseEntity.ok(assembler.toModel(resource));
+        var resource = computeResourcePropertyService.findComputeResourcePropertyById(id);
+        return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(resource));
     }
 
     @Operation(responses = {
@@ -71,8 +71,8 @@ public class ComputeResourcePropertyController {
     })
     @DeleteMapping("/{id}")
     public HttpEntity<Void> deleteComputingResourceProperty(@PathVariable UUID id) {
-        service.findComputeResourcePropertyById(id);
-        service.deleteComputeResourceProperty(id);
+        computeResourcePropertyService.findComputeResourcePropertyById(id);
+        computeResourcePropertyService.deleteComputeResourceProperty(id);
         return ResponseEntity.ok().build();
     }
 }

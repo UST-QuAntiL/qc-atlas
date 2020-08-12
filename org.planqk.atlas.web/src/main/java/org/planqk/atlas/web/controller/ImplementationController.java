@@ -99,27 +99,39 @@ public class ImplementationController {
     private final PublicationMixin publicationMixin;
     private final ComputeResourcePropertyMixin computeResourcePropertyMixin;
 
-    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", description = "Algorithm doesn't exist")}, description = "Retrieve all implementations for the algorithm")
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", description = "Algorithm doesn't exist")
+    }, description = "Retrieve all implementations for the algorithm")
     @GetMapping()
-    public HttpEntity<CollectionModel<EntityModel<ImplementationDto>>> getImplementations(@PathVariable UUID algoId) {
-        log.debug("Get to retrieve all implementations of algorithm with Id {} received.", algoId);
+    public HttpEntity<CollectionModel<EntityModel<ImplementationDto>>> getImplementations(
+            @PathVariable UUID algoId) {
         algorithmService.findById(algoId);
         var implementations = implementationService.findByImplementedAlgorithm(algoId, RestUtils.getAllPageable());
         return ResponseEntity.ok(implementationAssembler.toModel(implementations));
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", description = "Algorithm or implementation doesn't exist")}, description = "Retrieve a specific implemention of the algorithm.")
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", description = "Algorithm or implementation doesn't exist")
+    }, description = "Retrieve a specific implemention of the algorithm.")
     @GetMapping("/{implId}")
-    public HttpEntity<EntityModel<ImplementationDto>> getImplementation(@PathVariable UUID algoId, @PathVariable UUID implId) {
-        log.debug("Get to retrieve implementation with id: {}.", implId);
+    public HttpEntity<EntityModel<ImplementationDto>> getImplementation(
+            @PathVariable UUID algoId,
+            @PathVariable UUID implId) {
         algorithmService.findById(algoId);
         var implementation = implementationService.findById(implId);
         return ResponseEntity.ok(implementationAssembler.toModel(implementation));
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "404", description = "Algorithm doesn't exist")}, description = "Create a new implementation for the algorithm. Custom ID will be ignored.")
+    @Operation(responses = {
+            @ApiResponse(responseCode = "201"),
+            @ApiResponse(responseCode = "404", description = "Algorithm doesn't exist")
+    }, description = "Create a new implementation for the algorithm. Custom ID will be ignored.")
     @PostMapping()
-    public HttpEntity<EntityModel<ImplementationDto>> createImplementation(@PathVariable UUID algoId, @Valid @RequestBody ImplementationDto impl) {
+    public HttpEntity<EntityModel<ImplementationDto>> createImplementation(
+            @PathVariable UUID algoId,
+            @Valid @RequestBody ImplementationDto impl) {
         log.debug("Post to create new implementation received.");
         Algorithm algorithm = algorithmService.findById(algoId);
         // Store and return implementation
@@ -129,6 +141,7 @@ public class ImplementationController {
         return new ResponseEntity<>(implementationAssembler.toModel(input), HttpStatus.CREATED);
     }
 
+// TODO Uncomment and Revise once tags shall be implemented
 //    @Operation(responses = { @ApiResponse(responseCode = "200") })
 //    @GetMapping("/{implId}/" + Constants.TAGS)
 //    public HttpEntity<CollectionModel<EntityModel<TagDto>>> getTags(@PathVariable UUID algoId, @PathVariable UUID implId) {
@@ -137,19 +150,29 @@ public class ImplementationController {
 //        return ResponseEntity.ok(tagAssembler.toModel(tags));
 //    }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", description = "Algorithm doesn't exist")})
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", description = "Algorithm doesn't exist")
+    })
     @DeleteMapping("/{implId}")
-    public HttpEntity<Void> deleteImplementation(@PathVariable UUID algoId, @PathVariable UUID implId) {
-        log.debug("Delete to remove implementation with id: {}.", implId);
+    public HttpEntity<Void> deleteImplementation(
+            @PathVariable UUID algoId,
+            @PathVariable UUID implId
+    ) {
         algorithmService.findById(algoId);
         implementationService.delete(implId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", description = "Algorithm doesn't exist")}, description = "Custom ID will be ignored.")
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", description = "Algorithm doesn't exist")
+    }, description = "Custom ID will be ignored.")
     @PutMapping("/{implId}")
-    public HttpEntity<EntityModel<ImplementationDto>> updateImplementation(@PathVariable UUID algoId, @PathVariable UUID implId, @Valid @RequestBody ImplementationDto dto) {
-        log.debug("Put to update implementation with id: {}.", implId);
+    public HttpEntity<EntityModel<ImplementationDto>> updateImplementation(
+            @PathVariable UUID algoId,
+            @PathVariable UUID implId,
+            @Valid @RequestBody ImplementationDto dto) {
         algorithmService.findById(algoId);
         var impl = ModelMapperUtils.convert(dto, Implementation.class);
         impl = implementationService.update(implId, impl);
@@ -167,7 +190,6 @@ public class ImplementationController {
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size
     ) {
-        log.debug("Received Get to retrieve all computing resources of implementation with id: {}.", implId);
         algorithmService.findById(algoId);
         implementationService.findById(implId);
         var resources = computeResourcePropertyService.findAllComputeResourcesPropertiesByImplementationId(implId, RestUtils.getPageableFromRequestParams(page, size));
@@ -178,8 +200,11 @@ public class ImplementationController {
             responses = {
                     @ApiResponse(responseCode = "200"),
                     @ApiResponse(responseCode = "400", description = "Id of the passed computing resource type is null"),
-                    @ApiResponse(responseCode = "404", description = "Computing resource type, implementation or algorithm can not be found with the given Ids")
-            }, description = "Add a computing resource (e.g. a certain number of qubits) that is requiered by an implementation. Custom ID will be ignored. For computing resource type only ID is required, other computing resource type attributes will not change")
+                    @ApiResponse(responseCode = "404", description = "Computing resource type, " +
+                            "implementation or algorithm can not be found with the given Ids")
+            }, description = "Add a computing resource (e.g. a certain number of qubits) " +
+            "that is requiered by an implementation. Custom ID will be ignored. For computing " +
+            "resource type only ID is required, other computing resource type attributes will not change")
     @PostMapping("/{implId}/" + Constants.COMPUTING_RESOURCES_PROPERTIES)
     public HttpEntity<EntityModel<ComputeResourcePropertyDto>> addComputingResource(
             @PathVariable UUID algoId, @PathVariable UUID implId,
@@ -194,11 +219,16 @@ public class ImplementationController {
     }
 
     @Operation(operationId = "getComputingResourceByImplementation",
-            responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400", description = "Resource doesn't belong to this implementation"), @ApiResponse(responseCode = "404")})
+            responses = {
+                    @ApiResponse(responseCode = "200"),
+                    @ApiResponse(responseCode = "400", description = "Resource doesn't belong to this implementation"),
+                    @ApiResponse(responseCode = "404")
+            })
     @GetMapping("/{implId}/" + Constants.COMPUTING_RESOURCES_PROPERTIES + "/{resourceId}")
     public HttpEntity<EntityModel<ComputeResourcePropertyDto>> getComputingResource(
-            @PathVariable UUID algoId, @PathVariable UUID implId, @PathVariable UUID resourceId) {
-        log.debug("Get received to retrieve computing resource with id {}.", resourceId);
+            @PathVariable UUID algoId,
+            @PathVariable UUID implId,
+            @PathVariable UUID resourceId) {
         var computingResourceProperty = computeResourcePropertyService.findComputeResourcePropertyById(resourceId);
         if (Objects.isNull(computingResourceProperty.getImplementation()) || !computingResourceProperty.getImplementation().getId().equals(implId)) {
             log.debug("Implementation is not referenced from the computing resource to retrieve!");
@@ -208,12 +238,18 @@ public class ImplementationController {
     }
 
     @Operation(operationId = "updateComputingResourceByImplementation",
-            responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400")}, description = "Update a computing resource of the implementation. Custom ID will be ignored. For computing resource type only ID is required, other computing resource type attributes will not change")
+            responses = {
+                    @ApiResponse(responseCode = "200"),
+                    @ApiResponse(responseCode = "400")
+            }, description = "Update a computing resource of the implementation. " +
+            "Custom ID will be ignored. For computing resource type only ID is required, " +
+            "other computing resource type attributes will not change")
     @PutMapping("/{implId}/" + Constants.COMPUTING_RESOURCES_PROPERTIES + "/{resourceId}")
-    public HttpEntity<EntityModel<ComputeResourcePropertyDto>> updateComputingResource(@PathVariable UUID algoId,
-                                                                                       @PathVariable UUID implId,
-                                                                                       @PathVariable UUID resourceId,
-                                                                                       @RequestBody ComputeResourcePropertyDto resourceDto) {
+    public HttpEntity<EntityModel<ComputeResourcePropertyDto>> updateComputingResource(
+            @PathVariable UUID algoId,
+            @PathVariable UUID implId,
+            @PathVariable UUID resourceId,
+            @RequestBody ComputeResourcePropertyDto resourceDto) {
         log.debug("Put received to update computing resource with id {}.", resourceId);
         ComputeResourceProperty computeResourceProperty = computeResourcePropertyService.findComputeResourcePropertyById(resourceId);
         Implementation implementation = implementationService.findById(implId);
@@ -235,9 +271,10 @@ public class ImplementationController {
                     @ApiResponse(responseCode = "404", description = "Algorithm, Implementation or computing resource with given id doesn't exist")
             }, description = "Delete a computing resource of the implementation.")
     @DeleteMapping("/{implId}/" + Constants.COMPUTING_RESOURCES_PROPERTIES + "/{resourceId}")
-    public HttpEntity<Void> deleteComputingResource(@PathVariable UUID algoId, @PathVariable UUID implId,
-                                                    @PathVariable UUID resourceId) {
-        log.debug("Delete received to remove computing resource with id {}.", resourceId);
+    public HttpEntity<Void> deleteComputingResource(
+            @PathVariable UUID algoId,
+            @PathVariable UUID implId,
+            @PathVariable UUID resourceId) {
         algorithmService.findById(algoId);
         implementationService.findById(implId);
         ComputeResourceProperty computeResourceProperty = computeResourcePropertyService.findComputeResourcePropertyById(resourceId);
@@ -261,13 +298,20 @@ public class ImplementationController {
     }
 
     @Operation(operationId = "addPublicationByImplementation",
-            responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "404", content = @Content,
-                    description = "Implementation or publication does not exist.")},
-            description = "Add a reference to an existing publication (that was previously created via a POST on /publications/). Custom ID will be ignored. For publication only ID is required, other publication attributes will not change. If the publication doesn't exist yet, a 404 error is thrown.")
+            responses = {
+                    @ApiResponse(responseCode = "201"),
+                    @ApiResponse(responseCode = "404", content = @Content,
+                            description = "Implementation or publication does not exist.")
+            },
+            description = "Add a reference to an existing publication " +
+                    "(that was previously created via a POST on /publications/). Custom ID will be ignored. " +
+                    "For publication only ID is required, other publication attributes will not change. " +
+                    "If the publication doesn't exist yet, a 404 error is thrown.")
     @PostMapping("/{implId}/" + Constants.PUBLICATIONS + "/{publId}")
-    public HttpEntity<CollectionModel<EntityModel<PublicationDto>>> addPublication(@PathVariable UUID algoId,
-                                                                                   @PathVariable UUID implId,
-                                                                                   @PathVariable UUID publId) {
+    public HttpEntity<CollectionModel<EntityModel<PublicationDto>>> addPublication(
+            @PathVariable UUID algoId,
+            @PathVariable UUID implId,
+            @PathVariable UUID publId) {
         Implementation implementation = implementationService.findById(implId);
         publicationMixin.addPublication(implementation, publId);
         implementation = implementationService.save(implementation);
@@ -275,22 +319,27 @@ public class ImplementationController {
     }
 
     @Operation(operationId = "getPublicationByImplementation",
-            responses = {@ApiResponse(responseCode = "200")}, description = "Get a specific referenced publication of an implementation.")
+            responses = {
+                    @ApiResponse(responseCode = "200")
+            }, description = "Get a specific referenced publication of an implementation.")
     @GetMapping("/{implId}/" + Constants.PUBLICATIONS + "/{publId}")
-    public HttpEntity<EntityModel<PublicationDto>> getPublication(@PathVariable UUID algoId,
-                                                                  @PathVariable UUID implId,
-                                                                  @PathVariable UUID publId) {
-        log.debug("Get to retrieve referenced publication with Id {} from implementation with Id {}", publId, implId);
+    public HttpEntity<EntityModel<PublicationDto>> getPublication(
+            @PathVariable UUID algoId,
+            @PathVariable UUID implId,
+            @PathVariable UUID publId) {
         Implementation implementation = implementationService.findById(implId);
         return ResponseEntity.ok(publicationAssembler.toModel(publicationMixin.getPublication(implementation, publId)));
     }
 
     @Operation(operationId = "deleteReferenceToPublicationByImplementation",
-            responses = {@ApiResponse(responseCode = "200")}, description = "Delete a reference to a publication of the implementation.")
+            responses = {
+                    @ApiResponse(responseCode = "200")
+            }, description = "Delete a reference to a publication of the implementation.")
     @DeleteMapping("/{implId}/" + Constants.PUBLICATIONS + "/{publId}")
-    public HttpEntity<Void> deleteReferenceToPublication(@PathVariable UUID algoId,
-                                                         @PathVariable UUID implId,
-                                                         @PathVariable UUID publId) {
+    public HttpEntity<Void> deleteReferenceToPublication(
+            @PathVariable UUID algoId,
+            @PathVariable UUID implId,
+            @PathVariable UUID publId) {
         Implementation implementation = implementationService.findById(implId);
         publicationMixin.unlinkPublication(implementation, publId);
         implementationService.save(implementation);
@@ -298,7 +347,8 @@ public class ImplementationController {
     }
 
     @Operation(operationId = "getSoftwarePlatformsByImplementation",
-            responses = {@ApiResponse(responseCode = "200"),
+            responses = {
+                    @ApiResponse(responseCode = "200"),
                     @ApiResponse(responseCode = "404", content = @Content, description = "Implementation doesn't exist")},
             description = "Get referenced software platform for an implementation")
     @GetMapping("/{implId}/" + Constants.SOFTWARE_PLATFORMS)
@@ -315,11 +365,16 @@ public class ImplementationController {
     @Operation(operationId = "addSoftwarePlatformByImplementation",
             responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "404", content = @Content,
                     description = "Software platform or publication does not exist")},
-            description = "Add a reference to an existing software platform (that was previously created via a POST on /software-platforms/). Custom ID will be ignored. For software platform only ID is required, other software platform attributes will not change. If the software platform doesn't exist yet, a 404 error is thrown.")
+            description = "Add a reference to an existing software platform" +
+                    "(that was previously created via a POST on /software-platforms/)." +
+                    "Custom ID will be ignored. For software platform only ID is required," +
+                    "other software platform attributes will not change." +
+                    "If the software platform doesn't exist yet, a 404 error is thrown.")
     @PostMapping("/{implId}/" + Constants.SOFTWARE_PLATFORMS)
-    public HttpEntity<CollectionModel<EntityModel<SoftwarePlatformDto>>> addSoftwarePlatform(@PathVariable UUID algoId,
-                                                                                             @PathVariable UUID implId,
-                                                                                             @RequestBody SoftwarePlatformDto softwarePlatformDto) {
+    public HttpEntity<CollectionModel<EntityModel<SoftwarePlatformDto>>> addSoftwarePlatform(
+            @PathVariable UUID algoId,
+            @PathVariable UUID implId,
+            @RequestBody SoftwarePlatformDto softwarePlatformDto) {
         Implementation implementation = implementationService.findById(implId);
         SoftwarePlatform softwarePlatform = softwarePlatformService.findById(softwarePlatformDto.getId());
 
@@ -333,12 +388,14 @@ public class ImplementationController {
     }
 
     @Operation(operationId = "getSoftwarePlatformByImplementation",
-            responses = {@ApiResponse(responseCode = "200")}, description = "Get a specific referenced software platform of an implementation")
+            responses = {
+                    @ApiResponse(responseCode = "200")
+            }, description = "Get a specific referenced software platform of an implementation")
     @GetMapping("/{implId}/" + Constants.SOFTWARE_PLATFORMS + "/{platformId}")
-    public HttpEntity<EntityModel<SoftwarePlatformDto>> getSoftwarePlatform(@PathVariable UUID algoId,
-                                                                            @PathVariable UUID implId,
-                                                                            @PathVariable UUID platformId) {
-        log.debug("Get to retrieve referenced software platform with Id {} from implementation with Id {}", platformId, implId);
+    public HttpEntity<EntityModel<SoftwarePlatformDto>> getSoftwarePlatform(
+            @PathVariable UUID algoId,
+            @PathVariable UUID implId,
+            @PathVariable UUID platformId) {
         SoftwarePlatform platform = softwarePlatformService.findById(platformId);
         var softwarePlatforms = implementationService.findById(implId).getSoftwarePlatforms();
         if (!softwarePlatforms.contains(platform)) {
@@ -348,11 +405,14 @@ public class ImplementationController {
         return ResponseEntity.ok(softwarePlatformAssembler.toModel(platform));
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Delete a reference to a software platform of the implementation")
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200")
+    }, description = "Delete a reference to a software platform of the implementation")
     @DeleteMapping("/{implId}/" + Constants.SOFTWARE_PLATFORMS + "/{platformId}")
-    public HttpEntity<Void> deleteReferenceToSoftwarePlatform(@PathVariable UUID algoId,
-                                                              @PathVariable UUID implId,
-                                                              @PathVariable UUID platformId) {
+    public HttpEntity<Void> deleteReferenceToSoftwarePlatform(
+            @PathVariable UUID algoId,
+            @PathVariable UUID implId,
+            @PathVariable UUID platformId) {
         Implementation implementation = implementationService.findById(implId);
         Set<SoftwarePlatform> softwarePlatforms = implementation.getSoftwarePlatforms();
         softwarePlatforms.removeIf(platform -> platform.getId().equals(platformId));
