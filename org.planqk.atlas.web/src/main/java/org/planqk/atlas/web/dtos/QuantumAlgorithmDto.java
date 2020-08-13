@@ -7,7 +7,6 @@ import javax.validation.constraints.NotNull;
 
 import org.planqk.atlas.core.model.ComputationModel;
 import org.planqk.atlas.core.model.QuantumComputationModel;
-import org.planqk.atlas.core.model.QuantumImplementation;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -35,7 +34,7 @@ public class QuantumAlgorithmDto extends AlgorithmDto {
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Schema(accessMode = WRITE_ONLY)
-    private Set<QuantumImplementation> implementations = new HashSet<>();
+    private Set<QuantumImplementationDto> implementations = new HashSet<>();
 
     @Override
     @Schema(type = "string", allowableValues = {"QUANTUM"})
