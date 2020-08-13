@@ -21,3 +21,6 @@ spring.jackson.serialization.write-dates-as-timestamps=false
 
 # Embedded Tomcat
 server.servlet.contextPath=/atlas
+# Max file upload size
+spring.servlet.multipart.max-file-size=10MB
+spring.servlet.multipart.max-request-size=10MB
