@@ -20,8 +20,6 @@ package org.planqk.atlas.web;
 
 import java.util.Map;
 
-import org.planqk.atlas.core.model.ClassicImplementation;
-import org.planqk.atlas.core.model.QuantumImplementation;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.ClassicAlgorithmDto;
 import org.planqk.atlas.web.dtos.ClassicImplementationDto;
