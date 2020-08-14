@@ -78,7 +78,6 @@ public class SwaggerConfiguration {
 
     @Schema(
             name = "AlgorithmDto",
-            title = "quantum/classic algorithm",
             description = "Either a quantum or a classic algorithm",
             oneOf = {ClassicAlgorithmDto.class, QuantumAlgorithmDto.class},
             discriminatorMapping = {
