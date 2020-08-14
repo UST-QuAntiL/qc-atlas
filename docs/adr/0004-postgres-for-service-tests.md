@@ -1,4 +1,4 @@
-# Use Postgres databse for service tests
+# Use Postgres database for service tests
 
 * Status: accepted
 * Deciders: [Q-tal Enpro Team]
