@@ -20,9 +20,14 @@ package org.planqk.atlas.web;
 
 import java.util.Map;
 
+import org.planqk.atlas.core.model.ClassicImplementation;
+import org.planqk.atlas.core.model.QuantumImplementation;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.ClassicAlgorithmDto;
+import org.planqk.atlas.web.dtos.ClassicImplementationDto;
+import org.planqk.atlas.web.dtos.ImplementationDto;
 import org.planqk.atlas.web.dtos.QuantumAlgorithmDto;
+import org.planqk.atlas.web.dtos.QuantumImplementationDto;
 import org.planqk.atlas.web.utils.EntityModelConverter;
 import org.planqk.atlas.web.utils.LinkRemoverModelConverter;
 import org.planqk.atlas.web.utils.OverrideModelConverter;
@@ -70,6 +75,17 @@ public class SwaggerConfiguration {
         return converter;
     }
 
+    @Bean
+    @Lazy(false)
+    @DependsOn("entityModelConverter")
+    public OverrideModelConverter overrideImplementationConverter() {
+        final var converter = new OverrideModelConverter(Map.of(
+                ImplementationDto.class, ImplementationSchema.class
+        ));
+        ModelConverters.getInstance().addConverter(converter);
+        return converter;
+    }
+
     // The private classes below provide custom schemas for certain types used in our public API.
     // Setting these annotations on the correct types is not always possible, because we could end up with
     // reference cycles, for example:
@@ -86,5 +102,17 @@ public class SwaggerConfiguration {
             }
     )
     private static class AlgorithmSchema {
+    }
+
+    @Schema(
+            name = "ImplementationDto",
+            description = "Either a quantum or a classic implementation",
+            oneOf = {ClassicImplementationDto.class, QuantumImplementationDto.class},
+            discriminatorMapping = {
+                    @DiscriminatorMapping(value = "CLASSIC", schema = ClassicImplementationDto.class),
+                    @DiscriminatorMapping(value = "QUANTUM", schema = QuantumImplementationDto.class),
+            }
+    )
+    private static class ImplementationSchema {
     }
 }
