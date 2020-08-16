@@ -75,7 +75,7 @@ public class Implementation extends AlgorOrImpl implements ModelWithPublications
 
     @EqualsAndHashCode.Exclude
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "implementation", orphanRemoval = true)
-    private Set<ComputingResourceProperty> requiredComputingResourceProperties = new HashSet<>();
+    private Set<ComputeResourceProperty> requiredComputeResourceProperties = new HashSet<>();
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @EqualsAndHashCode.Exclude

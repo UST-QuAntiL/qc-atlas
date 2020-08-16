@@ -17,30 +17,15 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.planqk.atlas.core.services;
+package org.planqk.atlas.core.repository;
 
-import java.util.Set;
 import java.util.UUID;
 
-import org.planqk.atlas.core.model.Backend;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.transaction.annotation.Transactional;
+import org.planqk.atlas.core.model.ComputeResourcePropertyType;
 
-public interface BackendService {
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
-    @Transactional
-    Backend saveOrUpdate(Backend backend);
-
-    @Transactional
-    Set<Backend> saveOrUpdateAll(Set<Backend> backends);
-
-    Backend findById(UUID id);
-
-    Set<Backend> findByName(String name);
-
-    Page<Backend> findAll(Pageable pageable);
-
-    @Transactional
-    void delete (UUID id);
+@RepositoryRestResource
+public interface ComputeResourcePropertyTypeRepository extends JpaRepository<ComputeResourcePropertyType, UUID> {
 }

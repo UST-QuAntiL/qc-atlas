@@ -17,30 +17,42 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.planqk.atlas.core.repository;
+package org.planqk.atlas.core.services;
 
 import java.util.Set;
 import java.util.UUID;
 
-import org.planqk.atlas.core.model.ComputingResourceProperty;
+import org.planqk.atlas.core.model.CloudService;
+import org.planqk.atlas.core.model.ComputeResource;
+import org.planqk.atlas.core.model.SoftwarePlatform;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import org.springframework.transaction.annotation.Transactional;
 
-@RepositoryRestResource(exported = false)
-public interface ComputingResourcePropertyRepository extends JpaRepository<ComputingResourceProperty, UUID> {
+public interface ComputeResourceService {
 
-    Set<ComputingResourceProperty> findAllByAlgorithm_Id(UUID algoId);
+    Page<ComputeResource> searchAllByName(String name, Pageable p);
 
-    Page<ComputingResourceProperty> findAllByAlgorithm_Id(UUID algoId, Pageable p);
+    @Transactional
+    ComputeResource save(ComputeResource computeResource);
 
-    Set<ComputingResourceProperty> findAllByImplementation_Id(UUID backendId);
+    @Transactional
+    ComputeResource update(UUID id, ComputeResource computeResource);
 
-    Page<ComputingResourceProperty> findAllByImplementation_Id(UUID backendId, Pageable p);
+    @Transactional
+    Set<ComputeResource> saveOrUpdateAll(Set<ComputeResource> computeResources);
 
-    Set<ComputingResourceProperty> findAllByBackend_Id(UUID backendId);
+    Page<CloudService> findLinkedComputeResources(UUID id, Pageable p);
 
-    Page<ComputingResourceProperty> findAllByBackend_Id(UUID backendId, Pageable p);
+    Page<SoftwarePlatform> findLinkedSoftwarePlatforms(UUID id, Pageable p);
+
+    ComputeResource findById(UUID id);
+
+    Set<ComputeResource> findByName(String name);
+
+    Page<ComputeResource> findAll(Pageable pageable);
+
+    @Transactional
+    void delete(UUID id);
 }

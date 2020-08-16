@@ -19,19 +19,22 @@
 
 package org.planqk.atlas.core.services;
 
-import lombok.AllArgsConstructor;
-
-import org.planqk.atlas.core.model.CloudService;
-import org.planqk.atlas.core.repository.CloudServiceRepository;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.planqk.atlas.core.model.CloudService;
+import org.planqk.atlas.core.model.ComputeResource;
+import org.planqk.atlas.core.model.SoftwarePlatform;
+import org.planqk.atlas.core.model.exceptions.ConsistencyException;
+import org.planqk.atlas.core.repository.CloudServiceRepository;
+import org.planqk.atlas.core.repository.ComputeResourceRepository;
+import org.planqk.atlas.core.repository.SoftwarePlatformRepository;
+
+import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,11 +43,17 @@ import org.springframework.transaction.annotation.Transactional;
 public class CloudServiceServiceImpl implements CloudServiceService {
 
     private final CloudServiceRepository cloudServiceRepository;
-    private final BackendService backendService;
+    private final ComputeResourceRepository computeResourceRepository;
+    private final SoftwarePlatformRepository softwarePlatformRepository;
+    private final ComputeResourceService computeResourceService;
+
+    @Override
+    public Page<CloudService> searchAllByName(String name, Pageable p) {
+        return cloudServiceRepository.findAllByNameContainingIgnoreCase(name, p);
+    }
 
     @Override
     public CloudService save(CloudService cloudService) {
-        backendService.saveOrUpdateAll(cloudService.getProvidedBackends());
         return this.cloudServiceRepository.save(cloudService);
     }
 
@@ -56,11 +65,16 @@ public class CloudServiceServiceImpl implements CloudServiceService {
     @Transactional
     @Override
     public CloudService update(UUID id, CloudService cloudService) {
-        if (cloudServiceRepository.existsCloudServiceById(id)) {
-            cloudService.setId(id);
-            return save(cloudService);
-        }
-        throw new NoSuchElementException();
+        CloudService persistedCloudService = findById(id);
+
+        // update fields that can be changed based on DTO
+        persistedCloudService.setName(cloudService.getName());
+        persistedCloudService.setProvider(cloudService.getProvider());
+        persistedCloudService.setUrl(cloudService.getUrl());
+        persistedCloudService.setDescription(cloudService.getDescription());
+        persistedCloudService.setCostModel(cloudService.getCostModel());
+
+        return save(persistedCloudService);
     }
 
     @Override
@@ -76,6 +90,49 @@ public class CloudServiceServiceImpl implements CloudServiceService {
     @Transactional
     @Override
     public void delete(UUID cloudServiceId) {
+        if (!cloudServiceRepository.existsById(cloudServiceId)) {
+            throw new NoSuchElementException();
+        }
+        // TODO remove references
         cloudServiceRepository.deleteById(cloudServiceId);
+    }
+
+    @Override
+    public Page<ComputeResource> findComputeResources(UUID serviceId, Pageable pageable) {
+        if (!cloudServiceRepository.existsCloudServiceById(serviceId)) {
+            throw new NoSuchElementException();
+        }
+        return computeResourceRepository.findComputeResourcesByCloudServiceId(serviceId, pageable);
+    }
+
+    @Override
+    public Page<SoftwarePlatform> findLinkedSoftwarePlatforms(UUID serviceId, Pageable pageable) {
+        return softwarePlatformRepository.findSoftwarePlatformsByCloudServiceId(serviceId, pageable);
+    }
+
+    @Transactional
+    @Override
+    public void addComputeResourceReference(UUID serviceId, UUID resourceId) {
+        var cloudService = findById(serviceId);
+        var computeResource = computeResourceService.findById(resourceId);
+
+        if (cloudService.getProvidedComputeResources().contains(computeResource)) {
+            throw new ConsistencyException("Compute Resource and software platform are already linked");
+        }
+
+        cloudService.addComputeResource(computeResource);
+    }
+
+    @Transactional
+    @Override
+    public void deleteComputeResourceReference(UUID serviceId, UUID resourceId) {
+        var cloudService = findById(serviceId);
+        var computeResource = computeResourceService.findById(resourceId);
+
+        if (!cloudService.getProvidedComputeResources().contains(computeResource)) {
+            throw new ConsistencyException("Compute Resource and software platform are not linked");
+        }
+
+        cloudService.removeComputeResource(computeResource);
     }
 }

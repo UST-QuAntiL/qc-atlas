@@ -22,14 +22,10 @@ public class SoftwarePlatformDto {
     @NotNull(message = "SoftwarePlatform name must not be null!")
     private String name;
 
-    @Schema(description = "URL", example = "https://qiskit.org/", required = false)
+    @Schema(description = "URL", example = "https://qiskit.org/")
     private URL link;
-
-    private String version;
 
     private String licence;
 
-//    private Set<BackendDto> supportedBackends = new HashSet<>();
-//
-//    private Set<CloudServiceDto> supportedCloudServices = new HashSet<>();
+    private String version;
 }

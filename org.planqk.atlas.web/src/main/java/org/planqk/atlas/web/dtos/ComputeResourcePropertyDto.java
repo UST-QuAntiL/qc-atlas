@@ -17,13 +17,26 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.planqk.atlas.core.repository;
+package org.planqk.atlas.web.dtos;
 
 import java.util.UUID;
 
-import org.planqk.atlas.core.model.BackendPropertyType;
+import javax.validation.constraints.NotNull;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import org.springframework.hateoas.server.core.Relation;
 
-public interface BackendPropertyTypeRepository extends JpaRepository<BackendPropertyType, UUID> {
+@Data
+@EqualsAndHashCode
+@ToString
+@NoArgsConstructor
+@Relation(itemRelation = "computeResourceProperty", collectionRelation = "computeResourceProperties")
+public class ComputeResourcePropertyDto {
+    private UUID id;
+    private String value;
+    @NotNull
+    private ComputeResourcePropertyTypeDto type;
 }

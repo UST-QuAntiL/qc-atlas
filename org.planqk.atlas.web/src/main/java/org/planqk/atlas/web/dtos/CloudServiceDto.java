@@ -25,13 +25,11 @@ public class CloudServiceDto {
     private String name;
 
     private String provider;
-    @Schema(description = "URL", example = "https://www.ibm.com/quantum-computing/", required = false)
+
+    @Schema(description = "URL", example = "https://www.ibm.com/quantum-computing/")
     private URL url;
 
     private String description;
 
     private String costModel;
-
-    private Set<BackendDto> providedBackends = new HashSet<>();
-
 }

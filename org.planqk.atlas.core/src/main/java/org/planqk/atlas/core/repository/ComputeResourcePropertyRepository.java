@@ -19,13 +19,28 @@
 
 package org.planqk.atlas.core.repository;
 
+import java.util.Set;
 import java.util.UUID;
 
-import org.planqk.atlas.core.model.ComputingResourcePropertyType;
+import org.planqk.atlas.core.model.ComputeResourceProperty;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
-@RepositoryRestResource
-public interface ComputingResourcePropertyTypeRepository extends JpaRepository<ComputingResourcePropertyType, UUID> {
+@RepositoryRestResource(exported = false)
+public interface ComputeResourcePropertyRepository extends JpaRepository<ComputeResourceProperty, UUID> {
+
+    Set<ComputeResourceProperty> findAllByAlgorithm_Id(UUID algoId);
+
+    Page<ComputeResourceProperty> findAllByAlgorithm_Id(UUID algoId, Pageable p);
+
+    Set<ComputeResourceProperty> findAllByImplementation_Id(UUID backendId);
+
+    Page<ComputeResourceProperty> findAllByImplementation_Id(UUID backendId, Pageable p);
+
+    Set<ComputeResourceProperty> findAllByComputeResource_Id(UUID backendId);
+
+    Page<ComputeResourceProperty> findAllByComputeResource_Id(UUID backendId, Pageable p);
 }

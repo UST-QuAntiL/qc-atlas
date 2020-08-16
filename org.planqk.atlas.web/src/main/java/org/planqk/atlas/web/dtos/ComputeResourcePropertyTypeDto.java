@@ -17,19 +17,33 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.planqk.atlas.core.model;
+package org.planqk.atlas.web.dtos;
 
-import javax.persistence.Entity;
+import java.util.UUID;
+
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
+import org.planqk.atlas.core.model.ComputeResourcePropertyDataType;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import org.springframework.hateoas.server.core.Relation;
 
-@EqualsAndHashCode(callSuper = true)
 @Data
-@Entity
-public class ComputingResourcePropertyType extends HasId {
+@EqualsAndHashCode
+@ToString
+@NoArgsConstructor
+@Relation(itemRelation = "computeResourcePropertyType", collectionRelation = "computeResourcePropertyTypes")
+public class ComputeResourcePropertyTypeDto {
 
+    private UUID id;
+
+    @NotEmpty
     private String name;
-    private ComputingResourcePropertyDataType datatype;
+    @NotNull
+    private ComputeResourcePropertyDataType datatype;
     private String description;
 }

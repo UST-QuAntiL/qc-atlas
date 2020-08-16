@@ -22,6 +22,7 @@ package org.planqk.atlas.core.services;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.DiscussionTopic;
+import org.planqk.atlas.core.model.KnowledgeArtifact;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,6 +32,8 @@ public interface DiscussionTopicService {
     DiscussionTopic save(DiscussionTopic discussionTopic);
 
     Page<DiscussionTopic> findAll(Pageable pageable);
+
+    Page<DiscussionTopic> findByKnowledgeArtifact(KnowledgeArtifact artifact, Pageable pageable);
 
     DiscussionTopic findById(UUID id);
 

@@ -20,9 +20,9 @@ package org.planqk.atlas.web.controller.mixin;
 
 import java.util.Objects;
 
-import org.planqk.atlas.core.model.ComputingResourceProperty;
-import org.planqk.atlas.core.services.ComputingResourcePropertyService;
-import org.planqk.atlas.web.dtos.ComputingResourcePropertyDto;
+import org.planqk.atlas.core.model.ComputeResourceProperty;
+import org.planqk.atlas.core.services.ComputeResourcePropertyService;
+import org.planqk.atlas.web.dtos.ComputeResourcePropertyDto;
 import org.planqk.atlas.web.exceptions.InvalidParameterException;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 
@@ -31,16 +31,16 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class ComputingResourceMixin {
-    private final ComputingResourcePropertyService computingResourcePropertyService;
+public class ComputeResourcePropertyMixin {
+    private final ComputeResourcePropertyService computeResourcePropertyService;
 
-    public ComputingResourceProperty fromDto(ComputingResourcePropertyDto resourceDto) {
+    public ComputeResourceProperty fromDto(ComputeResourcePropertyDto resourceDto) {
         if (Objects.isNull(resourceDto.getType().getId())) {
             throw new InvalidParameterException("empty type ID");
         }
-        var type = computingResourcePropertyService.findComputingResourcePropertyTypeById(resourceDto.getType().getId());
-        var resource = ModelMapperUtils.convert(resourceDto, ComputingResourceProperty.class);
-        resource.setComputingResourcePropertyType(type);
+        var type = computeResourcePropertyService.findComputeResourcePropertyTypeById(resourceDto.getType().getId());
+        var resource = ModelMapperUtils.convert(resourceDto, ComputeResourceProperty.class);
+        resource.setComputeResourcePropertyType(type);
         return resource;
     }
 }

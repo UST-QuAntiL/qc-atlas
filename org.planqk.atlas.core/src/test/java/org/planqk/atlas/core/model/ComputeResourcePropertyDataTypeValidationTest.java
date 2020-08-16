@@ -22,34 +22,34 @@ package org.planqk.atlas.core.model;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class ComputingResourcePropertyDataTypeValidationTest {
+public class ComputeResourcePropertyDataTypeValidationTest {
     @Test
     void validate_Integer_Pass() {
-        Assertions.assertThat(ComputingResourcePropertyDataType.INTEGER.isValid("1000")).isTrue();
+        Assertions.assertThat(ComputeResourcePropertyDataType.INTEGER.isValid("1000")).isTrue();
     }
 
     @Test
     void validate_Integer_Fail() {
-        Assertions.assertThat(ComputingResourcePropertyDataType.INTEGER.isValid("100-0")).isFalse();
+        Assertions.assertThat(ComputeResourcePropertyDataType.INTEGER.isValid("100-0")).isFalse();
     }
 
     @Test
     void validate_Float_Pass() {
-        Assertions.assertThat(ComputingResourcePropertyDataType.FLOAT.isValid("1.0001")).isTrue();
+        Assertions.assertThat(ComputeResourcePropertyDataType.FLOAT.isValid("1.0001")).isTrue();
     }
 
     @Test
     void validate_Float_Fail() {
-        Assertions.assertThat(ComputingResourcePropertyDataType.FLOAT.isValid("100-0")).isFalse();
+        Assertions.assertThat(ComputeResourcePropertyDataType.FLOAT.isValid("100-0")).isFalse();
     }
 
     @Test
     void validate_StringNull_Fail() {
-        Assertions.assertThat(ComputingResourcePropertyDataType.STRING.isValid(null)).isFalse();
+        Assertions.assertThat(ComputeResourcePropertyDataType.STRING.isValid(null)).isFalse();
     }
 
     @Test
     void validate_String_Pass() {
-        Assertions.assertThat(ComputingResourcePropertyDataType.STRING.isValid("Hello World")).isTrue();
+        Assertions.assertThat(ComputeResourcePropertyDataType.STRING.isValid("Hello World")).isTrue();
     }
 }

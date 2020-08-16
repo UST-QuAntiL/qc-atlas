@@ -188,7 +188,7 @@ public class PublicationServiceTest extends AtlasDatabaseTestBase {
                 .count()).isEqualTo(comparePublication.getAuthors().size());
     }
 
-    private Publication getGenericTestPublication(String title) throws MalformedURLException {
+    static Publication getGenericTestPublication(String title) throws MalformedURLException {
         Publication publication = new Publication();
         publication.setTitle(title);
         publication.setUrl("http://example.com");

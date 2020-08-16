@@ -19,8 +19,8 @@
 
 package org.planqk.atlas.web.linkassembler;
 
-import org.planqk.atlas.web.controller.ComputingResourcePropertyTypeController;
-import org.planqk.atlas.web.dtos.ComputingResourcePropertyTypeDto;
+import org.planqk.atlas.web.controller.ComputeResourcePropertyTypeController;
+import org.planqk.atlas.web.dtos.ComputeResourcePropertyTypeDto;
 
 import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Component;
@@ -29,10 +29,10 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @SuppressWarnings("ConstantConditions")
 @Component
-public class QuantumResourcePropertyTypeAssembler extends GenericLinkAssembler<ComputingResourcePropertyTypeDto> {
+public class QuantumResourcePropertyTypeAssembler extends GenericLinkAssembler<ComputeResourcePropertyTypeDto> {
     @Override
-    public void addLinks(EntityModel<ComputingResourcePropertyTypeDto> resource) {
-        resource.add(links.linkTo(methodOn(ComputingResourcePropertyTypeController.class)
+    public void addLinks(EntityModel<ComputeResourcePropertyTypeDto> resource) {
+        resource.add(links.linkTo(methodOn(ComputeResourcePropertyTypeController.class)
                 .getComputingResourcePropertyType(resource.getContent().getId()))
                 .withSelfRel());
     }

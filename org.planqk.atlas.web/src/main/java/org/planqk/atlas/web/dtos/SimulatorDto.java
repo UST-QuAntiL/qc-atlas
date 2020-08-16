@@ -9,7 +9,7 @@ import org.springframework.hateoas.server.core.Relation;
 @ToString(callSuper = true)
 @Data
 @Relation(itemRelation = "simulator", collectionRelation = "simulators")
-public class SimulatorDto extends BackendDto {
+public class SimulatorDto extends ComputeResourceDto {
 
     private boolean localExecution;
 

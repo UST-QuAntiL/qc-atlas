@@ -25,6 +25,7 @@ import java.util.UUID;
 
 import org.planqk.atlas.core.model.DiscussionComment;
 import org.planqk.atlas.core.model.DiscussionTopic;
+import org.planqk.atlas.core.model.KnowledgeArtifact;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -41,9 +42,10 @@ public class DiscussionCommentServiceTest extends AtlasDatabaseTestBase {
 
     @Autowired
     private DiscussionTopicService topicService;
-
     @Autowired
     private DiscussionCommentService commentService;
+    @Autowired
+    private PublicationService publicationService;
 
     private DiscussionComment comment;
     private DiscussionComment comment2;
@@ -55,8 +57,13 @@ public class DiscussionCommentServiceTest extends AtlasDatabaseTestBase {
     private final Pageable pageable = PageRequest.of(page, size);
 
     @BeforeEach
-    public void initialize() {
+    public void initialize() throws Exception {
+        var pub = PublicationServiceTest.getGenericTestPublication("discussion");
+        pub = publicationService.save(pub);
+
         topic = new DiscussionTopic();
+        topic.setKnowledgeArtifact(pub);
+
         comment = new DiscussionComment();
         comment.setDate(OffsetDateTime.now());
         comment.setText("Test Text");
