@@ -36,6 +36,7 @@ import org.planqk.atlas.web.linkassembler.AlgorithmAssembler;
 import org.planqk.atlas.web.linkassembler.ImplementationAssembler;
 import org.planqk.atlas.web.linkassembler.TagAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
+import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -66,6 +67,7 @@ public class TagController {
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping(value = "/")
+    @ListParametersDoc()
     public HttpEntity<PagedModel<EntityModel<TagDto>>> getTags(@Parameter(hidden = true) ListParameters listParameters) {
         return new ResponseEntity<>(tagAssembler.toModel(tagService.findAll(listParameters.getPageable(), listParameters.getSearch())), HttpStatus.OK);
     }
@@ -80,14 +82,14 @@ public class TagController {
     @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping(value = "/{tagId}")
     public HttpEntity<EntityModel<TagDto>> getTag(@PathVariable String name) {
-        Tag tag = tagService.getTag(name);
+        Tag tag = tagService.findByName(name);
         return new ResponseEntity<>(tagAssembler.toModel(tag), HttpStatus.OK);
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping(value = "/{tagId}/" + Constants.ALGORITHMS)
     public HttpEntity<CollectionModel<EntityModel<AlgorithmDto>>> getAlgorithmsOfTag(@PathVariable String value) {
-        Tag tag = this.tagService.getTag(value);
+        Tag tag = this.tagService.findByName(value);
         CollectionModel<EntityModel<AlgorithmDto>> algorithms = algorithmAssembler.toModel(tag.getImplementations());
         algorithmAssembler.addLinks(algorithms.getContent());
         tagAssembler.addAlgorithmLink(algorithms, tag.getValue());
@@ -98,7 +100,7 @@ public class TagController {
     @GetMapping(value = "/{tagId}/" + Constants.IMPLEMENTATIONS)
     public HttpEntity<CollectionModel<EntityModel<ImplementationDto>>> getImplementationsOfTag(
             @PathVariable String value) {
-        Tag tag = this.tagService.getTag(value);
+        Tag tag = this.tagService.findByName(value);
         CollectionModel<EntityModel<ImplementationDto>> implementations = implementationAssembler.toModel(tag.getImplementations());
         implementationAssembler.addLinks(implementations.getContent());
         tagAssembler.addImplementationLink(implementations, tag.getValue());

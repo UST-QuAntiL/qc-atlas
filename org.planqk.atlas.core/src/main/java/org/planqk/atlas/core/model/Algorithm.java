@@ -118,6 +118,30 @@ public class Algorithm extends AlgorOrImpl implements ModelWithPublications {
     @ToString.Exclude
     private Set<Tag> tags = new HashSet<>();
 
+    public Set<Tag> getTags() {
+        return tags;
+    }
+
+    public void addTag(Tag tag) {
+        if (tag != null) {
+            this.tags.add(tag);
+        }
+    }
+
+    public void setTags(Set<Tag> tags) {
+        this.tags.clear();
+        if (tags != null) {
+            this.tags.addAll(tags);
+        }
+    }
+
+    public void removeTag(Tag tag) {
+        if (!this.tags.contains(tag)) {
+            return;
+        }
+        this.tags.remove(tag);
+    }
+
     @NonNull
     public boolean addAlgorithmRelation(AlgorithmRelation relation) {
         return algorithmRelations.add(relation);

@@ -34,6 +34,7 @@ import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.core.services.ComputeResourcePropertyService;
 import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.core.services.SoftwarePlatformService;
+import org.planqk.atlas.core.services.TagService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.mixin.ComputeResourcePropertyMixin;
 import org.planqk.atlas.web.controller.mixin.PublicationMixin;
@@ -93,6 +94,7 @@ public class ImplementationController {
     private final ImplementationService implementationService;
     private final AlgorithmService algorithmService;
     private final SoftwarePlatformService softwarePlatformService;
+    private final TagService tagService;
 
     private final ImplementationAssembler implementationAssembler;
     private final PublicationAssembler publicationAssembler;
@@ -134,12 +136,41 @@ public class ImplementationController {
         return new ResponseEntity<>(implementationAssembler.toModel(input), HttpStatus.CREATED);
     }
 
-    @Operation(responses = { @ApiResponse(responseCode = "200") })
+    @Operation(operationId = "getTagsOfImplementation",
+            responses = { @ApiResponse(responseCode = "200") })
     @GetMapping("/{implId}/" + Constants.TAGS)
     public HttpEntity<CollectionModel<EntityModel<TagDto>>> getTags(@PathVariable UUID algoId, @PathVariable UUID implId) {
        Implementation implementation = implementationService.findById(implId);
        Set<Tag> tags = implementation.getTags();
         return ResponseEntity.ok(tagsAssembler.toModel(tags));
+    }
+
+    @Operation(operationId = "addTagToImplementation",
+            responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "404")})
+    @PutMapping("/{id}/" + Constants.TAGS)
+    public HttpEntity<CollectionModel<EntityModel<TagDto>>> addTag(@PathVariable UUID implId,
+                                                                   @Valid @RequestBody TagDto tagDto) {
+        Implementation implementation = implementationService.findById(implId);
+        Tag tag = tagService.findByName(tagDto.getValue());
+
+        if (tag == null) {
+            implementation.addTag(ModelMapperUtils.convert(tagDto, Tag.class));
+        } else {
+            implementation.addTag(tag);
+        }
+        implementationService.update(implId, implementation);
+        return ResponseEntity.ok(tagsAssembler.toModel(implementation.getTags()));
+    }
+
+    @Operation(operationId = "removeTagFromImplementation",
+            responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404")})
+    @DeleteMapping("/{id}/" + Constants.TAGS)
+    public HttpEntity<CollectionModel<EntityModel<TagDto>>> removeTag(@PathVariable UUID implId,
+                                                                      @Valid @RequestBody TagDto tagDto) {
+        Implementation implementation = implementationService.findById(implId);
+        implementation.removeTag(ModelMapperUtils.convert(tagDto, Tag.class));
+        implementationService.update(implId, implementation);
+        return ResponseEntity.ok(tagsAssembler.toModel(implementation.getTags()));
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", description = "Algorithm doesn't exist")})

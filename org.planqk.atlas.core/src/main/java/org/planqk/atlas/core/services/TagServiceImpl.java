@@ -39,7 +39,7 @@ public class TagServiceImpl implements TagService {
     private TagRepository tagRepository;
 
     @Override
-    public Tag getTag(String value) {
+    public Tag findByName(String value) {
         return tagRepository.findByValue(value);
     }
 

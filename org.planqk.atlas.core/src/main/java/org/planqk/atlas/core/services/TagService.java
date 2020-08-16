@@ -27,7 +27,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 public interface TagService {
-    Tag getTag(String name);
+    Tag findByName(String name);
 
     Set<Tag> findByCategory(String category);
 

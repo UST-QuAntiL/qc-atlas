@@ -86,6 +86,30 @@ public class Implementation extends AlgorOrImpl implements ModelWithPublications
         super();
     }
 
+    public Set<Tag> getTags() {
+        return tags;
+    }
+
+    public void addTag(Tag tag) {
+        if (tag != null) {
+            this.tags.add(tag);
+        }
+    }
+
+    public void setTags(Set<Tag> tags) {
+        this.tags.clear();
+        if (tags != null) {
+            this.tags.addAll(tags);
+        }
+    }
+
+    public void removeTag(Tag tag) {
+        if (!this.tags.contains(tag)) {
+            return;
+        }
+        this.tags.remove(tag);
+    }
+
     public Set<Publication> getPublications() {
         return new HashSet<Publication>(publications);
     }
