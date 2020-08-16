@@ -51,6 +51,7 @@ import org.planqk.atlas.web.dtos.PatternRelationDto;
 import org.planqk.atlas.web.dtos.PatternRelationTypeDto;
 import org.planqk.atlas.web.dtos.ProblemTypeDto;
 import org.planqk.atlas.web.dtos.PublicationDto;
+import org.planqk.atlas.web.dtos.TagDto;
 import org.planqk.atlas.web.linkassembler.AlgorithmAssembler;
 import org.planqk.atlas.web.linkassembler.AlgorithmRelationAssembler;
 import org.planqk.atlas.web.linkassembler.ApplicationAreaAssembler;
@@ -58,6 +59,7 @@ import org.planqk.atlas.web.linkassembler.ComputeResourcePropertyAssembler;
 import org.planqk.atlas.web.linkassembler.PatternRelationAssembler;
 import org.planqk.atlas.web.linkassembler.ProblemTypeAssembler;
 import org.planqk.atlas.web.linkassembler.PublicationAssembler;
+import org.planqk.atlas.web.linkassembler.TagAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
@@ -109,7 +111,7 @@ public class AlgorithmController {
 
     private final ProblemTypeAssembler problemTypeAssembler;
     private final ApplicationAreaAssembler applicationAreaAssembler;
-    //    private final TagAssembler tagAssembler;
+    private final TagAssembler tagsAssembler;
     private final AlgorithmAssembler algorithmAssembler;
     private final AlgorithmRelationAssembler algorithmRelationAssembler;
     private final PublicationAssembler publicationAssembler;
@@ -145,12 +147,12 @@ public class AlgorithmController {
         return ResponseEntity.ok(algorithmAssembler.toModel(updatedAlgorithm));
     }
 
-//    @Operation(responses = {@ApiResponse(responseCode = "200")})
-//    @GetMapping("/{id}/" + Constants.TAGS)
-//    public HttpEntity<CollectionModel<EntityModel<TagDto>>> getTags(@PathVariable UUID id) {
-//        Algorithm algorithm = algorithmService.findById(id);
-//        return ResponseEntity.ok(tagsAssembler.toModel(algorithm.getTags()));
-//    }
+    @Operation(responses = {@ApiResponse(responseCode = "200")})
+   @GetMapping("/{id}/" + Constants.TAGS)
+    public HttpEntity<CollectionModel<EntityModel<TagDto>>> getTags(@PathVariable UUID id) {
+        Algorithm algorithm = algorithmService.findById(id);
+        return ResponseEntity.ok(tagsAssembler.toModel(algorithm.getTags()));
+    }
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
