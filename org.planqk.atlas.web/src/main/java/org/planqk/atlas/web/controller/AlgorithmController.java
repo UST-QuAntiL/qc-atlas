@@ -114,7 +114,7 @@ public class AlgorithmController {
 
     private final ProblemTypeAssembler problemTypeAssembler;
     private final ApplicationAreaAssembler applicationAreaAssembler;
-    private final TagAssembler tagsAssembler;
+    private final TagAssembler tagAssembler;
     private final AlgorithmAssembler algorithmAssembler;
     private final AlgorithmRelationAssembler algorithmRelationAssembler;
     private final PublicationAssembler publicationAssembler;
@@ -150,17 +150,17 @@ public class AlgorithmController {
         return ResponseEntity.ok(algorithmAssembler.toModel(updatedAlgorithm));
     }
 
-    @Operation(operationId = "getTagsOfImplementation",
+    @Operation(operationId = "getTagsOfAlgorithm",
             responses = {@ApiResponse(responseCode = "200")})
-    @GetMapping("/{id}/" + Constants.TAGS)
-    public HttpEntity<CollectionModel<EntityModel<TagDto>>> getTags(@PathVariable UUID id) {
-        Algorithm algorithm = algorithmService.findById(id);
-        return ResponseEntity.ok(tagsAssembler.toModel(algorithm.getTags()));
+    @GetMapping("/{algoId}/" + Constants.TAGS)
+    public HttpEntity<CollectionModel<EntityModel<TagDto>>> getTags(@PathVariable UUID algoId) {
+        Algorithm algorithm = algorithmService.findById(algoId);
+        return ResponseEntity.ok(tagAssembler.toModel(algorithm.getTags()));
     }
 
     @Operation(operationId = "addTagToAlgorithm",
             responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "404")})
-    @PutMapping("/{id}/" + Constants.TAGS)
+    @PutMapping("/{algoId}/" + Constants.TAGS)
     public HttpEntity<CollectionModel<EntityModel<TagDto>>> addTag(@PathVariable UUID algoId,
                                                                    @Valid @RequestBody TagDto tagDto) {
         Algorithm algorithm = algorithmService.findById(algoId);
@@ -172,18 +172,18 @@ public class AlgorithmController {
             algorithm.addTag(tag);
         }
         algorithmService.update(algoId, algorithm);
-        return ResponseEntity.ok(tagsAssembler.toModel(algorithm.getTags()));
+        return ResponseEntity.ok(tagAssembler.toModel(algorithm.getTags()));
     }
 
     @Operation(operationId = "removeTagFromAlgorithm",
             responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404")})
-    @DeleteMapping("/{id}/" + Constants.TAGS)
+    @DeleteMapping("/{algoId}/" + Constants.TAGS)
     public HttpEntity<CollectionModel<EntityModel<TagDto>>> removeTag(@PathVariable UUID algoId,
                                                                    @Valid @RequestBody TagDto tagDto) {
         Algorithm algorithm = algorithmService.findById(algoId);
         algorithm.removeTag(ModelMapperUtils.convert(tagDto, Tag.class));
         algorithmService.update(algoId, algorithm);
-        return ResponseEntity.ok(tagsAssembler.toModel(algorithm.getTags()));
+        return ResponseEntity.ok(tagAssembler.toModel(algorithm.getTags()));
     }
 
     @Operation(responses = {

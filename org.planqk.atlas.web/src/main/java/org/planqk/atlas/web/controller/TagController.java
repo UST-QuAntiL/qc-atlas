@@ -69,7 +69,7 @@ public class TagController {
     @GetMapping(value = "/")
     @ListParametersDoc()
     public HttpEntity<PagedModel<EntityModel<TagDto>>> getTags(@Parameter(hidden = true) ListParameters listParameters) {
-        return new ResponseEntity<>(tagAssembler.toModel(tagService.findAll(listParameters.getPageable(), listParameters.getSearch())), HttpStatus.OK);
+        return new ResponseEntity<>(tagAssembler.toModel(tagService.findAllByContent(listParameters.getSearch(), listParameters.getPageable())), HttpStatus.OK);
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "201")})

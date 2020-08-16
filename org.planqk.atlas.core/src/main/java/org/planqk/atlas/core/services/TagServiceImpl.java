@@ -24,7 +24,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import lombok.AllArgsConstructor;
-import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.repository.TagRepository;
 import org.springframework.data.domain.Page;
@@ -49,11 +48,8 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public Page<Tag> findAll(Pageable pageable, String search) {
-        if (!Objects.isNull(search) && !search.isEmpty()) {
-            return tagRepository.findAll(search, pageable);
-        }
-        return tagRepository.findAll(pageable);
+    public Page<Tag> findAllByContent(String search, Pageable pageable) {
+        return tagRepository.findByValueContainingIgnoreCaseOrCategoryContainingIgnoreCase(search, search, pageable);
     }
 
     @Transactional

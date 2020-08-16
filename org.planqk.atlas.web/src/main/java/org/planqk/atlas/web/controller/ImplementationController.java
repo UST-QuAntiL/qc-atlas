@@ -77,8 +77,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-//import org.planqk.atlas.web.linkassembler.TagAssembler;
-
 /**
  * Controller to access and manipulate implementations of quantum algorithms.
  */
@@ -100,7 +98,7 @@ public class ImplementationController {
     private final PublicationAssembler publicationAssembler;
     private final ComputeResourcePropertyAssembler computeResourcePropertyAssembler;
     private final SoftwarePlatformAssembler softwarePlatformAssembler;
-    private final TagAssembler tagsAssembler;
+    private final TagAssembler tagAssembler;
 
 
     private final PublicationMixin publicationMixin;
@@ -142,12 +140,12 @@ public class ImplementationController {
     public HttpEntity<CollectionModel<EntityModel<TagDto>>> getTags(@PathVariable UUID algoId, @PathVariable UUID implId) {
        Implementation implementation = implementationService.findById(implId);
        Set<Tag> tags = implementation.getTags();
-        return ResponseEntity.ok(tagsAssembler.toModel(tags));
+        return ResponseEntity.ok(tagAssembler.toModel(tags));
     }
 
     @Operation(operationId = "addTagToImplementation",
             responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "404")})
-    @PutMapping("/{id}/" + Constants.TAGS)
+    @PutMapping("/{implId}/" + Constants.TAGS)
     public HttpEntity<CollectionModel<EntityModel<TagDto>>> addTag(@PathVariable UUID implId,
                                                                    @Valid @RequestBody TagDto tagDto) {
         Implementation implementation = implementationService.findById(implId);
@@ -159,18 +157,18 @@ public class ImplementationController {
             implementation.addTag(tag);
         }
         implementationService.update(implId, implementation);
-        return ResponseEntity.ok(tagsAssembler.toModel(implementation.getTags()));
+        return ResponseEntity.ok(tagAssembler.toModel(implementation.getTags()));
     }
 
     @Operation(operationId = "removeTagFromImplementation",
             responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404")})
-    @DeleteMapping("/{id}/" + Constants.TAGS)
+    @DeleteMapping("/{implId}/" + Constants.TAGS)
     public HttpEntity<CollectionModel<EntityModel<TagDto>>> removeTag(@PathVariable UUID implId,
                                                                       @Valid @RequestBody TagDto tagDto) {
         Implementation implementation = implementationService.findById(implId);
         implementation.removeTag(ModelMapperUtils.convert(tagDto, Tag.class));
         implementationService.update(implId, implementation);
-        return ResponseEntity.ok(tagsAssembler.toModel(implementation.getTags()));
+        return ResponseEntity.ok(tagAssembler.toModel(implementation.getTags()));
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", description = "Algorithm doesn't exist")})

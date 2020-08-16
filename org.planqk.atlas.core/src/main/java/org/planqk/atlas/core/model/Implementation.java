@@ -104,9 +104,6 @@ public class Implementation extends AlgorOrImpl implements ModelWithPublications
     }
 
     public void removeTag(Tag tag) {
-        if (!this.tags.contains(tag)) {
-            return;
-        }
         this.tags.remove(tag);
     }
 
@@ -149,12 +146,4 @@ public class Implementation extends AlgorOrImpl implements ModelWithPublications
         softwarePlatforms.remove(softwarePlatform);
         softwarePlatform.removeImplementation(this);
     }
-
-//    @NonNull
-//    public Set<Tag> getTags() {
-//        if (Objects.isNull(tags)) {
-//            return new HashSet<>();
-//        }
-//        return tags;
-//    }
 }

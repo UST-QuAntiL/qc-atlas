@@ -136,9 +136,6 @@ public class Algorithm extends AlgorOrImpl implements ModelWithPublications {
     }
 
     public void removeTag(Tag tag) {
-        if (!this.tags.contains(tag)) {
-            return;
-        }
         this.tags.remove(tag);
     }
 

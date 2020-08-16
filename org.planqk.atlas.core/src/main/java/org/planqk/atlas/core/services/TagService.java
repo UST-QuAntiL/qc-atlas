@@ -31,7 +31,7 @@ public interface TagService {
 
     Set<Tag> findByCategory(String category);
 
-    Page<Tag> findAll(Pageable pageable, String search);
+    Page<Tag> findAllByContent(String search, Pageable pageable);
 
     @Transactional
     Tag save(Tag tag);

@@ -33,10 +33,6 @@ public interface TagRepository extends JpaRepository<Tag, String> {
     Tag findByValue(String value);
     Set<Tag> findByCategory(String category);
 
-    default Page<Tag> findAll(String search, Pageable pageable) {
-        return findByValueContainingIgnoreCaseOrCategoryContainingIgnoreCase(search, search, pageable);
-    }
-
     Page<Tag> findByValueContainingIgnoreCaseOrCategoryContainingIgnoreCase(String value, String key, Pageable pageable);
 
 
