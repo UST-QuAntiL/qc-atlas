@@ -40,7 +40,7 @@ import org.springframework.context.annotation.Lazy;
 
 /**
  * This configuration contains the Swagger / SpringDoc configurations we need.
- *
+ * <p>
  * This includes custom ModelConverters and type overrides.
  */
 @Configuration
@@ -67,17 +67,7 @@ public class SwaggerConfiguration {
     @DependsOn("entityModelConverter")
     public OverrideModelConverter overrideModelConverter() {
         final var converter = new OverrideModelConverter(Map.of(
-                AlgorithmDto.class, AlgorithmSchema.class
-        ));
-        ModelConverters.getInstance().addConverter(converter);
-        return converter;
-    }
-
-    @Bean
-    @Lazy(false)
-    @DependsOn("entityModelConverter")
-    public OverrideModelConverter overrideImplementationConverter() {
-        final var converter = new OverrideModelConverter(Map.of(
+                AlgorithmDto.class, AlgorithmSchema.class,
                 ImplementationDto.class, ImplementationSchema.class
         ));
         ModelConverters.getInstance().addConverter(converter);
