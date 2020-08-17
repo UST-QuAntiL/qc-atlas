@@ -166,7 +166,13 @@ public class ImplementationController {
     public HttpEntity<CollectionModel<EntityModel<TagDto>>> removeTag(@PathVariable UUID implId,
                                                                       @Valid @RequestBody TagDto tagDto) {
         Implementation implementation = implementationService.findById(implId);
-        implementation.removeTag(ModelMapperUtils.convert(tagDto, Tag.class));
+        Tag tag = tagService.findByName(tagDto.getValue());
+
+        if (tag == null) {
+            implementation.removeTag(ModelMapperUtils.convert(tagDto, Tag.class));
+        } else {
+            implementation.removeTag(tag);
+        }
         implementationService.update(implId, implementation);
         return ResponseEntity.ok(tagAssembler.toModel(implementation.getTags()));
     }

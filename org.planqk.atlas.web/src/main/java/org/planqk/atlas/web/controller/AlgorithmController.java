@@ -179,9 +179,15 @@ public class AlgorithmController {
             responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404")})
     @DeleteMapping("/{algoId}/" + Constants.TAGS)
     public HttpEntity<CollectionModel<EntityModel<TagDto>>> removeTag(@PathVariable UUID algoId,
-                                                                   @Valid @RequestBody TagDto tagDto) {
+                                                                      @Valid @RequestBody TagDto tagDto) {
         Algorithm algorithm = algorithmService.findById(algoId);
-        algorithm.removeTag(ModelMapperUtils.convert(tagDto, Tag.class));
+        Tag tag = tagService.findByName(tagDto.getValue());
+
+        if (tag == null) {
+            algorithm.removeTag(ModelMapperUtils.convert(tagDto, Tag.class));
+        } else {
+            algorithm.removeTag(tag);
+        }
         algorithmService.update(algoId, algorithm);
         return ResponseEntity.ok(tagAssembler.toModel(algorithm.getTags()));
     }
