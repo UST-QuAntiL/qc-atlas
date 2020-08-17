@@ -33,6 +33,6 @@ public class TagAssembler extends GenericLinkAssembler<TagDto> {
     }
 
     private String getName(EntityModel<TagDto> resource) {
-        return resource.getContent().getCategory();
+        return resource.getContent().getValue();
   }
 }

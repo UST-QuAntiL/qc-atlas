@@ -69,25 +69,27 @@ public class TagController {
     @GetMapping(value = "/")
     @ListParametersDoc()
     public HttpEntity<PagedModel<EntityModel<TagDto>>> getTags(@Parameter(hidden = true) ListParameters listParameters) {
-        return new ResponseEntity<>(tagAssembler.toModel(tagService.findAllByContent(listParameters.getSearch(), listParameters.getPageable())), HttpStatus.OK);
+        return new ResponseEntity<>(tagAssembler.toModel(this.tagService.findAllByContent(listParameters.getSearch(), listParameters.getPageable())), HttpStatus.OK);
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "201")})
     @PostMapping(value = "/")
     public HttpEntity<EntityModel<TagDto>> createTag(@Valid @RequestBody TagDto tag) {
-        Tag savedTag = tagService.save(ModelMapperUtils.convert(tag, Tag.class));
+        Tag savedTag = this.tagService.save(ModelMapperUtils.convert(tag, Tag.class));
         return new ResponseEntity<>(tagAssembler.toModel(savedTag), HttpStatus.CREATED);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200")})
-    @GetMapping(value = "/{tagId}")
-    public HttpEntity<EntityModel<TagDto>> getTag(@PathVariable String name) {
-        Tag tag = tagService.findByName(name);
-        return new ResponseEntity<>(tagAssembler.toModel(tag), HttpStatus.OK);
+    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404")})
+    @GetMapping(value = "/{value}")
+    public HttpEntity<EntityModel<TagDto>> getTag(@PathVariable String value) {
+        Tag tag = this.tagService.findByName(value);
+        var tmp2 = tagAssembler.toModel(tag);
+        ResponseEntity tmp = new ResponseEntity<>(tmp2, HttpStatus.OK);
+        return tmp;
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
-    @GetMapping(value = "/{tagId}/" + Constants.ALGORITHMS)
+    @GetMapping(value = "/{value}/" + Constants.ALGORITHMS)
     public HttpEntity<CollectionModel<EntityModel<AlgorithmDto>>> getAlgorithmsOfTag(@PathVariable String value) {
         Tag tag = this.tagService.findByName(value);
         CollectionModel<EntityModel<AlgorithmDto>> algorithms = algorithmAssembler.toModel(tag.getImplementations());
@@ -97,7 +99,7 @@ public class TagController {
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "200")})
-    @GetMapping(value = "/{tagId}/" + Constants.IMPLEMENTATIONS)
+    @GetMapping(value = "/{value}/" + Constants.IMPLEMENTATIONS)
     public HttpEntity<CollectionModel<EntityModel<ImplementationDto>>> getImplementationsOfTag(
             @PathVariable String value) {
         Tag tag = this.tagService.findByName(value);
