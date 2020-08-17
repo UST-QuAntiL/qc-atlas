@@ -2,6 +2,7 @@ package org.planqk.atlas.core.model;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import javax.persistence.*;
 
@@ -17,7 +18,6 @@ import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "cloud_services")
 @Data
 public class CloudService extends HasId {
 
@@ -27,10 +27,48 @@ public class CloudService extends HasId {
     private String description;
     private String costModel;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.MERGE })
-    @JoinTable(name = "cloud_services_backends", joinColumns = @JoinColumn(name = "cloud_service_id"), inverseJoinColumns = @JoinColumn(name = "backend_id"))
-    private Set<Backend> providedBackends = new HashSet<>();
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE})
+    @JoinTable(name = "cloud_services_compute_resources",
+            joinColumns = @JoinColumn(name = "cloud_service_id"),
+            inverseJoinColumns = @JoinColumn(name = "compute_resource_id"))
+    private Set<ComputeResource> providedComputeResources = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.MERGE }, mappedBy = "supportedCloudServices")
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE}, mappedBy = "supportedCloudServices")
     private Set<SoftwarePlatform> softwarePlatforms = new HashSet<>();
+
+    public void addSoftwarePlatform(SoftwarePlatform softwarePlatform) {
+        if (softwarePlatforms.contains(softwarePlatform)) {
+            return;
+        }
+        softwarePlatforms.add(softwarePlatform);
+        softwarePlatform.addCloudService(this);
+    }
+
+    public void removeSoftwarePlatform(SoftwarePlatform softwarePlatform) {
+        if (!softwarePlatforms.contains(softwarePlatform)) {
+            return;
+        }
+        softwarePlatforms.remove(softwarePlatform);
+        softwarePlatform.removeCloudService(this);
+    }
+
+    public void addComputeResource(ComputeResource computeResource) {
+        if (providedComputeResources.contains(computeResource)) {
+            return;
+        }
+        providedComputeResources.add(computeResource);
+        computeResource.addCloudService(this);
+    }
+
+    public void removeComputeResource(ComputeResource computeResource) {
+        if (!providedComputeResources.contains(computeResource)) {
+            return;
+        }
+        providedComputeResources.remove(computeResource);
+        computeResource.removeCloudService(this);
+    }
 }

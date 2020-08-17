@@ -2,7 +2,7 @@ package org.planqk.atlas.web.utils;
 
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
-import org.planqk.atlas.core.model.Backend;
+import org.planqk.atlas.core.model.ComputeResource;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
 import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.model.Qpu;
@@ -10,7 +10,7 @@ import org.planqk.atlas.core.model.QuantumAlgorithm;
 import org.planqk.atlas.core.model.Simulator;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
-import org.planqk.atlas.web.dtos.BackendDto;
+import org.planqk.atlas.web.dtos.ComputeResourceDto;
 import org.planqk.atlas.web.dtos.ClassicAlgorithmDto;
 import org.planqk.atlas.web.dtos.PatternRelationDto;
 import org.planqk.atlas.web.dtos.QPUDto;
@@ -44,13 +44,13 @@ public class ModelMapperUtils {
                 .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), ClassicAlgorithm.class));
         mapper.createTypeMap(QuantumAlgorithmDto.class, Algorithm.class)
                 .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), QuantumAlgorithm.class));
-        mapper.createTypeMap(Qpu.class, BackendDto.class)
+        mapper.createTypeMap(Qpu.class, ComputeResourceDto.class)
                 .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), QPUDto.class));
-        mapper.createTypeMap(Simulator.class, BackendDto.class)
+        mapper.createTypeMap(Simulator.class, ComputeResourceDto.class)
                 .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), SimulatorDto.class));
-        mapper.createTypeMap(QPUDto.class, Backend.class)
+        mapper.createTypeMap(QPUDto.class, ComputeResource.class)
                 .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), Qpu.class));
-        mapper.createTypeMap(SimulatorDto.class, Backend.class)
+        mapper.createTypeMap(SimulatorDto.class, ComputeResource.class)
                 .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), Simulator.class));
 
         // Map Algorithm of PatternRelation to correct Subclass when mapping to PatternRelationDto

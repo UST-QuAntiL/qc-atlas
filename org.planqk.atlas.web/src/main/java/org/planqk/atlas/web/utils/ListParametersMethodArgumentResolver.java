@@ -18,6 +18,9 @@
  *******************************************************************************/
 package org.planqk.atlas.web.utils;
 
+import org.planqk.atlas.web.Constants;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -30,18 +33,23 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
+@Slf4j
 public class ListParametersMethodArgumentResolver extends PageableHandlerMethodArgumentResolverSupport implements HandlerMethodArgumentResolver {
     private final SortHandlerMethodArgumentResolver sortResolver = new SortHandlerMethodArgumentResolver();
 
     @Override
     public Object resolveArgument(MethodParameter methodParameter, @Nullable ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest, @Nullable WebDataBinderFactory binderFactory) {
-        String page = webRequest.getParameter(getParameterNameToUse("page", methodParameter));
-        String pageSize = webRequest.getParameter(getParameterNameToUse("size", methodParameter));
-        String searchQuery = webRequest.getParameter(getParameterNameToUse("search", methodParameter));
+        String page = webRequest.getParameter(getParameterNameToUse(Constants.PAGE, methodParameter));
+        String pageSize = webRequest.getParameter(getParameterNameToUse(Constants.SIZE, methodParameter));
+        String searchQuery = webRequest.getParameter(getParameterNameToUse(Constants.SEARCH, methodParameter));
 
         Sort sort = sortResolver.resolveArgument(methodParameter, mavContainer, webRequest, binderFactory);
         Pageable pageable = getPageable(methodParameter, page, pageSize);
+
+        if ((page != null && pageSize != null) && (page.equals("-1") && pageSize.equals("-1"))) {
+            pageable = Pageable.unpaged();
+        }
 
         if (sort.isSorted()) {
             pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);

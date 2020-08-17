@@ -22,10 +22,10 @@ package org.planqk.atlas.web.controller;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
-import org.planqk.atlas.core.model.ComputingResourceProperty;
-import org.planqk.atlas.core.model.ComputingResourcePropertyDataType;
-import org.planqk.atlas.core.model.ComputingResourcePropertyType;
-import org.planqk.atlas.core.services.ComputingResourcePropertyService;
+import org.planqk.atlas.core.model.ComputeResourceProperty;
+import org.planqk.atlas.core.model.ComputeResourcePropertyDataType;
+import org.planqk.atlas.core.model.ComputeResourcePropertyType;
+import org.planqk.atlas.core.services.ComputeResourcePropertyService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
 import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
@@ -52,13 +52,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(ComputingResourcePropertyController.class)
+@WebMvcTest(ComputeResourcePropertyController.class)
 @ExtendWith(MockitoExtension.class)
 @AutoConfigureMockMvc
 @EnableLinkAssemblers
-public class ComputingResourcePropertyControllerTest {
+public class ComputeResourcePropertyControllerTest {
     @MockBean
-    private ComputingResourcePropertyService resourceService;
+    private ComputeResourcePropertyService resourceService;
 
     @Autowired
     private MockMvc mockMvc;
@@ -72,43 +72,43 @@ public class ComputingResourcePropertyControllerTest {
 
     @Test
     void test_deleteResource() throws Exception {
-        doNothing().when(resourceService).deleteComputingResourceProperty(any());
+        doNothing().when(resourceService).deleteComputeResourceProperty(any());
         var url = "/" + Constants.API_VERSION + "/" + Constants.COMPUTING_RESOURCES_PROPERTIES + "/" + UUID.randomUUID().toString();
         mockMvc.perform(delete(url)).andExpect(status().isOk());
     }
 
     @Test
     void test_deleteResource_InvalidId() throws Exception {
-        doThrow(new NoSuchElementException()).when(resourceService).deleteComputingResourceProperty(any());
+        doThrow(new NoSuchElementException()).when(resourceService).deleteComputeResourceProperty(any());
         var url = "/" + Constants.API_VERSION + "/" + Constants.COMPUTING_RESOURCES_PROPERTIES + "/" + UUID.randomUUID().toString();
         mockMvc.perform(delete(url)).andExpect(status().isNotFound());
     }
 
     @Test
     void test_getResource_InvalidId() throws Exception {
-        when(resourceService.findComputingResourcePropertyById(any())).thenThrow(new NoSuchElementException());
+        when(resourceService.findComputeResourcePropertyById(any())).thenThrow(new NoSuchElementException());
         var url = "/" + Constants.API_VERSION + "/" + Constants.COMPUTING_RESOURCES_PROPERTIES + "/" + UUID.randomUUID().toString();
         mockMvc.perform(get(url)).andExpect(status().isNotFound());
     }
 
     @Test
     void test_getResource() throws Exception {
-        var sampleType = new ComputingResourcePropertyType();
+        var sampleType = new ComputeResourcePropertyType();
         sampleType.setId(UUID.randomUUID());
         sampleType.setName("Hello World");
-        sampleType.setDatatype(ComputingResourcePropertyDataType.FLOAT);
+        sampleType.setDatatype(ComputeResourcePropertyDataType.FLOAT);
         sampleType.setDescription("Test");
-        var sampleResource = new ComputingResourceProperty();
+        var sampleResource = new ComputeResourceProperty();
         sampleResource.setId(UUID.randomUUID());
-        sampleResource.setComputingResourcePropertyType(sampleType);
+        sampleResource.setComputeResourcePropertyType(sampleType);
 
-        when(resourceService.findComputingResourcePropertyById(any())).thenReturn(sampleResource);
+        when(resourceService.findComputeResourcePropertyById(any())).thenReturn(sampleResource);
         var url = "/" + Constants.API_VERSION + "/" + Constants.COMPUTING_RESOURCES_PROPERTIES + "/" + UUID.randomUUID().toString();
         var result = mockMvc.perform(get(url)).andExpect(status().isOk()).andReturn();
 
         var dto = mapper.readValue(
                 result.getResponse().getContentAsString(),
-                new TypeReference<EntityModel<ComputingResourceProperty>>() {
+                new TypeReference<EntityModel<ComputeResourceProperty>>() {
                 }
         ).getContent();
 

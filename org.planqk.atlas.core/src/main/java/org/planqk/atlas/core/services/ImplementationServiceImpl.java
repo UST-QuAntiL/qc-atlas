@@ -25,7 +25,9 @@ import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Implementation;
+import org.planqk.atlas.core.model.SoftwarePlatform;
 import org.planqk.atlas.core.repository.ImplementationRepository;
+import org.planqk.atlas.core.repository.SoftwarePlatformRepository;
 
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -37,7 +39,8 @@ import org.springframework.transaction.annotation.Transactional;
 @AllArgsConstructor
 public class ImplementationServiceImpl implements ImplementationService {
 
-    private final ImplementationRepository repository;
+    private final ImplementationRepository implementationRepository;
+    private final SoftwarePlatformRepository softwarePlatformRepository;
     //    private final TagService tagService;
     private final PublicationService publicationService;
     private final AlgorithmService algorithmService;
@@ -53,30 +56,45 @@ public class ImplementationServiceImpl implements ImplementationService {
             implementation.setImplementedAlgorithm(algorithmService.save(implementation.getImplementedAlgorithm()));
         }
 
-        return repository.save(implementation);
+        return implementationRepository.save(implementation);
     }
 
     @Override
     public void delete(UUID id) {
-        repository.deleteById(id);
+        implementationRepository.deleteById(id);
     }
 
     @Override
     public Page<Implementation> findByImplementedAlgorithm(UUID algoId, Pageable pageable) {
         var algorithm = new Algorithm();
         algorithm.setId(algoId);
-        return repository.findByImplementedAlgorithm(algorithm, pageable);
+        return implementationRepository.findByImplementedAlgorithm(algorithm, pageable);
+    }
+
+    @Override
+    public Algorithm getImplementedAlgorithm(UUID implId) {
+        return findById(implId).getImplementedAlgorithm();
+    }
+
+    @Override
+    public Page<SoftwarePlatform> findLinkedSoftwarePlatforms(UUID implId, Pageable p) {
+        return softwarePlatformRepository.findSoftwarePlatformsByImplementationId(implId, p);
     }
 
     @Override
     public Implementation findById(UUID implId) {
-        return repository.findById(implId).orElseThrow(NoSuchElementException::new);
+        return implementationRepository.findById(implId).orElseThrow(NoSuchElementException::new);
+    }
+
+    @Override
+    public Page<Implementation> findAll(Pageable p) {
+        return this.implementationRepository.findAll(p);
     }
 
     @Transactional
     @Override
     public Implementation update(UUID id, Implementation implementation) {
-        Optional<Implementation> implementationOptional = repository.findById(id);
+        Optional<Implementation> implementationOptional = implementationRepository.findById(id);
         if (implementationOptional.isPresent()) {
             Implementation oldImpl = implementationOptional.get();
             implementation.setId(id);

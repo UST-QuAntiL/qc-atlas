@@ -18,15 +18,14 @@
  *******************************************************************************/
 package org.planqk.atlas.core.repository;
 
+import java.util.UUID;
+
 import org.planqk.atlas.core.model.DiscussionComment;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.querydsl.QPageRequest;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
-
-import java.util.UUID;
 
 @RepositoryRestResource(exported = false)
 public interface DiscussionCommentRepository extends JpaRepository<DiscussionComment, UUID> {

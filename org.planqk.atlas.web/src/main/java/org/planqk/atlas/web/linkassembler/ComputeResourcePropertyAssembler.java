@@ -19,9 +19,9 @@
 
 package org.planqk.atlas.web.linkassembler;
 
-import org.planqk.atlas.web.controller.ComputingResourcePropertyController;
-import org.planqk.atlas.web.controller.ComputingResourcePropertyTypeController;
-import org.planqk.atlas.web.dtos.ComputingResourcePropertyDto;
+import org.planqk.atlas.web.controller.ComputeResourcePropertyController;
+import org.planqk.atlas.web.controller.ComputeResourcePropertyTypeController;
+import org.planqk.atlas.web.dtos.ComputeResourcePropertyDto;
 
 import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Component;
@@ -30,13 +30,13 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @SuppressWarnings("ConstantConditions")
 @Component
-public class ComputingResourcePropertyAssembler extends GenericLinkAssembler<ComputingResourcePropertyDto> {
+public class ComputeResourcePropertyAssembler extends GenericLinkAssembler<ComputeResourcePropertyDto> {
     @Override
-    public void addLinks(EntityModel<ComputingResourcePropertyDto> resource) {
-        resource.add(links.linkTo(methodOn(ComputingResourcePropertyController.class)
+    public void addLinks(EntityModel<ComputeResourcePropertyDto> resource) {
+        resource.add(links.linkTo(methodOn(ComputeResourcePropertyController.class)
                 .getComputingResourceProperty(resource.getContent().getId()))
                 .withSelfRel());
-        resource.add(links.linkTo(methodOn(ComputingResourcePropertyTypeController.class)
+        resource.add(links.linkTo(methodOn(ComputeResourcePropertyTypeController.class)
                 .getComputingResourcePropertyType(resource.getContent().getType().getId()))
                 .withRel("type"));
         // TODO (Maybe) add link to the entities linked to this quantum Resource, e.g. the Quantum Algorithms

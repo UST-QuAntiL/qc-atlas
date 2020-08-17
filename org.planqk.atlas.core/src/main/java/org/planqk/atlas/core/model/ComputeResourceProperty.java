@@ -36,10 +36,10 @@ import static lombok.EqualsAndHashCode.Exclude;
 @Data
 @Entity
 @TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
-public class ComputingResourceProperty extends HasId {
+public class ComputeResourceProperty extends HasId {
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
-    private ComputingResourcePropertyType computingResourcePropertyType;
+    private ComputeResourcePropertyType computeResourcePropertyType;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "algorithm_id")
@@ -51,7 +51,7 @@ public class ComputingResourceProperty extends HasId {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @Exclude
-    private Backend backend;
+    private ComputeResource computeResource;
 
     private String value;
 }

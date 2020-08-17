@@ -29,24 +29,24 @@ import javax.validation.Valid;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.model.ApplicationArea;
-import org.planqk.atlas.core.model.ComputingResourceProperty;
+import org.planqk.atlas.core.model.ComputeResourceProperty;
 import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.services.AlgoRelationService;
 import org.planqk.atlas.core.services.AlgoRelationTypeService;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.core.services.ApplicationAreaService;
-import org.planqk.atlas.core.services.ComputingResourcePropertyService;
+import org.planqk.atlas.core.services.ComputeResourcePropertyService;
 import org.planqk.atlas.core.services.PatternRelationService;
 import org.planqk.atlas.core.services.PatternRelationTypeService;
 import org.planqk.atlas.core.services.ProblemTypeService;
 import org.planqk.atlas.web.Constants;
-import org.planqk.atlas.web.controller.mixin.ComputingResourceMixin;
+import org.planqk.atlas.web.controller.mixin.ComputeResourcePropertyMixin;
 import org.planqk.atlas.web.controller.mixin.PublicationMixin;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
 import org.planqk.atlas.web.dtos.ApplicationAreaDto;
-import org.planqk.atlas.web.dtos.ComputingResourcePropertyDto;
+import org.planqk.atlas.web.dtos.ComputeResourcePropertyDto;
 import org.planqk.atlas.web.dtos.PatternRelationDto;
 import org.planqk.atlas.web.dtos.PatternRelationTypeDto;
 import org.planqk.atlas.web.dtos.ProblemTypeDto;
@@ -54,7 +54,7 @@ import org.planqk.atlas.web.dtos.PublicationDto;
 import org.planqk.atlas.web.linkassembler.AlgorithmAssembler;
 import org.planqk.atlas.web.linkassembler.AlgorithmRelationAssembler;
 import org.planqk.atlas.web.linkassembler.ApplicationAreaAssembler;
-import org.planqk.atlas.web.linkassembler.ComputingResourcePropertyAssembler;
+import org.planqk.atlas.web.linkassembler.ComputeResourcePropertyAssembler;
 import org.planqk.atlas.web.linkassembler.PatternRelationAssembler;
 import org.planqk.atlas.web.linkassembler.ProblemTypeAssembler;
 import org.planqk.atlas.web.linkassembler.PublicationAssembler;
@@ -70,8 +70,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
@@ -103,7 +101,7 @@ public class AlgorithmController {
     private final AlgorithmService algorithmService;
     private final AlgoRelationService algoRelationService;
     private final AlgoRelationTypeService algoRelationTypeService;
-    private final ComputingResourcePropertyService computingResourcePropertyService;
+    private final ComputeResourcePropertyService computeResourcePropertyService;
     private final PatternRelationService patternRelationService;
     private final PatternRelationTypeService patternRelationTypeService;
     private final ProblemTypeService problemTypeService;
@@ -115,11 +113,11 @@ public class AlgorithmController {
     private final AlgorithmAssembler algorithmAssembler;
     private final AlgorithmRelationAssembler algorithmRelationAssembler;
     private final PublicationAssembler publicationAssembler;
-    private final ComputingResourcePropertyAssembler computingResourcePropertyAssembler;
+    private final ComputeResourcePropertyAssembler computeResourcePropertyAssembler;
     private final PatternRelationAssembler patternRelationAssembler;
 
     private final PublicationMixin publicationMixin;
-    private final ComputingResourceMixin computingResourceMixin;
+    private final ComputeResourcePropertyMixin computeResourcePropertyMixin;
 
     @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Retrieve all algorithms (quantum, hybrid and classic).")
     @GetMapping()
@@ -500,14 +498,14 @@ public class AlgorithmController {
                     @ApiResponse(responseCode = "404")
             }, description = "Retrieve the required computing resources of an algorithm")
     @GetMapping("/{algoId}/" + Constants.COMPUTING_RESOURCES_PROPERTIES)
-    public HttpEntity<PagedModel<EntityModel<ComputingResourcePropertyDto>>> getComputingResources(
+    public HttpEntity<PagedModel<EntityModel<ComputeResourcePropertyDto>>> getComputingResources(
             @PathVariable UUID algoId,
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size
     ) {
         algorithmService.findById(algoId);
-        var resources = computingResourcePropertyService.findAllComputingResourcesPropertyByAlgorithmId(algoId, RestUtils.getPageableFromRequestParams(page, size));
-        return ResponseEntity.ok(computingResourcePropertyAssembler.toModel(resources));
+        var resources = computeResourcePropertyService.findAllComputeResourcesPropertyByAlgorithmId(algoId, RestUtils.getPageableFromRequestParams(page, size));
+        return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(resources));
     }
 
     @Operation(responses = {
@@ -516,17 +514,17 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "404", description = "Computing resource type  or algorithm can not be found with the given Ids")
     }, description = "Add a computing resource (e.g. a certain number of qubits) that is required by an algorithm. Custom ID will be ignored. For computing resource type only ID is required, other computing resource type attributes will not change.")
     @PostMapping("/{algoId}/" + Constants.COMPUTING_RESOURCES_PROPERTIES)
-    public HttpEntity<EntityModel<ComputingResourcePropertyDto>> addComputingResource(
+    public HttpEntity<EntityModel<ComputeResourcePropertyDto>> addComputingResource(
             @PathVariable UUID algoId,
-            @Valid @RequestBody ComputingResourcePropertyDto resourceDto
+            @Valid @RequestBody ComputeResourcePropertyDto resourceDto
     ) {
         var algorithm = algorithmService.findById(algoId);
 
         ValidationUtils.validateComputingResourceProperty(resourceDto);
 
-        var resource = computingResourceMixin.fromDto(resourceDto);
-        var updatedResource = computingResourcePropertyService.addComputingResourcePropertyToAlgorithm(algorithm, resource);
-        return ResponseEntity.ok(computingResourcePropertyAssembler.toModel(updatedResource));
+        var resource = computeResourcePropertyMixin.fromDto(resourceDto);
+        var updatedResource = computeResourcePropertyService.addComputeResourcePropertyToAlgorithm(algorithm, resource);
+        return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(updatedResource));
     }
 
     @Operation(responses = {
@@ -534,18 +532,18 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "400", description = "Resource doesn't belong to this algorithm"),
             @ApiResponse(responseCode = "404", description = "Algorithm with the given id doesn't exist")})
     @GetMapping("/{algoId}/" + Constants.COMPUTING_RESOURCES_PROPERTIES + "/{resourceId}")
-    public HttpEntity<EntityModel<ComputingResourcePropertyDto>> getComputingResource(
+    public HttpEntity<EntityModel<ComputeResourcePropertyDto>> getComputingResource(
             @PathVariable UUID algoId, @PathVariable UUID resourceId) {
         log.debug("Get received to retrieve computing resource with id {}.", resourceId);
 
         algorithmService.findById(algoId);
-        ComputingResourceProperty computingResourceProperty = computingResourcePropertyService.findComputingResourcePropertyById(resourceId);
-        if (Objects.isNull(computingResourceProperty.getAlgorithm()) || !computingResourceProperty.getAlgorithm().getId().equals(algoId)) {
+        ComputeResourceProperty computeResourceProperty = computeResourcePropertyService.findComputeResourcePropertyById(resourceId);
+        if (Objects.isNull(computeResourceProperty.getAlgorithm()) || !computeResourceProperty.getAlgorithm().getId().equals(algoId)) {
             log.debug("Algorithm is not referenced from the computing resource to retrieve!");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        return ResponseEntity.ok(computingResourcePropertyAssembler.toModel(computingResourceProperty));
+        return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(computeResourceProperty));
     }
 
     @Operation(responses = {
@@ -554,21 +552,21 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "404", description = "Algorithm with the given id doesn't exist")},
             description = "Update a computing resource of the algorithm. Custom ID will be ignored. For computing resource type only ID is required, other computing resource type attributes will not change.")
     @PutMapping("/{algoId}/" + Constants.COMPUTING_RESOURCES_PROPERTIES + "/{resourceId}")
-    public HttpEntity<EntityModel<ComputingResourcePropertyDto>> updateComputingResource(@PathVariable UUID algoId,
-                                                                                         @PathVariable UUID resourceId,
-                                                                                         @RequestBody ComputingResourcePropertyDto resourceDto) {
+    public HttpEntity<EntityModel<ComputeResourcePropertyDto>> updateComputingResource(@PathVariable UUID algoId,
+                                                                                       @PathVariable UUID resourceId,
+                                                                                       @RequestBody ComputeResourcePropertyDto resourceDto) {
         log.debug("Put received to update computing resource with id {}.", resourceId);
-        ComputingResourceProperty computingResourceProperty = computingResourcePropertyService.findComputingResourcePropertyById(resourceId);
+        ComputeResourceProperty computeResourceProperty = computeResourcePropertyService.findComputeResourcePropertyById(resourceId);
         Algorithm algorithm = algorithmService.findById(algoId);
-        if (Objects.isNull(computingResourceProperty.getAlgorithm()) || !computingResourceProperty.getAlgorithm().getId().equals(algoId)) {
+        if (Objects.isNull(computeResourceProperty.getAlgorithm()) || !computeResourceProperty.getAlgorithm().getId().equals(algoId)) {
             log.debug("Algorithm is not referenced from the computing resource to update!");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         ValidationUtils.validateComputingResourceProperty(resourceDto);
-        var resource = computingResourceMixin.fromDto(resourceDto);
+        var resource = computeResourcePropertyMixin.fromDto(resourceDto);
         resource.setId(resourceId);
-        var updatedResource = computingResourcePropertyService.addComputingResourcePropertyToAlgorithm(algorithm, resource);
-        return ResponseEntity.ok(computingResourcePropertyAssembler.toModel(updatedResource));
+        var updatedResource = computeResourcePropertyService.addComputeResourcePropertyToAlgorithm(algorithm, resource);
+        return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(updatedResource));
     }
 
     @Operation(responses = {
@@ -580,12 +578,12 @@ public class AlgorithmController {
                                                     @PathVariable UUID resourceId) {
         log.debug("Delete received to remove computing resource with id {}.", resourceId);
         algorithmService.findById(algoId);
-        var computingResourceProperty = computingResourcePropertyService.findComputingResourcePropertyById(resourceId);
+        var computingResourceProperty = computeResourcePropertyService.findComputeResourcePropertyById(resourceId);
         if (Objects.isNull(computingResourceProperty.getAlgorithm()) || !computingResourceProperty.getAlgorithm().getId().equals(algoId)) {
             log.debug("Algorithm is not referenced from the computing resource to delete!");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        computingResourcePropertyService.deleteComputingResourceProperty(resourceId);
+        computeResourcePropertyService.deleteComputeResourceProperty(resourceId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

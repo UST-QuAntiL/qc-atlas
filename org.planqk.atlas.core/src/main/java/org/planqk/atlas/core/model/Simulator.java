@@ -13,10 +13,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 @Data
-public class Simulator extends Backend {
-
-    private boolean localExecution;
-
-    private String licence;
+public class Simulator extends ComputeResource {
 
 }
