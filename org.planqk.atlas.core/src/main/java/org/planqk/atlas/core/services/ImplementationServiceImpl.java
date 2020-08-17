@@ -78,7 +78,8 @@ public class ImplementationServiceImpl implements ImplementationService {
 
     @Override
     public Page<SoftwarePlatform> findLinkedSoftwarePlatforms(UUID implId, Pageable p) {
-        return softwarePlatformRepository.findSoftwarePlatformsByImplementationId(implId, p);
+        // return softwarePlatformRepository.findSoftwarePlatformsByImplementationId(implId, p);
+        return implementationRepository.findLinkedSoftwarePlatforms(implId, p);
     }
 
     @Override
