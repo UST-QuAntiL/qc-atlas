@@ -24,6 +24,10 @@ import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
+import org.planqk.atlas.core.model.ApplicationArea;
+import org.planqk.atlas.core.model.PatternRelation;
+import org.planqk.atlas.core.model.ProblemType;
+import org.planqk.atlas.core.model.Publication;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -44,11 +48,15 @@ public interface AlgorithmService {
     @Transactional
     void delete(UUID id);
 
+    Page<Publication> findPublications(UUID algoId, Pageable pageable);
+
     @Transactional
     void addPublicationReference(UUID algoId, UUID publicationId);
 
     @Transactional
     void deletePublicationReference(UUID algoId, UUID publicationId);
+
+    Page<ProblemType> findProblemTypes(UUID algoId, Pageable pageable);
 
     @Transactional
     void addProblemTypeReference(UUID algoId, UUID problemTypeId);
@@ -56,17 +64,29 @@ public interface AlgorithmService {
     @Transactional
     void deleteProblemTypeReference(UUID algoId, UUID problemTypeId);
 
+    Page<ApplicationArea> findApplicationAreas(UUID algoId, Pageable pageable);
+
     @Transactional
     void addApplicationAreaReference(UUID algoId, UUID applicationAreaId);
 
     @Transactional
     void deleteApplicationAreaReference(UUID algoId, UUID applicationAreaId);
 
+    Page<PatternRelation> findPatternRelations(UUID algoId, Pageable pageable);
+
     @Transactional
     void addPatternRelationReference(UUID algoId, UUID patternRelationId);
 
     @Transactional
     void deletePatternRelationReference(UUID algoId, UUID patternRelationId);
+
+    Page<AlgorithmRelation> findAlgorithmRelations(UUID algoId, Pageable pageable);
+
+    @Transactional
+    void addAlgorithmRelationReference(UUID algoId, UUID algorithmRelationId);
+
+    @Transactional
+    void deleteAlgorithmRelationReference(UUID algoId, UUID algorithmRelationId);
 
     @Transactional
     void deleteAlgorithmRelation(UUID algoId, UUID relationId);

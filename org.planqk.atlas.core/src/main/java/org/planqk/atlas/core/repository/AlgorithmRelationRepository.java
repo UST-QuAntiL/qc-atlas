@@ -5,6 +5,9 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.AlgorithmRelation;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -20,6 +23,8 @@ public interface AlgorithmRelationRepository extends JpaRepository<AlgorithmRela
     Set<AlgorithmRelation> findByTargetAlgorithmId(UUID targetAlgId);
 
     Set<AlgorithmRelation> findBySourceAlgorithmId(UUID sourceAlgId);
+
+    Page<AlgorithmRelation> findBySourceAlgorithmIdOrTargetAlgorithmId(UUID algoId, Pageable pageable);
 
     long countByAlgoRelationType_Id(UUID algoRelationTypeId);
 

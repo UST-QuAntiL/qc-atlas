@@ -27,6 +27,8 @@ import org.planqk.atlas.core.model.ApplicationArea;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 /**
@@ -42,4 +44,7 @@ public interface ApplicationAreaRepository extends JpaRepository<ApplicationArea
     }
 
     Page<ApplicationArea> findByNameContainingIgnoreCase(String name, Pageable pageable);
+
+    @Query("SELECT aa FROM ApplicationArea aa JOIN aa.algorithms algos WHERE algos.id = :algoid")
+    Page<ApplicationArea> findApplicationAreasByAlgorithmId(@Param("algoid") UUID id, Pageable p);
 }

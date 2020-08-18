@@ -38,10 +38,12 @@ import org.planqk.atlas.core.model.exceptions.ConsistencyException;
 import org.planqk.atlas.core.repository.AlgoRelationTypeRepository;
 import org.planqk.atlas.core.repository.AlgorithmRelationRepository;
 import org.planqk.atlas.core.repository.AlgorithmRepository;
+import org.planqk.atlas.core.repository.ApplicationAreaRepository;
 import org.planqk.atlas.core.repository.ImplementationRepository;
+import org.planqk.atlas.core.repository.PatternRelationRepository;
+import org.planqk.atlas.core.repository.ProblemTypeRepository;
+import org.planqk.atlas.core.repository.PublicationRepository;
 import org.planqk.atlas.core.repository.SketchRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -53,26 +55,29 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class AlgorithmServiceImpl implements AlgorithmService {
 
-    private final static Logger LOG = LoggerFactory.getLogger(AlgorithmServiceImpl.class);
-
     private final AlgorithmRepository algorithmRepository;
 
     private final SketchRepository sketchRepository;
 
     private final AlgorithmRelationRepository algorithmRelationRepository;
 
-    private final PatternRelationService patternRelationService;
-
-    private final AlgoRelationTypeRepository algoRelationTypeRepository;
+    private final AlgoRelationService algoRelationService;
     private final AlgoRelationTypeService algoRelationTypeService;
+    private final AlgoRelationTypeRepository algoRelationTypeRepository;
 
     private final ImplementationRepository implementationRepository;
 
     private final PublicationService publicationService;
+    private final PublicationRepository publicationRepository;
 
     private final ProblemTypeService problemTypeService;
+    private final ProblemTypeRepository problemTypeRepository;
 
     private final ApplicationAreaService applicationAreaService;
+    private final ApplicationAreaRepository applicationAreaRepository;
+
+    private final PatternRelationService patternRelationService;
+    private final PatternRelationRepository patternRelationRepository;
 
     @Transactional
     @Override
@@ -164,6 +169,15 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     }
 
     @Override
+    public Page<Publication> findPublications(UUID algoId, Pageable pageable) {
+        if (algorithmRepository.existsAlgorithmById(algoId)) {
+            throw new NoSuchElementException();
+        }
+
+        return publicationRepository.findPublicationsByAlgorithmId(algoId, pageable);
+    }
+
+    @Override
     @Transactional
     public void addPublicationReference(UUID algoId, UUID publicationId) {
         Algorithm algorithm = findById(algoId);
@@ -187,6 +201,15 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         }
 
         algorithm.removePublication(publication);
+    }
+
+    @Override
+    public Page<ProblemType> findProblemTypes(UUID algoId, Pageable pageable) {
+        if (algorithmRepository.existsAlgorithmById(algoId)) {
+            throw new NoSuchElementException();
+        }
+
+        return problemTypeRepository.findProblemTypesByAlgorithmId(algoId, pageable);
     }
 
     @Override
@@ -216,6 +239,15 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     }
 
     @Override
+    public Page<ApplicationArea> findApplicationAreas(UUID algoId, Pageable pageable) {
+        if (algorithmRepository.existsAlgorithmById(algoId)) {
+            throw new NoSuchElementException();
+        }
+
+        return applicationAreaRepository.findApplicationAreasByAlgorithmId(algoId, pageable);
+    }
+
+    @Override
     @Transactional
     public void addApplicationAreaReference(UUID algoId, UUID applicationAreaId) {
         Algorithm algorithm = findById(algoId);
@@ -241,6 +273,16 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         algorithm.removeApplicationArea(applicationArea);
     }
 
+    @Override
+    public Page<PatternRelation> findPatternRelations(UUID algoId, Pageable pageable) {
+        if (algorithmRepository.existsAlgorithmById(algoId)) {
+            throw new NoSuchElementException();
+        }
+
+        return patternRelationRepository.findByAlgorithmId(algoId, pageable);
+    }
+
+    @Override
     @Transactional
     public void addPatternRelationReference(UUID algoId, UUID patternRelationId) {
         Algorithm algorithm = findById(algoId);
@@ -253,6 +295,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         algorithm.getRelatedPatterns().add(patternRelation);
     }
 
+    @Override
     @Transactional
     public void deletePatternRelationReference(UUID algoId, UUID patternRelationId) {
         Algorithm algorithm = findById(algoId);
@@ -263,6 +306,41 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         }
 
         algorithm.getRelatedPatterns().remove(patternRelation);
+    }
+
+    @Override
+    public Page<AlgorithmRelation> findAlgorithmRelations(UUID algoId, Pageable pageable) {
+        if (algorithmRepository.existsAlgorithmById(algoId)) {
+            throw new NoSuchElementException();
+        }
+
+        return algorithmRelationRepository.findBySourceAlgorithmIdOrTargetAlgorithmId(algoId, pageable);
+    }
+
+    @Override
+    @Transactional
+    public void addAlgorithmRelationReference(UUID algoId, UUID algorithmRelationId) {
+        Algorithm algorithm = findById(algoId);
+        AlgorithmRelation algorithmRelation = algoRelationService.findById(algorithmRelationId);
+
+        if (algorithm.getAlgorithmRelations().contains(algorithmRelation)) {
+            throw new ConsistencyException("Algorithms are already linked");
+        }
+
+        algorithm.getAlgorithmRelations().add(algorithmRelation);
+    }
+
+    @Override
+    @Transactional
+    public void deleteAlgorithmRelationReference(UUID algoId, UUID algorithmRelationId) {
+        Algorithm algorithm = findById(algoId);
+        AlgorithmRelation algorithmRelation = algoRelationService.findById(algorithmRelationId);
+
+        if (!algorithm.getAlgorithmRelations().contains(algorithmRelation)) {
+            throw new ConsistencyException("Algorithms are not linked");
+        }
+
+        algorithm.getAlgorithmRelations().remove(algorithmRelation);
     }
 
     private AlgoRelationType getPersistedAlgoRelationType(AlgorithmRelation relation) {

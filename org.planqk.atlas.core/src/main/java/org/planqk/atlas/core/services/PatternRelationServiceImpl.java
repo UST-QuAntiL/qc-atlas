@@ -65,7 +65,7 @@ public class PatternRelationServiceImpl implements PatternRelationService {
 
     @Override
     public Set<PatternRelation> findByAlgorithmId(UUID algoId) {
-        return repo.findByAlgorithmId(algoId);
+        return repo.findByAlgorithmId(algoId, Pageable.unpaged()).toSet();
     }
 
     @Override

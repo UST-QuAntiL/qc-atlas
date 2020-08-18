@@ -400,7 +400,7 @@ public class AlgorithmControllerTest {
         doThrow(new NoSuchElementException()).when(algorithmService).getAlgorithmRelations(any());
 
         var url = fromMethodCall(uriBuilder, on(AlgorithmController.class)
-                .getAlgorithmRelations(UUID.randomUUID())).toUriString();
+                .getAlgorithmRelationsForAlgorithm(UUID.randomUUID())).toUriString();
         mockMvc.perform(get(url))
                 .andExpect(status().isNotFound());
     }
@@ -411,7 +411,7 @@ public class AlgorithmControllerTest {
         when(algorithmService.getAlgorithmRelations(any())).thenReturn(new HashSet<>());
 
         var url = fromMethodCall(uriBuilder, on(AlgorithmController.class)
-                .getAlgorithmRelations(UUID.randomUUID())).toUriString();
+                .getAlgorithmRelationsForAlgorithm(UUID.randomUUID())).toUriString();
 
         MvcResult result = mockMvc
                 .perform(get(url))
@@ -428,7 +428,7 @@ public class AlgorithmControllerTest {
         when(algorithmService.getAlgorithmRelations(any())).thenReturn(algorithm1.getAlgorithmRelations());
 
         var url = fromMethodCall(uriBuilder, on(AlgorithmController.class)
-                .getAlgorithmRelations(UUID.randomUUID())).toUriString();
+                .getAlgorithmRelationsForAlgorithm(UUID.randomUUID())).toUriString();
 
         MvcResult result = mockMvc
                 .perform(get(url).accept(MediaType.APPLICATION_JSON))
@@ -457,7 +457,7 @@ public class AlgorithmControllerTest {
         initializeAlgorithms();
 
         var url = fromMethodCall(uriBuilder, on(AlgorithmController.class)
-                .addAlgorithmRelation(UUID.randomUUID(), null)).toUriString();
+                .addAlgorithmRelationReferenceToAlgorithm(UUID.randomUUID(), null)).toUriString();
 
         mockMvc.perform(post(url).content(mapper.writeValueAsString(algorithmRelation1Dto))
                 .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
@@ -500,7 +500,7 @@ public class AlgorithmControllerTest {
         doNothing().when(algorithmService).deleteAlgorithmRelation(algorithm1.getId(), algorithmRelation1.getId());
 
         var url = fromMethodCall(uriBuilder, on(AlgorithmController.class)
-                .deleteAlgorithmRelation(UUID.randomUUID(), UUID.randomUUID())).toUriString();
+                .deleteAlgorithmRelationReferenceFromAlgorithm(UUID.randomUUID(), UUID.randomUUID())).toUriString();
 
         mockMvc.perform(delete(url)).andExpect(status().isOk());
     }
@@ -540,7 +540,7 @@ public class AlgorithmControllerTest {
         when(algorithmService.findById(any())).thenReturn(new QuantumAlgorithm());
         when(computeResourcePropertyService.findAllComputeResourcesPropertyByAlgorithmId(any(), any())).thenReturn(Page.empty());
         var path = fromMethodCall(uriBuilder, on(AlgorithmController.class)
-                .getComputingResources(UUID.randomUUID(), 10, 10)).toUriString();
+                .getComputeResourcePropertiesForAlgorithm(UUID.randomUUID(), 10, 10)).toUriString();
 
         mockMvc.perform(get(path)).andExpect(status().isOk());
     }
@@ -552,7 +552,7 @@ public class AlgorithmControllerTest {
         when(algorithmService.findById(any())).thenReturn(algo);
         when(computeResourcePropertyService.findAllComputeResourcesPropertyByAlgorithmId(any(), any())).thenReturn(Page.empty());
         var path = fromMethodCall(uriBuilder, on(AlgorithmController.class)
-                .getComputingResources(UUID.randomUUID(), 10, 10)).toUriString();
+                .getComputeResourcePropertiesForAlgorithm(UUID.randomUUID(), 10, 10)).toUriString();
         var result = mockMvc.perform(get(path)).andExpect(status().isOk()).andReturn();
 
         var resultList = ObjectMapperUtils.mapResponseToList(
@@ -586,7 +586,7 @@ public class AlgorithmControllerTest {
         when(algorithmService.findById(any())).thenReturn(algo);
         when(computeResourcePropertyService.findAllComputeResourcesPropertyByAlgorithmId(any(), any())).thenReturn(new PageImpl<>(resources));
         var path = fromMethodCall(uriBuilder, on(AlgorithmController.class)
-                .getComputingResources(UUID.randomUUID(), 10, 10)).toUriString();
+                .getComputeResourcePropertiesForAlgorithm(UUID.randomUUID(), 10, 10)).toUriString();
         var result = mockMvc.perform(get(path)).andExpect(status().isOk()).andReturn();
 
         var resultList = ObjectMapperUtils.mapResponseToList(

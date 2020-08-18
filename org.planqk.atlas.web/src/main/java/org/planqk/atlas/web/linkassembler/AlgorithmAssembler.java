@@ -30,7 +30,7 @@ public class AlgorithmAssembler extends GenericLinkAssembler<AlgorithmDto> {
                 .withRel(Constants.IMPLEMENTATIONS));
         resource.add(links.linkTo(methodOn(AlgorithmController.class).getProblemTypesForAlgorithm(getId(resource)))
                 .withRel(Constants.PROBLEM_TYPES));
-        resource.add(links.linkTo(methodOn(AlgorithmController.class).getAlgorithmRelations(getId(resource)))
+        resource.add(links.linkTo(methodOn(AlgorithmController.class).getAlgorithmRelationsForAlgorithm(getId(resource)))
                 .withRel(Constants.ALGORITHM_RELATIONS));
         resource.add(links.linkTo(methodOn(AlgorithmController.class).getPublicationsForAlgorithm(getId(resource)))
                 .withRel(Constants.PUBLICATIONS));
@@ -57,7 +57,7 @@ public class AlgorithmAssembler extends GenericLinkAssembler<AlgorithmDto> {
     public void addAlgorithmRelationLink(CollectionModel<EntityModel<AlgorithmRelationDto>> resultCollection,
                                          UUID sourceAlgorithm_id) {
         resultCollection.add(
-                links.linkTo(methodOn(AlgorithmController.class).getAlgorithmRelations(sourceAlgorithm_id)).withSelfRel());
+                links.linkTo(methodOn(AlgorithmController.class).getAlgorithmRelationsForAlgorithm(sourceAlgorithm_id)).withSelfRel());
     }
 
     public void addPatternRelationLink(CollectionModel<EntityModel<PatternRelationDto>> resultCollection, UUID

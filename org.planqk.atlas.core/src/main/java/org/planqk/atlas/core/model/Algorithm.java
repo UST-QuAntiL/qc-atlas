@@ -199,6 +199,8 @@ public class Algorithm extends AlgorOrImpl implements ModelWithPublications {
         problemType.removeAlgorithm(this);
     }
 
+
+
     public void addSketch(Sketch sketch) {
         sketches.add(sketch);
     }
