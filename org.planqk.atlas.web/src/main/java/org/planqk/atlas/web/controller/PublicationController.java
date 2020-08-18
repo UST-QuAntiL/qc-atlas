@@ -35,6 +35,8 @@ import org.planqk.atlas.web.linkassembler.PublicationAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
+import org.planqk.atlas.web.utils.UpdateValidationGroup;
+import org.planqk.atlas.web.utils.ValidationGroup;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -93,12 +95,24 @@ public class PublicationController {
             @ApiResponse(responseCode = "201"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404")
-    }, description = "Custom ID will be ignored.")
+    })
     @PostMapping()
     public HttpEntity<EntityModel<PublicationDto>> createPublication(
-            @Validated @RequestBody PublicationDto publicationDto) {
+            @Validated(ValidationGroup.class) @RequestBody PublicationDto publicationDto) {
         Publication publication = publicationService.save(ModelMapperUtils.convert(publicationDto, Publication.class));
         return new ResponseEntity<>(publicationAssembler.toModel(publication), HttpStatus.CREATED);
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404")
+    }, description = "Custom ID will be ignored.")
+    @PutMapping()
+    public HttpEntity<EntityModel<PublicationDto>> updatePublication(
+            @Validated({ValidationGroup.class, UpdateValidationGroup.class}) @RequestBody PublicationDto pub) {
+        Publication publication = publicationService.update(pub.getId(), ModelMapperUtils.convert(pub, Publication.class));
+        return new ResponseEntity<>(publicationAssembler.toModel(publication), HttpStatus.OK);
     }
 
     @Operation(responses = {
@@ -115,26 +129,10 @@ public class PublicationController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404")
-    }, description = "Custom ID will be ignored.")
-    @PutMapping("/{id}")
-    public HttpEntity<EntityModel<PublicationDto>> updatePublication(
-            @PathVariable UUID id,
-            @Validated @RequestBody PublicationDto pub) {
-        Publication publication = publicationService.update(id, ModelMapperUtils.convert(pub, Publication.class));
-        return new ResponseEntity<>(publicationAssembler.toModel(publication), HttpStatus.OK);
-    }
-
-    @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Publication with given id doesn't exist")
     }, description = "")
     @DeleteMapping("/{id}")
     public HttpEntity<Void> deletePublication(@PathVariable UUID id) {
-        Publication publication = publicationService.findById(id);
-        publication.getAlgorithms().forEach(algorithm -> algorithm.removePublication(publication));
-        publication.getImplementations().forEach(implementation -> implementation.removePublication(publication));
         publicationService.deleteById(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -151,7 +149,9 @@ public class PublicationController {
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "200")
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404")
     }, description = "Get a specific referenced algorithm of a publication.")
     @GetMapping("/{id}/" + Constants.ALGORITHMS + "/{algoId}")
     public HttpEntity<EntityModel<AlgorithmDto>> getPublicationAlgorithm(
@@ -162,7 +162,8 @@ public class PublicationController {
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "201"),
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", content = @Content, description = "algorithm or publication does not exist")
     }, description = "Add a reference to an existing algorithm (that was previously created via a POST on /algorithms/). " +
             "Custom ID will be ignored. For algorithm only ID is required, other algorithm attributes will not change. " +

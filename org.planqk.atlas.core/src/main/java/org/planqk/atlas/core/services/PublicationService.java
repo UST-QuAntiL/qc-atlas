@@ -19,17 +19,23 @@
 
 package org.planqk.atlas.core.services;
 
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+
+import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Publication;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-
 public interface PublicationService {
+
+    Page<Algorithm> findAlgorithmsOfPublication(UUID publicationId, Pageable p);
+
+    Page<Implementation> findImplementationsOfPublication(UUID publicationId, Pageable p);
 
     @Transactional
     Publication save(Publication publication);

@@ -38,6 +38,9 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 @RepositoryRestResource(exported = false)
 public interface ImplementationRepository extends JpaRepository<Implementation, UUID> {
 
+    @Query("SELECT algo FROM Algorithm algo JOIN algo.publications pub WHERE  pub.id = :id")
+    Page<Implementation> findImplementationsByPublicationId(@Param("id") UUID id, Pageable p);
+
     boolean existsImplementationById(UUID id);
 
     Page<Implementation> findByImplementedAlgorithm(Algorithm implementedAlgorithm, Pageable pageable);

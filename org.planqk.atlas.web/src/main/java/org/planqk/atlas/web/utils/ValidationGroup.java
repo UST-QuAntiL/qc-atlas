@@ -1,0 +1,4 @@
+package org.planqk.atlas.web.utils;
+
+public interface ValidationGroup {
+}

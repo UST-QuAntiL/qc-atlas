@@ -27,6 +27,8 @@ import org.planqk.atlas.core.model.Publication;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.stereotype.Repository;
 
@@ -36,6 +38,12 @@ import org.springframework.stereotype.Repository;
 @Repository
 @RepositoryRestResource(exported = false)
 public interface PublicationRepository extends JpaRepository<Publication, UUID> {
+
+    @Query("SELECT pub FROM Publication pub JOIN pub.algorithms algs WHERE :id = algs.id")
+    Page<Publication> findPublicationsByAlgorithmId(@Param("id") UUID id, Pageable p);
+
+    @Query("SELECT pub FROM Publication pub JOIN pub.implementations impls WHERE :id = impls.id")
+    Page<Publication> findPublicationsByImplementationId(@Param("id") UUID id, Pageable p);
 
     default Page<Publication> findAll(String search, Pageable pageable) {
         return findByTitleContainingIgnoreCaseOrDoiContainingIgnoreCaseOrUrlContainingIgnoreCaseOrAuthorsContainingIgnoreCase(search, search, search, search, pageable);

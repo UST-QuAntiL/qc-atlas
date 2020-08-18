@@ -26,7 +26,11 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Publication;
+import org.planqk.atlas.core.repository.AlgorithmRepository;
+import org.planqk.atlas.core.repository.ImplementationRepository;
 import org.planqk.atlas.core.repository.PublicationRepository;
 
 import lombok.AllArgsConstructor;
@@ -40,6 +44,18 @@ import org.springframework.transaction.annotation.Transactional;
 public class PublicationServiceImpl implements PublicationService {
 
     private final PublicationRepository publicationRepository;
+    private final ImplementationRepository implementationRepository;
+    private final AlgorithmRepository algorithmRepository;
+
+    @Override
+    public Page<Algorithm> findAlgorithmsOfPublication(UUID publicationId, Pageable p) {
+        return algorithmRepository.findAlgorithmsByPublicationId(publicationId, p);
+    }
+
+    @Override
+    public Page<Implementation> findImplementationsOfPublication(UUID publicationId, Pageable p) {
+        return implementationRepository.findImplementationsByPublicationId(publicationId, p);
+    }
 
     @Override
     @Transactional
@@ -59,6 +75,9 @@ public class PublicationServiceImpl implements PublicationService {
     @Override
     @Transactional
     public void deleteById(UUID id) {
+        Publication publication = findById(id);
+        publication.getAlgorithms().forEach(algorithm -> algorithm.removePublication(publication));
+        publication.getImplementations().forEach(implementation -> implementation.removePublication(publication));
         publicationRepository.deleteById(id);
     }
 
