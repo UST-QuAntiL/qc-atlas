@@ -21,11 +21,8 @@ package org.planqk.atlas.web.controller;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Publication;
-import org.planqk.atlas.core.services.AlgorithmService;
-import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.core.services.PublicationService;
 import org.planqk.atlas.web.Constants;
-import org.planqk.atlas.web.controller.mixin.PublicationMixin;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.ImplementationDto;
 import org.planqk.atlas.web.dtos.PublicationDto;
@@ -35,8 +32,8 @@ import org.planqk.atlas.web.linkassembler.PublicationAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
-import org.planqk.atlas.web.utils.UpdateValidationGroup;
-import org.planqk.atlas.web.utils.ValidationGroup;
+import org.planqk.atlas.web.utils.ValidationGroups.Create;
+import org.planqk.atlas.web.utils.ValidationGroups.Update;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -44,10 +41,8 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -73,19 +68,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class PublicationController {
 
     private final PublicationService publicationService;
-    private final AlgorithmService algorithmService;
-    private final ImplementationService implementationService;
     private final PublicationAssembler publicationAssembler;
     private final AlgorithmAssembler algorithmAssembler;
     private final ImplementationAssembler implementationAssembler;
-    private final PublicationMixin publicationMixIn;
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200")
     }, description = "")
     @GetMapping()
     @ListParametersDoc()
-    public HttpEntity<PagedModel<EntityModel<PublicationDto>>> getPublications(
+    public ResponseEntity<PagedModel<EntityModel<PublicationDto>>> getPublications(
             @Parameter(hidden = true) ListParameters listParameters) {
         var entities = publicationService.findAll(listParameters.getPageable(), listParameters.getSearch());
         return ResponseEntity.ok(publicationAssembler.toModel(entities));
@@ -97,8 +89,8 @@ public class PublicationController {
             @ApiResponse(responseCode = "404")
     })
     @PostMapping()
-    public HttpEntity<EntityModel<PublicationDto>> createPublication(
-            @Validated(ValidationGroup.class) @RequestBody PublicationDto publicationDto) {
+    public ResponseEntity<EntityModel<PublicationDto>> createPublication(
+            @Validated(Create.class) @RequestBody PublicationDto publicationDto) {
         Publication publication = publicationService.save(ModelMapperUtils.convert(publicationDto, Publication.class));
         return new ResponseEntity<>(publicationAssembler.toModel(publication), HttpStatus.CREATED);
     }
@@ -107,10 +99,10 @@ public class PublicationController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404")
-    }, description = "Custom ID will be ignored.")
+    })
     @PutMapping()
-    public HttpEntity<EntityModel<PublicationDto>> updatePublication(
-            @Validated({ValidationGroup.class, UpdateValidationGroup.class}) @RequestBody PublicationDto pub) {
+    public ResponseEntity<EntityModel<PublicationDto>> updatePublication(
+            @Validated({Update.class}) @RequestBody PublicationDto pub) {
         Publication publication = publicationService.update(pub.getId(), ModelMapperUtils.convert(pub, Publication.class));
         return new ResponseEntity<>(publicationAssembler.toModel(publication), HttpStatus.OK);
     }
@@ -121,7 +113,7 @@ public class PublicationController {
             @ApiResponse(responseCode = "404")
     }, description = "")
     @GetMapping("/{id}")
-    public HttpEntity<EntityModel<PublicationDto>> getPublication(@PathVariable UUID id) {
+    public ResponseEntity<EntityModel<PublicationDto>> getPublication(@PathVariable UUID id) {
         Publication publication = publicationService.findById(id);
         return new ResponseEntity<>(publicationAssembler.toModel(publication), HttpStatus.OK);
     }
@@ -132,9 +124,9 @@ public class PublicationController {
             @ApiResponse(responseCode = "404", description = "Publication with given id doesn't exist")
     }, description = "")
     @DeleteMapping("/{id}")
-    public HttpEntity<Void> deletePublication(@PathVariable UUID id) {
+    public ResponseEntity<Void> deletePublication(@PathVariable UUID id) {
         publicationService.deleteById(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return ResponseEntity.ok().build();
     }
 
     @Operation(responses = {
@@ -143,54 +135,74 @@ public class PublicationController {
             @ApiResponse(responseCode = "404")
     }, description = "")
     @GetMapping("/{id}/" + Constants.ALGORITHMS)
-    public HttpEntity<CollectionModel<EntityModel<AlgorithmDto>>> getPublicationAlgorithms(@PathVariable UUID id) {
-        var publication = publicationService.findById(id);
-        return new ResponseEntity<>(algorithmAssembler.toModel(publication.getAlgorithms()), HttpStatus.OK);
-    }
-
-    @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404")
-    }, description = "Get a specific referenced algorithm of a publication.")
-    @GetMapping("/{id}/" + Constants.ALGORITHMS + "/{algoId}")
-    public HttpEntity<EntityModel<AlgorithmDto>> getPublicationAlgorithm(
+    @ListParametersDoc
+    public ResponseEntity<PagedModel<EntityModel<AlgorithmDto>>> getPublicationAlgorithms(
             @PathVariable UUID id,
-            @PathVariable UUID algoId) {
-        publicationService.findById(id);
-        return ResponseEntity.ok(algorithmAssembler.toModel(algorithmService.findById(algoId)));
+            @Parameter(hidden = true) ListParameters params) {
+        var publications = publicationService.findAlgorithmsOfPublication(id, params.getPageable());
+        return ResponseEntity.ok(algorithmAssembler.toModel(publications));
     }
 
-    @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404", content = @Content, description = "algorithm or publication does not exist")
-    }, description = "Add a reference to an existing algorithm (that was previously created via a POST on /algorithms/). " +
+    @Operation(
+            operationId = "addPublicationReferenceToAlgorithm",
+            responses = {
+                    @ApiResponse(responseCode = "200"),
+                    @ApiResponse(responseCode = "400"),
+                    @ApiResponse(responseCode = "404", content = @Content, description = "algorithm or publication does not exist")
+            }, description = "Add a reference to an existing algorithm (that was previously created via a POST on /algorithms/). " +
             "Custom ID will be ignored. For algorithm only ID is required, other algorithm attributes will not change. " +
             "If the algorithm doesn't exist yet, a 404 error is thrown.")
     @PostMapping("/{id}/" + Constants.ALGORITHMS + "/{algoId}")
-    public HttpEntity<CollectionModel<EntityModel<AlgorithmDto>>> linkAlgorithmWithPublication(
+    public ResponseEntity<Void> addPublicationReferenceToAlgorithm(
             @PathVariable UUID id,
             @PathVariable UUID algoId) {
-        var algorithm = algorithmService.findById(algoId);
-        publicationMixIn.addPublication(algorithm, id);
-        algorithmService.save(algorithm);
-        return ResponseEntity.ok(algorithmAssembler.toModel(publicationService.findById(id).getAlgorithms()));
+        publicationService.createReferenceToAlgorithm(id, algoId);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "404", description =
-                    "Algorithm or publication with given ids do not exist or no relation between algorithm and publication")
-    }, description = "Delete a reference to a algorithm of the publication.")
+    @Operation(
+            operationId = "removePublicationReferenceFromAlgorithm",
+            responses = {
+                    @ApiResponse(responseCode = "200"),
+                    @ApiResponse(responseCode = "404", description =
+                            "Algorithm or publication with given ids do not exist or no relation between algorithm and publication")
+            }, description = "Delete a reference to a algorithm of the publication.")
     @DeleteMapping("/{id}/" + Constants.ALGORITHMS + "/{algoId}")
-    public HttpEntity<Void> unlinkAlgorithmFromPublication(
+    public ResponseEntity<Void> removePublicationReferenceFromAlgorithm(
             @PathVariable UUID id,
             @PathVariable UUID algoId) {
-        var algorithm = algorithmService.findById(algoId);
-        publicationMixIn.unlinkPublication(algorithm, id);
-        algorithmService.save(algorithm);
-        return new ResponseEntity<>(HttpStatus.OK);
+        publicationService.removeReferenceToAlgorithm(id, algoId);
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(operationId = "addPublicationReferenceToImplementation", responses = {
+            @ApiResponse(responseCode = "201"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", content = @Content,
+                    description = "Implementation or publication does not exist.")
+    }, description = "Add a reference to an existing publication " +
+            "(that was previously created via a POST on /publications/). Custom ID will be ignored. " +
+            "For publication only ID is required, other publication attributes will not change. " +
+            "If the publication doesn't exist yet, a 404 error is thrown.")
+    @PostMapping("/{id}/" + Constants.IMPLEMENTATIONS + "/{implId}")
+    public ResponseEntity<Void> addPublicationReferenceToImplementation(
+            @PathVariable UUID implId,
+            @PathVariable UUID id) {
+        publicationService.createReferenceToImplementation(id, implId);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @Operation(operationId = "deleteReferenceToPublicationByImplementation", responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404")
+    }, description = "Delete a reference to a publication of the implementation.")
+    @DeleteMapping("/{id}/" + Constants.IMPLEMENTATIONS + "/{implId}")
+    public ResponseEntity<Void> deleteReferenceToPublication(
+            @PathVariable UUID implId,
+            @PathVariable UUID id) {
+        publicationService.removeReferenceToImplementation(id, implId);
+        return ResponseEntity.ok().build();
     }
 
     @Operation(responses = {
@@ -199,21 +211,12 @@ public class PublicationController {
             @ApiResponse(responseCode = "404")
     }, description = "")
     @GetMapping("/{id}/" + Constants.IMPLEMENTATIONS)
-    public HttpEntity<CollectionModel<EntityModel<ImplementationDto>>> getPublicationImplementations(
-            @PathVariable UUID id) {
-        var publication = publicationService.findById(id);
-        return new ResponseEntity<>(implementationAssembler.toModel(publication.getImplementations()), HttpStatus.OK);
-    }
-
-    @Operation(responses = {
-            @ApiResponse(responseCode = "200")
-    }, description = "Get a specific referenced implementation of a publication.")
-    @GetMapping("/{id}/" + Constants.IMPLEMENTATIONS + "/{implId}")
-    public HttpEntity<EntityModel<ImplementationDto>> getPublicationImplementation(
+    @ListParametersDoc
+    public ResponseEntity<PagedModel<EntityModel<ImplementationDto>>> getPublicationImplementations(
             @PathVariable UUID id,
-            @PathVariable UUID implId) {
-        publicationService.findById(id);
-        return ResponseEntity.ok(implementationAssembler.toModel(implementationService.findById(implId)));
+            @Parameter(hidden = true) ListParameters params) {
+        var implementations = publicationService.findImplementationsOfPublication(id, params.getPageable());
+        return ResponseEntity.ok(implementationAssembler.toModel(implementations));
     }
 }
 

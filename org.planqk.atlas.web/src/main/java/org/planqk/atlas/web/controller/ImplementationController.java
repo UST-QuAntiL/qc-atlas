@@ -292,24 +292,38 @@ public class ImplementationController {
         return ResponseEntity.ok(publicationAssembler.toModel(implementation.getPublications()));
     }
 
-    @Operation(operationId = "addPublicationByImplementation", responses = {
-            @ApiResponse(responseCode = "201"),
-            @ApiResponse(responseCode = "404", content = @Content,
-                    description = "Implementation or publication does not exist.")
-    }, description = "Add a reference to an existing publication " +
-            "(that was previously created via a POST on /publications/). Custom ID will be ignored. " +
-            "For publication only ID is required, other publication attributes will not change. " +
-            "If the publication doesn't exist yet, a 404 error is thrown.")
-    @PostMapping("/{implId}/" + Constants.PUBLICATIONS + "/{publId}")
-    public HttpEntity<CollectionModel<EntityModel<PublicationDto>>> addPublication(
-            @PathVariable UUID algoId,
-            @PathVariable UUID implId,
-            @PathVariable UUID publId) {
-        Implementation implementation = implementationService.findById(implId);
-        publicationMixin.addPublication(implementation, publId);
-        implementation = implementationService.save(implementation);
-        return ResponseEntity.ok(publicationAssembler.toModel(implementation.getPublications()));
-    }
+// TODO REMOVE
+//      @Operation(operationId = "addPublicationByImplementation", responses = {
+//              @ApiResponse(responseCode = "201"),
+//              @ApiResponse(responseCode = "404", content = @Content,
+//                      description = "Implementation or publication does not exist.")
+//      }, description = "Add a reference to an existing publication " +
+//              "(that was previously created via a POST on /publications/). Custom ID will be ignored. " +
+//              "For publication only ID is required, other publication attributes will not change. " +
+//              "If the publication doesn't exist yet, a 404 error is thrown.")
+//      @PostMapping("/{implId}/" + Constants.PUBLICATIONS + "/{publId}")
+//      public HttpEntity<CollectionModel<EntityModel<PublicationDto>>> addPublication(
+//              @PathVariable UUID algoId,
+//              @PathVariable UUID implId,
+//              @PathVariable UUID publId) {
+//          Implementation implementation = implementationService.findById(implId);
+//          publicationMixin.addPublication(implementation, publId);
+//          implementation = implementationService.save(implementation);
+//          return ResponseEntity.ok(publicationAssembler.toModel(implementation.getPublications()));
+//      }
+//      @Operation(operationId = "deleteReferenceToPublicationByImplementation", responses = {
+//              @ApiResponse(responseCode = "200")
+//      }, description = "Delete a reference to a publication of the implementation.")
+//      @DeleteMapping("/{implId}/" + Constants.PUBLICATIONS + "/{publId}")
+//      public HttpEntity<Void> deleteReferenceToPublication(
+//              @PathVariable UUID algoId,
+//              @PathVariable UUID implId,
+//              @PathVariable UUID publId) {
+//          Implementation implementation = implementationService.findById(implId);
+//          publicationMixin.unlinkPublication(implementation, publId);
+//          implementationService.save(implementation);
+//          return new ResponseEntity<>(HttpStatus.OK);
+//      }
 
     @Operation(operationId = "getPublicationByImplementation", responses = {
             @ApiResponse(responseCode = "200")
@@ -323,19 +337,6 @@ public class ImplementationController {
         return ResponseEntity.ok(publicationAssembler.toModel(publicationMixin.getPublication(implementation, publId)));
     }
 
-    @Operation(operationId = "deleteReferenceToPublicationByImplementation", responses = {
-            @ApiResponse(responseCode = "200")
-    }, description = "Delete a reference to a publication of the implementation.")
-    @DeleteMapping("/{implId}/" + Constants.PUBLICATIONS + "/{publId}")
-    public HttpEntity<Void> deleteReferenceToPublication(
-            @PathVariable UUID algoId,
-            @PathVariable UUID implId,
-            @PathVariable UUID publId) {
-        Implementation implementation = implementationService.findById(implId);
-        publicationMixin.unlinkPublication(implementation, publId);
-        implementationService.save(implementation);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
 
     @Operation(operationId = "getSoftwarePlatformsByImplementation", responses = {
             @ApiResponse(responseCode = "200"),

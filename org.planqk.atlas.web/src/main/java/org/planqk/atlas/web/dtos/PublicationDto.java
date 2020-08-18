@@ -23,9 +23,10 @@ import java.util.UUID;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 
-import org.planqk.atlas.web.utils.UpdateValidationGroup;
-import org.planqk.atlas.web.utils.ValidationGroup;
+import org.planqk.atlas.web.utils.ValidationGroups.Update;
+import org.planqk.atlas.web.utils.ValidationGroups.Create;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -40,18 +41,19 @@ import org.springframework.hateoas.server.core.Relation;
 @Relation(itemRelation = "publication", collectionRelation = "publications")
 public class PublicationDto {
 
-    @NotNull(groups = {UpdateValidationGroup.class}, message = "The id must not be null to perform an update")
+    @NotNull(groups = {Update.class}, message = "The id must not be null to perform an update")
+    @Null(groups = {Create.class}, message = "When Creating a resource the id must be null")
     private UUID id;
 
-    @NotNull(groups = {ValidationGroup.class}, message = "Title of the Publication must not be null!")
+    @NotNull(groups = {Create.class}, message = "Title of the Publication must not be null!")
     private String title;
 
     private String doi;
 
     @Schema(description = "URL", example = "https://www.ibm.com/quantum-computing/", required = false)
-    @URL(groups = {ValidationGroup.class}, message = "Publication URL must be a valid URL!")
+    @URL(groups = {Create.class}, message = "Publication URL must be a valid URL!")
     private String url;
 
-    @NotEmpty(groups = {ValidationGroup.class}, message = "Authors of the Publication must not be empty!")
+    @NotEmpty(groups = {Create.class}, message = "Authors of the Publication must not be empty!")
     private List<String> authors;
 }

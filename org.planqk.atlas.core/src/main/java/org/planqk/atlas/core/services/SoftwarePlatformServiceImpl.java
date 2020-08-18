@@ -159,7 +159,7 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
         SoftwarePlatform softwarePlatform = findById(platformId);
         CloudService cloudService = cloudServiceService.findById(cloudServiceId);
 
-        if (!softwarePlatformRepository.existsSoftwarePlatformById(platformId)) {
+        if (softwarePlatform.getSupportedCloudServices().contains(cloudService)) {
             throw new ConsistencyException("Cloud service and software platform are already linked");
         }
 
@@ -172,7 +172,7 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
         SoftwarePlatform softwarePlatform = findById(platformId);
         CloudService cloudService = cloudServiceService.findById(cloudServiceId);
 
-        if (!softwarePlatformRepository.existsSoftwarePlatformById(platformId)) {
+        if (!softwarePlatform.getSupportedCloudServices().contains(cloudService)) {
             throw new ConsistencyException("Cloud service and software platform are not linked");
         }
 
@@ -194,7 +194,7 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
         SoftwarePlatform softwarePlatform = findById(platformId);
         ComputeResource computeResource = computeResourceService.findById(resourceId);
 
-        if (!softwarePlatformRepository.existsSoftwarePlatformById(platformId)) {
+        if (softwarePlatform.getSupportedComputeResources().contains(computeResource)) {
             throw new ConsistencyException("Compute resource and software platform are already linked");
         }
 
@@ -207,7 +207,7 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
         SoftwarePlatform softwarePlatform = findById(platformId);
         ComputeResource computeResource = computeResourceService.findById(resourceId);
 
-        if (!softwarePlatformRepository.existsSoftwarePlatformById(platformId)) {
+        if (!softwarePlatform.getSupportedComputeResources().contains(computeResource)) {
             throw new ConsistencyException("Compute resource and software platform are not linked");
         }
 

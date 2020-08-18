@@ -58,10 +58,19 @@ public class GlobalImplementationController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200")
     }, description = "Retrieve a specific algorithm and its basic properties.")
-    @GetMapping("/{id}")
+    @GetMapping("/" + Constants.ALGORITHM + "/{id}")
     public HttpEntity<EntityModel<AlgorithmDto>> getImplementedAlgorithm(@PathVariable UUID id) {
         var algorithm = implementationService.getImplementedAlgorithm(id);
         return ResponseEntity.ok(algorithmAssembler.toModel(algorithm));
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200")
+    }, description = "Get an implementation by its id. ")
+    @GetMapping("/{id}")
+    public ResponseEntity<EntityModel<ImplementationDto>> getImplementationStandalone(
+            @PathVariable UUID id) {
+        return ResponseEntity.ok(implementationAssembler.toModel(implementationService.findById(id)));
     }
 
     @Operation(responses = {

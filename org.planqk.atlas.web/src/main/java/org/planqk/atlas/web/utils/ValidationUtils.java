@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 public class ValidationUtils {
 
+
     public static void validateComputingResourceProperty(@RequestBody @Valid ComputeResourcePropertyDto resourceDto) {
         if (!resourceDto.getType().getDatatype().isValid(resourceDto.getValue())) {
             throw new InvalidResourceTypeValueException("The value \"" + resourceDto.getType() +
