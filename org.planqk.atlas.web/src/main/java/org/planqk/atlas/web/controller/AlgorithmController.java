@@ -27,19 +27,16 @@ import javax.validation.Valid;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.model.ApplicationArea;
-import org.planqk.atlas.core.model.ComputeResourceProperty;
 import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.services.AlgoRelationService;
 import org.planqk.atlas.core.services.AlgoRelationTypeService;
 import org.planqk.atlas.core.services.AlgorithmService;
-import org.planqk.atlas.core.services.ComputeResourcePropertyService;
 import org.planqk.atlas.core.services.PatternRelationService;
 import org.planqk.atlas.core.services.PatternRelationTypeService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.mixin.ComputeResourcePropertyMixin;
-import org.planqk.atlas.web.controller.mixin.PublicationMixin;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
 import org.planqk.atlas.web.dtos.ApplicationAreaDto;
@@ -95,7 +92,6 @@ public class AlgorithmController {
     private final AlgorithmService algorithmService;
     private final AlgoRelationService algoRelationService;
     private final AlgoRelationTypeService algoRelationTypeService;
-    private final ComputeResourcePropertyService computeResourcePropertyService;
     private final PatternRelationService patternRelationService;
     private final PatternRelationTypeService patternRelationTypeService;
 
@@ -108,7 +104,6 @@ public class AlgorithmController {
     private final ComputeResourcePropertyAssembler computeResourcePropertyAssembler;
     private final PatternRelationAssembler patternRelationAssembler;
 
-    private final PublicationMixin publicationMixin;
     private final ComputeResourcePropertyMixin computeResourcePropertyMixin;
 
     @Operation(responses = {

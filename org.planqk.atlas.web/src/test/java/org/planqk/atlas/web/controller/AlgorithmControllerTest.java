@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.planqk.atlas.core.model.AlgoRelationType;
 import org.planqk.atlas.core.model.Algorithm;
@@ -509,7 +510,8 @@ public class AlgorithmControllerTest {
     @Test
     public void getPatternRelations_returnTwo() throws Exception {
         initializeAlgorithms();
-        when(algorithmService.findById(any())).thenReturn(algorithm1);
+        when(algorithmService.findPatternRelations(any(), any()))
+                .thenReturn(new PageImpl<>(new ArrayList<>(algorithm1.getRelatedPatterns())));
 
         var url = fromMethodCall(uriBuilder, on(AlgorithmController.class)
                 .getPatternRelationsForAlgorithm(UUID.randomUUID(), ListParameters.getDefault())).toUriString();
@@ -526,7 +528,8 @@ public class AlgorithmControllerTest {
     @Test
     public void getPatternRelations_returnNotFound() throws Exception {
         initializeAlgorithms();
-        when(algorithmService.findById(any())).thenThrow(NoSuchElementException.class);
+        when(algorithmService.findPatternRelations(any(), any()))
+                .thenThrow(NoSuchElementException.class);
 
         var url = fromMethodCall(uriBuilder, on(AlgorithmController.class)
                 .getPatternRelationsForAlgorithm(UUID.randomUUID(), ListParameters.getDefault())).toUriString();
@@ -538,7 +541,8 @@ public class AlgorithmControllerTest {
 
     @Test
     void testListComputingResources_ClassicAlgorithm() throws Exception {
-        when(algorithmService.findById(any())).thenReturn(new QuantumAlgorithm());
+        when(algorithmService.findComputeResourceProperties(any(), any()))
+                .thenReturn(new PageImpl<>(new ArrayList<ComputeResourceProperty>()));
         when(computeResourcePropertyService.findAllComputeResourcesPropertyByAlgorithmId(any(), any())).thenReturn(Page.empty());
         var path = fromMethodCall(uriBuilder, on(AlgorithmController.class)
                 .getComputeResourcePropertiesForAlgorithm(UUID.randomUUID(), ListParameters.getDefault())).toUriString();
@@ -550,7 +554,8 @@ public class AlgorithmControllerTest {
     void testListComputingResources_ValidAlgo_NoResources() throws Exception {
         var algo = new QuantumAlgorithm();
         algo.setRequiredComputeResourceProperties(new HashSet<>());
-        when(algorithmService.findById(any())).thenReturn(algo);
+        when(algorithmService.findComputeResourceProperties(any(), any()))
+                .thenReturn(new PageImpl<>(new ArrayList<>(algo.getRequiredComputeResourceProperties())));
         when(computeResourcePropertyService.findAllComputeResourcesPropertyByAlgorithmId(any(), any())).thenReturn(Page.empty());
         var path = fromMethodCall(uriBuilder, on(AlgorithmController.class)
                 .getComputeResourcePropertiesForAlgorithm(UUID.randomUUID(), ListParameters.getDefault())).toUriString();
@@ -584,7 +589,8 @@ public class AlgorithmControllerTest {
             algo.addComputeResourceProperty(resource);
         }
 
-        when(algorithmService.findById(any())).thenReturn(algo);
+        when(algorithmService.findComputeResourceProperties(any(), any()))
+                .thenReturn(new PageImpl<>(new ArrayList<>(algo.getRequiredComputeResourceProperties())));
         when(computeResourcePropertyService.findAllComputeResourcesPropertyByAlgorithmId(any(), any())).thenReturn(new PageImpl<>(resources));
         var path = fromMethodCall(uriBuilder, on(AlgorithmController.class)
                 .getComputeResourcePropertiesForAlgorithm(UUID.randomUUID(), ListParameters.getDefault())).toUriString();
@@ -603,7 +609,8 @@ public class AlgorithmControllerTest {
 
     @Test
     void testAddComputeResourceProperty_AlgoNotFound() throws Exception {
-        when(algorithmService.findById(any())).thenThrow(new NoSuchElementException());
+        when(algorithmService.createComputeResourceProperty(any(), any()))
+                .thenThrow(new NoSuchElementException());
         var path = fromMethodCall(uriBuilder, on(AlgorithmController.class)
                 .createComputeResourcePropertyForAlgorithm(UUID.randomUUID(), null)).toUriString();
         mockMvc.perform(post(path).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsBytes(getValidResourceInput())))
@@ -612,7 +619,6 @@ public class AlgorithmControllerTest {
 
     @Test
     void testAddComputeResourceProperty_ClassicAlgo() throws Exception {
-
         var algorithm = new Algorithm();
         algorithm.setId(UUID.randomUUID());
         algorithm.setName("alg1");
@@ -630,9 +636,8 @@ public class AlgorithmControllerTest {
         resource.setValue(resReq.getValue());
         resource.setId(resReq.getId());
 
-        when(algorithmService.findById(any())).thenReturn(algorithm);
-        when(computeResourcePropertyService.findComputeResourcePropertyTypeById(any())).thenReturn(type);
-        when(computeResourcePropertyService.addComputeResourcePropertyToAlgorithm(any(Algorithm.class), any(ComputeResourceProperty.class))).thenReturn(resource);
+        when(algorithmService.createComputeResourceProperty(any(), any())).thenReturn(resource);
+
         var path = fromMethodCall(uriBuilder, on(AlgorithmController.class)
                 .createComputeResourcePropertyForAlgorithm(UUID.randomUUID(), null)).toUriString();
         mockMvc.perform(post(path).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsBytes(resReq)))
@@ -753,9 +758,7 @@ public class AlgorithmControllerTest {
         resource.setValue(resReq.getValue());
         resource.setId(resReq.getId());
 
-        when(algorithmService.findById(any())).thenReturn(algorithm1);
-        when(computeResourcePropertyService.findComputeResourcePropertyTypeById(any())).thenReturn(type);
-        when(computeResourcePropertyService.addComputeResourcePropertyToAlgorithm(any(Algorithm.class), any(ComputeResourceProperty.class))).thenReturn(resource);
+        when(algorithmService.createComputeResourceProperty(any(), any())).thenReturn(resource);
 
         var path = fromMethodCall(uriBuilder, on(AlgorithmController.class)
                 .createComputeResourcePropertyForAlgorithm(UUID.randomUUID(), null)).toUriString();
