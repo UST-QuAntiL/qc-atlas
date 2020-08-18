@@ -19,17 +19,20 @@
 
 package org.planqk.atlas.core.services;
 
-import java.util.Set;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
+import org.planqk.atlas.core.model.ApplicationArea;
+import org.planqk.atlas.core.model.PatternRelation;
+import org.planqk.atlas.core.model.ProblemType;
+import org.planqk.atlas.core.model.Publication;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
-public interface AlgorithmService {
+public interface AlgorithmService extends ComputeResourcePropertyInterface {
 
     @Transactional
     Algorithm save(Algorithm algorithm);
@@ -44,11 +47,15 @@ public interface AlgorithmService {
     @Transactional
     void delete(UUID id);
 
+    Page<Publication> findPublications(UUID algoId, Pageable pageable);
+
     @Transactional
     void addPublicationReference(UUID algoId, UUID publicationId);
 
     @Transactional
     void deletePublicationReference(UUID algoId, UUID publicationId);
+
+    Page<ProblemType> findProblemTypes(UUID algoId, Pageable pageable);
 
     @Transactional
     void addProblemTypeReference(UUID algoId, UUID problemTypeId);
@@ -56,11 +63,15 @@ public interface AlgorithmService {
     @Transactional
     void deleteProblemTypeReference(UUID algoId, UUID problemTypeId);
 
+    Page<ApplicationArea> findApplicationAreas(UUID algoId, Pageable pageable);
+
     @Transactional
     void addApplicationAreaReference(UUID algoId, UUID applicationAreaId);
 
     @Transactional
     void deleteApplicationAreaReference(UUID algoId, UUID applicationAreaId);
+
+    Page<PatternRelation> findPatternRelations(UUID algoId, Pageable pageable);
 
     @Transactional
     void addPatternRelationReference(UUID algoId, UUID patternRelationId);
@@ -68,11 +79,5 @@ public interface AlgorithmService {
     @Transactional
     void deletePatternRelationReference(UUID algoId, UUID patternRelationId);
 
-    @Transactional
-    void deleteAlgorithmRelation(UUID algoId, UUID relationId);
-
-    @Transactional
-    AlgorithmRelation addOrUpdateAlgorithmRelation(UUID sourceAlgorithm_id, AlgorithmRelation relation);
-
-    Set<AlgorithmRelation> getAlgorithmRelations(UUID sourceAlgorithm_id);
+    Page<AlgorithmRelation> findAlgorithmRelations(UUID algoId, Pageable pageable);
 }

@@ -46,7 +46,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = Constants.TAG_COMPUTE_RESOURCE_PROPERTIES)
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
-@RequestMapping("/" + Constants.API_VERSION + "/" + Constants.COMPUTING_RESOURCES_PROPERTIES)
+@RequestMapping("/" + Constants.API_VERSION + "/" + Constants.COMPUTE_RESOURCES_PROPERTIES)
 @AllArgsConstructor
 @Slf4j
 public class ComputeResourcePropertyController {

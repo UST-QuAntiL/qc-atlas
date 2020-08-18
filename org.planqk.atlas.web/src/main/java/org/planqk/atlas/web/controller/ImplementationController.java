@@ -183,7 +183,7 @@ public class ImplementationController {
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Algorithm or implementation doesn't exist")
     }, description = "Retrieve the required computing resources of an implementation")
-    @GetMapping("/{implId}/" + Constants.COMPUTING_RESOURCES_PROPERTIES)
+    @GetMapping("/{implId}/" + Constants.COMPUTE_RESOURCES_PROPERTIES)
     public HttpEntity<PagedModel<EntityModel<ComputeResourcePropertyDto>>> getComputingResources(
             @PathVariable UUID algoId, @PathVariable UUID implId,
             @RequestParam(required = false) Integer page,
@@ -202,7 +202,7 @@ public class ImplementationController {
     }, description = "Add a computing resource (e.g. a certain number of qubits) " +
             "that is requiered by an implementation. Custom ID will be ignored. For computing " +
             "resource type only ID is required, other computing resource type attributes will not change")
-    @PostMapping("/{implId}/" + Constants.COMPUTING_RESOURCES_PROPERTIES)
+    @PostMapping("/{implId}/" + Constants.COMPUTE_RESOURCES_PROPERTIES)
     public HttpEntity<EntityModel<ComputeResourcePropertyDto>> addComputingResource(
             @PathVariable UUID algoId, @PathVariable UUID implId,
             @Valid @RequestBody ComputeResourcePropertyDto resourceDto) {
@@ -219,7 +219,7 @@ public class ImplementationController {
             @ApiResponse(responseCode = "400", description = "Resource doesn't belong to this implementation"),
             @ApiResponse(responseCode = "404")
     }, description = "")
-    @GetMapping("/{implId}/" + Constants.COMPUTING_RESOURCES_PROPERTIES + "/{resourceId}")
+    @GetMapping("/{implId}/" + Constants.COMPUTE_RESOURCES_PROPERTIES + "/{resourceId}")
     public HttpEntity<EntityModel<ComputeResourcePropertyDto>> getComputingResource(
             @PathVariable UUID algoId,
             @PathVariable UUID implId,
@@ -238,7 +238,7 @@ public class ImplementationController {
     }, description = "Update a computing resource of the implementation. " +
             "Custom ID will be ignored. For computing resource type only ID is required, " +
             "other computing resource type attributes will not change")
-    @PutMapping("/{implId}/" + Constants.COMPUTING_RESOURCES_PROPERTIES + "/{resourceId}")
+    @PutMapping("/{implId}/" + Constants.COMPUTE_RESOURCES_PROPERTIES + "/{resourceId}")
     public HttpEntity<EntityModel<ComputeResourcePropertyDto>> updateComputingResource(
             @PathVariable UUID algoId,
             @PathVariable UUID implId,
@@ -264,7 +264,7 @@ public class ImplementationController {
             @ApiResponse(responseCode = "404",
                     description = "Algorithm, Implementation or computing resource with given id doesn't exist")
     }, description = "Delete a computing resource of the implementation.")
-    @DeleteMapping("/{implId}/" + Constants.COMPUTING_RESOURCES_PROPERTIES + "/{resourceId}")
+    @DeleteMapping("/{implId}/" + Constants.COMPUTE_RESOURCES_PROPERTIES + "/{resourceId}")
     public HttpEntity<Void> deleteComputingResource(
             @PathVariable UUID algoId,
             @PathVariable UUID implId,

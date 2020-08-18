@@ -1,10 +1,11 @@
 package org.planqk.atlas.core.repository;
 
-import java.util.Set;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.PatternRelation;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
@@ -16,5 +17,5 @@ public interface PatternRelationRepository extends JpaRepository<PatternRelation
 
     long countByPatternRelationTypeId(UUID id);
 
-    Set<PatternRelation> findByAlgorithmId(UUID algoId);
+    Page<PatternRelation> findByAlgorithmId(UUID algoId, Pageable pageable);
 }

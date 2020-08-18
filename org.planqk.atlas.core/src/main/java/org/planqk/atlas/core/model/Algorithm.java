@@ -135,8 +135,8 @@ public class Algorithm extends AlgorOrImpl implements ModelWithPublications {
         }
     }
 
-    public void addComputeResourceProperty(@lombok.NonNull ComputeResourceProperty resource) {
-        this.requiredComputeResourceProperties.add(resource);
+    public void addComputeResourceProperty(ComputeResourceProperty resourceProperty) {
+        this.requiredComputeResourceProperties.add(resourceProperty);
     }
 
     public Set<Publication> getPublications() {
