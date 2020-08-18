@@ -21,14 +21,12 @@ package org.planqk.atlas.core.services;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
-import org.planqk.atlas.core.model.AlgoRelationType;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.model.ApplicationArea;
+import org.planqk.atlas.core.model.ComputeResourceProperty;
 import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.model.Publication;
@@ -39,6 +37,7 @@ import org.planqk.atlas.core.repository.AlgoRelationTypeRepository;
 import org.planqk.atlas.core.repository.AlgorithmRelationRepository;
 import org.planqk.atlas.core.repository.AlgorithmRepository;
 import org.planqk.atlas.core.repository.ApplicationAreaRepository;
+import org.planqk.atlas.core.repository.ComputeResourcePropertyRepository;
 import org.planqk.atlas.core.repository.ImplementationRepository;
 import org.planqk.atlas.core.repository.PatternRelationRepository;
 import org.planqk.atlas.core.repository.ProblemTypeRepository;
@@ -78,6 +77,9 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 
     private final PatternRelationService patternRelationService;
     private final PatternRelationRepository patternRelationRepository;
+
+    private final ComputeResourcePropertyService computeResourcePropertyService;
+    private final ComputeResourcePropertyRepository computeResourcePropertyRepository;
 
     @Transactional
     @Override
@@ -157,7 +159,8 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         implementationRepository.findByImplementedAlgorithm(algorithm).forEach(implementationRepository::delete);
 
         // delete algorithm relations
-        getAlgorithmRelations(algorithm.getId()).forEach(algorithmRelationRepository::delete);
+        getAlgorithmRelations(algorithm.getId(), Pageable.unpaged())
+                .forEach(algorithmRelationRepository::delete);
 
         // delete related pattern relations
         patternRelationService.findByAlgorithmId(algorithm.getId()).forEach(
@@ -314,103 +317,105 @@ public class AlgorithmServiceImpl implements AlgorithmService {
             throw new NoSuchElementException();
         }
 
-        return algorithmRelationRepository.findBySourceAlgorithmIdOrTargetAlgorithmId(algoId, pageable);
+        return getAlgorithmRelations(algoId, pageable);
     }
 
     @Override
-    @Transactional
-    public void addAlgorithmRelationReference(UUID algoId, UUID algorithmRelationId) {
+    public Page<ComputeResourceProperty> findComputeResourceProperties(UUID algoId, Pageable pageable) {
+        if (algorithmRepository.existsAlgorithmById(algoId)) {
+            throw new NoSuchElementException();
+        }
+
+        return computeResourcePropertyRepository.findAllByAlgorithm_Id(algoId, pageable);
+    }
+
+    @Override
+    public ComputeResourceProperty createComputeResourceProperty(UUID algoId, ComputeResourceProperty computeResourceProperty) {
         Algorithm algorithm = findById(algoId);
-        AlgorithmRelation algorithmRelation = algoRelationService.findById(algorithmRelationId);
 
-        if (algorithm.getAlgorithmRelations().contains(algorithmRelation)) {
-            throw new ConsistencyException("Algorithms are already linked");
-        }
+        var createdProperty = computeResourcePropertyService.saveComputeResourceProperty(computeResourceProperty);
+        algorithm.addComputeResourceProperty(createdProperty);
 
-        algorithm.getAlgorithmRelations().add(algorithmRelation);
+        return createdProperty;
     }
 
     @Override
-    @Transactional
-    public void deleteAlgorithmRelationReference(UUID algoId, UUID algorithmRelationId) {
+    public void deleteComputeResourceProperty(UUID algoId, UUID computeResourcePropertyId) {
         Algorithm algorithm = findById(algoId);
-        AlgorithmRelation algorithmRelation = algoRelationService.findById(algorithmRelationId);
+        var computeResourceProperty = computeResourcePropertyService.findComputeResourcePropertyById(computeResourcePropertyId);
 
-        if (!algorithm.getAlgorithmRelations().contains(algorithmRelation)) {
-            throw new ConsistencyException("Algorithms are not linked");
+        if (!algorithm.getRequiredComputeResourceProperties().contains(computeResourceProperty)) {
+            throw new ConsistencyException("Compute resource property to delete is not part of given algorithm");
         }
 
-        algorithm.getAlgorithmRelations().remove(algorithmRelation);
+        computeResourcePropertyService.deleteComputeResourceProperty(computeResourcePropertyId);
     }
 
-    private AlgoRelationType getPersistedAlgoRelationType(AlgorithmRelation relation) {
-        if (algoRelationTypeRepository.existsById(relation.getAlgoRelationType().getId())) {
-            return algoRelationTypeService.findById(relation.getAlgoRelationType().getId());
-        } else {
-            return algoRelationTypeService.save(relation.getAlgoRelationType());
-        }
-    }
+//    private AlgoRelationType getPersistedAlgoRelationType(AlgorithmRelation relation) {
+//        if (algoRelationTypeRepository.existsById(relation.getAlgoRelationType().getId())) {
+//            return algoRelationTypeService.findById(relation.getAlgoRelationType().getId());
+//        } else {
+//            return algoRelationTypeService.save(relation.getAlgoRelationType());
+//        }
+//    }
+//
+//    @Transactional
+//    @Override
+//    public AlgorithmRelation addOrUpdateAlgorithmRelation(UUID sourceAlgorithmId, AlgorithmRelation relation) {
+//        // Read involved Algorithms from database
+//        Algorithm sourceAlgorithm = findById(sourceAlgorithmId);
+//        Algorithm targetAlgorithm = findById(relation.getTargetAlgorithm().getId());
+//
+//        if (relation.getAlgoRelationType().getId() == null) {
+//            algoRelationTypeService.save(relation.getAlgoRelationType());
+//        }
+//
+//        AlgoRelationType relationType = getPersistedAlgoRelationType(relation);
+//
+//        // Check if relation with those two algorithms and the relation type already
+//        // exists
+//        Optional<AlgorithmRelation> persistedRelationOpt = algorithmRelationRepository
+//                .findBySourceAlgorithmIdAndTargetAlgorithmIdAndAlgoRelationTypeId(sourceAlgorithm.getId(),
+//                        targetAlgorithm.getId(), relationType.getId());
+//
+//        // If relation between the two algorithms already exists, update it
+//        if (persistedRelationOpt.isPresent()) {
+//            AlgorithmRelation persistedRelation = persistedRelationOpt.get();
+//            persistedRelation.setDescription(relation.getDescription());
+//            // Return updated relation
+//            return algorithmRelationRepository.save(persistedRelation);
+//        }
+//
+//        // Set Relation Objects with referenced database objects
+//        relation.setSourceAlgorithm(sourceAlgorithm);
+//        relation.setTargetAlgorithm(targetAlgorithm);
+//        relation.setAlgoRelationType(relationType);
+//
+//        sourceAlgorithm.addAlgorithmRelation(relation);
+//
+//        // Save updated Algorithm -> CASCADE will save Relation
+//        this.algorithmRepository.save(sourceAlgorithm);
+//        persistedRelationOpt = algorithmRelationRepository
+//                .findBySourceAlgorithmIdAndTargetAlgorithmIdAndAlgoRelationTypeId(sourceAlgorithm.getId(),
+//                        targetAlgorithm.getId(), relationType.getId());
+//
+//        return persistedRelationOpt.get();
+//    }
+//
+//    @Override
+//    public void deleteAlgorithmRelation(UUID algoId, UUID relationId) {
+//        // Get involved Objects from database
+//        Algorithm sourceAlgorithm = algorithmRepository.findById(algoId)
+//                .orElseThrow(() -> new NoSuchElementException("Algorithm does not exist!"));
+//        AlgorithmRelation relation = algorithmRelationRepository.findById(relationId)
+//                .orElseThrow(() -> new NoSuchElementException("Relation does not exist!"));
+//
+//        Set<AlgorithmRelation> algorithmRelations = sourceAlgorithm.getAlgorithmRelations();
+//        algorithmRelations.remove(relation);
+//        algorithmRepository.save(sourceAlgorithm);
+//    }
 
-    @Transactional
-    @Override
-    public AlgorithmRelation addOrUpdateAlgorithmRelation(UUID sourceAlgorithmId, AlgorithmRelation relation) {
-        // Read involved Algorithms from database
-        Algorithm sourceAlgorithm = findById(sourceAlgorithmId);
-        Algorithm targetAlgorithm = findById(relation.getTargetAlgorithm().getId());
-
-        if (relation.getAlgoRelationType().getId() == null) {
-            algoRelationTypeService.save(relation.getAlgoRelationType());
-        }
-
-        AlgoRelationType relationType = getPersistedAlgoRelationType(relation);
-
-        // Check if relation with those two algorithms and the relation type already
-        // exists
-        Optional<AlgorithmRelation> persistedRelationOpt = algorithmRelationRepository
-                .findBySourceAlgorithmIdAndTargetAlgorithmIdAndAlgoRelationTypeId(sourceAlgorithm.getId(),
-                        targetAlgorithm.getId(), relationType.getId());
-
-        // If relation between the two algorithms already exists, update it
-        if (persistedRelationOpt.isPresent()) {
-            AlgorithmRelation persistedRelation = persistedRelationOpt.get();
-            persistedRelation.setDescription(relation.getDescription());
-            // Return updated relation
-            return algorithmRelationRepository.save(persistedRelation);
-        }
-
-        // Set Relation Objects with referenced database objects
-        relation.setSourceAlgorithm(sourceAlgorithm);
-        relation.setTargetAlgorithm(targetAlgorithm);
-        relation.setAlgoRelationType(relationType);
-
-        sourceAlgorithm.addAlgorithmRelation(relation);
-
-        // Save updated Algorithm -> CASCADE will save Relation
-        this.algorithmRepository.save(sourceAlgorithm);
-        persistedRelationOpt = algorithmRelationRepository
-                .findBySourceAlgorithmIdAndTargetAlgorithmIdAndAlgoRelationTypeId(sourceAlgorithm.getId(),
-                        targetAlgorithm.getId(), relationType.getId());
-
-        return persistedRelationOpt.get();
-    }
-
-    @Override
-    public void deleteAlgorithmRelation(UUID algoId, UUID relationId) {
-        // Get involved Objects from database
-        Algorithm sourceAlgorithm = algorithmRepository.findById(algoId)
-                .orElseThrow(() -> new NoSuchElementException("Algorithm does not exist!"));
-        AlgorithmRelation relation = algorithmRelationRepository.findById(relationId)
-                .orElseThrow(() -> new NoSuchElementException("Relation does not exist!"));
-
-        Set<AlgorithmRelation> algorithmRelations = sourceAlgorithm.getAlgorithmRelations();
-        algorithmRelations.remove(relation);
-        algorithmRepository.save(sourceAlgorithm);
-    }
-
-    @Override
-    public Set<AlgorithmRelation> getAlgorithmRelations(UUID algorithmId) {
-        Set<AlgorithmRelation> relations = algorithmRelationRepository.findBySourceAlgorithmId(algorithmId);
-        relations.addAll(algorithmRelationRepository.findByTargetAlgorithmId(algorithmId));
-        return relations;
+    private Page<AlgorithmRelation> getAlgorithmRelations(UUID algorithmId, Pageable pageable) {
+        return algorithmRelationRepository.findBySourceAlgorithmIdOrTargetAlgorithmId(algorithmId, algorithmId, pageable);
     }
 }

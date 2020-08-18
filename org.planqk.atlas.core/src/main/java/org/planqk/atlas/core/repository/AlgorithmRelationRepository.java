@@ -24,7 +24,7 @@ public interface AlgorithmRelationRepository extends JpaRepository<AlgorithmRela
 
     Set<AlgorithmRelation> findBySourceAlgorithmId(UUID sourceAlgId);
 
-    Page<AlgorithmRelation> findBySourceAlgorithmIdOrTargetAlgorithmId(UUID algoId, Pageable pageable);
+    Page<AlgorithmRelation> findBySourceAlgorithmIdOrTargetAlgorithmId(UUID sourceId, UUID targetId, Pageable pageable);
 
     long countByAlgoRelationType_Id(UUID algoRelationTypeId);
 

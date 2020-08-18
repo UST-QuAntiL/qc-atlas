@@ -19,7 +19,6 @@
 
 package org.planqk.atlas.core.services;
 
-import java.util.Set;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
@@ -33,7 +32,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
-public interface AlgorithmService {
+public interface AlgorithmService extends ComputeResourcePropertyInterface {
 
     @Transactional
     Algorithm save(Algorithm algorithm);
@@ -81,18 +80,4 @@ public interface AlgorithmService {
     void deletePatternRelationReference(UUID algoId, UUID patternRelationId);
 
     Page<AlgorithmRelation> findAlgorithmRelations(UUID algoId, Pageable pageable);
-
-    @Transactional
-    void addAlgorithmRelationReference(UUID algoId, UUID algorithmRelationId);
-
-    @Transactional
-    void deleteAlgorithmRelationReference(UUID algoId, UUID algorithmRelationId);
-
-    @Transactional
-    void deleteAlgorithmRelation(UUID algoId, UUID relationId);
-
-    @Transactional
-    AlgorithmRelation addOrUpdateAlgorithmRelation(UUID sourceAlgorithm_id, AlgorithmRelation relation);
-
-    Set<AlgorithmRelation> getAlgorithmRelations(UUID sourceAlgorithm_id);
 }

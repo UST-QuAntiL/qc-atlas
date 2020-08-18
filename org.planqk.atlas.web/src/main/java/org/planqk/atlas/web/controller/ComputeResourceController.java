@@ -189,7 +189,7 @@ public class ComputeResourceController {
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Compute Resource with given id does not exist")
     }, description = "Get referenced compute resource properties for a compute resource.")
-    @GetMapping("/{id}/" + Constants.COMPUTING_RESOURCES_PROPERTIES)
+    @GetMapping("/{id}/" + Constants.COMPUTE_RESOURCES_PROPERTIES)
     @ListParametersDoc
     public HttpEntity<PagedModel<EntityModel<ComputeResourcePropertyDto>>> getComputingResourcePropertiesForComputeResource(
             @PathVariable UUID id,
@@ -207,7 +207,7 @@ public class ComputeResourceController {
     }, description = "Define the basic properties of a compute resource property and " +
             "add a reference to the defined compute resource property. " +
             "Custom ID will be ignored. ")
-    @PostMapping("/{id}/" + Constants.COMPUTING_RESOURCES_PROPERTIES)
+    @PostMapping("/{id}/" + Constants.COMPUTE_RESOURCES_PROPERTIES)
     public HttpEntity<EntityModel<ComputeResourceDto>> addComputingResourcePropertyToComputeResource(
             @PathVariable UUID id,
             @Valid @RequestBody ComputeResourcePropertyDto resourceDto
@@ -225,7 +225,7 @@ public class ComputeResourceController {
             @ApiResponse(responseCode = "404", description = "Algorithm with the given id doesn't exist")},
             description = "Update a computing resource of the algorithm. Custom ID will be ignored." +
                     "For computing resource type only ID is required, other computing resource type attributes will not change.")
-    @PutMapping("/{crid}/" + Constants.COMPUTING_RESOURCES_PROPERTIES + "/{resourceId}")
+    @PutMapping("/{crid}/" + Constants.COMPUTE_RESOURCES_PROPERTIES + "/{resourceId}")
     public HttpEntity<EntityModel<ComputeResourcePropertyDto>> updateComputingResourceResourcePropertyOfComputeResource(
             @PathVariable UUID crid,
             @PathVariable UUID resourceId,
@@ -248,7 +248,7 @@ public class ComputeResourceController {
             @ApiResponse(responseCode = "400", description = "Computing resource with the given id doesn't belong to this algorithm"),
             @ApiResponse(responseCode = "404", description = "Algorithm or computing resource with given id doesn't exist")},
             description = "Delete a computing resource of the algorithm.")
-    @DeleteMapping("/{crid}/" + Constants.COMPUTING_RESOURCES_PROPERTIES + "/{resourceId}")
+    @DeleteMapping("/{crid}/" + Constants.COMPUTE_RESOURCES_PROPERTIES + "/{resourceId}")
     public HttpEntity<Void> deleteComputingResourcePropertyFromComputeResource(
             @PathVariable UUID crid,
             @PathVariable UUID resourceId) {
