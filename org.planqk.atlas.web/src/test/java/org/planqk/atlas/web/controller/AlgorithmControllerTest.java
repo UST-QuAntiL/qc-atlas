@@ -605,7 +605,7 @@ public class AlgorithmControllerTest {
     void testAddComputeResourceProperty_AlgoNotFound() throws Exception {
         when(algorithmService.findById(any())).thenThrow(new NoSuchElementException());
         var path = fromMethodCall(uriBuilder, on(AlgorithmController.class)
-                .createComputingResourceForAlgorithm(UUID.randomUUID(), null)).toUriString();
+                .createComputeResourcePropertyForAlgorithm(UUID.randomUUID(), null)).toUriString();
         mockMvc.perform(post(path).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsBytes(getValidResourceInput())))
                 .andExpect(status().isNotFound());
     }
@@ -634,7 +634,7 @@ public class AlgorithmControllerTest {
         when(computeResourcePropertyService.findComputeResourcePropertyTypeById(any())).thenReturn(type);
         when(computeResourcePropertyService.addComputeResourcePropertyToAlgorithm(any(Algorithm.class), any(ComputeResourceProperty.class))).thenReturn(resource);
         var path = fromMethodCall(uriBuilder, on(AlgorithmController.class)
-                .createComputingResourceForAlgorithm(UUID.randomUUID(), null)).toUriString();
+                .createComputeResourcePropertyForAlgorithm(UUID.randomUUID(), null)).toUriString();
         mockMvc.perform(post(path).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsBytes(resReq)))
                 .andExpect(status().isOk());
     }
@@ -666,7 +666,7 @@ public class AlgorithmControllerTest {
         when(computeResourcePropertyService.findComputeResourcePropertyTypeById(any())).thenReturn(type);
         when(computeResourcePropertyService.addComputeResourcePropertyToAlgorithm(any(Algorithm.class), any(ComputeResourceProperty.class))).thenReturn(resource);
         var path = fromMethodCall(uriBuilder, on(AlgorithmController.class)
-                .createComputingResourceForAlgorithm(UUID.randomUUID(), null)).toUriString();
+                .createComputeResourcePropertyForAlgorithm(UUID.randomUUID(), null)).toUriString();
         mockMvc.perform(post(path).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsBytes(resReq)))
                 .andExpect(status().isBadRequest());
     }
@@ -678,7 +678,7 @@ public class AlgorithmControllerTest {
 
         when(algorithmService.findById(any())).thenReturn(new ClassicAlgorithm());
         var path = fromMethodCall(uriBuilder, on(AlgorithmController.class)
-                .createComputingResourceForAlgorithm(UUID.randomUUID(), null)).toUriString();
+                .createComputeResourcePropertyForAlgorithm(UUID.randomUUID(), null)).toUriString();
 
         mockMvc.perform(post(path).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsBytes(resource)))
                 .andExpect(status().isBadRequest());
@@ -758,7 +758,7 @@ public class AlgorithmControllerTest {
         when(computeResourcePropertyService.addComputeResourcePropertyToAlgorithm(any(Algorithm.class), any(ComputeResourceProperty.class))).thenReturn(resource);
 
         var path = fromMethodCall(uriBuilder, on(AlgorithmController.class)
-                .createComputingResourceForAlgorithm(UUID.randomUUID(), null)).toUriString();
+                .createComputeResourcePropertyForAlgorithm(UUID.randomUUID(), null)).toUriString();
         mockMvc.perform(post(path).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsBytes(resReq)))
                 .andExpect(status().isOk());
     }

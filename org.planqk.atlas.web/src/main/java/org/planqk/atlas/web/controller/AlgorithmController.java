@@ -501,42 +501,14 @@ public class AlgorithmController {
             "Custom ID will be ignored. For computing resource type only ID is required, " +
             "other computing resource type attributes will not change.")
     @PostMapping("/{algoId}/" + Constants.COMPUTE_RESOURCES_PROPERTIES)
-    public ResponseEntity<EntityModel<ComputeResourcePropertyDto>> createComputingResourceForAlgorithm(
+    public ResponseEntity<EntityModel<ComputeResourcePropertyDto>> createComputeResourcePropertyForAlgorithm(
             @PathVariable UUID algoId,
             @Valid @RequestBody ComputeResourcePropertyDto resourceDto) {
         ValidationUtils.validateComputingResourceProperty(resourceDto);
 
-        //var resourceProperty = computeResourcePropertyMixin.fromDto(resourceDto);
-        var resourceProperty = ModelMapperUtils.convert(resourceDto, ComputeResourceProperty.class);
+        var resourceProperty = computeResourcePropertyMixin.fromDto(resourceDto);
         var createdResourceProperty = algorithmService.createComputeResourceProperty(algoId, resourceProperty);
         return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(createdResourceProperty));
-    }
-
-    @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404",
-                    description = "Algorithm with the given id doesn't exist")
-    }, description = "Update a computing resource of the algorithm. Custom ID will be ignored. " +
-            "For computing resource type only ID is required, other computing resource type attributes will not change.")
-    @PutMapping("/{algoId}/" + Constants.COMPUTE_RESOURCES_PROPERTIES + "/{resourceId}")
-    public ResponseEntity<EntityModel<ComputeResourcePropertyDto>> updateComputingResource(
-            @PathVariable UUID algoId,
-            @PathVariable UUID resourceId,
-            @RequestBody ComputeResourcePropertyDto resourceDto) {
-        ComputeResourceProperty computeResourceProperty = computeResourcePropertyService
-                .findComputeResourcePropertyById(resourceId);
-        Algorithm algorithm = algorithmService.findById(algoId);
-        if (Objects.isNull(computeResourceProperty.getAlgorithm()) ||
-                !computeResourceProperty.getAlgorithm().getId().equals(algoId)) {
-            log.debug("Algorithm is not referenced from the computing resource to update!");
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        ValidationUtils.validateComputingResourceProperty(resourceDto);
-        var resource = computeResourcePropertyMixin.fromDto(resourceDto);
-        resource.setId(resourceId);
-        var updatedResource = computeResourcePropertyService.addComputeResourcePropertyToAlgorithm(algorithm, resource);
-        return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(updatedResource));
     }
 
     @Operation(responses = {
@@ -547,35 +519,62 @@ public class AlgorithmController {
                     description = "Algorithm or computing resource with given id doesn't exist")
     }, description = "Delete a computing resource of the algorithm.")
     @DeleteMapping("/{algoId}/" + Constants.COMPUTE_RESOURCES_PROPERTIES + "/{resourceId}")
-    public ResponseEntity<Void> deleteComputeResourceOfAlgorithm(
+    public ResponseEntity<Void> deleteComputeResourcePropertyOfAlgorithm(
             @PathVariable UUID algoId,
             @PathVariable UUID resourceId) {
         algorithmService.deleteComputeResourceProperty(algoId, resourceId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400",
-                    description = "Resource doesn't belong to this algorithm"),
-            @ApiResponse(responseCode = "404",
-                    description = "Algorithm with the given id doesn't exist")
-    }, description = "")
-    @GetMapping("/{algoId}/" + Constants.COMPUTE_RESOURCES_PROPERTIES + "/{resourceId}")
-    public ResponseEntity<EntityModel<ComputeResourcePropertyDto>> getComputingResource(
-            @PathVariable UUID algoId,
-            @PathVariable UUID resourceId) {
-        algorithmService.findById(algoId);
-        ComputeResourceProperty computeResourceProperty = computeResourcePropertyService
-                .findComputeResourcePropertyById(resourceId);
-        if (Objects.isNull(computeResourceProperty.getAlgorithm()) ||
-                !computeResourceProperty.getAlgorithm().getId().equals(algoId)) {
-            log.debug("Algorithm is not referenced from the computing resource to retrieve!");
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-
-        return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(computeResourceProperty));
-    }
+//    @Operation(responses = {
+//            @ApiResponse(responseCode = "200"),
+//            @ApiResponse(responseCode = "400"),
+//            @ApiResponse(responseCode = "404",
+//                    description = "Algorithm with the given id doesn't exist")
+//    }, description = "Update a computing resource of the algorithm. Custom ID will be ignored. " +
+//            "For computing resource type only ID is required, other computing resource type attributes will not change.")
+//    @PutMapping("/{algoId}/" + Constants.COMPUTE_RESOURCES_PROPERTIES + "/{resourceId}")
+//    public ResponseEntity<EntityModel<ComputeResourcePropertyDto>> updateComputeResourcePropertyOfAlgorithm(
+//            @PathVariable UUID algoId,
+//            @PathVariable UUID resourceId,
+//            @RequestBody ComputeResourcePropertyDto resourceDto) {
+//        ComputeResourceProperty computeResourceProperty = computeResourcePropertyService
+//                .findComputeResourcePropertyById(resourceId);
+//        Algorithm algorithm = algorithmService.findById(algoId);
+//        if (Objects.isNull(computeResourceProperty.getAlgorithm()) ||
+//                !computeResourceProperty.getAlgorithm().getId().equals(algoId)) {
+//            log.debug("Algorithm is not referenced from the computing resource to update!");
+//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+//        }
+//        ValidationUtils.validateComputingResourceProperty(resourceDto);
+//        var resource = computeResourcePropertyMixin.fromDto(resourceDto);
+//        resource.setId(resourceId);
+//        var updatedResource = computeResourcePropertyService.addComputeResourcePropertyToAlgorithm(algorithm, resource);
+//        return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(updatedResource));
+//    }
+//
+//    @Operation(responses = {
+//            @ApiResponse(responseCode = "200"),
+//            @ApiResponse(responseCode = "400",
+//                    description = "Resource doesn't belong to this algorithm"),
+//            @ApiResponse(responseCode = "404",
+//                    description = "Algorithm with the given id doesn't exist")
+//    }, description = "")
+//    @GetMapping("/{algoId}/" + Constants.COMPUTE_RESOURCES_PROPERTIES + "/{resourceId}")
+//    public ResponseEntity<EntityModel<ComputeResourcePropertyDto>> getComputingResource(
+//            @PathVariable UUID algoId,
+//            @PathVariable UUID resourceId) {
+//        algorithmService.findById(algoId);
+//        ComputeResourceProperty computeResourceProperty = computeResourcePropertyService
+//                .findComputeResourcePropertyById(resourceId);
+//        if (Objects.isNull(computeResourceProperty.getAlgorithm()) ||
+//                !computeResourceProperty.getAlgorithm().getId().equals(algoId)) {
+//            log.debug("Algorithm is not referenced from the computing resource to retrieve!");
+//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+//        }
+//
+//        return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(computeResourceProperty));
+//    }
 
     private AlgorithmRelation handleRelationUpdate(AlgorithmRelationDto relationDto, UUID relationId) {
         AlgorithmRelation resource = new AlgorithmRelation();
