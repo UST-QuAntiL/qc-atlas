@@ -32,6 +32,7 @@ import org.planqk.atlas.web.dtos.PatternRelationDto;
 import org.planqk.atlas.web.linkassembler.PatternRelationAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
+import org.planqk.atlas.web.utils.ValidationGroups;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -108,12 +109,11 @@ public class PatternRelationController {
             @ApiResponse(responseCode = "200")
     }, description = "")
     @GetMapping()
+    @ListParametersDoc
     public HttpEntity<PagedModel<EntityModel<PatternRelationDto>>> getPatternRelationTypes(
-            @RequestParam(required = false) Integer page,
-            @RequestParam(required = false) Integer size
+            @Parameter(hidden = true) ListParameters params
     ) {
-        Pageable p = RestUtils.getPageableFromRequestParams(page, size);
-        var entities = patternRelationService.findAll(p);
+        var entities = patternRelationService.findAll(params.getPageable());
         return ResponseEntity.ok(patternRelationAssembler.toModel(entities));
     }
 
