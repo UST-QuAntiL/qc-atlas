@@ -99,7 +99,7 @@ import static org.springframework.web.servlet.mvc.method.annotation.MvcUriCompon
 import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.on;
 
 @WebMvcTest(value = AlgorithmController.class, includeFilters = {
-        @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = {PublicationMixin.class, ComputeResourcePropertyMixin.class})
+        @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = {ComputeResourcePropertyMixin.class})
 })
 @ExtendWith(MockitoExtension.class)
 @AutoConfigureMockMvc
@@ -128,8 +128,6 @@ public class AlgorithmControllerTest {
     private AlgoRelationService algoRelationService;
     @MockBean
     private AlgoRelationTypeService algoRelationTypeService;
-    @MockBean
-    private PatternRelationController patternRelationController;
 
     @Autowired
     private MockMvc mockMvc;

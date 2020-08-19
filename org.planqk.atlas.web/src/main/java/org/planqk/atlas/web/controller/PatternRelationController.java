@@ -105,18 +105,6 @@ public class PatternRelationController {
         return ResponseEntity.ok(handlePatternRelationUpdate(relationDto, relationDto.getId()));
     }
 
-    @Operation(operationId = "getAllPatternRelationTypes", responses = {
-            @ApiResponse(responseCode = "200")
-    }, description = "")
-    @GetMapping()
-    @ListParametersDoc
-    public HttpEntity<PagedModel<EntityModel<PatternRelationDto>>> getPatternRelationTypes(
-            @Parameter(hidden = true) ListParameters params
-    ) {
-        var entities = patternRelationService.findAll(params.getPageable());
-        return ResponseEntity.ok(patternRelationAssembler.toModel(entities));
-    }
-
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
