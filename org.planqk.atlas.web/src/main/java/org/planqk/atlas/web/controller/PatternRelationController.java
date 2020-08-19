@@ -101,7 +101,7 @@ public class PatternRelationController {
             "other pattern relation type attributes will not change.")
     @PutMapping()
     public HttpEntity<EntityModel<PatternRelationDto>> updatePatternRelationType(
-            @Validated(ValidationGroups.Update.class) @RequestBody PatternRelationDto relationDto) {
+            @Validated({ValidationGroups.Update.class}) @RequestBody PatternRelationDto relationDto) {
         return ResponseEntity.ok(handlePatternRelationUpdate(relationDto, relationDto.getId()));
     }
 

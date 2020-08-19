@@ -26,6 +26,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
 
 import org.planqk.atlas.core.model.ComputeResourcePropertyDataType;
+import org.planqk.atlas.web.utils.Identifyable;
 import org.planqk.atlas.web.utils.ValidationGroups;
 
 import lombok.Data;
@@ -39,7 +40,7 @@ import org.springframework.hateoas.server.core.Relation;
 @ToString
 @NoArgsConstructor
 @Relation(itemRelation = "computeResourcePropertyType", collectionRelation = "computeResourcePropertyTypes")
-public class ComputeResourcePropertyTypeDto {
+public class ComputeResourcePropertyTypeDto implements Identifyable {
 
     @NotNull(groups = {ValidationGroups.Update.class}, message = "An id is required to perform an update")
     @Null(groups = {ValidationGroups.Create.class}, message = "The id must be null for creating a compute resource property type")

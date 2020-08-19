@@ -25,6 +25,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
 
+import org.planqk.atlas.web.utils.Identifyable;
 import org.planqk.atlas.web.utils.ValidationGroups.Update;
 import org.planqk.atlas.web.utils.ValidationGroups.Create;
 
@@ -39,7 +40,7 @@ import org.springframework.hateoas.server.core.Relation;
 @Data
 @NoArgsConstructor
 @Relation(itemRelation = "publication", collectionRelation = "publications")
-public class PublicationDto {
+public class PublicationDto implements Identifyable {
 
     @NotNull(groups = {Update.class}, message = "The id must not be null to perform an update")
     @Null(groups = {Create.class}, message = "When Creating a resource the id must be null")
