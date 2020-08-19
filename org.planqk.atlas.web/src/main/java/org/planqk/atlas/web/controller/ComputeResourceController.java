@@ -22,8 +22,6 @@ package org.planqk.atlas.web.controller;
 import java.util.Objects;
 import java.util.UUID;
 
-import javax.validation.Valid;
-
 import org.planqk.atlas.core.model.ComputeResource;
 import org.planqk.atlas.core.model.ComputeResourceProperty;
 import org.planqk.atlas.core.services.ComputeResourcePropertyService;
@@ -41,6 +39,7 @@ import org.planqk.atlas.web.linkassembler.SoftwarePlatformAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
+import org.planqk.atlas.web.utils.ValidationGroups;
 import org.planqk.atlas.web.utils.ValidationUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -55,6 +54,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -106,8 +106,9 @@ public class ComputeResourceController {
             "Custom ID will be ignored.")
     @PostMapping()
     public ResponseEntity<EntityModel<ComputeResourceDto>> createComputeResource(
-            @Valid @RequestBody ComputeResourceDto computeResourceDto) {
-        ComputeResource computeResource = computeResourceService.save(ModelMapperUtils.convert(computeResourceDto, ComputeResource.class));
+            @Validated(ValidationGroups.Create.class) @RequestBody ComputeResourceDto computeResourceDto) {
+        ComputeResource computeResource = computeResourceService.save(
+                ModelMapperUtils.convert(computeResourceDto, ComputeResource.class));
         return ResponseEntity.status(HttpStatus.CREATED).body(computeResourceAssembler.toModel(computeResource));
     }
 
@@ -122,7 +123,7 @@ public class ComputeResourceController {
     @PutMapping("/{computeResourceId}")
     public ResponseEntity<EntityModel<ComputeResourceDto>> updateComputeResource(
             @PathVariable UUID computeResourceId,
-            @Valid @RequestBody ComputeResourceDto computeResourceDto) {
+            @Validated(ValidationGroups.Update.class) @RequestBody ComputeResourceDto computeResourceDto) {
         ComputeResource computeResource = computeResourceService.update(
                 computeResourceId, ModelMapperUtils.convert(computeResourceDto, ComputeResource.class));
         return ResponseEntity.ok(computeResourceAssembler.toModel(computeResource));
@@ -162,10 +163,9 @@ public class ComputeResourceController {
     }, description = "Get referenced software platform for a compute resource")
     @GetMapping("/{computeResourceId}/" + Constants.SOFTWARE_PLATFORMS)
     @ListParametersDoc
-    public ResponseEntity<CollectionModel<EntityModel<SoftwarePlatformDto>>> getSoftwarePlatformsForComputeResource(
+    public ResponseEntity<CollectionModel<EntityModel<SoftwarePlatformDto>>> getSoftwarePlatformsOfComputeResource(
             @PathVariable UUID computeResourceId,
-            @Parameter(hidden = true) ListParameters listParameters
-    ) {
+            @Parameter(hidden = true) ListParameters listParameters) {
         var softwarePlatforms = computeResourceService.findLinkedSoftwarePlatforms(computeResourceId, listParameters.getPageable());
         return ResponseEntity.ok(softwarePlatformAssembler.toModel(softwarePlatforms));
     }
@@ -177,10 +177,9 @@ public class ComputeResourceController {
     }, description = "Get referenced cloud services for a compute resource")
     @GetMapping("/{computeResourceId}/" + Constants.CLOUD_SERVICES)
     @ListParametersDoc
-    public ResponseEntity<CollectionModel<EntityModel<CloudServiceDto>>> getCloudServicesForComputeResource(
+    public ResponseEntity<CollectionModel<EntityModel<CloudServiceDto>>> getCloudServicesOfComputeResource(
             @PathVariable UUID computeResourceId,
-            @Parameter(hidden = true) ListParameters listParameters
-    ) {
+            @Parameter(hidden = true) ListParameters listParameters) {
         var cloudServices = computeResourceService.findLinkedComputeResources(computeResourceId, listParameters.getPageable());
         return ResponseEntity.ok(cloudServiceAssembler.toModel(cloudServices));
     }
@@ -194,8 +193,7 @@ public class ComputeResourceController {
     @ListParametersDoc
     public ResponseEntity<PagedModel<EntityModel<ComputeResourcePropertyDto>>> getComputingResourcePropertiesOfComputeResource(
             @PathVariable UUID computeResourceId,
-            @Parameter(hidden = true) ListParameters listParameters
-    ) {
+            @Parameter(hidden = true) ListParameters listParameters) {
         var resources = computeResourcePropertyService.findAllComputeResourcesPropertiesByComputeResourceId(computeResourceId,
                 listParameters.getPageable());
         return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(resources));
@@ -209,10 +207,9 @@ public class ComputeResourceController {
             "add a reference to the defined compute resource property. " +
             "Custom ID will be ignored. ")
     @PostMapping("/{computeResourceId}/" + Constants.COMPUTE_RESOURCES_PROPERTIES)
-    public ResponseEntity<EntityModel<ComputeResourceDto>> addComputingResourcePropertyToComputeResource(
+    public ResponseEntity<EntityModel<ComputeResourceDto>> createComputingResourcePropertyForComputeResource(
             @PathVariable UUID computeResourceId,
-            @Valid @RequestBody ComputeResourcePropertyDto resourceDto
-    ) {
+            @Validated(ValidationGroups.Create.class) @RequestBody ComputeResourcePropertyDto resourceDto) {
         var ComputeResource = computeResourceService.findById(computeResourceId);
         ValidationUtils.validateComputingResourceProperty(resourceDto);
         var resource = ModelMapperUtils.convert(resourceDto, ComputeResourceProperty.class);

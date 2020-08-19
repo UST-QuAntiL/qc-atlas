@@ -21,8 +21,6 @@ package org.planqk.atlas.web.controller;
 
 import java.util.UUID;
 
-import javax.validation.Valid;
-
 import org.planqk.atlas.core.model.CloudService;
 import org.planqk.atlas.core.services.CloudServiceService;
 import org.planqk.atlas.core.services.LinkingService;
@@ -36,6 +34,7 @@ import org.planqk.atlas.web.linkassembler.SoftwarePlatformAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
+import org.planqk.atlas.web.utils.ValidationGroups;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -44,11 +43,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -99,7 +98,7 @@ public class CloudServiceController {
             "Custom ID will be ignored.")
     @PostMapping()
     public ResponseEntity<EntityModel<CloudServiceDto>> createCloudService(
-            @Valid @RequestBody CloudServiceDto cloudServiceDto) {
+            @Validated(ValidationGroups.Create.class) @RequestBody CloudServiceDto cloudServiceDto) {
         var savedCloudService = cloudServiceService.save(ModelMapperUtils.convert(cloudServiceDto, CloudService.class));
         return new ResponseEntity<>(cloudServiceAssembler.toModel(savedCloudService), HttpStatus.CREATED);
     }
@@ -114,7 +113,7 @@ public class CloudServiceController {
             "Custom ID will be ignored.")
     @PutMapping()
     public ResponseEntity<EntityModel<CloudServiceDto>> updateCloudService(
-            @Valid @RequestBody CloudServiceDto cloudServiceDto) {
+            @Validated(ValidationGroups.Update.class) @RequestBody CloudServiceDto cloudServiceDto) {
         var updatedCloudService = cloudServiceService.update(
                 cloudServiceDto.getId(), ModelMapperUtils.convert(cloudServiceDto, CloudService.class));
         return ResponseEntity.ok(cloudServiceAssembler.toModel(updatedCloudService));
@@ -127,7 +126,8 @@ public class CloudServiceController {
     }, description = "Delete a cloud service. " +
             "This also removes all references to other entities (e.g. compute resource)")
     @DeleteMapping("/{cloudServiceId}")
-    public ResponseEntity<Void> deleteCloudService(@PathVariable UUID cloudServiceId) {
+    public ResponseEntity<Void> deleteCloudService(
+            @PathVariable UUID cloudServiceId) {
         cloudServiceService.delete(cloudServiceId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -154,8 +154,7 @@ public class CloudServiceController {
     @ListParametersDoc
     public ResponseEntity<PagedModel<EntityModel<SoftwarePlatformDto>>> getSoftwarePlatformsOfCloudService(
             @PathVariable UUID cloudServiceId,
-            @Parameter(hidden = true) ListParameters listParameters
-    ) {
+            @Parameter(hidden = true) ListParameters listParameters) {
         var softwarePlatforms = cloudServiceService.findLinkedSoftwarePlatforms(cloudServiceId, listParameters.getPageable());
         return ResponseEntity.ok(softwarePlatformAssembler.toModel(softwarePlatforms));
     }

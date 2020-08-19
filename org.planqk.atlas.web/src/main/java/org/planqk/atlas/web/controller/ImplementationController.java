@@ -38,6 +38,7 @@ import org.planqk.atlas.web.linkassembler.SoftwarePlatformAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
+import org.planqk.atlas.web.utils.ValidationGroups;
 import org.planqk.atlas.web.utils.ValidationUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -95,23 +96,22 @@ public class ImplementationController {
     }, description = "Custom ID will be ignored.")
     @PutMapping()
     public ResponseEntity<EntityModel<ImplementationDto>> updateImplementation(
-            @Validated @RequestBody ImplementationDto dto) {
+            @Validated(ValidationGroups.Update.class) @RequestBody ImplementationDto implementationDto) {
         Implementation updatedImplementation = implementationService.update(
-                dto.getId(), ModelMapperUtils.convert(dto, Implementation.class));
+                implementationDto.getId(), ModelMapperUtils.convert(implementationDto, Implementation.class));
         return ResponseEntity.ok(implementationAssembler.toModel(updatedImplementation));
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "204"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Implementation doesn't exist")
     }, description = "")
     @DeleteMapping("/{implementationId}/")
     public ResponseEntity<Void> deleteImplementation(
-            @PathVariable UUID implementationId
-    ) {
+            @PathVariable UUID implementationId) {
         implementationService.delete(implementationId);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @Operation(responses = {
@@ -150,6 +150,7 @@ public class ImplementationController {
         return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(resources));
     }
 
+    // TODO refactor
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400", description = "Id of the passed computing resource type is null"),
@@ -161,7 +162,7 @@ public class ImplementationController {
     @PostMapping("/{implementationId}/" + Constants.COMPUTE_RESOURCES_PROPERTIES)
     public ResponseEntity<EntityModel<ComputeResourcePropertyDto>> createComputeResourcePropertyForImplementation(
             @PathVariable UUID implementationId,
-            @Validated @RequestBody ComputeResourcePropertyDto computeResourcePropertyDto) {
+            @Validated(ValidationGroups.Create.class) @RequestBody ComputeResourcePropertyDto computeResourcePropertyDto) {
         var implementation = implementationService.findById(implementationId);
         ValidationUtils.validateComputingResourceProperty(computeResourcePropertyDto);
         var resource = computeResourcePropertyMixin.fromDto(computeResourcePropertyDto);

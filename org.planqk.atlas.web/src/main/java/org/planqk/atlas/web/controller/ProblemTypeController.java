@@ -99,14 +99,14 @@ public class ProblemTypeController {
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "204"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Problem type with given id doesn't exist")
     }, description = "")
     @DeleteMapping("/{problemTypeId}")
     public ResponseEntity<Void> deleteProblemType(@PathVariable UUID problemTypeId) {
         problemTypeService.delete(problemTypeId);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @Operation(responses = {

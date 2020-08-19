@@ -19,8 +19,6 @@
 
 package org.planqk.atlas.web.dtos;
 
-import org.planqk.atlas.core.model.ClassicAlgorithm;
-
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -32,6 +30,6 @@ import org.springframework.hateoas.server.core.Relation;
 @Relation(itemRelation = "implementation", collectionRelation = "implementations")
 public class ClassicImplementationDto extends ImplementationDto {
 
-    private ClassicAlgorithm algorithm;
+    private ClassicAlgorithmDto algorithm;
 
 }
