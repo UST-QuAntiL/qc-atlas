@@ -21,8 +21,6 @@ package org.planqk.atlas.web.controller;
 import java.util.Objects;
 import java.util.UUID;
 
-import javax.validation.Valid;
-
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.model.PatternRelationType;
@@ -32,18 +30,20 @@ import org.planqk.atlas.core.services.PatternRelationTypeService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.PatternRelationDto;
 import org.planqk.atlas.web.linkassembler.PatternRelationAssembler;
-import org.planqk.atlas.web.utils.RestUtils;
+import org.planqk.atlas.web.utils.ListParameters;
+import org.planqk.atlas.web.utils.ListParametersDoc;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -52,7 +52,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @io.swagger.v3.oas.annotations.tags.Tag(name = Constants.TAG_PATTERN_RELATION)
@@ -69,6 +68,17 @@ public class PatternRelationController {
     private final PatternRelationAssembler patternRelationAssembler;
 
     @Operation(responses = {
+            @ApiResponse(responseCode = "200")
+    }, description = "Retrieve all pattern relations")
+    @GetMapping()
+    @ListParametersDoc
+    public HttpEntity<PagedModel<EntityModel<PatternRelationDto>>> getPatternRelations(
+            @Parameter(hidden = true) ListParameters listParameters) {
+        var patternRelations = patternRelationService.findAll(listParameters.getPageable());
+        return ResponseEntity.ok(patternRelationAssembler.toModel(patternRelations));
+    }
+
+    @Operation(responses = {
             @ApiResponse(responseCode = "201"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404")
@@ -77,21 +87,9 @@ public class PatternRelationController {
             "other pattern relation type attributes will not change.")
     @PostMapping()
     public HttpEntity<EntityModel<PatternRelationDto>> createPatternRelation(
-            @Valid @RequestBody PatternRelationDto relationDto) {
+            @Validated @RequestBody PatternRelationDto relationDto) {
+        var patternRelation = patternRelationAssembler.toModel(relationDto);
         return new ResponseEntity<>(handlePatternRelationUpdate(relationDto, null), HttpStatus.CREATED);
-    }
-
-    @Operation(operationId = "getAllPatternRelationTypes", responses = {
-            @ApiResponse(responseCode = "200")
-    }, description = "")
-    @GetMapping()
-    public HttpEntity<PagedModel<EntityModel<PatternRelationDto>>> getPatternRelationTypes(
-            @RequestParam(required = false) Integer page,
-            @RequestParam(required = false) Integer size
-    ) {
-        Pageable p = RestUtils.getPageableFromRequestParams(page, size);
-        var entities = patternRelationService.findAll(p);
-        return ResponseEntity.ok(patternRelationAssembler.toModel(entities));
     }
 
     @Operation(responses = {
@@ -115,7 +113,7 @@ public class PatternRelationController {
     @PutMapping("/{id}")
     public HttpEntity<EntityModel<PatternRelationDto>> updatePatternRelationType(
             @PathVariable UUID id,
-            @Valid @RequestBody PatternRelationDto relationDto) {
+            @Validated @RequestBody PatternRelationDto relationDto) {
         return ResponseEntity.ok(handlePatternRelationUpdate(relationDto, id));
     }
 

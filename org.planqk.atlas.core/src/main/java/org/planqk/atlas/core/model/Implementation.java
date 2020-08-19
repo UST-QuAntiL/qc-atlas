@@ -78,6 +78,10 @@ public class Implementation extends AlgorOrImpl implements ModelWithPublications
     private Set<ComputeResourceProperty> requiredComputeResourceProperties = new HashSet<>();
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "implementation_software_platforms",
+            joinColumns = @JoinColumn(name = "implementation_id"),
+            inverseJoinColumns = @JoinColumn(name = "software_platform_id")
+    )
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Set<SoftwarePlatform> softwarePlatforms = new HashSet<>();

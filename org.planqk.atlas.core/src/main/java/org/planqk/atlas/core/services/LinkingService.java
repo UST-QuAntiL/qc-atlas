@@ -21,38 +21,38 @@ package org.planqk.atlas.core.services;
 
 import java.util.UUID;
 
-import org.planqk.atlas.core.model.Algorithm;
-import org.planqk.atlas.core.model.Implementation;
-import org.planqk.atlas.core.model.Publication;
-import org.planqk.atlas.core.model.SoftwarePlatform;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
-public interface ImplementationService {
+public interface LinkingService {
 
     @Transactional
-    Implementation save(Implementation implementation);
+    void linkAlgorithmAndPublication(UUID algorithmId, UUID publicationId);
 
     @Transactional
-    Implementation create(Implementation implementation, UUID implementedAlgorithmId);
-
-    Implementation findById(UUID implementationId);
-
-    Page<Implementation> findAll(Pageable pageable);
+    void unlinkAlgorithmAndPublication(UUID algorithmId, UUID publicationId);
 
     @Transactional
-    Implementation update(UUID implementationId, Implementation implementation);
+    void linkAlgorithmAndProblemType(UUID algorithmId, UUID problemTypeId);
 
     @Transactional
-    void delete(UUID implementationId);
+    void unlinkAlgorithmAndProblemType(UUID algorithmId, UUID problemTypeId);
 
-    Page<Implementation> findByImplementedAlgorithm(UUID algorithmId, Pageable pageable);
+    @Transactional
+    void linkAlgorithmAndApplicationArea(UUID algorithmId, UUID applicationAreaId);
 
-    Algorithm getImplementedAlgorithm(UUID implementationId);
+    @Transactional
+    void unlinkAlgorithmAndApplicationArea(UUID algorithmId, UUID applicationAreaId);
 
-    Page<SoftwarePlatform> findLinkedSoftwarePlatforms(UUID implementationId, Pageable pageable);
+    @Transactional
+    void linkAlgorithmAndPatternRelation(UUID algorithmId, UUID patternRelationId);
 
-    Page<Publication> findLinkedPublications(UUID implementationId, Pageable pageable);
+    @Transactional
+    void unlinkAlgorithmAndPatternRelation(UUID algorithmId, UUID patternRelationId);
+
+    @Transactional
+    void linkImplementationAndPublication(UUID implementationId, UUID publicationId);
+
+    @Transactional
+    void unlinkImplementationAndPublication(UUID implementationId, UUID publicationId);
+
 }

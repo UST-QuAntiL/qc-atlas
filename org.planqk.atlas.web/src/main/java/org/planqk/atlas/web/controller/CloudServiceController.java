@@ -16,6 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
+
 package org.planqk.atlas.web.controller;
 
 import java.util.UUID;
@@ -45,7 +46,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -76,7 +76,7 @@ public class CloudServiceController {
     }, description = "Retrieve all cloud services")
     @GetMapping()
     @ListParametersDoc
-    public HttpEntity<PagedModel<EntityModel<CloudServiceDto>>> getCloudServices(
+    public ResponseEntity<PagedModel<EntityModel<CloudServiceDto>>> getCloudServices(
             @Parameter(hidden = true) ListParameters listParameters) {
         Page<CloudService> entities;
         if (listParameters.getSearch() == null || listParameters.getSearch().isEmpty()) {
@@ -95,7 +95,7 @@ public class CloudServiceController {
             "can be added via sub-routes (e.g. /cloud-services/{id}/compute-resources). " +
             "Custom ID will be ignored.")
     @PostMapping()
-    public HttpEntity<EntityModel<CloudServiceDto>> createCloudService(
+    public ResponseEntity<EntityModel<CloudServiceDto>> createCloudService(
             @Valid @RequestBody CloudServiceDto cloudServiceDto) {
         var savedCloudService = cloudServiceService.save(ModelMapperUtils.convert(cloudServiceDto, CloudService.class));
         return new ResponseEntity<>(cloudServiceAssembler.toModel(savedCloudService), HttpStatus.CREATED);
@@ -108,7 +108,7 @@ public class CloudServiceController {
     }, description = "Get referenced software platform for a  cloud service")
     @GetMapping("/{id}/" + Constants.SOFTWARE_PLATFORMS)
     @ListParametersDoc
-    public HttpEntity<CollectionModel<EntityModel<SoftwarePlatformDto>>> getSoftwarePlatformsForCloudService(
+    public ResponseEntity<CollectionModel<EntityModel<SoftwarePlatformDto>>> getSoftwarePlatformsForCloudService(
             @PathVariable UUID id,
             @Parameter(hidden = true) ListParameters listParameters
     ) {
@@ -125,7 +125,7 @@ public class CloudServiceController {
             "use the corresponding sub-route for updating them (e.g. /cloud-services/{id}/compute-resources). " +
             "Custom ID will be ignored.")
     @PutMapping("/{id}")
-    public HttpEntity<EntityModel<CloudServiceDto>> updateCloudService(
+    public ResponseEntity<EntityModel<CloudServiceDto>> updateCloudService(
             @PathVariable UUID id,
             @Valid @RequestBody CloudServiceDto cloudServiceDto) {
         var updatedCloudService = cloudServiceService.update(id, ModelMapperUtils.convert(cloudServiceDto, CloudService.class));
@@ -139,7 +139,7 @@ public class CloudServiceController {
     }, description = "Delete a cloud service. " +
             "This also removes all references to other entities (e.g. compute resource)")
     @DeleteMapping("/{id}")
-    public HttpEntity<Void> deleteCloudService(@PathVariable UUID id) {
+    public ResponseEntity<Void> deleteCloudService(@PathVariable UUID id) {
         cloudServiceService.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -150,7 +150,7 @@ public class CloudServiceController {
             @ApiResponse(responseCode = "404", description = "Cloud Service with given id does not exist"),
     }, description = "Retrieve a specific cloud service and its basic properties.")
     @GetMapping("/{id}")
-    public HttpEntity<EntityModel<CloudServiceDto>> getCloudService(
+    public ResponseEntity<EntityModel<CloudServiceDto>> getCloudService(
             @PathVariable UUID id) {
         var cloudService = cloudServiceService.findById(id);
         var cloudServiceDto = ModelMapperUtils.convert(cloudService, CloudServiceDto.class);

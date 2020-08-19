@@ -143,68 +143,6 @@ public class PublicationController {
         return ResponseEntity.ok(algorithmAssembler.toModel(publications));
     }
 
-    @Operation(
-            operationId = "addPublicationReferenceToAlgorithm",
-            responses = {
-                    @ApiResponse(responseCode = "200"),
-                    @ApiResponse(responseCode = "400"),
-                    @ApiResponse(responseCode = "404", content = @Content, description = "algorithm or publication does not exist")
-            }, description = "Add a reference to an existing algorithm (that was previously created via a POST on /algorithms/). " +
-            "Custom ID will be ignored. For algorithm only ID is required, other algorithm attributes will not change. " +
-            "If the algorithm doesn't exist yet, a 404 error is thrown.")
-    @PostMapping("/{id}/" + Constants.ALGORITHMS + "/{algoId}")
-    public ResponseEntity<Void> addPublicationReferenceToAlgorithm(
-            @PathVariable UUID id,
-            @PathVariable UUID algoId) {
-        publicationService.createReferenceToAlgorithm(id, algoId);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
-
-    @Operation(
-            operationId = "removePublicationReferenceFromAlgorithm",
-            responses = {
-                    @ApiResponse(responseCode = "200"),
-                    @ApiResponse(responseCode = "404", description =
-                            "Algorithm or publication with given ids do not exist or no relation between algorithm and publication")
-            }, description = "Delete a reference to a algorithm of the publication.")
-    @DeleteMapping("/{id}/" + Constants.ALGORITHMS + "/{algoId}")
-    public ResponseEntity<Void> removePublicationReferenceFromAlgorithm(
-            @PathVariable UUID id,
-            @PathVariable UUID algoId) {
-        publicationService.removeReferenceToAlgorithm(id, algoId);
-        return ResponseEntity.ok().build();
-    }
-
-    @Operation(operationId = "addPublicationReferenceToImplementation", responses = {
-            @ApiResponse(responseCode = "201"),
-            @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404", content = @Content,
-                    description = "Implementation or publication does not exist.")
-    }, description = "Add a reference to an existing publication " +
-            "(that was previously created via a POST on /publications/). Custom ID will be ignored. " +
-            "For publication only ID is required, other publication attributes will not change. " +
-            "If the publication doesn't exist yet, a 404 error is thrown.")
-    @PostMapping("/{id}/" + Constants.IMPLEMENTATIONS + "/{implId}")
-    public ResponseEntity<Void> addPublicationReferenceToImplementation(
-            @PathVariable UUID implId,
-            @PathVariable UUID id) {
-        publicationService.createReferenceToImplementation(id, implId);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
-
-    @Operation(operationId = "deleteReferenceToPublicationByImplementation", responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404")
-    }, description = "Delete a reference to a publication of the implementation.")
-    @DeleteMapping("/{id}/" + Constants.IMPLEMENTATIONS + "/{implId}")
-    public ResponseEntity<Void> deleteReferenceToPublication(
-            @PathVariable UUID implId,
-            @PathVariable UUID id) {
-        publicationService.removeReferenceToImplementation(id, implId);
-        return ResponseEntity.ok().build();
-    }
-
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
