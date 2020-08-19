@@ -27,6 +27,7 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.UUID;
 
+import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.CloudService;
 import org.planqk.atlas.core.model.ComputeResource;
 import org.planqk.atlas.core.model.Implementation;
@@ -51,6 +52,8 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
     private ComputeResourceService computeResourceService;
     @Autowired
     private ImplementationService implementationService;
+    @Autowired
+    private AlgorithmService algorithmService;
     @Autowired
     private LinkingService linkingService;
 
@@ -80,7 +83,7 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
         implementation.setName("test implementation");
         Implementation storedImplementation = implementationService.save(implementation);
 
-        linkingService.linkImplementationAndSoftwarePlatform(storedSoftwarePlatform.getId(), storedImplementation.getId());
+        linkingService.linkImplementationAndSoftwarePlatform(storedImplementation.getId(), storedSoftwarePlatform.getId());
 
         Set<Implementation> implementations = softwarePlatformService.findImplementations(
                 storedSoftwarePlatform.getId(), Pageable.unpaged()).toSet();
@@ -211,7 +214,7 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
             implementation.setName("test implementation" + i);
             Implementation storedImplementation = implementationService.save(implementation);
             storedImplementations.add(storedImplementation);
-            linkingService.linkImplementationAndSoftwarePlatform(storedSoftwarePlatform.getId(), storedImplementation.getId());
+            linkingService.linkImplementationAndSoftwarePlatform(storedImplementation.getId(), storedSoftwarePlatform.getId());
         }
         Set<Implementation> implementations = softwarePlatformService.findImplementations(
                 storedSoftwarePlatform.getId(), Pageable.unpaged()).toSet();
@@ -260,7 +263,7 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
             computeResource.setQuantumComputationModel(QuantumComputationModel.QUANTUM_ANNEALING);
             ComputeResource storedComputeResource = computeResourceService.save(computeResource);
             storedComputeResources.add(storedComputeResource);
-            linkingService.linkCloudServiceAndComputeResource(storedSoftwarePlatform.getId(), storedComputeResource.getId());
+            linkingService.linkSoftwarePlatformAndComputeResource(storedSoftwarePlatform.getId(), storedComputeResource.getId());
         }
         Set<ComputeResource> computeResources = softwarePlatformService.findComputeResources(
                 storedSoftwarePlatform.getId(), Pageable.unpaged()).toSet();
@@ -294,7 +297,7 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
         Implementation implementation = new Implementation();
         implementation.setName("test implementation");
         Implementation storedImplementation = implementationService.save(implementation);
-        linkingService.linkImplementationAndSoftwarePlatform(storedSoftwarePlatform.getId(), storedImplementation.getId());
+        linkingService.linkImplementationAndSoftwarePlatform(storedImplementation.getId(), storedSoftwarePlatform.getId());
 
         // Add Cloud Service Reference
         CloudService cloudService = new CloudService();
@@ -329,13 +332,13 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
         implementation.setName("test implementation");
         Implementation storedImplementation = implementationService.save(implementation);
 
-        linkingService.linkImplementationAndSoftwarePlatform(storedSoftwarePlatform.getId(), storedImplementation.getId());
+        linkingService.linkImplementationAndSoftwarePlatform(storedImplementation.getId(), storedSoftwarePlatform.getId());
 
         Set<Implementation> implementations = softwarePlatformService.findImplementations(
                 storedSoftwarePlatform.getId(), Pageable.unpaged()).toSet();
         assertThat(implementations.size()).isEqualTo(1);
 
-        linkingService.unlinkImplementationAndSoftwarePlatform(storedSoftwarePlatform.getId(), storedImplementation.getId());
+        linkingService.unlinkImplementationAndSoftwarePlatform(storedImplementation.getId(), storedSoftwarePlatform.getId());
 
         implementations = softwarePlatformService.findImplementations(
                 storedSoftwarePlatform.getId(), Pageable.unpaged()).toSet();
