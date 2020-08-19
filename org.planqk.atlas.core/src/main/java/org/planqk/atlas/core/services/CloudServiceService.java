@@ -53,10 +53,4 @@ public interface CloudServiceService {
     Page<ComputeResource> findComputeResources(UUID serviceId, Pageable pageable);
 
     Page<SoftwarePlatform> findLinkedSoftwarePlatforms(UUID serviceId, Pageable pageable);
-
-    @Transactional
-    void addComputeResourceReference(UUID serviceId, UUID resourceId);
-
-    @Transactional
-    void deleteComputeResourceReference(UUID serviceId, UUID resourceId);
 }

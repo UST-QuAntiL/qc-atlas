@@ -35,6 +35,7 @@ import org.planqk.atlas.core.services.AlgoRelationService;
 import org.planqk.atlas.core.services.AlgoRelationTypeService;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.core.services.ImplementationService;
+import org.planqk.atlas.core.services.LinkingService;
 import org.planqk.atlas.core.services.PatternRelationService;
 import org.planqk.atlas.core.services.PatternRelationTypeService;
 import org.planqk.atlas.web.Constants;
@@ -117,6 +118,8 @@ public class AlgorithmController {
     private final PublicationAssembler publicationAssembler;
 
     private final ComputeResourcePropertyAssembler computeResourcePropertyAssembler;
+
+    private final LinkingService linkingService;
 
 
     //    private final TagAssembler tagAssembler;
@@ -219,7 +222,7 @@ public class AlgorithmController {
     public ResponseEntity<Void> addPublicationReferenceToAlgorithm(
             @PathVariable UUID algoId,
             @PathVariable UUID publicationId) {
-        algorithmService.addPublicationReference(algoId, publicationId);
+        linkingService.linkAlgorithmAndPublication(algoId, publicationId);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -234,7 +237,7 @@ public class AlgorithmController {
     public ResponseEntity<Void> deletePublicationReferenceFromAlgorithm(
             @PathVariable UUID algoId,
             @PathVariable UUID publicationId) {
-        algorithmService.deletePublicationReference(algoId, publicationId);
+        linkingService.unlinkAlgorithmAndPublication(algoId, publicationId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -265,7 +268,7 @@ public class AlgorithmController {
     public ResponseEntity<Void> addProblemTypeReferenceToAlgorithm(
             @PathVariable UUID algoId,
             @PathVariable UUID problemTypeId) {
-        algorithmService.addProblemTypeReference(algoId, problemTypeId);
+        linkingService.linkAlgorithmAndProblemType(algoId, problemTypeId);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -280,7 +283,7 @@ public class AlgorithmController {
     public ResponseEntity<Void> deleteProblemTypeReferenceFromAlgorithm(
             @PathVariable UUID algoId,
             @PathVariable UUID problemTypeId) {
-        algorithmService.deleteProblemTypeReference(algoId, problemTypeId);
+        linkingService.unlinkAlgorithmAndProblemType(algoId, problemTypeId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -311,7 +314,7 @@ public class AlgorithmController {
     public ResponseEntity<Void> addApplicationAreaReferenceToAlgorithm(
             @PathVariable UUID algoId,
             @PathVariable UUID applicationAreaId) {
-        algorithmService.addApplicationAreaReference(algoId, applicationAreaId);
+        linkingService.linkAlgorithmAndApplicationArea(algoId, applicationAreaId);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -325,7 +328,7 @@ public class AlgorithmController {
     public ResponseEntity<Void> deleteApplicationAreaReferenceFromAlgorithm(
             @PathVariable UUID algoId,
             @PathVariable UUID applicationAreaId) {
-        algorithmService.deleteApplicationAreaReference(algoId, applicationAreaId);
+        linkingService.unlinkAlgorithmAndApplicationArea(algoId, applicationAreaId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -356,7 +359,7 @@ public class AlgorithmController {
     public ResponseEntity<Void> addPatternRelationReferenceToAlgorithm(
             @PathVariable UUID algoId,
             @PathVariable UUID patternRelationId) {
-        algorithmService.addPatternRelationReference(algoId, patternRelationId);
+        linkingService.linkAlgorithmAndPatternRelation(algoId, patternRelationId);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -370,7 +373,7 @@ public class AlgorithmController {
     public ResponseEntity<Void> deletePatternRelationReferenceFromAlgorithm(
             @PathVariable UUID algoId,
             @PathVariable UUID patternRelationId) {
-        algorithmService.deletePatternRelationReference(algoId, patternRelationId);
+        linkingService.unlinkAlgorithmAndPatternRelation(algoId, patternRelationId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

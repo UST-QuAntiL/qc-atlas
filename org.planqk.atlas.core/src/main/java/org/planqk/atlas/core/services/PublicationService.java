@@ -38,18 +38,6 @@ public interface PublicationService {
     Page<Implementation> findImplementationsOfPublication(UUID publicationId, Pageable p);
 
     @Transactional
-    void createReferenceToAlgorithm(UUID publicationId, UUID algorithmId);
-
-    @Transactional
-    void createReferenceToImplementation(UUID publicationId, UUID implementationId);
-
-    @Transactional
-    void removeReferenceToAlgorithm(UUID publicationId, UUID algorithmId);
-
-    @Transactional
-    void removeReferenceToImplementation(UUID publicationId, UUID implementationId);
-
-    @Transactional
     Publication save(Publication publication);
 
     @Transactional

@@ -29,7 +29,6 @@ import java.util.UUID;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Publication;
-import org.planqk.atlas.core.model.exceptions.ConsistencyException;
 import org.planqk.atlas.core.repository.AlgorithmRepository;
 import org.planqk.atlas.core.repository.ImplementationRepository;
 import org.planqk.atlas.core.repository.PublicationRepository;
@@ -62,62 +61,6 @@ public class PublicationServiceImpl implements PublicationService {
             throw new NoSuchElementException("Publication with id " + publicationId.toString() + " Does not exist");
         }
         return implementationRepository.findImplementationsByPublicationId(publicationId, p);
-    }
-
-    @Override
-    @Transactional
-    public void createReferenceToAlgorithm(UUID publicationId, UUID algorithmId) {
-        var publication = findById(publicationId);
-        var algorithm = algorithmRepository.findById(algorithmId)
-                .orElseThrow(() -> new NoSuchElementException("Algorithm not found"));
-
-        if (publication.getAlgorithms().contains(algorithm)) {
-            throw new ConsistencyException("Publication and Algorithm are already linked");
-        }
-
-        publication.addAlgorithm(algorithm);
-    }
-
-    @Override
-    @Transactional
-    public void createReferenceToImplementation(UUID publicationId, UUID implementationId) {
-        var publication = findById(publicationId);
-        var implementation = implementationRepository.findById(implementationId)
-                .orElseThrow(() -> new NoSuchElementException("Implementation not found"));
-
-        if (publication.getImplementations().contains(implementation)) {
-            throw new ConsistencyException("Publication and Implementation are already linked");
-        }
-
-        publication.addImplementation(implementation);
-    }
-
-    @Override
-    @Transactional
-    public void removeReferenceToAlgorithm(UUID publicationId, UUID algoId) {
-        var publication = findById(publicationId);
-        var algorithm = algorithmRepository.findById(algoId)
-                .orElseThrow(() -> new NoSuchElementException("Algorithm not found"));
-
-        if (!publication.getAlgorithms().contains(algorithm)) {
-            throw new ConsistencyException("Publication and Algorithme were not linked");
-        }
-
-        publication.removeAlgorithm(algorithm);
-    }
-
-    @Override
-    @Transactional
-    public void removeReferenceToImplementation(UUID publicationId, UUID implementationId) {
-        var publication = findById(publicationId);
-        var implementation = implementationRepository.findById(implementationId)
-                .orElseThrow(() -> new NoSuchElementException("Implementation not found"));
-
-        if (!publication.getImplementations().contains(implementation)) {
-            throw new ConsistencyException("Publication and Implementation were not linked");
-        }
-
-        publication.removeImplementation(implementation);
     }
 
     @Override

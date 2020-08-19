@@ -55,4 +55,28 @@ public interface LinkingService {
     @Transactional
     void unlinkImplementationAndPublication(UUID implementationId, UUID publicationId);
 
+    @Transactional
+    void linkImplementationAndSoftwarePlatform(UUID implementationId, UUID softwarePlatformId);
+
+    @Transactional
+    void unlinkImplementationAndSoftwarePlatform(UUID implementationId, UUID softwarePlatformId);
+
+    @Transactional
+    void linkSoftwarePlatformAndCloudService(UUID softwarePlatformId, UUID cloudServiceId);
+
+    @Transactional
+    void unlinkSoftwarePlatformAndCloudService(UUID softwarePlatformId, UUID cloudServiceId);
+
+    @Transactional
+    void linkSoftwarePlatformAndComputeResource(UUID softwarePlatformId, UUID computeResourceId);
+
+    @Transactional
+    void unlinkSoftwarePlatformAndComputeResource(UUID softwarePlatformId, UUID computeResourceId);
+
+    @Transactional
+    void linkCloudServiceAndComputeResource(UUID cloudServiceId, UUID computeResourceId);
+
+    @Transactional
+    void unlinkCloudServiceAndComputeResource(UUID cloudServiceId, UUID computeResourceId);
+
 }
