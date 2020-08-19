@@ -102,7 +102,7 @@ public class ImplementationController {
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "204"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Implementation doesn't exist")
     }, description = "")
@@ -111,7 +111,7 @@ public class ImplementationController {
             @PathVariable UUID implementationId
     ) {
         implementationService.delete(implementationId);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @Operation(responses = {
@@ -150,6 +150,7 @@ public class ImplementationController {
         return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(resources));
     }
 
+    // TODO refactor
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400", description = "Id of the passed computing resource type is null"),

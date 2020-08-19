@@ -100,14 +100,14 @@ public class ApplicationAreaController {
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "204"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Application area with given id doesn't exist")
     }, description = "")
     @DeleteMapping("/{applicationAreaId}")
     public ResponseEntity<Void> deleteApplicationArea(@PathVariable UUID applicationAreaId) {
         applicationAreaService.delete(applicationAreaId);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @Operation(responses = {

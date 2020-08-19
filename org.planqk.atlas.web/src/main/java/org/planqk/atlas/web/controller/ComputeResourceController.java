@@ -162,7 +162,7 @@ public class ComputeResourceController {
     }, description = "Get referenced software platform for a compute resource")
     @GetMapping("/{computeResourceId}/" + Constants.SOFTWARE_PLATFORMS)
     @ListParametersDoc
-    public ResponseEntity<CollectionModel<EntityModel<SoftwarePlatformDto>>> getSoftwarePlatformsForComputeResource(
+    public ResponseEntity<CollectionModel<EntityModel<SoftwarePlatformDto>>> getSoftwarePlatformsOfComputeResource(
             @PathVariable UUID computeResourceId,
             @Parameter(hidden = true) ListParameters listParameters
     ) {
@@ -177,7 +177,7 @@ public class ComputeResourceController {
     }, description = "Get referenced cloud services for a compute resource")
     @GetMapping("/{computeResourceId}/" + Constants.CLOUD_SERVICES)
     @ListParametersDoc
-    public ResponseEntity<CollectionModel<EntityModel<CloudServiceDto>>> getCloudServicesForComputeResource(
+    public ResponseEntity<CollectionModel<EntityModel<CloudServiceDto>>> getCloudServicesOfComputeResource(
             @PathVariable UUID computeResourceId,
             @Parameter(hidden = true) ListParameters listParameters
     ) {
@@ -209,10 +209,9 @@ public class ComputeResourceController {
             "add a reference to the defined compute resource property. " +
             "Custom ID will be ignored. ")
     @PostMapping("/{computeResourceId}/" + Constants.COMPUTE_RESOURCES_PROPERTIES)
-    public ResponseEntity<EntityModel<ComputeResourceDto>> addComputingResourcePropertyToComputeResource(
+    public ResponseEntity<EntityModel<ComputeResourceDto>> createComputingResourcePropertyForComputeResource(
             @PathVariable UUID computeResourceId,
-            @Valid @RequestBody ComputeResourcePropertyDto resourceDto
-    ) {
+            @Valid @RequestBody ComputeResourcePropertyDto resourceDto) {
         var ComputeResource = computeResourceService.findById(computeResourceId);
         ValidationUtils.validateComputingResourceProperty(resourceDto);
         var resource = ModelMapperUtils.convert(resourceDto, ComputeResourceProperty.class);

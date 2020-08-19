@@ -118,14 +118,14 @@ public class PublicationController {
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "204"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Publication with given id doesn't exist")
     }, description = "")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePublication(@PathVariable UUID id) {
         publicationService.deleteById(id);
-        return ResponseEntity.ok().build();
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @Operation(responses = {
@@ -135,7 +135,7 @@ public class PublicationController {
     }, description = "")
     @GetMapping("/{id}/" + Constants.ALGORITHMS)
     @ListParametersDoc
-    public ResponseEntity<PagedModel<EntityModel<AlgorithmDto>>> getPublicationAlgorithms(
+    public ResponseEntity<PagedModel<EntityModel<AlgorithmDto>>> getAlgorithmsOfPublication(
             @PathVariable UUID id,
             @Parameter(hidden = true) ListParameters params) {
         var publications = publicationService.findAlgorithmsOfPublication(id, params.getPageable());
@@ -149,7 +149,7 @@ public class PublicationController {
     }, description = "")
     @GetMapping("/{id}/" + Constants.IMPLEMENTATIONS)
     @ListParametersDoc
-    public ResponseEntity<PagedModel<EntityModel<ImplementationDto>>> getPublicationImplementations(
+    public ResponseEntity<PagedModel<EntityModel<ImplementationDto>>> getImplementationsOfPublication(
             @PathVariable UUID id,
             @Parameter(hidden = true) ListParameters params) {
         var implementations = publicationService.findImplementationsOfPublication(id, params.getPageable());
