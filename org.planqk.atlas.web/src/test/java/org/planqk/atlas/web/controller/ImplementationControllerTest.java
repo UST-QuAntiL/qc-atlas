@@ -29,6 +29,7 @@ import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.core.services.ComputeResourcePropertyService;
 import org.planqk.atlas.core.services.ImplementationService;
+import org.planqk.atlas.core.services.LinkingService;
 import org.planqk.atlas.core.services.PublicationService;
 import org.planqk.atlas.core.services.SoftwarePlatformService;
 import org.planqk.atlas.web.controller.mixin.ComputeResourcePropertyMixin;
@@ -90,6 +91,8 @@ public class ImplementationControllerTest {
     private PublicationService publicationService;
     @MockBean
     private SoftwarePlatformService softwarePlatformService;
+    @MockBean
+    private LinkingService linkingService;
 
     @Autowired
     private MockMvc mockMvc;
