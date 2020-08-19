@@ -294,7 +294,7 @@ public class ComputeResourceControllerTest {
                 get(
                         fromMethodCall(uriBuilder,
                                 on(ComputeResourceController.class)
-                                        .getComputingResourcePropertiesForComputeResource(UUID.randomUUID(), null)
+                                        .getComputingResourcePropertiesOfComputeResource(UUID.randomUUID(), null)
                         ).toUriString()
                 ).queryParam(Constants.PAGE, Integer.toString(page))
                         .queryParam(Constants.SIZE, Integer.toString(size))
@@ -329,7 +329,7 @@ public class ComputeResourceControllerTest {
                 get(
                         fromMethodCall(uriBuilder,
                                 on(ComputeResourceController.class)
-                                        .getComputingResourcePropertiesForComputeResource(UUID.randomUUID(), null)
+                                        .getComputingResourcePropertiesOfComputeResource(UUID.randomUUID(), null)
                         ).toUriString()
                 ).queryParam(Constants.PAGE, Integer.toString(page))
                         .queryParam(Constants.SIZE, Integer.toString(size))

@@ -50,7 +50,7 @@ public interface CloudServiceService {
     @Transactional
     void delete(UUID cloudServiceId);
 
-    Page<ComputeResource> findComputeResources(UUID serviceId, Pageable pageable);
-
     Page<SoftwarePlatform> findLinkedSoftwarePlatforms(UUID serviceId, Pageable pageable);
+
+    Page<ComputeResource> findComputeResources(UUID serviceId, Pageable pageable);
 }

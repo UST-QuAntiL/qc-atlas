@@ -25,6 +25,7 @@ import javax.validation.Valid;
 
 import org.planqk.atlas.core.model.CloudService;
 import org.planqk.atlas.core.services.CloudServiceService;
+import org.planqk.atlas.core.services.LinkingService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.CloudServiceDto;
 import org.planqk.atlas.web.dtos.ComputeResourceDto;
@@ -71,6 +72,8 @@ public class CloudServiceController {
     private final ComputeResourceAssembler computeResourceAssembler;
     private final SoftwarePlatformAssembler softwarePlatformAssembler;
 
+    private final LinkingService linkingService;
+
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
     }, description = "Retrieve all cloud services")
@@ -104,44 +107,29 @@ public class CloudServiceController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404", content = @Content, description = "Resource doesn't exist")
-    }, description = "Get referenced software platform for a  cloud service")
-    @GetMapping("/{id}/" + Constants.SOFTWARE_PLATFORMS)
-    @ListParametersDoc
-    public ResponseEntity<CollectionModel<EntityModel<SoftwarePlatformDto>>> getSoftwarePlatformsForCloudService(
-            @PathVariable UUID id,
-            @Parameter(hidden = true) ListParameters listParameters
-    ) {
-        var softwarePlatforms = cloudServiceService.findLinkedSoftwarePlatforms(id, listParameters.getPageable());
-        return ResponseEntity.ok(softwarePlatformAssembler.toModel(softwarePlatforms));
-    }
-
-    @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Cloud Service with given id does not exist")
     }, description = "Update the basic properties of a cloud service (e.g. name). " +
             "References to sub-objects (e.g. a compute resource) are not updated via this operation - " +
             "use the corresponding sub-route for updating them (e.g. /cloud-services/{id}/compute-resources). " +
             "Custom ID will be ignored.")
-    @PutMapping("/{id}")
+    @PutMapping()
     public ResponseEntity<EntityModel<CloudServiceDto>> updateCloudService(
-            @PathVariable UUID id,
             @Valid @RequestBody CloudServiceDto cloudServiceDto) {
-        var updatedCloudService = cloudServiceService.update(id, ModelMapperUtils.convert(cloudServiceDto, CloudService.class));
+        var updatedCloudService = cloudServiceService.update(
+                cloudServiceDto.getId(), ModelMapperUtils.convert(cloudServiceDto, CloudService.class));
         return ResponseEntity.ok(cloudServiceAssembler.toModel(updatedCloudService));
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "204"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Cloud Service with given id does not exist"),
     }, description = "Delete a cloud service. " +
             "This also removes all references to other entities (e.g. compute resource)")
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCloudService(@PathVariable UUID id) {
-        cloudServiceService.delete(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+    @DeleteMapping("/{cloudServiceId}")
+    public ResponseEntity<Void> deleteCloudService(@PathVariable UUID cloudServiceId) {
+        cloudServiceService.delete(cloudServiceId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @Operation(responses = {
@@ -149,12 +137,27 @@ public class CloudServiceController {
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Cloud Service with given id does not exist"),
     }, description = "Retrieve a specific cloud service and its basic properties.")
-    @GetMapping("/{id}")
+    @GetMapping("/{cloudServiceId}")
     public ResponseEntity<EntityModel<CloudServiceDto>> getCloudService(
-            @PathVariable UUID id) {
-        var cloudService = cloudServiceService.findById(id);
-        var cloudServiceDto = ModelMapperUtils.convert(cloudService, CloudServiceDto.class);
-        return ResponseEntity.ok(cloudServiceAssembler.toModel(cloudServiceDto));
+            @PathVariable UUID cloudServiceId) {
+        var cloudService = cloudServiceService.findById(cloudServiceId);
+        return ResponseEntity.ok(cloudServiceAssembler
+                .toModel(ModelMapperUtils.convert(cloudService, CloudServiceDto.class)));
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", content = @Content, description = "Resource doesn't exist")
+    }, description = "Get referenced software platforms for a cloud service")
+    @GetMapping("/{cloudServiceId}/" + Constants.SOFTWARE_PLATFORMS)
+    @ListParametersDoc
+    public ResponseEntity<PagedModel<EntityModel<SoftwarePlatformDto>>> getSoftwarePlatformsOfCloudService(
+            @PathVariable UUID cloudServiceId,
+            @Parameter(hidden = true) ListParameters listParameters
+    ) {
+        var softwarePlatforms = cloudServiceService.findLinkedSoftwarePlatforms(cloudServiceId, listParameters.getPageable());
+        return ResponseEntity.ok(softwarePlatformAssembler.toModel(softwarePlatforms));
     }
 
     @Operation(responses = {
@@ -162,41 +165,41 @@ public class CloudServiceController {
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Cloud Service or Compute Resource with given id does not exist"),
     }, description = "Get referenced compute resources for a software platform.")
-    @GetMapping("/{id}/" + Constants.COMPUTE_RESOURCES)
+    @GetMapping("/{cloudServiceId}/" + Constants.COMPUTE_RESOURCES)
     @ListParametersDoc()
-    public ResponseEntity<PagedModel<EntityModel<ComputeResourceDto>>> getComputeResourcesForCloudService(
-            @PathVariable UUID id,
+    public ResponseEntity<PagedModel<EntityModel<ComputeResourceDto>>> getComputeResourcesOfCloudService(
+            @PathVariable UUID cloudServiceId,
             @Parameter(hidden = true) ListParameters listParameters) {
-        var computeResources = cloudServiceService.findComputeResources(id, listParameters.getPageable());
+        var computeResources = cloudServiceService.findComputeResources(cloudServiceId, listParameters.getPageable());
         return ResponseEntity.ok(computeResourceAssembler.toModel(computeResources));
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "204"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Cloud Service or Compute Resource with given id does not exist"),
     }, description = "Add a reference to an existing compute resource (that was previously created via a POST on /compute-resources/). " +
             "Custom ID will be ignored. " +
             "For the compute resource only the ID is required, other compute resource attributes will not change. " +
             "If the compute resource doesn't exist yet, a 404 error is thrown.")
-    @PostMapping("/{id}/" + Constants.COMPUTE_RESOURCES + "/{crId}")
-    public ResponseEntity<Void> addComputeResourceReferenceToCloudService(
-            @PathVariable UUID id,
-            @PathVariable UUID crId) {
-        cloudServiceService.addComputeResourceReference(id, crId);
-        return ResponseEntity.status(HttpStatus.OK).build();
+    @PostMapping("/{cloudServiceId}/" + Constants.COMPUTE_RESOURCES + "/{computeResourceId}")
+    public ResponseEntity<Void> linkCloudServiceAndComputeResource(
+            @PathVariable UUID cloudServiceId,
+            @PathVariable UUID computeResourceId) {
+        linkingService.linkCloudServiceAndComputeResource(cloudServiceId, computeResourceId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "204"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Cloud Service or Compute Resource with given id does not exist"),
     }, description = "Get a specific referenced compute resource of a cloud service.")
-    @DeleteMapping("/{id}/" + Constants.COMPUTE_RESOURCES + "/{crId}")
-    public ResponseEntity<Void> deleteComputeResourceReferenceFromCloudService(
-            @PathVariable UUID id,
-            @PathVariable UUID crId) {
-        cloudServiceService.deleteComputeResourceReference(id, crId);
-        return ResponseEntity.status(HttpStatus.OK).build();
+    @DeleteMapping("/{cloudServiceId}/" + Constants.COMPUTE_RESOURCES + "/{computeResourceId}")
+    public ResponseEntity<Void> unlinkCloudServiceAndComputeResource(
+            @PathVariable UUID cloudServiceId,
+            @PathVariable UUID computeResourceId) {
+        linkingService.unlinkCloudServiceAndComputeResource(cloudServiceId, computeResourceId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

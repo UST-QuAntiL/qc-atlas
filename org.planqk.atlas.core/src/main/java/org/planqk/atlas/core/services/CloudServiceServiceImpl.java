@@ -116,30 +116,4 @@ public class CloudServiceServiceImpl implements CloudServiceService {
     public Page<SoftwarePlatform> findLinkedSoftwarePlatforms(UUID serviceId, Pageable pageable) {
         return softwarePlatformRepository.findSoftwarePlatformsByCloudServiceId(serviceId, pageable);
     }
-
-    @Transactional
-    @Override
-    public void addComputeResourceReference(UUID serviceId, UUID resourceId) {
-        var cloudService = findById(serviceId);
-        var computeResource = computeResourceService.findById(resourceId);
-
-        if (cloudService.getProvidedComputeResources().contains(computeResource)) {
-            throw new ConsistencyException("Compute Resource and software platform are already linked");
-        }
-
-        cloudService.addComputeResource(computeResource);
-    }
-
-    @Transactional
-    @Override
-    public void deleteComputeResourceReference(UUID serviceId, UUID resourceId) {
-        var cloudService = findById(serviceId);
-        var computeResource = computeResourceService.findById(resourceId);
-
-        if (!cloudService.getProvidedComputeResources().contains(computeResource)) {
-            throw new ConsistencyException("Compute Resource and software platform are not linked");
-        }
-
-        cloudService.removeComputeResource(computeResource);
-    }
 }

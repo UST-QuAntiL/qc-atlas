@@ -123,63 +123,11 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
     }
 
     @Override
-    @Transactional
-    public void addCloudServiceReference(UUID platformId, UUID cloudServiceId) {
-        SoftwarePlatform softwarePlatform = findById(platformId);
-        CloudService cloudService = cloudServiceService.findById(cloudServiceId);
-
-        if (softwarePlatform.getSupportedCloudServices().contains(cloudService)) {
-            throw new ConsistencyException("Cloud service and software platform are already linked");
-        }
-
-        softwarePlatform.addCloudService(cloudService);
-    }
-
-    @Override
-    @Transactional
-    public void deleteCloudServiceReference(UUID platformId, UUID cloudServiceId) {
-        SoftwarePlatform softwarePlatform = findById(platformId);
-        CloudService cloudService = cloudServiceService.findById(cloudServiceId);
-
-        if (!softwarePlatform.getSupportedCloudServices().contains(cloudService)) {
-            throw new ConsistencyException("Cloud service and software platform are not linked");
-        }
-
-        softwarePlatform.removeCloudService(cloudService);
-    }
-
-    @Override
     public Page<ComputeResource> findComputeResources(UUID platformId, Pageable pageable) {
         if (!softwarePlatformRepository.existsSoftwarePlatformById(platformId)) {
             throw new NoSuchElementException();
         }
 
         return computeResourceRepository.findComputeResourcesBySoftwarePlatformId(platformId, pageable);
-    }
-
-    @Override
-    @Transactional
-    public void addComputeResourceReference(UUID platformId, UUID resourceId) {
-        SoftwarePlatform softwarePlatform = findById(platformId);
-        ComputeResource computeResource = computeResourceService.findById(resourceId);
-
-        if (softwarePlatform.getSupportedComputeResources().contains(computeResource)) {
-            throw new ConsistencyException("Compute resource and software platform are already linked");
-        }
-
-        softwarePlatform.addComputeResource(computeResource);
-    }
-
-    @Override
-    @Transactional
-    public void deleteComputeResourceReference(UUID platformId, UUID resourceId) {
-        SoftwarePlatform softwarePlatform = findById(platformId);
-        ComputeResource computeResource = computeResourceService.findById(resourceId);
-
-        if (!softwarePlatform.getSupportedComputeResources().contains(computeResource)) {
-            throw new ConsistencyException("Compute resource and software platform are not linked");
-        }
-
-        softwarePlatform.removeComputeResource(computeResource);
     }
 }

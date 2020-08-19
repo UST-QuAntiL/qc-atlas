@@ -368,7 +368,7 @@ public class SoftwarePlatformControllerTest {
                 get(
                         fromMethodCall(uriBuilder,
                                 on(SoftwarePlatformController.class)
-                                        .getImplementationsForSoftwarePlatform(UUID.randomUUID(), null)
+                                        .getImplementationsOfSoftwarePlatform(UUID.randomUUID(), null)
                         ).toUriString()
                 ).queryParam(Constants.PAGE, Integer.toString(page))
                         .queryParam(Constants.SIZE, Integer.toString(size))
@@ -385,7 +385,7 @@ public class SoftwarePlatformControllerTest {
                 get(
                         fromMethodCall(uriBuilder,
                                 on(SoftwarePlatformController.class)
-                                        .getCloudServicesForSoftwarePlatform(UUID.randomUUID(), null)
+                                        .getCloudServicesOfSoftwarePlatform(UUID.randomUUID(), null)
                         ).toUriString()
                 ).queryParam(Constants.PAGE, Integer.toString(page))
                         .queryParam(Constants.SIZE, Integer.toString(size))
@@ -402,7 +402,7 @@ public class SoftwarePlatformControllerTest {
                 get(
                         fromMethodCall(uriBuilder,
                                 on(SoftwarePlatformController.class)
-                                        .getComputeResourcesForSoftwarePlatform(UUID.randomUUID(), null)
+                                        .getComputeResourcesOfSoftwarePlatform(UUID.randomUUID(), null)
                         ).toUriString()
                 ).queryParam(Constants.PAGE, Integer.toString(page))
                         .queryParam(Constants.SIZE, Integer.toString(size))
@@ -419,7 +419,7 @@ public class SoftwarePlatformControllerTest {
                 get(
                         fromMethodCall(uriBuilder,
                                 on(SoftwarePlatformController.class)
-                                        .getImplementationsForSoftwarePlatform(UUID.randomUUID(), null)
+                                        .getImplementationsOfSoftwarePlatform(UUID.randomUUID(), null)
                         ).toUriString()
                 ).queryParam(Constants.PAGE, Integer.toString(page))
                         .queryParam(Constants.SIZE, Integer.toString(size))
@@ -441,7 +441,7 @@ public class SoftwarePlatformControllerTest {
                 get(
                         fromMethodCall(uriBuilder,
                                 on(SoftwarePlatformController.class)
-                                        .getCloudServicesForSoftwarePlatform(UUID.randomUUID(), null)
+                                        .getCloudServicesOfSoftwarePlatform(UUID.randomUUID(), null)
                         ).toUriString()
                 ).queryParam(Constants.PAGE, Integer.toString(page))
                         .queryParam(Constants.SIZE, Integer.toString(size))
@@ -463,7 +463,7 @@ public class SoftwarePlatformControllerTest {
                 get(
                         fromMethodCall(uriBuilder,
                                 on(SoftwarePlatformController.class)
-                                        .getComputeResourcesForSoftwarePlatform(UUID.randomUUID(), null)
+                                        .getComputeResourcesOfSoftwarePlatform(UUID.randomUUID(), null)
                         ).toUriString()
                 ).queryParam(Constants.PAGE, Integer.toString(page))
                         .queryParam(Constants.SIZE, Integer.toString(size))
@@ -495,7 +495,7 @@ public class SoftwarePlatformControllerTest {
                 get(
                         fromMethodCall(uriBuilder,
                                 on(SoftwarePlatformController.class)
-                                        .getImplementationsForSoftwarePlatform(UUID.randomUUID(), null)
+                                        .getImplementationsOfSoftwarePlatform(UUID.randomUUID(), null)
                         ).toUriString()
                 ).queryParam(Constants.PAGE, Integer.toString(page))
                         .queryParam(Constants.SIZE, Integer.toString(size))
@@ -530,7 +530,7 @@ public class SoftwarePlatformControllerTest {
                 get(
                         fromMethodCall(uriBuilder,
                                 on(SoftwarePlatformController.class)
-                                        .getCloudServicesForSoftwarePlatform(UUID.randomUUID(), null)
+                                        .getCloudServicesOfSoftwarePlatform(UUID.randomUUID(), null)
                         ).toUriString()
                 ).queryParam(Constants.PAGE, Integer.toString(page))
                         .queryParam(Constants.SIZE, Integer.toString(size))
@@ -565,7 +565,7 @@ public class SoftwarePlatformControllerTest {
                 get(
                         fromMethodCall(uriBuilder,
                                 on(SoftwarePlatformController.class)
-                                        .getComputeResourcesForSoftwarePlatform(UUID.randomUUID(), null)
+                                        .getComputeResourcesOfSoftwarePlatform(UUID.randomUUID(), null)
                         ).toUriString()
                 ).queryParam(Constants.PAGE, Integer.toString(page))
                         .queryParam(Constants.SIZE, Integer.toString(size))
@@ -669,7 +669,7 @@ public class SoftwarePlatformControllerTest {
                 post(
                         fromMethodCall(uriBuilder,
                                 on(SoftwarePlatformController.class)
-                                        .addComputeResourceReferenceToSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID())
+                                        .linkSoftwarePlatformAndComputeResource(UUID.randomUUID(), UUID.randomUUID())
                         ).toUriString()
                 ).accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk());
@@ -682,7 +682,7 @@ public class SoftwarePlatformControllerTest {
                 delete(
                         fromMethodCall(uriBuilder,
                                 on(SoftwarePlatformController.class)
-                                        .deleteComputeResourceReferenceFromSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID())
+                                        .unlinkSoftwarePlatformAndComputeResource(UUID.randomUUID(), UUID.randomUUID())
                         ).toUriString()
                 ).accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk());
@@ -695,7 +695,7 @@ public class SoftwarePlatformControllerTest {
                 post(
                         fromMethodCall(uriBuilder,
                                 on(SoftwarePlatformController.class)
-                                        .addComputeResourceReferenceToSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID())
+                                        .linkSoftwarePlatformAndComputeResource(UUID.randomUUID(), UUID.randomUUID())
                         ).toUriString()
                 ).accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isNotFound());
@@ -708,7 +708,7 @@ public class SoftwarePlatformControllerTest {
                 delete(
                         fromMethodCall(uriBuilder,
                                 on(SoftwarePlatformController.class)
-                                        .deleteComputeResourceReferenceFromSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID())
+                                        .unlinkSoftwarePlatformAndComputeResource(UUID.randomUUID(), UUID.randomUUID())
                         ).toUriString()
                 ).accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isNotFound());
@@ -721,7 +721,7 @@ public class SoftwarePlatformControllerTest {
                 post(
                         fromMethodCall(uriBuilder,
                                 on(SoftwarePlatformController.class)
-                                        .addComputeResourceReferenceToSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID())
+                                        .linkSoftwarePlatformAndComputeResource(UUID.randomUUID(), UUID.randomUUID())
                         ).toUriString()
                 ).accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isBadRequest());
@@ -734,7 +734,7 @@ public class SoftwarePlatformControllerTest {
                 delete(
                         fromMethodCall(uriBuilder,
                                 on(SoftwarePlatformController.class)
-                                        .deleteComputeResourceReferenceFromSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID())
+                                        .unlinkSoftwarePlatformAndComputeResource(UUID.randomUUID(), UUID.randomUUID())
                         ).toUriString()
                 ).accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isBadRequest());
@@ -747,7 +747,7 @@ public class SoftwarePlatformControllerTest {
                 post(
                         fromMethodCall(uriBuilder,
                                 on(SoftwarePlatformController.class)
-                                        .addCloudServiceReferenceToSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID())
+                                        .linkSoftwarePlatformAndCloudService(UUID.randomUUID(), UUID.randomUUID())
                         ).toUriString()
                 ).accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk());
@@ -760,7 +760,7 @@ public class SoftwarePlatformControllerTest {
                 delete(
                         fromMethodCall(uriBuilder,
                                 on(SoftwarePlatformController.class)
-                                        .deleteCloudServiceReferenceFromSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID())
+                                        .unlinkSoftwarePlatformAndCloudService(UUID.randomUUID(), UUID.randomUUID())
                         ).toUriString()
                 ).accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk());
@@ -773,7 +773,7 @@ public class SoftwarePlatformControllerTest {
                 post(
                         fromMethodCall(uriBuilder,
                                 on(SoftwarePlatformController.class)
-                                        .addCloudServiceReferenceToSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID())
+                                        .linkSoftwarePlatformAndCloudService(UUID.randomUUID(), UUID.randomUUID())
                         ).toUriString()
                 ).accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isNotFound());
@@ -786,7 +786,7 @@ public class SoftwarePlatformControllerTest {
                 delete(
                         fromMethodCall(uriBuilder,
                                 on(SoftwarePlatformController.class)
-                                        .deleteCloudServiceReferenceFromSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID())
+                                        .unlinkSoftwarePlatformAndCloudService(UUID.randomUUID(), UUID.randomUUID())
                         ).toUriString()
                 ).accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isNotFound());
@@ -799,7 +799,7 @@ public class SoftwarePlatformControllerTest {
                 post(
                         fromMethodCall(uriBuilder,
                                 on(SoftwarePlatformController.class)
-                                        .addCloudServiceReferenceToSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID())
+                                        .linkSoftwarePlatformAndCloudService(UUID.randomUUID(), UUID.randomUUID())
                         ).toUriString()
                 ).accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isBadRequest());
@@ -812,7 +812,7 @@ public class SoftwarePlatformControllerTest {
                 delete(
                         fromMethodCall(uriBuilder,
                                 on(SoftwarePlatformController.class)
-                                        .deleteCloudServiceReferenceFromSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID())
+                                        .unlinkSoftwarePlatformAndCloudService(UUID.randomUUID(), UUID.randomUUID())
                         ).toUriString()
                 ).accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isBadRequest());

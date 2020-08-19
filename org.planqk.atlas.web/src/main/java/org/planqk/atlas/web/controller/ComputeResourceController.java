@@ -119,27 +119,40 @@ public class ComputeResourceController {
             "References to sub-objects (e.g. a compute resource property) are not updated via this operation - " +
             "use the corresponding sub-route for updating them (e.g. /compute-resources/{id}/compute-resource-properties). " +
             "Custom ID will be ignored.")
-    @PutMapping("/{id}")
+    @PutMapping("/{computeResourceId}")
     public ResponseEntity<EntityModel<ComputeResourceDto>> updateComputeResource(
-            @PathVariable UUID id,
+            @PathVariable UUID computeResourceId,
             @Valid @RequestBody ComputeResourceDto computeResourceDto) {
-        ComputeResource computeResource = computeResourceService.update(id, ModelMapperUtils.convert(computeResourceDto, ComputeResource.class));
+        ComputeResource computeResource = computeResourceService.update(
+                computeResourceId, ModelMapperUtils.convert(computeResourceDto, ComputeResource.class));
         return ResponseEntity.ok(computeResourceAssembler.toModel(computeResource));
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "204"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", description = "Compute Resource with given id does not exist")
+    }, description = "Delete a compute resource. " +
+            "This also removes all references to other entities (e.g. software platform)")
+    @DeleteMapping("/{computeResourceId}")
+    public ResponseEntity<Void> deleteComputeResource(
+            @PathVariable UUID computeResourceId) {
+        // only deletes if not used in any CloudService or SoftwarePlatform
+        // we have to decide if this is acceptable behavior - TODO
+        computeResourceService.delete(computeResourceId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Compute Resource with given id does not exist")
-    }, description = "Delete a compute resource. " +
-            "This also removes all references to other entities (e.g. software platform)")
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteComputeResource(
-            @PathVariable UUID id) {
-        // only deletes if not used in any CloudService or SoftwarePlatform
-        // we have to decide if this is acceptable behavior - TODO
-        computeResourceService.delete(id);
-        return ResponseEntity.status(HttpStatus.OK).build();
+    }, description = "Retrieve a specific compute resource and its basic properties.")
+    @GetMapping("/{computeResourceId}")
+    public ResponseEntity<EntityModel<ComputeResourceDto>> getComputeResource(
+            @PathVariable UUID computeResourceId) {
+        ComputeResource computeResource = computeResourceService.findById(computeResourceId);
+        return ResponseEntity.ok(computeResourceAssembler.toModel(computeResource));
     }
 
     @Operation(responses = {
@@ -147,13 +160,13 @@ public class ComputeResourceController {
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", content = @Content, description = "Resource doesn't exist")
     }, description = "Get referenced software platform for a compute resource")
-    @GetMapping("/{id}/" + Constants.SOFTWARE_PLATFORMS)
+    @GetMapping("/{computeResourceId}/" + Constants.SOFTWARE_PLATFORMS)
     @ListParametersDoc
     public ResponseEntity<CollectionModel<EntityModel<SoftwarePlatformDto>>> getSoftwarePlatformsForComputeResource(
-            @PathVariable UUID id,
+            @PathVariable UUID computeResourceId,
             @Parameter(hidden = true) ListParameters listParameters
     ) {
-        var softwarePlatforms = computeResourceService.findLinkedSoftwarePlatforms(id, listParameters.getPageable());
+        var softwarePlatforms = computeResourceService.findLinkedSoftwarePlatforms(computeResourceId, listParameters.getPageable());
         return ResponseEntity.ok(softwarePlatformAssembler.toModel(softwarePlatforms));
     }
 
@@ -162,13 +175,13 @@ public class ComputeResourceController {
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", content = @Content, description = "Resource doesn't exist")
     }, description = "Get referenced cloud services for a compute resource")
-    @GetMapping("/{id}/" + Constants.CLOUD_SERVICES)
+    @GetMapping("/{computeResourceId}/" + Constants.CLOUD_SERVICES)
     @ListParametersDoc
     public ResponseEntity<CollectionModel<EntityModel<CloudServiceDto>>> getCloudServicesForComputeResource(
-            @PathVariable UUID id,
+            @PathVariable UUID computeResourceId,
             @Parameter(hidden = true) ListParameters listParameters
     ) {
-        var cloudServices = computeResourceService.findLinkedComputeResources(id, listParameters.getPageable());
+        var cloudServices = computeResourceService.findLinkedComputeResources(computeResourceId, listParameters.getPageable());
         return ResponseEntity.ok(cloudServiceAssembler.toModel(cloudServices));
     }
 
@@ -176,26 +189,14 @@ public class ComputeResourceController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Compute Resource with given id does not exist")
-    }, description = "Retrieve a specific compute resource and its basic properties.")
-    @GetMapping("/{id}")
-    public ResponseEntity<EntityModel<ComputeResourceDto>> getComputeResource(
-            @PathVariable UUID id) {
-        ComputeResource computeResource = computeResourceService.findById(id);
-        return ResponseEntity.ok(computeResourceAssembler.toModel(computeResource));
-    }
-
-    @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404", description = "Compute Resource with given id does not exist")
     }, description = "Get referenced compute resource properties for a compute resource.")
-    @GetMapping("/{id}/" + Constants.COMPUTE_RESOURCES_PROPERTIES)
+    @GetMapping("/{computeResourceId}/" + Constants.COMPUTE_RESOURCES_PROPERTIES)
     @ListParametersDoc
-    public ResponseEntity<PagedModel<EntityModel<ComputeResourcePropertyDto>>> getComputingResourcePropertiesForComputeResource(
-            @PathVariable UUID id,
+    public ResponseEntity<PagedModel<EntityModel<ComputeResourcePropertyDto>>> getComputingResourcePropertiesOfComputeResource(
+            @PathVariable UUID computeResourceId,
             @Parameter(hidden = true) ListParameters listParameters
     ) {
-        var resources = computeResourcePropertyService.findAllComputeResourcesPropertiesByComputeResourceId(id,
+        var resources = computeResourcePropertyService.findAllComputeResourcesPropertiesByComputeResourceId(computeResourceId,
                 listParameters.getPageable());
         return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(resources));
     }
@@ -207,12 +208,12 @@ public class ComputeResourceController {
     }, description = "Define the basic properties of a compute resource property and " +
             "add a reference to the defined compute resource property. " +
             "Custom ID will be ignored. ")
-    @PostMapping("/{id}/" + Constants.COMPUTE_RESOURCES_PROPERTIES)
+    @PostMapping("/{computeResourceId}/" + Constants.COMPUTE_RESOURCES_PROPERTIES)
     public ResponseEntity<EntityModel<ComputeResourceDto>> addComputingResourcePropertyToComputeResource(
-            @PathVariable UUID id,
+            @PathVariable UUID computeResourceId,
             @Valid @RequestBody ComputeResourcePropertyDto resourceDto
     ) {
-        var ComputeResource = computeResourceService.findById(id);
+        var ComputeResource = computeResourceService.findById(computeResourceId);
         ValidationUtils.validateComputingResourceProperty(resourceDto);
         var resource = ModelMapperUtils.convert(resourceDto, ComputeResourceProperty.class);
         var updatedComputeResource = computeResourcePropertyService.addComputeResourcePropertyToComputeResource(ComputeResource, resource);
@@ -225,15 +226,15 @@ public class ComputeResourceController {
             @ApiResponse(responseCode = "404", description = "Algorithm with the given id doesn't exist")},
             description = "Update a computing resource of the algorithm. Custom ID will be ignored." +
                     "For computing resource type only ID is required, other computing resource type attributes will not change.")
-    @PutMapping("/{crid}/" + Constants.COMPUTE_RESOURCES_PROPERTIES + "/{resourceId}")
+    @PutMapping("/{computeResourceId}/" + Constants.COMPUTE_RESOURCES_PROPERTIES + "/{resourceId}")
     public ResponseEntity<EntityModel<ComputeResourcePropertyDto>> updateComputingResourceResourcePropertyOfComputeResource(
-            @PathVariable UUID crid,
+            @PathVariable UUID computeResourceId,
             @PathVariable UUID resourceId,
             @RequestBody ComputeResourcePropertyDto resourceDto) {
         ComputeResourceProperty computeResourceProperty = computeResourcePropertyService.findComputeResourcePropertyById(resourceId);
-        var computeResource = computeResourceService.findById(crid);
+        var computeResource = computeResourceService.findById(computeResourceId);
         if (Objects.isNull(computeResourceProperty.getComputeResource()) ||
-                !computeResourceProperty.getComputeResource().getId().equals(crid)) {
+                !computeResourceProperty.getComputeResource().getId().equals(computeResourceId)) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         ValidationUtils.validateComputingResourceProperty(resourceDto);
@@ -248,14 +249,14 @@ public class ComputeResourceController {
             @ApiResponse(responseCode = "400", description = "Computing resource with the given id doesn't belong to this algorithm"),
             @ApiResponse(responseCode = "404", description = "Algorithm or computing resource with given id doesn't exist")},
             description = "Delete a computing resource of the algorithm.")
-    @DeleteMapping("/{crid}/" + Constants.COMPUTE_RESOURCES_PROPERTIES + "/{resourceId}")
+    @DeleteMapping("/{computeResourceId}/" + Constants.COMPUTE_RESOURCES_PROPERTIES + "/{resourceId}")
     public ResponseEntity<Void> deleteComputingResourcePropertyFromComputeResource(
-            @PathVariable UUID crid,
+            @PathVariable UUID computeResourceId,
             @PathVariable UUID resourceId) {
-        computeResourceService.findById(crid);
+        computeResourceService.findById(computeResourceId);
         var computingResourceProperty = computeResourcePropertyService.findComputeResourcePropertyById(resourceId);
         if (Objects.isNull(computingResourceProperty.getComputeResource()) ||
-                !computingResourceProperty.getComputeResource().getId().equals(crid)) {
+                !computingResourceProperty.getComputeResource().getId().equals(computeResourceId)) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         computeResourcePropertyService.deleteComputeResourceProperty(resourceId);

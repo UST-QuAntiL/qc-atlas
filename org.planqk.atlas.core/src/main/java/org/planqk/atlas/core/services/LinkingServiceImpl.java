@@ -24,6 +24,8 @@ import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.ApplicationArea;
+import org.planqk.atlas.core.model.CloudService;
+import org.planqk.atlas.core.model.ComputeResource;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.model.ProblemType;
@@ -216,36 +218,78 @@ public class LinkingServiceImpl implements LinkingService {
     @Override
     @Transactional
     public void linkSoftwarePlatformAndCloudService(UUID softwarePlatformId, UUID cloudServiceId) {
+        SoftwarePlatform softwarePlatform = softwarePlatformService.findById(softwarePlatformId);
+        CloudService cloudService = cloudServiceService.findById(cloudServiceId);
 
+        if (softwarePlatform.getSupportedCloudServices().contains(cloudService)) {
+            throw new ConsistencyException("Software platform and Cloud service are already linked");
+        }
+
+        softwarePlatform.addCloudService(cloudService);
     }
 
     @Override
     @Transactional
     public void unlinkSoftwarePlatformAndCloudService(UUID softwarePlatformId, UUID cloudServiceId) {
+        SoftwarePlatform softwarePlatform = softwarePlatformService.findById(softwarePlatformId);
+        CloudService cloudService = cloudServiceService.findById(cloudServiceId);
 
+        if (!softwarePlatform.getSupportedCloudServices().contains(cloudService)) {
+            throw new ConsistencyException("Software platform and Cloud service are not linked");
+        }
+
+        softwarePlatform.removeCloudService(cloudService);
     }
 
     @Override
     @Transactional
     public void linkSoftwarePlatformAndComputeResource(UUID softwarePlatformId, UUID computeResourceId) {
+        SoftwarePlatform softwarePlatform = softwarePlatformService.findById(softwarePlatformId);
+        ComputeResource computeResource = computeResourceService.findById(computeResourceId);
 
+        if (softwarePlatform.getSupportedComputeResources().contains(computeResource)) {
+            throw new ConsistencyException("Software platform and Compute resource are already linked");
+        }
+
+        softwarePlatform.addComputeResource(computeResource);
     }
 
     @Override
     @Transactional
     public void unlinkSoftwarePlatformAndComputeResource(UUID softwarePlatformId, UUID computeResourceId) {
+        SoftwarePlatform softwarePlatform = softwarePlatformService.findById(softwarePlatformId);
+        ComputeResource computeResource = computeResourceService.findById(computeResourceId);
 
+        if (!softwarePlatform.getSupportedComputeResources().contains(computeResource)) {
+            throw new ConsistencyException("Software platform and Compute resource are not linked");
+        }
+
+        softwarePlatform.removeComputeResource(computeResource);
     }
 
     @Override
     @Transactional
     public void linkCloudServiceAndComputeResource(UUID cloudServiceId, UUID computeResourceId) {
+        var cloudService = cloudServiceService.findById(cloudServiceId);
+        var computeResource = computeResourceService.findById(computeResourceId);
 
+        if (cloudService.getProvidedComputeResources().contains(computeResource)) {
+            throw new ConsistencyException("Cloud service and Compute Resource are already linked");
+        }
+
+        cloudService.addComputeResource(computeResource);
     }
 
     @Override
     @Transactional
     public void unlinkCloudServiceAndComputeResource(UUID cloudServiceId, UUID computeResourceId) {
+        var cloudService = cloudServiceService.findById(cloudServiceId);
+        var computeResource = computeResourceService.findById(computeResourceId);
 
+        if (!cloudService.getProvidedComputeResources().contains(computeResource)) {
+            throw new ConsistencyException("Cloud service and Compute Resource are not linked");
+        }
+
+        cloudService.removeComputeResource(computeResource);
     }
 }
