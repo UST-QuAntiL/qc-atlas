@@ -35,10 +35,17 @@ public interface ImplementationService {
     Implementation save(Implementation implementation);
 
     @Transactional
-    void delete(UUID id);
+    Implementation create(Implementation implementation, UUID implementedAlgorithmId);
+
+    Implementation findById(UUID implId);
+
+    Page<Implementation> findAll(Pageable pageable);
 
     @Transactional
-    Implementation update(UUID id, Implementation implementation);
+    Implementation update(UUID implId, Implementation implementation);
+
+    @Transactional
+    void delete(UUID implId);
 
     Page<Implementation> findByImplementedAlgorithm(UUID algoId, Pageable pageable);
 
@@ -46,7 +53,5 @@ public interface ImplementationService {
 
     Page<SoftwarePlatform> findLinkedSoftwarePlatforms(UUID implId, Pageable p);
 
-    Implementation findById(UUID implId);
 
-    Page<Implementation> findAll(Pageable p);
 }

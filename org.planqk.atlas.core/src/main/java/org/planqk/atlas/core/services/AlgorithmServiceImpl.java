@@ -102,8 +102,8 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 
     @Transactional
     @Override
-    public Algorithm update(UUID id, Algorithm algorithm) {
-        Algorithm persistedAlgorithm = this.findById(id);
+    public Algorithm update(UUID algoId, Algorithm algorithm) {
+        Algorithm persistedAlgorithm = findById(algoId);
 
         // remove all attached sketches
         persistedAlgorithm.removeSketches(persistedAlgorithm.getSketches());
@@ -146,12 +146,12 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 
     @Override
     @Transactional
-    public void delete(UUID id) {
-        Algorithm algorithm = findById(id);
+    public void delete(UUID algoId) {
+        Algorithm algorithm = findById(algoId);
 
         removeReferences(algorithm);
 
-        algorithmRepository.deleteById(id);
+        algorithmRepository.deleteById(algoId);
     }
 
     private void removeReferences(Algorithm algorithm) {

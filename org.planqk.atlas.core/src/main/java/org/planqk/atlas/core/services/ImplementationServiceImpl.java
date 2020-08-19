@@ -20,12 +20,12 @@
 package org.planqk.atlas.core.services;
 
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.SoftwarePlatform;
+import org.planqk.atlas.core.repository.AlgorithmRepository;
 import org.planqk.atlas.core.repository.ImplementationRepository;
 import org.planqk.atlas.core.repository.SoftwarePlatformRepository;
 
@@ -44,31 +44,78 @@ public class ImplementationServiceImpl implements ImplementationService {
     //    private final TagService tagService;
     private final PublicationService publicationService;
     private final AlgorithmService algorithmService;
+    private final AlgorithmRepository algorithmRepository;
 
-    @Transactional
     @Override
+    @Transactional
     public Implementation save(Implementation implementation) {
-//        tagService.createOrUpdateAll(implementation.getTags());
-
-        publicationService.createOrUpdateAll(implementation.getPublications());
-
-        if (implementation.getImplementedAlgorithm() != null && implementation.getImplementedAlgorithm().getId() == null) {
-            implementation.setImplementedAlgorithm(algorithmService.save(implementation.getImplementedAlgorithm()));
-        }
-
         return implementationRepository.save(implementation);
     }
 
     @Override
-    public void delete(UUID id) {
-        implementationRepository.deleteById(id);
+    @Transactional
+    public Implementation create(Implementation implementation, UUID implementedAlgorithmId) {
+        Algorithm implementedAlgorithm = algorithmService.findById(implementedAlgorithmId);
+        implementation.setImplementedAlgorithm(implementedAlgorithm);
+        return implementationRepository.save(implementation);
+    }
+
+    @Override
+    public Page<Implementation> findAll(Pageable pageable) {
+        return this.implementationRepository.findAll(pageable);
+    }
+
+    @Override
+    public Implementation findById(UUID implId) {
+        return implementationRepository.findById(implId).orElseThrow(NoSuchElementException::new);
+    }
+
+    @Override
+    @Transactional
+    public Implementation update(UUID implId, Implementation implementation) {
+        Implementation persistedImplementation = findById(implId);
+
+        persistedImplementation.setName(implementation.getName());
+        persistedImplementation.setDescription(implementation.getDescription());
+        persistedImplementation.setContributors(implementation.getContributors());
+        persistedImplementation.setAssumptions(implementation.getAssumptions());
+        persistedImplementation.setInputFormat(implementation.getInputFormat());
+        persistedImplementation.setParameter(implementation.getParameter());
+        persistedImplementation.setOutputFormat(implementation.getOutputFormat());
+        persistedImplementation.setLink(implementation.getLink());
+        persistedImplementation.setDependencies(implementation.getDependencies());
+
+        return implementationRepository.save(persistedImplementation);
+    }
+
+    @Override
+    @Transactional
+    public void delete(UUID implId) {
+        Implementation implementation = findById(implId);
+
+        removeReferences(implementation);
+
+        implementationRepository.deleteById(implId);
+    }
+
+    private void removeReferences(Implementation implementation) {
+        // TODO rethink the model implementation
+        implementation.setImplementedAlgorithm(null);
+
+        implementation.getPublications().forEach(publication ->
+                publication.removeImplementation(implementation));
+
+        implementation.getSoftwarePlatforms().forEach(softwarePlatform ->
+                softwarePlatform.removeImplementation(implementation));
     }
 
     @Override
     public Page<Implementation> findByImplementedAlgorithm(UUID algoId, Pageable pageable) {
-        var algorithm = new Algorithm();
-        algorithm.setId(algoId);
-        return implementationRepository.findByImplementedAlgorithm(algorithm, pageable);
+        if (!algorithmRepository.existsAlgorithmById(algoId)) {
+            throw new NoSuchElementException("Algorithm with ID \"" + algoId + "\" does not exist");
+        }
+
+        return implementationRepository.findByImplementedAlgorithmId(algoId, pageable);
     }
 
     @Override
@@ -79,28 +126,5 @@ public class ImplementationServiceImpl implements ImplementationService {
     @Override
     public Page<SoftwarePlatform> findLinkedSoftwarePlatforms(UUID implId, Pageable p) {
         return softwarePlatformRepository.findSoftwarePlatformsByImplementationId(implId, p);
-    }
-
-    @Override
-    public Implementation findById(UUID implId) {
-        return implementationRepository.findById(implId).orElseThrow(NoSuchElementException::new);
-    }
-
-    @Override
-    public Page<Implementation> findAll(Pageable p) {
-        return this.implementationRepository.findAll(p);
-    }
-
-    @Transactional
-    @Override
-    public Implementation update(UUID id, Implementation implementation) {
-        Optional<Implementation> implementationOptional = implementationRepository.findById(id);
-        if (implementationOptional.isPresent()) {
-            Implementation oldImpl = implementationOptional.get();
-            implementation.setId(id);
-            implementation.setImplementedAlgorithm(oldImpl.getImplementedAlgorithm());
-            return save(implementation);
-        }
-        throw new NoSuchElementException();
     }
 }

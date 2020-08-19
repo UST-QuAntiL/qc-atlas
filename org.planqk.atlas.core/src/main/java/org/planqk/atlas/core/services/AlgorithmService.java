@@ -42,10 +42,10 @@ public interface AlgorithmService extends ComputeResourcePropertyInterface {
     Algorithm findById(UUID algoId);
 
     @Transactional
-    Algorithm update(UUID id, Algorithm algorithm);
+    Algorithm update(UUID algoId, Algorithm algorithm);
 
     @Transactional
-    void delete(UUID id);
+    void delete(UUID algoId);
 
     Page<Publication> findPublications(UUID algoId, Pageable pageable);
 

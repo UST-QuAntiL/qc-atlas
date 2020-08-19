@@ -16,6 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
+
 package org.planqk.atlas.web.controller;
 
 import java.util.Objects;
@@ -24,7 +25,6 @@ import java.util.UUID;
 
 import javax.validation.Valid;
 
-import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.ComputeResourceProperty;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.SoftwarePlatform;
@@ -72,8 +72,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-//import org.planqk.atlas.web.linkassembler.TagAssembler;
-
 /**
  * Controller to access and manipulate implementations of quantum algorithms.
  */
@@ -100,45 +98,72 @@ public class ImplementationController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Algorithm doesn't exist")
     }, description = "Retrieve all implementations for the algorithm")
     @GetMapping()
-    public HttpEntity<CollectionModel<EntityModel<ImplementationDto>>> getImplementations(
+    public ResponseEntity<PagedModel<EntityModel<ImplementationDto>>> getImplementations(
             @PathVariable UUID algoId) {
-        algorithmService.findById(algoId);
         var implementations = implementationService.findByImplementedAlgorithm(algoId, RestUtils.getAllPageable());
         return ResponseEntity.ok(implementationAssembler.toModel(implementations));
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "404", description = "Algorithm or implementation doesn't exist")
-    }, description = "Retrieve a specific implementation of the algorithm.")
-    @GetMapping("/{implId}")
-    public HttpEntity<EntityModel<ImplementationDto>> getImplementation(
-            @PathVariable UUID algoId,
-            @PathVariable UUID implId) {
-        algorithmService.findById(algoId);
-        var implementation = implementationService.findById(implId);
-        return ResponseEntity.ok(implementationAssembler.toModel(implementation));
-    }
-
-    @Operation(responses = {
             @ApiResponse(responseCode = "201"),
+            @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Algorithm doesn't exist")
     }, description = "Create a new implementation for the algorithm. Custom ID will be ignored.")
     @PostMapping()
-    public HttpEntity<EntityModel<ImplementationDto>> createImplementation(
+    public ResponseEntity<EntityModel<ImplementationDto>> createImplementation(
             @PathVariable UUID algoId,
-            @Valid @RequestBody ImplementationDto impl) {
-        log.debug("Post to create new implementation received.");
-        Algorithm algorithm = algorithmService.findById(algoId);
-        // Store and return implementation
-        Implementation input = ModelMapperUtils.convert(impl, Implementation.class);
-        input.setImplementedAlgorithm(algorithm);
-        input = implementationService.save(input);
-        return new ResponseEntity<>(implementationAssembler.toModel(input), HttpStatus.CREATED);
+            @Valid @RequestBody ImplementationDto implementationDto) {
+        Implementation savedImplementation = implementationService.create(
+                ModelMapperUtils.convert(implementationDto, Implementation.class), algoId);
+        return new ResponseEntity<>(implementationAssembler.toModel(savedImplementation), HttpStatus.CREATED);
     }
+
+    // TODO move out of algorithm path
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", description = "Algorithm doesn't exist")
+    }, description = "Custom ID will be ignored.")
+    @PutMapping("/{implId}")
+    public ResponseEntity<EntityModel<ImplementationDto>> updateImplementation(
+            @PathVariable UUID algoId,
+            @PathVariable UUID implId,
+            @Valid @RequestBody ImplementationDto dto) {
+        Implementation updatedImplementation = implementationService.update(
+                implId, ModelMapperUtils.convert(dto, Implementation.class));
+        return ResponseEntity.ok(implementationAssembler.toModel(updatedImplementation));
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", description = "Algorithm doesn't exist")
+    }, description = "")
+    @DeleteMapping("/{implId}")
+    public ResponseEntity<Void> deleteImplementation(
+            @PathVariable UUID algoId,
+            @PathVariable UUID implId
+    ) {
+        implementationService.delete(implId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+//    @Operation(responses = {
+//            @ApiResponse(responseCode = "200"),
+//            @ApiResponse(responseCode = "404", description = "Algorithm or implementation doesn't exist")
+//    }, description = "Retrieve a specific implementation of the algorithm.")
+//    @GetMapping("/{implId}")
+//    public HttpEntity<EntityModel<ImplementationDto>> getImplementation(
+//            @PathVariable UUID algoId,
+//            @PathVariable UUID implId) {
+//        algorithmService.findById(algoId);
+//        var implementation = implementationService.findById(implId);
+//        return ResponseEntity.ok(implementationAssembler.toModel(implementation));
+//    }
 
 // TODO Uncomment and Revise once tags shall be implemented
 //    @Operation(responses = { @ApiResponse(responseCode = "200") })
@@ -148,35 +173,6 @@ public class ImplementationController {
 //         Set<Tag> tags = implementation.getTags();
 //        return ResponseEntity.ok(tagAssembler.toModel(tags));
 //    }
-
-    @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "404", description = "Algorithm doesn't exist")
-    }, description = "")
-    @DeleteMapping("/{implId}")
-    public HttpEntity<Void> deleteImplementation(
-            @PathVariable UUID algoId,
-            @PathVariable UUID implId
-    ) {
-        algorithmService.findById(algoId);
-        implementationService.delete(implId);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "404", description = "Algorithm doesn't exist")
-    }, description = "Custom ID will be ignored.")
-    @PutMapping("/{implId}")
-    public HttpEntity<EntityModel<ImplementationDto>> updateImplementation(
-            @PathVariable UUID algoId,
-            @PathVariable UUID implId,
-            @Valid @RequestBody ImplementationDto dto) {
-        algorithmService.findById(algoId);
-        var impl = ModelMapperUtils.convert(dto, Implementation.class);
-        impl = implementationService.update(implId, impl);
-        return ResponseEntity.ok(implementationAssembler.toModel(impl));
-    }
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
@@ -336,7 +332,6 @@ public class ImplementationController {
         Implementation implementation = implementationService.findById(implId);
         return ResponseEntity.ok(publicationAssembler.toModel(publicationMixin.getPublication(implementation, publId)));
     }
-
 
     @Operation(operationId = "getSoftwarePlatformsByImplementation", responses = {
             @ApiResponse(responseCode = "200"),

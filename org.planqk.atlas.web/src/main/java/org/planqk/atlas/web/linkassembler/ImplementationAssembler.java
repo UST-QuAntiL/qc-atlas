@@ -17,9 +17,9 @@ public class ImplementationAssembler extends GenericLinkAssembler<Implementation
 
     @Override
     public void addLinks(EntityModel<ImplementationDto> resource) {
-        resource.add(
-                links.linkTo(methodOn(ImplementationController.class).getImplementation(getAlgId(resource), getId(resource)))
-                        .withSelfRel());
+//        resource.add(
+//                links.linkTo(methodOn(ImplementationController.class).getImplementation(getAlgId(resource), getId(resource)))
+//                        .withSelfRel());
         resource.add(links.linkTo(methodOn(AlgorithmController.class).getAlgorithm(getAlgId(resource)))
                 .withRel(Constants.ALGORITHM_LINK));
         resource.add(links.linkTo(methodOn(ImplementationController.class).getPublications(getAlgId(resource), getId(resource))).withRel(Constants.PUBLICATIONS));
