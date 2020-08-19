@@ -33,18 +33,16 @@ public interface ProblemTypeService {
     @Transactional
     ProblemType save(ProblemType problemType);
 
-    @Transactional
-    ProblemType update(UUID id, ProblemType problemType);
-
-    @Transactional
-    void delete(ProblemType problemType);
-
-    ProblemType findById(UUID id);
-
-    ProblemType findByName(String name);
-
     Page<ProblemType> findAll(Pageable pageable);
 
-    List<ProblemType> getParentList(UUID id);
+    ProblemType findById(UUID problemTypeId);
+
+    @Transactional
+    ProblemType update(UUID problemTypeId, ProblemType problemType);
+
+    @Transactional
+    void delete(UUID problemTypeId);
+
+    List<ProblemType> getParentList(UUID problemTypeId);
 
 }

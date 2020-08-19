@@ -27,10 +27,14 @@ import org.planqk.atlas.core.services.ProblemTypeService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.ProblemTypeDto;
 import org.planqk.atlas.web.linkassembler.ProblemTypeAssembler;
+import org.planqk.atlas.web.utils.ListParameters;
+import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.RestUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +45,7 @@ import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -64,67 +69,72 @@ public class ProblemTypeController {
     private final ProblemTypeAssembler problemTypeAssembler;
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "201")
+            @ApiResponse(responseCode = "200")
+    }, description = "")
+    @GetMapping()
+    @ListParametersDoc()
+    public ResponseEntity<PagedModel<EntityModel<ProblemTypeDto>>> getProblemTypes(
+            @Parameter(hidden = true) ListParameters listParameters) {
+        return ResponseEntity.ok(problemTypeAssembler
+                .toModel(problemTypeService.findAll(listParameters.getPageable())));
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "201"),
+            @ApiResponse(responseCode = "400"),
     }, description = "Custom ID will be ignored.")
     @PostMapping()
-    public HttpEntity<EntityModel<ProblemTypeDto>> createProblemType(
-            @Valid @RequestBody ProblemTypeDto problemTypeDto) {
-        var entityInput = ModelMapperUtils.convert(problemTypeDto, ProblemType.class);
-        var savedProblemType = problemTypeService.save(entityInput);
+    public ResponseEntity<EntityModel<ProblemTypeDto>> createProblemType(
+            @Validated @RequestBody ProblemTypeDto problemTypeDto) {
+        var savedProblemType = problemTypeService.save(ModelMapperUtils.convert(problemTypeDto, ProblemType.class));
         return new ResponseEntity<>(problemTypeAssembler.toModel(savedProblemType), HttpStatus.CREATED);
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "200")
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", description = "Problem type with given id doesn't exist")
     }, description = "Custom ID will be ignored.")
-    @PutMapping("/{id}")
-    public HttpEntity<EntityModel<ProblemTypeDto>> updateProblemType(
-            @PathVariable UUID id,
-            @Valid @RequestBody ProblemTypeDto problemTypeDto) {
-        var entityInput = ModelMapperUtils.convert(problemTypeDto, ProblemType.class);
-        var updatedEntity = problemTypeService.update(id, entityInput);
-        return ResponseEntity.ok(problemTypeAssembler.toModel(updatedEntity));
+    @PutMapping("/{problemTypeId}")
+    public ResponseEntity<EntityModel<ProblemTypeDto>> updateProblemType(
+            @PathVariable UUID problemTypeId,
+            @Validated @RequestBody ProblemTypeDto problemTypeDto) {
+        var updatedProblemType = problemTypeService.update(
+                problemTypeId, ModelMapperUtils.convert(problemTypeDto, ProblemType.class));
+        return ResponseEntity.ok(problemTypeAssembler.toModel(updatedProblemType));
     }
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Problem type with given id doesn't exist")
     }, description = "")
-    @DeleteMapping("/{id}")
-    public HttpEntity<Void> deleteProblemType(@PathVariable UUID id) {
-        ProblemType problemType = problemTypeService.findById(id);
-        problemType.getAlgorithms().forEach(algorithm -> algorithm.removeProblemType(problemType));
-        problemTypeService.delete(problemType);
+    @DeleteMapping("/{problemTypeId}")
+    public ResponseEntity<Void> deleteProblemType(@PathVariable UUID problemTypeId) {
+        problemTypeService.delete(problemTypeId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "200")
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", description = "Problem type with given id doesn't exist")
     }, description = "")
-    @GetMapping()
-    public HttpEntity<PagedModel<EntityModel<ProblemTypeDto>>> getProblemTypes(
-            @RequestParam(required = false) Integer page,
-            @RequestParam(required = false) Integer size) {
-        Pageable p = RestUtils.getPageableFromRequestParams(page, size);
-        var entities = problemTypeService.findAll(p);
-        return ResponseEntity.ok(problemTypeAssembler.toModel(entities));
-    }
-
-    @Operation(responses = {
-            @ApiResponse(responseCode = "200")
-    }, description = "")
-    @GetMapping("/{id}")
-    public HttpEntity<EntityModel<ProblemTypeDto>> getProblemTypeById(@PathVariable UUID id) {
-        ProblemType problemType = problemTypeService.findById(id);
+    @GetMapping("/{problemTypeId}")
+    public ResponseEntity<EntityModel<ProblemTypeDto>> getProblemType(@PathVariable UUID problemTypeId) {
+        ProblemType problemType = problemTypeService.findById(problemTypeId);
         return ResponseEntity.ok(problemTypeAssembler.toModel(problemType));
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "200")
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", description = "Problem type with given id doesn't exist")
     }, description = "")
-    @GetMapping("/{id}/" + Constants.PROBLEM_TYPE_PARENT_LIST)
-    public HttpEntity<CollectionModel<EntityModel<ProblemTypeDto>>> getProblemTypeParentList(@PathVariable UUID id) {
-        var entities = problemTypeService.getParentList(id);
-        return ResponseEntity.ok(problemTypeAssembler.toModel(entities));
+    @GetMapping("/{problemTypeId}/" + Constants.PROBLEM_TYPE_PARENT_LIST)
+    public ResponseEntity<CollectionModel<EntityModel<ProblemTypeDto>>> getProblemTypeParentList(
+            @PathVariable UUID problemTypeId) {
+        var problemTypeParentList = problemTypeService.getParentList(problemTypeId);
+        return ResponseEntity.ok(problemTypeAssembler.toModel(problemTypeParentList));
     }
 }
