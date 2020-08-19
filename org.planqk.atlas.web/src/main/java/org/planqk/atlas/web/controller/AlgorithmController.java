@@ -27,12 +27,15 @@ import javax.validation.Valid;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.model.ApplicationArea;
+import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.services.AlgoRelationService;
 import org.planqk.atlas.core.services.AlgoRelationTypeService;
 import org.planqk.atlas.core.services.AlgorithmService;
+import org.planqk.atlas.core.services.ImplementationService;
+import org.planqk.atlas.core.services.LinkingService;
 import org.planqk.atlas.core.services.PatternRelationService;
 import org.planqk.atlas.core.services.PatternRelationTypeService;
 import org.planqk.atlas.web.Constants;
@@ -41,6 +44,7 @@ import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
 import org.planqk.atlas.web.dtos.ApplicationAreaDto;
 import org.planqk.atlas.web.dtos.ComputeResourcePropertyDto;
+import org.planqk.atlas.web.dtos.ImplementationDto;
 import org.planqk.atlas.web.dtos.PatternRelationDto;
 import org.planqk.atlas.web.dtos.PatternRelationTypeDto;
 import org.planqk.atlas.web.dtos.ProblemTypeDto;
@@ -49,12 +53,14 @@ import org.planqk.atlas.web.linkassembler.AlgorithmAssembler;
 import org.planqk.atlas.web.linkassembler.AlgorithmRelationAssembler;
 import org.planqk.atlas.web.linkassembler.ApplicationAreaAssembler;
 import org.planqk.atlas.web.linkassembler.ComputeResourcePropertyAssembler;
+import org.planqk.atlas.web.linkassembler.ImplementationAssembler;
 import org.planqk.atlas.web.linkassembler.PatternRelationAssembler;
 import org.planqk.atlas.web.linkassembler.ProblemTypeAssembler;
 import org.planqk.atlas.web.linkassembler.PublicationAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
+import org.planqk.atlas.web.utils.RestUtils;
 import org.planqk.atlas.web.utils.ValidationUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -90,19 +96,33 @@ import org.springframework.web.bind.annotation.RestController;
 public class AlgorithmController {
 
     private final AlgorithmService algorithmService;
+    private final AlgorithmAssembler algorithmAssembler;
+
     private final AlgoRelationService algoRelationService;
     private final AlgoRelationTypeService algoRelationTypeService;
+
     private final PatternRelationService patternRelationService;
+    private final PatternRelationAssembler patternRelationAssembler;
+
     private final PatternRelationTypeService patternRelationTypeService;
 
+    private final ImplementationService implementationService;
+    private final ImplementationAssembler implementationAssembler;
+
     private final ProblemTypeAssembler problemTypeAssembler;
+
     private final ApplicationAreaAssembler applicationAreaAssembler;
-    //    private final TagAssembler tagAssembler;
-    private final AlgorithmAssembler algorithmAssembler;
+
     private final AlgorithmRelationAssembler algorithmRelationAssembler;
+
     private final PublicationAssembler publicationAssembler;
+
     private final ComputeResourcePropertyAssembler computeResourcePropertyAssembler;
-    private final PatternRelationAssembler patternRelationAssembler;
+
+    private final LinkingService linkingService;
+
+
+    //    private final TagAssembler tagAssembler;
 
     private final ComputeResourcePropertyMixin computeResourcePropertyMixin;
 
@@ -202,7 +222,7 @@ public class AlgorithmController {
     public ResponseEntity<Void> addPublicationReferenceToAlgorithm(
             @PathVariable UUID algoId,
             @PathVariable UUID publicationId) {
-        algorithmService.addPublicationReference(algoId, publicationId);
+        linkingService.linkAlgorithmAndPublication(algoId, publicationId);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -217,7 +237,7 @@ public class AlgorithmController {
     public ResponseEntity<Void> deletePublicationReferenceFromAlgorithm(
             @PathVariable UUID algoId,
             @PathVariable UUID publicationId) {
-        algorithmService.deletePublicationReference(algoId, publicationId);
+        linkingService.unlinkAlgorithmAndPublication(algoId, publicationId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -248,7 +268,7 @@ public class AlgorithmController {
     public ResponseEntity<Void> addProblemTypeReferenceToAlgorithm(
             @PathVariable UUID algoId,
             @PathVariable UUID problemTypeId) {
-        algorithmService.addProblemTypeReference(algoId, problemTypeId);
+        linkingService.linkAlgorithmAndProblemType(algoId, problemTypeId);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -263,7 +283,7 @@ public class AlgorithmController {
     public ResponseEntity<Void> deleteProblemTypeReferenceFromAlgorithm(
             @PathVariable UUID algoId,
             @PathVariable UUID problemTypeId) {
-        algorithmService.deleteProblemTypeReference(algoId, problemTypeId);
+        linkingService.unlinkAlgorithmAndProblemType(algoId, problemTypeId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -294,7 +314,7 @@ public class AlgorithmController {
     public ResponseEntity<Void> addApplicationAreaReferenceToAlgorithm(
             @PathVariable UUID algoId,
             @PathVariable UUID applicationAreaId) {
-        algorithmService.addApplicationAreaReference(algoId, applicationAreaId);
+        linkingService.linkAlgorithmAndApplicationArea(algoId, applicationAreaId);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -308,7 +328,7 @@ public class AlgorithmController {
     public ResponseEntity<Void> deleteApplicationAreaReferenceFromAlgorithm(
             @PathVariable UUID algoId,
             @PathVariable UUID applicationAreaId) {
-        algorithmService.deleteApplicationAreaReference(algoId, applicationAreaId);
+        linkingService.unlinkAlgorithmAndApplicationArea(algoId, applicationAreaId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -339,7 +359,7 @@ public class AlgorithmController {
     public ResponseEntity<Void> addPatternRelationReferenceToAlgorithm(
             @PathVariable UUID algoId,
             @PathVariable UUID patternRelationId) {
-        algorithmService.addPatternRelationReference(algoId, patternRelationId);
+        linkingService.linkAlgorithmAndPatternRelation(algoId, patternRelationId);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -353,7 +373,7 @@ public class AlgorithmController {
     public ResponseEntity<Void> deletePatternRelationReferenceFromAlgorithm(
             @PathVariable UUID algoId,
             @PathVariable UUID patternRelationId) {
-        algorithmService.deletePatternRelationReference(algoId, patternRelationId);
+        linkingService.unlinkAlgorithmAndPatternRelation(algoId, patternRelationId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -471,6 +491,32 @@ public class AlgorithmController {
 //        AlgorithmRelation updatedRelation = handleRelationUpdate(relationDto, relationId);
 //        return ResponseEntity.ok(algorithmRelationAssembler.toModel(updatedRelation));
 //    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", description = "Algorithm doesn't exist")
+    }, description = "Retrieve all implementations for the algorithm")
+    @GetMapping("/{algoId}/" + Constants.IMPLEMENTATIONS)
+    public ResponseEntity<PagedModel<EntityModel<ImplementationDto>>> getImplementationsOfAlgorithm(
+            @PathVariable UUID algoId) {
+        var implementations = implementationService.findByImplementedAlgorithm(algoId, RestUtils.getAllPageable());
+        return ResponseEntity.ok(implementationAssembler.toModel(implementations));
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "201"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", description = "Algorithm doesn't exist")
+    }, description = "Create a new implementation for the algorithm. Custom ID will be ignored.")
+    @PostMapping("/{algoId}/" + Constants.IMPLEMENTATIONS)
+    public ResponseEntity<EntityModel<ImplementationDto>> createImplementation(
+            @PathVariable UUID algoId,
+            @Valid @RequestBody ImplementationDto implementationDto) {
+        Implementation savedImplementation = implementationService.create(
+                ModelMapperUtils.convert(implementationDto, Implementation.class), algoId);
+        return new ResponseEntity<>(implementationAssembler.toModel(savedImplementation), HttpStatus.CREATED);
+    }
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),

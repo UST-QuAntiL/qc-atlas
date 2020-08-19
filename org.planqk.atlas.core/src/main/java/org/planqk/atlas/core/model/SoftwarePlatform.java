@@ -50,8 +50,9 @@ public class SoftwarePlatform extends HasId {
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    @ManyToMany(mappedBy = "softwarePlatforms",
-            cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @ManyToMany(fetch = FetchType.LAZY,
+            cascade = {CascadeType.MERGE, CascadeType.PERSIST},
+            mappedBy = "softwarePlatforms")
     private Set<Implementation> implementations = new HashSet<>();
 
     public Set<Implementation> getImplementations() {

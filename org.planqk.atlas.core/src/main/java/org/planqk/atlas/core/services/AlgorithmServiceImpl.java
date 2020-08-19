@@ -181,64 +181,12 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     }
 
     @Override
-    @Transactional
-    public void addPublicationReference(UUID algoId, UUID publicationId) {
-        Algorithm algorithm = findById(algoId);
-        Publication publication = publicationService.findById(publicationId);
-
-        if (algorithm.getPublications().contains(publication)) {
-            throw new ConsistencyException("Publication and algorithm are already linked");
-        }
-
-        algorithm.addPublication(publication);
-    }
-
-    @Override
-    @Transactional
-    public void deletePublicationReference(UUID algoId, UUID publicationId) {
-        Algorithm algorithm = findById(algoId);
-        Publication publication = publicationService.findById(publicationId);
-
-        if (!algorithm.getPublications().contains(publication)) {
-            throw new ConsistencyException("Publication and algorithm are not linked");
-        }
-
-        algorithm.removePublication(publication);
-    }
-
-    @Override
     public Page<ProblemType> findProblemTypes(UUID algoId, Pageable pageable) {
         if (algorithmRepository.existsAlgorithmById(algoId)) {
             throw new NoSuchElementException();
         }
 
         return problemTypeRepository.findProblemTypesByAlgorithmId(algoId, pageable);
-    }
-
-    @Override
-    @Transactional
-    public void addProblemTypeReference(UUID algoId, UUID problemTypeId) {
-        Algorithm algorithm = findById(algoId);
-        ProblemType problemType = problemTypeService.findById(problemTypeId);
-
-        if (algorithm.getProblemTypes().contains(problemType)) {
-            throw new ConsistencyException("Problem type and algorithm are already linked");
-        }
-
-        algorithm.addProblemType(problemType);
-    }
-
-    @Override
-    @Transactional
-    public void deleteProblemTypeReference(UUID algoId, UUID problemTypeId) {
-        Algorithm algorithm = findById(algoId);
-        ProblemType problemType = problemTypeService.findById(problemTypeId);
-
-        if (!algorithm.getProblemTypes().contains(problemType)) {
-            throw new ConsistencyException("Problem type and algorithm are not linked");
-        }
-
-        algorithm.removeProblemType(problemType);
     }
 
     @Override
@@ -251,64 +199,12 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     }
 
     @Override
-    @Transactional
-    public void addApplicationAreaReference(UUID algoId, UUID applicationAreaId) {
-        Algorithm algorithm = findById(algoId);
-        ApplicationArea applicationArea = applicationAreaService.findById(applicationAreaId);
-
-        if (algorithm.getApplicationAreas().contains(applicationArea)) {
-            throw new ConsistencyException("Application area and algorithm are already linked");
-        }
-
-        algorithm.addApplicationArea(applicationArea);
-    }
-
-    @Override
-    @Transactional
-    public void deleteApplicationAreaReference(UUID algoId, UUID applicationAreaId) {
-        Algorithm algorithm = findById(algoId);
-        ApplicationArea applicationArea = applicationAreaService.findById(applicationAreaId);
-
-        if (!algorithm.getApplicationAreas().contains(applicationArea)) {
-            throw new ConsistencyException("Application area and algorithm are not linked");
-        }
-
-        algorithm.removeApplicationArea(applicationArea);
-    }
-
-    @Override
     public Page<PatternRelation> findPatternRelations(UUID algoId, Pageable pageable) {
         if (algorithmRepository.existsAlgorithmById(algoId)) {
             throw new NoSuchElementException();
         }
 
         return patternRelationRepository.findByAlgorithmId(algoId, pageable);
-    }
-
-    @Override
-    @Transactional
-    public void addPatternRelationReference(UUID algoId, UUID patternRelationId) {
-        Algorithm algorithm = findById(algoId);
-        PatternRelation patternRelation = patternRelationService.findById(patternRelationId);
-
-        if (algorithm.getRelatedPatterns().contains(patternRelation)) {
-            throw new ConsistencyException("Pattern relation and algorithm are already linked");
-        }
-
-        algorithm.getRelatedPatterns().add(patternRelation);
-    }
-
-    @Override
-    @Transactional
-    public void deletePatternRelationReference(UUID algoId, UUID patternRelationId) {
-        Algorithm algorithm = findById(algoId);
-        PatternRelation patternRelation = patternRelationService.findById(patternRelationId);
-
-        if (!algorithm.getRelatedPatterns().contains(patternRelation)) {
-            throw new ConsistencyException("Pattern relation and algorithm are not linked");
-        }
-
-        algorithm.getRelatedPatterns().remove(patternRelation);
     }
 
     @Override

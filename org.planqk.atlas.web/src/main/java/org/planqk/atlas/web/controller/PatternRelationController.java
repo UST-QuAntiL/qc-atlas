@@ -30,14 +30,14 @@ import org.planqk.atlas.core.services.PatternRelationTypeService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.PatternRelationDto;
 import org.planqk.atlas.web.linkassembler.PatternRelationAssembler;
-import org.planqk.atlas.web.utils.RestUtils;
-import org.planqk.atlas.web.utils.ValidationGroups;
+import org.planqk.atlas.web.utils.ListParameters;
+import org.planqk.atlas.web.utils.ListParametersDoc;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpEntity;
@@ -52,7 +52,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @io.swagger.v3.oas.annotations.tags.Tag(name = Constants.TAG_PATTERN_RELATION)
@@ -67,6 +66,17 @@ public class PatternRelationController {
     private final PatternRelationTypeService patternRelationTypeService;
     private final PatternRelationService patternRelationService;
     private final PatternRelationAssembler patternRelationAssembler;
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200")
+    }, description = "Retrieve all pattern relations")
+    @GetMapping()
+    @ListParametersDoc
+    public HttpEntity<PagedModel<EntityModel<PatternRelationDto>>> getPatternRelations(
+            @Parameter(hidden = true) ListParameters listParameters) {
+        var patternRelations = patternRelationService.findAll(listParameters.getPageable());
+        return ResponseEntity.ok(patternRelationAssembler.toModel(patternRelations));
+    }
 
     @Operation(responses = {
             @ApiResponse(responseCode = "201"),

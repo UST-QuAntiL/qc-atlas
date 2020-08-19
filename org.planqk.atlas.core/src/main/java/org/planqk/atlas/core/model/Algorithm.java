@@ -112,7 +112,9 @@ public class Algorithm extends AlgorOrImpl implements ModelWithPublications {
     private Set<ApplicationArea> applicationAreas = new HashSet<>();
 
     @ManyToMany(cascade = {CascadeType.MERGE})
-    @JoinTable(name = "algorithm_tag", joinColumns = @JoinColumn(name = "algorithm_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
+    @JoinTable(name = "algorithm_tag",
+            joinColumns = @JoinColumn(name = "algorithm_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id"))
     @EqualsAndHashCode.Exclude
     private Set<Tag> tags = new HashSet<>();
 

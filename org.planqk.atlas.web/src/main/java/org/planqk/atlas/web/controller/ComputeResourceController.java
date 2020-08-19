@@ -16,6 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
+
 package org.planqk.atlas.web.controller;
 
 import java.util.Objects;
@@ -52,7 +53,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -120,7 +120,7 @@ public class ComputeResourceController {
             "use the corresponding sub-route for updating them (e.g. /compute-resources/{id}/compute-resource-properties). " +
             "Custom ID will be ignored.")
     @PutMapping("/{id}")
-    public HttpEntity<EntityModel<ComputeResourceDto>> updateComputeResource(
+    public ResponseEntity<EntityModel<ComputeResourceDto>> updateComputeResource(
             @PathVariable UUID id,
             @Valid @RequestBody ComputeResourceDto computeResourceDto) {
         ComputeResource computeResource = computeResourceService.update(id, ModelMapperUtils.convert(computeResourceDto, ComputeResource.class));
@@ -134,7 +134,7 @@ public class ComputeResourceController {
     }, description = "Delete a compute resource. " +
             "This also removes all references to other entities (e.g. software platform)")
     @DeleteMapping("/{id}")
-    public HttpEntity<Void> deleteComputeResource(
+    public ResponseEntity<Void> deleteComputeResource(
             @PathVariable UUID id) {
         // only deletes if not used in any CloudService or SoftwarePlatform
         // we have to decide if this is acceptable behavior - TODO
@@ -149,7 +149,7 @@ public class ComputeResourceController {
     }, description = "Get referenced software platform for a compute resource")
     @GetMapping("/{id}/" + Constants.SOFTWARE_PLATFORMS)
     @ListParametersDoc
-    public HttpEntity<CollectionModel<EntityModel<SoftwarePlatformDto>>> getSoftwarePlatformsForComputeResource(
+    public ResponseEntity<CollectionModel<EntityModel<SoftwarePlatformDto>>> getSoftwarePlatformsForComputeResource(
             @PathVariable UUID id,
             @Parameter(hidden = true) ListParameters listParameters
     ) {
@@ -164,7 +164,7 @@ public class ComputeResourceController {
     }, description = "Get referenced cloud services for a compute resource")
     @GetMapping("/{id}/" + Constants.CLOUD_SERVICES)
     @ListParametersDoc
-    public HttpEntity<CollectionModel<EntityModel<CloudServiceDto>>> getCloudServicesForComputeResource(
+    public ResponseEntity<CollectionModel<EntityModel<CloudServiceDto>>> getCloudServicesForComputeResource(
             @PathVariable UUID id,
             @Parameter(hidden = true) ListParameters listParameters
     ) {
@@ -178,7 +178,7 @@ public class ComputeResourceController {
             @ApiResponse(responseCode = "404", description = "Compute Resource with given id does not exist")
     }, description = "Retrieve a specific compute resource and its basic properties.")
     @GetMapping("/{id}")
-    public HttpEntity<EntityModel<ComputeResourceDto>> getComputeResource(
+    public ResponseEntity<EntityModel<ComputeResourceDto>> getComputeResource(
             @PathVariable UUID id) {
         ComputeResource computeResource = computeResourceService.findById(id);
         return ResponseEntity.ok(computeResourceAssembler.toModel(computeResource));
@@ -191,7 +191,7 @@ public class ComputeResourceController {
     }, description = "Get referenced compute resource properties for a compute resource.")
     @GetMapping("/{id}/" + Constants.COMPUTE_RESOURCES_PROPERTIES)
     @ListParametersDoc
-    public HttpEntity<PagedModel<EntityModel<ComputeResourcePropertyDto>>> getComputingResourcePropertiesForComputeResource(
+    public ResponseEntity<PagedModel<EntityModel<ComputeResourcePropertyDto>>> getComputingResourcePropertiesForComputeResource(
             @PathVariable UUID id,
             @Parameter(hidden = true) ListParameters listParameters
     ) {
@@ -208,7 +208,7 @@ public class ComputeResourceController {
             "add a reference to the defined compute resource property. " +
             "Custom ID will be ignored. ")
     @PostMapping("/{id}/" + Constants.COMPUTE_RESOURCES_PROPERTIES)
-    public HttpEntity<EntityModel<ComputeResourceDto>> addComputingResourcePropertyToComputeResource(
+    public ResponseEntity<EntityModel<ComputeResourceDto>> addComputingResourcePropertyToComputeResource(
             @PathVariable UUID id,
             @Valid @RequestBody ComputeResourcePropertyDto resourceDto
     ) {
@@ -226,7 +226,7 @@ public class ComputeResourceController {
             description = "Update a computing resource of the algorithm. Custom ID will be ignored." +
                     "For computing resource type only ID is required, other computing resource type attributes will not change.")
     @PutMapping("/{crid}/" + Constants.COMPUTE_RESOURCES_PROPERTIES + "/{resourceId}")
-    public HttpEntity<EntityModel<ComputeResourcePropertyDto>> updateComputingResourceResourcePropertyOfComputeResource(
+    public ResponseEntity<EntityModel<ComputeResourcePropertyDto>> updateComputingResourceResourcePropertyOfComputeResource(
             @PathVariable UUID crid,
             @PathVariable UUID resourceId,
             @RequestBody ComputeResourcePropertyDto resourceDto) {
@@ -249,7 +249,7 @@ public class ComputeResourceController {
             @ApiResponse(responseCode = "404", description = "Algorithm or computing resource with given id doesn't exist")},
             description = "Delete a computing resource of the algorithm.")
     @DeleteMapping("/{crid}/" + Constants.COMPUTE_RESOURCES_PROPERTIES + "/{resourceId}")
-    public HttpEntity<Void> deleteComputingResourcePropertyFromComputeResource(
+    public ResponseEntity<Void> deleteComputingResourcePropertyFromComputeResource(
             @PathVariable UUID crid,
             @PathVariable UUID resourceId) {
         computeResourceService.findById(crid);

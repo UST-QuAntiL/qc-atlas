@@ -41,7 +41,7 @@ public class PatternRelationServiceImpl implements PatternRelationService {
 
     private final String NO_RELATION_ERROR = "PatternRelation does not exist!";
 
-    private final PatternRelationRepository repo;
+    private final PatternRelationRepository patternRelationRepository;
     private final PatternRelationTypeService patternRelationTypeService;
     private final AlgorithmRepository algorithmRepository;
 
@@ -50,39 +50,39 @@ public class PatternRelationServiceImpl implements PatternRelationService {
     public PatternRelation save(PatternRelation relation) {
         // Validate input
         validatePatternRelation(relation);
-        return repo.save(relation);
+        return patternRelationRepository.save(relation);
     }
 
     @Override
     public PatternRelation findById(UUID id) {
-        return repo.findById(id).orElseThrow(() -> new NoSuchElementException(NO_RELATION_ERROR));
+        return patternRelationRepository.findById(id).orElseThrow(() -> new NoSuchElementException(NO_RELATION_ERROR));
     }
 
     @Override
     public Page<PatternRelation> findAll(Pageable pageable) {
-        return repo.findAll(pageable);
+        return patternRelationRepository.findAll(pageable);
     }
 
     @Override
     public Set<PatternRelation> findByAlgorithmId(UUID algoId) {
-        return repo.findByAlgorithmId(algoId, Pageable.unpaged()).toSet();
+        return patternRelationRepository.findByAlgorithmId(algoId, Pageable.unpaged()).toSet();
     }
 
     @Override
     @Transactional
     public PatternRelation update(UUID id, PatternRelation relation) {
-        PatternRelation persistedRelation = repo.findById(id).orElseThrow(() -> new NoSuchElementException(NO_RELATION_ERROR));
+        PatternRelation persistedRelation = patternRelationRepository.findById(id).orElseThrow(() -> new NoSuchElementException(NO_RELATION_ERROR));
         // Update fields
         persistedRelation.setPatternRelationType(patternRelationTypeService.createOrGet(relation.getPatternRelationType()));
         persistedRelation.setPattern(relation.getPattern());
         persistedRelation.setDescription(relation.getDescription());
-        return repo.save(persistedRelation);
+        return patternRelationRepository.save(persistedRelation);
     }
 
     @Override
     @Transactional
     public void deleteById(UUID id) {
-        repo.deleteById(id);
+        patternRelationRepository.deleteById(id);
     }
 
     private void validatePatternRelation(PatternRelation relation) {

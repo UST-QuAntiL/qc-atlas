@@ -27,15 +27,11 @@ import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.repository.AlgorithmRelationRepository;
 
 import lombok.AllArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
 public class AlgoRelationServiceImpl implements AlgoRelationService {
-
-    private final static Logger LOG = LoggerFactory.getLogger(AlgoRelationServiceImpl.class);
 
     private final AlgorithmRelationRepository algorithmRelationRepository;
 
@@ -46,7 +42,6 @@ public class AlgoRelationServiceImpl implements AlgoRelationService {
 
     @Override
     public AlgorithmRelation update(UUID id, AlgorithmRelation relation) {
-        LOG.info("Trying to update algorithm");
         AlgorithmRelation persistedRelation = algorithmRelationRepository.findById(id).orElseThrow(NoSuchElementException::new);
 
         return algorithmRelationRepository.save(relation);

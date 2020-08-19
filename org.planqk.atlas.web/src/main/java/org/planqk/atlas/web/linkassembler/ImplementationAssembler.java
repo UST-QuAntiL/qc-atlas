@@ -22,7 +22,7 @@ public class ImplementationAssembler extends GenericLinkAssembler<Implementation
 //                        .withSelfRel());
         resource.add(links.linkTo(methodOn(AlgorithmController.class).getAlgorithm(getAlgId(resource)))
                 .withRel(Constants.ALGORITHM_LINK));
-        resource.add(links.linkTo(methodOn(ImplementationController.class).getPublications(getAlgId(resource), getId(resource))).withRel(Constants.PUBLICATIONS));
+        resource.add(links.linkTo(methodOn(ImplementationController.class).getPublicationsOfImplementation(getAlgId(resource), getId(resource))).withRel(Constants.PUBLICATIONS));
 
 //        resource.add(links.linkTo(methodOn(ImplementationController.class).getTags(getId(resource)))
 //                .withRel(Constants.TAGS));

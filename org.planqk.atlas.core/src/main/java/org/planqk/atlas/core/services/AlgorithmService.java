@@ -49,35 +49,11 @@ public interface AlgorithmService extends ComputeResourcePropertyInterface {
 
     Page<Publication> findPublications(UUID algoId, Pageable pageable);
 
-    @Transactional
-    void addPublicationReference(UUID algoId, UUID publicationId);
-
-    @Transactional
-    void deletePublicationReference(UUID algoId, UUID publicationId);
-
     Page<ProblemType> findProblemTypes(UUID algoId, Pageable pageable);
-
-    @Transactional
-    void addProblemTypeReference(UUID algoId, UUID problemTypeId);
-
-    @Transactional
-    void deleteProblemTypeReference(UUID algoId, UUID problemTypeId);
 
     Page<ApplicationArea> findApplicationAreas(UUID algoId, Pageable pageable);
 
-    @Transactional
-    void addApplicationAreaReference(UUID algoId, UUID applicationAreaId);
-
-    @Transactional
-    void deleteApplicationAreaReference(UUID algoId, UUID applicationAreaId);
-
     Page<PatternRelation> findPatternRelations(UUID algoId, Pageable pageable);
-
-    @Transactional
-    void addPatternRelationReference(UUID algoId, UUID patternRelationId);
-
-    @Transactional
-    void deletePatternRelationReference(UUID algoId, UUID patternRelationId);
 
     Page<AlgorithmRelation> findAlgorithmRelations(UUID algoId, Pageable pageable);
 }

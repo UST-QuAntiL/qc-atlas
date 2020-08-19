@@ -49,27 +49,7 @@ public interface SoftwarePlatformService {
 
     Page<Implementation> findImplementations(UUID platformId, Pageable pageable);
 
-    @Transactional
-    void addImplementationReference(UUID platformId, UUID implId);
-
-    Implementation getImplementation(UUID platformId, UUID implId);
-
-    @Transactional
-    void deleteImplementationReference(UUID platformId, UUID implId);
-
     Page<CloudService> findCloudServices(UUID platformId, Pageable pageable);
 
-    @Transactional
-    void addCloudServiceReference(UUID platformId, UUID cloudServiceId);
-
-    @Transactional
-    void deleteCloudServiceReference(UUID platformId, UUID cloudServiceId);
-
     Page<ComputeResource> findComputeResources(UUID platformId, Pageable pageable);
-
-    @Transactional
-    void addComputeResourceReference(UUID platformId, UUID resourceId);
-
-    @Transactional
-    void deleteComputeResourceReference(UUID platformId, UUID resourceId);
 }

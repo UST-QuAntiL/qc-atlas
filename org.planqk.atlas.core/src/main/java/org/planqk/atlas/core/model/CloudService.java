@@ -37,7 +37,9 @@ public class CloudService extends HasId {
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE}, mappedBy = "supportedCloudServices")
+    @ManyToMany(fetch = FetchType.LAZY,
+            cascade = {CascadeType.MERGE},
+            mappedBy = "supportedCloudServices")
     private Set<SoftwarePlatform> softwarePlatforms = new HashSet<>();
 
     public void addSoftwarePlatform(SoftwarePlatform softwarePlatform) {

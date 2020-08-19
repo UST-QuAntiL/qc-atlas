@@ -114,37 +114,6 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
     }
 
     @Override
-    @Transactional
-    public void addImplementationReference(UUID platformId, UUID implId) {
-        SoftwarePlatform softwarePlatform = findById(platformId);
-        Implementation implementation = implementationService.findById(implId);
-
-        if (softwarePlatform.getImplementations().contains(implementation)) {
-            throw new ConsistencyException("Implementation and software platform are already linked");
-        }
-
-        softwarePlatform.addImplementation(implementation);
-    }
-
-    @Override
-    public Implementation getImplementation(UUID platformId, UUID implId) {
-        return null;
-    }
-
-    @Override
-    @Transactional
-    public void deleteImplementationReference(UUID platformId, UUID implId) {
-        SoftwarePlatform softwarePlatform = findById(platformId);
-        Implementation implementation = implementationService.findById(implId);
-
-        if (!softwarePlatform.getImplementations().contains(implementation)) {
-            throw new ConsistencyException("Implementation and software platform are not linked");
-        }
-
-        softwarePlatform.removeImplementation(implementation);
-    }
-
-    @Override
     public Page<CloudService> findCloudServices(UUID platformId, Pageable pageable) {
         if (!softwarePlatformRepository.existsSoftwarePlatformById(platformId)) {
             throw new NoSuchElementException();
