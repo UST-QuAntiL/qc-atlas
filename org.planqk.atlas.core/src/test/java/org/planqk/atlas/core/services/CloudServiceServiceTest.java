@@ -44,6 +44,8 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
     private CloudServiceService cloudServiceService;
     @Autowired
     private ComputeResourceService computeResourceService;
+    @Autowired
+    private LinkingService linkingService;
 
     @Test
     void createMinimalCloudService() {
@@ -74,7 +76,7 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
         computeResource.setQuantumComputationModel(QuantumComputationModel.QUANTUM_ANNEALING);
         ComputeResource storedComputeResource = computeResourceService.save(computeResource);
 
-        cloudServiceService.addComputeResourceReference(
+        linkingService.linkCloudServiceAndComputeResource(
                 storedCloudService.getId(), storedComputeResource.getId());
 
         Set<ComputeResource> computeResources = cloudServiceService.findComputeResources(
@@ -165,7 +167,7 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void deleteSoftwarePlatform_HasReferences() {
+    void deleteCloudService_HasReferences() {
         CloudService cloudService = getTestCloudService("test cloud service");
         CloudService storedCloudService = cloudServiceService.save(cloudService);
 
@@ -175,7 +177,7 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
         ComputeResource computeResource = new ComputeResource();
         computeResource.setName("test compute resource");
         ComputeResource storedComputeResource = computeResourceService.save(computeResource);
-        cloudServiceService.addComputeResourceReference(storedCloudService.getId(), storedComputeResource.getId());
+        linkingService.linkCloudServiceAndComputeResource(storedCloudService.getId(), storedComputeResource.getId());
 
         // Delete
         cloudServiceService.delete(storedCloudService.getId());
@@ -198,14 +200,14 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
         computeResource.setQuantumComputationModel(QuantumComputationModel.QUANTUM_ANNEALING);
         ComputeResource storedComputeResource = computeResourceService.save(computeResource);
 
-        cloudServiceService.addComputeResourceReference(
+        linkingService.linkCloudServiceAndComputeResource(
                 storedCloudService.getId(), storedComputeResource.getId());
 
         Set<ComputeResource> computeResources = cloudServiceService.findComputeResources(
                 storedCloudService.getId(), Pageable.unpaged()).toSet();
         assertThat(computeResources.size()).isEqualTo(1);
 
-        cloudServiceService.deleteComputeResourceReference(
+        linkingService.unlinkCloudServiceAndComputeResource(
                 storedCloudService.getId(), storedComputeResource.getId());
 
         computeResources = cloudServiceService.findComputeResources(

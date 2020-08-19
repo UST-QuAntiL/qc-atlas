@@ -51,6 +51,8 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
     private ComputeResourceService computeResourceService;
     @Autowired
     private ImplementationService implementationService;
+    @Autowired
+    private LinkingService linkingService;
 
     @Test
     void createMinimalSoftwarePlatform() {
@@ -78,7 +80,7 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
         implementation.setName("test implementation");
         Implementation storedImplementation = implementationService.save(implementation);
 
-        softwarePlatformService.addImplementationReference(storedSoftwarePlatform.getId(), storedImplementation.getId());
+        linkingService.linkImplementationAndSoftwarePlatform(storedSoftwarePlatform.getId(), storedImplementation.getId());
 
         Set<Implementation> implementations = softwarePlatformService.findImplementations(
                 storedSoftwarePlatform.getId(), Pageable.unpaged()).toSet();
@@ -102,7 +104,7 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
         cloudService.setCostModel("testCostModel");
         CloudService storedCloudService = cloudServiceService.save(cloudService);
 
-        softwarePlatformService.addCloudServiceReference(storedSoftwarePlatform.getId(), storedCloudService.getId());
+        linkingService.linkSoftwarePlatformAndCloudService(storedSoftwarePlatform.getId(), storedCloudService.getId());
 
         Set<CloudService> cloudServices = softwarePlatformService.findCloudServices(
                 storedSoftwarePlatform.getId(), Pageable.unpaged()).toSet();
@@ -123,7 +125,7 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
         computeResource.setQuantumComputationModel(QuantumComputationModel.QUANTUM_ANNEALING);
         ComputeResource storedComputeResource = computeResourceService.save(computeResource);
 
-        softwarePlatformService.addComputeResourceReference(
+        linkingService.linkSoftwarePlatformAndComputeResource(
                 storedSoftwarePlatform.getId(), storedComputeResource.getId());
 
         Set<ComputeResource> computeResources = softwarePlatformService.findComputeResources(
@@ -209,7 +211,7 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
             implementation.setName("test implementation" + i);
             Implementation storedImplementation = implementationService.save(implementation);
             storedImplementations.add(storedImplementation);
-            softwarePlatformService.addImplementationReference(storedSoftwarePlatform.getId(), storedImplementation.getId());
+            linkingService.linkImplementationAndSoftwarePlatform(storedSoftwarePlatform.getId(), storedImplementation.getId());
         }
         Set<Implementation> implementations = softwarePlatformService.findImplementations(
                 storedSoftwarePlatform.getId(), Pageable.unpaged()).toSet();
@@ -235,7 +237,7 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
             cloudService.setCostModel("testCostModel");
             CloudService storedCloudService = cloudServiceService.save(cloudService);
             storedCloudServices.add(storedCloudService);
-            softwarePlatformService.addCloudServiceReference(storedSoftwarePlatform.getId(), storedCloudService.getId());
+            linkingService.linkSoftwarePlatformAndCloudService(storedSoftwarePlatform.getId(), storedCloudService.getId());
         }
         Set<CloudService> cloudServices = softwarePlatformService.findCloudServices(
                 storedSoftwarePlatform.getId(), Pageable.unpaged()).toSet();
@@ -258,7 +260,7 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
             computeResource.setQuantumComputationModel(QuantumComputationModel.QUANTUM_ANNEALING);
             ComputeResource storedComputeResource = computeResourceService.save(computeResource);
             storedComputeResources.add(storedComputeResource);
-            softwarePlatformService.addComputeResourceReference(storedSoftwarePlatform.getId(), storedComputeResource.getId());
+            linkingService.linkCloudServiceAndComputeResource(storedSoftwarePlatform.getId(), storedComputeResource.getId());
         }
         Set<ComputeResource> computeResources = softwarePlatformService.findComputeResources(
                 storedSoftwarePlatform.getId(), Pageable.unpaged()).toSet();
@@ -292,19 +294,19 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
         Implementation implementation = new Implementation();
         implementation.setName("test implementation");
         Implementation storedImplementation = implementationService.save(implementation);
-        softwarePlatformService.addImplementationReference(storedSoftwarePlatform.getId(), storedImplementation.getId());
+        linkingService.linkImplementationAndSoftwarePlatform(storedSoftwarePlatform.getId(), storedImplementation.getId());
 
         // Add Cloud Service Reference
         CloudService cloudService = new CloudService();
         cloudService.setName("testCloudService");
         CloudService storedCloudService = cloudServiceService.save(cloudService);
-        softwarePlatformService.addCloudServiceReference(storedSoftwarePlatform.getId(), storedCloudService.getId());
+        linkingService.linkSoftwarePlatformAndCloudService(storedSoftwarePlatform.getId(), storedCloudService.getId());
 
         // Add Compute Resource Reference
         ComputeResource computeResource = new ComputeResource();
         computeResource.setName("test compute resource");
         ComputeResource storedComputeResource = computeResourceService.save(computeResource);
-        softwarePlatformService.addComputeResourceReference(storedSoftwarePlatform.getId(), storedComputeResource.getId());
+        linkingService.linkSoftwarePlatformAndComputeResource(storedSoftwarePlatform.getId(), storedComputeResource.getId());
 
         // Delete
         softwarePlatformService.delete(storedSoftwarePlatform.getId());
@@ -327,13 +329,13 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
         implementation.setName("test implementation");
         Implementation storedImplementation = implementationService.save(implementation);
 
-        softwarePlatformService.addImplementationReference(storedSoftwarePlatform.getId(), storedImplementation.getId());
+        linkingService.linkImplementationAndSoftwarePlatform(storedSoftwarePlatform.getId(), storedImplementation.getId());
 
         Set<Implementation> implementations = softwarePlatformService.findImplementations(
                 storedSoftwarePlatform.getId(), Pageable.unpaged()).toSet();
         assertThat(implementations.size()).isEqualTo(1);
 
-        softwarePlatformService.deleteImplementationReference(storedSoftwarePlatform.getId(), storedImplementation.getId());
+        linkingService.unlinkImplementationAndSoftwarePlatform(storedSoftwarePlatform.getId(), storedImplementation.getId());
 
         implementations = softwarePlatformService.findImplementations(
                 storedSoftwarePlatform.getId(), Pageable.unpaged()).toSet();
@@ -355,13 +357,13 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
         cloudService.setCostModel("testCostModel");
         CloudService storedCloudService = cloudServiceService.save(cloudService);
 
-        softwarePlatformService.addCloudServiceReference(storedSoftwarePlatform.getId(), storedCloudService.getId());
+        linkingService.linkSoftwarePlatformAndCloudService(storedSoftwarePlatform.getId(), storedCloudService.getId());
 
         Set<CloudService> cloudServices = softwarePlatformService.findCloudServices(
                 storedSoftwarePlatform.getId(), Pageable.unpaged()).toSet();
         assertThat(cloudServices.size()).isEqualTo(1);
 
-        softwarePlatformService.deleteCloudServiceReference(storedSoftwarePlatform.getId(), storedCloudService.getId());
+        linkingService.unlinkSoftwarePlatformAndCloudService(storedSoftwarePlatform.getId(), storedCloudService.getId());
 
         cloudServices = softwarePlatformService.findCloudServices(
                 storedSoftwarePlatform.getId(), Pageable.unpaged()).toSet();
@@ -380,14 +382,14 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
         computeResource.setQuantumComputationModel(QuantumComputationModel.QUANTUM_ANNEALING);
         ComputeResource storedComputeResource = computeResourceService.save(computeResource);
 
-        softwarePlatformService.addComputeResourceReference(
+        linkingService.linkSoftwarePlatformAndComputeResource(
                 storedSoftwarePlatform.getId(), storedComputeResource.getId());
 
         Set<ComputeResource> computeResources = softwarePlatformService.findComputeResources(
                 storedSoftwarePlatform.getId(), Pageable.unpaged()).toSet();
         assertThat(computeResources.size()).isEqualTo(1);
 
-        softwarePlatformService.deleteComputeResourceReference(
+        linkingService.unlinkSoftwarePlatformAndComputeResource(
                 storedSoftwarePlatform.getId(), storedComputeResource.getId());
 
         computeResources = softwarePlatformService.findComputeResources(

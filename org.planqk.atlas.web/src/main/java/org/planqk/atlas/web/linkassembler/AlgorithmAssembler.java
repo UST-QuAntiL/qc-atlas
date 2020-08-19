@@ -27,8 +27,8 @@ public class AlgorithmAssembler extends GenericLinkAssembler<AlgorithmDto> {
     public void addLinks(EntityModel<AlgorithmDto> resource) {
         resource.add(links.linkTo(methodOn(AlgorithmController.class).getAlgorithm(getId(resource))).withSelfRel());
 //        resource.add(links.linkTo(methodOn(AlgorithmController.class).getTags(getId(resource))).withRel(Constants.TAGS));
-        resource.add(links.linkTo(methodOn(ImplementationController.class).getImplementations(getId(resource)))
-                .withRel(Constants.IMPLEMENTATIONS));
+//        resource.add(links.linkTo(methodOn(ImplementationController.class).getImplementations(getId(resource)))
+//                .withRel(Constants.IMPLEMENTATIONS));
         resource.add(links.linkTo(methodOn(AlgorithmController.class)
                 .getProblemTypesForAlgorithm(getId(resource), ListParameters.getDefault()))
                 .withRel(Constants.PROBLEM_TYPES));
