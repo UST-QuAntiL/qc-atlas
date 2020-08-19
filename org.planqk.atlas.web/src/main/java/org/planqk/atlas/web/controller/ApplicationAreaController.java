@@ -29,6 +29,7 @@ import org.planqk.atlas.web.linkassembler.ApplicationAreaAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
+import org.planqk.atlas.web.utils.ValidationGroups;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -78,7 +79,7 @@ public class ApplicationAreaController {
     }, description = "Custom ID will be ignored.")
     @PostMapping()
     public ResponseEntity<EntityModel<ApplicationAreaDto>> createApplicationArea(
-            @Validated @RequestBody ApplicationAreaDto applicationAreaDto) {
+            @Validated(ValidationGroups.Create.class) @RequestBody ApplicationAreaDto applicationAreaDto) {
         var savedApplicationArea = applicationAreaService.save(
                 ModelMapperUtils.convert(applicationAreaDto, ApplicationArea.class));
         return new ResponseEntity<>(applicationAreaAssembler.toModel(savedApplicationArea), HttpStatus.CREATED);
@@ -93,7 +94,7 @@ public class ApplicationAreaController {
     @PutMapping("/{applicationAreaId}")
     public ResponseEntity<EntityModel<ApplicationAreaDto>> updateApplicationArea(
             @PathVariable UUID applicationAreaId,
-            @Validated @RequestBody ApplicationAreaDto applicationAreaDto) {
+            @Validated(ValidationGroups.Update.class) @RequestBody ApplicationAreaDto applicationAreaDto) {
         var updatedApplicationArea = applicationAreaService.update(
                 applicationAreaId, ModelMapperUtils.convert(applicationAreaDto, ApplicationArea.class));
         return ResponseEntity.ok(applicationAreaAssembler.toModel(updatedApplicationArea));

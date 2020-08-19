@@ -100,8 +100,8 @@ public class SoftwarePlatformController {
             "Custom ID will be ignored.")
     @PostMapping()
     public ResponseEntity<EntityModel<SoftwarePlatformDto>> createSoftwarePlatform(
-            @Validated(ValidationGroups.Create.class) @RequestBody SoftwarePlatformDto platformDto) {
-        var savedPlatform = softwarePlatformService.save(ModelMapperUtils.convert(platformDto, SoftwarePlatform.class));
+            @Validated(ValidationGroups.Create.class) @RequestBody SoftwarePlatformDto softwarePlatformDto) {
+        var savedPlatform = softwarePlatformService.save(ModelMapperUtils.convert(softwarePlatformDto, SoftwarePlatform.class));
         return new ResponseEntity<>(softwarePlatformAssembler.toModel(savedPlatform), HttpStatus.CREATED);
     }
 

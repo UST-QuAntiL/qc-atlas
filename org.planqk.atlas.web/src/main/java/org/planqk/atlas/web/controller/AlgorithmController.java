@@ -61,6 +61,7 @@ import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.RestUtils;
+import org.planqk.atlas.web.utils.ValidationGroups;
 import org.planqk.atlas.web.utils.ValidationUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -74,6 +75,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -143,8 +145,9 @@ public class AlgorithmController {
             "References to sub-objects (e.g. a ProblemType) can be added via " +
             "sub-routes (e.g. /algorithm/id/problem-types). Custom ID will be ignored.")
     @PostMapping()
-    public ResponseEntity<EntityModel<AlgorithmDto>> createAlgorithm(@Valid @RequestBody AlgorithmDto algo) {
-        Algorithm savedAlgorithm = algorithmService.save(ModelMapperUtils.convert(algo, Algorithm.class));
+    public ResponseEntity<EntityModel<AlgorithmDto>> createAlgorithm(
+            @Validated(ValidationGroups.Create.class) @RequestBody AlgorithmDto algorithmDto) {
+        Algorithm savedAlgorithm = algorithmService.save(ModelMapperUtils.convert(algorithmDto, Algorithm.class));
         return new ResponseEntity<>(algorithmAssembler.toModel(savedAlgorithm), HttpStatus.CREATED);
     }
 
@@ -159,8 +162,9 @@ public class AlgorithmController {
     @PutMapping("/{algorithmId}")
     public ResponseEntity<EntityModel<AlgorithmDto>> updateAlgorithm(
             @PathVariable UUID algorithmId,
-            @Valid @RequestBody AlgorithmDto algo) {
-        Algorithm updatedAlgorithm = algorithmService.update(algorithmId, ModelMapperUtils.convert(algo, Algorithm.class));
+            @Validated(ValidationGroups.Update.class) @RequestBody AlgorithmDto algorithmDto) {
+        Algorithm updatedAlgorithm = algorithmService.update(
+                algorithmId, ModelMapperUtils.convert(algorithmDto, Algorithm.class));
         return ResponseEntity.ok(algorithmAssembler.toModel(updatedAlgorithm));
     }
 
@@ -171,7 +175,8 @@ public class AlgorithmController {
     }, description = "Delete an algorithm. This also deletes all entities that depend on it " +
             "(e.g., the algorithm's relation to another algorithm).")
     @DeleteMapping("/{algorithmId}")
-    public ResponseEntity<Void> deleteAlgorithm(@PathVariable UUID algorithmId) {
+    public ResponseEntity<Void> deleteAlgorithm(
+            @PathVariable UUID algorithmId) {
         algorithmService.delete(algorithmId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -182,7 +187,8 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "404", content = @Content, description = "Algorithm doesn't exist")
     }, description = "Retrieve a specific algorithm and its basic properties.")
     @GetMapping("/{algorithmId}")
-    public ResponseEntity<EntityModel<AlgorithmDto>> getAlgorithm(@PathVariable UUID algorithmId) {
+    public ResponseEntity<EntityModel<AlgorithmDto>> getAlgorithm(
+            @PathVariable UUID algorithmId) {
         var algorithm = algorithmService.findById(algorithmId);
         return ResponseEntity.ok(algorithmAssembler.toModel(algorithm));
     }
@@ -511,7 +517,7 @@ public class AlgorithmController {
     @PostMapping("/{algorithmId}/" + Constants.IMPLEMENTATIONS)
     public ResponseEntity<EntityModel<ImplementationDto>> createImplementation(
             @PathVariable UUID algorithmId,
-            @Valid @RequestBody ImplementationDto implementationDto) {
+            @Validated(ValidationGroups.Create.class) @RequestBody ImplementationDto implementationDto) {
         Implementation savedImplementation = implementationService.create(
                 ModelMapperUtils.convert(implementationDto, Implementation.class), algorithmId);
         return new ResponseEntity<>(implementationAssembler.toModel(savedImplementation), HttpStatus.CREATED);
@@ -543,10 +549,10 @@ public class AlgorithmController {
     @PostMapping("/{algorithmId}/" + Constants.COMPUTE_RESOURCES_PROPERTIES)
     public ResponseEntity<EntityModel<ComputeResourcePropertyDto>> createComputeResourcePropertyForAlgorithm(
             @PathVariable UUID algorithmId,
-            @Valid @RequestBody ComputeResourcePropertyDto resourceDto) {
-        ValidationUtils.validateComputingResourceProperty(resourceDto);
+            @Validated(ValidationGroups.Create.class) @RequestBody ComputeResourcePropertyDto computeResourcePropertyDto) {
+        ValidationUtils.validateComputingResourceProperty(computeResourcePropertyDto);
 
-        var resourceProperty = computeResourcePropertyMixin.fromDto(resourceDto);
+        var resourceProperty = computeResourcePropertyMixin.fromDto(computeResourcePropertyDto);
         var createdResourceProperty = algorithmService.createComputeResourceProperty(algorithmId, resourceProperty);
         return new ResponseEntity<>(computeResourcePropertyAssembler.toModel(createdResourceProperty), HttpStatus.CREATED);
     }
