@@ -623,8 +623,8 @@ public class AlgorithmController {
             resource.setId(relationId);
         }
         resource.setAlgoRelationType(algoRelationTypeService.findById(relationDto.getAlgoRelationType().getId()));
-        resource.setSourceAlgorithm(algorithmService.findById(relationDto.getSourceAlgorithm().getId()));
-        resource.setTargetAlgorithm(algorithmService.findById(relationDto.getTargetAlgorithm().getId()));
+        resource.setSourceAlgorithm(algorithmService.findById(relationDto.getSourceAlgorithmId()));
+        resource.setTargetAlgorithm(algorithmService.findById(relationDto.getTargetAlgorithmId()));
         resource.setDescription(relationDto.getDescription());
         return algoRelationService.save(resource);
     }

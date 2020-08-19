@@ -57,9 +57,19 @@ public class ModelMapperUtils {
         mapper.createTypeMap(PatternRelation.class, PatternRelationDto.class)
                 .addMappings(expression -> expression.map(PatternRelation::getAlgorithm, PatternRelationDto::setAlgorithm));
         mapper.createTypeMap(AlgorithmRelation.class, AlgorithmRelationDto.class)
-                .addMappings(expression -> expression.map(AlgorithmRelation::getSourceAlgorithm, AlgorithmRelationDto::setSourceAlgorithm))
-                .addMappings(expression -> expression.map(AlgorithmRelation::getTargetAlgorithm, AlgorithmRelationDto::setTargetAlgorithm));
-
+                .addMappings(expression -> expression.map(e -> e.getSourceAlgorithm().getId(), AlgorithmRelationDto::setSourceAlgorithmId))
+                .addMappings(expression -> expression.map(e -> e.getTargetAlgorithm().getId(), AlgorithmRelationDto::setTargetAlgorithmId));
+        mapper.createTypeMap(AlgorithmRelationDto.class, AlgorithmRelation.class)
+                .addMapping(e -> {
+                    var algo = new Algorithm();
+                    algo.setId(e.getSourceAlgorithmId());
+                    return e;
+                }, AlgorithmRelation::setSourceAlgorithm)
+                .addMapping(e -> {
+                    var algo = new Algorithm();
+                    algo.setId(e.getTargetAlgorithmId());
+                    return algo;
+                }, AlgorithmRelation::setTargetAlgorithm);
         return mapper;
     }
 }

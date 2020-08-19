@@ -44,14 +44,14 @@ public class AlgorithmRelationDto {
     private UUID id;
 
     @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
-            message = "Source Algorithm must not be null!")
+            message = "Source Algorithm id must not be null!")
     @EqualsAndHashCode.Exclude
-    private AlgorithmDto sourceAlgorithm;
+    private UUID sourceAlgorithmId;
 
     @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
-            message = "Target Algorithm must not be null!")
+            message = "Target Algorithm id must not be null!")
     @EqualsAndHashCode.Exclude
-    private AlgorithmDto targetAlgorithm;
+    private UUID targetAlgorithmId;
 
     @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
             message = "AlgorithmRelationType must not be null!")
