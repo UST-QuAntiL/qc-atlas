@@ -21,8 +21,6 @@ package org.planqk.atlas.web.controller;
 
 import java.util.UUID;
 
-import javax.validation.Valid;
-
 import org.planqk.atlas.core.model.ApplicationArea;
 import org.planqk.atlas.core.services.ApplicationAreaService;
 import org.planqk.atlas.web.Constants;
@@ -39,9 +37,9 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -64,57 +62,62 @@ public class ApplicationAreaController {
     private final ApplicationAreaAssembler applicationAreaAssembler;
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "201")
-    }, description = "Custom ID will be ignored.")
-    @PostMapping()
-    public HttpEntity<EntityModel<ApplicationAreaDto>> createApplicationArea(
-            @Valid @RequestBody ApplicationAreaDto applicationAreaDto) {
-        var entityInput = ModelMapperUtils.convert(applicationAreaDto, ApplicationArea.class);
-        var savedEntity = applicationAreaService.save(entityInput);
-        return new ResponseEntity<>(applicationAreaAssembler.toModel(savedEntity), HttpStatus.CREATED);
-    }
-
-    @Operation(responses = {
-            @ApiResponse(responseCode = "200")
-    }, description = "Custom ID will be ignored.")
-    @PutMapping("/{id}")
-    public HttpEntity<EntityModel<ApplicationAreaDto>> updateApplicationArea(
-            @PathVariable UUID id,
-            @Valid @RequestBody ApplicationAreaDto applicationAreaDto) {
-        var entityInput = ModelMapperUtils.convert(applicationAreaDto, ApplicationArea.class);
-        var savedEntity = applicationAreaService.update(id, entityInput);
-        return ResponseEntity.ok(applicationAreaAssembler.toModel(savedEntity));
-    }
-
-    @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "404", description = "Application area with given id doesn't exist")
-    }, description = "")
-    @DeleteMapping("/{id}")
-    public HttpEntity<Void> deleteApplicationArea(@PathVariable UUID id) {
-        ApplicationArea applicationArea = applicationAreaService.findById(id);
-        applicationArea.getAlgorithms().forEach(algorithm -> algorithm.removeApplicationArea(applicationArea));
-        applicationAreaService.delete(applicationArea);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    @Operation(responses = {
             @ApiResponse(responseCode = "200")
     }, description = "")
     @GetMapping()
     @ListParametersDoc()
-    public HttpEntity<PagedModel<EntityModel<ApplicationAreaDto>>> getApplicationAreas(
+    public ResponseEntity<PagedModel<EntityModel<ApplicationAreaDto>>> getApplicationAreas(
             @Parameter(hidden = true) ListParameters listParameters) {
         return ResponseEntity.ok(applicationAreaAssembler
                 .toModel(applicationAreaService.findAll(listParameters.getPageable(), listParameters.getSearch())));
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "200")
+            @ApiResponse(responseCode = "201"),
+            @ApiResponse(responseCode = "400"),
+    }, description = "Custom ID will be ignored.")
+    @PostMapping()
+    public ResponseEntity<EntityModel<ApplicationAreaDto>> createApplicationArea(
+            @Validated @RequestBody ApplicationAreaDto applicationAreaDto) {
+        var savedApplicationArea = applicationAreaService.save(
+                ModelMapperUtils.convert(applicationAreaDto, ApplicationArea.class));
+        return new ResponseEntity<>(applicationAreaAssembler.toModel(savedApplicationArea), HttpStatus.CREATED);
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404",
+                    description = "Application area with given id does not exist"),
+    }, description = "Custom ID will be ignored.")
+    @PutMapping("/{applicationAreaId}")
+    public ResponseEntity<EntityModel<ApplicationAreaDto>> updateApplicationArea(
+            @PathVariable UUID applicationAreaId,
+            @Validated @RequestBody ApplicationAreaDto applicationAreaDto) {
+        var updatedApplicationArea = applicationAreaService.update(
+                applicationAreaId, ModelMapperUtils.convert(applicationAreaDto, ApplicationArea.class));
+        return ResponseEntity.ok(applicationAreaAssembler.toModel(updatedApplicationArea));
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", description = "Application area with given id doesn't exist")
     }, description = "")
-    @GetMapping("/{id}")
-    public HttpEntity<EntityModel<ApplicationAreaDto>> getApplicationAreaById(@PathVariable UUID id) {
-        ApplicationArea applicationArea = applicationAreaService.findById(id);
+    @DeleteMapping("/{applicationAreaId}")
+    public ResponseEntity<Void> deleteApplicationArea(@PathVariable UUID applicationAreaId) {
+        applicationAreaService.delete(applicationAreaId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", description = "Application area with given id doesn't exist")
+    }, description = "")
+    @GetMapping("/{applicationAreaId}")
+    public ResponseEntity<EntityModel<ApplicationAreaDto>> getApplicationArea(@PathVariable UUID applicationAreaId) {
+        ApplicationArea applicationArea = applicationAreaService.findById(applicationAreaId);
         return ResponseEntity.ok(applicationAreaAssembler.toModel(applicationArea));
     }
 }

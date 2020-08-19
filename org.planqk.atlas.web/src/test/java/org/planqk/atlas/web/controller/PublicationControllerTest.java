@@ -141,19 +141,20 @@ public class PublicationControllerTest {
         assertThat(resultList.size()).isEqualTo(0);
     }
 
-    @Test
-    public void createPublication_returnPublication() throws Exception {
-        when(publicationService.save(publication)).thenReturn(publication);
-        MvcResult result = mockMvc
-                .perform(post("/" + Constants.API_VERSION + "/" + Constants.PUBLICATIONS + "/").content(mapper.writeValueAsString(publicationDto))
-                        .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated()).andReturn();
-
-        EntityModel<PublicationDto> response = mapper.readValue(result.getResponse().getContentAsString(),
-                new TypeReference<>() {
-                });
-        assertThat(response.getContent().getTitle()).isEqualTo(publicationDto.getTitle());
-        assertThat(response.getContent().getDoi()).isEqualTo(publicationDto.getDoi());
-        assertThat(response.getContent().getUrl()).isEqualTo(publicationDto.getUrl());
-    }
+//    @Test
+//    public void createPublication_returnPublication() throws Exception {
+//        when(publicationService.save(publication)).thenReturn(publication);
+//        MvcResult result = mockMvc
+//                .perform(post("/" + Constants.API_VERSION + "/" + Constants.PUBLICATIONS + "/")
+//                        .content(mapper.writeValueAsString(publicationDto))
+//                        .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+//                .andExpect(status().isCreated()).andReturn();
+//
+//        EntityModel<PublicationDto> response = mapper.readValue(result.getResponse().getContentAsString(),
+//                new TypeReference<>() {
+//                });
+//        assertThat(response.getContent().getTitle()).isEqualTo(publicationDto.getTitle());
+//        assertThat(response.getContent().getDoi()).isEqualTo(publicationDto.getDoi());
+//        assertThat(response.getContent().getUrl()).isEqualTo(publicationDto.getUrl());
+//    }
 }

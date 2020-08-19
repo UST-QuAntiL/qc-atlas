@@ -71,7 +71,7 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
     @Override
     @Transactional
     public void delete(ProblemType problemType) {
-        if (this.algRepo.findAllByProblemTypes(problemType).size() > 0) {
+        if (this.algRepo.findAllByProblemTypesId(problemType.getId()).size() > 0) {
             LOG.info("Trying to delete ProblemType that is used by at least 1 algorithm");
             throw new ConsistencyException("Cannot delete ProbemType, since it is used by existing algorithms!");
         }

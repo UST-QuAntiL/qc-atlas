@@ -31,8 +31,6 @@ import org.planqk.atlas.core.repository.AlgorithmRepository;
 import org.planqk.atlas.core.repository.ApplicationAreaRepository;
 
 import lombok.AllArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -41,53 +39,54 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class ApplicationAreaServiceImpl implements ApplicationAreaService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ApplicationAreaServiceImpl.class);
-
-    private final ApplicationAreaRepository repo;
-    private final AlgorithmRepository algRepo;
+    private final ApplicationAreaRepository applicationAreaRepository;
+    private final AlgorithmRepository algorithmRepository;
 
     @Override
     @Transactional
     public ApplicationArea save(ApplicationArea applicationArea) {
-        return repo.save(applicationArea);
-    }
-
-    @Override
-    @Transactional
-    public ApplicationArea update(UUID id, ApplicationArea problemType) {
-        // Get existing ApplicationArea if it exists
-        ApplicationArea persistedType = findById(id);
-        // Update fields
-        persistedType.setName(problemType.getName());
-        return save(persistedType);
-    }
-
-    @Override
-    @Transactional
-    public void delete(ApplicationArea applicationArea) {
-        if (algRepo.findAllByApplicationAreas(applicationArea).size() > 0) {
-            LOG.info("Trying to delete applicationArea that is used by at least 1 algorithm");
-            throw new ConsistencyException("Cannot delete applicationArea, since it is used by existing algorithms!");
-        }
-
-        repo.delete(applicationArea);
-    }
-
-    @Override
-    public ApplicationArea findById(UUID id) {
-        return repo.findById(id).orElseThrow(NoSuchElementException::new);
-    }
-
-    @Override
-    public ApplicationArea findByName(String name) {
-        return repo.findByName(name).orElseThrow(NoSuchElementException::new);
+        return applicationAreaRepository.save(applicationArea);
     }
 
     @Override
     public Page<ApplicationArea> findAll(Pageable pageable, String search) {
         if (!Objects.isNull(search) && !search.isEmpty()) {
-            return repo.findAll(search, pageable);
+            return applicationAreaRepository.findAll(search, pageable);
         }
-        return repo.findAll(pageable);
+        return applicationAreaRepository.findAll(pageable);
+    }
+
+    @Override
+    public ApplicationArea findById(UUID id) {
+        return applicationAreaRepository.findById(id).orElseThrow(NoSuchElementException::new);
+    }
+
+    @Override
+    @Transactional
+    public ApplicationArea update(UUID id, ApplicationArea applicationArea) {
+        ApplicationArea persistedApplicationArea = findById(id);
+
+        persistedApplicationArea.setName(applicationArea.getName());
+
+        return save(persistedApplicationArea);
+    }
+
+    @Override
+    @Transactional
+    public void delete(UUID applicationAreaId) {
+        ApplicationArea applicationArea = findById(applicationAreaId);
+
+        if (applicationArea.getAlgorithms().size() > 0) {
+            throw new ConsistencyException("Cannot delete application area with ID \"" + applicationAreaId +
+                    "\". It is used by existing an algorithms!");
+        }
+
+        removeReferences(applicationArea);
+
+        applicationAreaRepository.deleteById(applicationAreaId);
+    }
+
+    private void removeReferences(ApplicationArea applicationArea) {
+        applicationArea.getAlgorithms().forEach(algorithm -> algorithm.removeApplicationArea(applicationArea));
     }
 }

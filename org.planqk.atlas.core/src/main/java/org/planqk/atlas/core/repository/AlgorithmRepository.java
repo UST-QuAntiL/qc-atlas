@@ -66,7 +66,7 @@ public interface AlgorithmRepository extends JpaRepository<Algorithm, UUID> {
     @Query(nativeQuery = true, value = "DELETE FROM algorithm_publication WHERE algorithm_publication.algorithm_id = :algorithmId")
     void deleteAssociationsOfAlgorithm(@Param("algorithmId") UUID algorithmId);
 
-    Set<Algorithm> findAllByProblemTypes(ProblemType problemType);
+    Set<Algorithm> findAllByProblemTypesId(UUID problemTypeId);
 
-    Set<Algorithm> findAllByApplicationAreas(ApplicationArea applicationArea);
+    Set<Algorithm> findAllByApplicationAreasId(UUID applicationAreaId);
 }

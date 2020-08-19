@@ -32,15 +32,13 @@ public interface ApplicationAreaService {
     @Transactional
     ApplicationArea save(ApplicationArea applicationArea);
 
-    @Transactional
-    ApplicationArea update(UUID id, ApplicationArea applicationArea);
-
-    @Transactional
-    void delete(ApplicationArea applicationArea);
-
-    ApplicationArea findById(UUID id);
-
-    ApplicationArea findByName(String name);
-
     Page<ApplicationArea> findAll(Pageable pageable, String search);
+
+    ApplicationArea findById(UUID applicationAreaId);
+
+    @Transactional
+    ApplicationArea update(UUID applicationAreaId, ApplicationArea applicationArea);
+
+    @Transactional
+    void delete(UUID applicationAreaId);
 }
