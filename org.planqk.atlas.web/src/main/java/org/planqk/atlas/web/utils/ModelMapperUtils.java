@@ -1,17 +1,21 @@
 package org.planqk.atlas.web.utils;
 
+import java.util.UUID;
+
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
-import org.planqk.atlas.core.model.ComputeResource;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
+import org.planqk.atlas.core.model.ComputeResource;
+import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.model.Qpu;
 import org.planqk.atlas.core.model.QuantumAlgorithm;
 import org.planqk.atlas.core.model.Simulator;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
-import org.planqk.atlas.web.dtos.ComputeResourceDto;
 import org.planqk.atlas.web.dtos.ClassicAlgorithmDto;
+import org.planqk.atlas.web.dtos.ComputeResourceDto;
+import org.planqk.atlas.web.dtos.ImplementationDto;
 import org.planqk.atlas.web.dtos.PatternRelationDto;
 import org.planqk.atlas.web.dtos.QPUDto;
 import org.planqk.atlas.web.dtos.QuantumAlgorithmDto;
@@ -35,7 +39,13 @@ public class ModelMapperUtils {
 
     private static ModelMapper initModelMapper() {
         ModelMapper mapper = new ModelMapper();
-        // Config ModelMapper to always use child classes of Algorithm and it's DTO
+        initializeConverters(mapper);
+        initializeUUIDMappings(mapper);
+
+        return mapper;
+    }
+
+    private static void initializeConverters(ModelMapper mapper) {
         mapper.createTypeMap(ClassicAlgorithm.class, AlgorithmDto.class)
                 .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), ClassicAlgorithmDto.class));
         mapper.createTypeMap(QuantumAlgorithm.class, AlgorithmDto.class)
@@ -52,24 +62,33 @@ public class ModelMapperUtils {
                 .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), Qpu.class));
         mapper.createTypeMap(SimulatorDto.class, ComputeResource.class)
                 .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), Simulator.class));
+    }
 
-        // Map Algorithm of PatternRelation to correct Subclass when mapping to PatternRelationDto
-        mapper.createTypeMap(PatternRelation.class, PatternRelationDto.class)
-                .addMappings(expression -> expression.map(PatternRelation::getAlgorithm, PatternRelationDto::setAlgorithm));
+    private static void initializeUUIDMappings(ModelMapper mapper) {
+        // Algorithm Relations
         mapper.createTypeMap(AlgorithmRelation.class, AlgorithmRelationDto.class)
-                .addMappings(expression -> expression.map(e -> e.getSourceAlgorithm().getId(), AlgorithmRelationDto::setSourceAlgorithmId))
-                .addMappings(expression -> expression.map(e -> e.getTargetAlgorithm().getId(), AlgorithmRelationDto::setTargetAlgorithmId));
+                .addMapping(e -> e.getSourceAlgorithm().getId(), AlgorithmRelationDto::setSourceAlgorithmId)
+                .addMapping(e -> e.getTargetAlgorithm().getId(), AlgorithmRelationDto::setTargetAlgorithmId);
         mapper.createTypeMap(AlgorithmRelationDto.class, AlgorithmRelation.class)
-                .addMapping(e -> {
-                    var algo = new Algorithm();
-                    algo.setId(e.getSourceAlgorithmId());
-                    return e;
-                }, AlgorithmRelation::setSourceAlgorithm)
-                .addMapping(e -> {
-                    var algo = new Algorithm();
-                    algo.setId(e.getTargetAlgorithmId());
-                    return algo;
-                }, AlgorithmRelation::setTargetAlgorithm);
-        return mapper;
+                .addMapping(e -> newAlgorithmWithId(e.getSourceAlgorithmId()), AlgorithmRelation::setSourceAlgorithm)
+                .addMapping(e -> newAlgorithmWithId(e.getTargetAlgorithmId()), AlgorithmRelation::setTargetAlgorithm);
+
+        // Implementations
+        mapper.createTypeMap(Implementation.class, ImplementationDto.class)
+                .addMapping(e -> e.getImplementedAlgorithm().getId(), ImplementationDto::setImplementedAlgorithmId);
+        mapper.createTypeMap(ImplementationDto.class, Implementation.class)
+                .addMapping(e -> newAlgorithmWithId(e.getImplementedAlgorithmId()), Implementation::setImplementedAlgorithm);
+
+        // Pattern Relations
+        mapper.createTypeMap(PatternRelation.class, PatternRelationDto.class)
+                .addMapping(e -> e.getAlgorithm().getId(), PatternRelationDto::setAlgorithmId);
+        mapper.createTypeMap(PatternRelationDto.class, PatternRelation.class)
+                .addMapping(e -> newAlgorithmWithId(e.getAlgorithmId()), PatternRelation::setAlgorithm);
+    }
+
+    private static Algorithm newAlgorithmWithId(UUID id) {
+        var algo = new Algorithm();
+        algo.setId(id);
+        return algo;
     }
 }

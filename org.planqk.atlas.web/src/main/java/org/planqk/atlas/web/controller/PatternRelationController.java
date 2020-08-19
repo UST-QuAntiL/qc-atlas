@@ -136,7 +136,7 @@ public class PatternRelationController {
         }
 
         // Convert Dto to PatternRelation by using content from the database
-        Algorithm algorithm = algorithmService.findById(relationDto.getAlgorithm().getId());
+        Algorithm algorithm = algorithmService.findById(relationDto.getAlgorithmId());
         PatternRelationType patternRelationType = patternRelationTypeService.findById(relationDto.getPatternRelationType().getId());
         patternRelation.setAlgorithm(algorithm);
         patternRelation.setPattern(relationDto.getPattern());

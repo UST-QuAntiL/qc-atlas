@@ -26,7 +26,7 @@ public class PatternRelationDto {
     @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
             message = "Algorithm must not be null!")
     @EqualsAndHashCode.Exclude
-    private AlgorithmDto algorithm;
+    private UUID algorithmId;
 
     @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
             message = "Pattern-Relations must have a URI!")

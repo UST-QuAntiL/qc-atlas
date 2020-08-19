@@ -121,7 +121,6 @@ public class AlgorithmController {
 
     private final LinkingService linkingService;
 
-
     //    private final TagAssembler tagAssembler;
 
     private final ComputeResourcePropertyMixin computeResourcePropertyMixin;
@@ -231,7 +230,7 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
                     description = "Algorithm or publication with given ids do not exist or " +
-                    "no relation between algorithm and publication")
+                            "no relation between algorithm and publication")
     }, description = "Delete a reference to a publication of the algorithm.")
     @DeleteMapping("/{algoId}/" + Constants.PUBLICATIONS + "/{publicationId}")
     public ResponseEntity<Void> deletePublicationReferenceFromAlgorithm(
@@ -629,10 +628,11 @@ public class AlgorithmController {
         return algoRelationService.save(resource);
     }
 
+    // TODO CHECK IF THIS STILL WORKS
     private PatternRelation savePatternRelationFromDto(Algorithm algorithm, PatternRelationDto relationDto) {
         // always use current state of this algorithm/pattern type and do not overwrite when saving relations
         var patternRelationType = patternRelationTypeService.findById(relationDto.getPatternRelationType().getId());
-        relationDto.setAlgorithm(ModelMapperUtils.convert(algorithm, AlgorithmDto.class));
+        relationDto.setAlgorithmId(algorithm.getId());
         relationDto.setPatternRelationType(ModelMapperUtils.convert(patternRelationType, PatternRelationTypeDto.class));
 
         return patternRelationService.save(ModelMapperUtils.convert(relationDto, PatternRelation.class));
