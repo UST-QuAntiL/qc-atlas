@@ -26,6 +26,7 @@ import java.util.UUID;
 import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.core.services.ImplementationService;
+import org.planqk.atlas.core.services.LinkingService;
 import org.planqk.atlas.core.services.PublicationService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.mixin.PublicationMixin;
@@ -77,6 +78,8 @@ public class PublicationControllerTest {
     private AlgorithmService algorithmService;
     @MockBean
     private ImplementationService implementationService;
+    @MockBean
+    private LinkingService linkingService;
 
     @Autowired
     private MockMvc mockMvc;
