@@ -23,9 +23,11 @@ import java.util.List;
 import java.util.UUID;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 
 import org.planqk.atlas.core.model.ComputationModel;
 import org.planqk.atlas.core.model.Sketch;
+import org.planqk.atlas.web.utils.ValidationGroups;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -44,9 +46,12 @@ import org.springframework.hateoas.server.core.Relation;
         @JsonSubTypes.Type(value = QuantumAlgorithmDto.class, name = "HYBRID")})
 @Relation(itemRelation = "algorithm", collectionRelation = "algorithms")
 public class AlgorithmDto {
+    @NotNull(groups = {ValidationGroups.Update.class}, message = "An id is required to perform an update")
+    @Null(groups = {ValidationGroups.Create.class}, message = "The id must be null for creating an algorithm")
     private UUID id;
 
-    @NotNull(message = "Algorithm-Name must not be null!")
+    @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
+            message = "Algorithm-Name must not be null!")
     private String name;
 
     private String acronym;
@@ -67,6 +72,7 @@ public class AlgorithmDto {
 
     private String assumptions;
 
-    @NotNull(message = "Computational-Model must not be null!")
+    @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
+            message = "Computational-Model must not be null!")
     private ComputationModel computationModel;
 }

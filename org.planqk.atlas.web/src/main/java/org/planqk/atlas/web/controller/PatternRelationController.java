@@ -21,8 +21,6 @@ package org.planqk.atlas.web.controller;
 import java.util.Objects;
 import java.util.UUID;
 
-import javax.validation.Valid;
-
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.model.PatternRelationType;
@@ -33,6 +31,7 @@ import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.PatternRelationDto;
 import org.planqk.atlas.web.linkassembler.PatternRelationAssembler;
 import org.planqk.atlas.web.utils.RestUtils;
+import org.planqk.atlas.web.utils.ValidationGroups;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -44,6 +43,7 @@ import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -77,8 +77,21 @@ public class PatternRelationController {
             "other pattern relation type attributes will not change.")
     @PostMapping()
     public HttpEntity<EntityModel<PatternRelationDto>> createPatternRelation(
-            @Valid @RequestBody PatternRelationDto relationDto) {
+            @Validated(ValidationGroups.Create.class) @RequestBody PatternRelationDto relationDto) {
         return new ResponseEntity<>(handlePatternRelationUpdate(relationDto, null), HttpStatus.CREATED);
+    }
+
+    @Operation(operationId = "updatePatternRelationTypeByPattern", responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404")
+    }, description = "Update a reference to a pattern. " +
+            "Custom ID will be ignored. For pattern relation type only ID is required, " +
+            "other pattern relation type attributes will not change.")
+    @PutMapping()
+    public HttpEntity<EntityModel<PatternRelationDto>> updatePatternRelationType(
+            @Validated(ValidationGroups.Update.class) @RequestBody PatternRelationDto relationDto) {
+        return ResponseEntity.ok(handlePatternRelationUpdate(relationDto, relationDto.getId()));
     }
 
     @Operation(operationId = "getAllPatternRelationTypes", responses = {
@@ -103,20 +116,6 @@ public class PatternRelationController {
     public HttpEntity<EntityModel<PatternRelationDto>> getPatternRelation(@PathVariable UUID id) {
         var patternRelation = patternRelationService.findById(id);
         return ResponseEntity.ok(patternRelationAssembler.toModel(patternRelation));
-    }
-
-    @Operation(operationId = "updatePatternRelationTypeByPattern", responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404")
-    }, description = "Update a reference to a pattern. " +
-            "Custom ID will be ignored. For pattern relation type only ID is required, " +
-            "other pattern relation type attributes will not change.")
-    @PutMapping("/{id}")
-    public HttpEntity<EntityModel<PatternRelationDto>> updatePatternRelationType(
-            @PathVariable UUID id,
-            @Valid @RequestBody PatternRelationDto relationDto) {
-        return ResponseEntity.ok(handlePatternRelationUpdate(relationDto, id));
     }
 
     @Operation(responses = {

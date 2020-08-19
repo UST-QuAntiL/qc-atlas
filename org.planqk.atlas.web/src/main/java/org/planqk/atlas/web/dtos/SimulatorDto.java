@@ -11,8 +11,4 @@ import org.springframework.hateoas.server.core.Relation;
 @Relation(itemRelation = "simulator", collectionRelation = "simulators")
 public class SimulatorDto extends ComputeResourceDto {
 
-    private boolean localExecution;
-
-    private String licence;
-
 }

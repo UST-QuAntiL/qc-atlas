@@ -23,8 +23,10 @@ import java.util.UUID;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 
 import org.planqk.atlas.core.model.ComputeResourcePropertyDataType;
+import org.planqk.atlas.web.utils.ValidationGroups;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -39,11 +41,13 @@ import org.springframework.hateoas.server.core.Relation;
 @Relation(itemRelation = "computeResourcePropertyType", collectionRelation = "computeResourcePropertyTypes")
 public class ComputeResourcePropertyTypeDto {
 
+    @NotNull(groups = {ValidationGroups.Update.class}, message = "An id is required to perform an update")
+    @Null(groups = {ValidationGroups.Create.class}, message = "The id must be null for creating a compute resource property type")
     private UUID id;
 
-    @NotEmpty
+    @NotEmpty(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class})
     private String name;
-    @NotNull
+    @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class})
     private ComputeResourcePropertyDataType datatype;
     private String description;
 }

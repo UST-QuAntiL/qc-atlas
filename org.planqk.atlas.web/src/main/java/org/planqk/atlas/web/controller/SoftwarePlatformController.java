@@ -20,8 +20,6 @@ package org.planqk.atlas.web.controller;
 
 import java.util.UUID;
 
-import javax.validation.Valid;
-
 import org.planqk.atlas.core.model.SoftwarePlatform;
 import org.planqk.atlas.core.services.SoftwarePlatformService;
 import org.planqk.atlas.web.Constants;
@@ -36,10 +34,10 @@ import org.planqk.atlas.web.linkassembler.SoftwarePlatformAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
+import org.planqk.atlas.web.utils.ValidationGroups;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -48,6 +46,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -97,7 +96,7 @@ public class SoftwarePlatformController {
             "Custom ID will be ignored.")
     @PostMapping()
     public ResponseEntity<EntityModel<SoftwarePlatformDto>> createSoftwarePlatform(
-            @Valid @RequestBody SoftwarePlatformDto platformDto) {
+            @Validated(ValidationGroups.Create.class) @RequestBody SoftwarePlatformDto platformDto) {
         var savedPlatform = softwarePlatformService.save(ModelMapperUtils.convert(platformDto, SoftwarePlatform.class));
         return new ResponseEntity<>(softwarePlatformAssembler.toModel(savedPlatform), HttpStatus.CREATED);
     }
@@ -110,12 +109,12 @@ public class SoftwarePlatformController {
             "References to sub-objects (e.g. a compute resource) are not updated via this operation - " +
             "use the corresponding sub-route for updating them (e.g. /software-platforms/{id}/compute-resources). " +
             "Custom ID will be ignored.")
-    @PutMapping("/{id}")
+    @PutMapping()
     public ResponseEntity<EntityModel<SoftwarePlatformDto>> updateSoftwarePlatform(
-            @PathVariable UUID id,
-            @Valid @RequestBody SoftwarePlatformDto softwarePlatformDto) {
+            @Validated(ValidationGroups.Update.class) @RequestBody SoftwarePlatformDto softwarePlatformDto) {
         var softwarePlatform = softwarePlatformService
-                .update(id, ModelMapperUtils.convert(softwarePlatformDto, SoftwarePlatform.class));
+                .update(softwarePlatformDto.getId(),
+                        ModelMapperUtils.convert(softwarePlatformDto, SoftwarePlatform.class));
         return ResponseEntity.ok(softwarePlatformAssembler.toModel(softwarePlatform));
     }
 

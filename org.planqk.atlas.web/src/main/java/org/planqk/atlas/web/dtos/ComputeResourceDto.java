@@ -3,8 +3,10 @@ package org.planqk.atlas.web.dtos;
 import java.util.UUID;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 
 import org.planqk.atlas.core.model.QuantumComputationModel;
+import org.planqk.atlas.web.utils.ValidationGroups;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import lombok.Data;
@@ -20,9 +22,12 @@ import org.springframework.hateoas.server.core.Relation;
 @Relation(itemRelation = "computeResource", collectionRelation = "computeResources")
 public class ComputeResourceDto {
 
+    @NotNull(groups = {ValidationGroups.Update.class}, message = "An id is required to perform an update")
+    @Null(groups = {ValidationGroups.Create.class}, message = "The id must be null for creating a compute resource")
     private UUID id;
 
-    @NotNull(message = "Compute Resource Name must not be null!")
+    @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
+            message = "Compute Resource Name must not be null!")
     private String name;
 
     private String vendor;

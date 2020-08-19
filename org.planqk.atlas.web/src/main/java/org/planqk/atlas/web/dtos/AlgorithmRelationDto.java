@@ -22,6 +22,9 @@ package org.planqk.atlas.web.dtos;
 import java.util.UUID;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
+
+import org.planqk.atlas.web.utils.ValidationGroups;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -36,17 +39,22 @@ import org.springframework.hateoas.server.core.Relation;
 @Relation(itemRelation = "algorithmRelation", collectionRelation = "algorithmRelations")
 public class AlgorithmRelationDto {
 
+    @NotNull(groups = {ValidationGroups.Update.class}, message = "An id is required to perform an update")
+    @Null(groups = {ValidationGroups.Create.class}, message = "The id must be null for creating an algorithm relation")
     private UUID id;
 
-    @NotNull(message = "Source Algorithm must not be null!")
+    @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
+            message = "Source Algorithm must not be null!")
     @EqualsAndHashCode.Exclude
     private AlgorithmDto sourceAlgorithm;
 
-    @NotNull(message = "Target Algorithm must not be null!")
+    @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
+            message = "Target Algorithm must not be null!")
     @EqualsAndHashCode.Exclude
     private AlgorithmDto targetAlgorithm;
 
-    @NotNull(message = "AlgorithmRelationType must not be null!")
+    @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
+            message = "AlgorithmRelationType must not be null!")
     private AlgoRelationTypeDto algoRelationType;
 
     private String description;

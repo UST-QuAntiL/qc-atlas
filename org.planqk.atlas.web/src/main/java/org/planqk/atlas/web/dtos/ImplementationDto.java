@@ -23,6 +23,9 @@ import java.net.URL;
 import java.util.UUID;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
+
+import org.planqk.atlas.web.utils.ValidationGroups;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -40,9 +43,12 @@ import org.springframework.hateoas.server.core.Relation;
 @Relation(itemRelation = "implementation", collectionRelation = "implementations")
 public class ImplementationDto {
 
+    @NotNull(groups = {ValidationGroups.Update.class}, message = "An id is required to perform an update")
+    @Null(groups = {ValidationGroups.Create.class}, message = "The id must be null for creating an implementation")
     private UUID id;
 
-    @NotNull(message = "Implementation-Name must not be null!")
+    @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
+            message = "Implementation-Name must not be null!")
     private String name;
     @Schema(description = "URL of implementation", example = "http://www.github.com/planqk", required = false)
     private URL link;

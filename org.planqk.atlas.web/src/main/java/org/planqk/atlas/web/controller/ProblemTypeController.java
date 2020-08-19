@@ -20,8 +20,6 @@ package org.planqk.atlas.web.controller;
 
 import java.util.UUID;
 
-import javax.validation.Valid;
-
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.services.ProblemTypeService;
 import org.planqk.atlas.web.Constants;
@@ -30,19 +28,17 @@ import org.planqk.atlas.web.linkassembler.ProblemTypeAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
-import org.planqk.atlas.web.utils.RestUtils;
+import org.planqk.atlas.web.utils.ValidationGroups;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -54,10 +50,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@io.swagger.v3.oas.annotations.tags.Tag(name = Constants.TAG_PROBLEM_TYPE)
+@Tag(name = Constants.TAG_PROBLEM_TYPE)
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/" + Constants.API_VERSION + "/" + Constants.PROBLEM_TYPES)
@@ -85,7 +80,7 @@ public class ProblemTypeController {
     }, description = "Custom ID will be ignored.")
     @PostMapping()
     public ResponseEntity<EntityModel<ProblemTypeDto>> createProblemType(
-            @Validated @RequestBody ProblemTypeDto problemTypeDto) {
+            @Validated(ValidationGroups.Create.class) @RequestBody ProblemTypeDto problemTypeDto) {
         var savedProblemType = problemTypeService.save(ModelMapperUtils.convert(problemTypeDto, ProblemType.class));
         return new ResponseEntity<>(problemTypeAssembler.toModel(savedProblemType), HttpStatus.CREATED);
     }
@@ -95,12 +90,11 @@ public class ProblemTypeController {
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Problem type with given id doesn't exist")
     }, description = "Custom ID will be ignored.")
-    @PutMapping("/{problemTypeId}")
+    @PutMapping()
     public ResponseEntity<EntityModel<ProblemTypeDto>> updateProblemType(
-            @PathVariable UUID problemTypeId,
-            @Validated @RequestBody ProblemTypeDto problemTypeDto) {
+            @Validated(ValidationGroups.Update.class) @RequestBody ProblemTypeDto problemTypeDto) {
         var updatedProblemType = problemTypeService.update(
-                problemTypeId, ModelMapperUtils.convert(problemTypeDto, ProblemType.class));
+                problemTypeDto.getId(), ModelMapperUtils.convert(problemTypeDto, ProblemType.class));
         return ResponseEntity.ok(problemTypeAssembler.toModel(updatedProblemType));
     }
 
@@ -132,6 +126,7 @@ public class ProblemTypeController {
             @ApiResponse(responseCode = "404", description = "Problem type with given id doesn't exist")
     }, description = "")
     @GetMapping("/{problemTypeId}/" + Constants.PROBLEM_TYPE_PARENT_LIST)
+    @ListParametersDoc
     public ResponseEntity<CollectionModel<EntityModel<ProblemTypeDto>>> getProblemTypeParentList(
             @PathVariable UUID problemTypeId) {
         var problemTypeParentList = problemTypeService.getParentList(problemTypeId);
