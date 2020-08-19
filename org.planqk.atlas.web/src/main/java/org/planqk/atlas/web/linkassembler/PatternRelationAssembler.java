@@ -31,7 +31,7 @@ public class PatternRelationAssembler extends GenericLinkAssembler<PatternRelati
     }
 
     private UUID getAlgorithmId(EntityModel<PatternRelationDto> resource) {
-        return resource.getContent().getAlgorithm().getId();
+        return resource.getContent().getAlgorithmId();
     }
 
     private UUID getTypeId(EntityModel<PatternRelationDto> resource) {

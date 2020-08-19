@@ -27,7 +27,6 @@ import javax.validation.constraints.Null;
 
 import org.planqk.atlas.web.utils.ValidationGroups;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -47,6 +46,8 @@ public class ImplementationDto {
     @Null(groups = {ValidationGroups.Create.class}, message = "The id must be null for creating an implementation")
     private UUID id;
 
+    private UUID implementedAlgorithmId;
+
     @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
             message = "Implementation-Name must not be null!")
     private String name;
@@ -60,7 +61,4 @@ public class ImplementationDto {
     private String assumptions;
     private String parameter;
     private String dependencies;
-
-    @JsonIgnore
-    private AlgorithmDto implementedAlgorithm;
 }

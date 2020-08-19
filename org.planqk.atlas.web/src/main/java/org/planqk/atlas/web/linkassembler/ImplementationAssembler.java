@@ -2,15 +2,10 @@ package org.planqk.atlas.web.linkassembler;
 
 import java.util.UUID;
 
-import org.planqk.atlas.web.Constants;
-import org.planqk.atlas.web.controller.AlgorithmController;
-import org.planqk.atlas.web.controller.ImplementationController;
 import org.planqk.atlas.web.dtos.ImplementationDto;
 
 import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Component;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Component
 public class ImplementationAssembler extends GenericLinkAssembler<ImplementationDto> {
@@ -37,6 +32,6 @@ public class ImplementationAssembler extends GenericLinkAssembler<Implementation
     }
 
     public UUID getAlgId(EntityModel<ImplementationDto> resource) {
-        return resource.getContent().getImplementedAlgorithm().getId();
+        return resource.getContent().getImplementedAlgorithmId();
     }
 }

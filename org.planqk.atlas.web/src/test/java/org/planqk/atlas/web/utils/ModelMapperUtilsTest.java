@@ -15,7 +15,6 @@ import org.planqk.atlas.core.model.QuantumAlgorithm;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.PatternRelationDto;
 import org.planqk.atlas.web.dtos.ProblemTypeDto;
-import org.planqk.atlas.web.dtos.QuantumAlgorithmDto;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,7 +24,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class ModelMapperUtilsTest {
 
@@ -148,15 +146,8 @@ public class ModelMapperUtilsTest {
         relation.setDescription("Description");
 
         PatternRelationDto dto = ModelMapperUtils.convert(relation, PatternRelationDto.class);
-        AlgorithmDto dtoAlg = dto.getAlgorithm();
 
         assertEquals(dto.getDescription(), relation.getDescription());
         assertEquals(dto.getPattern(), relation.getPattern());
-        assertTrue(dtoAlg instanceof QuantumAlgorithmDto);
-        if (dtoAlg instanceof QuantumAlgorithmDto) {
-            QuantumAlgorithmDto quantumAlgDto = (QuantumAlgorithmDto) dtoAlg;
-            assertEquals(quantumAlgDto.isNisqReady(), alg.isNisqReady());
-            assertEquals(quantumAlgDto.getSpeedUp(), alg.getSpeedUp());
-        }
     }
 }
