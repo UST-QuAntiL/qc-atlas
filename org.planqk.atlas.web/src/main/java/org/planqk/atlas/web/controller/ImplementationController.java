@@ -100,7 +100,6 @@ public class ImplementationController {
     private final SoftwarePlatformAssembler softwarePlatformAssembler;
     private final TagAssembler tagAssembler;
 
-
     private final PublicationMixin publicationMixin;
     private final ComputeResourcePropertyMixin computeResourcePropertyMixin;
 
@@ -135,19 +134,19 @@ public class ImplementationController {
     }
 
     @Operation(operationId = "getTagsOfImplementation",
-            responses = { @ApiResponse(responseCode = "200") })
+            responses = {@ApiResponse(responseCode = "200")})
     @GetMapping("/{implId}/" + Constants.TAGS)
     public HttpEntity<CollectionModel<EntityModel<TagDto>>> getTags(@PathVariable UUID algoId, @PathVariable UUID implId) {
-       Implementation implementation = implementationService.findById(implId);
-       Set<Tag> tags = implementation.getTags();
+        Implementation implementation = implementationService.findById(implId);
+        Set<Tag> tags = implementation.getTags();
         return ResponseEntity.ok(tagAssembler.toModel(tags));
     }
 
     @Operation(operationId = "addTagToImplementation",
             responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "404")})
     @PutMapping("/{implId}/" + Constants.TAGS)
-    public HttpEntity<CollectionModel<EntityModel<TagDto>>> addTag(@PathVariable UUID implId,
-                                                                   @Valid @RequestBody TagDto tagDto) {
+    public HttpEntity<Void> addTag(@PathVariable UUID implId,
+                                   @Valid @RequestBody TagDto tagDto) {
         Implementation implementation = implementationService.findById(implId);
         Tag tag = tagService.findByName(tagDto.getValue());
 
@@ -157,14 +156,14 @@ public class ImplementationController {
             implementation.addTag(tag);
         }
         implementationService.update(implId, implementation);
-        return ResponseEntity.ok(tagAssembler.toModel(implementation.getTags()));
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @Operation(operationId = "removeTagFromImplementation",
             responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404")})
     @DeleteMapping("/{implId}/" + Constants.TAGS)
-    public HttpEntity<CollectionModel<EntityModel<TagDto>>> removeTag(@PathVariable UUID implId,
-                                                                      @Valid @RequestBody TagDto tagDto) {
+    public HttpEntity<Void> removeTag(@PathVariable UUID implId,
+                                      @Valid @RequestBody TagDto tagDto) {
         Implementation implementation = implementationService.findById(implId);
         Tag tag = tagService.findByName(tagDto.getValue());
 
@@ -174,7 +173,7 @@ public class ImplementationController {
             implementation.removeTag(tag);
         }
         implementationService.update(implId, implementation);
-        return ResponseEntity.ok(tagAssembler.toModel(implementation.getTags()));
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", description = "Algorithm doesn't exist")})
