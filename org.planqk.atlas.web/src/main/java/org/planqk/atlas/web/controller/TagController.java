@@ -82,7 +82,7 @@ public class TagController {
     @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404")})
     @GetMapping(value = "/{value}")
     public HttpEntity<EntityModel<TagDto>> getTag(@PathVariable String value) {
-        Tag tag = this.tagService.findByName(value);
+        Tag tag = this.tagService.findByValue(value);
         var tmp2 = tagAssembler.toModel(tag);
         ResponseEntity tmp = new ResponseEntity<>(tmp2, HttpStatus.OK);
         return tmp;
@@ -91,7 +91,7 @@ public class TagController {
     @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping(value = "/{value}/" + Constants.ALGORITHMS)
     public HttpEntity<CollectionModel<EntityModel<AlgorithmDto>>> getAlgorithmsOfTag(@PathVariable String value) {
-        Tag tag = this.tagService.findByName(value);
+        Tag tag = this.tagService.findByValue(value);
         CollectionModel<EntityModel<AlgorithmDto>> algorithms = algorithmAssembler.toModel(tag.getImplementations());
         algorithmAssembler.addLinks(algorithms.getContent());
         tagAssembler.addAlgorithmLink(algorithms, tag.getValue());
@@ -102,7 +102,7 @@ public class TagController {
     @GetMapping(value = "/{value}/" + Constants.IMPLEMENTATIONS)
     public HttpEntity<CollectionModel<EntityModel<ImplementationDto>>> getImplementationsOfTag(
             @PathVariable String value) {
-        Tag tag = this.tagService.findByName(value);
+        Tag tag = this.tagService.findByValue(value);
         CollectionModel<EntityModel<ImplementationDto>> implementations = implementationAssembler.toModel(tag.getImplementations());
         implementationAssembler.addLinks(implementations.getContent());
         tagAssembler.addImplementationLink(implementations, tag.getValue());

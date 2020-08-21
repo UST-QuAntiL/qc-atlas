@@ -19,7 +19,7 @@
 
 package org.planqk.atlas.core.services;
 
-import java.util.Set;
+import java.util.UUID;
 
 import org.planqk.atlas.core.model.Tag;
 import org.springframework.data.domain.Page;
@@ -27,17 +27,27 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 public interface TagService {
-    Tag findByName(String name);
-
-    Set<Tag> findByCategory(String category);
-
-    Page<Tag> findAllByContent(String search, Pageable pageable);
 
     @Transactional
     Tag save(Tag tag);
 
     Page<Tag> findAll(Pageable pageable);
 
+    Page<Tag> findAllByContent(String search, Pageable pageable);
+
+    Page<Tag> findAllByCategory(String category, Pageable pageable);
+
+    Tag findByValue(String value);
+
     @Transactional
-    Set<Tag> createOrUpdateAll(Set<Tag> algorithmTags);
+    void addTagToAlgorithm(UUID algorithmId, Tag tag);
+
+    @Transactional
+    void removeTagFromAlgorithm(UUID algorithmId, Tag tag);
+
+    @Transactional
+    void addTagToImplementation(UUID implementationId, Tag tag);
+
+    @Transactional
+    void removeTagFromImplementation(UUID implementationId, Tag tag);
 }

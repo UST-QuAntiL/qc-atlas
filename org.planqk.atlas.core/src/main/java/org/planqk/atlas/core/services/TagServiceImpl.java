@@ -19,11 +19,12 @@
 
 package org.planqk.atlas.core.services;
 
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.UUID;
 
 import lombok.AllArgsConstructor;
+
+import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.repository.TagRepository;
 import org.springframework.data.domain.Page;
@@ -35,25 +36,14 @@ import org.springframework.transaction.annotation.Transactional;
 @AllArgsConstructor
 public class TagServiceImpl implements TagService {
 
-    private TagRepository tagRepository;
+    private final TagRepository tagRepository;
+
+    private final AlgorithmService algorithmService;
+
+    private final ImplementationService implementationService;
 
     @Override
-    public Tag findByName(String value) {
-        return tagRepository.findByValue(value);
-    }
-
-    @Override
-    public Set<Tag> findByCategory(String category) {
-        return tagRepository.findByCategory(category);
-    }
-
-    @Override
-    public Page<Tag> findAllByContent(String search, Pageable pageable) {
-        return tagRepository.findByValueContainingIgnoreCaseOrCategoryContainingIgnoreCase(search, search, pageable);
-    }
-
     @Transactional
-    @Override
     public Tag save(Tag tag) {
         return tagRepository.save(tag);
     }
@@ -63,10 +53,58 @@ public class TagServiceImpl implements TagService {
         return tagRepository.findAll(pageable);
     }
 
-    @Transactional
     @Override
-    public Set<Tag> createOrUpdateAll(Set<Tag> algorithmTags) {
-        return algorithmTags.stream().map(this::save).collect(Collectors.toSet());
+    public Page<Tag> findAllByContent(String search, Pageable pageable) {
+        return tagRepository.findByValueContainingIgnoreCaseOrCategoryContainingIgnoreCase(search, search, pageable);
+    }
+
+    @Override
+    public Page<Tag> findAllByCategory(String category, Pageable pageable) {
+        return tagRepository.findByCategory(category, pageable);
+    }
+
+    @Override
+    public Tag findByValue(String value) {
+        return tagRepository.findByValue(value);
+    }
+
+    @Override
+    @Transactional
+    public void addTagToAlgorithm(UUID algorithmId, Tag tag) {
+        Algorithm algorithm = algorithmService.findById(algorithmId);
+
+        algorithm.addTag(createTagIfNotExists(tag));
+    }
+
+    @Override
+    @Transactional
+    public void removeTagFromAlgorithm(UUID algorithmId, Tag tag) {
+        Algorithm algorithm = algorithmService.findById(algorithmId);
+
+        algorithm.removeTag(tag);
+    }
+
+    @Override
+    @Transactional
+    public void addTagToImplementation(UUID implementationId, Tag tag) {
+        Implementation implementation = implementationService.findById(implementationId);
+
+        implementation.addTag(createTagIfNotExists(tag));
+    }
+
+    @Override
+    @Transactional
+    public void removeTagFromImplementation(UUID implementationId, Tag tag) {
+        Implementation implementation = implementationService.findById(implementationId);
+
+        implementation.removeTag(tag);
+    }
+
+    private Tag createTagIfNotExists(Tag tag) {
+        if (tagRepository.existsTagByValue(tag.getValue())) {
+            return tag;
+        }
+        return save(tag);
     }
 }
 
