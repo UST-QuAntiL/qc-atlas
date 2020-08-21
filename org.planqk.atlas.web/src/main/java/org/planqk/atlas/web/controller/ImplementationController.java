@@ -29,10 +29,12 @@ import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.ComputeResourceProperty;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.SoftwarePlatform;
+import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.core.services.ComputeResourcePropertyService;
 import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.core.services.SoftwarePlatformService;
+import org.planqk.atlas.core.services.TagService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.mixin.ComputeResourcePropertyMixin;
 import org.planqk.atlas.web.controller.mixin.PublicationMixin;
@@ -40,10 +42,12 @@ import org.planqk.atlas.web.dtos.ComputeResourcePropertyDto;
 import org.planqk.atlas.web.dtos.ImplementationDto;
 import org.planqk.atlas.web.dtos.PublicationDto;
 import org.planqk.atlas.web.dtos.SoftwarePlatformDto;
+import org.planqk.atlas.web.dtos.TagDto;
 import org.planqk.atlas.web.linkassembler.ComputeResourcePropertyAssembler;
 import org.planqk.atlas.web.linkassembler.ImplementationAssembler;
 import org.planqk.atlas.web.linkassembler.PublicationAssembler;
 import org.planqk.atlas.web.linkassembler.SoftwarePlatformAssembler;
+import org.planqk.atlas.web.linkassembler.TagAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
@@ -73,8 +77,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-//import org.planqk.atlas.web.linkassembler.TagAssembler;
-
 /**
  * Controller to access and manipulate implementations of quantum algorithms.
  */
@@ -90,11 +92,13 @@ public class ImplementationController {
     private final ImplementationService implementationService;
     private final AlgorithmService algorithmService;
     private final SoftwarePlatformService softwarePlatformService;
+    private final TagService tagService;
 
     private final ImplementationAssembler implementationAssembler;
     private final PublicationAssembler publicationAssembler;
     private final ComputeResourcePropertyAssembler computeResourcePropertyAssembler;
     private final SoftwarePlatformAssembler softwarePlatformAssembler;
+    private final TagAssembler tagAssembler;
 
     private final PublicationMixin publicationMixin;
     private final ComputeResourcePropertyMixin computeResourcePropertyMixin;
@@ -129,13 +133,48 @@ public class ImplementationController {
         return new ResponseEntity<>(implementationAssembler.toModel(input), HttpStatus.CREATED);
     }
 
-//    @Operation(responses = { @ApiResponse(responseCode = "200") })
-//    @GetMapping("/{implId}/" + Constants.TAGS)
-//    public HttpEntity<CollectionModel<EntityModel<TagDto>>> getTags(@PathVariable UUID algoId, @PathVariable UUID implId) {
-//        Implementation implementation = implementationService.findById(implId);
-//         Set<Tag> tags = implementation.getTags();
-//        return ResponseEntity.ok(tagAssembler.toModel(tags));
-//    }
+    @Operation(operationId = "getTagsOfImplementation",
+            responses = {@ApiResponse(responseCode = "200")})
+    @GetMapping("/{implId}/" + Constants.TAGS)
+    public HttpEntity<CollectionModel<EntityModel<TagDto>>> getTags(@PathVariable UUID algoId, @PathVariable UUID implId) {
+        Implementation implementation = implementationService.findById(implId);
+        Set<Tag> tags = implementation.getTags();
+        return ResponseEntity.ok(tagAssembler.toModel(tags));
+    }
+
+    @Operation(operationId = "addTagToImplementation",
+            responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "404")})
+    @PutMapping("/{implId}/" + Constants.TAGS)
+    public HttpEntity<Void> addTag(@PathVariable UUID implId,
+                                   @Valid @RequestBody TagDto tagDto) {
+        Implementation implementation = implementationService.findById(implId);
+        Tag tag = tagService.findByName(tagDto.getValue());
+
+        if (tag == null) {
+            implementation.addTag(ModelMapperUtils.convert(tagDto, Tag.class));
+        } else {
+            implementation.addTag(tag);
+        }
+        implementationService.update(implId, implementation);
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @Operation(operationId = "removeTagFromImplementation",
+            responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404")})
+    @DeleteMapping("/{implId}/" + Constants.TAGS)
+    public HttpEntity<Void> removeTag(@PathVariable UUID implId,
+                                      @Valid @RequestBody TagDto tagDto) {
+        Implementation implementation = implementationService.findById(implId);
+        Tag tag = tagService.findByName(tagDto.getValue());
+
+        if (tag == null) {
+            implementation.removeTag(ModelMapperUtils.convert(tagDto, Tag.class));
+        } else {
+            implementation.removeTag(tag);
+        }
+        implementationService.update(implId, implementation);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
     @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", description = "Algorithm doesn't exist")})
     @DeleteMapping("/{implId}")

@@ -19,18 +19,25 @@
 
 package org.planqk.atlas.core.services;
 
-// tags will be used in the future
+import java.util.Set;
+
+import org.planqk.atlas.core.model.Tag;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
+
 public interface TagService {
-//    List<Tag> findByName(String name);
-//
-//    @Transactional
-//    Tag save(Tag tag);
-//
-//    Page<Tag> findAll(Pageable pageable);
-//
-//    @Transactional(readOnly = true)
-//    Tag getTagById(UUID tagId);
-//
-//    @Transactional
-//    Set<Tag> createOrUpdateAll(Set<Tag> algorithmTags);
+    Tag findByName(String name);
+
+    Set<Tag> findByCategory(String category);
+
+    Page<Tag> findAllByContent(String search, Pageable pageable);
+
+    @Transactional
+    Tag save(Tag tag);
+
+    Page<Tag> findAll(Pageable pageable);
+
+    @Transactional
+    Set<Tag> createOrUpdateAll(Set<Tag> algorithmTags);
 }

@@ -32,6 +32,7 @@ import org.planqk.atlas.core.model.ApplicationArea;
 import org.planqk.atlas.core.model.ComputeResourceProperty;
 import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.model.ProblemType;
+import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.services.AlgoRelationService;
 import org.planqk.atlas.core.services.AlgoRelationTypeService;
 import org.planqk.atlas.core.services.AlgorithmService;
@@ -40,6 +41,7 @@ import org.planqk.atlas.core.services.ComputeResourcePropertyService;
 import org.planqk.atlas.core.services.PatternRelationService;
 import org.planqk.atlas.core.services.PatternRelationTypeService;
 import org.planqk.atlas.core.services.ProblemTypeService;
+import org.planqk.atlas.core.services.TagService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.mixin.ComputeResourcePropertyMixin;
 import org.planqk.atlas.web.controller.mixin.PublicationMixin;
@@ -51,6 +53,7 @@ import org.planqk.atlas.web.dtos.PatternRelationDto;
 import org.planqk.atlas.web.dtos.PatternRelationTypeDto;
 import org.planqk.atlas.web.dtos.ProblemTypeDto;
 import org.planqk.atlas.web.dtos.PublicationDto;
+import org.planqk.atlas.web.dtos.TagDto;
 import org.planqk.atlas.web.linkassembler.AlgorithmAssembler;
 import org.planqk.atlas.web.linkassembler.AlgorithmRelationAssembler;
 import org.planqk.atlas.web.linkassembler.ApplicationAreaAssembler;
@@ -58,6 +61,7 @@ import org.planqk.atlas.web.linkassembler.ComputeResourcePropertyAssembler;
 import org.planqk.atlas.web.linkassembler.PatternRelationAssembler;
 import org.planqk.atlas.web.linkassembler.ProblemTypeAssembler;
 import org.planqk.atlas.web.linkassembler.PublicationAssembler;
+import org.planqk.atlas.web.linkassembler.TagAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
@@ -106,10 +110,11 @@ public class AlgorithmController {
     private final PatternRelationTypeService patternRelationTypeService;
     private final ProblemTypeService problemTypeService;
     private final ApplicationAreaService applicationAreaService;
+    private final TagService tagService;
 
     private final ProblemTypeAssembler problemTypeAssembler;
     private final ApplicationAreaAssembler applicationAreaAssembler;
-    //    private final TagAssembler tagAssembler;
+    private final TagAssembler tagAssembler;
     private final AlgorithmAssembler algorithmAssembler;
     private final AlgorithmRelationAssembler algorithmRelationAssembler;
     private final PublicationAssembler publicationAssembler;
@@ -145,12 +150,47 @@ public class AlgorithmController {
         return ResponseEntity.ok(algorithmAssembler.toModel(updatedAlgorithm));
     }
 
-//    @Operation(responses = {@ApiResponse(responseCode = "200")})
-//    @GetMapping("/{id}/" + Constants.TAGS)
-//    public HttpEntity<CollectionModel<EntityModel<TagDto>>> getTags(@PathVariable UUID id) {
-//        Algorithm algorithm = algorithmService.findById(id);
-//        return ResponseEntity.ok(tagsAssembler.toModel(algorithm.getTags()));
-//    }
+    @Operation(operationId = "getTagsOfAlgorithm",
+            responses = {@ApiResponse(responseCode = "200")})
+    @GetMapping("/{algoId}/" + Constants.TAGS)
+    public HttpEntity<CollectionModel<EntityModel<TagDto>>> getTags(@PathVariable UUID algoId) {
+        Algorithm algorithm = algorithmService.findById(algoId);
+        return ResponseEntity.ok(tagAssembler.toModel(algorithm.getTags()));
+    }
+
+    @Operation(operationId = "addTagToAlgorithm",
+            responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "404")})
+    @PutMapping("/{algoId}/" + Constants.TAGS)
+    public HttpEntity<Void> addTag(@PathVariable UUID algoId,
+                                   @Valid @RequestBody TagDto tagDto) {
+        Algorithm algorithm = algorithmService.findById(algoId);
+        Tag tag = tagService.findByName(tagDto.getValue());
+
+        if (tag == null) {
+            algorithm.addTag(ModelMapperUtils.convert(tagDto, Tag.class));
+        } else {
+            algorithm.addTag(tag);
+        }
+        algorithmService.update(algoId, algorithm);
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @Operation(operationId = "removeTagFromAlgorithm",
+            responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404")})
+    @DeleteMapping("/{algoId}/" + Constants.TAGS)
+    public HttpEntity<Void> removeTag(@PathVariable UUID algoId,
+                                      @Valid @RequestBody TagDto tagDto) {
+        Algorithm algorithm = algorithmService.findById(algoId);
+        Tag tag = tagService.findByName(tagDto.getValue());
+
+        if (tag == null) {
+            algorithm.removeTag(ModelMapperUtils.convert(tagDto, Tag.class));
+        } else {
+            algorithm.removeTag(tag);
+        }
+        algorithmService.update(algoId, algorithm);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
