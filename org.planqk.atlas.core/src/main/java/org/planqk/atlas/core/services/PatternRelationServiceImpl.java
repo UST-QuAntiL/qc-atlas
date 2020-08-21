@@ -20,14 +20,11 @@
 package org.planqk.atlas.core.services;
 
 import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.Set;
 import java.util.UUID;
 
 import javax.transaction.Transactional;
 
 import org.planqk.atlas.core.model.PatternRelation;
-import org.planqk.atlas.core.repository.AlgorithmRepository;
 import org.planqk.atlas.core.repository.PatternRelationRepository;
 
 import lombok.AllArgsConstructor;
@@ -39,23 +36,22 @@ import org.springframework.stereotype.Service;
 @Service
 public class PatternRelationServiceImpl implements PatternRelationService {
 
-    private final String NO_RELATION_ERROR = "PatternRelation does not exist!";
+    private final String NO_RELATION_ERROR = "Pattern relation does not exist!";
 
     private final PatternRelationRepository patternRelationRepository;
     private final PatternRelationTypeService patternRelationTypeService;
-    private final AlgorithmRepository algorithmRepository;
 
     @Override
     @Transactional
-    public PatternRelation save(PatternRelation relation) {
-        // Validate input
-        validatePatternRelation(relation);
-        return patternRelationRepository.save(relation);
+    public PatternRelation save(PatternRelation patternRelation) {
+        var patternRelationType = patternRelationTypeService.findById(patternRelation.getPatternRelationType().getId());
+        patternRelation.setPatternRelationType(patternRelationType);
+        return patternRelationRepository.save(patternRelation);
     }
 
     @Override
-    public PatternRelation findById(UUID id) {
-        return patternRelationRepository.findById(id).orElseThrow(() -> new NoSuchElementException(NO_RELATION_ERROR));
+    public PatternRelation findById(UUID patternRelationId) {
+        return patternRelationRepository.findById(patternRelationId).orElseThrow(() -> new NoSuchElementException(NO_RELATION_ERROR));
     }
 
     @Override
@@ -64,33 +60,19 @@ public class PatternRelationServiceImpl implements PatternRelationService {
     }
 
     @Override
-    public Set<PatternRelation> findByAlgorithmId(UUID algoId) {
-        return patternRelationRepository.findByAlgorithmId(algoId, Pageable.unpaged()).toSet();
+    @Transactional
+    public PatternRelation update(PatternRelation patternRelation) {
+        PatternRelation persistedRelation = findById(patternRelation.getId());
+
+        persistedRelation.setPattern(patternRelation.getPattern());
+        persistedRelation.setDescription(patternRelation.getDescription());
+
+        return save(persistedRelation);
     }
 
     @Override
     @Transactional
-    public PatternRelation update(UUID id, PatternRelation relation) {
-        PatternRelation persistedRelation = patternRelationRepository.findById(id).orElseThrow(() -> new NoSuchElementException(NO_RELATION_ERROR));
-        // Update fields
-        persistedRelation.setPatternRelationType(patternRelationTypeService.createOrGet(relation.getPatternRelationType()));
-        persistedRelation.setPattern(relation.getPattern());
-        persistedRelation.setDescription(relation.getDescription());
-        return patternRelationRepository.save(persistedRelation);
-    }
-
-    @Override
-    @Transactional
-    public void deleteById(UUID id) {
-        patternRelationRepository.deleteById(id);
-    }
-
-    private void validatePatternRelation(PatternRelation relation) {
-        // Can't create PatternRelation if Algorithm is not described
-        if (Objects.isNull(relation.getAlgorithm().getId()) || algorithmRepository.findById(relation.getAlgorithm().getId()).isEmpty()) {
-            throw new NoSuchElementException("Algorithm for pattern relation does not exist!");
-        }
-
-        relation.setPatternRelationType(patternRelationTypeService.createOrGet(relation.getPatternRelationType()));
+    public void delete(UUID patternRelationId) {
+        patternRelationRepository.deleteById(patternRelationId);
     }
 }

@@ -107,7 +107,7 @@ public class PatternRelationTypeServiceTest extends AtlasDatabaseTestBase {
     void createType_updateType() {
         PatternRelationType storedType1 = service.save(type1);
         storedType1.setName(type1Updated.getName());
-        PatternRelationType updatedType1 = service.update(storedType1.getId(), storedType1);
+        PatternRelationType updatedType1 = service.update(storedType1);
         assertEquals(updatedType1.getId(), storedType1.getId());
         assertEquals(updatedType1.getName(), type1Updated.getName());
         assertTrue(repo.findById(updatedType1.getId()).isPresent());
@@ -115,9 +115,9 @@ public class PatternRelationTypeServiceTest extends AtlasDatabaseTestBase {
 
     @Test
     void updateType_notFound() {
-        assertThrows(NoSuchElementException.class, () -> {
-            service.update(UUID.randomUUID(), type1Updated);
-        });
+        type1Updated.setId(UUID.randomUUID());
+        assertThrows(NoSuchElementException.class, () ->
+            service.update(type1Updated));
     }
 
     @Test
@@ -152,41 +152,13 @@ public class PatternRelationTypeServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void createOrGet_get() {
-        PatternRelationType savedType = service.save(type1);
-
-        PatternRelationType getType = service.createOrGet(savedType);
-
-        assertEquals(savedType, getType);
-    }
-
-    @Test
-    void createOrGet_createWithNoId() {
-        PatternRelationType createType = service.createOrGet(type1);
-
-        assertFalse(Objects.isNull(createType.getId()));
-        assertTrue(repo.findById(createType.getId()).isPresent());
-    }
-
-    @Test
-    void createOrGet_createWithNoExistingId() {
-        UUID randomId = UUID.randomUUID();
-        type1.setId(randomId);
-        PatternRelationType createType = service.createOrGet(type1);
-
-        assertNotEquals(randomId, createType.getId());
-        assertFalse(Objects.isNull(createType.getId()));
-        assertTrue(repo.findById(createType.getId()).isPresent());
-    }
-
-    @Test
     void delete_success() {
-        PatternRelationType createType = service.createOrGet(type1);
+        PatternRelationType createType = service.save(type1);
 
         assertFalse(Objects.isNull(createType.getId()));
         assertTrue(repo.findById(createType.getId()).isPresent());
 
-        service.deleteById(createType.getId());
+        service.delete(createType.getId());
         assertTrue(repo.findById(createType.getId()).isEmpty());
     }
 
@@ -206,14 +178,14 @@ public class PatternRelationTypeServiceTest extends AtlasDatabaseTestBase {
         assertTrue(relationRepo.findById(storedRelation.getId()).isPresent());
 
         assertThrows(ConsistencyException.class, () -> {
-            service.deleteById(storedType.getId());
+            service.delete(storedType.getId());
         });
     }
 
     @Test
     void delete_noContent() {
         assertThrows(EmptyResultDataAccessException.class, () -> {
-            service.deleteById(UUID.randomUUID());
+            service.delete(UUID.randomUUID());
         });
     }
 }

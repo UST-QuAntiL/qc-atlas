@@ -207,7 +207,7 @@ public class PatternRelationServiceTest extends AtlasDatabaseTestBase {
     @Test
     void delete_noContent() {
         assertThrows(EmptyResultDataAccessException.class, () -> {
-            service.deleteById(UUID.randomUUID());
+            service.delete(UUID.randomUUID());
         });
     }
 
@@ -219,7 +219,7 @@ public class PatternRelationServiceTest extends AtlasDatabaseTestBase {
         PatternRelation savedRelation = service.save(relation1);
         assertEquals(1, algorithmService.findById(savedAlgorithm.getId()).getRelatedPatterns().size());
 
-        service.deleteById(savedRelation.getId());
+        service.delete(savedRelation.getId());
         assertEquals(0, algorithmService.findById(savedAlgorithm.getId()).getRelatedPatterns().size());
     }
 }

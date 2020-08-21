@@ -133,46 +133,41 @@ public class ImplementationController {
         return ResponseEntity.ok(implementationAssembler.toModel(implementation));
     }
 
-    @Operation(operationId = "getTagsOfImplementation",
-            responses = {@ApiResponse(responseCode = "200")})
-    @GetMapping("/{implId}/" + Constants.TAGS)
-    public HttpEntity<CollectionModel<EntityModel<TagDto>>> getTags(@PathVariable UUID algoId, @PathVariable UUID implId) {
-        Implementation implementation = implementationService.findById(implId);
-        var tags = implementation.getTags();
-        return ResponseEntity.ok(tagAssembler.toModel(tags));
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404")
+    }, description = "")
+    @GetMapping("/{implementationId}/" + Constants.TAGS)
+    public HttpEntity<CollectionModel<EntityModel<TagDto>>> getTagsOfImplementation(
+            @PathVariable UUID implementationId) {
+        Implementation implementation = implementationService.findById(implementationId);
+        return ResponseEntity.ok(tagAssembler.toModel(implementation.getTags()));
     }
 
-    @Operation(operationId = "addTagToImplementation",
-            responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "404")})
-    @PutMapping("/{implId}/" + Constants.TAGS)
-    public HttpEntity<Void> addTag(@PathVariable UUID implId,
-                                   @Validated @RequestBody TagDto tagDto) {
-        Implementation implementation = implementationService.findById(implId);
-        Tag tag = tagService.findByName(tagDto.getValue());
-
-        if (tag == null) {
-            implementation.addTag(ModelMapperUtils.convert(tagDto, Tag.class));
-        } else {
-            implementation.addTag(tag);
-        }
-        implementationService.update(implId, implementation);
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404")
+    }, description = "")
+    @PutMapping("/{implementationId}/" + Constants.TAGS)
+    public HttpEntity<Void> addTagToImplementation(
+            @PathVariable UUID implementationId,
+            @Validated @RequestBody TagDto tagDto) {
+        tagService.addTagToImplementation(implementationId, ModelMapperUtils.convert(tagDto, Tag.class));
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @Operation(operationId = "removeTagFromImplementation",
-            responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404")})
-    @DeleteMapping("/{implId}/" + Constants.TAGS)
-    public HttpEntity<Void> removeTag(@PathVariable UUID implId,
-                                      @Validated @RequestBody TagDto tagDto) {
-        Implementation implementation = implementationService.findById(implId);
-        Tag tag = tagService.findByName(tagDto.getValue());
-
-        if (tag == null) {
-            implementation.removeTag(ModelMapperUtils.convert(tagDto, Tag.class));
-        } else {
-            implementation.removeTag(tag);
-        }
-        implementationService.update(implId, implementation);
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404")
+    }, description = "")
+    @DeleteMapping("/{implementationId}/" + Constants.TAGS)
+    public HttpEntity<Void> removeTagFromImplementation(
+            @PathVariable UUID implementationId,
+            @Validated @RequestBody TagDto tagDto) {
+        tagService.removeTagFromImplementation(implementationId, ModelMapperUtils.convert(tagDto, Tag.class));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

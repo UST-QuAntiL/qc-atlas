@@ -18,20 +18,16 @@
  *******************************************************************************/
 package org.planqk.atlas.web.controller;
 
-import java.util.Objects;
 import java.util.UUID;
 
-import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.PatternRelation;
-import org.planqk.atlas.core.model.PatternRelationType;
-import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.core.services.PatternRelationService;
-import org.planqk.atlas.core.services.PatternRelationTypeService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.PatternRelationDto;
 import org.planqk.atlas.web.linkassembler.PatternRelationAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
+import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.ValidationGroups;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -41,7 +37,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -63,8 +58,6 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class PatternRelationController {
 
-    private final AlgorithmService algorithmService;
-    private final PatternRelationTypeService patternRelationTypeService;
     private final PatternRelationService patternRelationService;
     private final PatternRelationAssembler patternRelationAssembler;
 
@@ -73,7 +66,7 @@ public class PatternRelationController {
     }, description = "Retrieve all pattern relations")
     @GetMapping()
     @ListParametersDoc
-    public HttpEntity<PagedModel<EntityModel<PatternRelationDto>>> getPatternRelations(
+    public ResponseEntity<PagedModel<EntityModel<PatternRelationDto>>> getPatternRelations(
             @Parameter(hidden = true) ListParameters listParameters) {
         var patternRelations = patternRelationService.findAll(listParameters.getPageable());
         return ResponseEntity.ok(patternRelationAssembler.toModel(patternRelations));
@@ -87,12 +80,14 @@ public class PatternRelationController {
             "Custom ID will be ignored. For pattern relation type only ID is required," +
             "other pattern relation type attributes will not change.")
     @PostMapping()
-    public HttpEntity<EntityModel<PatternRelationDto>> createPatternRelation(
-            @Validated(ValidationGroups.Create.class) @RequestBody PatternRelationDto relationDto) {
-        return new ResponseEntity<>(handlePatternRelationUpdate(relationDto, null), HttpStatus.CREATED);
+    public ResponseEntity<EntityModel<PatternRelationDto>> createPatternRelation(
+            @Validated({ValidationGroups.Create.class}) @RequestBody PatternRelationDto patternRelationDto) {
+        var savedPatternRelation = patternRelationService.save(
+                ModelMapperUtils.convert(patternRelationDto, PatternRelation.class));
+        return new ResponseEntity<>(patternRelationAssembler.toModel(savedPatternRelation), HttpStatus.CREATED);
     }
 
-    @Operation(operationId = "updatePatternRelationTypeByPattern", responses = {
+    @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404")
@@ -100,9 +95,11 @@ public class PatternRelationController {
             "Custom ID will be ignored. For pattern relation type only ID is required, " +
             "other pattern relation type attributes will not change.")
     @PutMapping()
-    public HttpEntity<EntityModel<PatternRelationDto>> updatePatternRelationType(
-            @Validated({ValidationGroups.Update.class}) @RequestBody PatternRelationDto relationDto) {
-        return ResponseEntity.ok(handlePatternRelationUpdate(relationDto, relationDto.getId()));
+    public ResponseEntity<EntityModel<PatternRelationDto>> updatePatternRelation(
+            @Validated({ValidationGroups.Update.class}) @RequestBody PatternRelationDto patternRelationDto) {
+        var savedPatternRelation = patternRelationService.update(
+                ModelMapperUtils.convert(patternRelationDto, PatternRelation.class));
+        return ResponseEntity.ok(patternRelationAssembler.toModel(savedPatternRelation));
     }
 
     @Operation(responses = {
@@ -110,41 +107,20 @@ public class PatternRelationController {
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404")
     }, description = "")
-    @GetMapping("/{id}")
-    public HttpEntity<EntityModel<PatternRelationDto>> getPatternRelation(@PathVariable UUID id) {
-        var patternRelation = patternRelationService.findById(id);
+    @GetMapping("/{patternRelationId}")
+    public ResponseEntity<EntityModel<PatternRelationDto>> getPatternRelation(@PathVariable UUID patternRelationId) {
+        var patternRelation = patternRelationService.findById(patternRelationId);
         return ResponseEntity.ok(patternRelationAssembler.toModel(patternRelation));
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "204"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Pattern relation with given id doesn't exist")
     }, description = "")
-    @DeleteMapping("/{id}")
-    public HttpEntity<Void> deletePatternRelation(@PathVariable UUID id) {
-        log.debug("Delete to remove PatternRelation with id: {}.", id);
-        patternRelationService.findById(id);
-        patternRelationService.deleteById(id);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    private EntityModel<PatternRelationDto> handlePatternRelationUpdate(PatternRelationDto relationDto, UUID relationId) {
-        PatternRelation patternRelation = new PatternRelation();
-        if (Objects.nonNull(relationId)) {
-            patternRelation.setId(relationId);
-        }
-
-        // Convert Dto to PatternRelation by using content from the database
-        Algorithm algorithm = algorithmService.findById(relationDto.getAlgorithmId());
-        PatternRelationType patternRelationType = patternRelationTypeService.findById(relationDto.getPatternRelationType().getId());
-        patternRelation.setAlgorithm(algorithm);
-        patternRelation.setPattern(relationDto.getPattern());
-        patternRelation.setDescription(relationDto.getDescription());
-        patternRelation.setPatternRelationType(patternRelationType);
-
-        // Store and return PatternRelation
-        PatternRelation savedRelation = patternRelationService.save(patternRelation);
-        return patternRelationAssembler.toModel(savedRelation);
+    @DeleteMapping("/{patternRelationId}")
+    public ResponseEntity<Void> deletePatternRelation(@PathVariable UUID patternRelationId) {
+        patternRelationService.delete(patternRelationId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

@@ -19,7 +19,6 @@
 
 package org.planqk.atlas.core.services;
 
-import java.util.Set;
 import java.util.UUID;
 
 import javax.transaction.Transactional;
@@ -32,17 +31,15 @@ import org.springframework.data.domain.Pageable;
 public interface PatternRelationService {
 
     @Transactional
-    PatternRelation save(PatternRelation relation);
+    PatternRelation save(PatternRelation patternRelation);
 
-    PatternRelation findById(UUID id);
+    PatternRelation findById(UUID patternRelationId);
 
     Page<PatternRelation> findAll(Pageable pageable);
 
-    Set<PatternRelation> findByAlgorithmId(UUID algoId);
+    @Transactional
+    PatternRelation update(PatternRelation patternRelation);
 
     @Transactional
-    PatternRelation update(UUID id, PatternRelation relation);
-
-    @Transactional
-    void deleteById(UUID id);
+    void delete(UUID patternRelationId);
 }

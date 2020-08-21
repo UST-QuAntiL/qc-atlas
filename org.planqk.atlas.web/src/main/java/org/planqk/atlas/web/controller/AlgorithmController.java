@@ -198,48 +198,42 @@ public class AlgorithmController {
         return ResponseEntity.ok(algorithmAssembler.toModel(algorithm));
     }
 
-    @Operation(operationId = "getTagsOfAlgorithm",
-            responses = {@ApiResponse(responseCode = "200")})
-    @GetMapping("/{algoId}/" + Constants.TAGS)
-    public ResponseEntity<CollectionModel<EntityModel<TagDto>>> getTags(@PathVariable UUID algoId) {
-        Algorithm algorithm = algorithmService.findById(algoId);
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404")
+    }, description = "")
+    @GetMapping("/{algorithmId}/" + Constants.TAGS)
+    public ResponseEntity<CollectionModel<EntityModel<TagDto>>> getTagsOfAlgorithm(
+            @PathVariable UUID algorithmId) {
+        Algorithm algorithm = algorithmService.findById(algorithmId);
         return ResponseEntity.ok(tagAssembler.toModel(algorithm.getTags()));
     }
 
-    @Operation(operationId = "addTagToAlgorithm",
-            responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "404")})
-    @PutMapping("/{algoId}/" + Constants.TAGS)
-    public ResponseEntity<Void> addTag(
-            @PathVariable UUID algoId,
-            @Validated(ValidationGroups.Update.class) @RequestBody TagDto tagDto) {
-        Algorithm algorithm = algorithmService.findById(algoId);
-        Tag tag = tagService.findByName(tagDto.getValue());
-
-        if (tag == null) {
-            algorithm.addTag(ModelMapperUtils.convert(tagDto, Tag.class));
-        } else {
-            algorithm.addTag(tag);
-        }
-        algorithmService.update(algoId, algorithm);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+    @Operation(responses = {
+            @ApiResponse(responseCode = "204"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404")
+    }, description = "")
+    @PutMapping("/{algorithmId}/" + Constants.TAGS)
+    public ResponseEntity<Void> addTagToAlgorithm(
+            @PathVariable UUID algorithmId,
+            @Validated @RequestBody TagDto tagDto) {
+        tagService.addTagToAlgorithm(algorithmId, ModelMapperUtils.convert(tagDto, Tag.class));
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @Operation(operationId = "removeTagFromAlgorithm",
-            responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404")})
-    @DeleteMapping("/{algoId}/" + Constants.TAGS)
-    public ResponseEntity<Void> removeTag(
-            @PathVariable UUID algoId,
-            @Validated(ValidationGroups.Update.class) @RequestBody TagDto tagDto) {
-        Algorithm algorithm = algorithmService.findById(algoId);
-        Tag tag = tagService.findByName(tagDto.getValue());
-
-        if (tag == null) {
-            algorithm.removeTag(ModelMapperUtils.convert(tagDto, Tag.class));
-        } else {
-            algorithm.removeTag(tag);
-        }
-        algorithmService.update(algoId, algorithm);
-        return new ResponseEntity<>(HttpStatus.OK);
+    @Operation(responses = {
+            @ApiResponse(responseCode = "204"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404")
+    }, description = "")
+    @DeleteMapping("/{algorithmId}/" + Constants.TAGS)
+    public ResponseEntity<Void> removeTagFromAlgorithm(
+            @PathVariable UUID algorithmId,
+            @Validated @RequestBody TagDto tagDto) {
+        tagService.removeTagFromAlgorithm(algorithmId, ModelMapperUtils.convert(tagDto, Tag.class));
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @Operation(responses = {

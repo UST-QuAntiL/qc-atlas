@@ -31,18 +31,15 @@ import org.springframework.data.domain.Pageable;
 public interface PatternRelationTypeService {
 
     @Transactional
-    PatternRelationType save(PatternRelationType type);
+    PatternRelationType save(PatternRelationType patternRelationType);
 
-    PatternRelationType findById(UUID id);
+    PatternRelationType findById(UUID patternRelationTypeId);
 
     Page<PatternRelationType> findAll(Pageable pageable);
 
     @Transactional
-    PatternRelationType update(UUID id, PatternRelationType type);
+    PatternRelationType update(PatternRelationType patternRelationType);
 
     @Transactional
-    void deleteById(UUID id);
-
-    @Transactional
-    PatternRelationType createOrGet(PatternRelationType type);
+    void delete(UUID patternRelationTypeId);
 }

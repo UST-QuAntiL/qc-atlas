@@ -39,21 +39,21 @@ public interface AlgorithmService extends ComputeResourcePropertyInterface {
 
     Page<Algorithm> findAll(Pageable pageable, String search);
 
-    Algorithm findById(UUID algoId);
+    Algorithm findById(UUID algorithmId);
 
     @Transactional
-    Algorithm update(UUID algoId, Algorithm algorithm);
+    Algorithm update(UUID algorithmId, Algorithm algorithm);
 
     @Transactional
-    void delete(UUID algoId);
+    void delete(UUID algorithmId);
 
-    Page<Publication> findPublications(UUID algoId, Pageable pageable);
+    Page<Publication> findPublications(UUID algorithmId, Pageable pageable);
 
-    Page<ProblemType> findProblemTypes(UUID algoId, Pageable pageable);
+    Page<ProblemType> findProblemTypes(UUID algorithmId, Pageable pageable);
 
-    Page<ApplicationArea> findApplicationAreas(UUID algoId, Pageable pageable);
+    Page<ApplicationArea> findApplicationAreas(UUID algorithmId, Pageable pageable);
 
-    Page<PatternRelation> findPatternRelations(UUID algoId, Pageable pageable);
+    Page<PatternRelation> findPatternRelations(UUID algorithmId, Pageable pageable);
 
-    Page<AlgorithmRelation> findAlgorithmRelations(UUID algoId, Pageable pageable);
+    Page<AlgorithmRelation> findAlgorithmRelations(UUID algorithmId, Pageable pageable);
 }

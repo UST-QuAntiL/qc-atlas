@@ -298,7 +298,7 @@ public class PatternRelationControllerTest {
 
     @Test
     public void deleteRelation_returnOk() throws Exception {
-        doNothing().when(patternRelationService).deleteById(relation1.getId());
+        doNothing().when(patternRelationService).delete(relation1.getId());
 
         mockMvc.perform(delete("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATIONS + "/{id}", relation1.getId())
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
@@ -306,7 +306,7 @@ public class PatternRelationControllerTest {
 
     @Test
     public void deleteRelation_returnNotFound() throws Exception {
-        doThrow(EmptyResultDataAccessException.class).when(patternRelationService).deleteById(any());
+        doThrow(EmptyResultDataAccessException.class).when(patternRelationService).delete(any());
 
         mockMvc.perform(delete("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATIONS + "/{id}", UUID.randomUUID())
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
