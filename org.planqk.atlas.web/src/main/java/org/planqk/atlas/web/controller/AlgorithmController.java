@@ -31,13 +31,18 @@ import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.model.Publication;
+import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.services.AlgoRelationService;
 import org.planqk.atlas.core.services.AlgoRelationTypeService;
 import org.planqk.atlas.core.services.AlgorithmService;
+import org.planqk.atlas.core.services.ApplicationAreaService;
 import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.core.services.LinkingService;
 import org.planqk.atlas.core.services.PatternRelationService;
 import org.planqk.atlas.core.services.PatternRelationTypeService;
+
+import org.planqk.atlas.core.services.ProblemTypeService;
+import org.planqk.atlas.core.services.TagService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.mixin.ComputeResourcePropertyMixin;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
@@ -49,6 +54,7 @@ import org.planqk.atlas.web.dtos.PatternRelationDto;
 import org.planqk.atlas.web.dtos.PatternRelationTypeDto;
 import org.planqk.atlas.web.dtos.ProblemTypeDto;
 import org.planqk.atlas.web.dtos.PublicationDto;
+import org.planqk.atlas.web.dtos.TagDto;
 import org.planqk.atlas.web.linkassembler.AlgorithmAssembler;
 import org.planqk.atlas.web.linkassembler.AlgorithmRelationAssembler;
 import org.planqk.atlas.web.linkassembler.ApplicationAreaAssembler;
@@ -57,6 +63,7 @@ import org.planqk.atlas.web.linkassembler.ImplementationAssembler;
 import org.planqk.atlas.web.linkassembler.PatternRelationAssembler;
 import org.planqk.atlas.web.linkassembler.ProblemTypeAssembler;
 import org.planqk.atlas.web.linkassembler.PublicationAssembler;
+import org.planqk.atlas.web.linkassembler.TagAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
@@ -71,6 +78,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
@@ -101,6 +109,8 @@ public class AlgorithmController {
     private final AlgorithmAssembler algorithmAssembler;
 
     private final AlgoRelationService algoRelationService;
+    private final AlgorithmRelationAssembler algorithmRelationAssembler;
+
     private final AlgoRelationTypeService algoRelationTypeService;
 
     private final PatternRelationService patternRelationService;
@@ -111,19 +121,20 @@ public class AlgorithmController {
     private final ImplementationService implementationService;
     private final ImplementationAssembler implementationAssembler;
 
+    private final ProblemTypeService problemTypeService;
     private final ProblemTypeAssembler problemTypeAssembler;
 
+    private final ApplicationAreaService applicationAreaService;
     private final ApplicationAreaAssembler applicationAreaAssembler;
 
-    private final AlgorithmRelationAssembler algorithmRelationAssembler;
+    private final TagService tagService;
+    private final TagAssembler tagAssembler;
 
     private final PublicationAssembler publicationAssembler;
 
     private final ComputeResourcePropertyAssembler computeResourcePropertyAssembler;
 
     private final LinkingService linkingService;
-
-    //    private final TagAssembler tagAssembler;
 
     private final ComputeResourcePropertyMixin computeResourcePropertyMixin;
 
@@ -193,12 +204,47 @@ public class AlgorithmController {
         return ResponseEntity.ok(algorithmAssembler.toModel(algorithm));
     }
 
-//    @Operation(responses = {@ApiResponse(responseCode = "200")})
-//    @GetMapping("/{id}/" + Constants.TAGS)
-//    public HttpEntity<CollectionModel<EntityModel<TagDto>>> getTags(@PathVariable UUID id) {
-//        Algorithm algorithm = algorithmService.findById(id);
-//        return ResponseEntity.ok(tagsAssembler.toModel(algorithm.getTags()));
-//    }
+    @Operation(operationId = "getTagsOfAlgorithm",
+            responses = {@ApiResponse(responseCode = "200")})
+    @GetMapping("/{algoId}/" + Constants.TAGS)
+    public ResponseEntity<CollectionModel<EntityModel<TagDto>>> getTags(@PathVariable UUID algoId) {
+        Algorithm algorithm = algorithmService.findById(algoId);
+        return ResponseEntity.ok(tagAssembler.toModel(algorithm.getTags()));
+    }
+
+    @Operation(operationId = "addTagToAlgorithm",
+            responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "404")})
+    @PutMapping("/{algoId}/" + Constants.TAGS)
+    public ResponseEntity<Void> addTag(@PathVariable UUID algoId,
+                                   @Valid @RequestBody TagDto tagDto) {
+        Algorithm algorithm = algorithmService.findById(algoId);
+        Tag tag = tagService.findByName(tagDto.getValue());
+
+        if (tag == null) {
+            algorithm.addTag(ModelMapperUtils.convert(tagDto, Tag.class));
+        } else {
+            algorithm.addTag(tag);
+        }
+        algorithmService.update(algoId, algorithm);
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @Operation(operationId = "removeTagFromAlgorithm",
+            responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404")})
+    @DeleteMapping("/{algoId}/" + Constants.TAGS)
+    public ResponseEntity<Void> removeTag(@PathVariable UUID algoId,
+                                      @Valid @RequestBody TagDto tagDto) {
+        Algorithm algorithm = algorithmService.findById(algoId);
+        Tag tag = tagService.findByName(tagDto.getValue());
+
+        if (tag == null) {
+            algorithm.removeTag(ModelMapperUtils.convert(tagDto, Tag.class));
+        } else {
+            algorithm.removeTag(tag);
+        }
+        algorithmService.update(algoId, algorithm);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
