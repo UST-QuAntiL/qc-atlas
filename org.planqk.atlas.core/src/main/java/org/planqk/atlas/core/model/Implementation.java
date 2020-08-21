@@ -33,11 +33,13 @@ import javax.persistence.OneToMany;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 /**
  * Entity representing an implementation of a certain quantum {@link Algorithm}.
  */
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
@@ -67,11 +69,13 @@ public class Implementation extends AlgorOrImpl implements ModelWithPublications
     @ToString.Exclude
     private Algorithm implementedAlgorithm;
 
-//    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-//    @EqualsAndHashCode.Exclude
-//    @ToString.Exclude
-//    @JoinTable(name = "implementation_tag", joinColumns = @JoinColumn(name = "implementation_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
-//    private Set<Tag> tags;
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @JoinTable(name = "implementation_tag",
+            joinColumns = @JoinColumn(name = "implementation_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_value"))
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private Set<Tag> tags = new HashSet<>();
 
     @EqualsAndHashCode.Exclude
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "implementation", orphanRemoval = true)
@@ -86,8 +90,27 @@ public class Implementation extends AlgorOrImpl implements ModelWithPublications
     @ToString.Exclude
     private Set<SoftwarePlatform> softwarePlatforms = new HashSet<>();
 
-    public Implementation() {
-        super();
+    public void addTag(Tag tag) {
+        if (tags.contains(tag)) {
+            return;
+        }
+        this.tags.add(tag);
+        tag.addImplementation(this);
+    }
+
+    public void removeTag(Tag tag) {
+        if (!tags.contains(tag)) {
+            return;
+        }
+        this.tags.remove(tag);
+        tag.removeImplementation(this);
+    }
+
+    public void setTags(Set<Tag> tags) {
+        this.tags.clear();
+        if (tags != null) {
+            this.tags.addAll(tags);
+        }
     }
 
     public Set<Publication> getPublications() {
@@ -129,12 +152,4 @@ public class Implementation extends AlgorOrImpl implements ModelWithPublications
         softwarePlatforms.remove(softwarePlatform);
         softwarePlatform.removeImplementation(this);
     }
-
-//    @NonNull
-//    public Set<Tag> getTags() {
-//        if (Objects.isNull(tags)) {
-//            return new HashSet<>();
-//        }
-//        return tags;
-//    }
 }

@@ -25,16 +25,20 @@ import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.services.ComputeResourcePropertyService;
 import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.core.services.LinkingService;
+import org.planqk.atlas.core.model.Tag;
+import org.planqk.atlas.core.services.TagService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.mixin.ComputeResourcePropertyMixin;
 import org.planqk.atlas.web.dtos.ComputeResourcePropertyDto;
 import org.planqk.atlas.web.dtos.ImplementationDto;
 import org.planqk.atlas.web.dtos.PublicationDto;
 import org.planqk.atlas.web.dtos.SoftwarePlatformDto;
+import org.planqk.atlas.web.dtos.TagDto;
 import org.planqk.atlas.web.linkassembler.ComputeResourcePropertyAssembler;
 import org.planqk.atlas.web.linkassembler.ImplementationAssembler;
 import org.planqk.atlas.web.linkassembler.PublicationAssembler;
 import org.planqk.atlas.web.linkassembler.SoftwarePlatformAssembler;
+import org.planqk.atlas.web.linkassembler.TagAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
@@ -78,7 +82,8 @@ public class ImplementationController {
     private final ImplementationService implementationService;
     private final ImplementationAssembler implementationAssembler;
 
-    private final LinkingService linkingService;
+    private final TagService tagService;
+    private final TagAssembler tagAssembler;
 
     private final ComputeResourcePropertyService computeResourcePropertyService;
     private final ComputeResourcePropertyAssembler computeResourcePropertyAssembler;
@@ -86,6 +91,8 @@ public class ImplementationController {
     private final PublicationAssembler publicationAssembler;
 
     private final SoftwarePlatformAssembler softwarePlatformAssembler;
+
+    private final LinkingService linkingService;
 
     private final ComputeResourcePropertyMixin computeResourcePropertyMixin;
 
@@ -126,14 +133,48 @@ public class ImplementationController {
         return ResponseEntity.ok(implementationAssembler.toModel(implementation));
     }
 
-// TODO Uncomment and Revise once tags shall be implemented
-//    @Operation(responses = { @ApiResponse(responseCode = "200") })
-//    @GetMapping("/{implId}/" + Constants.TAGS)
-//    public HttpEntity<CollectionModel<EntityModel<TagDto>>> getTags(@PathVariable UUID algoId, @PathVariable UUID implId) {
-//        Implementation implementation = implementationService.findById(implId);
-//         Set<Tag> tags = implementation.getTags();
-//        return ResponseEntity.ok(tagAssembler.toModel(tags));
-//    }
+    @Operation(operationId = "getTagsOfImplementation",
+            responses = {@ApiResponse(responseCode = "200")})
+    @GetMapping("/{implId}/" + Constants.TAGS)
+    public HttpEntity<CollectionModel<EntityModel<TagDto>>> getTags(@PathVariable UUID algoId, @PathVariable UUID implId) {
+        Implementation implementation = implementationService.findById(implId);
+        var tags = implementation.getTags();
+        return ResponseEntity.ok(tagAssembler.toModel(tags));
+    }
+
+    @Operation(operationId = "addTagToImplementation",
+            responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "404")})
+    @PutMapping("/{implId}/" + Constants.TAGS)
+    public HttpEntity<Void> addTag(@PathVariable UUID implId,
+                                   @Validated @RequestBody TagDto tagDto) {
+        Implementation implementation = implementationService.findById(implId);
+        Tag tag = tagService.findByName(tagDto.getValue());
+
+        if (tag == null) {
+            implementation.addTag(ModelMapperUtils.convert(tagDto, Tag.class));
+        } else {
+            implementation.addTag(tag);
+        }
+        implementationService.update(implId, implementation);
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @Operation(operationId = "removeTagFromImplementation",
+            responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404")})
+    @DeleteMapping("/{implId}/" + Constants.TAGS)
+    public HttpEntity<Void> removeTag(@PathVariable UUID implId,
+                                      @Validated @RequestBody TagDto tagDto) {
+        Implementation implementation = implementationService.findById(implId);
+        Tag tag = tagService.findByName(tagDto.getValue());
+
+        if (tag == null) {
+            implementation.removeTag(ModelMapperUtils.convert(tagDto, Tag.class));
+        } else {
+            implementation.removeTag(tag);
+        }
+        implementationService.update(implId, implementation);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
