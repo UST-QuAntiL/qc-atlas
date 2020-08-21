@@ -43,6 +43,7 @@ import org.planqk.atlas.core.services.AlgoRelationTypeService;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.core.services.ApplicationAreaService;
 import org.planqk.atlas.core.services.ComputeResourcePropertyService;
+import org.planqk.atlas.core.services.ComputeResourcePropertyTypeService;
 import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.core.services.LinkingService;
 import org.planqk.atlas.core.services.PatternRelationService;
@@ -117,6 +118,8 @@ public class AlgorithmControllerTest {
     private AlgorithmService algorithmService;
     @MockBean
     private ComputeResourcePropertyService computeResourcePropertyService;
+    @MockBean
+    private ComputeResourcePropertyTypeService computeResourcePropertyTypeService;
     @MockBean
     private PatternRelationService patternRelationService;
     @MockBean
@@ -548,7 +551,7 @@ public class AlgorithmControllerTest {
     void testListComputingResources_ClassicAlgorithm() throws Exception {
         when(algorithmService.findComputeResourceProperties(any(), any()))
                 .thenReturn(new PageImpl<>(new ArrayList<ComputeResourceProperty>()));
-        when(computeResourcePropertyService.findAllComputeResourcesPropertyByAlgorithmId(any(), any())).thenReturn(Page.empty());
+        when(computeResourcePropertyService.findComputeResourcePropertiesOfAlgorithm(any(), any())).thenReturn(Page.empty());
         var path = fromMethodCall(uriBuilder, on(AlgorithmController.class)
                 .getComputeResourcePropertiesOfAlgorithm(UUID.randomUUID(), ListParameters.getDefault())).toUriString();
 
@@ -561,7 +564,7 @@ public class AlgorithmControllerTest {
         algo.setRequiredComputeResourceProperties(new HashSet<>());
         when(algorithmService.findComputeResourceProperties(any(), any()))
                 .thenReturn(new PageImpl<>(new ArrayList<>(algo.getRequiredComputeResourceProperties())));
-        when(computeResourcePropertyService.findAllComputeResourcesPropertyByAlgorithmId(any(), any())).thenReturn(Page.empty());
+        when(computeResourcePropertyService.findComputeResourcePropertiesOfAlgorithm(any(), any())).thenReturn(Page.empty());
         var path = fromMethodCall(uriBuilder, on(AlgorithmController.class)
                 .getComputeResourcePropertiesOfAlgorithm(UUID.randomUUID(), ListParameters.getDefault())).toUriString();
         var result = mockMvc.perform(get(path)).andExpect(status().isOk()).andReturn();
@@ -596,7 +599,7 @@ public class AlgorithmControllerTest {
 
         when(algorithmService.findComputeResourceProperties(any(), any()))
                 .thenReturn(new PageImpl<>(new ArrayList<>(algo.getRequiredComputeResourceProperties())));
-        when(computeResourcePropertyService.findAllComputeResourcesPropertyByAlgorithmId(any(), any())).thenReturn(new PageImpl<>(resources));
+        when(computeResourcePropertyService.findComputeResourcePropertiesOfAlgorithm(any(), any())).thenReturn(new PageImpl<>(resources));
         var path = fromMethodCall(uriBuilder, on(AlgorithmController.class)
                 .getComputeResourcePropertiesOfAlgorithm(UUID.randomUUID(), ListParameters.getDefault())).toUriString();
         var result = mockMvc.perform(get(path)).andExpect(status().isOk()).andReturn();
@@ -673,7 +676,7 @@ public class AlgorithmControllerTest {
         resource.setId(resReq.getId());
 
         when(algorithmService.findById(any())).thenReturn(algorithm);
-        when(computeResourcePropertyService.findComputeResourcePropertyTypeById(any())).thenReturn(type);
+        when(computeResourcePropertyTypeService.findById(any())).thenReturn(type);
         when(computeResourcePropertyService.addComputeResourcePropertyToAlgorithm(any(Algorithm.class), any(ComputeResourceProperty.class))).thenReturn(resource);
         var path = fromMethodCall(uriBuilder, on(AlgorithmController.class)
                 .createComputeResourcePropertyForAlgorithm(UUID.randomUUID(), null)).toUriString();

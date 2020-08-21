@@ -45,6 +45,8 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
     private ComputeResourceService computeResourceService;
     @Autowired
     private ComputeResourcePropertyService computeResourcePropertyService;
+    @Autowired
+    private ComputeResourcePropertyTypeService computeResourcePropertyTypeService;
 
     @Test
     void createMinimalComputeResource() {
@@ -78,7 +80,7 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
         computingResourcePropertyType.setName("test name");
         computingResourcePropertyType.setDatatype(ComputeResourcePropertyDataType.STRING);
         computingResourcePropertyType.setDescription("test description");
-        var storedType = computeResourcePropertyService.saveComputeResourcePropertyType(computingResourcePropertyType);
+        var storedType = computeResourcePropertyTypeService.save(computingResourcePropertyType);
         computingResourceProperty.setComputeResourcePropertyType(storedType);
         computingResourceProperty.setValue("test value");
 
@@ -187,7 +189,7 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
         computingResourcePropertyType.setName("test name");
         computingResourcePropertyType.setDatatype(ComputeResourcePropertyDataType.STRING);
         computingResourcePropertyType.setDescription("test description");
-        var storedType = computeResourcePropertyService.saveComputeResourcePropertyType(computingResourcePropertyType);
+        var storedType = computeResourcePropertyTypeService.save(computingResourcePropertyType);
         computingResourceProperty.setComputeResourcePropertyType(storedType);
         computingResourceProperty.setValue("test value");
 
@@ -202,7 +204,7 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
 
         // Test if references are removed
         Assertions.assertThrows(NoSuchElementException.class, () ->
-                computeResourcePropertyService.findComputeResourcePropertyById(storedProperty.getId()));
+                computeResourcePropertyService.findById(storedProperty.getId()));
     }
 
     private void assertComputeResourceEquality(ComputeResource dbComputeResource, ComputeResource compareComputeResource) {

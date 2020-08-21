@@ -288,7 +288,7 @@ public class ComputeResourceControllerTest {
     @SuppressWarnings("ConstantConditions")
     void listComputationResourceProperties_empty() throws Exception {
         doReturn(Page.empty()).when(computeResourcePropertyService)
-                .findAllComputeResourcesPropertiesByComputeResourceId(any(), any());
+                .findComputeResourcePropertiesOfComputeResource(any(), any());
 
         var mvcResult = mockMvc.perform(
                 get(
@@ -323,7 +323,7 @@ public class ComputeResourceControllerTest {
             inputList.add(element);
         }
         doReturn(new PageImpl<>(inputList)).when(computeResourcePropertyService)
-                .findAllComputeResourcesPropertiesByComputeResourceId(any(), any());
+                .findComputeResourcePropertiesOfComputeResource(any(), any());
 
         var mvcResult = mockMvc.perform(
                 get(

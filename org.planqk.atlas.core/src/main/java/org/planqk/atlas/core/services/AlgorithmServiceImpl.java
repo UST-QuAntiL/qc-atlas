@@ -227,7 +227,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     public ComputeResourceProperty createComputeResourceProperty(UUID algoId, ComputeResourceProperty computeResourceProperty) {
         Algorithm algorithm = findById(algoId);
 
-        var createdProperty = computeResourcePropertyService.saveComputeResourceProperty(computeResourceProperty);
+        var createdProperty = computeResourcePropertyService.save(computeResourceProperty);
         algorithm.addComputeResourceProperty(createdProperty);
 
         return createdProperty;
@@ -236,13 +236,13 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     @Override
     public void deleteComputeResourceProperty(UUID algoId, UUID computeResourcePropertyId) {
         Algorithm algorithm = findById(algoId);
-        var computeResourceProperty = computeResourcePropertyService.findComputeResourcePropertyById(computeResourcePropertyId);
+        var computeResourceProperty = computeResourcePropertyService.findById(computeResourcePropertyId);
 
         if (!algorithm.getRequiredComputeResourceProperties().contains(computeResourceProperty)) {
             throw new ConsistencyException("Compute resource property to delete is not part of given algorithm");
         }
 
-        computeResourcePropertyService.deleteComputeResourceProperty(computeResourcePropertyId);
+        computeResourcePropertyService.delete(computeResourcePropertyId);
     }
 
 //    private AlgoRelationType getPersistedAlgoRelationType(AlgorithmRelation relation) {

@@ -193,7 +193,7 @@ public class ComputeResourceController {
     public ResponseEntity<PagedModel<EntityModel<ComputeResourcePropertyDto>>> getComputingResourcePropertiesOfComputeResource(
             @PathVariable UUID computeResourceId,
             @Parameter(hidden = true) ListParameters listParameters) {
-        var resources = computeResourcePropertyService.findAllComputeResourcesPropertiesByComputeResourceId(computeResourceId,
+        var resources = computeResourcePropertyService.findComputeResourcePropertiesOfComputeResource(computeResourceId,
                 listParameters.getPageable());
         return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(resources));
     }
@@ -249,12 +249,12 @@ public class ComputeResourceController {
             @PathVariable UUID computeResourceId,
             @PathVariable UUID resourceId) {
         computeResourceService.findById(computeResourceId);
-        var computingResourceProperty = computeResourcePropertyService.findComputeResourcePropertyById(resourceId);
+        var computingResourceProperty = computeResourcePropertyService.findById(resourceId);
         if (Objects.isNull(computingResourceProperty.getComputeResource()) ||
                 !computingResourceProperty.getComputeResource().getId().equals(computeResourceId)) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        computeResourcePropertyService.deleteComputeResourceProperty(resourceId);
+        computeResourcePropertyService.delete(resourceId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

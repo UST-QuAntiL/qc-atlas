@@ -67,7 +67,7 @@ public class ComputeResourcePropertyController {
     }, description = "")
     @GetMapping("/{id}")
     public HttpEntity<EntityModel<ComputeResourcePropertyDto>> getComputeResourceProperty(@PathVariable UUID id) {
-        var resource = computeResourcePropertyService.findComputeResourcePropertyById(id);
+        var resource = computeResourcePropertyService.findById(id);
         return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(resource));
     }
 
@@ -82,7 +82,7 @@ public class ComputeResourcePropertyController {
             @Validated(ValidationGroups.Update.class) @RequestBody ComputeResourcePropertyDto resourceDto) {
         var resource = computeResourcePropertyMixin.fromDto(resourceDto);
         ValidationUtils.validateComputingResourceProperty(resource);
-        var updatedResource = computeResourcePropertyService.updateComputeResourceProperty(resource);
+        var updatedResource = computeResourcePropertyService.update(resource);
         return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(updatedResource));
     }
 
@@ -93,7 +93,7 @@ public class ComputeResourcePropertyController {
     }, description = "")
     @DeleteMapping("/{id}")
     public HttpEntity<Void> deleteComputeResourceProperty(@PathVariable UUID id) {
-        computeResourcePropertyService.deleteComputeResourceProperty(id);
+        computeResourcePropertyService.delete(id);
         return ResponseEntity.noContent().build();
     }
 

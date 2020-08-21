@@ -181,7 +181,7 @@ public class ImplementationController {
     public ResponseEntity<PagedModel<EntityModel<ComputeResourcePropertyDto>>> getComputeResourcePropertiesOfImplementation(
             @PathVariable UUID implementationId,
             @Parameter(hidden = true) ListParameters listParameters) {
-        var resources = computeResourcePropertyService.findAllComputeResourcesPropertiesByImplementationId(
+        var resources = computeResourcePropertyService.findComputeResourcePropertiesOfImplementation(
                 implementationId, listParameters.getPageable());
         return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(resources));
     }

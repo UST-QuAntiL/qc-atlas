@@ -137,7 +137,7 @@ public class ComputeResourceServiceImpl implements ComputeResourceService {
                 cloudService -> cloudService.removeComputeResource(computeResource));
 
         computeResource.getProvidedComputingResourceProperties().forEach(computingResourceProperty ->
-                computeResourcePropertyService.deleteComputeResourceProperty(computingResourceProperty.getId()));
+                computeResourcePropertyService.delete(computingResourceProperty.getId()));
     }
 
 }

@@ -20,6 +20,7 @@ package org.planqk.atlas.web.controller.mixin;
 
 import org.planqk.atlas.core.model.ComputeResourceProperty;
 import org.planqk.atlas.core.services.ComputeResourcePropertyService;
+import org.planqk.atlas.core.services.ComputeResourcePropertyTypeService;
 import org.planqk.atlas.web.dtos.ComputeResourcePropertyDto;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 
@@ -30,12 +31,13 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class ComputeResourcePropertyMixin {
     private final ComputeResourcePropertyService computeResourcePropertyService;
+    private final ComputeResourcePropertyTypeService computeResourcePropertyTypeService;
 
     public ComputeResourceProperty fromDto(ComputeResourcePropertyDto resourceDto) {
 //        if (Objects.isNull(resourceDto.getType().getId())) {
 //            throw new InvalidParameterException("empty type ID");
 //        }
-        var type = computeResourcePropertyService.findComputeResourcePropertyTypeById(resourceDto.getType().getId());
+        var type = computeResourcePropertyTypeService.findById(resourceDto.getType().getId());
         var resource = ModelMapperUtils.convert(resourceDto, ComputeResourceProperty.class);
         resource.setComputeResourcePropertyType(type);
         return resource;

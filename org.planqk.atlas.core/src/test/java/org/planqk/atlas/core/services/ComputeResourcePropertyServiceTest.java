@@ -46,6 +46,8 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
     @Autowired
     private ComputeResourcePropertyService resourceService;
     @Autowired
+    private ComputeResourcePropertyTypeService computeResourcePropertyTypeService;
+    @Autowired
     private AlgorithmService algorithmService;
 
     @Autowired
@@ -63,11 +65,11 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         var resource = new ComputeResourceProperty();
         resource.setComputeResourcePropertyType(resourceType);
 
-        var storedResource = resourceService.saveComputeResourceProperty(resource);
+        var storedResource = resourceService.save(resource);
 
-        resourceService.deleteComputeResourceProperty(resource.getId());
-        this.resourceService.deleteComputeResourcePropertyType(storedResource.getComputeResourcePropertyType().getId());
-        assertThat(this.resourceService.findAllComputeResourcePropertyTypes(Pageable.unpaged()).get().count()).isEqualTo(0);
+        resourceService.delete(resource.getId());
+        this.computeResourcePropertyTypeService.delete(storedResource.getComputeResourcePropertyType().getId());
+        assertThat(this.computeResourcePropertyTypeService.findAll(Pageable.unpaged()).get().count()).isEqualTo(0);
     }
 
     @Test
@@ -80,12 +82,12 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         var resource = new ComputeResourceProperty();
         resource.setComputeResourcePropertyType(resourceType);
 
-        var storedResource = resourceService.saveComputeResourceProperty(resource);
+        var storedResource = resourceService.save(resource);
 
         Assertions.assertThrows(DataIntegrityViolationException.class, () -> {
-            this.resourceService.deleteComputeResourcePropertyType(storedResource.getComputeResourcePropertyType().getId());
+            this.computeResourcePropertyTypeService.delete(storedResource.getComputeResourcePropertyType().getId());
         });
-        assertThat(this.resourceService.findAllComputeResourcePropertyTypes(Pageable.unpaged()).get().count()).isEqualTo(1);
+        assertThat(this.computeResourcePropertyTypeService.findAll(Pageable.unpaged()).get().count()).isEqualTo(1);
     }
 
     @Test
@@ -132,7 +134,7 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
 
         var storedResource = resourceService.addComputeResourcePropertyToAlgorithm(storedAlgo, resource);
 
-        this.resourceService.deleteComputeResourceProperty(storedResource.getId());
+        this.resourceService.delete(storedResource.getId());
         assertEquals(0, this.resourceRepository.findAllByAlgorithm_Id(storedAlgo.getId()).size());
         assertEquals(1, this.typeRepository.findAll().size());
         var dbAlgo = algorithmService.findById(storedAlgo.getId());
@@ -157,7 +159,7 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         algo.setComputationModel(ComputationModel.QUANTUM);
         var storedAlgo = (QuantumAlgorithm) algorithmService.save(algo);
 
-        var storedResource = resourceService.saveComputeResourceProperty(resource);
+        var storedResource = resourceService.save(resource);
 
         resourceService.addComputeResourcePropertyToAlgorithm(storedAlgo, resource);
 
@@ -205,7 +207,7 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         resourceType.setName("Test Name");
         resourceType.setDatatype(ComputeResourcePropertyDataType.FLOAT);
 
-        var insertedElem = this.resourceService.saveComputeResourcePropertyType(resourceType);
+        var insertedElem = this.computeResourcePropertyTypeService.save(resourceType);
 
         var elements = this.typeRepository.findAll();
         assertEquals(1, elements.size());
@@ -217,12 +219,12 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
 
     @Test
     void testFindTypeById_NotFound() {
-        assertThrows(NoSuchElementException.class, () -> resourceService.findComputeResourcePropertyTypeById(UUID.randomUUID()));
+        assertThrows(NoSuchElementException.class, () -> computeResourcePropertyTypeService.findById(UUID.randomUUID()));
     }
 
     @Test
     void testFindById_NotFound() {
-        assertThrows(NoSuchElementException.class, () -> resourceService.findComputeResourcePropertyById(UUID.randomUUID()));
+        assertThrows(NoSuchElementException.class, () -> resourceService.findById(UUID.randomUUID()));
     }
 
     @Test
@@ -232,9 +234,9 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         resourceType.setName("Test Name");
         resourceType.setDatatype(ComputeResourcePropertyDataType.FLOAT);
 
-        var insertedElem = this.resourceService.saveComputeResourcePropertyType(resourceType);
+        var insertedElem = this.computeResourcePropertyTypeService.save(resourceType);
 
-        assertThat(resourceService.findComputeResourcePropertyTypeById(insertedElem.getId()).getDatatype()).isEqualTo(resourceType.getDatatype());
+        assertThat(computeResourcePropertyTypeService.findById(insertedElem.getId()).getDatatype()).isEqualTo(resourceType.getDatatype());
     }
 
     @Test
@@ -256,7 +258,7 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
 
         var storedResource = resourceService.addComputeResourcePropertyToAlgorithm(storedAlgo, resource);
 
-        assertThat(resourceService.findComputeResourcePropertyById(storedResource.getId()).getAlgorithm().getId()).isEqualTo(storedAlgo.getId());
+        assertThat(resourceService.findById(storedResource.getId()).getAlgorithm().getId()).isEqualTo(storedAlgo.getId());
     }
 
     @Test
@@ -278,9 +280,9 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
 
         var storedResource = resourceService.addComputeResourcePropertyToAlgorithm(storedAlgo, resource);
 
-        var byAlgo = resourceService.findAllComputeResourcesPropertyByAlgorithmId(storedAlgo.getId(), Pageable.unpaged())
+        var byAlgo = resourceService.findComputeResourcePropertiesOfAlgorithm(storedAlgo.getId(), Pageable.unpaged())
                 .getContent();
-        var byAlgoP = resourceService.findAllComputeResourcesPropertyByAlgorithmId(storedAlgo.getId(), Pageable.unpaged());
+        var byAlgoP = resourceService.findComputeResourcePropertiesOfAlgorithm(storedAlgo.getId(), Pageable.unpaged());
 
         assertThat(byAlgo.size()).isEqualTo(1);
         assertThat(byAlgoP.getContent().size()).isEqualTo(1);

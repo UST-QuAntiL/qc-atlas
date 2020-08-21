@@ -27,6 +27,7 @@ import org.planqk.atlas.core.model.ComputeResourcePropertyDataType;
 import org.planqk.atlas.core.model.ComputeResourcePropertyType;
 import org.planqk.atlas.core.model.exceptions.ConsistencyException;
 import org.planqk.atlas.core.services.ComputeResourcePropertyService;
+import org.planqk.atlas.core.services.ComputeResourcePropertyTypeService;
 import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
 import org.planqk.atlas.web.dtos.ComputeResourcePropertyTypeDto;
 import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
@@ -63,6 +64,8 @@ import static org.springframework.web.servlet.mvc.method.annotation.MvcUriCompon
 public class ComputeResourcePropertyTypeControllerTest {
     @MockBean
     private ComputeResourcePropertyService resourceService;
+    @MockBean
+    private ComputeResourcePropertyTypeService computeResourcePropertyTypeService;
 
     @Autowired
     private MockMvc mockMvc;
@@ -72,7 +75,7 @@ public class ComputeResourcePropertyTypeControllerTest {
 
     @Test
     void deleteType_returnOk() throws Exception {
-        doNothing().when(resourceService).deleteComputeResourcePropertyType(any());
+        doNothing().when(computeResourcePropertyTypeService).delete(any());
         var url = fromMethodCall(uriBuilder, on(ComputeResourcePropertyTypeController.class)
                 .deleteComputingResourcePropertyType(UUID.randomUUID())).toUriString();
         mockMvc.perform(delete(url)).andExpect(status().isOk());
@@ -80,7 +83,7 @@ public class ComputeResourcePropertyTypeControllerTest {
 
     @Test
     void deleteType_returnBadRequest() throws Exception {
-        doThrow(new ConsistencyException()).when(resourceService).deleteComputeResourcePropertyType(any());
+        doThrow(new ConsistencyException()).when(computeResourcePropertyTypeService).delete(any());
         var url = fromMethodCall(uriBuilder, on(ComputeResourcePropertyTypeController.class)
                 .deleteComputingResourcePropertyType(UUID.randomUUID())).toUriString();
         mockMvc.perform(delete(url)).andExpect(status().isBadRequest());
@@ -88,7 +91,7 @@ public class ComputeResourcePropertyTypeControllerTest {
 
     @Test
     void deleteType_returnNotFound() throws Exception {
-        doThrow(new NoSuchElementException()).when(resourceService).deleteComputeResourcePropertyType(any());
+        doThrow(new NoSuchElementException()).when(computeResourcePropertyTypeService).delete(any());
         var url = fromMethodCall(uriBuilder, on(ComputeResourcePropertyTypeController.class)
                 .deleteComputingResourcePropertyType(UUID.randomUUID())).toUriString();
         mockMvc.perform(delete(url)).andExpect(status().isNotFound());
@@ -96,7 +99,7 @@ public class ComputeResourcePropertyTypeControllerTest {
 
     @Test
     void getType_returnNotFound() throws Exception {
-        when(resourceService.findComputeResourcePropertyTypeById(any())).thenThrow(new NoSuchElementException());
+        when(computeResourcePropertyTypeService.findById(any())).thenThrow(new NoSuchElementException());
         var url = fromMethodCall(uriBuilder, on(ComputeResourcePropertyTypeController.class)
                 .getComputingResourcePropertyType(UUID.randomUUID())).toUriString();
         mockMvc.perform(get(url)).andExpect(status().isNotFound());
@@ -110,7 +113,7 @@ public class ComputeResourcePropertyTypeControllerTest {
         sampleType.setDatatype(ComputeResourcePropertyDataType.FLOAT);
         sampleType.setDescription("Test");
 
-        when(resourceService.findComputeResourcePropertyTypeById(any())).thenReturn(sampleType);
+        when(computeResourcePropertyTypeService.findById(any())).thenReturn(sampleType);
         var url = fromMethodCall(uriBuilder, on(ComputeResourcePropertyTypeController.class)
                 .getComputingResourcePropertyType(UUID.randomUUID())).toUriString();
         var result = mockMvc.perform(get(url)).andExpect(status().isOk()).andReturn();
@@ -139,7 +142,7 @@ public class ComputeResourcePropertyTypeControllerTest {
             types.add(sampleType);
         }
 
-        when(resourceService.findAllComputeResourcePropertyTypes(any())).thenReturn(new PageImpl<>(types));
+        when(computeResourcePropertyTypeService.findAll(any())).thenReturn(new PageImpl<>(types));
         var url = fromMethodCall(uriBuilder, on(ComputeResourcePropertyTypeController.class)
                 .getResourcePropertyTypes(null, null)).toUriString();
         var result = mockMvc.perform(get(url)).andExpect(status().isOk()).andReturn();
