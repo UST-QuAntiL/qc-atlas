@@ -19,10 +19,7 @@
 
 package org.planqk.atlas.web.controller;
 
-import java.util.Objects;
 import java.util.UUID;
-
-import javax.validation.Valid;
 
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
@@ -40,7 +37,6 @@ import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.core.services.LinkingService;
 import org.planqk.atlas.core.services.PatternRelationService;
 import org.planqk.atlas.core.services.PatternRelationTypeService;
-
 import org.planqk.atlas.core.services.ProblemTypeService;
 import org.planqk.atlas.core.services.TagService;
 import org.planqk.atlas.web.Constants;
@@ -51,7 +47,6 @@ import org.planqk.atlas.web.dtos.ApplicationAreaDto;
 import org.planqk.atlas.web.dtos.ComputeResourcePropertyDto;
 import org.planqk.atlas.web.dtos.ImplementationDto;
 import org.planqk.atlas.web.dtos.PatternRelationDto;
-import org.planqk.atlas.web.dtos.PatternRelationTypeDto;
 import org.planqk.atlas.web.dtos.ProblemTypeDto;
 import org.planqk.atlas.web.dtos.PublicationDto;
 import org.planqk.atlas.web.dtos.TagDto;
@@ -170,12 +165,11 @@ public class AlgorithmController {
             "(e.g. name). References to subobjects (e.g. a problemtype) are not updated via this operation " +
             "- use the corresponding subroute for updating them (e.g. algorithm/{id}/problem-type). " +
             "Custom ID will be ignored.")
-    @PutMapping("/{algorithmId}")
+    @PutMapping
     public ResponseEntity<EntityModel<AlgorithmDto>> updateAlgorithm(
-            @PathVariable UUID algorithmId,
             @Validated(ValidationGroups.Update.class) @RequestBody AlgorithmDto algorithmDto) {
         Algorithm updatedAlgorithm = algorithmService.update(
-                algorithmId, ModelMapperUtils.convert(algorithmDto, Algorithm.class));
+                algorithmDto.getId(), ModelMapperUtils.convert(algorithmDto, Algorithm.class));
         return ResponseEntity.ok(algorithmAssembler.toModel(updatedAlgorithm));
     }
 
@@ -215,8 +209,9 @@ public class AlgorithmController {
     @Operation(operationId = "addTagToAlgorithm",
             responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "404")})
     @PutMapping("/{algoId}/" + Constants.TAGS)
-    public ResponseEntity<Void> addTag(@PathVariable UUID algoId,
-                                   @Valid @RequestBody TagDto tagDto) {
+    public ResponseEntity<Void> addTag(
+            @PathVariable UUID algoId,
+            @Validated(ValidationGroups.Update.class) @RequestBody TagDto tagDto) {
         Algorithm algorithm = algorithmService.findById(algoId);
         Tag tag = tagService.findByName(tagDto.getValue());
 
@@ -232,8 +227,9 @@ public class AlgorithmController {
     @Operation(operationId = "removeTagFromAlgorithm",
             responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404")})
     @DeleteMapping("/{algoId}/" + Constants.TAGS)
-    public ResponseEntity<Void> removeTag(@PathVariable UUID algoId,
-                                      @Valid @RequestBody TagDto tagDto) {
+    public ResponseEntity<Void> removeTag(
+            @PathVariable UUID algoId,
+            @Validated(ValidationGroups.Update.class) @RequestBody TagDto tagDto) {
         Algorithm algorithm = algorithmService.findById(algoId);
         Tag tag = tagService.findByName(tagDto.getValue());
 
@@ -596,9 +592,8 @@ public class AlgorithmController {
     public ResponseEntity<EntityModel<ComputeResourcePropertyDto>> createComputeResourcePropertyForAlgorithm(
             @PathVariable UUID algorithmId,
             @Validated(ValidationGroups.Create.class) @RequestBody ComputeResourcePropertyDto computeResourcePropertyDto) {
-        ValidationUtils.validateComputingResourceProperty(computeResourcePropertyDto);
-
         var resourceProperty = computeResourcePropertyMixin.fromDto(computeResourcePropertyDto);
+        ValidationUtils.validateComputingResourceProperty(resourceProperty);
         var createdResourceProperty = algorithmService.createComputeResourceProperty(algorithmId, resourceProperty);
         return new ResponseEntity<>(computeResourcePropertyAssembler.toModel(createdResourceProperty), HttpStatus.CREATED);
     }
@@ -667,26 +662,26 @@ public class AlgorithmController {
 //
 //        return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(computeResourceProperty));
 //    }
-
-    private AlgorithmRelation handleRelationUpdate(AlgorithmRelationDto relationDto, UUID relationId) {
-        AlgorithmRelation resource = new AlgorithmRelation();
-        if (Objects.nonNull(relationId)) {
-            resource.setId(relationId);
-        }
-        resource.setAlgoRelationType(algoRelationTypeService.findById(relationDto.getAlgoRelationType().getId()));
-        resource.setSourceAlgorithm(algorithmService.findById(relationDto.getSourceAlgorithmId()));
-        resource.setTargetAlgorithm(algorithmService.findById(relationDto.getTargetAlgorithmId()));
-        resource.setDescription(relationDto.getDescription());
-        return algoRelationService.save(resource);
-    }
-
-    // TODO CHECK IF THIS STILL WORKS
-    private PatternRelation savePatternRelationFromDto(Algorithm algorithm, PatternRelationDto relationDto) {
-        // always use current state of this algorithm/pattern type and do not overwrite when saving relations
-        var patternRelationType = patternRelationTypeService.findById(relationDto.getPatternRelationType().getId());
-        relationDto.setAlgorithmId(algorithm.getId());
-        relationDto.setPatternRelationType(ModelMapperUtils.convert(patternRelationType, PatternRelationTypeDto.class));
-
-        return patternRelationService.save(ModelMapperUtils.convert(relationDto, PatternRelation.class));
-    }
+//
+//    private AlgorithmRelation handleRelationUpdate(AlgorithmRelationDto relationDto, UUID relationId) {
+//        AlgorithmRelation resource = new AlgorithmRelation();
+//        if (Objects.nonNull(relationId)) {
+//            resource.setId(relationId);
+//        }
+//        resource.setAlgoRelationType(algoRelationTypeService.findById(relationDto.getAlgoRelationType().getId()));
+//        resource.setSourceAlgorithm(algorithmService.findById(relationDto.getSourceAlgorithmId()));
+//        resource.setTargetAlgorithm(algorithmService.findById(relationDto.getTargetAlgorithmId()));
+//        resource.setDescription(relationDto.getDescription());
+//        return algoRelationService.save(resource);
+//    }
+//
+//    // TODO CHECK IF THIS STILL WORKS
+//    private PatternRelation savePatternRelationFromDto(Algorithm algorithm, PatternRelationDto relationDto) {
+//        // always use current state of this algorithm/pattern type and do not overwrite when saving relations
+//        var patternRelationType = patternRelationTypeService.findById(relationDto.getPatternRelationType().getId());
+//        relationDto.setAlgorithmId(algorithm.getId());
+//        relationDto.setPatternRelationType(ModelMapperUtils.convert(patternRelationType, PatternRelationTypeDto.class));
+//
+//        return patternRelationService.save(ModelMapperUtils.convert(relationDto, PatternRelation.class));
+//    }
 }

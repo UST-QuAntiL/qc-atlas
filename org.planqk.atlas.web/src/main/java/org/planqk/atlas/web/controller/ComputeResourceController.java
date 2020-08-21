@@ -210,34 +210,34 @@ public class ComputeResourceController {
             @PathVariable UUID computeResourceId,
             @Validated(ValidationGroups.Create.class) @RequestBody ComputeResourcePropertyDto resourceDto) {
         var ComputeResource = computeResourceService.findById(computeResourceId);
-        ValidationUtils.validateComputingResourceProperty(resourceDto);
         var resource = ModelMapperUtils.convert(resourceDto, ComputeResourceProperty.class);
+        ValidationUtils.validateComputingResourceProperty(resource);
         var updatedComputeResource = computeResourcePropertyService.addComputeResourcePropertyToComputeResource(ComputeResource, resource);
         return ResponseEntity.ok(computeResourceAssembler.toModel(updatedComputeResource));
     }
 
-    @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404", description = "Algorithm with the given id doesn't exist")},
-            description = "Update a computing resource of the algorithm. Custom ID will be ignored." +
-                    "For computing resource type only ID is required, other computing resource type attributes will not change.")
-    @PutMapping("/{computeResourceId}/" + Constants.COMPUTE_RESOURCES_PROPERTIES)
-    public ResponseEntity<EntityModel<ComputeResourcePropertyDto>> updateComputingResourceResourcePropertyOfComputeResource(
-            @PathVariable UUID computeResourceId,
-            @Validated(ValidationGroups.Update.class) @RequestBody ComputeResourcePropertyDto resourceDto) {
-        ComputeResourceProperty computeResourceProperty = computeResourcePropertyService.findComputeResourcePropertyById(resourceDto.getId());
-        var computeResource = computeResourceService.findById(computeResourceId);
-        if (Objects.isNull(computeResourceProperty.getComputeResource()) ||
-                !computeResourceProperty.getComputeResource().getId().equals(computeResourceId)) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        ValidationUtils.validateComputingResourceProperty(resourceDto);
-        var resource = computeResourcePropertyMixin.fromDto(resourceDto);
-        resource.setId(resourceDto.getId());
-        var updatedResource = computeResourcePropertyService.addComputeResourcePropertyToComputeResource(computeResource, resource);
-        return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(updatedResource));
-    }
+//     @Operation(responses = {
+//             @ApiResponse(responseCode = "200"),
+//             @ApiResponse(responseCode = "400"),
+//             @ApiResponse(responseCode = "404", description = "Algorithm with the given id doesn't exist")},
+//             description = "Update a computing resource of the algorithm. Custom ID will be ignored." +
+//                     "For computing resource type only ID is required, other computing resource type attributes will not change.")
+//     @PutMapping("/{computeResourceId}/" + Constants.COMPUTE_RESOURCES_PROPERTIES)
+//     public ResponseEntity<EntityModel<ComputeResourcePropertyDto>> updateComputingResourceResourcePropertyOfComputeResource(
+//             @PathVariable UUID computeResourceId,
+//             @Validated(ValidationGroups.Update.class) @RequestBody ComputeResourcePropertyDto resourceDto) {
+//         ComputeResourceProperty computeResourceProperty = computeResourcePropertyService.findComputeResourcePropertyById(resourceDto.getId());
+//         var computeResource = computeResourceService.findById(computeResourceId);
+//         if (Objects.isNull(computeResourceProperty.getComputeResource()) ||
+//                 !computeResourceProperty.getComputeResource().getId().equals(computeResourceId)) {
+//             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+//         }
+//         ValidationUtils.validateComputingResourceProperty(resourceDto);
+//         var resource = computeResourcePropertyMixin.fromDto(resourceDto);
+//         resource.setId(resourceDto.getId());
+//         var updatedResource = computeResourcePropertyService.addComputeResourcePropertyToComputeResource(computeResource, resource);
+//         return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(updatedResource));
+//     }
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),

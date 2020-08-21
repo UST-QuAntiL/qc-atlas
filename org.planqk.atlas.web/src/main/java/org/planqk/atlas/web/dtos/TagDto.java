@@ -19,13 +19,13 @@
 
 package org.planqk.atlas.web.dtos;
 
+import javax.validation.constraints.NotNull;
+
+import org.planqk.atlas.web.utils.ValidationGroups;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.hateoas.server.core.Relation;
-
-import java.util.UUID;
-
-import javax.validation.constraints.NotNull;
 
 @EqualsAndHashCode
 @Data
@@ -34,6 +34,6 @@ public class TagDto {
 
     private String category;
 
-    @NotNull(message = "Tag value must not be null!")
+    @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class}, message = "Tag value must not be null!")
     private String value;
 }

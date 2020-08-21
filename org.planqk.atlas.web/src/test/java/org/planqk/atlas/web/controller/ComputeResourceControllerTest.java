@@ -122,7 +122,7 @@ public class ComputeResourceControllerTest {
         mockMvc.perform(
                 put(
                         fromMethodCall(uriBuilder,
-                                on(ComputeResourceController.class).updateComputeResource(resource.getId(), null)
+                                on(ComputeResourceController.class).updateComputeResource(null)
                         ).toUriString()
                 ).content(mapper.writeValueAsString(resource))
                         .contentType(MediaType.APPLICATION_JSON)
@@ -138,7 +138,7 @@ public class ComputeResourceControllerTest {
         mockMvc.perform(
                 put(
                         fromMethodCall(uriBuilder,
-                                on(ComputeResourceController.class).updateComputeResource(resource.getId(), null)
+                                on(ComputeResourceController.class).updateComputeResource(null)
                         ).toUriString()
                 ).content(mapper.writeValueAsString(resource))
                         .contentType(MediaType.APPLICATION_JSON)
@@ -161,7 +161,7 @@ public class ComputeResourceControllerTest {
         mockMvc.perform(
                 put(
                         fromMethodCall(uriBuilder,
-                                on(ComputeResourceController.class).updateComputeResource(resource.getId(), null)
+                                on(ComputeResourceController.class).updateComputeResource(null)
                         ).toUriString()
                 ).content(mapper.writeValueAsString(resource))
                         .contentType(MediaType.APPLICATION_JSON)

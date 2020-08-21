@@ -11,6 +11,7 @@ import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
 import org.planqk.atlas.web.dtos.AlgoRelationTypeDto;
 import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
 import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
+import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -119,7 +120,7 @@ public class AlgoRelationTypeControllerTest {
         algoRelationTypeDto.setId(UUID.randomUUID());
 
         var url = fromMethodCall(uriBuilder, on(AlgoRelationTypeController.class)
-                .updateAlgoRelationType(algoRelationTypeDto.getId(), null)).toUriString();
+                .updateAlgoRelationType(null)).toUriString();
         mockMvc.perform(put(url)
                 .content(mapper.writeValueAsString(algoRelationTypeDto)).contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
@@ -130,7 +131,7 @@ public class AlgoRelationTypeControllerTest {
         when(algoRelationTypeService.update(any(), any())).thenReturn(algoRelationType1);
 
         var url = fromMethodCall(uriBuilder, on(AlgoRelationTypeController.class)
-                .updateAlgoRelationType(algoRelationType1.getId(), null)).toUriString();
+                .updateAlgoRelationType(null)).toUriString();
         MvcResult result = mockMvc
                 .perform(put(url)
                         .content(mapper.writeValueAsString(algoRelationType1Dto))
@@ -148,7 +149,7 @@ public class AlgoRelationTypeControllerTest {
         when(algoRelationTypeService.findAll(any())).thenReturn(Page.empty());
 
         var url = fromMethodCall(uriBuilder, on(AlgoRelationTypeController.class)
-                .getAlgoRelationTypes(page, size)).toUriString();
+                .getAlgoRelationTypes(ListParameters.getDefault())).toUriString();
         MvcResult result = mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
@@ -170,7 +171,7 @@ public class AlgoRelationTypeControllerTest {
         when(algoRelationTypeService.findAll(any())).thenReturn(algoRelationPage);
 
         var url = fromMethodCall(uriBuilder, on(AlgoRelationTypeController.class)
-                .getAlgoRelationTypes(page, size)).toUriString();
+                .getAlgoRelationTypes(ListParameters.getDefault())).toUriString();
 
         MvcResult result = mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();

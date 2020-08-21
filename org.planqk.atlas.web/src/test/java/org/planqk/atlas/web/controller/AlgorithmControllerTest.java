@@ -355,7 +355,7 @@ public class AlgorithmControllerTest {
         algoDto.setId(UUID.randomUUID());
 
         var url = fromMethodCall(uriBuilder, on(AlgorithmController.class)
-                .updateAlgorithm(UUID.randomUUID(), null)).toUriString();
+                .updateAlgorithm(null)).toUriString();
 
         mockMvc.perform(put(url).content(mapper.writeValueAsString(algoDto))
                 .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
@@ -369,7 +369,7 @@ public class AlgorithmControllerTest {
         doReturn(algorithm1).when(algorithmService).update(any(), any());
 
         var url = fromMethodCall(uriBuilder, on(AlgorithmController.class)
-                .updateAlgorithm(algorithm1.getId(), null)).toUriString();
+                .updateAlgorithm(null)).toUriString();
 
         MvcResult result = mockMvc.perform(put(url)
                 .content(mapper.writeValueAsString(algorithm1Dto)).contentType(MediaType.APPLICATION_JSON)

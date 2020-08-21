@@ -23,8 +23,11 @@ import java.util.UUID;
 
 import org.planqk.atlas.core.services.ComputeResourcePropertyService;
 import org.planqk.atlas.web.Constants;
+import org.planqk.atlas.web.controller.mixin.ComputeResourcePropertyMixin;
 import org.planqk.atlas.web.dtos.ComputeResourcePropertyDto;
 import org.planqk.atlas.web.linkassembler.ComputeResourcePropertyAssembler;
+import org.planqk.atlas.web.utils.ValidationGroups;
+import org.planqk.atlas.web.utils.ValidationUtils;
 
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,10 +38,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -52,6 +58,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ComputeResourcePropertyController {
     private final ComputeResourcePropertyAssembler computeResourcePropertyAssembler;
     private final ComputeResourcePropertyService computeResourcePropertyService;
+    private final ComputeResourcePropertyMixin computeResourcePropertyMixin;
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
@@ -59,9 +66,24 @@ public class ComputeResourcePropertyController {
             @ApiResponse(responseCode = "404"),
     }, description = "")
     @GetMapping("/{id}")
-    public HttpEntity<EntityModel<ComputeResourcePropertyDto>> getComputingResourceProperty(@PathVariable UUID id) {
+    public HttpEntity<EntityModel<ComputeResourcePropertyDto>> getComputeResourceProperty(@PathVariable UUID id) {
         var resource = computeResourcePropertyService.findComputeResourcePropertyById(id);
         return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(resource));
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", description = "Algorithm with the given id doesn't exist")},
+            description = "Update a computing resource of the algorithm. Custom ID will be ignored." +
+                    "For computing resource type only ID is required, other computing resource type attributes will not change.")
+    @PutMapping()
+    public ResponseEntity<EntityModel<ComputeResourcePropertyDto>> updateComputeResourceProperty(
+            @Validated(ValidationGroups.Update.class) @RequestBody ComputeResourcePropertyDto resourceDto) {
+        var resource = computeResourcePropertyMixin.fromDto(resourceDto);
+        ValidationUtils.validateComputingResourceProperty(resource);
+        var updatedResource = computeResourcePropertyService.updateComputeResourceProperty(resource);
+        return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(updatedResource));
     }
 
     @Operation(responses = {
@@ -70,9 +92,9 @@ public class ComputeResourcePropertyController {
             @ApiResponse(responseCode = "404", description = "Computing resource with given id doesn't exist"),
     }, description = "")
     @DeleteMapping("/{id}")
-    public HttpEntity<Void> deleteComputingResourceProperty(@PathVariable UUID id) {
-        computeResourcePropertyService.findComputeResourcePropertyById(id);
+    public HttpEntity<Void> deleteComputeResourceProperty(@PathVariable UUID id) {
         computeResourcePropertyService.deleteComputeResourceProperty(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
+
 }

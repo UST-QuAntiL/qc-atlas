@@ -34,7 +34,7 @@ public class ComputeResourcePropertyAssembler extends GenericLinkAssembler<Compu
     @Override
     public void addLinks(EntityModel<ComputeResourcePropertyDto> resource) {
         resource.add(links.linkTo(methodOn(ComputeResourcePropertyController.class)
-                .getComputingResourceProperty(resource.getContent().getId()))
+                .getComputeResourceProperty(resource.getContent().getId()))
                 .withSelfRel());
         resource.add(links.linkTo(methodOn(ComputeResourcePropertyTypeController.class)
                 .getComputingResourcePropertyType(resource.getContent().getType().getId()))

@@ -19,7 +19,6 @@
 
 package org.planqk.atlas.core.services;
 
-import java.util.Set;
 import java.util.UUID;
 
 import javax.transaction.Transactional;
@@ -45,15 +44,9 @@ public interface ComputeResourcePropertyService {
 
     Page<ComputeResourcePropertyType> findAllComputeResourcePropertyTypes(Pageable pageable);
 
-    Set<ComputeResourceProperty> findAllComputeResourcesPropertyByAlgorithmId(UUID algoid);
-
     Page<ComputeResourceProperty> findAllComputeResourcesPropertyByAlgorithmId(UUID algoid, Pageable pageable);
 
-    Set<ComputeResourceProperty> findAllComputeResourcesPropertiesByImplementationId(UUID implId);
-
     Page<ComputeResourceProperty> findAllComputeResourcesPropertiesByImplementationId(UUID implId, Pageable pageable);
-
-    Set<ComputeResourceProperty> findAllComputeResourcesPropertiesByComputeResourceId(UUID backendId);
 
     Page<ComputeResourceProperty> findAllComputeResourcesPropertiesByComputeResourceId(UUID backendId, Pageable pageable);
 
@@ -67,19 +60,13 @@ public interface ComputeResourcePropertyService {
     ComputeResourceProperty addComputeResourcePropertyToAlgorithm(Algorithm algo, ComputeResourceProperty resource);
 
     @Transactional
-    ComputeResourceProperty addComputeResourcePropertyToAlgorithm(UUID algoId, UUID resourceId);
-
-    @Transactional
     ComputeResourceProperty addComputeResourcePropertyToImplementation(Implementation implId, ComputeResourceProperty resource);
-
-    @Transactional
-    ComputeResourceProperty addComputeResourcePropertyToImplementation(UUID implId, UUID resourceId);
 
     @Transactional
     ComputeResourceProperty addComputeResourcePropertyToComputeResource(ComputeResource computeResource, ComputeResourceProperty resource);
 
-    @Transactional
-    ComputeResourceProperty addComputeResourcePropertyToComputeResource(UUID backend, UUID resourceId);
-
     ComputeResourceProperty findComputeResourcePropertyById(UUID id);
+
+    @Transactional
+    ComputeResourceProperty updateComputeResourceProperty(ComputeResourceProperty property);
 }

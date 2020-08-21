@@ -22,10 +22,10 @@ package org.planqk.atlas.web.controller;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Implementation;
+import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.services.ComputeResourcePropertyService;
 import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.core.services.LinkingService;
-import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.services.TagService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.mixin.ComputeResourcePropertyMixin;
@@ -205,8 +205,8 @@ public class ImplementationController {
             @PathVariable UUID implementationId,
             @Validated(ValidationGroups.Create.class) @RequestBody ComputeResourcePropertyDto computeResourcePropertyDto) {
         var implementation = implementationService.findById(implementationId);
-        ValidationUtils.validateComputingResourceProperty(computeResourcePropertyDto);
         var resource = computeResourcePropertyMixin.fromDto(computeResourcePropertyDto);
+        ValidationUtils.validateComputingResourceProperty(resource);
         resource = computeResourcePropertyService.addComputeResourcePropertyToImplementation(implementation, resource);
         return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(resource));
     }

@@ -71,7 +71,7 @@ public class ComputeResourcePropertyControllerTest {
     void deleteResourceProperty_returnOk() throws Exception {
         doNothing().when(resourceService).deleteComputeResourceProperty(any());
         var url = fromMethodCall(uriBuilder, on(ComputeResourcePropertyController.class)
-                .deleteComputingResourceProperty(UUID.randomUUID())).toUriString();
+                .deleteComputeResourceProperty(UUID.randomUUID())).toUriString();
         mockMvc.perform(delete(url)).andExpect(status().isOk());
     }
 
@@ -79,7 +79,7 @@ public class ComputeResourcePropertyControllerTest {
     void deleteResourceProperty_returnNotFound() throws Exception {
         doThrow(new NoSuchElementException()).when(resourceService).deleteComputeResourceProperty(any());
         var url = fromMethodCall(uriBuilder, on(ComputeResourcePropertyController.class)
-                .deleteComputingResourceProperty(UUID.randomUUID())).toUriString();
+                .deleteComputeResourceProperty(UUID.randomUUID())).toUriString();
         mockMvc.perform(delete(url)).andExpect(status().isNotFound());
     }
 
@@ -87,7 +87,7 @@ public class ComputeResourcePropertyControllerTest {
     void getResource_returnNotFound() throws Exception {
         when(resourceService.findComputeResourcePropertyById(any())).thenThrow(new NoSuchElementException());
         var url = fromMethodCall(uriBuilder, on(ComputeResourcePropertyController.class)
-                .getComputingResourceProperty(UUID.randomUUID())).toUriString();
+                .getComputeResourceProperty(UUID.randomUUID())).toUriString();
         mockMvc.perform(get(url)).andExpect(status().isNotFound());
     }
 
@@ -104,7 +104,7 @@ public class ComputeResourcePropertyControllerTest {
 
         when(resourceService.findComputeResourcePropertyById(any())).thenReturn(sampleResource);
         var url = fromMethodCall(uriBuilder, on(ComputeResourcePropertyController.class)
-                .deleteComputingResourceProperty(UUID.randomUUID())).toUriString();
+                .deleteComputeResourceProperty(UUID.randomUUID())).toUriString();
         var result = mockMvc.perform(get(url)).andExpect(status().isOk()).andReturn();
 
         var dto = mapper.readValue(
