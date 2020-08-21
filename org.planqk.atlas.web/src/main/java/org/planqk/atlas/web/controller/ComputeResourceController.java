@@ -84,7 +84,7 @@ public class ComputeResourceController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200")
     }, description = "Retrieve all compute resources")
-    @GetMapping()
+    @GetMapping
     @ListParametersDoc
     public ResponseEntity<PagedModel<EntityModel<ComputeResourceDto>>> getComputeResources(
             @Parameter(hidden = true) ListParameters listParameters) {
@@ -104,7 +104,7 @@ public class ComputeResourceController {
             "References to sub-objects (e.g. a compute resource property) " +
             "can be added via sub-routes (e.g. /compute-resources/{id}/compute-resource-properties). " +
             "Custom ID will be ignored.")
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<EntityModel<ComputeResourceDto>> createComputeResource(
             @Validated(ValidationGroups.Create.class) @RequestBody ComputeResourceDto computeResourceDto) {
         ComputeResource computeResource = computeResourceService.save(
@@ -120,12 +120,11 @@ public class ComputeResourceController {
             "References to sub-objects (e.g. a compute resource property) are not updated via this operation - " +
             "use the corresponding sub-route for updating them (e.g. /compute-resources/{id}/compute-resource-properties). " +
             "Custom ID will be ignored.")
-    @PutMapping("/{computeResourceId}")
+    @PutMapping
     public ResponseEntity<EntityModel<ComputeResourceDto>> updateComputeResource(
-            @PathVariable UUID computeResourceId,
             @Validated(ValidationGroups.Update.class) @RequestBody ComputeResourceDto computeResourceDto) {
         ComputeResource computeResource = computeResourceService.update(
-                computeResourceId, ModelMapperUtils.convert(computeResourceDto, ComputeResource.class));
+                computeResourceDto.getId(), ModelMapperUtils.convert(computeResourceDto, ComputeResource.class));
         return ResponseEntity.ok(computeResourceAssembler.toModel(computeResource));
     }
 
@@ -223,12 +222,11 @@ public class ComputeResourceController {
             @ApiResponse(responseCode = "404", description = "Algorithm with the given id doesn't exist")},
             description = "Update a computing resource of the algorithm. Custom ID will be ignored." +
                     "For computing resource type only ID is required, other computing resource type attributes will not change.")
-    @PutMapping("/{computeResourceId}/" + Constants.COMPUTE_RESOURCES_PROPERTIES + "/{resourceId}")
+    @PutMapping("/{computeResourceId}/" + Constants.COMPUTE_RESOURCES_PROPERTIES)
     public ResponseEntity<EntityModel<ComputeResourcePropertyDto>> updateComputingResourceResourcePropertyOfComputeResource(
             @PathVariable UUID computeResourceId,
-            @PathVariable UUID resourceId,
-            @RequestBody ComputeResourcePropertyDto resourceDto) {
-        ComputeResourceProperty computeResourceProperty = computeResourcePropertyService.findComputeResourcePropertyById(resourceId);
+            @Validated(ValidationGroups.Update.class) @RequestBody ComputeResourcePropertyDto resourceDto) {
+        ComputeResourceProperty computeResourceProperty = computeResourcePropertyService.findComputeResourcePropertyById(resourceDto.getId());
         var computeResource = computeResourceService.findById(computeResourceId);
         if (Objects.isNull(computeResourceProperty.getComputeResource()) ||
                 !computeResourceProperty.getComputeResource().getId().equals(computeResourceId)) {
@@ -236,7 +234,7 @@ public class ComputeResourceController {
         }
         ValidationUtils.validateComputingResourceProperty(resourceDto);
         var resource = computeResourcePropertyMixin.fromDto(resourceDto);
-        resource.setId(resourceId);
+        resource.setId(resourceDto.getId());
         var updatedResource = computeResourcePropertyService.addComputeResourcePropertyToComputeResource(computeResource, resource);
         return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(updatedResource));
     }
