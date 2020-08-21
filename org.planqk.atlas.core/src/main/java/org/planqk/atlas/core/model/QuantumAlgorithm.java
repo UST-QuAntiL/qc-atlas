@@ -1,13 +1,6 @@
 package org.planqk.atlas.core.model;
 
-import java.util.Set;
-
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.OneToMany;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -25,10 +18,10 @@ public class QuantumAlgorithm extends Algorithm {
 
     private String speedUp;
 
-    @OneToMany(cascade = {CascadeType.MERGE}, fetch = FetchType.LAZY)
-    @JoinTable(name = "algorithm_implementation",
-            joinColumns = @JoinColumn(name = "algorithm_id"),
-            inverseJoinColumns = @JoinColumn(name = "implementation_id"))
-    @EqualsAndHashCode.Exclude
-    private Set<QuantumImplementation> implementations;
+//    @OneToMany(cascade = {CascadeType.MERGE}, fetch = FetchType.LAZY)
+//    @JoinTable(name = "algorithm_implementation",
+//            joinColumns = @JoinColumn(name = "algorithm_id"),
+//            inverseJoinColumns = @JoinColumn(name = "implementation_id"))
+//    @EqualsAndHashCode.Exclude
+//    private Set<QuantumImplementation> implementations;
 }

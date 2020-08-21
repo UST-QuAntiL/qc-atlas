@@ -43,12 +43,12 @@ import org.planqk.atlas.core.repository.PatternRelationRepository;
 import org.planqk.atlas.core.repository.ProblemTypeRepository;
 import org.planqk.atlas.core.repository.PublicationRepository;
 import org.planqk.atlas.core.repository.SketchRepository;
+
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import lombok.AllArgsConstructor;
 
 @Service
 @AllArgsConstructor
@@ -67,13 +67,10 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     private final ImplementationService implementationService;
     private final ImplementationRepository implementationRepository;
 
-    private final PublicationService publicationService;
     private final PublicationRepository publicationRepository;
 
-    private final ProblemTypeService problemTypeService;
     private final ProblemTypeRepository problemTypeRepository;
 
-    private final ApplicationAreaService applicationAreaService;
     private final ApplicationAreaRepository applicationAreaRepository;
 
     private final PatternRelationService patternRelationService;

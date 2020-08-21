@@ -34,7 +34,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class DiscussionCommentServiceImpl implements DiscussionCommentService {
 
-    private DiscussionCommentRepository repository;
+    private final DiscussionCommentRepository repository;
 
     @Override
     public DiscussionComment save(DiscussionComment discussionComment) {

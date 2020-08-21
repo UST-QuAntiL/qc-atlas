@@ -45,7 +45,6 @@ public class ImplementationServiceImpl implements ImplementationService {
     private final SoftwarePlatformRepository softwarePlatformRepository;
 
     private final PublicationRepository publicationRepository;
-    private final AlgorithmService algorithmService;
     private final AlgorithmRepository algorithmRepository;
 
     @Override
@@ -57,7 +56,8 @@ public class ImplementationServiceImpl implements ImplementationService {
     @Override
     @Transactional
     public Implementation create(Implementation implementation, UUID implementedAlgorithmId) {
-        Algorithm implementedAlgorithm = algorithmService.findById(implementedAlgorithmId);
+        Algorithm implementedAlgorithm = algorithmRepository.findById(implementedAlgorithmId)
+                .orElseThrow(() -> new NoSuchElementException("The algorithm does not exist"));
         implementation.setImplementedAlgorithm(implementedAlgorithm);
         Implementation savedImplementation = implementationRepository.save(implementation);
         implementedAlgorithm.getImplementations().add(savedImplementation);

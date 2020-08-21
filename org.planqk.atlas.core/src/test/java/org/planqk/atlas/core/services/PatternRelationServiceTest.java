@@ -19,18 +19,10 @@
 
 package org.planqk.atlas.core.services;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.net.URI;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.UUID;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
@@ -39,11 +31,18 @@ import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.model.PatternRelationType;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PatternRelationServiceTest extends AtlasDatabaseTestBase {
 
@@ -147,7 +146,7 @@ public class PatternRelationServiceTest extends AtlasDatabaseTestBase {
         relation1.setPatternRelationType(savedType);
 
         assertThrows(NoSuchElementException.class, () -> {
-            service.update(relation1.getId(), relation1);
+            service.update(relation1);
         });
     }
 
@@ -162,7 +161,7 @@ public class PatternRelationServiceTest extends AtlasDatabaseTestBase {
         savedRelation.setDescription("UpdatedDescription");
         savedRelation.setPattern(URI.create("https://www.updated.com"));
 
-        PatternRelation updatedRelation = service.update(savedRelation.getId(), savedRelation);
+        PatternRelation updatedRelation = service.update(savedRelation);
 
         assertEquals(updatedRelation.getDescription(), savedRelation.getDescription());
         assertEquals(updatedRelation.getPattern(), savedRelation.getPattern());

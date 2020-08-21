@@ -39,7 +39,7 @@ import lombok.AllArgsConstructor;
 @Service
 public class PatternRelationTypeServiceImpl implements PatternRelationTypeService {
 
-    private final String NO_TYPE_ERROR = "PatternRelationType does not exist!";
+    private static final String NO_TYPE_ERROR = "PatternRelationType does not exist!";
 
     private final PatternRelationTypeRepository patternRelationTypeRepository;
     private final PatternRelationRepository patternRelationRepository;

@@ -35,7 +35,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class DiscussionTopicServiceImpl implements DiscussionTopicService {
 
-    private DiscussionTopicRepository repository;
+    private final DiscussionTopicRepository repository;
 
     @Override
     public DiscussionTopic save(DiscussionTopic discussionTopic) {

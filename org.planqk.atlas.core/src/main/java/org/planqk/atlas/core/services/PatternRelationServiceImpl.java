@@ -25,6 +25,7 @@ import java.util.UUID;
 import javax.transaction.Transactional;
 
 import org.planqk.atlas.core.model.PatternRelation;
+import org.planqk.atlas.core.repository.AlgorithmRepository;
 import org.planqk.atlas.core.repository.PatternRelationRepository;
 
 import lombok.AllArgsConstructor;
@@ -36,14 +37,20 @@ import org.springframework.stereotype.Service;
 @Service
 public class PatternRelationServiceImpl implements PatternRelationService {
 
-    private final String NO_RELATION_ERROR = "Pattern relation does not exist!";
+    private static final String NO_RELATION_ERROR = "Pattern relation does not exist!";
 
     private final PatternRelationRepository patternRelationRepository;
     private final PatternRelationTypeService patternRelationTypeService;
+    private final AlgorithmRepository algorithmRepository;
 
     @Override
     @Transactional
     public PatternRelation save(PatternRelation patternRelation) {
+        if (patternRelation.getAlgorithm() == null
+                || patternRelation.getAlgorithm().getId() == null
+                || !algorithmRepository.existsById(patternRelation.getAlgorithm().getId())) {
+            throw new NoSuchElementException("The given algorithm is invalid or does not exist");
+        }
         var patternRelationType = patternRelationTypeService.findById(patternRelation.getPatternRelationType().getId());
         patternRelation.setPatternRelationType(patternRelationType);
         return patternRelationRepository.save(patternRelation);
