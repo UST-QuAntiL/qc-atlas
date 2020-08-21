@@ -157,8 +157,8 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 
     private void removeReferences(Algorithm algorithm) {
         // delete related implementations
-        implementationService.findByImplementedAlgorithm(algorithm.getId(), Pageable.unpaged())
-                .forEach(implementation -> implementationService.delete(implementation.getId()));
+        algorithm.getImplementations().forEach(
+                implementation -> implementationService.delete(implementation.getId()));
 
         // delete algorithm relations
         algorithm.getAlgorithmRelations().forEach(algorithmRelationRepository::delete);

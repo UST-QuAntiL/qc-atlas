@@ -43,7 +43,7 @@ public class ImplementationServiceImpl implements ImplementationService {
 
     private final ImplementationRepository implementationRepository;
     private final SoftwarePlatformRepository softwarePlatformRepository;
-    //    private final TagService tagService;
+
     private final PublicationRepository publicationRepository;
     private final AlgorithmService algorithmService;
     private final AlgorithmRepository algorithmRepository;
@@ -59,7 +59,9 @@ public class ImplementationServiceImpl implements ImplementationService {
     public Implementation create(Implementation implementation, UUID implementedAlgorithmId) {
         Algorithm implementedAlgorithm = algorithmService.findById(implementedAlgorithmId);
         implementation.setImplementedAlgorithm(implementedAlgorithm);
-        return implementationRepository.save(implementation);
+        Implementation savedImplementation = implementationRepository.save(implementation);
+        implementedAlgorithm.getImplementations().add(savedImplementation);
+        return savedImplementation;
     }
 
     @Override

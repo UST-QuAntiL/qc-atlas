@@ -94,7 +94,10 @@ public class Algorithm extends AlgorOrImpl implements ModelWithPublications {
 
     private ComputationModel computationModel;
 
-    @OneToMany(mappedBy = "algorithm", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "algorithm",
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
     @EqualsAndHashCode.Exclude
     private Set<PatternRelation> relatedPatterns = new HashSet<>();
 
@@ -119,6 +122,14 @@ public class Algorithm extends AlgorOrImpl implements ModelWithPublications {
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Set<Tag> tags = new HashSet<>();
+
+    @OneToMany(mappedBy = "implementedAlgorithm",
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private Set<Implementation> implementations = new HashSet<>();
 
     public void addTag(Tag tag) {
         if (tags.contains(tag)) {
