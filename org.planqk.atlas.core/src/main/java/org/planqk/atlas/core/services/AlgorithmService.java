@@ -55,4 +55,6 @@ public interface AlgorithmService {
 
     Set<AlgorithmRelation> getAlgorithmRelations(UUID sourceAlgorithm_id);
 
+    byte[] getImageURLByAlgorithmAndSketch(final UUID algoId, final UUID sketchId);
+
 }

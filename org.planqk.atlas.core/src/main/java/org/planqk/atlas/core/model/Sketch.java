@@ -31,7 +31,7 @@ public class Sketch extends KnowledgeArtifact {
 
     @Lob
     @Type(type = "org.hibernate.type.TextType")
-    private String image;
+    private String imageURL;
 
     @Column(columnDefinition = "text")
     private String description;

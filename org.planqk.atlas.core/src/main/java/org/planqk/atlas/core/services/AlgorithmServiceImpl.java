@@ -33,6 +33,7 @@ import org.planqk.atlas.core.model.QuantumAlgorithm;
 import org.planqk.atlas.core.model.Sketch;
 import org.planqk.atlas.core.repository.AlgorithmRelationRepository;
 import org.planqk.atlas.core.repository.AlgorithmRepository;
+import org.planqk.atlas.core.repository.ImageRepository;
 import org.planqk.atlas.core.repository.ImplementationRepository;
 import org.planqk.atlas.core.repository.SketchRepository;
 import org.slf4j.Logger;
@@ -61,6 +62,8 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     private final AlgoRelationTypeService relationTypeService;
 
     private final ImplementationRepository implementationRepository;
+
+    private ImageRepository imageRepository;
 
     @Transactional
     @Override
@@ -248,5 +251,10 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         Set<AlgorithmRelation> relations = algorithmRelationRepository.findBySourceAlgorithmId(sourceAlgorithmId);
         relations.addAll(algorithmRelationRepository.findByTargetAlgorithmId(sourceAlgorithmId));
         return relations;
+    }
+
+    @Override
+    public byte[] getImageURLByAlgorithmAndSketch(UUID algoId, UUID sketchId) {
+        return this.imageRepository.findAll().get(0).getImage();
     }
 }
