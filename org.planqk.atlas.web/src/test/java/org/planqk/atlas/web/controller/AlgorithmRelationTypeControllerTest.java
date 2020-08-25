@@ -99,7 +99,7 @@ public class AlgorithmRelationTypeControllerTest {
 
     @Test
     public void createAlgoRelationType_returnCreate() throws Exception {
-        when(algoRelationTypeService.save(any())).thenReturn(algoRelationType1);
+        when(algoRelationTypeService.create(any())).thenReturn(algoRelationType1);
 
         var url = fromMethodCall(uriBuilder, on(AlgorithmRelationTypeController.class)
                 .createAlgorithmRelationType(null)).toUriString();
@@ -128,7 +128,7 @@ public class AlgorithmRelationTypeControllerTest {
 
     @Test
     public void updateAlgoRelationType_returnOk() throws Exception {
-        when(algoRelationTypeService.update(any(), any())).thenReturn(algoRelationType1);
+        when(algoRelationTypeService.update(any())).thenReturn(algoRelationType1);
 
         var url = fromMethodCall(uriBuilder, on(AlgorithmRelationTypeController.class)
                 .updateAlgorithmRelationType(null)).toUriString();

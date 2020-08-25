@@ -27,11 +27,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import org.planqk.atlas.core.model.AlgoRelationType;
-import org.planqk.atlas.core.model.Algorithm;
-import org.planqk.atlas.core.model.AlgorithmRelation;
-import org.planqk.atlas.core.model.ClassicAlgorithm;
-import org.planqk.atlas.core.model.ComputationModel;
-import org.planqk.atlas.core.model.exceptions.ConsistencyException;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -49,7 +44,7 @@ public class AlgoRelationTypeServiceTest extends AtlasDatabaseTestBase {
     void testAddAlgoRelationType() {
         AlgoRelationType relationType = getGenericAlgoRelationType("testRelation");
 
-        AlgoRelationType storedRelationType = algoRelationTypeService.save(relationType);
+        AlgoRelationType storedRelationType = algoRelationTypeService.create(relationType);
 
         assertThat(storedRelationType.getId()).isNotNull();
         assertThat(storedRelationType.getName()).isEqualTo(relationType.getName());
@@ -58,7 +53,7 @@ public class AlgoRelationTypeServiceTest extends AtlasDatabaseTestBase {
     @Test
     void testUpdateAlgoRelationType_ElementNotFound() {
         Assertions.assertThrows(NoSuchElementException.class, () ->
-                algoRelationTypeService.update(UUID.randomUUID(), null));
+                algoRelationTypeService.update(null));
     }
 
     @Test
@@ -66,11 +61,11 @@ public class AlgoRelationTypeServiceTest extends AtlasDatabaseTestBase {
         AlgoRelationType relationType = getGenericAlgoRelationType("testRelation");
         AlgoRelationType compareRelationType = getGenericAlgoRelationType("testRelation");
 
-        AlgoRelationType storedRelationType = algoRelationTypeService.save(relationType);
+        AlgoRelationType storedRelationType = algoRelationTypeService.create(relationType);
         compareRelationType.setId(storedRelationType.getId());
         String editName = "editedRelation";
         storedRelationType.setName(editName);
-        storedRelationType = algoRelationTypeService.update(storedRelationType.getId(), storedRelationType);
+        storedRelationType = algoRelationTypeService.update(storedRelationType);
 
         assertThat(storedRelationType.getId()).isNotNull();
         assertThat(storedRelationType.getId()).isEqualTo(compareRelationType.getId());
@@ -88,7 +83,7 @@ public class AlgoRelationTypeServiceTest extends AtlasDatabaseTestBase {
     void testFindAlgoRelationTypeById_ElementFound() {
         AlgoRelationType relationType = getGenericAlgoRelationType("testRelation");
 
-        AlgoRelationType storedRelationType = algoRelationTypeService.save(relationType);
+        AlgoRelationType storedRelationType = algoRelationTypeService.create(relationType);
 
         storedRelationType = algoRelationTypeService.findById(storedRelationType.getId());
 
@@ -99,9 +94,9 @@ public class AlgoRelationTypeServiceTest extends AtlasDatabaseTestBase {
     @Test
     void testFindAll() {
         AlgoRelationType relationType1 = getGenericAlgoRelationType("testRelationType1");
-        algoRelationTypeService.save(relationType1);
+        algoRelationTypeService.create(relationType1);
         AlgoRelationType relationType2 = getGenericAlgoRelationType("testRelationType2");
-        algoRelationTypeService.save(relationType2);
+        algoRelationTypeService.create(relationType2);
 
         List<AlgoRelationType> algoRelationTypes = algoRelationTypeService.findAll(Pageable.unpaged()).getContent();
 
@@ -138,7 +133,7 @@ public class AlgoRelationTypeServiceTest extends AtlasDatabaseTestBase {
     @Test
     void testDeleteAlgoRelationType_NoReferences() {
         AlgoRelationType relationType = getGenericAlgoRelationType("testRelation");
-        AlgoRelationType storedRelationType = algoRelationTypeService.save(relationType);
+        AlgoRelationType storedRelationType = algoRelationTypeService.create(relationType);
 
         Assertions.assertDoesNotThrow(() -> algoRelationTypeService.findById(storedRelationType.getId()));
 

@@ -80,7 +80,7 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
         computingResourcePropertyType.setName("test name");
         computingResourcePropertyType.setDatatype(ComputeResourcePropertyDataType.STRING);
         computingResourcePropertyType.setDescription("test description");
-        var storedType = computeResourcePropertyTypeService.save(computingResourcePropertyType);
+        var storedType = computeResourcePropertyTypeService.create(computingResourcePropertyType);
         computingResourceProperty.setComputeResourcePropertyType(storedType);
         computingResourceProperty.setValue("test value");
 
@@ -189,7 +189,7 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
         computingResourcePropertyType.setName("test name");
         computingResourcePropertyType.setDatatype(ComputeResourcePropertyDataType.STRING);
         computingResourcePropertyType.setDescription("test description");
-        var storedType = computeResourcePropertyTypeService.save(computingResourcePropertyType);
+        var storedType = computeResourcePropertyTypeService.create(computingResourcePropertyType);
         computingResourceProperty.setComputeResourcePropertyType(storedType);
         computingResourceProperty.setValue("test value");
 

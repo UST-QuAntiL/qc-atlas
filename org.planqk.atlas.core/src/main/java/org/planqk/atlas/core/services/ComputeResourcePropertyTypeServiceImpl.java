@@ -39,11 +39,7 @@ public class ComputeResourcePropertyTypeServiceImpl implements ComputeResourcePr
 
     @Override
     @Transactional
-    public ComputeResourcePropertyType save(ComputeResourcePropertyType computeResourcePropertyType) {
-        if (computeResourcePropertyType.getId() != null &&
-                !computeResourcePropertyTypeRepository.existsById(computeResourcePropertyType.getId())) {
-            throw new NoSuchElementException("The use of a custom id is not allowed!");
-        }
+    public ComputeResourcePropertyType create(ComputeResourcePropertyType computeResourcePropertyType) {
         return computeResourcePropertyTypeRepository.save(computeResourcePropertyType);
     }
 

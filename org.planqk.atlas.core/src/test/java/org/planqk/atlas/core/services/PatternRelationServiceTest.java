@@ -88,7 +88,7 @@ public class PatternRelationServiceTest extends AtlasDatabaseTestBase {
 
         // Init stored objects
         savedAlgorithm = algorithmService.save(algorithm);
-        savedType = patternRelationTypeService.save(type);
+        savedType = patternRelationTypeService.create(type);
     }
 
     @Test

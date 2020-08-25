@@ -31,7 +31,7 @@ import org.springframework.data.domain.Pageable;
 public interface PatternRelationTypeService {
 
     @Transactional
-    PatternRelationType save(PatternRelationType patternRelationType);
+    PatternRelationType create(PatternRelationType patternRelationType);
 
     PatternRelationType findById(UUID patternRelationTypeId);
 

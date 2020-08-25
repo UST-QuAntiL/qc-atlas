@@ -207,7 +207,7 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         resourceType.setName("Test Name");
         resourceType.setDatatype(ComputeResourcePropertyDataType.FLOAT);
 
-        var insertedElem = this.computeResourcePropertyTypeService.save(resourceType);
+        var insertedElem = this.computeResourcePropertyTypeService.create(resourceType);
 
         var elements = this.typeRepository.findAll();
         assertEquals(1, elements.size());
@@ -234,7 +234,7 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         resourceType.setName("Test Name");
         resourceType.setDatatype(ComputeResourcePropertyDataType.FLOAT);
 
-        var insertedElem = this.computeResourcePropertyTypeService.save(resourceType);
+        var insertedElem = this.computeResourcePropertyTypeService.create(resourceType);
 
         assertThat(computeResourcePropertyTypeService.findById(insertedElem.getId()).getDatatype()).isEqualTo(resourceType.getDatatype());
     }
