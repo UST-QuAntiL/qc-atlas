@@ -541,7 +541,7 @@ public class AlgorithmController {
     public ResponseEntity<PagedModel<EntityModel<ComputeResourcePropertyDto>>> getComputeResourcePropertiesOfAlgorithm(
             @PathVariable UUID algorithmId,
             @Parameter(hidden = true) ListParameters listParameters) {
-        var resources = algorithmService.findComputeResourceProperties(algorithmId, listParameters.getPageable());
+        var resources = computeResourcePropertyService.findComputeResourcePropertiesOfAlgorithm(algorithmId, listParameters.getPageable());
         return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(resources));
     }
 

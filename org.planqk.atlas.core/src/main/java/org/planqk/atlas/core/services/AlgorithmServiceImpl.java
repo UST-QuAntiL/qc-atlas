@@ -26,13 +26,11 @@ import java.util.UUID;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.model.ApplicationArea;
-import org.planqk.atlas.core.model.ComputeResourceProperty;
 import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.model.QuantumAlgorithm;
 import org.planqk.atlas.core.model.Sketch;
-import org.planqk.atlas.core.model.exceptions.ConsistencyException;
 import org.planqk.atlas.core.repository.AlgoRelationTypeRepository;
 import org.planqk.atlas.core.repository.AlgorithmRelationRepository;
 import org.planqk.atlas.core.repository.AlgorithmRepository;
@@ -212,39 +210,6 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         }
 
         return getAlgorithmRelations(algorithmId, pageable);
-    }
-
-    @Override
-    public Page<ComputeResourceProperty> findComputeResourceProperties(UUID algoId, Pageable pageable) {
-        if (algorithmRepository.existsAlgorithmById(algoId)) {
-            throw new NoSuchElementException();
-        }
-
-        return computeResourcePropertyRepository.findAllByAlgorithm_Id(algoId, pageable);
-    }
-
-    @Override
-    @Transactional
-    public ComputeResourceProperty createComputeResourceProperty(UUID algoId, ComputeResourceProperty computeResourceProperty) {
-        Algorithm algorithm = findById(algoId);
-
-        var createdProperty = computeResourcePropertyService.save(computeResourceProperty);
-        algorithm.addComputeResourceProperty(createdProperty);
-
-        return createdProperty;
-    }
-
-    @Override
-    @Transactional
-    public void deleteComputeResourceProperty(UUID algoId, UUID computeResourcePropertyId) {
-        Algorithm algorithm = findById(algoId);
-        var computeResourceProperty = computeResourcePropertyService.findById(computeResourcePropertyId);
-
-        if (!algorithm.getRequiredComputeResourceProperties().contains(computeResourceProperty)) {
-            throw new ConsistencyException("Compute resource property to delete is not part of given algorithm");
-        }
-
-        computeResourcePropertyService.delete(computeResourcePropertyId);
     }
 
 //    private AlgoRelationType getPersistedAlgoRelationType(AlgorithmRelation relation) {

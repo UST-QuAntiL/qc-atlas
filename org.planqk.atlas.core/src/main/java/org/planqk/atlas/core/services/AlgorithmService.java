@@ -32,7 +32,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
-public interface AlgorithmService extends ComputeResourcePropertyInterface {
+public interface AlgorithmService {
 
     @Transactional
     Algorithm save(Algorithm algorithm);
