@@ -20,19 +20,20 @@
 package org.planqk.atlas.core.services;
 
 import java.util.List;
-import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Slf4j
 public class ImplementationServiceTest extends AtlasDatabaseTestBase {
 
     @Autowired
@@ -57,7 +58,7 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
 
         Algorithm algo = new ClassicAlgorithm();
         algo.setName("test");
-        algo = algorithmService.save(algo);
+        algo = algorithmService.create(algo);
 
         var impl = new Implementation();
         impl.setName("test-impl");
@@ -65,13 +66,13 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
 //        impl.setTags(tags);
 //        tags.forEach(e -> e.setImplementations(SetUtils.hashSetOf(impl)));
 
-        var returnedImpl = implementationService.save(impl);
+        var returnedImpl = implementationService.create(impl, algo.getId());
 
 //        var returnedTag = tagService.getTagById(tag.getId());
 //        returnedTag.setImplementations(SetUtils.hashSetOf(impl));
 //        returnedImpl.setTags(SetUtils.hashSetOf(tag));
 
-        implementationService.save(returnedImpl);
+        implementationService.create(returnedImpl, algo.getId());
 
         var dbImpl = implementationService.findById(returnedImpl.getId());
         assertThat(dbImpl.getName()).isEqualTo(impl.getName());
@@ -83,16 +84,16 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
     void testFindByImplementedAlgorithm() {
         Algorithm algo = new Algorithm();
         algo.setName("dummy");
-        algo = algorithmService.save(algo);
+        algo = algorithmService.create(algo);
 
         Implementation implementation1 = new Implementation();
         implementation1.setName("test-impl1");
         implementation1.setImplementedAlgorithm(algo);
-        implementationService.save(implementation1);
+        implementationService.create(implementation1, algo.getId());
         Implementation implementation2 = new Implementation();
         implementation2.setName("test-impl2");
         implementation2.setImplementedAlgorithm(algo);
-        implementationService.save(implementation2);
+        implementationService.create(implementation2, algo.getId());
 
         List<Implementation> implementations = implementationService.findByImplementedAlgorithm(algo.getId(), Pageable.unpaged()).getContent();
 

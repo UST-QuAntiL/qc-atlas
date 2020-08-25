@@ -20,7 +20,6 @@
 package org.planqk.atlas.core.services;
 
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -34,6 +33,7 @@ import org.planqk.atlas.core.model.ComputationModel;
 import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +41,7 @@ import org.springframework.data.domain.Pageable;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Slf4j
 public class PublicationServiceTest extends AtlasDatabaseTestBase {
 
     @Autowired
@@ -52,7 +53,7 @@ public class PublicationServiceTest extends AtlasDatabaseTestBase {
     void testAddPublication() throws MalformedURLException {
         Publication publication = getGenericTestPublication("testPublicationTitle");
 
-        Publication storedPublication = publicationService.save(publication);
+        Publication storedPublication = publicationService.create(publication);
         assertPublicationEquality(storedPublication, publication);
     }
 
@@ -67,7 +68,7 @@ public class PublicationServiceTest extends AtlasDatabaseTestBase {
         Publication publication = getGenericTestPublication("testPublicationTitle");
         Publication comparePublication = getGenericTestPublication("testPublicationTitle");
 
-        Publication storedPublication = publicationService.save(publication);
+        Publication storedPublication = publicationService.create(publication);
         comparePublication.setId(storedPublication.getId());
         storedPublication.setTitle("editedPublicationTitle");
         Publication editedProblemType = publicationService.update(storedPublication.getId(), storedPublication);
@@ -91,7 +92,7 @@ public class PublicationServiceTest extends AtlasDatabaseTestBase {
     @Test
     void testFindPublicationById_ElementFound() throws MalformedURLException {
         Publication publication = getGenericTestPublication("testPublicationTitle");
-        Publication storedPublication = publicationService.save(publication);
+        Publication storedPublication = publicationService.create(publication);
 
         storedPublication = publicationService.findById(storedPublication.getId());
 
@@ -109,12 +110,12 @@ public class PublicationServiceTest extends AtlasDatabaseTestBase {
         Set<Algorithm> algorithms = new HashSet<>();
         algorithms.add(algorithm);
         publication.setAlgorithms(algorithms);
-        Publication storedPublication = publicationService.save(publication);
+        Publication storedPublication = publicationService.create(publication);
         publications.add(publication);
 
         algorithm.setPublications(publications);
 
-        Algorithm storedAlgorithm = algorithmService.save(algorithm);
+        Algorithm storedAlgorithm = algorithmService.create(algorithm);
 
         Set<Algorithm> publicationAlgorithms = storedPublication.getAlgorithms();
 
@@ -126,11 +127,11 @@ public class PublicationServiceTest extends AtlasDatabaseTestBase {
     @Test
     void testDeletePublication() throws MalformedURLException {
         Publication publication = getGenericTestPublication("testPublicationTitle");
-        Publication storedPublication = publicationService.save(publication);
+        Publication storedPublication = publicationService.create(publication);
 
         Assertions.assertDoesNotThrow(() -> publicationService.findById(storedPublication.getId()));
 
-        publicationService.deleteById(storedPublication.getId());
+        publicationService.delete(storedPublication.getId());
 
         Assertions.assertThrows(NoSuchElementException.class, () ->
                 publicationService.findById(storedPublication.getId()));
@@ -139,9 +140,9 @@ public class PublicationServiceTest extends AtlasDatabaseTestBase {
     @Test
     void testDeletePublications() throws MalformedURLException {
         Publication publication1 = getGenericTestPublication("testPublicationTitle1");
-        Publication storedPublication1 = publicationService.save(publication1);
+        Publication storedPublication1 = publicationService.create(publication1);
         Publication publication2 = getGenericTestPublication("testPublicationTitle2");
-        Publication storedPublication2 = publicationService.save(publication2);
+        Publication storedPublication2 = publicationService.create(publication2);
 
         Set<UUID> publicationIds = new HashSet<>();
         publicationIds.add(storedPublication1.getId());
@@ -150,32 +151,12 @@ public class PublicationServiceTest extends AtlasDatabaseTestBase {
         Assertions.assertDoesNotThrow(() -> publicationService.findById(storedPublication1.getId()));
         Assertions.assertDoesNotThrow(() -> publicationService.findById(storedPublication2.getId()));
 
-        publicationService.deletePublicationsByIds(publicationIds);
+        publicationService.deletePublications(publicationIds);
 
         Assertions.assertThrows(NoSuchElementException.class, () ->
                 publicationService.findById(storedPublication1.getId()));
         Assertions.assertThrows(NoSuchElementException.class, () ->
                 publicationService.findById(storedPublication2.getId()));
-    }
-
-    @Test
-    void testCreateOrUpdateAll() {
-        var publications = new HashSet<Publication>();
-        for (int i = 0; i < 10; i++) {
-            var pub = new Publication();
-            pub.setAuthors(List.of("Hello", "World", "my", "Name", "is", "test", i + ""));
-            pub.setTitle("Some Title " + i);
-            if (i % 2 == 0) {
-                publications.add(publicationService.save(pub));
-            } else {
-                publications.add(pub);
-            }
-        }
-        publicationService.createOrUpdateAll(publications);
-
-        var elements = publicationService.findAll(Pageable.unpaged(), null);
-
-        assertThat(elements.get().filter(e -> e.getId() != null).count()).isEqualTo(publications.size());
     }
 
     private void assertPublicationEquality(Publication dbPublication, Publication comparePublication) {

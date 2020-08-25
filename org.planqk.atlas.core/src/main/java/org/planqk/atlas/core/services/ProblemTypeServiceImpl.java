@@ -28,24 +28,24 @@ import javax.transaction.Transactional;
 
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.model.exceptions.ConsistencyException;
-import org.planqk.atlas.core.repository.AlgorithmRepository;
 import org.planqk.atlas.core.repository.ProblemTypeRepository;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class ProblemTypeServiceImpl implements ProblemTypeService {
 
     private final ProblemTypeRepository problemTypeRepository;
-    private final AlgorithmRepository algorithmRepository;
 
     @Override
     @Transactional
-    public ProblemType save(ProblemType problemType) {
+    public ProblemType create(ProblemType problemType) {
         return problemTypeRepository.save(problemType);
     }
 
@@ -61,13 +61,13 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
 
     @Override
     @Transactional
-    public ProblemType update(UUID problemTypeId, ProblemType problemType) {
-        ProblemType persistedProblemType = findById(problemTypeId);
+    public ProblemType update(ProblemType problemType) {
+        ProblemType persistedProblemType = findById(problemType.getId());
 
         persistedProblemType.setName(problemType.getName());
         persistedProblemType.setParentProblemType(problemType.getParentProblemType());
 
-        return save(persistedProblemType);
+        return create(persistedProblemType);
     }
 
     @Override

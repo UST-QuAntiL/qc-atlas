@@ -54,7 +54,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -98,6 +97,17 @@ public class ImplementationController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
+    }, description = "Retrieve all implementations")
+    @GetMapping()
+    @ListParametersDoc
+    public ResponseEntity<PagedModel<EntityModel<ImplementationDto>>> getImplementations(
+            @Parameter(hidden = true) ListParameters listParameters) {
+        var implementations = implementationService.findAll(listParameters.getPageable());
+        return ResponseEntity.ok(implementationAssembler.toModel(implementations));
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Implementation doesn't exist")
     }, description = "Custom ID will be ignored.")
@@ -105,7 +115,7 @@ public class ImplementationController {
     public ResponseEntity<EntityModel<ImplementationDto>> updateImplementation(
             @Validated(ValidationGroups.Update.class) @RequestBody ImplementationDto implementationDto) {
         Implementation updatedImplementation = implementationService.update(
-                implementationDto.getId(), ModelMapperUtils.convert(implementationDto, Implementation.class));
+                ModelMapperUtils.convert(implementationDto, Implementation.class));
         return ResponseEntity.ok(implementationAssembler.toModel(updatedImplementation));
     }
 
@@ -139,7 +149,7 @@ public class ImplementationController {
             @ApiResponse(responseCode = "404")
     }, description = "")
     @GetMapping("/{implementationId}/" + Constants.TAGS)
-    public HttpEntity<CollectionModel<EntityModel<TagDto>>> getTagsOfImplementation(
+    public ResponseEntity<CollectionModel<EntityModel<TagDto>>> getTagsOfImplementation(
             @PathVariable UUID implementationId) {
         Implementation implementation = implementationService.findById(implementationId);
         return ResponseEntity.ok(tagAssembler.toModel(implementation.getTags()));
@@ -151,7 +161,7 @@ public class ImplementationController {
             @ApiResponse(responseCode = "404")
     }, description = "")
     @PutMapping("/{implementationId}/" + Constants.TAGS)
-    public HttpEntity<Void> addTagToImplementation(
+    public ResponseEntity<Void> addTagToImplementation(
             @PathVariable UUID implementationId,
             @Validated @RequestBody TagDto tagDto) {
         tagService.addTagToImplementation(implementationId, ModelMapperUtils.convert(tagDto, Tag.class));
@@ -164,7 +174,7 @@ public class ImplementationController {
             @ApiResponse(responseCode = "404")
     }, description = "")
     @DeleteMapping("/{implementationId}/" + Constants.TAGS)
-    public HttpEntity<Void> removeTagFromImplementation(
+    public ResponseEntity<Void> removeTagFromImplementation(
             @PathVariable UUID implementationId,
             @Validated @RequestBody TagDto tagDto) {
         tagService.removeTagFromImplementation(implementationId, ModelMapperUtils.convert(tagDto, Tag.class));
@@ -222,10 +232,9 @@ public class ImplementationController {
     }, description = "Get referenced software platform for an implementation")
     @GetMapping("/{implementationId}/" + Constants.SOFTWARE_PLATFORMS)
     @ListParametersDoc
-    public HttpEntity<CollectionModel<EntityModel<SoftwarePlatformDto>>> getSoftwarePlatformsOfImplementation(
+    public ResponseEntity<CollectionModel<EntityModel<SoftwarePlatformDto>>> getSoftwarePlatformsOfImplementation(
             @PathVariable UUID implementationId,
-            @Parameter(hidden = true) ListParameters listParameters
-    ) {
+            @Parameter(hidden = true) ListParameters listParameters) {
         var softwarePlatforms = implementationService.findLinkedSoftwarePlatforms(implementationId, listParameters.getPageable());
         return ResponseEntity.ok(softwarePlatformAssembler.toModel(softwarePlatforms));
     }
@@ -241,7 +250,7 @@ public class ImplementationController {
             "other software platform attributes will not change." +
             "If the software platform doesn't exist yet, a 404 error is thrown.")
     @PostMapping("/{implementationId}/" + Constants.SOFTWARE_PLATFORMS + "/{softwarePlatformId}")
-    public HttpEntity<CollectionModel<EntityModel<SoftwarePlatformDto>>> linkImplementationAndSoftwarePlatform(
+    public ResponseEntity<CollectionModel<EntityModel<SoftwarePlatformDto>>> linkImplementationAndSoftwarePlatform(
             @PathVariable UUID implementationId,
             @PathVariable UUID softwarePlatformId) {
         linkingService.linkImplementationAndSoftwarePlatform(implementationId, softwarePlatformId);
@@ -255,7 +264,7 @@ public class ImplementationController {
                     description = "Software platform or publication does not exist")
     }, description = "Delete a reference to a software platform of the implementation")
     @DeleteMapping("/{implementationId}/" + Constants.SOFTWARE_PLATFORMS + "/{softwarePlatformId}")
-    public HttpEntity<Void> unlinkImplementationAndSoftwarePlatform(
+    public ResponseEntity<Void> unlinkImplementationAndSoftwarePlatform(
             @PathVariable UUID implementationId,
             @PathVariable UUID softwarePlatformId) {
         linkingService.unlinkImplementationAndSoftwarePlatform(implementationId, softwarePlatformId);

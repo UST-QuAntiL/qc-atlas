@@ -35,21 +35,21 @@ public interface SoftwarePlatformService {
     Page<SoftwarePlatform> searchAllByName(String name, Pageable p);
 
     @Transactional
-    SoftwarePlatform save(SoftwarePlatform softwarePlatform);
+    SoftwarePlatform create(SoftwarePlatform softwarePlatform);
 
     Page<SoftwarePlatform> findAll(Pageable pageable);
 
-    SoftwarePlatform findById(UUID platformId);
+    SoftwarePlatform findById(UUID softwarePlatformId);
 
     @Transactional
-    SoftwarePlatform update(UUID id, SoftwarePlatform softwarePlatform);
+    SoftwarePlatform update(SoftwarePlatform softwarePlatform);
 
     @Transactional
-    void delete(UUID platformId);
+    void delete(UUID softwarePlatformId);
 
-    Page<Implementation> findImplementations(UUID platformId, Pageable pageable);
+    Page<Implementation> findImplementations(UUID softwarePlatformId, Pageable pageable);
 
-    Page<CloudService> findCloudServices(UUID platformId, Pageable pageable);
+    Page<CloudService> findCloudServices(UUID softwarePlatformId, Pageable pageable);
 
-    Page<ComputeResource> findComputeResources(UUID platformId, Pageable pageable);
+    Page<ComputeResource> findComputeResources(UUID softwarePlatformId, Pageable pageable);
 }

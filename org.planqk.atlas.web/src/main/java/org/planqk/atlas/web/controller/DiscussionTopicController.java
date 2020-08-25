@@ -103,7 +103,7 @@ public class DiscussionTopicController {
     }, description = "")
     @DeleteMapping("/{topicId}")
     public HttpEntity<Void> deleteDiscussionTopic(@PathVariable UUID topicId) {
-        discussionTopicService.deleteById(topicId);
+        discussionTopicService.delete(topicId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -115,7 +115,7 @@ public class DiscussionTopicController {
     @PostMapping()
     public HttpEntity<EntityModel<DiscussionTopicDto>> createDiscussionTopic(
             @Valid @RequestBody DiscussionTopicDto discussionTopicDto) {
-        var discussionTopic = discussionTopicService.save(ModelMapperUtils.convert(discussionTopicDto, DiscussionTopic.class));
+        var discussionTopic = discussionTopicService.create(ModelMapperUtils.convert(discussionTopicDto, DiscussionTopic.class));
         return new ResponseEntity<>(discussionTopicAssembler.toModel(discussionTopic), HttpStatus.CREATED);
     }
 
@@ -207,7 +207,7 @@ public class DiscussionTopicController {
             @PathVariable UUID topicId,
             @Valid @RequestBody DiscussionTopicDto discussionTopicDto) {
         discussionTopicDto.setId(topicId);
-        DiscussionTopic discussionTopic = discussionTopicService.update(topicId, ModelMapperUtils.convert(discussionTopicDto, DiscussionTopic.class));
+        DiscussionTopic discussionTopic = discussionTopicService.update(ModelMapperUtils.convert(discussionTopicDto, DiscussionTopic.class));
         return ResponseEntity.ok(discussionTopicAssembler.toModel(discussionTopic));
     }
 }

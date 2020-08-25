@@ -95,7 +95,7 @@ public class ComputeResourceControllerTest {
         returnedResource.setName(resource.getName());
         returnedResource.setId(resource.getId());
 
-        doReturn(returnedResource).when(computeResourceService).save(any());
+        doReturn(returnedResource).when(computeResourceService).create(any());
 
         mockMvc.perform(
                 post(
@@ -117,7 +117,7 @@ public class ComputeResourceControllerTest {
         resource.setId(UUID.randomUUID());
         resource.setName("Hello World");
 
-        doThrow(new NoSuchElementException()).when(computeResourceService).update(any(), any());
+        doThrow(new NoSuchElementException()).when(computeResourceService).update(any());
 
         mockMvc.perform(
                 put(
@@ -156,7 +156,7 @@ public class ComputeResourceControllerTest {
         returnedResource.setName(resource.getName());
         returnedResource.setId(resource.getId());
 
-        doReturn(returnedResource).when(computeResourceService).update(any(), any());
+        doReturn(returnedResource).when(computeResourceService).update(any());
 
         mockMvc.perform(
                 put(

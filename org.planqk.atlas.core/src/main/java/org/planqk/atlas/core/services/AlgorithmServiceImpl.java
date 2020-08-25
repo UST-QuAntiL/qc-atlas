@@ -31,23 +31,22 @@ import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.model.QuantumAlgorithm;
 import org.planqk.atlas.core.model.Sketch;
-import org.planqk.atlas.core.repository.AlgorithmRelationTypeRepository;
 import org.planqk.atlas.core.repository.AlgorithmRelationRepository;
 import org.planqk.atlas.core.repository.AlgorithmRepository;
 import org.planqk.atlas.core.repository.ApplicationAreaRepository;
-import org.planqk.atlas.core.repository.ComputeResourcePropertyRepository;
-import org.planqk.atlas.core.repository.ImplementationRepository;
 import org.planqk.atlas.core.repository.PatternRelationRepository;
 import org.planqk.atlas.core.repository.ProblemTypeRepository;
 import org.planqk.atlas.core.repository.PublicationRepository;
 import org.planqk.atlas.core.repository.SketchRepository;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class AlgorithmServiceImpl implements AlgorithmService {
@@ -58,12 +57,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 
     private final AlgorithmRelationRepository algorithmRelationRepository;
 
-    private final AlgorithmRelationService algorithmRelationService;
-    private final AlgorithmRelationTypeService algorithmRelationTypeService;
-    private final AlgorithmRelationTypeRepository algorithmRelationTypeRepository;
-
     private final ImplementationService implementationService;
-    private final ImplementationRepository implementationRepository;
 
     private final PublicationRepository publicationRepository;
 
@@ -74,12 +68,9 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     private final PatternRelationService patternRelationService;
     private final PatternRelationRepository patternRelationRepository;
 
-    private final ComputeResourcePropertyService computeResourcePropertyService;
-    private final ComputeResourcePropertyRepository computeResourcePropertyRepository;
-
-    @Transactional
     @Override
-    public Algorithm save(Algorithm algorithm) {
+    @Transactional
+    public Algorithm create(Algorithm algorithm) {
         return algorithmRepository.save(algorithm);
     }
 
@@ -96,10 +87,10 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         return algorithmRepository.findById(algorithmId).orElseThrow(NoSuchElementException::new);
     }
 
-    @Transactional
     @Override
-    public Algorithm update(UUID algorithmId, Algorithm algorithm) {
-        Algorithm persistedAlgorithm = findById(algorithmId);
+    @Transactional
+    public Algorithm update(Algorithm algorithm) {
+        Algorithm persistedAlgorithm = findById(algorithm.getId());
 
         // remove all attached sketches
         persistedAlgorithm.removeSketches(persistedAlgorithm.getSketches());
@@ -124,7 +115,6 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         persistedAlgorithm.setAssumptions(algorithm.getAssumptions());
         persistedAlgorithm.setComputationModel(algorithm.getComputationModel());
 
-        // If QuantumAlgorithm adjust Quantum fields
         if (algorithm instanceof QuantumAlgorithm) {
             QuantumAlgorithm quantumAlgorithm = (QuantumAlgorithm) algorithm;
             QuantumAlgorithm persistedQuantumAlgorithm = (QuantumAlgorithm) persistedAlgorithm;
@@ -135,7 +125,6 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 
             return algorithmRepository.save(persistedQuantumAlgorithm);
         } else {
-            // Else if ClassicAlgorithm no more fields to adjust
             return algorithmRepository.save(persistedAlgorithm);
         }
     }
@@ -211,70 +200,6 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 
         return getAlgorithmRelations(algorithmId, pageable);
     }
-
-//    private AlgoRelationType getPersistedAlgoRelationType(AlgorithmRelation relation) {
-//        if (algoRelationTypeRepository.existsById(relation.getAlgoRelationType().getId())) {
-//            return algoRelationTypeService.findById(relation.getAlgoRelationType().getId());
-//        } else {
-//            return algoRelationTypeService.save(relation.getAlgoRelationType());
-//        }
-//    }
-//
-//    @Transactional
-//    @Override
-//    public AlgorithmRelation addOrUpdateAlgorithmRelation(UUID sourceAlgorithmId, AlgorithmRelation relation) {
-//        // Read involved Algorithms from database
-//        Algorithm sourceAlgorithm = findById(sourceAlgorithmId);
-//        Algorithm targetAlgorithm = findById(relation.getTargetAlgorithm().getId());
-//
-//        if (relation.getAlgoRelationType().getId() == null) {
-//            algoRelationTypeService.save(relation.getAlgoRelationType());
-//        }
-//
-//        AlgoRelationType relationType = getPersistedAlgoRelationType(relation);
-//
-//        // Check if relation with those two algorithms and the relation type already
-//        // exists
-//        Optional<AlgorithmRelation> persistedRelationOpt = algorithmRelationRepository
-//                .findBySourceAlgorithmIdAndTargetAlgorithmIdAndAlgoRelationTypeId(sourceAlgorithm.getId(),
-//                        targetAlgorithm.getId(), relationType.getId());
-//
-//        // If relation between the two algorithms already exists, update it
-//        if (persistedRelationOpt.isPresent()) {
-//            AlgorithmRelation persistedRelation = persistedRelationOpt.get();
-//            persistedRelation.setDescription(relation.getDescription());
-//            // Return updated relation
-//            return algorithmRelationRepository.save(persistedRelation);
-//        }
-//
-//        // Set Relation Objects with referenced database objects
-//        relation.setSourceAlgorithm(sourceAlgorithm);
-//        relation.setTargetAlgorithm(targetAlgorithm);
-//        relation.setAlgoRelationType(relationType);
-//
-//        sourceAlgorithm.addAlgorithmRelation(relation);
-//
-//        // Save updated Algorithm -> CASCADE will save Relation
-//        this.algorithmRepository.save(sourceAlgorithm);
-//        persistedRelationOpt = algorithmRelationRepository
-//                .findBySourceAlgorithmIdAndTargetAlgorithmIdAndAlgoRelationTypeId(sourceAlgorithm.getId(),
-//                        targetAlgorithm.getId(), relationType.getId());
-//
-//        return persistedRelationOpt.get();
-//    }
-//
-//    @Override
-//    public void deleteAlgorithmRelation(UUID algoId, UUID relationId) {
-//        // Get involved Objects from database
-//        Algorithm sourceAlgorithm = algorithmRepository.findById(algoId)
-//                .orElseThrow(() -> new NoSuchElementException("Algorithm does not exist!"));
-//        AlgorithmRelation relation = algorithmRelationRepository.findById(relationId)
-//                .orElseThrow(() -> new NoSuchElementException("Relation does not exist!"));
-//
-//        Set<AlgorithmRelation> algorithmRelations = sourceAlgorithm.getAlgorithmRelations();
-//        algorithmRelations.remove(relation);
-//        algorithmRepository.save(sourceAlgorithm);
-//    }
 
     private Page<AlgorithmRelation> getAlgorithmRelations(UUID algorithmId, Pageable pageable) {
         return algorithmRelationRepository.findBySourceAlgorithmIdOrTargetAlgorithmId(algorithmId, algorithmId, pageable);

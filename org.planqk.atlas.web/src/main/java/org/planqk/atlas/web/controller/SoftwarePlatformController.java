@@ -41,6 +41,7 @@ import org.planqk.atlas.web.utils.ValidationGroups;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -59,7 +60,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@io.swagger.v3.oas.annotations.tags.Tag(name = Constants.TAG_EXECUTION_ENVIRONMENTS)
+@Tag(name = Constants.TAG_EXECUTION_ENVIRONMENTS)
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/" + Constants.API_VERSION + "/" + Constants.SOFTWARE_PLATFORMS)
@@ -101,7 +102,7 @@ public class SoftwarePlatformController {
     @PostMapping()
     public ResponseEntity<EntityModel<SoftwarePlatformDto>> createSoftwarePlatform(
             @Validated(ValidationGroups.Create.class) @RequestBody SoftwarePlatformDto softwarePlatformDto) {
-        var savedPlatform = softwarePlatformService.save(ModelMapperUtils.convert(softwarePlatformDto, SoftwarePlatform.class));
+        var savedPlatform = softwarePlatformService.create(ModelMapperUtils.convert(softwarePlatformDto, SoftwarePlatform.class));
         return new ResponseEntity<>(softwarePlatformAssembler.toModel(savedPlatform), HttpStatus.CREATED);
     }
 
@@ -117,7 +118,7 @@ public class SoftwarePlatformController {
     public ResponseEntity<EntityModel<SoftwarePlatformDto>> updateSoftwarePlatform(
             @Validated(ValidationGroups.Update.class) @RequestBody SoftwarePlatformDto softwarePlatformDto) {
         var softwarePlatform = softwarePlatformService
-                .update(softwarePlatformDto.getId(),
+                .update(
                         ModelMapperUtils.convert(softwarePlatformDto, SoftwarePlatform.class));
         return ResponseEntity.ok(softwarePlatformAssembler.toModel(softwarePlatform));
     }

@@ -35,9 +35,9 @@ import org.springframework.stereotype.Service;
 import lombok.AllArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @AllArgsConstructor
-@Slf4j
 public class AlgorithmRelationTypeServiceImpl implements AlgorithmRelationTypeService {
 
     private final AlgorithmRelationTypeRepository algorithmRelationTypeRepository;

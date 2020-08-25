@@ -31,14 +31,14 @@ import org.springframework.transaction.annotation.Transactional;
 public interface ProblemTypeService {
 
     @Transactional
-    ProblemType save(ProblemType problemType);
+    ProblemType create(ProblemType problemType);
 
     Page<ProblemType> findAll(Pageable pageable);
 
     ProblemType findById(UUID problemTypeId);
 
     @Transactional
-    ProblemType update(UUID problemTypeId, ProblemType problemType);
+    ProblemType update(ProblemType problemType);
 
     @Transactional
     void delete(UUID problemTypeId);

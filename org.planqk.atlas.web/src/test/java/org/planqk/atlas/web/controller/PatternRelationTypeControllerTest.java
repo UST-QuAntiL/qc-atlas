@@ -52,6 +52,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @EnableLinkAssemblers
 public class PatternRelationTypeControllerTest {
+
     @MockBean
     private PatternRelationTypeService patternRelationTypeService;
 

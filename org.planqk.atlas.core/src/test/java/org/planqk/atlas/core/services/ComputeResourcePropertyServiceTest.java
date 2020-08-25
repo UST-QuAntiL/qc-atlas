@@ -31,6 +31,7 @@ import org.planqk.atlas.core.repository.ComputeResourcePropertyRepository;
 import org.planqk.atlas.core.repository.ComputeResourcePropertyTypeRepository;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@Slf4j
 public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
 
     @Autowired
@@ -105,7 +107,7 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         algo.setName("MyFirstQuantumAlgorithm");
         algo.setSpeedUp("123");
         algo.setComputationModel(ComputationModel.QUANTUM);
-        var storedAlgo = (QuantumAlgorithm) algorithmService.save(algo);
+        var storedAlgo = (QuantumAlgorithm) algorithmService.create(algo);
 
         var storedResource = resourceService.addComputeResourcePropertyToAlgorithm(storedAlgo.getId(), resource);
 
@@ -130,7 +132,7 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         algo.setName("MyFirstQuantumAlgorithm");
         algo.setSpeedUp("123");
         algo.setComputationModel(ComputationModel.QUANTUM);
-        var storedAlgo = (QuantumAlgorithm) algorithmService.save(algo);
+        var storedAlgo = (QuantumAlgorithm) algorithmService.create(algo);
 
         var storedResource = resourceService.addComputeResourcePropertyToAlgorithm(storedAlgo.getId(), resource);
 
@@ -157,7 +159,7 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         algo.setName("MyFirstQuantumAlgorithm");
         algo.setSpeedUp("123");
         algo.setComputationModel(ComputationModel.QUANTUM);
-        var storedAlgo = (QuantumAlgorithm) algorithmService.save(algo);
+        var storedAlgo = (QuantumAlgorithm) algorithmService.create(algo);
 
         var storedResource = resourceService.create(resource);
 
@@ -187,7 +189,7 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         algo.setName("MyFirstQuantumAlgorithm");
         algo.setSpeedUp("123");
         algo.setComputationModel(ComputationModel.QUANTUM);
-        var storedAlgo = (QuantumAlgorithm) algorithmService.save(algo);
+        var storedAlgo = (QuantumAlgorithm) algorithmService.create(algo);
 
         var storedResource = resourceService.addComputeResourcePropertyToAlgorithm(storedAlgo.getId(), resource);
 
@@ -254,7 +256,7 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         algo.setName("MyFirstQuantumAlgorithm");
         algo.setSpeedUp("123");
         algo.setComputationModel(ComputationModel.QUANTUM);
-        var storedAlgo = (QuantumAlgorithm) algorithmService.save(algo);
+        var storedAlgo = (QuantumAlgorithm) algorithmService.create(algo);
 
         var storedResource = resourceService.addComputeResourcePropertyToAlgorithm(storedAlgo.getId(), resource);
 
@@ -276,7 +278,7 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         algo.setName("MyFirstQuantumAlgorithm");
         algo.setSpeedUp("123");
         algo.setComputationModel(ComputationModel.QUANTUM);
-        var storedAlgo = (QuantumAlgorithm) algorithmService.save(algo);
+        var storedAlgo = (QuantumAlgorithm) algorithmService.create(algo);
 
         var storedResource = resourceService.addComputeResourcePropertyToAlgorithm(storedAlgo.getId(), resource);
 

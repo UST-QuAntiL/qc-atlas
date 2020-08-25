@@ -71,6 +71,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @EnableLinkAssemblers
 public class DiscussionCommentControllerTest {
+
     @MockBean
     private DiscussionCommentService discussionCommentService;
 
@@ -117,7 +118,7 @@ public class DiscussionCommentControllerTest {
 
     @Test
     public void createDiscussionComment_returnDiscussionComment() throws Exception {
-        when(discussionCommentService.save(any())).thenReturn(discussionComment);
+        when(discussionCommentService.create(any())).thenReturn(discussionComment);
         when(discussionTopicService.findById(discussionTopic.getId())).thenReturn(discussionTopic);
 
         MvcResult result = mockMvc
@@ -168,7 +169,7 @@ public class DiscussionCommentControllerTest {
         UUID id = UUID.randomUUID();
         when(discussionCommentService.findById(id)).thenReturn(discussionComment);
 
-        doThrow(new NoSuchElementException()).when(discussionCommentService).deleteById(id);
+        doThrow(new NoSuchElementException()).when(discussionCommentService).delete(id);
         mockMvc.perform(delete("/" + Constants.API_VERSION + "/" + Constants.DISCUSSION_TOPICS + "/" + discussionTopic.getId() + "/" + Constants.DISCUSSION_COMMENTS + "/" + id).accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
     }
 
@@ -207,7 +208,7 @@ public class DiscussionCommentControllerTest {
     @Test
     public void updateDiscussionComment_returnDiscussionComment() throws Exception {
         when(discussionCommentService.findById(discussionComment.getId())).thenReturn(discussionComment);
-        when(discussionCommentService.update(discussionComment.getId(), discussionComment)).thenReturn(discussionComment);
+        when(discussionCommentService.update(discussionComment)).thenReturn(discussionComment);
 
         MvcResult result = mockMvc.perform(put("/" + Constants.API_VERSION + "/" + Constants.DISCUSSION_TOPICS + "/" + discussionTopic.getId() + "/" + Constants.DISCUSSION_COMMENTS + "/" + discussionComment.getId())
                 .content(mapper.writeValueAsString(discussionCommentDto)).contentType(MediaType.APPLICATION_JSON)
@@ -227,7 +228,7 @@ public class DiscussionCommentControllerTest {
 
         // Missing required attribute
         discussionComment.setDate(null);
-        when(discussionCommentService.update(discussionComment.getId(), discussionComment)).thenReturn(discussionComment);
+        when(discussionCommentService.update(discussionComment)).thenReturn(discussionComment);
 
         mockMvc.perform(put("/" + Constants.API_VERSION + "/" + Constants.DISCUSSION_TOPICS + "/" + discussionTopic.getId() + "/" + Constants.DISCUSSION_COMMENTS + "/" + discussionComment.getId())
                 .content(mapper.writeValueAsString(discussionComment)).contentType(MediaType.APPLICATION_JSON)

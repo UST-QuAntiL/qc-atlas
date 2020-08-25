@@ -28,6 +28,7 @@ import org.planqk.atlas.core.model.KnowledgeArtifact;
 import org.planqk.atlas.core.model.Status;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,7 @@ import org.springframework.data.domain.Pageable;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@Slf4j
 public class DiscussionTopicServiceTest extends AtlasDatabaseTestBase {
 
     @Autowired
@@ -68,7 +70,7 @@ public class DiscussionTopicServiceTest extends AtlasDatabaseTestBase {
         topic2.setStatus(Status.CLOSED);
 
         var pub = PublicationServiceTest.getGenericTestPublication("discussion");
-        pub = publicationService.save(pub);
+        pub = publicationService.create(pub);
 
         topic.setKnowledgeArtifact(pub);
         topic2.setKnowledgeArtifact(pub);
@@ -77,7 +79,7 @@ public class DiscussionTopicServiceTest extends AtlasDatabaseTestBase {
 
     @Test
     void createDiscussionTopic() {
-        DiscussionTopic topic = topicService.save(this.topic);
+        DiscussionTopic topic = topicService.create(this.topic);
         assertThat(topic.getId()).isNotNull();
         assertThat(topic.getDate()).isEqualTo(this.topic.getDate());
         assertThat(topic.getTitle()).isEqualTo(this.topic.getTitle());
@@ -87,9 +89,9 @@ public class DiscussionTopicServiceTest extends AtlasDatabaseTestBase {
 
     @Test
     void updateDiscussionTopic() {
-        DiscussionTopic topic = topicService.save(this.topic);
+        DiscussionTopic topic = topicService.create(this.topic);
         topic.setTitle("New Title");
-        DiscussionTopic update = topicService.update(topic.getId(), topic);
+        DiscussionTopic update = topicService.update(topic);
 
         assertThat(update.getDate()).isEqualTo(topic.getDate());
         assertThat(update.getTitle()).isEqualTo(topic.getTitle());
@@ -99,7 +101,7 @@ public class DiscussionTopicServiceTest extends AtlasDatabaseTestBase {
     @Test
     void updateDiscussionTopic_notFound() {
         assertThrows(NoSuchElementException.class, () -> {
-            topicService.update(UUID.randomUUID(), this.topic);
+            topicService.update(this.topic);
         });
     }
 
@@ -112,8 +114,8 @@ public class DiscussionTopicServiceTest extends AtlasDatabaseTestBase {
 
     @Test
     void findAllDiscussionTopic() {
-        topicService.save(this.topic);
-        topicService.save(this.topic2);
+        topicService.create(this.topic);
+        topicService.create(this.topic2);
 
         Page<DiscussionTopic> discussionTopicPage = topicService.findAll(pageable);
         assertThat(discussionTopicPage.getTotalElements()).isEqualTo(2);
@@ -121,8 +123,8 @@ public class DiscussionTopicServiceTest extends AtlasDatabaseTestBase {
 
     @Test
     void deleteDiscussionTopic() {
-        DiscussionTopic topic = topicService.save(this.topic);
-        topicService.deleteById(topic.getId());
+        DiscussionTopic topic = topicService.create(this.topic);
+        topicService.delete(topic.getId());
         assertThrows(NoSuchElementException.class, () -> {
             topicService.findById(topic.getId());
         });
@@ -130,7 +132,7 @@ public class DiscussionTopicServiceTest extends AtlasDatabaseTestBase {
 
     @Test
     void existsDiscussionTopic_exists() {
-        DiscussionTopic topic = topicService.save(this.topic);
+        DiscussionTopic topic = topicService.create(this.topic);
         boolean exists = topicService.existsDiscussionTopicById(topic.getId());
 
         assertThat(exists).isEqualTo(true);
@@ -145,8 +147,8 @@ public class DiscussionTopicServiceTest extends AtlasDatabaseTestBase {
 
     @Test
     void findByKnowledgeArtifact() {
-        topicService.save(topic);
-        topicService.save(topic2);
+        topicService.create(topic);
+        topicService.create(topic2);
 
         var page = topicService.findByKnowledgeArtifact(knowledgeArtifact, Pageable.unpaged());
         assertThat(page.getTotalElements()).isEqualTo(2);

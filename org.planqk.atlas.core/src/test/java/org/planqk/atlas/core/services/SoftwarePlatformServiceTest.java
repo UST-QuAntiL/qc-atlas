@@ -35,6 +35,7 @@ import org.planqk.atlas.core.model.QuantumComputationModel;
 import org.planqk.atlas.core.model.SoftwarePlatform;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,7 @@ import org.springframework.data.domain.Pageable;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Slf4j
 public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
 
     @Autowired
@@ -62,7 +64,7 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
         SoftwarePlatform softwarePlatform = new SoftwarePlatform();
         softwarePlatform.setName("test software platform");
 
-        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.save(softwarePlatform);
+        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.create(softwarePlatform);
         assertSoftwarePlatformEquality(storedSoftwarePlatform, softwarePlatform);
     }
 
@@ -70,18 +72,21 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
     void createMaximalSoftwarePlatform() {
         SoftwarePlatform softwarePlatform = getTestSoftwarePlatform("test software platform");
 
-        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.save(softwarePlatform);
+        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.create(softwarePlatform);
         assertSoftwarePlatformEquality(storedSoftwarePlatform, softwarePlatform);
     }
 
     @Test
     void addImplementationReference() {
         SoftwarePlatform softwarePlatform = getTestSoftwarePlatform("test software platform");
-        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.save(softwarePlatform);
+        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.create(softwarePlatform);
+
+        Algorithm algorithm = new Algorithm();
+        algorithm = algorithmService.create(algorithm);
 
         Implementation implementation = new Implementation();
         implementation.setName("test implementation");
-        Implementation storedImplementation = implementationService.save(implementation);
+        Implementation storedImplementation = implementationService.create(implementation, algorithm.getId());
 
         linkingService.linkImplementationAndSoftwarePlatform(storedImplementation.getId(), storedSoftwarePlatform.getId());
 
@@ -95,7 +100,7 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
     @Test
     void addCloudServiceReference() {
         SoftwarePlatform softwarePlatform = getTestSoftwarePlatform("test software platform");
-        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.save(softwarePlatform);
+        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.create(softwarePlatform);
 
         CloudService cloudService = new CloudService();
         cloudService.setName("testCloudService");
@@ -105,7 +110,7 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
         } catch (MalformedURLException ignored) {
         }
         cloudService.setCostModel("testCostModel");
-        CloudService storedCloudService = cloudServiceService.save(cloudService);
+        CloudService storedCloudService = cloudServiceService.create(cloudService);
 
         linkingService.linkSoftwarePlatformAndCloudService(storedSoftwarePlatform.getId(), storedCloudService.getId());
 
@@ -119,14 +124,14 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
     @Test
     void addComputeResourceReference() {
         SoftwarePlatform softwarePlatform = getTestSoftwarePlatform("test software platform");
-        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.save(softwarePlatform);
+        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.create(softwarePlatform);
 
         ComputeResource computeResource = new ComputeResource();
         computeResource.setName("test compute resource");
         computeResource.setVendor("test vendor");
         computeResource.setTechnology("test technology");
         computeResource.setQuantumComputationModel(QuantumComputationModel.QUANTUM_ANNEALING);
-        ComputeResource storedComputeResource = computeResourceService.save(computeResource);
+        ComputeResource storedComputeResource = computeResourceService.create(computeResource);
 
         linkingService.linkSoftwarePlatformAndComputeResource(
                 storedSoftwarePlatform.getId(), storedComputeResource.getId());
@@ -141,7 +146,7 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
     @Test
     void updateSoftwarePlatform_ElementNotFound() {
         Assertions.assertThrows(NoSuchElementException.class, () ->
-                softwarePlatformService.update(UUID.randomUUID(), null));
+                softwarePlatformService.update(null));
     }
 
     @Test
@@ -149,11 +154,11 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
         SoftwarePlatform softwarePlatform = getTestSoftwarePlatform("test software platform");
         SoftwarePlatform storedSoftwarePlatform = getTestSoftwarePlatform("test software platform");
 
-        SoftwarePlatform storedEditedSoftwarePlatform = softwarePlatformService.save(softwarePlatform);
+        SoftwarePlatform storedEditedSoftwarePlatform = softwarePlatformService.create(softwarePlatform);
         storedSoftwarePlatform.setId(storedEditedSoftwarePlatform.getId());
         String editName = "edited software platform";
         storedEditedSoftwarePlatform.setName(editName);
-        storedEditedSoftwarePlatform = softwarePlatformService.update(storedEditedSoftwarePlatform.getId(), storedEditedSoftwarePlatform);
+        storedEditedSoftwarePlatform = softwarePlatformService.update(storedEditedSoftwarePlatform);
 
         assertThat(storedEditedSoftwarePlatform.getId()).isEqualTo(storedSoftwarePlatform.getId());
         assertThat(storedEditedSoftwarePlatform.getName()).isNotEqualTo(storedSoftwarePlatform.getName());
@@ -172,7 +177,7 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
     @Test
     void findSoftwarePlatformById_ElementFound() {
         SoftwarePlatform softwarePlatform = getTestSoftwarePlatform("test software platform");
-        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.save(softwarePlatform);
+        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.create(softwarePlatform);
 
         storedSoftwarePlatform = softwarePlatformService.findById(storedSoftwarePlatform.getId());
 
@@ -182,9 +187,9 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
     @Test
     void findAll() {
         SoftwarePlatform softwarePlatform1 = getTestSoftwarePlatform("test software platform1");
-        softwarePlatformService.save(softwarePlatform1);
+        softwarePlatformService.create(softwarePlatform1);
         SoftwarePlatform softwarePlatform2 = getTestSoftwarePlatform("test software platform2");
-        softwarePlatformService.save(softwarePlatform2);
+        softwarePlatformService.create(softwarePlatform2);
 
         List<SoftwarePlatform> softwarePlatforms = softwarePlatformService.findAll(Pageable.unpaged()).getContent();
 
@@ -194,9 +199,9 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
     @Test
     void searchAll() {
         SoftwarePlatform softwarePlatform1 = getTestSoftwarePlatform("test software platform1");
-        softwarePlatformService.save(softwarePlatform1);
+        softwarePlatformService.create(softwarePlatform1);
         SoftwarePlatform softwarePlatform2 = getTestSoftwarePlatform("test software platform2");
-        softwarePlatformService.save(softwarePlatform2);
+        softwarePlatformService.create(softwarePlatform2);
 
         List<SoftwarePlatform> softwarePlatforms = softwarePlatformService.searchAllByName("1", Pageable.unpaged()).getContent();
 
@@ -206,13 +211,16 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
     @Test
     void findImplementations() {
         SoftwarePlatform softwarePlatform = getTestSoftwarePlatform("test software platform");
-        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.save(softwarePlatform);
+        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.create(softwarePlatform);
+
+        Algorithm algorithm = new Algorithm();
+        algorithm = algorithmService.create(algorithm);
 
         Set<Implementation> storedImplementations = new HashSet<>();
         for (int i = 0; i < 10; i++) {
             Implementation implementation = new Implementation();
             implementation.setName("test implementation" + i);
-            Implementation storedImplementation = implementationService.save(implementation);
+            Implementation storedImplementation = implementationService.create(implementation, algorithm.getId());
             storedImplementations.add(storedImplementation);
             linkingService.linkImplementationAndSoftwarePlatform(storedImplementation.getId(), storedSoftwarePlatform.getId());
         }
@@ -226,7 +234,7 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
     @Test
     void findCloudServices() {
         SoftwarePlatform softwarePlatform = getTestSoftwarePlatform("test software platform");
-        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.save(softwarePlatform);
+        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.create(softwarePlatform);
 
         Set<CloudService> storedCloudServices = new HashSet<>();
         for (int i = 0; i < 10; i++) {
@@ -238,7 +246,7 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
             } catch (MalformedURLException ignored) {
             }
             cloudService.setCostModel("testCostModel");
-            CloudService storedCloudService = cloudServiceService.save(cloudService);
+            CloudService storedCloudService = cloudServiceService.create(cloudService);
             storedCloudServices.add(storedCloudService);
             linkingService.linkSoftwarePlatformAndCloudService(storedSoftwarePlatform.getId(), storedCloudService.getId());
         }
@@ -252,7 +260,7 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
     @Test
     void findComputeResources() {
         SoftwarePlatform softwarePlatform = getTestSoftwarePlatform("test software platform");
-        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.save(softwarePlatform);
+        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.create(softwarePlatform);
 
         Set<ComputeResource> storedComputeResources = new HashSet<>();
         for (int i = 0; i < 10; i++) {
@@ -261,7 +269,7 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
             computeResource.setVendor("test vendor");
             computeResource.setTechnology("test technology");
             computeResource.setQuantumComputationModel(QuantumComputationModel.QUANTUM_ANNEALING);
-            ComputeResource storedComputeResource = computeResourceService.save(computeResource);
+            ComputeResource storedComputeResource = computeResourceService.create(computeResource);
             storedComputeResources.add(storedComputeResource);
             linkingService.linkSoftwarePlatformAndComputeResource(storedSoftwarePlatform.getId(), storedComputeResource.getId());
         }
@@ -276,7 +284,7 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
     void deleteSoftwarePlatform_NoReferences() {
         SoftwarePlatform softwarePlatform = getTestSoftwarePlatform("testSoftwarePlatform");
 
-        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.save(softwarePlatform);
+        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.create(softwarePlatform);
 
         Assertions.assertDoesNotThrow(() -> softwarePlatformService.findById(storedSoftwarePlatform.getId()));
 
@@ -289,26 +297,30 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
     @Test
     void deleteSoftwarePlatform_HasReferences() {
         SoftwarePlatform softwarePlatform = getTestSoftwarePlatform("testSoftwarePlatform");
-        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.save(softwarePlatform);
+        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.create(softwarePlatform);
 
         Assertions.assertDoesNotThrow(() -> softwarePlatformService.findById(storedSoftwarePlatform.getId()));
 
+
         // Add Implementation Reference
+        Algorithm algorithm = new Algorithm();
+        algorithm = algorithmService.create(algorithm);
+
         Implementation implementation = new Implementation();
         implementation.setName("test implementation");
-        Implementation storedImplementation = implementationService.save(implementation);
+        Implementation storedImplementation = implementationService.create(implementation, algorithm.getId());
         linkingService.linkImplementationAndSoftwarePlatform(storedImplementation.getId(), storedSoftwarePlatform.getId());
 
         // Add Cloud Service Reference
         CloudService cloudService = new CloudService();
         cloudService.setName("testCloudService");
-        CloudService storedCloudService = cloudServiceService.save(cloudService);
+        CloudService storedCloudService = cloudServiceService.create(cloudService);
         linkingService.linkSoftwarePlatformAndCloudService(storedSoftwarePlatform.getId(), storedCloudService.getId());
 
         // Add Compute Resource Reference
         ComputeResource computeResource = new ComputeResource();
         computeResource.setName("test compute resource");
-        ComputeResource storedComputeResource = computeResourceService.save(computeResource);
+        ComputeResource storedComputeResource = computeResourceService.create(computeResource);
         linkingService.linkSoftwarePlatformAndComputeResource(storedSoftwarePlatform.getId(), storedComputeResource.getId());
 
         // Delete
@@ -326,11 +338,14 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
     @Test
     void deleteImplementationReference() {
         SoftwarePlatform softwarePlatform = getTestSoftwarePlatform("test software platform");
-        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.save(softwarePlatform);
+        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.create(softwarePlatform);
+
+        Algorithm algorithm = new Algorithm();
+        algorithm = algorithmService.create(algorithm);
 
         Implementation implementation = new Implementation();
         implementation.setName("test implementation");
-        Implementation storedImplementation = implementationService.save(implementation);
+        Implementation storedImplementation = implementationService.create(implementation, algorithm.getId());
 
         linkingService.linkImplementationAndSoftwarePlatform(storedImplementation.getId(), storedSoftwarePlatform.getId());
 
@@ -348,7 +363,7 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
     @Test
     void deleteCloudServiceReference() {
         SoftwarePlatform softwarePlatform = getTestSoftwarePlatform("test software platform");
-        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.save(softwarePlatform);
+        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.create(softwarePlatform);
 
         CloudService cloudService = new CloudService();
         cloudService.setName("testCloudService");
@@ -358,7 +373,7 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
         } catch (MalformedURLException ignored) {
         }
         cloudService.setCostModel("testCostModel");
-        CloudService storedCloudService = cloudServiceService.save(cloudService);
+        CloudService storedCloudService = cloudServiceService.create(cloudService);
 
         linkingService.linkSoftwarePlatformAndCloudService(storedSoftwarePlatform.getId(), storedCloudService.getId());
 
@@ -376,14 +391,14 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
     @Test
     void deleteComputeResourceReference() {
         SoftwarePlatform softwarePlatform = getTestSoftwarePlatform("test software platform");
-        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.save(softwarePlatform);
+        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.create(softwarePlatform);
 
         ComputeResource computeResource = new ComputeResource();
         computeResource.setName("test compute resource");
         computeResource.setVendor("test vendor");
         computeResource.setTechnology("test technology");
         computeResource.setQuantumComputationModel(QuantumComputationModel.QUANTUM_ANNEALING);
-        ComputeResource storedComputeResource = computeResourceService.save(computeResource);
+        ComputeResource storedComputeResource = computeResourceService.create(computeResource);
 
         linkingService.linkSoftwarePlatformAndComputeResource(
                 storedSoftwarePlatform.getId(), storedComputeResource.getId());

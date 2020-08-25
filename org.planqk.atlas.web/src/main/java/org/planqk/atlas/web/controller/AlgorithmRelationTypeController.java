@@ -75,14 +75,15 @@ public class AlgorithmRelationTypeController {
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "201")
+            @ApiResponse(responseCode = "201"),
+            @ApiResponse(responseCode = "400"),
     }, description = "Custom ID will be ignored.")
     @PostMapping
     public ResponseEntity<EntityModel<AlgorithmRelationTypeDto>> createAlgorithmRelationType(
             @Validated(ValidationGroups.Create.class) @RequestBody AlgorithmRelationTypeDto AlgorithmRelationTypeDto) {
-        var entityInput = ModelMapperUtils.convert(AlgorithmRelationTypeDto, AlgorithmRelationType.class);
-        var savedAlgoRelationType = algorithmRelationTypeService.create(entityInput);
-        return new ResponseEntity<>(algorithmRelationTypeAssembler.toModel(savedAlgoRelationType), HttpStatus.CREATED);
+        var savedAlgorithmRelationType = algorithmRelationTypeService.create(
+                ModelMapperUtils.convert(AlgorithmRelationTypeDto, AlgorithmRelationType.class));
+        return new ResponseEntity<>(algorithmRelationTypeAssembler.toModel(savedAlgorithmRelationType), HttpStatus.CREATED);
     }
 
     @Operation(responses = {
@@ -93,9 +94,9 @@ public class AlgorithmRelationTypeController {
     @PutMapping
     public ResponseEntity<EntityModel<AlgorithmRelationTypeDto>> updateAlgorithmRelationType(
             @Validated(ValidationGroups.Update.class) @RequestBody AlgorithmRelationTypeDto AlgorithmRelationTypeDto) {
-        var entityInput = ModelMapperUtils.convert(AlgorithmRelationTypeDto, AlgorithmRelationType.class);
-        var savedAlgoRelationType = algorithmRelationTypeService.update(entityInput);
-        return ResponseEntity.ok(algorithmRelationTypeAssembler.toModel(savedAlgoRelationType));
+        var savedAlgorithmRelationType = algorithmRelationTypeService.update(
+                ModelMapperUtils.convert(AlgorithmRelationTypeDto, AlgorithmRelationType.class));
+        return ResponseEntity.ok(algorithmRelationTypeAssembler.toModel(savedAlgorithmRelationType));
     }
 
     @Operation(responses = {
@@ -115,8 +116,9 @@ public class AlgorithmRelationTypeController {
             @ApiResponse(responseCode = "404", description = "Algorithm relation with given id doesn't exist")
     }, description = "")
     @GetMapping("/{algorithmRelationTypeId}")
-    public ResponseEntity<EntityModel<AlgorithmRelationTypeDto>> getAlgorithmRelationType(@PathVariable UUID algorithmRelationTypeId) {
-        var algoRelationType = algorithmRelationTypeService.findById(algorithmRelationTypeId);
-        return ResponseEntity.ok(algorithmRelationTypeAssembler.toModel(algoRelationType));
+    public ResponseEntity<EntityModel<AlgorithmRelationTypeDto>> getAlgorithmRelationType(
+            @PathVariable UUID algorithmRelationTypeId) {
+        var algorithmRelationType = algorithmRelationTypeService.findById(algorithmRelationTypeId);
+        return ResponseEntity.ok(algorithmRelationTypeAssembler.toModel(algorithmRelationType));
     }
 }

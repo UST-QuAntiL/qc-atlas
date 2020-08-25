@@ -25,9 +25,9 @@ import java.util.UUID;
 
 import org.planqk.atlas.core.model.DiscussionComment;
 import org.planqk.atlas.core.model.DiscussionTopic;
-import org.planqk.atlas.core.model.KnowledgeArtifact;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +38,7 @@ import org.springframework.data.domain.Pageable;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@Slf4j
 public class DiscussionCommentServiceTest extends AtlasDatabaseTestBase {
 
     @Autowired
@@ -59,7 +60,7 @@ public class DiscussionCommentServiceTest extends AtlasDatabaseTestBase {
     @BeforeEach
     public void initialize() throws Exception {
         var pub = PublicationServiceTest.getGenericTestPublication("discussion");
-        pub = publicationService.save(pub);
+        pub = publicationService.create(pub);
 
         topic = new DiscussionTopic();
         topic.setKnowledgeArtifact(pub);
@@ -77,8 +78,8 @@ public class DiscussionCommentServiceTest extends AtlasDatabaseTestBase {
 
     @Test
     void createDiscussionComment() {
-        topicService.save(this.topic);
-        DiscussionComment comment = commentService.save(this.comment);
+        topicService.create(this.topic);
+        DiscussionComment comment = commentService.create(this.comment);
         assertThat(comment.getId()).isNotNull();
         assertThat(comment.getDate()).isEqualTo(this.comment.getDate());
         assertThat(comment.getText()).isEqualTo(this.comment.getText());
@@ -87,10 +88,10 @@ public class DiscussionCommentServiceTest extends AtlasDatabaseTestBase {
 
     @Test
     void updateDiscussionComment() {
-        topicService.save(this.topic);
-        DiscussionComment comment = commentService.save(this.comment);
+        topicService.create(this.topic);
+        DiscussionComment comment = commentService.create(this.comment);
         comment.setText("New Text");
-        DiscussionComment update = commentService.update(comment.getId(), comment);
+        DiscussionComment update = commentService.update(comment);
 
         assertThat(update.getDate()).isEqualTo(comment.getDate());
         assertThat(update.getText()).isEqualTo(comment.getText());
@@ -100,7 +101,7 @@ public class DiscussionCommentServiceTest extends AtlasDatabaseTestBase {
     @Test
     void updateDiscussionComment_notFound() {
         assertThrows(NoSuchElementException.class, () -> {
-            commentService.update(UUID.randomUUID(), comment);
+            commentService.update(comment);
         });
     }
 
@@ -113,9 +114,9 @@ public class DiscussionCommentServiceTest extends AtlasDatabaseTestBase {
 
     @Test
     void findAllDiscussionComments() {
-        topicService.save(this.topic);
-        commentService.save(this.comment);
-        commentService.save(this.comment2);
+        topicService.create(this.topic);
+        commentService.create(this.comment);
+        commentService.create(this.comment2);
 
         Page<DiscussionComment> discussionCommentPage = commentService.findAll(pageable);
         assertThat(discussionCommentPage.getTotalElements()).isEqualTo(2);
@@ -123,9 +124,9 @@ public class DiscussionCommentServiceTest extends AtlasDatabaseTestBase {
 
     @Test
     void deleteDiscussionComment() {
-        topicService.save(this.topic);
-        DiscussionComment comment = commentService.save(this.comment);
-        commentService.deleteById(comment.getId());
+        topicService.create(this.topic);
+        DiscussionComment comment = commentService.create(this.comment);
+        commentService.delete(comment.getId());
         assertThrows(NoSuchElementException.class, () -> {
             commentService.findById(comment.getId());
         });
@@ -133,8 +134,8 @@ public class DiscussionCommentServiceTest extends AtlasDatabaseTestBase {
 
     @Test
     void existsDiscussionComment_exists(){
-        topicService.save(this.topic);
-        DiscussionComment comment = commentService.save(this.comment);
+        topicService.create(this.topic);
+        DiscussionComment comment = commentService.create(this.comment);
         boolean exists = commentService.existsDiscussionCommentById(comment.getId());
 
         assertThat(exists).isEqualTo(true);

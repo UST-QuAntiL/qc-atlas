@@ -21,7 +21,6 @@ package org.planqk.atlas.core.services;
 
 import java.util.UUID;
 
-import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.model.SoftwarePlatform;
@@ -33,24 +32,19 @@ import org.springframework.transaction.annotation.Transactional;
 public interface ImplementationService {
 
     @Transactional
-    Implementation save(Implementation implementation);
-
-    @Transactional
     Implementation create(Implementation implementation, UUID implementedAlgorithmId);
-
-    Implementation findById(UUID implementationId);
 
     Page<Implementation> findAll(Pageable pageable);
 
+    Implementation findById(UUID implementationId);
+
     @Transactional
-    Implementation update(UUID implementationId, Implementation implementation);
+    Implementation update(Implementation implementation);
 
     @Transactional
     void delete(UUID implementationId);
 
     Page<Implementation> findByImplementedAlgorithm(UUID algorithmId, Pageable pageable);
-
-    Algorithm getImplementedAlgorithm(UUID implementationId);
 
     Page<SoftwarePlatform> findLinkedSoftwarePlatforms(UUID implementationId, Pageable pageable);
 

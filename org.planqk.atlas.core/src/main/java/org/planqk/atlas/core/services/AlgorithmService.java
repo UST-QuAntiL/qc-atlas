@@ -35,14 +35,14 @@ import org.springframework.transaction.annotation.Transactional;
 public interface AlgorithmService {
 
     @Transactional
-    Algorithm save(Algorithm algorithm);
+    Algorithm create(Algorithm algorithm);
 
     Page<Algorithm> findAll(Pageable pageable, String search);
 
     Algorithm findById(UUID algorithmId);
 
     @Transactional
-    Algorithm update(UUID algorithmId, Algorithm algorithm);
+    Algorithm update(Algorithm algorithm);
 
     @Transactional
     void delete(UUID algorithmId);

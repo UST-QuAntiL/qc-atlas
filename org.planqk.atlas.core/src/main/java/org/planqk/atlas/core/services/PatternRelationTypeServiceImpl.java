@@ -29,14 +29,16 @@ import org.planqk.atlas.core.model.exceptions.ConsistencyException;
 import org.planqk.atlas.core.repository.PatternRelationRepository;
 import org.planqk.atlas.core.repository.PatternRelationTypeRepository;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import lombok.AllArgsConstructor;
 
-@AllArgsConstructor
+@Slf4j
 @Service
+@AllArgsConstructor
 public class PatternRelationTypeServiceImpl implements PatternRelationTypeService {
 
     private static final String NO_TYPE_ERROR = "PatternRelationType does not exist!";

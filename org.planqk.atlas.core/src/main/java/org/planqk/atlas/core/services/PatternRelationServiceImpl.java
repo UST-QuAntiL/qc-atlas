@@ -29,12 +29,14 @@ import org.planqk.atlas.core.repository.AlgorithmRepository;
 import org.planqk.atlas.core.repository.PatternRelationRepository;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-@AllArgsConstructor
+@Slf4j
 @Service
+@AllArgsConstructor
 public class PatternRelationServiceImpl implements PatternRelationService {
 
     private static final String NO_RELATION_ERROR = "Pattern relation does not exist!";

@@ -19,7 +19,6 @@
 
 package org.planqk.atlas.core.services;
 
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -33,28 +32,23 @@ import org.springframework.transaction.annotation.Transactional;
 
 public interface PublicationService {
 
-    Page<Algorithm> findAlgorithmsOfPublication(UUID publicationId, Pageable p);
-
-    Page<Implementation> findImplementationsOfPublication(UUID publicationId, Pageable p);
-
     @Transactional
-    Publication save(Publication publication);
-
-    @Transactional
-    Publication update(UUID pubId, Publication publication);
-
-    @Transactional
-    void deleteById(UUID pubId);
+    Publication create(Publication publication);
 
     Page<Publication> findAll(Pageable pageable, String search);
 
-    Publication findById(UUID pubId);
-
-    Optional<Publication> findOptionalById(UUID pubId);
+    Publication findById(UUID publicationId);
 
     @Transactional
-    Set<Publication> createOrUpdateAll(Set<Publication> publications);
+    Publication update(UUID publicationId, Publication publication);
 
     @Transactional
-    void deletePublicationsByIds(Set<UUID> publicationIds);
+    void delete(UUID publicationId);
+
+    Page<Algorithm> findAlgorithmsOfPublication(UUID publicationId, Pageable pageable);
+
+    Page<Implementation> findImplementationsOfPublication(UUID publicationId, Pageable pageable);
+
+    @Transactional
+    void deletePublications(Set<UUID> publicationIds);
 }

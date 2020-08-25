@@ -71,6 +71,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @EnableLinkAssemblers
 public class DiscussionTopicControllerTest {
+
     @MockBean
     private DiscussionTopicService discussionTopicService;
     @MockBean
@@ -110,7 +111,7 @@ public class DiscussionTopicControllerTest {
 
     @Test
     public void createDiscussionTopic_returnDiscussionTopic() throws Exception {
-        when(discussionTopicService.save(any())).thenReturn(discussionTopic);
+        when(discussionTopicService.create(any())).thenReturn(discussionTopic);
 
         MvcResult result = mockMvc
                 .perform(post("/" + Constants.API_VERSION + "/" + Constants.DISCUSSION_TOPICS + "/").content(mapper.writeValueAsString(discussionTopicDto))
@@ -158,7 +159,7 @@ public class DiscussionTopicControllerTest {
     @Test
     public void deleteDiscussionTopic_returnNotFound() throws Exception {
         UUID id = UUID.randomUUID();
-        doThrow(new NoSuchElementException()).when(discussionTopicService).deleteById(id);
+        doThrow(new NoSuchElementException()).when(discussionTopicService).delete(id);
         mockMvc.perform(delete("/" + Constants.API_VERSION + "/" + Constants.DISCUSSION_TOPICS + "/" + id).accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
     }
 
@@ -196,7 +197,7 @@ public class DiscussionTopicControllerTest {
 
     @Test
     public void updateDiscussionTopic_returnDiscussionTopic() throws Exception {
-        when(discussionTopicService.update(discussionTopic.getId(), discussionTopic)).thenReturn(discussionTopic);
+        when(discussionTopicService.update(discussionTopic)).thenReturn(discussionTopic);
         MvcResult result = mockMvc.perform(put("/" + Constants.API_VERSION + "/" + Constants.DISCUSSION_TOPICS + "/" + discussionTopic.getId())
                 .content(mapper.writeValueAsString(discussionTopicDto)).contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
@@ -216,7 +217,7 @@ public class DiscussionTopicControllerTest {
 
         // Missing required attribute
         discussionTopic.setDate(null);
-        when(discussionTopicService.update(discussionTopic.getId(), discussionTopic)).thenReturn(discussionTopic);
+        when(discussionTopicService.update(discussionTopic)).thenReturn(discussionTopic);
 
         mockMvc.perform(put("/" + Constants.API_VERSION + "/" + Constants.DISCUSSION_TOPICS + "/" + discussionTopic.getId())
                 .content(mapper.writeValueAsString(discussionTopic)).contentType(MediaType.APPLICATION_JSON)

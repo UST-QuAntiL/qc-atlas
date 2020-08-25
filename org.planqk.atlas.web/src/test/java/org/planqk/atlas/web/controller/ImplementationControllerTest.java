@@ -20,8 +20,6 @@
 package org.planqk.atlas.web.controller;
 
 import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
@@ -34,16 +32,10 @@ import org.planqk.atlas.core.services.PublicationService;
 import org.planqk.atlas.core.services.SoftwarePlatformService;
 import org.planqk.atlas.core.services.TagService;
 import org.planqk.atlas.web.controller.mixin.ComputeResourcePropertyMixin;
-import org.planqk.atlas.web.controller.mixin.PublicationMixin;
 import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
-import org.planqk.atlas.web.dtos.ImplementationDto;
 import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
-import org.planqk.atlas.web.utils.ModelMapperUtils;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.swagger.v3.core.util.Json;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,30 +44,14 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.hateoas.EntityModel;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.fromMethodCall;
-import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.on;
 
 @WebMvcTest(controllers = ImplementationController.class, includeFilters = {
-        @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = {PublicationMixin.class, ComputeResourcePropertyMixin.class})
+        @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = {ComputeResourcePropertyMixin.class})
 })
 @ExtendWith(MockitoExtension.class)
 @AutoConfigureMockMvc
@@ -217,11 +193,15 @@ public class ImplementationControllerTest {
 //    }
 
     private Implementation mockValidMinimalImpl(UUID implId) throws MalformedURLException {
+        Algorithm algo = new Algorithm();
+        algo.setName("dummy");
+        algo = algorithmService.create(algo);
+
         Implementation implementation = new Implementation();
         implementation.setName("implementation for Shor");
         implementation.setId(implId);
 
-        when(implementationService.save(any(Implementation.class))).thenReturn(implementation);
+        when(implementationService.create(any(Implementation.class), any())).thenReturn(implementation);
         return implementation;
     }
 

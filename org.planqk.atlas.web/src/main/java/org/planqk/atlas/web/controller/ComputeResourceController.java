@@ -44,6 +44,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -63,11 +64,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = Constants.TAG_EXECUTION_ENVIRONMENTS)
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/" + Constants.API_VERSION + "/" + Constants.COMPUTE_RESOURCES)
 @AllArgsConstructor
-@io.swagger.v3.oas.annotations.tags.Tag(name = Constants.TAG_EXECUTION_ENVIRONMENTS)
 @Slf4j
 public class ComputeResourceController {
 
@@ -109,7 +110,7 @@ public class ComputeResourceController {
     @PostMapping
     public ResponseEntity<EntityModel<ComputeResourceDto>> createComputeResource(
             @Validated(ValidationGroups.Create.class) @RequestBody ComputeResourceDto computeResourceDto) {
-        ComputeResource computeResource = computeResourceService.save(
+        ComputeResource computeResource = computeResourceService.create(
                 ModelMapperUtils.convert(computeResourceDto, ComputeResource.class));
         return ResponseEntity.status(HttpStatus.CREATED).body(computeResourceAssembler.toModel(computeResource));
     }
@@ -126,7 +127,7 @@ public class ComputeResourceController {
     public ResponseEntity<EntityModel<ComputeResourceDto>> updateComputeResource(
             @Validated(ValidationGroups.Update.class) @RequestBody ComputeResourceDto computeResourceDto) {
         ComputeResource computeResource = computeResourceService.update(
-                computeResourceDto.getId(), ModelMapperUtils.convert(computeResourceDto, ComputeResource.class));
+                ModelMapperUtils.convert(computeResourceDto, ComputeResource.class));
         return ResponseEntity.ok(computeResourceAssembler.toModel(computeResource));
     }
 

@@ -81,7 +81,7 @@ public class ProblemTypeController {
     @PostMapping()
     public ResponseEntity<EntityModel<ProblemTypeDto>> createProblemType(
             @Validated(ValidationGroups.Create.class) @RequestBody ProblemTypeDto problemTypeDto) {
-        var savedProblemType = problemTypeService.save(ModelMapperUtils.convert(problemTypeDto, ProblemType.class));
+        var savedProblemType = problemTypeService.create(ModelMapperUtils.convert(problemTypeDto, ProblemType.class));
         return new ResponseEntity<>(problemTypeAssembler.toModel(savedProblemType), HttpStatus.CREATED);
     }
 
@@ -94,7 +94,7 @@ public class ProblemTypeController {
     public ResponseEntity<EntityModel<ProblemTypeDto>> updateProblemType(
             @Validated(ValidationGroups.Update.class) @RequestBody ProblemTypeDto problemTypeDto) {
         var updatedProblemType = problemTypeService.update(
-                problemTypeDto.getId(), ModelMapperUtils.convert(problemTypeDto, ProblemType.class));
+                ModelMapperUtils.convert(problemTypeDto, ProblemType.class));
         return ResponseEntity.ok(problemTypeAssembler.toModel(updatedProblemType));
     }
 

@@ -58,6 +58,7 @@ import static org.springframework.web.servlet.mvc.method.annotation.MvcUriCompon
 @AutoConfigureMockMvc
 @EnableLinkAssemblers
 public class ComputeResourcePropertyControllerTest {
+
     @MockBean
     private ComputeResourcePropertyService resourceService;
 

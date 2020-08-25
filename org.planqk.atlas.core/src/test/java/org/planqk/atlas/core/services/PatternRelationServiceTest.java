@@ -31,6 +31,7 @@ import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.model.PatternRelationType;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +45,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@Slf4j
 public class PatternRelationServiceTest extends AtlasDatabaseTestBase {
 
     @Autowired
@@ -87,7 +89,7 @@ public class PatternRelationServiceTest extends AtlasDatabaseTestBase {
         relation2.setDescription("Description2");
 
         // Init stored objects
-        savedAlgorithm = algorithmService.save(algorithm);
+        savedAlgorithm = algorithmService.create(algorithm);
         savedType = patternRelationTypeService.create(type);
     }
 

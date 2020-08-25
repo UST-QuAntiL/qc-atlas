@@ -89,7 +89,7 @@ public class DiscussionCommentController {
     })
     public HttpEntity<Void> deleteDiscussionComment(@PathVariable UUID commentId) {
         discussionCommentService.findById(commentId);
-        discussionCommentService.deleteById(commentId);
+        discussionCommentService.delete(commentId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -98,7 +98,7 @@ public class DiscussionCommentController {
     }, description = "")
     public HttpEntity<EntityModel<DiscussionCommentDto>> createDiscussionComment(
             @Valid @RequestBody DiscussionCommentDto discussionCommentDto) {
-        var comment = discussionCommentService.save(ModelMapperUtils.convert(discussionCommentDto, DiscussionComment.class));
+        var comment = discussionCommentService.create(ModelMapperUtils.convert(discussionCommentDto, DiscussionComment.class));
         return new ResponseEntity<>(discussionCommentAssembler.toModel(comment), HttpStatus.CREATED);
     }
 
@@ -113,7 +113,7 @@ public class DiscussionCommentController {
         discussionComment.setDiscussionTopic(discussionCommentObject.getDiscussionTopic());
         var discussionTopic = discussionCommentObject.getDiscussionTopic();
         discussionTopic.getDiscussionComments().add(discussionComment);
-        discussionTopicService.update(discussionTopic.getId(), discussionTopic);
+        discussionTopicService.update(discussionTopic);
         return ResponseEntity.ok(discussionCommentAssembler.toModel(discussionComment));
     }
 }

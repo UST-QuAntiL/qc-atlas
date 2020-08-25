@@ -19,7 +19,6 @@
 
 package org.planqk.atlas.core.services;
 
-import java.util.Set;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.CloudService;
@@ -35,17 +34,14 @@ public interface CloudServiceService {
     Page<CloudService> searchAllByName(String name, Pageable p);
 
     @Transactional
-    CloudService save(CloudService cloudService);
-
-    @Transactional
-    Set<CloudService> createOrUpdateAll(Set<CloudService> cloudServices);
-
-    @Transactional
-    CloudService update(UUID id, CloudService cloudService);
+    CloudService create(CloudService cloudService);
 
     Page<CloudService> findAll(Pageable pageable);
 
     CloudService findById(UUID cloudServiceId);
+
+    @Transactional
+    CloudService update(CloudService cloudService);
 
     @Transactional
     void delete(UUID cloudServiceId);

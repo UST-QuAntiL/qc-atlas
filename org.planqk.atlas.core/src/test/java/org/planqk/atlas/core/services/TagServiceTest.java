@@ -20,9 +20,10 @@
 package org.planqk.atlas.core.services;
 
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
-// Tags will be used/tested and included in the future
 
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class TagServiceTest extends AtlasDatabaseTestBase {
 
 //    @Autowired

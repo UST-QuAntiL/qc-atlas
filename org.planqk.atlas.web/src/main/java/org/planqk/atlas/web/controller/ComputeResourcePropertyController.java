@@ -56,6 +56,7 @@ import org.springframework.web.bind.annotation.RestController;
 @AllArgsConstructor
 @Slf4j
 public class ComputeResourcePropertyController {
+
     private final ComputeResourcePropertyAssembler computeResourcePropertyAssembler;
     private final ComputeResourcePropertyService computeResourcePropertyService;
     private final ComputeResourcePropertyMixin computeResourcePropertyMixin;

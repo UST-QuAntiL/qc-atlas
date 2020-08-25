@@ -29,6 +29,7 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.UUID;
 
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.planqk.atlas.core.model.AlgorithmRelationType;
@@ -45,6 +46,7 @@ import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 
+@Slf4j
 public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
 
     @Autowired
@@ -62,7 +64,7 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
     void testAddAlgorithm_WithoutRelations() {
         Algorithm algorithm = getGenericAlgorithmWithoutReferences("testAlgorithm");
 
-        Algorithm storedAlgorithm = algorithmService.save(algorithm);
+        Algorithm storedAlgorithm = algorithmService.create(algorithm);
 
         assertAlgorithmEquality(storedAlgorithm, algorithm);
     }
@@ -108,7 +110,7 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
         problemTypes.add(problemType2);
         algorithm.setProblemTypes(problemTypes);
 
-        Algorithm storedAlgorithm = algorithmService.save(algorithm);
+        Algorithm storedAlgorithm = algorithmService.create(algorithm);
 
         assertAlgorithmEquality(storedAlgorithm, algorithm);
 
@@ -140,7 +142,7 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
         applicationAreas.add(applicationArea);
         algorithm.setApplicationAreas(applicationAreas);
 
-        Algorithm storedAlgorithm = algorithmService.save(algorithm);
+        Algorithm storedAlgorithm = algorithmService.create(algorithm);
 
         assertAlgorithmEquality(storedAlgorithm, algorithm);
 
@@ -162,11 +164,11 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
         Algorithm algorithm = getGenericAlgorithmWithoutReferences("testAlgorithm");
         Algorithm compareAlgorithm = getGenericAlgorithmWithoutReferences("testAlgorithm");
 
-        Algorithm storedAlgorithm = algorithmService.save(algorithm);
+        Algorithm storedAlgorithm = algorithmService.create(algorithm);
         compareAlgorithm.setId(storedAlgorithm.getId());
         String editName = "editedAlgorithm";
         storedAlgorithm.setName(editName);
-        Algorithm editedAlgorithm = algorithmService.update(storedAlgorithm.getId(), storedAlgorithm);
+        Algorithm editedAlgorithm = algorithmService.update(storedAlgorithm);
 
         assertThat(editedAlgorithm.getId()).isNotNull();
         assertThat(editedAlgorithm.getId()).isEqualTo(compareAlgorithm.getId());
@@ -193,7 +195,7 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
         Algorithm algorithm = getGenericAlgorithmWithoutReferences("testAlgorithm");
 
         Assertions.assertThrows(NoSuchElementException.class, () ->
-                algorithmService.update(UUID.randomUUID(), algorithm));
+                algorithmService.update(algorithm));
     }
 
     @Test
@@ -211,11 +213,11 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
         compareAlgorithm.setSpeedUp("2");
         compareAlgorithm.setQuantumComputationModel(QuantumComputationModel.QUANTUM_ANNEALING);
 
-        QuantumAlgorithm storedAlgorithm = (QuantumAlgorithm) algorithmService.save(algorithm);
+        QuantumAlgorithm storedAlgorithm = (QuantumAlgorithm) algorithmService.create(algorithm);
         compareAlgorithm.setId(storedAlgorithm.getId());
         String editName = "editedQuantumAlgorithm";
         storedAlgorithm.setName(editName);
-        QuantumAlgorithm editedAlgorithm = (QuantumAlgorithm) algorithmService.update(storedAlgorithm.getId(), storedAlgorithm);
+        QuantumAlgorithm editedAlgorithm = (QuantumAlgorithm) algorithmService.update(storedAlgorithm);
 
         assertThat(editedAlgorithm.getId()).isNotNull();
         assertThat(editedAlgorithm.getId()).isEqualTo(compareAlgorithm.getId());
@@ -237,7 +239,7 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
     void testFindAlgorithmById_ElementFound() {
         Algorithm algorithm = getGenericAlgorithmWithoutReferences("testAlgorithm");
 
-        Algorithm storedAlgorithm = algorithmService.save(algorithm);
+        Algorithm storedAlgorithm = algorithmService.create(algorithm);
 
         storedAlgorithm = algorithmService.findById(storedAlgorithm.getId());
 
@@ -247,9 +249,9 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
     @Test
     void testFindAll() {
         Algorithm algorithm1 = getGenericAlgorithmWithoutReferences("testAlgorithm1");
-        algorithmService.save(algorithm1);
+        algorithmService.create(algorithm1);
         Algorithm algorithm2 = getGenericAlgorithmWithoutReferences("testAlgorithm2");
-        algorithmService.save(algorithm2);
+        algorithmService.create(algorithm2);
 
         List<Algorithm> algorithms = algorithmService.findAll(Pageable.unpaged(), null).getContent();
 
@@ -260,7 +262,7 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
     void testDeleteAlgorithm_WithoutRelations() {
         Algorithm algorithm = getGenericAlgorithmWithoutReferences("testAlgorithm");
 
-        Algorithm storedAlgorithm = algorithmService.save(algorithm);
+        Algorithm storedAlgorithm = algorithmService.create(algorithm);
 
         Assertions.assertDoesNotThrow(() -> algorithmService.findById(storedAlgorithm.getId()));
 
@@ -299,11 +301,11 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
         Set<Algorithm> publicationAlgorithms = new HashSet<>();
         publicationAlgorithms.add(algorithm);
         publication.setAlgorithms(publicationAlgorithms);
-        publication = publicationService.save(publication);
+        publication = publicationService.create(publication);
         publications.add(publication);
         algorithm.setPublications(publications);
 
-        Algorithm storedAlgorithm = algorithmService.save(algorithm);
+        Algorithm storedAlgorithm = algorithmService.create(algorithm);
 
         Assertions.assertDoesNotThrow(() -> algorithmService.findById(storedAlgorithm.getId()));
 //        storedAlgorithm.getTags().forEach(t ->

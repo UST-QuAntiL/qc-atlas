@@ -34,6 +34,7 @@ import org.planqk.atlas.web.utils.ValidationGroups;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.hateoas.EntityModel;
@@ -51,7 +52,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@io.swagger.v3.oas.annotations.tags.Tag(name = Constants.TAG_APPLICATION_AREAS)
+@Tag(name = Constants.TAG_APPLICATION_AREAS)
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/" + Constants.API_VERSION + "/" + Constants.APPLICATION_AREAS)
@@ -80,7 +81,7 @@ public class ApplicationAreaController {
     @PostMapping()
     public ResponseEntity<EntityModel<ApplicationAreaDto>> createApplicationArea(
             @Validated(ValidationGroups.Create.class) @RequestBody ApplicationAreaDto applicationAreaDto) {
-        var savedApplicationArea = applicationAreaService.save(
+        var savedApplicationArea = applicationAreaService.create(
                 ModelMapperUtils.convert(applicationAreaDto, ApplicationArea.class));
         return new ResponseEntity<>(applicationAreaAssembler.toModel(savedApplicationArea), HttpStatus.CREATED);
     }
@@ -95,7 +96,7 @@ public class ApplicationAreaController {
     public ResponseEntity<EntityModel<ApplicationAreaDto>> updateApplicationArea(
             @Validated(ValidationGroups.Update.class) @RequestBody ApplicationAreaDto applicationAreaDto) {
         var updatedApplicationArea = applicationAreaService.update(
-                applicationAreaDto.getId(), ModelMapperUtils.convert(applicationAreaDto, ApplicationArea.class));
+                ModelMapperUtils.convert(applicationAreaDto, ApplicationArea.class));
         return ResponseEntity.ok(applicationAreaAssembler.toModel(updatedApplicationArea));
     }
 

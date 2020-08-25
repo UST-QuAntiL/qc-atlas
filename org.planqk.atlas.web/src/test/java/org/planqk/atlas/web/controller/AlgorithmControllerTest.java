@@ -26,9 +26,9 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.UUID;
 
-import org.planqk.atlas.core.model.AlgorithmRelationType;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
+import org.planqk.atlas.core.model.AlgorithmRelationType;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
 import org.planqk.atlas.core.model.ComputationModel;
 import org.planqk.atlas.core.model.ComputeResourceProperty;
@@ -38,19 +38,9 @@ import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.model.PatternRelationType;
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.model.QuantumAlgorithm;
-import org.planqk.atlas.core.services.AlgorithmRelationService;
-import org.planqk.atlas.core.services.AlgorithmRelationTypeService;
 import org.planqk.atlas.core.services.AlgorithmService;
-import org.planqk.atlas.core.services.ApplicationAreaService;
 import org.planqk.atlas.core.services.ComputeResourcePropertyService;
 import org.planqk.atlas.core.services.ComputeResourcePropertyTypeService;
-import org.planqk.atlas.core.services.ImplementationService;
-import org.planqk.atlas.core.services.LinkingService;
-import org.planqk.atlas.core.services.PatternRelationService;
-import org.planqk.atlas.core.services.PatternRelationTypeService;
-import org.planqk.atlas.core.services.ProblemTypeService;
-import org.planqk.atlas.core.services.PublicationService;
-import org.planqk.atlas.core.services.TagService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.mixin.ComputeResourcePropertyMixin;
 import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
@@ -113,31 +103,11 @@ public class AlgorithmControllerTest {
     private final Pageable pageable = PageRequest.of(page, size);
 
     @MockBean
-    private ApplicationAreaService applicationAreaService;
-    @MockBean
     private AlgorithmService algorithmService;
     @MockBean
     private ComputeResourcePropertyService computeResourcePropertyService;
     @MockBean
     private ComputeResourcePropertyTypeService computeResourcePropertyTypeService;
-    @MockBean
-    private PatternRelationService patternRelationService;
-    @MockBean
-    private PatternRelationTypeService patternRelationTypeService;
-    @MockBean
-    private ProblemTypeService problemTypeService;
-    @MockBean
-    private PublicationService publicationService;
-    @MockBean
-    private AlgorithmRelationService algorithmRelationService;
-    @MockBean
-    private AlgorithmRelationTypeService algorithmRelationTypeService;
-    @MockBean
-    private ImplementationService implementationService;
-    @MockBean
-    private LinkingService linkingService;
-    @MockBean
-    private TagService tagService;
 
     @Autowired
     private MockMvc mockMvc;
@@ -334,7 +304,7 @@ public class AlgorithmControllerTest {
     @Test
     public void createAlgorithm_returnAlgorithm() throws Exception {
         initializeAlgorithms();
-        when(algorithmService.save(any())).thenReturn(algorithm1);
+        when(algorithmService.create(any())).thenReturn(algorithm1);
 
         var url = fromMethodCall(uriBuilder, on(AlgorithmController.class)
                 .createAlgorithm(null)).toUriString();
@@ -369,7 +339,7 @@ public class AlgorithmControllerTest {
     public void updateAlgorithm_returnAlgorithm() throws Exception {
         initializeAlgorithms();
 
-        doReturn(algorithm1).when(algorithmService).update(any(), any());
+        doReturn(algorithm1).when(algorithmService).update(any());
 
         var url = fromMethodCall(uriBuilder, on(AlgorithmController.class)
                 .updateAlgorithm(null)).toUriString();

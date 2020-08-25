@@ -89,7 +89,7 @@ public class PublicationController {
     @PostMapping()
     public ResponseEntity<EntityModel<PublicationDto>> createPublication(
             @Validated(ValidationGroups.Create.class) @RequestBody PublicationDto publicationDto) {
-        Publication publication = publicationService.save(ModelMapperUtils.convert(publicationDto, Publication.class));
+        Publication publication = publicationService.create(ModelMapperUtils.convert(publicationDto, Publication.class));
         return new ResponseEntity<>(publicationAssembler.toModel(publication), HttpStatus.CREATED);
     }
 
@@ -124,7 +124,7 @@ public class PublicationController {
     }, description = "")
     @DeleteMapping("/{publicationId}")
     public ResponseEntity<Void> deletePublication(@PathVariable UUID publicationId) {
-        publicationService.deleteById(publicationId);
+        publicationService.delete(publicationId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 

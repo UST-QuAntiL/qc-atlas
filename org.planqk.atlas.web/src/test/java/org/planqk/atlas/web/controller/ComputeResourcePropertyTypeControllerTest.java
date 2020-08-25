@@ -62,6 +62,7 @@ import static org.springframework.web.servlet.mvc.method.annotation.MvcUriCompon
 @AutoConfigureMockMvc
 @EnableLinkAssemblers
 public class ComputeResourcePropertyTypeControllerTest {
+
     @MockBean
     private ComputeResourcePropertyService resourceService;
     @MockBean
@@ -144,7 +145,7 @@ public class ComputeResourcePropertyTypeControllerTest {
 
         when(computeResourcePropertyTypeService.findAll(any())).thenReturn(new PageImpl<>(types));
         var url = fromMethodCall(uriBuilder, on(ComputeResourcePropertyTypeController.class)
-                .getResourcePropertyTypes(null, null)).toUriString();
+                .getResourcePropertyTypes(null)).toUriString();
         var result = mockMvc.perform(get(url)).andExpect(status().isOk()).andReturn();
 
         var resultList = ObjectMapperUtils.mapResponseToList(

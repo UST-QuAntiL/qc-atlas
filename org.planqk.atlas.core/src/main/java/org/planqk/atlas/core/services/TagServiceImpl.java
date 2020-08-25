@@ -27,11 +27,14 @@ import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.repository.TagRepository;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class TagServiceImpl implements TagService {
@@ -44,7 +47,7 @@ public class TagServiceImpl implements TagService {
 
     @Override
     @Transactional
-    public Tag save(Tag tag) {
+    public Tag create(Tag tag) {
         return tagRepository.save(tag);
     }
 
@@ -104,7 +107,7 @@ public class TagServiceImpl implements TagService {
         if (tagRepository.existsTagByValue(tag.getValue())) {
             return tag;
         }
-        return save(tag);
+        return create(tag);
     }
 }
 

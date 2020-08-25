@@ -38,9 +38,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @AllArgsConstructor
-@Slf4j
 public class ComputeResourceServiceImpl implements ComputeResourceService {
 
     private final ComputeResourceRepository computeResourceRepository;
@@ -55,41 +55,13 @@ public class ComputeResourceServiceImpl implements ComputeResourceService {
 
     @Override
     @Transactional
-    public ComputeResource save(ComputeResource computeResource) {
+    public ComputeResource create(ComputeResource computeResource) {
         return computeResourceRepository.save(computeResource);
     }
 
     @Override
-    @Transactional
-    public ComputeResource update(UUID id, ComputeResource computeResource) {
-        ComputeResource persistedComputeResource = findById(id);
-
-        // update fields that can be changed based on DTO
-        persistedComputeResource.setName(computeResource.getName());
-        persistedComputeResource.setVendor(computeResource.getVendor());
-        persistedComputeResource.setTechnology(computeResource.getTechnology());
-        persistedComputeResource.setQuantumComputationModel(computeResource.getQuantumComputationModel());
-
-        return computeResourceRepository.save(persistedComputeResource);
-    }
-
-    @Override
-    @Transactional
-    public Set<ComputeResource> saveOrUpdateAll(Set<ComputeResource> computeResources) {
-        for (ComputeResource computeResource : computeResources) {
-            save(computeResource);
-        }
-        return computeResources;
-    }
-
-    @Override
-    public Page<CloudService> findLinkedComputeResources(UUID computeresourceid, Pageable p) {
-        return cloudServiceRepository.findCloudServicesByComputeResourceId(computeresourceid, p);
-    }
-
-    @Override
-    public Page<SoftwarePlatform> findLinkedSoftwarePlatforms(UUID id, Pageable p) {
-        return softwarePlatformRepository.findSoftwarePlatformsByComputeResourceId(id, p);
+    public Page<ComputeResource> findAll(Pageable pageable) {
+        return computeResourceRepository.findAll(pageable);
     }
 
     @Override
@@ -98,13 +70,16 @@ public class ComputeResourceServiceImpl implements ComputeResourceService {
     }
 
     @Override
-    public Set<ComputeResource> findByName(String name) {
-        return computeResourceRepository.findByName(name);
-    }
+    @Transactional
+    public ComputeResource update(ComputeResource computeResource) {
+        ComputeResource persistedComputeResource = findById(computeResource.getId());
 
-    @Override
-    public Page<ComputeResource> findAll(Pageable pageable) {
-        return computeResourceRepository.findAll(pageable);
+        persistedComputeResource.setName(computeResource.getName());
+        persistedComputeResource.setVendor(computeResource.getVendor());
+        persistedComputeResource.setTechnology(computeResource.getTechnology());
+        persistedComputeResource.setQuantumComputationModel(computeResource.getQuantumComputationModel());
+
+        return computeResourceRepository.save(persistedComputeResource);
     }
 
     @Override
@@ -124,7 +99,6 @@ public class ComputeResourceServiceImpl implements ComputeResourceService {
 
             computeResourceRepository.deleteById(id);
         } else {
-            log.info("Trying to delete Compute Resource that is used in a CloudService or SoftwarePlatform");
             throw new ConsistencyException(
                     "Cannot delete Compute Resource since it is used by existing CloudService or SoftwarePlatform");
         }
@@ -140,4 +114,13 @@ public class ComputeResourceServiceImpl implements ComputeResourceService {
                 computeResourcePropertyService.delete(computingResourceProperty.getId()));
     }
 
+    @Override
+    public Page<CloudService> findLinkedComputeResources(UUID computeresourceid, Pageable p) {
+        return cloudServiceRepository.findCloudServicesByComputeResourceId(computeresourceid, p);
+    }
+
+    @Override
+    public Page<SoftwarePlatform> findLinkedSoftwarePlatforms(UUID id, Pageable p) {
+        return softwarePlatformRepository.findSoftwarePlatformsByComputeResourceId(id, p);
+    }
 }

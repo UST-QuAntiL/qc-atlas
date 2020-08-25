@@ -19,10 +19,8 @@
 
 package org.planqk.atlas.core.services;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Set;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.ComputeResource;
@@ -32,6 +30,7 @@ import org.planqk.atlas.core.model.ComputeResourcePropertyType;
 import org.planqk.atlas.core.model.QuantumComputationModel;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +38,7 @@ import org.springframework.data.domain.Pageable;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Slf4j
 public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
 
     @Autowired
@@ -53,7 +53,7 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
         ComputeResource computeResource = new ComputeResource();
         computeResource.setName("test compute resource");
 
-        ComputeResource storedComputeResource = computeResourceService.save(computeResource);
+        ComputeResource storedComputeResource = computeResourceService.create(computeResource);
 
         assertComputeResourceEquality(storedComputeResource, computeResource);
     }
@@ -62,7 +62,7 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
     void createMaximalComputeResource() {
         ComputeResource computeResource = getGenericTestComputeResource("test compute resource");
 
-        ComputeResource storedComputeResource = computeResourceService.save(computeResource);
+        ComputeResource storedComputeResource = computeResourceService.create(computeResource);
 
         assertComputeResourceEquality(storedComputeResource, computeResource);
     }
@@ -70,7 +70,7 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
     @Test
     void createComputeResource_WithComputingResourceProperty() {
         ComputeResource computeResource = getGenericTestComputeResource("test compute resource");
-        ComputeResource storedComputeResource = computeResourceService.save(computeResource);
+        ComputeResource storedComputeResource = computeResourceService.create(computeResource);
 
         Assertions.assertDoesNotThrow(() -> computeResourceService.findById(storedComputeResource.getId()));
 
@@ -95,7 +95,7 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
     @Test
     void updateComputeResource_ElementNotFound() {
         Assertions.assertThrows(NoSuchElementException.class, () ->
-                computeResourceService.update(UUID.randomUUID(), null));
+                computeResourceService.update(null));
     }
 
     @Test
@@ -103,11 +103,11 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
         ComputeResource computeResource = getGenericTestComputeResource("test compute resource");
         ComputeResource storedComputeResource = getGenericTestComputeResource("test compute resource");
 
-        ComputeResource storedEditedComputeResource = computeResourceService.save(computeResource);
+        ComputeResource storedEditedComputeResource = computeResourceService.create(computeResource);
         storedComputeResource.setId(storedEditedComputeResource.getId());
         String editName = "edited compute resource";
         storedEditedComputeResource.setName(editName);
-        computeResourceService.save(storedEditedComputeResource);
+        computeResourceService.create(storedEditedComputeResource);
 
         assertThat(storedEditedComputeResource.getId()).isNotNull();
         assertThat(storedEditedComputeResource.getId()).isEqualTo(storedComputeResource.getId());
@@ -127,7 +127,7 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
     void findComputeResourceById_ElementFound() {
         ComputeResource computeResource = getGenericTestComputeResource("test compute resource");
 
-        ComputeResource storedComputeResource = computeResourceService.save(computeResource);
+        ComputeResource storedComputeResource = computeResourceService.create(computeResource);
 
         storedComputeResource = computeResourceService.findById(storedComputeResource.getId());
 
@@ -136,12 +136,10 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
 
     @Test
     void findAll() {
-        Set<ComputeResource> computeResources = new HashSet<>();
         ComputeResource computeResource1 = getGenericTestComputeResource("test compute resource1");
         ComputeResource computeResource2 = getGenericTestComputeResource("test compute resource2");
-        computeResources.add(computeResource1);
-        computeResources.add(computeResource2);
-        computeResourceService.saveOrUpdateAll(computeResources);
+        computeResourceService.create(computeResource1);
+        computeResourceService.create(computeResource2);
 
         List<ComputeResource> storedComputeResources = computeResourceService.findAll(Pageable.unpaged()).getContent();
 
@@ -150,12 +148,10 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
 
     @Test
     void searchAll() {
-        Set<ComputeResource> computeResources = new HashSet<>();
         ComputeResource computeResource1 = getGenericTestComputeResource("test compute resource1");
         ComputeResource computeResource2 = getGenericTestComputeResource("test compute resource2");
-        computeResources.add(computeResource1);
-        computeResources.add(computeResource2);
-        computeResourceService.saveOrUpdateAll(computeResources);
+        computeResourceService.create(computeResource1);
+        computeResourceService.create(computeResource2);
 
         List<ComputeResource> storedComputeResources = computeResourceService.searchAllByName("1", Pageable.unpaged()).getContent();
 
@@ -166,7 +162,7 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
     void deleteComputeResource_NoReferences() {
         ComputeResource computeResource = getGenericTestComputeResource("test compute resource");
 
-        ComputeResource storedComputeResource = computeResourceService.save(computeResource);
+        ComputeResource storedComputeResource = computeResourceService.create(computeResource);
 
         Assertions.assertDoesNotThrow(() -> computeResourceService.findById(storedComputeResource.getId()));
 
@@ -179,7 +175,7 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
     @Test
     void deleteComputeResource_HasReferences() {
         ComputeResource computeResource = getGenericTestComputeResource("test compute resource");
-        ComputeResource storedComputeResource = computeResourceService.save(computeResource);
+        ComputeResource storedComputeResource = computeResourceService.create(computeResource);
 
         Assertions.assertDoesNotThrow(() -> computeResourceService.findById(storedComputeResource.getId()));
 

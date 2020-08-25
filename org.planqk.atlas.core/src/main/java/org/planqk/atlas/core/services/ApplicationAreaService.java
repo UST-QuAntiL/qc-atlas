@@ -30,14 +30,14 @@ import org.springframework.transaction.annotation.Transactional;
 public interface ApplicationAreaService {
 
     @Transactional
-    ApplicationArea save(ApplicationArea applicationArea);
+    ApplicationArea create(ApplicationArea applicationArea);
 
     Page<ApplicationArea> findAll(Pageable pageable, String search);
 
     ApplicationArea findById(UUID applicationAreaId);
 
     @Transactional
-    ApplicationArea update(UUID applicationAreaId, ApplicationArea applicationArea);
+    ApplicationArea update(ApplicationArea applicationArea);
 
     @Transactional
     void delete(UUID applicationAreaId);

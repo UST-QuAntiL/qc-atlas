@@ -27,24 +27,24 @@ import javax.transaction.Transactional;
 
 import org.planqk.atlas.core.model.ApplicationArea;
 import org.planqk.atlas.core.model.exceptions.ConsistencyException;
-import org.planqk.atlas.core.repository.AlgorithmRepository;
 import org.planqk.atlas.core.repository.ApplicationAreaRepository;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class ApplicationAreaServiceImpl implements ApplicationAreaService {
 
     private final ApplicationAreaRepository applicationAreaRepository;
-    private final AlgorithmRepository algorithmRepository;
 
     @Override
     @Transactional
-    public ApplicationArea save(ApplicationArea applicationArea) {
+    public ApplicationArea create(ApplicationArea applicationArea) {
         return applicationAreaRepository.save(applicationArea);
     }
 
@@ -63,12 +63,12 @@ public class ApplicationAreaServiceImpl implements ApplicationAreaService {
 
     @Override
     @Transactional
-    public ApplicationArea update(UUID id, ApplicationArea applicationArea) {
-        ApplicationArea persistedApplicationArea = findById(id);
+    public ApplicationArea update(ApplicationArea applicationArea) {
+        ApplicationArea persistedApplicationArea = findById(applicationArea.getId());
 
         persistedApplicationArea.setName(applicationArea.getName());
 
-        return save(persistedApplicationArea);
+        return applicationAreaRepository.save(persistedApplicationArea);
     }
 
     @Override

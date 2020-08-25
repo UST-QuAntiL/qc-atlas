@@ -40,6 +40,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -58,7 +59,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@io.swagger.v3.oas.annotations.tags.Tag(name = Constants.TAG_EXECUTION_ENVIRONMENTS)
+@Tag(name = Constants.TAG_EXECUTION_ENVIRONMENTS)
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/" + Constants.API_VERSION + "/" + Constants.CLOUD_SERVICES)
@@ -99,7 +100,7 @@ public class CloudServiceController {
     @PostMapping()
     public ResponseEntity<EntityModel<CloudServiceDto>> createCloudService(
             @Validated(ValidationGroups.Create.class) @RequestBody CloudServiceDto cloudServiceDto) {
-        var savedCloudService = cloudServiceService.save(ModelMapperUtils.convert(cloudServiceDto, CloudService.class));
+        var savedCloudService = cloudServiceService.create(ModelMapperUtils.convert(cloudServiceDto, CloudService.class));
         return new ResponseEntity<>(cloudServiceAssembler.toModel(savedCloudService), HttpStatus.CREATED);
     }
 
@@ -115,7 +116,7 @@ public class CloudServiceController {
     public ResponseEntity<EntityModel<CloudServiceDto>> updateCloudService(
             @Validated(ValidationGroups.Update.class) @RequestBody CloudServiceDto cloudServiceDto) {
         var updatedCloudService = cloudServiceService.update(
-                cloudServiceDto.getId(), ModelMapperUtils.convert(cloudServiceDto, CloudService.class));
+                ModelMapperUtils.convert(cloudServiceDto, CloudService.class));
         return ResponseEntity.ok(cloudServiceAssembler.toModel(updatedCloudService));
     }
 

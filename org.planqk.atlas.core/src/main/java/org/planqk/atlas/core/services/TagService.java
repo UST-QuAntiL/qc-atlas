@@ -29,7 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 public interface TagService {
 
     @Transactional
-    Tag save(Tag tag);
+    Tag create(Tag tag);
 
     Page<Tag> findAll(Pageable pageable);
 

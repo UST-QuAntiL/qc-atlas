@@ -19,8 +19,6 @@
 
 package org.planqk.atlas.web.controller;
 
-import javax.validation.Valid;
-
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.services.TagService;
 import org.planqk.atlas.web.Constants;
@@ -44,6 +42,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -68,14 +67,17 @@ public class TagController {
     @Operation(responses = {@ApiResponse(responseCode = "200")})
     @GetMapping(value = "/")
     @ListParametersDoc()
-    public ResponseEntity<PagedModel<EntityModel<TagDto>>> getTags(@Parameter(hidden = true) ListParameters listParameters) {
-        return new ResponseEntity<>(tagAssembler.toModel(this.tagService.findAllByContent(listParameters.getSearch(), listParameters.getPageable())), HttpStatus.OK);
+    public ResponseEntity<PagedModel<EntityModel<TagDto>>> getTags(
+            @Parameter(hidden = true) ListParameters listParameters) {
+        return new ResponseEntity<>(tagAssembler.toModel(
+                this.tagService.findAllByContent(listParameters.getSearch(), listParameters.getPageable())), HttpStatus.OK);
     }
 
     @Operation(responses = {@ApiResponse(responseCode = "201")})
     @PostMapping(value = "/")
-    public ResponseEntity<EntityModel<TagDto>> createTag(@Valid @RequestBody TagDto tag) {
-        Tag savedTag = this.tagService.save(ModelMapperUtils.convert(tag, Tag.class));
+    public ResponseEntity<EntityModel<TagDto>> createTag(
+            @Validated @RequestBody TagDto tagDto) {
+        Tag savedTag = this.tagService.create(ModelMapperUtils.convert(tagDto, Tag.class));
         return new ResponseEntity<>(tagAssembler.toModel(savedTag), HttpStatus.CREATED);
     }
 

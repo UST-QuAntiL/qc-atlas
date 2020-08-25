@@ -31,6 +31,7 @@ import org.planqk.atlas.web.utils.ValidationGroups;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.hateoas.EntityModel;
@@ -47,7 +48,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@io.swagger.v3.oas.annotations.tags.Tag(name = Constants.TAG_ALGORITHM_RELATIONS)
+@Tag(name = Constants.TAG_ALGORITHM_RELATIONS)
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/" + Constants.API_VERSION + "/" + Constants.ALGORITHM_RELATIONS)
@@ -69,7 +70,8 @@ public class AlgorithmRelationController {
 //    }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "201")
+            @ApiResponse(responseCode = "201"),
+            @ApiResponse(responseCode = "400"),
     }, description = "Custom ID will be ignored.")
     @PostMapping
     public ResponseEntity<EntityModel<AlgorithmRelationDto>> createAlgorithmRelation(

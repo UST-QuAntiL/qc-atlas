@@ -62,6 +62,7 @@ import static org.springframework.web.servlet.mvc.method.annotation.MvcUriCompon
 @AutoConfigureMockMvc
 @EnableLinkAssemblers
 public class SoftwarePlatformControllerTest {
+
     private final int page = 0;
     private final int size = 10;
     private final Pageable pageable = PageRequest.of(page, size);
@@ -98,7 +99,7 @@ public class SoftwarePlatformControllerTest {
         softwarePlatform.setName("test platform");
         SoftwarePlatformDto softwarePlatformDto = ModelMapperUtils.convert(softwarePlatform, SoftwarePlatformDto.class);
 
-        when(softwarePlatformService.save(any(SoftwarePlatform.class))).thenReturn(softwarePlatform);
+        when(softwarePlatformService.create(any(SoftwarePlatform.class))).thenReturn(softwarePlatform);
 
         MvcResult result = mockMvc.perform(
                 post(
@@ -310,7 +311,7 @@ public class SoftwarePlatformControllerTest {
         returnValue.setId(sampleInput.getId());
         returnValue.setName(sampleInput.getName());
 
-        doReturn(returnValue).when(softwarePlatformService).update(any(), any());
+        doReturn(returnValue).when(softwarePlatformService).update(any());
         var mvcResult = mockMvc.perform(
                 put(
                         fromMethodCall(uriBuilder,
@@ -331,7 +332,7 @@ public class SoftwarePlatformControllerTest {
         var sampleInput = new SoftwarePlatformDto();
         sampleInput.setId(UUID.randomUUID());
         sampleInput.setName("Hello World");
-        doThrow(new NoSuchElementException()).when(softwarePlatformService).update(any(), any());
+        doThrow(new NoSuchElementException()).when(softwarePlatformService).update(any());
         mockMvc.perform(
                 put(
                         fromMethodCall(uriBuilder,
@@ -349,7 +350,7 @@ public class SoftwarePlatformControllerTest {
         var sampleInput = new SoftwarePlatformDto();
         sampleInput.setId(UUID.randomUUID());
         sampleInput.setName(null);
-        doThrow(new NoSuchElementException()).when(softwarePlatformService).update(any(), any());
+        doThrow(new NoSuchElementException()).when(softwarePlatformService).update(any());
         mockMvc.perform(
                 put(
                         fromMethodCall(uriBuilder,

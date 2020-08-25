@@ -20,24 +20,23 @@
 package org.planqk.atlas.core.services;
 
 import java.util.NoSuchElementException;
-import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.planqk.atlas.core.model.CloudService;
 import org.planqk.atlas.core.model.ComputeResource;
 import org.planqk.atlas.core.model.SoftwarePlatform;
-import org.planqk.atlas.core.model.exceptions.ConsistencyException;
 import org.planqk.atlas.core.repository.CloudServiceRepository;
 import org.planqk.atlas.core.repository.ComputeResourceRepository;
 import org.planqk.atlas.core.repository.SoftwarePlatformRepository;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class CloudServiceServiceImpl implements CloudServiceService {
@@ -45,7 +44,6 @@ public class CloudServiceServiceImpl implements CloudServiceService {
     private final CloudServiceRepository cloudServiceRepository;
     private final ComputeResourceRepository computeResourceRepository;
     private final SoftwarePlatformRepository softwarePlatformRepository;
-    private final ComputeResourceService computeResourceService;
 
     @Override
     public Page<CloudService> searchAllByName(String name, Pageable p) {
@@ -53,28 +51,9 @@ public class CloudServiceServiceImpl implements CloudServiceService {
     }
 
     @Override
-    public CloudService save(CloudService cloudService) {
-        return this.cloudServiceRepository.save(cloudService);
-    }
-
-    @Override
-    public Set<CloudService> createOrUpdateAll(Set<CloudService> cloudServices) {
-        return cloudServices.stream().map(this::save).collect(Collectors.toSet());
-    }
-
     @Transactional
-    @Override
-    public CloudService update(UUID id, CloudService cloudService) {
-        CloudService persistedCloudService = findById(id);
-
-        // update fields that can be changed based on DTO
-        persistedCloudService.setName(cloudService.getName());
-        persistedCloudService.setProvider(cloudService.getProvider());
-        persistedCloudService.setUrl(cloudService.getUrl());
-        persistedCloudService.setDescription(cloudService.getDescription());
-        persistedCloudService.setCostModel(cloudService.getCostModel());
-
-        return save(persistedCloudService);
+    public CloudService create(CloudService cloudService) {
+        return this.cloudServiceRepository.save(cloudService);
     }
 
     @Override
@@ -87,8 +66,22 @@ public class CloudServiceServiceImpl implements CloudServiceService {
         return cloudServiceRepository.findById(cloudServiceId).orElseThrow(NoSuchElementException::new);
     }
 
-    @Transactional
     @Override
+    @Transactional
+    public CloudService update(CloudService cloudService) {
+        CloudService persistedCloudService = findById(cloudService.getId());
+
+        persistedCloudService.setName(cloudService.getName());
+        persistedCloudService.setProvider(cloudService.getProvider());
+        persistedCloudService.setUrl(cloudService.getUrl());
+        persistedCloudService.setDescription(cloudService.getDescription());
+        persistedCloudService.setCostModel(cloudService.getCostModel());
+
+        return cloudServiceRepository.save(persistedCloudService);
+    }
+
+    @Override
+    @Transactional
     public void delete(UUID cloudServiceId) {
         CloudService cloudService = findById(cloudServiceId);
 

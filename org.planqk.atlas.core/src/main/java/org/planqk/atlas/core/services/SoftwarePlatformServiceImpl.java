@@ -26,29 +26,30 @@ import org.planqk.atlas.core.model.CloudService;
 import org.planqk.atlas.core.model.ComputeResource;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.SoftwarePlatform;
-import org.planqk.atlas.core.model.exceptions.ConsistencyException;
 import org.planqk.atlas.core.repository.CloudServiceRepository;
 import org.planqk.atlas.core.repository.ComputeResourceRepository;
 import org.planqk.atlas.core.repository.ImplementationRepository;
 import org.planqk.atlas.core.repository.SoftwarePlatformRepository;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
 
     private final SoftwarePlatformRepository softwarePlatformRepository;
+
     private final ImplementationRepository implementationRepository;
-    private final ImplementationService implementationService;
+
     private final ComputeResourceRepository computeResourceRepository;
-    private final ComputeResourceService computeResourceService;
+
     private final CloudServiceRepository cloudServiceRepository;
-    private final CloudServiceService cloudServiceService;
 
     @Override
     public Page<SoftwarePlatform> searchAllByName(String name, Pageable p) {
@@ -57,7 +58,7 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
 
     @Override
     @Transactional
-    public SoftwarePlatform save(SoftwarePlatform softwarePlatform) {
+    public SoftwarePlatform create(SoftwarePlatform softwarePlatform) {
         return this.softwarePlatformRepository.save(softwarePlatform);
     }
 
@@ -67,32 +68,31 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
     }
 
     @Override
-    public SoftwarePlatform findById(UUID platformId) {
-        return softwarePlatformRepository.findById(platformId).orElseThrow(NoSuchElementException::new);
+    public SoftwarePlatform findById(UUID softwarePlatformId) {
+        return softwarePlatformRepository.findById(softwarePlatformId).orElseThrow(NoSuchElementException::new);
     }
 
     @Override
     @Transactional
-    public SoftwarePlatform update(UUID platformId, SoftwarePlatform softwarePlatform) {
-        SoftwarePlatform persistedSoftwarePlatform = findById(platformId);
+    public SoftwarePlatform update(SoftwarePlatform softwarePlatform) {
+        SoftwarePlatform persistedSoftwarePlatform = findById(softwarePlatform.getId());
 
-        // update fields that can be changed based on DTO
         persistedSoftwarePlatform.setName(softwarePlatform.getName());
         persistedSoftwarePlatform.setLink(softwarePlatform.getLink());
         persistedSoftwarePlatform.setLicence(softwarePlatform.getLicence());
         persistedSoftwarePlatform.setVersion(softwarePlatform.getVersion());
 
-        return save(softwarePlatform);
+        return softwarePlatformRepository.save(softwarePlatform);
     }
 
     @Override
     @Transactional
-    public void delete(UUID platformId) {
-        SoftwarePlatform softwarePlatform = findById(platformId);
+    public void delete(UUID softwarePlatformId) {
+        SoftwarePlatform softwarePlatform = findById(softwarePlatformId);
 
         removeReferences(softwarePlatform);
 
-        softwarePlatformRepository.deleteById(platformId);
+        softwarePlatformRepository.deleteById(softwarePlatformId);
     }
 
     private void removeReferences(SoftwarePlatform softwarePlatform) {
@@ -105,29 +105,29 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
     }
 
     @Override
-    public Page<Implementation> findImplementations(UUID platformId, Pageable pageable) {
-        if (!softwarePlatformRepository.existsSoftwarePlatformById(platformId)) {
+    public Page<Implementation> findImplementations(UUID softwarePlatformId, Pageable pageable) {
+        if (!softwarePlatformRepository.existsSoftwarePlatformById(softwarePlatformId)) {
             throw new NoSuchElementException();
         }
 
-        return implementationRepository.findImplementationsBySoftwarePlatformId(platformId, pageable);
+        return implementationRepository.findImplementationsBySoftwarePlatformId(softwarePlatformId, pageable);
     }
 
     @Override
-    public Page<CloudService> findCloudServices(UUID platformId, Pageable pageable) {
-        if (!softwarePlatformRepository.existsSoftwarePlatformById(platformId)) {
+    public Page<CloudService> findCloudServices(UUID softwarePlatformId, Pageable pageable) {
+        if (!softwarePlatformRepository.existsSoftwarePlatformById(softwarePlatformId)) {
             throw new NoSuchElementException();
         }
 
-        return cloudServiceRepository.findCloudServicesBySoftwarePlatformId(platformId, pageable);
+        return cloudServiceRepository.findCloudServicesBySoftwarePlatformId(softwarePlatformId, pageable);
     }
 
     @Override
-    public Page<ComputeResource> findComputeResources(UUID platformId, Pageable pageable) {
-        if (!softwarePlatformRepository.existsSoftwarePlatformById(platformId)) {
+    public Page<ComputeResource> findComputeResources(UUID softwarePlatformId, Pageable pageable) {
+        if (!softwarePlatformRepository.existsSoftwarePlatformById(softwarePlatformId)) {
             throw new NoSuchElementException();
         }
 
-        return computeResourceRepository.findComputeResourcesBySoftwarePlatformId(platformId, pageable);
+        return computeResourceRepository.findComputeResourcesBySoftwarePlatformId(softwarePlatformId, pageable);
     }
 }

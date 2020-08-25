@@ -31,6 +31,7 @@ import org.planqk.atlas.core.model.ComputeResource;
 import org.planqk.atlas.core.model.QuantumComputationModel;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,7 @@ import org.springframework.data.domain.Pageable;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Slf4j
 public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
 
     @Autowired
@@ -52,7 +54,7 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
         CloudService cloudService = new CloudService();
         cloudService.setName("test cloud service");
 
-        CloudService storedCloudService = cloudServiceService.save(cloudService);
+        CloudService storedCloudService = cloudServiceService.create(cloudService);
         assertCloudServiceEquality(storedCloudService, cloudService);
     }
 
@@ -60,21 +62,21 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
     void createMaximalCloudService() {
         CloudService cloudService = getTestCloudService("test cloud service");
 
-        CloudService storedCloudService = cloudServiceService.save(cloudService);
+        CloudService storedCloudService = cloudServiceService.create(cloudService);
         assertCloudServiceEquality(storedCloudService, cloudService);
     }
 
     @Test
     void addComputeResourceReference() {
         CloudService cloudService = getTestCloudService("test cloud service");
-        CloudService storedCloudService = cloudServiceService.save(cloudService);
+        CloudService storedCloudService = cloudServiceService.create(cloudService);
 
         ComputeResource computeResource = new ComputeResource();
         computeResource.setName("test compute resource");
         computeResource.setVendor("test vendor");
         computeResource.setTechnology("test technology");
         computeResource.setQuantumComputationModel(QuantumComputationModel.QUANTUM_ANNEALING);
-        ComputeResource storedComputeResource = computeResourceService.save(computeResource);
+        ComputeResource storedComputeResource = computeResourceService.create(computeResource);
 
         linkingService.linkCloudServiceAndComputeResource(
                 storedCloudService.getId(), storedComputeResource.getId());
@@ -89,7 +91,7 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
     @Test
     void updateCloudService_ElementNotFound() {
         Assertions.assertThrows(NoSuchElementException.class, () ->
-                cloudServiceService.update(UUID.randomUUID(), null));
+                cloudServiceService.update(null));
     }
 
     @Test
@@ -97,11 +99,11 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
         CloudService cloudService = getTestCloudService("test cloud service");
         CloudService storedCloudService = getTestCloudService("test cloud service");
 
-        CloudService storedEditedCloudService = cloudServiceService.save(cloudService);
+        CloudService storedEditedCloudService = cloudServiceService.create(cloudService);
         storedCloudService.setId(storedEditedCloudService.getId());
         String editName = "edited cloud service";
         storedEditedCloudService.setName(editName);
-        storedEditedCloudService = cloudServiceService.update(storedEditedCloudService.getId(), storedEditedCloudService);
+        storedEditedCloudService = cloudServiceService.update(storedEditedCloudService);
 
         assertThat(storedEditedCloudService.getId()).isEqualTo(storedCloudService.getId());
         assertThat(storedEditedCloudService.getName()).isNotEqualTo(storedCloudService.getName());
@@ -121,7 +123,7 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
     void findCloudServiceById_ElementFound() {
         CloudService cloudService = getTestCloudService("test cloud service");
 
-        CloudService storedCloudService = cloudServiceService.save(cloudService);
+        CloudService storedCloudService = cloudServiceService.create(cloudService);
 
         storedCloudService = cloudServiceService.findById(storedCloudService.getId());
 
@@ -131,9 +133,9 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
     @Test
     void findAll() {
         CloudService cloudService1 = getTestCloudService("test cloud service1");
-        cloudServiceService.save(cloudService1);
+        cloudServiceService.create(cloudService1);
         CloudService cloudService2 = getTestCloudService("test cloud service2");
-        cloudServiceService.save(cloudService2);
+        cloudServiceService.create(cloudService2);
 
         List<CloudService> cloudServices = cloudServiceService.findAll(Pageable.unpaged()).getContent();
 
@@ -143,9 +145,9 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
     @Test
     void searchAll() {
         CloudService cloudService1 = getTestCloudService("test cloud service1");
-        cloudServiceService.save(cloudService1);
+        cloudServiceService.create(cloudService1);
         CloudService cloudService2 = getTestCloudService("test cloud service2");
-        cloudServiceService.save(cloudService2);
+        cloudServiceService.create(cloudService2);
 
         List<CloudService> cloudServices = cloudServiceService.searchAllByName("1", Pageable.unpaged()).getContent();
 
@@ -156,7 +158,7 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
     void deleteCloudService_NoReferences() {
         CloudService cloudService = getTestCloudService("test cloud service");
 
-        CloudService storedCloudService = cloudServiceService.save(cloudService);
+        CloudService storedCloudService = cloudServiceService.create(cloudService);
 
         Assertions.assertDoesNotThrow(() -> cloudServiceService.findById(storedCloudService.getId()));
 
@@ -169,14 +171,14 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
     @Test
     void deleteCloudService_HasReferences() {
         CloudService cloudService = getTestCloudService("test cloud service");
-        CloudService storedCloudService = cloudServiceService.save(cloudService);
+        CloudService storedCloudService = cloudServiceService.create(cloudService);
 
         Assertions.assertDoesNotThrow(() -> cloudServiceService.findById(storedCloudService.getId()));
 
         // Add Compute Resource Reference
         ComputeResource computeResource = new ComputeResource();
         computeResource.setName("test compute resource");
-        ComputeResource storedComputeResource = computeResourceService.save(computeResource);
+        ComputeResource storedComputeResource = computeResourceService.create(computeResource);
         linkingService.linkCloudServiceAndComputeResource(storedCloudService.getId(), storedComputeResource.getId());
 
         // Delete
@@ -191,14 +193,14 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
     @Test
     void deleteComputeResourceReference() {
         CloudService cloudService = getTestCloudService("test cloud service");
-        CloudService storedCloudService = cloudServiceService.save(cloudService);
+        CloudService storedCloudService = cloudServiceService.create(cloudService);
 
         ComputeResource computeResource = new ComputeResource();
         computeResource.setName("test compute resource");
         computeResource.setVendor("test vendor");
         computeResource.setTechnology("test technology");
         computeResource.setQuantumComputationModel(QuantumComputationModel.QUANTUM_ANNEALING);
-        ComputeResource storedComputeResource = computeResourceService.save(computeResource);
+        ComputeResource storedComputeResource = computeResourceService.create(computeResource);
 
         linkingService.linkCloudServiceAndComputeResource(
                 storedCloudService.getId(), storedComputeResource.getId());

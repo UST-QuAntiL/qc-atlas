@@ -32,11 +32,13 @@ import org.planqk.atlas.core.repository.PublicationRepository;
 import org.planqk.atlas.core.repository.SoftwarePlatformRepository;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class ImplementationServiceImpl implements ImplementationService {
@@ -46,12 +48,6 @@ public class ImplementationServiceImpl implements ImplementationService {
 
     private final PublicationRepository publicationRepository;
     private final AlgorithmRepository algorithmRepository;
-
-    @Override
-    @Transactional
-    public Implementation save(Implementation implementation) {
-        return implementationRepository.save(implementation);
-    }
 
     @Override
     @Transactional
@@ -76,8 +72,8 @@ public class ImplementationServiceImpl implements ImplementationService {
 
     @Override
     @Transactional
-    public Implementation update(UUID implementationId, Implementation implementation) {
-        Implementation persistedImplementation = findById(implementationId);
+    public Implementation update(Implementation implementation) {
+        Implementation persistedImplementation = findById(implementation.getId());
 
         persistedImplementation.setName(implementation.getName());
         persistedImplementation.setDescription(implementation.getDescription());
@@ -120,11 +116,6 @@ public class ImplementationServiceImpl implements ImplementationService {
         }
 
         return implementationRepository.findByImplementedAlgorithmId(algorithmId, pageable);
-    }
-
-    @Override
-    public Algorithm getImplementedAlgorithm(UUID implementationId) {
-        return findById(implementationId).getImplementedAlgorithm();
     }
 
     @Override

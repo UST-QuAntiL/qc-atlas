@@ -51,6 +51,7 @@ import static org.springframework.web.servlet.mvc.method.annotation.MvcUriCompon
 @AutoConfigureMockMvc
 @EnableLinkAssemblers
 public class CloudServiceControllerTest {
+
     @MockBean
     private CloudServiceService cloudServiceService;
     @MockBean
@@ -90,7 +91,7 @@ public class CloudServiceControllerTest {
         returnedService.setName(service.getName());
         returnedService.setId(service.getId());
 
-        doReturn(returnedService).when(cloudServiceService).save(any());
+        doReturn(returnedService).when(cloudServiceService).create(any());
 
         var url = fromMethodCall(uriBuilder, on(CloudServiceController.class)
                 .createCloudService(null)).toUriString();
@@ -110,7 +111,7 @@ public class CloudServiceControllerTest {
         resource.setId(UUID.randomUUID());
         resource.setName("Hello World");
 
-        doThrow(new NoSuchElementException()).when(cloudServiceService).update(any(), any());
+        doThrow(new NoSuchElementException()).when(cloudServiceService).update(any());
 
         var url = fromMethodCall(uriBuilder, on(CloudServiceController.class)
                 .updateCloudService(null)).toUriString();
@@ -145,7 +146,7 @@ public class CloudServiceControllerTest {
         returnedResource.setName(resource.getName());
         returnedResource.setId(resource.getId());
 
-        doReturn(returnedResource).when(cloudServiceService).update(any(), any());
+        doReturn(returnedResource).when(cloudServiceService).update(any());
 
         var url = fromMethodCall(uriBuilder, on(CloudServiceController.class)
                 .updateCloudService(null)).toUriString();

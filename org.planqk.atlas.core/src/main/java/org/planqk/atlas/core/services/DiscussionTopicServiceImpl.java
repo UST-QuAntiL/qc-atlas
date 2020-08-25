@@ -27,18 +27,22 @@ import org.planqk.atlas.core.model.KnowledgeArtifact;
 import org.planqk.atlas.core.repository.DiscussionTopicRepository;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-@AllArgsConstructor
+@Slf4j
 @Service
+@AllArgsConstructor
 public class DiscussionTopicServiceImpl implements DiscussionTopicService {
 
     private final DiscussionTopicRepository repository;
 
     @Override
-    public DiscussionTopic save(DiscussionTopic discussionTopic) {
+    @Transactional
+    public DiscussionTopic create(DiscussionTopic discussionTopic) {
         return repository.save(discussionTopic);
     }
 
@@ -61,8 +65,9 @@ public class DiscussionTopicServiceImpl implements DiscussionTopicService {
     }
 
     @Override
-    public DiscussionTopic update(UUID id, DiscussionTopic topic) {
-        if (!this.existsDiscussionTopicById(id)) {
+    @Transactional
+    public DiscussionTopic update(DiscussionTopic topic) {
+        if (!this.existsDiscussionTopicById(topic.getId())) {
             throw new NoSuchElementException();
         }
         return repository.save(topic);
@@ -74,7 +79,8 @@ public class DiscussionTopicServiceImpl implements DiscussionTopicService {
     }
 
     @Override
-    public void deleteById(UUID id) {
+    @Transactional
+    public void delete(UUID id) {
         repository.deleteById(id);
     }
 }
