@@ -19,7 +19,6 @@
 
 package org.planqk.atlas.web.controller;
 
-import java.util.Base64;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
@@ -33,7 +32,6 @@ import org.planqk.atlas.core.model.ComputingResourceProperty;
 import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.model.Sketch;
-import org.planqk.atlas.core.repository.SketchRepository;
 import org.planqk.atlas.core.services.AlgoRelationService;
 import org.planqk.atlas.core.services.AlgoRelationTypeService;
 import org.planqk.atlas.core.services.AlgorithmService;
@@ -71,6 +69,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -80,6 +79,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -138,7 +138,6 @@ public class AlgorithmController {
     private final PublicationMixin publicationMixin;
 
     private final ComputingResourceMixin computingResourceMixin;
-
 
     @Operation(responses = {@ApiResponse(responseCode = "200")}, description = "Retrieve all algorithms (quantum, hybrid and classic).")
     @GetMapping()
@@ -621,27 +620,23 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "404", description = "Algorithm with the given id doesn't exist")}, description = "Add a Sketch to the algorithm.")
     @PostMapping("/{algoId}/" + Constants.SKETCHES)
     public ResponseEntity<Sketch> uploadSketch(@PathVariable UUID algoId, @RequestParam("file") MultipartFile file,
-                                             @RequestParam("description") String description) {
+                                               @RequestParam("description") String description, @RequestParam("baseURL") String baseURL) {
         try {
-            Sketch sketch = sketchService.addSketchToAlgorithm(algoId, file, description);
+            Sketch sketch = sketchService.addSketchToAlgorithm(algoId, file, description, baseURL);
             return ResponseEntity.ok(sketch);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
         }
     }
 
-
-
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "404", description = "Algorithm or sketch with given id doesn't exist")}, description = "Delete a sketch of the algorithm.")
     @DeleteMapping("/{algoId}/" + Constants.SKETCHES + "/{sketchId}")
-    public ResponseEntity<Void> deleteSketch(@PathVariable UUID algoId, @PathVariable UUID sketchId){
+    public ResponseEntity<Void> deleteSketch(@PathVariable UUID algoId, @PathVariable UUID sketchId) {
         sketchService.delete(sketchId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
-
 
     private AlgorithmRelation handleRelationUpdate(AlgorithmRelationDto relationDto, UUID relationId) {
         AlgorithmRelation resource = new AlgorithmRelation();
@@ -663,4 +658,18 @@ public class AlgorithmController {
 
         return patternRelationService.save(ModelMapperUtils.convert(relationDto, PatternRelation.class));
     }
+
+    @RequestMapping(value = "/{algoId}/" + Constants.SKETCHES + "/{sketchId}" + "/image", method = RequestMethod.GET,
+            produces = MediaType.IMAGE_JPEG_VALUE)
+    public ResponseEntity<byte[]> uploadSketch(@PathVariable UUID algoId, @PathVariable UUID sketchId) {
+        try {
+            return ResponseEntity
+                    .ok()
+                    .contentType(MediaType.IMAGE_JPEG)
+                    .body(this.algorithmService.getImageByAlgorithmAndSketch(algoId, sketchId));
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+        }
+    }
+
 }

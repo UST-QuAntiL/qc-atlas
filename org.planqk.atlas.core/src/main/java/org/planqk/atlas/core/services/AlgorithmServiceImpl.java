@@ -20,6 +20,7 @@
 package org.planqk.atlas.core.services;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
@@ -29,6 +30,7 @@ import java.util.UUID;
 import org.planqk.atlas.core.model.AlgoRelationType;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
+import org.planqk.atlas.core.model.Image;
 import org.planqk.atlas.core.model.QuantumAlgorithm;
 import org.planqk.atlas.core.model.Sketch;
 import org.planqk.atlas.core.repository.AlgorithmRelationRepository;
@@ -163,7 +165,6 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 
         //Remove all publications associations
         algorithmRepository.deleteAssociationsOfAlgorithm(id);
-
         algorithmRepository.deleteById(id);
     }
 
@@ -254,7 +255,40 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     }
 
     @Override
-    public byte[] getImageURLByAlgorithmAndSketch(UUID algoId, UUID sketchId) {
-        return this.imageRepository.findAll().get(0).getImage();
+    public byte[] getImageByAlgorithmAndSketch(UUID algoId, UUID sketchId) {
+        // TODO optimize
+        List<Image> images = this.imageRepository.findAll();
+        Image image = null;
+        for(Image s: images) {
+            if(s.getSketch().getId().compareTo(sketchId) == 0) {
+                image = s;
+            }
+        }
+        return image.getImage();
     }
+
+    @Override
+    public String getImageURLByAlgorithmAndSketch(UUID algoId, UUID sketchId) {
+        final Sketch sketch = this.getSketchByAlgoIdAndSketchId(algoId, sketchId);
+        return sketch.getImageURL();
+    }
+
+
+    private Sketch getSketchByAlgoIdAndSketchId(UUID algoId, UUID sketchId) {
+        final Optional<Algorithm> algorithmOptional = this.algorithmRepository.findById(algoId);
+        Algorithm persistedAlgorithm = null;
+        if (algorithmOptional.isPresent()) {
+            persistedAlgorithm = algorithmOptional.get();
+        }
+        Sketch sketch = new Sketch();
+
+        for (Sketch s : persistedAlgorithm.getSketches()) {
+            if (s.getId().compareTo(sketchId) == 0) {
+                sketch = s;
+            }
+        }
+        return sketch;
+    }
+
+
 }
