@@ -96,7 +96,7 @@ public class PatternRelationTypeServiceTest extends AtlasDatabaseTestBase {
 
     @Test
     void createType() {
-        PatternRelationType storedType1 = service.save(type1);
+        PatternRelationType storedType1 = service.create(type1);
 
         assertFalse(Objects.isNull(storedType1.getId()));
         assertEquals(storedType1.getName(), type1.getName());
@@ -105,7 +105,7 @@ public class PatternRelationTypeServiceTest extends AtlasDatabaseTestBase {
 
     @Test
     void createType_updateType() {
-        PatternRelationType storedType1 = service.save(type1);
+        PatternRelationType storedType1 = service.create(type1);
         storedType1.setName(type1Updated.getName());
         PatternRelationType updatedType1 = service.update(storedType1);
         assertEquals(updatedType1.getId(), storedType1.getId());
@@ -122,7 +122,7 @@ public class PatternRelationTypeServiceTest extends AtlasDatabaseTestBase {
 
     @Test
     void getType_returnType() {
-        PatternRelationType storedType1 = service.save(type1);
+        PatternRelationType storedType1 = service.create(type1);
 
         assertFalse(Objects.isNull(service.findById(storedType1.getId())));
         assertEquals(service.findById(storedType1.getId()).getName(), type1.getName());
@@ -144,8 +144,8 @@ public class PatternRelationTypeServiceTest extends AtlasDatabaseTestBase {
 
     @Test
     void getTypes_returnTwo() {
-        service.save(type1);
-        service.save(type2);
+        service.create(type1);
+        service.create(type2);
         Page<PatternRelationType> typesPaged = service.findAll(pageable);
 
         assertTrue(typesPaged.getContent().size() == 2);
@@ -153,7 +153,7 @@ public class PatternRelationTypeServiceTest extends AtlasDatabaseTestBase {
 
     @Test
     void delete_success() {
-        PatternRelationType createType = service.save(type1);
+        PatternRelationType createType = service.create(type1);
 
         assertFalse(Objects.isNull(createType.getId()));
         assertTrue(repo.findById(createType.getId()).isPresent());

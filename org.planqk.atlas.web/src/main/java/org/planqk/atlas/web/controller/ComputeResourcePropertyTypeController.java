@@ -94,7 +94,7 @@ public class ComputeResourcePropertyTypeController {
     public HttpEntity<EntityModel<ComputeResourcePropertyTypeDto>> createComputingResourcePropertyType(
             @Validated(ValidationGroups.Create.class) @RequestBody ComputeResourcePropertyTypeDto resourceTypeDto) {
         var resourceType = ModelMapperUtils.convert(resourceTypeDto, ComputeResourcePropertyType.class);
-        var savedResourceType = computeResourcePropertyTypeService.save(resourceType);
+        var savedResourceType = computeResourcePropertyTypeService.create(resourceType);
         return new ResponseEntity<>(computeResourcePropertyTypeAssembler.toModel(savedResourceType), HttpStatus.CREATED);
     }
 
@@ -105,7 +105,7 @@ public class ComputeResourcePropertyTypeController {
     public HttpEntity<EntityModel<ComputeResourcePropertyTypeDto>> updateComputingResourcePropertyType(
             @Validated(ValidationGroups.Update.class) @RequestBody ComputeResourcePropertyTypeDto computeResourcePropertyTypeDto) {
         var inputEntity = ModelMapperUtils.convert(computeResourcePropertyTypeDto, ComputeResourcePropertyType.class);
-        var savedEntity = computeResourcePropertyTypeService.save(inputEntity);
+        var savedEntity = computeResourcePropertyTypeService.create(inputEntity);
         return ResponseEntity.ok(computeResourcePropertyTypeAssembler.toModel(savedEntity));
     }
 

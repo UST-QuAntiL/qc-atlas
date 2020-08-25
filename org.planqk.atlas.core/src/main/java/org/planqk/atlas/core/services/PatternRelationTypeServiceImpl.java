@@ -46,7 +46,7 @@ public class PatternRelationTypeServiceImpl implements PatternRelationTypeServic
 
     @Override
     @Transactional
-    public PatternRelationType save(PatternRelationType patternRelationType) {
+    public PatternRelationType create(PatternRelationType patternRelationType) {
         return patternRelationTypeRepository.save(patternRelationType);
     }
 

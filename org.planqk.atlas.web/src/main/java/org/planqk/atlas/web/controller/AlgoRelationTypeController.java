@@ -36,7 +36,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
@@ -81,7 +80,7 @@ public class AlgoRelationTypeController {
     public ResponseEntity<EntityModel<AlgoRelationTypeDto>> createAlgorithmRelationType(
             @Validated(ValidationGroups.Create.class) @RequestBody AlgoRelationTypeDto algoRelationTypeDto) {
         var entityInput = ModelMapperUtils.convert(algoRelationTypeDto, AlgoRelationType.class);
-        var savedAlgoRelationType = algoRelationTypeService.save(entityInput);
+        var savedAlgoRelationType = algoRelationTypeService.create(entityInput);
         return new ResponseEntity<>(algoRelationTypeAssembler.toModel(savedAlgoRelationType), HttpStatus.CREATED);
     }
 
@@ -94,7 +93,7 @@ public class AlgoRelationTypeController {
     public ResponseEntity<EntityModel<AlgoRelationTypeDto>> updateAlgorithmRelationType(
             @Validated(ValidationGroups.Update.class) @RequestBody AlgoRelationTypeDto algoRelationTypeDto) {
         var entityInput = ModelMapperUtils.convert(algoRelationTypeDto, AlgoRelationType.class);
-        var savedAlgoRelationType = algoRelationTypeService.update(algoRelationTypeDto.getId(), entityInput);
+        var savedAlgoRelationType = algoRelationTypeService.update(entityInput);
         return ResponseEntity.ok(algoRelationTypeAssembler.toModel(savedAlgoRelationType));
     }
 

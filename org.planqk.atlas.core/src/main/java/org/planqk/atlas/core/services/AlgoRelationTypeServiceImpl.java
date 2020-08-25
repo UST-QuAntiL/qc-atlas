@@ -20,7 +20,6 @@
 package org.planqk.atlas.core.services;
 
 import java.util.NoSuchElementException;
-import java.util.Set;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.AlgoRelationType;
@@ -44,49 +43,40 @@ public class AlgoRelationTypeServiceImpl implements AlgoRelationTypeService {
     private final AlgoRelationTypeRepository algoRelationTypeRepository;
     private final AlgorithmRelationRepository algorithmRelationRepository;
 
-    @Transactional
     @Override
-    public AlgoRelationType save(AlgoRelationType algoRelationType) {
+    @Transactional
+    public AlgoRelationType create(AlgoRelationType algoRelationType) {
         return algoRelationTypeRepository.save(algoRelationType);
-    }
-
-    @Transactional
-    @Override
-    public AlgoRelationType update(UUID id, AlgoRelationType algoRelationType) {
-        if (algoRelationTypeRepository.existsAlgoRelationTypeById(id)) {
-            algoRelationType.setId(id);
-            return save(algoRelationType);
-        }
-        throw new NoSuchElementException();
-    }
-
-    @Transactional
-    @Override
-    public void delete(UUID id) {
-        if (algorithmRelationRepository.existsById(id)) {
-            throw new NoSuchElementException("AlgoRelationType with id \"" + id + "\" does not exist");
-        }
-
-        if (algorithmRelationRepository.countByAlgoRelationType_Id(id) > 0) {
-            throw new ConsistencyException(
-                    "Cannot delete AlgoRelationType since it is used by existing algorithmRelations.");
-        }
-
-        algoRelationTypeRepository.deleteById(id);
-    }
-
-    @Override
-    public AlgoRelationType findById(UUID id) {
-        return algoRelationTypeRepository.findById(id).orElseThrow(NoSuchElementException::new);
-    }
-
-    @Override
-    public Set<AlgoRelationType> findByName(String name) {
-        return algoRelationTypeRepository.findByName(name);
     }
 
     @Override
     public Page<AlgoRelationType> findAll(Pageable pageable) {
         return algoRelationTypeRepository.findAll(pageable);
+    }
+
+    @Override
+    public AlgoRelationType findById(UUID algorithmRelationTypeId) {
+        return algoRelationTypeRepository.findById(algorithmRelationTypeId).orElseThrow(NoSuchElementException::new);
+    }
+
+    @Override
+    @Transactional
+    public AlgoRelationType update(AlgoRelationType algoRelationType) {
+        var persistedAlgorithmRelationType = findById(algoRelationType.getId());
+
+        persistedAlgorithmRelationType.setName(algoRelationType.getName());
+
+        return algoRelationTypeRepository.save(persistedAlgorithmRelationType);
+    }
+
+    @Override
+    @Transactional
+    public void delete(UUID algorithmRelationTypeId) {
+        if (algorithmRelationRepository.countByAlgoRelationType_Id(algorithmRelationTypeId) > 0) {
+            throw new ConsistencyException(
+                    "Cannot delete AlgorithmRelationType since it is used by existing AlgorithmRelations.");
+        }
+
+        algoRelationTypeRepository.deleteById(algorithmRelationTypeId);
     }
 }

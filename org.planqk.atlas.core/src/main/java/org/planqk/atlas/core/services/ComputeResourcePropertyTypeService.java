@@ -30,7 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 public interface ComputeResourcePropertyTypeService {
 
     @Transactional
-    ComputeResourcePropertyType save(ComputeResourcePropertyType computeResourcePropertyType);
+    ComputeResourcePropertyType create(ComputeResourcePropertyType computeResourcePropertyType);
 
     Page<ComputeResourcePropertyType> findAll(Pageable pageable);
 

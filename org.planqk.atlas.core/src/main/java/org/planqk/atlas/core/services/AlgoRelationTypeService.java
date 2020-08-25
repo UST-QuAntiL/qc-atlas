@@ -19,7 +19,6 @@
 
 package org.planqk.atlas.core.services;
 
-import java.util.Set;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.AlgoRelationType;
@@ -30,18 +29,15 @@ import org.springframework.transaction.annotation.Transactional;
 public interface AlgoRelationTypeService {
 
     @Transactional
-    AlgoRelationType save(AlgoRelationType algoRelationType);
-
-    @Transactional
-    AlgoRelationType update(UUID id, AlgoRelationType algoRelationType);
-
-    @Transactional
-    void delete(UUID id);
-
-    AlgoRelationType findById(UUID id);
-
-    Set<AlgoRelationType> findByName(String name);
+    AlgoRelationType create(AlgoRelationType algoRelationType);
 
     Page<AlgoRelationType> findAll(Pageable pageable);
 
+    AlgoRelationType findById(UUID algorithmRelationTypeId);
+
+    @Transactional
+    AlgoRelationType update(AlgoRelationType algoRelationType);
+
+    @Transactional
+    void delete(UUID algorithmRelationTypeId);
 }

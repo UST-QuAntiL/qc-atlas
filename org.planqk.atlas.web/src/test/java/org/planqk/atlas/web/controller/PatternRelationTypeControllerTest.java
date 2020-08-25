@@ -115,7 +115,7 @@ public class PatternRelationTypeControllerTest {
 
     @Test
     public void createType_returnType() throws Exception {
-        when(patternRelationTypeService.save(type1)).thenReturn(type1);
+        when(patternRelationTypeService.create(type1)).thenReturn(type1);
 
         MvcResult result = mockMvc
                 .perform(post("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATION_TYPES + "/").content(mapper.writeValueAsString(type1Dto))
@@ -131,7 +131,7 @@ public class PatternRelationTypeControllerTest {
 
     @Test
     public void createType_returnBadRequest() throws Exception {
-        when(patternRelationTypeService.save(type1)).thenReturn(type1);
+        when(patternRelationTypeService.create(type1)).thenReturn(type1);
 
         mockMvc.perform(
                 post("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATION_TYPES + "/").content(mapper.writeValueAsString(noReqParamDto))
