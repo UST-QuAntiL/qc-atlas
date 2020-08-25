@@ -677,7 +677,7 @@ public class AlgorithmControllerTest {
 
         when(algorithmService.findById(any())).thenReturn(algorithm);
         when(computeResourcePropertyTypeService.findById(any())).thenReturn(type);
-        when(computeResourcePropertyService.addComputeResourcePropertyToAlgorithm(any(Algorithm.class), any(ComputeResourceProperty.class))).thenReturn(resource);
+        when(computeResourcePropertyService.addComputeResourcePropertyToAlgorithm(any(UUID.class), any(ComputeResourceProperty.class))).thenReturn(resource);
         var path = fromMethodCall(uriBuilder, on(AlgorithmController.class)
                 .createComputeResourcePropertyForAlgorithm(UUID.randomUUID(), null)).toUriString();
         mockMvc.perform(post(path).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsBytes(resReq)))

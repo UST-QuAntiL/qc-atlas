@@ -107,7 +107,7 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         algo.setComputationModel(ComputationModel.QUANTUM);
         var storedAlgo = (QuantumAlgorithm) algorithmService.save(algo);
 
-        var storedResource = resourceService.addComputeResourcePropertyToAlgorithm(storedAlgo, resource);
+        var storedResource = resourceService.addComputeResourcePropertyToAlgorithm(storedAlgo.getId(), resource);
 
         algorithmService.delete(storedAlgo.getId());
 
@@ -132,7 +132,7 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         algo.setComputationModel(ComputationModel.QUANTUM);
         var storedAlgo = (QuantumAlgorithm) algorithmService.save(algo);
 
-        var storedResource = resourceService.addComputeResourcePropertyToAlgorithm(storedAlgo, resource);
+        var storedResource = resourceService.addComputeResourcePropertyToAlgorithm(storedAlgo.getId(), resource);
 
         this.resourceService.delete(storedResource.getId());
         assertEquals(0, this.resourceRepository.findAllByAlgorithm_Id(storedAlgo.getId()).size());
@@ -161,7 +161,7 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
 
         var storedResource = resourceService.save(resource);
 
-        resourceService.addComputeResourcePropertyToAlgorithm(storedAlgo, resource);
+        resourceService.addComputeResourcePropertyToAlgorithm(storedAlgo.getId(), resource);
 
         var resultAlgo = ((QuantumAlgorithm) algorithmService.findById(algo.getId()));
         assertEquals(1, this.resourceRepository.findAllByAlgorithm_Id(resultAlgo.getId()).size());
@@ -189,7 +189,7 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         algo.setComputationModel(ComputationModel.QUANTUM);
         var storedAlgo = (QuantumAlgorithm) algorithmService.save(algo);
 
-        var storedResource = resourceService.addComputeResourcePropertyToAlgorithm(storedAlgo, resource);
+        var storedResource = resourceService.addComputeResourcePropertyToAlgorithm(storedAlgo.getId(), resource);
 
         var resultAlgo = ((QuantumAlgorithm) algorithmService.findById(algo.getId()));
         assertEquals(1, this.resourceRepository.findAllByAlgorithm_Id(resultAlgo.getId()).size());
@@ -256,7 +256,7 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         algo.setComputationModel(ComputationModel.QUANTUM);
         var storedAlgo = (QuantumAlgorithm) algorithmService.save(algo);
 
-        var storedResource = resourceService.addComputeResourcePropertyToAlgorithm(storedAlgo, resource);
+        var storedResource = resourceService.addComputeResourcePropertyToAlgorithm(storedAlgo.getId(), resource);
 
         assertThat(resourceService.findById(storedResource.getId()).getAlgorithm().getId()).isEqualTo(storedAlgo.getId());
     }
@@ -278,7 +278,7 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         algo.setComputationModel(ComputationModel.QUANTUM);
         var storedAlgo = (QuantumAlgorithm) algorithmService.save(algo);
 
-        var storedResource = resourceService.addComputeResourcePropertyToAlgorithm(storedAlgo, resource);
+        var storedResource = resourceService.addComputeResourcePropertyToAlgorithm(storedAlgo.getId(), resource);
 
         var byAlgo = resourceService.findComputeResourcePropertiesOfAlgorithm(storedAlgo.getId(), Pageable.unpaged())
                 .getContent();

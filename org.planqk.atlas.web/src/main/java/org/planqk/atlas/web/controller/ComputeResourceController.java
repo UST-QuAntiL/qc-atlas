@@ -209,10 +209,10 @@ public class ComputeResourceController {
     public ResponseEntity<EntityModel<ComputeResourceDto>> createComputingResourcePropertyForComputeResource(
             @PathVariable UUID computeResourceId,
             @Validated(ValidationGroups.Create.class) @RequestBody ComputeResourcePropertyDto resourceDto) {
-        var ComputeResource = computeResourceService.findById(computeResourceId);
+        var computeResource = computeResourceService.findById(computeResourceId);
         var resource = ModelMapperUtils.convert(resourceDto, ComputeResourceProperty.class);
         ValidationUtils.validateComputingResourceProperty(resource);
-        var updatedComputeResource = computeResourcePropertyService.addComputeResourcePropertyToComputeResource(ComputeResource, resource);
+        var updatedComputeResource = computeResourcePropertyService.addComputeResourcePropertyToComputeResource(computeResourceId, resource);
         return ResponseEntity.ok(computeResourceAssembler.toModel(updatedComputeResource));
     }
 

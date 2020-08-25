@@ -85,7 +85,7 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
         computingResourceProperty.setValue("test value");
 
         var storedProperty = computeResourcePropertyService.addComputeResourcePropertyToComputeResource(
-                storedComputeResource, computingResourceProperty);
+                storedComputeResource.getId(), computingResourceProperty);
 
         var storedComputeResourceWithReference = computeResourceService.findById(storedComputeResource.getId());
 
@@ -194,7 +194,7 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
         computingResourceProperty.setValue("test value");
 
         var storedProperty = computeResourcePropertyService.addComputeResourcePropertyToComputeResource(
-                storedComputeResource, computingResourceProperty);
+                storedComputeResource.getId(), computingResourceProperty);
 
         // Delete
         computeResourceService.delete(storedComputeResource.getId());

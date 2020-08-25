@@ -202,7 +202,7 @@ public class ImplementationController {
         var implementation = implementationService.findById(implementationId);
         var resource = computeResourcePropertyMixin.fromDto(computeResourcePropertyDto);
         ValidationUtils.validateComputingResourceProperty(resource);
-        resource = computeResourcePropertyService.addComputeResourcePropertyToImplementation(implementation, resource);
+        resource = computeResourcePropertyService.addComputeResourcePropertyToImplementation(implementationId, resource);
         return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(resource));
     }
 
