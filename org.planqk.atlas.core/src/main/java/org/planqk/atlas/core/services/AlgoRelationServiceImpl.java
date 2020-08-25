@@ -22,8 +22,10 @@ package org.planqk.atlas.core.services;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
+import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.repository.AlgorithmRelationRepository;
+import org.planqk.atlas.core.repository.AlgorithmRepository;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -35,9 +37,20 @@ public class AlgoRelationServiceImpl implements AlgoRelationService {
 
     private final AlgorithmRelationRepository algorithmRelationRepository;
 
+    private final AlgoRelationTypeService algoRelationTypeService;
+
+    private final AlgorithmRepository algorithmRepository;
+
     @Override
     @Transactional
-    public AlgorithmRelation save(AlgorithmRelation algorithmRelation) {
+    public AlgorithmRelation create(AlgorithmRelation algorithmRelation) {
+        validateAlgorithmRelationType(algorithmRelation);
+        algorithmRelation.setAlgoRelationType(
+                algoRelationTypeService.findById(algorithmRelation.getAlgoRelationType().getId()));
+
+        algorithmRelation.setSourceAlgorithm(findAlgorithmById(algorithmRelation.getSourceAlgorithm().getId()));
+        algorithmRelation.setTargetAlgorithm(findAlgorithmById(algorithmRelation.getTargetAlgorithm().getId()));
+
         return algorithmRelationRepository.save(algorithmRelation);
     }
 
@@ -51,8 +64,10 @@ public class AlgoRelationServiceImpl implements AlgoRelationService {
     public AlgorithmRelation update(AlgorithmRelation algorithmRelation) {
         AlgorithmRelation persistedAlgorithmRelation = findById(algorithmRelation.getId());
 
+        validateAlgorithmRelationType(algorithmRelation);
+        persistedAlgorithmRelation.setAlgoRelationType(
+                algoRelationTypeService.findById(algorithmRelation.getAlgoRelationType().getId()));
         persistedAlgorithmRelation.setDescription(algorithmRelation.getDescription());
-        persistedAlgorithmRelation.setAlgoRelationType(algorithmRelation.getAlgoRelationType());
 
         return algorithmRelationRepository.save(algorithmRelation);
     }
@@ -61,5 +76,17 @@ public class AlgoRelationServiceImpl implements AlgoRelationService {
     @Transactional
     public void delete(UUID algorithmRelationId) {
         algorithmRelationRepository.deleteById(algorithmRelationId);
+    }
+
+    private Algorithm findAlgorithmById(UUID algorithmId) {
+        return algorithmRepository.findById(algorithmId).orElseThrow(
+                () -> new NoSuchElementException("No Algorithm with given ID \"" + algorithmId + "\" was found"));
+    }
+
+    private void validateAlgorithmRelationType(AlgorithmRelation algorithmRelation) {
+        if (algorithmRelation.getAlgoRelationType() == null ||
+                algorithmRelation.getAlgoRelationType().getId() == null) {
+            throw new NoSuchElementException("Algorithm relation type is invalid");
+        }
     }
 }

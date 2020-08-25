@@ -28,7 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 public interface AlgoRelationService {
 
     @Transactional
-    AlgorithmRelation save(AlgorithmRelation algorithmRelation);
+    AlgorithmRelation create(AlgorithmRelation algorithmRelation);
 
     AlgorithmRelation findById(UUID algorithmRelationId);
 
