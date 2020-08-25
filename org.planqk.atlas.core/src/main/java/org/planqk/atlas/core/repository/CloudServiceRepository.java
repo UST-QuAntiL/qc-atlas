@@ -10,22 +10,30 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import org.springframework.stereotype.Repository;
 
+@Repository
 @RepositoryRestResource(exported = false)
 public interface CloudServiceRepository extends JpaRepository<CloudService, UUID> {
     Page<CloudService> findAllByNameContainingIgnoreCase(String name, Pageable p);
 
     boolean existsCloudServiceById(UUID id);
 
-    @Query("SELECT cs FROM CloudService cs JOIN cs.softwarePlatforms sp WHERE sp.id = :spid")
-    Page<CloudService> findCloudServicesBySoftwarePlatformId(@Param("spid") UUID id, Pageable p);
+    @Query("SELECT cs " +
+            "FROM CloudService cs " +
+            "JOIN cs.softwarePlatforms sp " +
+            "WHERE sp.id = :spId")
+    Page<CloudService> findCloudServicesBySoftwarePlatformId(@Param("spId") UUID softwarePlatformId, Pageable pageable);
 
-    @Query("SELECT cs FROM CloudService cs JOIN cs.providedComputeResources cr WHERE cr.id = :spid")
-    Page<CloudService> findCloudServicesByComputeResourceId(@Param("spid") UUID id, Pageable p);
+    @Query("SELECT cs " +
+            "FROM CloudService cs " +
+            "JOIN cs.providedComputeResources cr " +
+            "WHERE cr.id = :crId")
+    Page<CloudService> findCloudServicesByComputeResourceId(@Param("crId") UUID computeResourceId, Pageable pageable);
 
     @Query("SELECT COUNT(cs) " +
             "FROM CloudService cs " +
-            "JOIN cs.providedComputeResources computeResource " +
-            "WHERE computeResource.id = :computeResourceId")
-    long countCloudServiceByComputeResource(@Param("computeResourceId") UUID computeResourceId);
+            "JOIN cs.providedComputeResources cr " +
+            "WHERE cr.id = :crId")
+    long countCloudServiceByComputeResource(@Param("crId") UUID computeResourceId);
 }

@@ -18,7 +18,6 @@
  *******************************************************************************/
 package org.planqk.atlas.core.repository;
 
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -39,21 +38,25 @@ import org.springframework.stereotype.Repository;
 @RepositoryRestResource(exported = false)
 public interface PublicationRepository extends JpaRepository<Publication, UUID> {
 
-    @Query("SELECT pub FROM Publication pub JOIN pub.algorithms algs WHERE :id = algs.id")
-    Page<Publication> findPublicationsByAlgorithmId(@Param("id") UUID id, Pageable p);
-
-    @Query("SELECT pub FROM Publication pub JOIN pub.implementations impls WHERE :id = impls.id")
-    Page<Publication> findPublicationsByImplementationId(@Param("id") UUID id, Pageable p);
-
     default Page<Publication> findAll(String search, Pageable pageable) {
         return findByTitleContainingIgnoreCaseOrDoiContainingIgnoreCaseOrUrlContainingIgnoreCaseOrAuthorsContainingIgnoreCase(search, search, search, search, pageable);
     }
 
     Page<Publication> findByTitleContainingIgnoreCaseOrDoiContainingIgnoreCaseOrUrlContainingIgnoreCaseOrAuthorsContainingIgnoreCase(String title, String doi, String url, String author, Pageable pageable);
 
-    Optional<Publication> findByTitle(String title);
-
     boolean existsById(UUID id);
 
     void deleteByIdIn(Set<UUID> ids);
+
+    @Query("SELECT pub " +
+            "FROM Publication pub " +
+            "JOIN pub.algorithms algos " +
+            "WHERE :algoId = algos.id")
+    Page<Publication> findPublicationsByAlgorithmId(@Param("algoId") UUID algorithmId, Pageable pageable);
+
+    @Query("SELECT pub " +
+            "FROM Publication pub " +
+            "JOIN pub.implementations impls " +
+            "WHERE :implId = impls.id")
+    Page<Publication> findPublicationsByImplementationId(@Param("implId") UUID implementationId, Pageable pageable);
 }

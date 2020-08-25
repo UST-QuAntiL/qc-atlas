@@ -90,19 +90,19 @@ public class ComputeResourcePropertyServiceImpl implements ComputeResourceProper
     @Override
     public Page<ComputeResourceProperty> findComputeResourcePropertiesOfAlgorithm(
             UUID algorithmId, Pageable pageable) {
-        return computeResourcePropertyRepository.findAllByAlgorithm_Id(algorithmId, pageable);
+        return computeResourcePropertyRepository.findAllByAlgorithmId(algorithmId, pageable);
     }
 
     @Override
     public Page<ComputeResourceProperty> findComputeResourcePropertiesOfImplementation(
             UUID implementationId, Pageable pageable) {
-        return computeResourcePropertyRepository.findAllByImplementation_Id(implementationId, pageable);
+        return computeResourcePropertyRepository.findAllByImplementationId(implementationId, pageable);
     }
 
     @Override
     public Page<ComputeResourceProperty> findComputeResourcePropertiesOfComputeResource(
             UUID computeResourceId, Pageable pageable) {
-        return computeResourcePropertyRepository.findAllByComputeResource_Id(computeResourceId, pageable);
+        return computeResourcePropertyRepository.findAllByComputeResourceId(computeResourceId, pageable);
     }
 
     @Override

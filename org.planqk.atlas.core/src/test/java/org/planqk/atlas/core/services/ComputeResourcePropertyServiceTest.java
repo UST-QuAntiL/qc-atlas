@@ -137,7 +137,7 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         var storedResource = resourceService.addComputeResourcePropertyToAlgorithm(storedAlgo.getId(), resource);
 
         this.resourceService.delete(storedResource.getId());
-        assertEquals(0, this.resourceRepository.findAllByAlgorithm_Id(storedAlgo.getId()).size());
+        assertEquals(0, this.resourceRepository.findAllByAlgorithmId(storedAlgo.getId(), Pageable.unpaged()).toSet().size());
         assertEquals(1, this.typeRepository.findAll().size());
         var dbAlgo = algorithmService.findById(storedAlgo.getId());
         assertEquals(storedAlgo.getName(), dbAlgo.getName());
@@ -166,7 +166,7 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         resourceService.addComputeResourcePropertyToAlgorithm(storedAlgo.getId(), resource);
 
         var resultAlgo = ((QuantumAlgorithm) algorithmService.findById(algo.getId()));
-        assertEquals(1, this.resourceRepository.findAllByAlgorithm_Id(resultAlgo.getId()).size());
+        assertEquals(1, this.resourceRepository.findAllByAlgorithmId(resultAlgo.getId(), Pageable.unpaged()).toSet().size());
         resultAlgo.getRequiredComputeResourceProperties().forEach(resultResource -> {
             assertEquals(storedResource.getId(), resultResource.getId());
             assertEquals(storedResource.getComputeResourcePropertyType().getId(), resultResource.getComputeResourcePropertyType().getId());
@@ -194,7 +194,7 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         var storedResource = resourceService.addComputeResourcePropertyToAlgorithm(storedAlgo.getId(), resource);
 
         var resultAlgo = ((QuantumAlgorithm) algorithmService.findById(algo.getId()));
-        assertEquals(1, this.resourceRepository.findAllByAlgorithm_Id(resultAlgo.getId()).size());
+        assertEquals(1, this.resourceRepository.findAllByAlgorithmId(resultAlgo.getId(), Pageable.unpaged()).toSet().size());
         resultAlgo.getRequiredComputeResourceProperties().forEach(resultResource -> {
             assertEquals(storedResource.getId(), resultResource.getId());
             assertEquals(storedResource.getComputeResourcePropertyType().getId(), resultResource.getComputeResourcePropertyType().getId());

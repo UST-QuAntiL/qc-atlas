@@ -6,10 +6,12 @@ import org.planqk.atlas.core.model.PatternRelationType;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import org.springframework.stereotype.Repository;
 
 /**
  * Repository to access {@link PatternRelationType}s available in the data base with different queries.
  */
+@Repository
 @RepositoryRestResource(exported = false)
 public interface PatternRelationTypeRepository extends JpaRepository<PatternRelationType, UUID> {
 

@@ -52,7 +52,7 @@ public class DiscussionCommentServiceImpl implements DiscussionCommentService {
 
     @Override
     public Page<DiscussionComment> findAllByTopic(UUID topicId, Pageable pageable) {
-        return discussionCommentRepository.findByDiscussionTopic_Id(topicId, pageable);
+        return discussionCommentRepository.findByDiscussionTopicId(topicId, pageable);
     }
 
     @Override
