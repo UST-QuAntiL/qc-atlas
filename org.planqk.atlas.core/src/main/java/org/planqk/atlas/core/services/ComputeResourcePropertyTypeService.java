@@ -37,7 +37,7 @@ public interface ComputeResourcePropertyTypeService {
     ComputeResourcePropertyType findById(UUID computeResourcePropertyTypeId);
 
     @Transactional
-    void update(ComputeResourcePropertyType computeResourcePropertyType);
+    ComputeResourcePropertyType update(ComputeResourcePropertyType computeResourcePropertyType);
 
     @Transactional
     void delete(UUID computeResourcePropertyTypeId);

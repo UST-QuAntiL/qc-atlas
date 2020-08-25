@@ -60,8 +60,14 @@ public class ComputeResourcePropertyTypeServiceImpl implements ComputeResourcePr
 
     @Override
     @Transactional
-    public void update(ComputeResourcePropertyType computeResourcePropertyType) {
+    public ComputeResourcePropertyType update(ComputeResourcePropertyType computeResourcePropertyType) {
+        var persistedComputeResourcePropertyType = findById(computeResourcePropertyType.getId());
 
+        persistedComputeResourcePropertyType.setName(computeResourcePropertyType.getName());
+        persistedComputeResourcePropertyType.setDescription(computeResourcePropertyType.getDescription());
+        persistedComputeResourcePropertyType.setDatatype(computeResourcePropertyType.getDatatype());
+
+        return computeResourcePropertyTypeRepository.save(persistedComputeResourcePropertyType);
     }
 
     @Override

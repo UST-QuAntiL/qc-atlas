@@ -33,6 +33,7 @@ import org.planqk.atlas.core.services.AlgoRelationService;
 import org.planqk.atlas.core.services.AlgoRelationTypeService;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.core.services.ApplicationAreaService;
+import org.planqk.atlas.core.services.ComputeResourcePropertyService;
 import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.core.services.LinkingService;
 import org.planqk.atlas.core.services.PatternRelationService;
@@ -127,6 +128,7 @@ public class AlgorithmController {
 
     private final PublicationAssembler publicationAssembler;
 
+    private final ComputeResourcePropertyService computeResourcePropertyService;
     private final ComputeResourcePropertyAssembler computeResourcePropertyAssembler;
 
     private final LinkingService linkingService;
@@ -418,29 +420,6 @@ public class AlgorithmController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    // TODO Move to pattern relation controller
-//    @Operation(responses = {
-//            @ApiResponse(responseCode = "200"),
-//            @ApiResponse(responseCode = "400",
-//                    description = "PatternRelation doesn't belong to this algorithm"),
-//            @ApiResponse(responseCode = "404",
-//                    description = "Pattern relation or algorithm with given id doesn't exist")
-//    }, description = "Update a references to a pattern. Custom ID will be ignored. " +
-//            "For pattern relation type only ID is required, other pattern relation type attributes will not change.")
-//    @PutMapping("/{algorithmId}/" + Constants.PATTERN_RELATIONS + "/{patternRelationId}")
-//    public ResponseEntity<EntityModel<PatternRelationDto>> updatePatternRelations(
-//            @PathVariable UUID algorithmId,
-//            @PathVariable UUID patternRelationId,
-//            @Valid @RequestBody PatternRelationDto relationDto) {
-//        PatternRelation patternRelation = patternRelationService.findById(patternRelationId);
-//        if (!patternRelation.getAlgorithm().getId().equals(algorithmId)) {
-//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-//        }
-//        var algorithm = algorithmService.findById(algorithmId);
-//        var saved = savePatternRelationFromDto(algorithm, relationDto);
-//        return ResponseEntity.ok(patternRelationAssembler.toModel(saved));
-//    }
-
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
@@ -586,96 +565,10 @@ public class AlgorithmController {
     public ResponseEntity<EntityModel<ComputeResourcePropertyDto>> createComputeResourcePropertyForAlgorithm(
             @PathVariable UUID algorithmId,
             @Validated(ValidationGroups.Create.class) @RequestBody ComputeResourcePropertyDto computeResourcePropertyDto) {
-        var resourceProperty = computeResourcePropertyMixin.fromDto(computeResourcePropertyDto);
-        ValidationUtils.validateComputingResourceProperty(resourceProperty);
-        var createdResourceProperty = algorithmService.createComputeResourceProperty(algorithmId, resourceProperty);
-        return new ResponseEntity<>(computeResourcePropertyAssembler.toModel(createdResourceProperty), HttpStatus.CREATED);
+        var computeResourceProperty = computeResourcePropertyMixin.fromDto(computeResourcePropertyDto);
+        ValidationUtils.validateComputingResourceProperty(computeResourceProperty);
+        var createdComputeResourceProperty = computeResourcePropertyService
+                .addComputeResourcePropertyToAlgorithm(algorithmId, computeResourceProperty);
+        return new ResponseEntity<>(computeResourcePropertyAssembler.toModel(createdComputeResourceProperty), HttpStatus.CREATED);
     }
-
-    @Operation(responses = {
-            @ApiResponse(responseCode = "204"),
-            @ApiResponse(responseCode = "400",
-                    description = "Computing resource with the given id doesn't belong to this algorithm"),
-            @ApiResponse(responseCode = "404",
-                    description = "Algorithm or computing resource with given id doesn't exist")
-    }, description = "Delete a computing resource of the algorithm.")
-    @DeleteMapping("/{algorithmId}/" + Constants.COMPUTE_RESOURCES_PROPERTIES + "/{computeResourcePropertyId}")
-    public ResponseEntity<Void> deleteComputeResourcePropertyOfAlgorithm(
-            @PathVariable UUID algorithmId,
-            @PathVariable UUID computeResourcePropertyId) {
-        algorithmService.deleteComputeResourceProperty(algorithmId, computeResourcePropertyId);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-
-//    @Operation(responses = {
-//            @ApiResponse(responseCode = "200"),
-//            @ApiResponse(responseCode = "400"),
-//            @ApiResponse(responseCode = "404",
-//                    description = "Algorithm with the given id doesn't exist")
-//    }, description = "Update a computing resource of the algorithm. Custom ID will be ignored. " +
-//            "For computing resource type only ID is required, other computing resource type attributes will not change.")
-//    @PutMapping("/{algorithmId}/" + Constants.COMPUTE_RESOURCES_PROPERTIES + "/{resourceId}")
-//    public ResponseEntity<EntityModel<ComputeResourcePropertyDto>> updateComputeResourcePropertyOfAlgorithm(
-//            @PathVariable UUID algorithmId,
-//            @PathVariable UUID resourceId,
-//            @RequestBody ComputeResourcePropertyDto resourceDto) {
-//        ComputeResourceProperty computeResourceProperty = computeResourcePropertyService
-//                .findComputeResourcePropertyById(resourceId);
-//        Algorithm algorithm = algorithmService.findById(algorithmId);
-//        if (Objects.isNull(computeResourceProperty.getAlgorithm()) ||
-//                !computeResourceProperty.getAlgorithm().getId().equals(algorithmId)) {
-//            log.debug("Algorithm is not referenced from the computing resource to update!");
-//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-//        }
-//        ValidationUtils.validateComputingResourceProperty(resourceDto);
-//        var resource = computeResourcePropertyMixin.fromDto(resourceDto);
-//        resource.setId(resourceId);
-//        var updatedResource = computeResourcePropertyService.addComputeResourcePropertyToAlgorithm(algorithm, resource);
-//        return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(updatedResource));
-//    }
-//
-//    @Operation(responses = {
-//            @ApiResponse(responseCode = "200"),
-//            @ApiResponse(responseCode = "400",
-//                    description = "Resource doesn't belong to this algorithm"),
-//            @ApiResponse(responseCode = "404",
-//                    description = "Algorithm with the given id doesn't exist")
-//    }, description = "")
-//    @GetMapping("/{algorithmId}/" + Constants.COMPUTE_RESOURCES_PROPERTIES + "/{resourceId}")
-//    public ResponseEntity<EntityModel<ComputeResourcePropertyDto>> getComputingResource(
-//            @PathVariable UUID algorithmId,
-//            @PathVariable UUID resourceId) {
-//        algorithmService.findById(algorithmId);
-//        ComputeResourceProperty computeResourceProperty = computeResourcePropertyService
-//                .findComputeResourcePropertyById(resourceId);
-//        if (Objects.isNull(computeResourceProperty.getAlgorithm()) ||
-//                !computeResourceProperty.getAlgorithm().getId().equals(algorithmId)) {
-//            log.debug("Algorithm is not referenced from the computing resource to retrieve!");
-//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-//        }
-//
-//        return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(computeResourceProperty));
-//    }
-//
-//    private AlgorithmRelation handleRelationUpdate(AlgorithmRelationDto relationDto, UUID relationId) {
-//        AlgorithmRelation resource = new AlgorithmRelation();
-//        if (Objects.nonNull(relationId)) {
-//            resource.setId(relationId);
-//        }
-//        resource.setAlgoRelationType(algoRelationTypeService.findById(relationDto.getAlgoRelationType().getId()));
-//        resource.setSourceAlgorithm(algorithmService.findById(relationDto.getSourceAlgorithmId()));
-//        resource.setTargetAlgorithm(algorithmService.findById(relationDto.getTargetAlgorithmId()));
-//        resource.setDescription(relationDto.getDescription());
-//        return algoRelationService.save(resource);
-//    }
-//
-//    // TODO CHECK IF THIS STILL WORKS
-//    private PatternRelation savePatternRelationFromDto(Algorithm algorithm, PatternRelationDto relationDto) {
-//        // always use current state of this algorithm/pattern type and do not overwrite when saving relations
-//        var patternRelationType = patternRelationTypeService.findById(relationDto.getPatternRelationType().getId());
-//        relationDto.setAlgorithmId(algorithm.getId());
-//        relationDto.setPatternRelationType(ModelMapperUtils.convert(patternRelationType, PatternRelationTypeDto.class));
-//
-//        return patternRelationService.save(ModelMapperUtils.convert(relationDto, PatternRelation.class));
-//    }
 }

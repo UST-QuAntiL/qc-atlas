@@ -75,6 +75,7 @@ public class ComputeResourcePropertyServiceImpl implements ComputeResourceProper
 
         resourcePropertyFromDb.setValue(computeResourceProperty.getValue());
         resourcePropertyFromDb.setComputeResourcePropertyType(computeResourceProperty.getComputeResourcePropertyType());
+
         return computeResourcePropertyRepository.save(resourcePropertyFromDb);
     }
 
@@ -109,39 +110,53 @@ public class ComputeResourcePropertyServiceImpl implements ComputeResourceProper
     @Transactional
     public ComputeResourceProperty addComputeResourcePropertyToAlgorithm(
             UUID algorithmId, ComputeResourceProperty computeResourceProperty) {
-        var updatedResource = computeResourceProperty;
-        if (updatedResource.getId() == null) {
-            updatedResource = this.save(computeResourceProperty);
+        ComputeResourceProperty persistedComputeResourceProperty;
+        if (computeResourceProperty.getId() == null) {
+            persistedComputeResourceProperty = this.save(computeResourceProperty);
+        } else {
+            persistedComputeResourceProperty = findById(computeResourceProperty.getId());
         }
-        Algorithm algorithm = algorithmRepository.findById(algorithmId).orElseThrow(NoSuchElementException::new);
 
-        updatedResource.setAlgorithm(algorithm);
-        return this.computeResourcePropertyRepository.save(updatedResource);
+        Algorithm algorithm = algorithmRepository.findById(algorithmId)
+                .orElseThrow(NoSuchElementException::new);
+
+        persistedComputeResourceProperty.setAlgorithm(algorithm);
+        return this.computeResourcePropertyRepository.save(persistedComputeResourceProperty);
     }
 
     @Override
+    @Transactional
     public ComputeResourceProperty addComputeResourcePropertyToImplementation(
             UUID implementationId, ComputeResourceProperty computeResourceProperty) {
-        var updatedResource = computeResourceProperty;
-        if (updatedResource.getId() == null) {
-            updatedResource = this.save(computeResourceProperty);
+        ComputeResourceProperty persistedComputeResourceProperty;
+        if (computeResourceProperty.getId() == null) {
+            persistedComputeResourceProperty = this.save(computeResourceProperty);
+        } else {
+            persistedComputeResourceProperty = findById(computeResourceProperty.getId());
         }
-        Implementation implementation = implementationRepository.findById(implementationId).orElseThrow(NoSuchElementException::new);
 
-        updatedResource.setImplementation(implementation);
-        return this.computeResourcePropertyRepository.save(updatedResource);
+        Implementation implementation = implementationRepository.findById(implementationId)
+                .orElseThrow(NoSuchElementException::new);
+
+        persistedComputeResourceProperty.setImplementation(implementation);
+        return this.computeResourcePropertyRepository.save(persistedComputeResourceProperty);
     }
 
     @Override
     @Transactional
     public ComputeResourceProperty addComputeResourcePropertyToComputeResource(
             UUID computeResourceId, ComputeResourceProperty computeResourceProperty) {
+        ComputeResourceProperty persistedComputeResourceProperty;
+        if (computeResourceProperty.getId() == null) {
+            persistedComputeResourceProperty = this.save(computeResourceProperty);
+        } else {
+            persistedComputeResourceProperty = findById(computeResourceProperty.getId());
+        }
 
-        ComputeResource computeResource = computeResourceRepository.findById(computeResourceId).orElseThrow(NoSuchElementException::new);
-        computeResourceProperty.setComputeResource(computeResource);
+        ComputeResource computeResource = computeResourceRepository.findById(computeResourceId)
+                .orElseThrow(NoSuchElementException::new);
 
-        this.save(computeResourceProperty);
-
-        return this.computeResourcePropertyRepository.save(computeResourceProperty);
+        persistedComputeResourceProperty.setComputeResource(computeResource);
+        return this.computeResourcePropertyRepository.save(persistedComputeResourceProperty);
     }
 }

@@ -19,11 +19,9 @@
 
 package org.planqk.atlas.web.controller;
 
-import java.util.Objects;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.ComputeResource;
-import org.planqk.atlas.core.model.ComputeResourceProperty;
 import org.planqk.atlas.core.services.ComputeResourcePropertyService;
 import org.planqk.atlas.core.services.ComputeResourceService;
 import org.planqk.atlas.web.Constants;
@@ -75,11 +73,15 @@ public class ComputeResourceController {
 
     private final ComputeResourcePropertyService computeResourcePropertyService;
     private final ComputeResourcePropertyAssembler computeResourcePropertyAssembler;
-    private final ComputeResourcePropertyMixin computeResourcePropertyMixin;
+
     private final ComputeResourceService computeResourceService;
     private final ComputeResourceAssembler computeResourceAssembler;
+
     private final SoftwarePlatformAssembler softwarePlatformAssembler;
+
     private final CloudServiceAssembler cloudServiceAssembler;
+
+    private final ComputeResourcePropertyMixin computeResourcePropertyMixin;
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200")
@@ -208,53 +210,11 @@ public class ComputeResourceController {
     @PostMapping("/{computeResourceId}/" + Constants.COMPUTE_RESOURCES_PROPERTIES)
     public ResponseEntity<EntityModel<ComputeResourceDto>> createComputingResourcePropertyForComputeResource(
             @PathVariable UUID computeResourceId,
-            @Validated(ValidationGroups.Create.class) @RequestBody ComputeResourcePropertyDto resourceDto) {
-        var computeResource = computeResourceService.findById(computeResourceId);
-        var resource = ModelMapperUtils.convert(resourceDto, ComputeResourceProperty.class);
-        ValidationUtils.validateComputingResourceProperty(resource);
-        var updatedComputeResource = computeResourcePropertyService.addComputeResourcePropertyToComputeResource(computeResourceId, resource);
-        return ResponseEntity.ok(computeResourceAssembler.toModel(updatedComputeResource));
-    }
-
-//     @Operation(responses = {
-//             @ApiResponse(responseCode = "200"),
-//             @ApiResponse(responseCode = "400"),
-//             @ApiResponse(responseCode = "404", description = "Algorithm with the given id doesn't exist")},
-//             description = "Update a computing resource of the algorithm. Custom ID will be ignored." +
-//                     "For computing resource type only ID is required, other computing resource type attributes will not change.")
-//     @PutMapping("/{computeResourceId}/" + Constants.COMPUTE_RESOURCES_PROPERTIES)
-//     public ResponseEntity<EntityModel<ComputeResourcePropertyDto>> updateComputingResourceResourcePropertyOfComputeResource(
-//             @PathVariable UUID computeResourceId,
-//             @Validated(ValidationGroups.Update.class) @RequestBody ComputeResourcePropertyDto resourceDto) {
-//         ComputeResourceProperty computeResourceProperty = computeResourcePropertyService.findComputeResourcePropertyById(resourceDto.getId());
-//         var computeResource = computeResourceService.findById(computeResourceId);
-//         if (Objects.isNull(computeResourceProperty.getComputeResource()) ||
-//                 !computeResourceProperty.getComputeResource().getId().equals(computeResourceId)) {
-//             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-//         }
-//         ValidationUtils.validateComputingResourceProperty(resourceDto);
-//         var resource = computeResourcePropertyMixin.fromDto(resourceDto);
-//         resource.setId(resourceDto.getId());
-//         var updatedResource = computeResourcePropertyService.addComputeResourcePropertyToComputeResource(computeResource, resource);
-//         return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(updatedResource));
-//     }
-
-    @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400", description = "Computing resource with the given id doesn't belong to this algorithm"),
-            @ApiResponse(responseCode = "404", description = "Algorithm or computing resource with given id doesn't exist")},
-            description = "Delete a computing resource of the algorithm.")
-    @DeleteMapping("/{computeResourceId}/" + Constants.COMPUTE_RESOURCES_PROPERTIES + "/{resourceId}")
-    public ResponseEntity<Void> deleteComputingResourcePropertyFromComputeResource(
-            @PathVariable UUID computeResourceId,
-            @PathVariable UUID resourceId) {
-        computeResourceService.findById(computeResourceId);
-        var computingResourceProperty = computeResourcePropertyService.findById(resourceId);
-        if (Objects.isNull(computingResourceProperty.getComputeResource()) ||
-                !computingResourceProperty.getComputeResource().getId().equals(computeResourceId)) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        computeResourcePropertyService.delete(resourceId);
-        return new ResponseEntity<>(HttpStatus.OK);
+            @Validated(ValidationGroups.Create.class) @RequestBody ComputeResourcePropertyDto computeResourcePropertyDto) {
+        var computeResourceProperty = computeResourcePropertyMixin.fromDto(computeResourcePropertyDto);
+        ValidationUtils.validateComputingResourceProperty(computeResourceProperty);
+        var createdComputeResourceProperty = computeResourcePropertyService
+                .addComputeResourcePropertyToComputeResource(computeResourceId, computeResourceProperty);
+        return ResponseEntity.ok(computeResourceAssembler.toModel(createdComputeResourceProperty));
     }
 }

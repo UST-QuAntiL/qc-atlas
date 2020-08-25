@@ -89,8 +89,10 @@ public class PatternRelationController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404")
+            @ApiResponse(responseCode = "400",
+                    description = "PatternRelation doesn't belong to this algorithm"),
+            @ApiResponse(responseCode = "404",
+                    description = "Pattern relation or algorithm with given id doesn't exist")
     }, description = "Update a reference to a pattern. " +
             "Custom ID will be ignored. For pattern relation type only ID is required, " +
             "other pattern relation type attributes will not change.")
