@@ -22,7 +22,7 @@ package org.planqk.atlas.web.controller;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.AlgorithmRelation;
-import org.planqk.atlas.core.services.AlgoRelationService;
+import org.planqk.atlas.core.services.AlgorithmRelationService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
 import org.planqk.atlas.web.linkassembler.AlgorithmRelationAssembler;
@@ -55,7 +55,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class AlgorithmRelationController {
 
-    private final AlgoRelationService algoRelationService;
+    private final AlgorithmRelationService algorithmRelationService;
     private final AlgorithmRelationAssembler algorithmRelationAssembler;
 
 //    @Operation(responses = {
@@ -74,7 +74,7 @@ public class AlgorithmRelationController {
     @PostMapping
     public ResponseEntity<EntityModel<AlgorithmRelationDto>> createAlgorithmRelation(
             @Validated(ValidationGroups.Create.class) @RequestBody AlgorithmRelationDto algorithmRelationDto) {
-        var savedAlgorithmRelation = algoRelationService.create(
+        var savedAlgorithmRelation = algorithmRelationService.create(
                 ModelMapperUtils.convert(algorithmRelationDto, AlgorithmRelation.class));
         return new ResponseEntity<>(algorithmRelationAssembler.toModel(savedAlgorithmRelation), HttpStatus.CREATED);
     }
@@ -87,7 +87,7 @@ public class AlgorithmRelationController {
     @PutMapping
     public ResponseEntity<EntityModel<AlgorithmRelationDto>> updateAlgorithmRelation(
             @Validated(ValidationGroups.Update.class) @RequestBody AlgorithmRelationDto algorithmRelationDto) {
-        var savedAlgorithmRelation = algoRelationService.update(
+        var savedAlgorithmRelation = algorithmRelationService.update(
                 ModelMapperUtils.convert(algorithmRelationDto, AlgorithmRelation.class));
         return ResponseEntity.ok(algorithmRelationAssembler.toModel(savedAlgorithmRelation));
     }
@@ -99,7 +99,7 @@ public class AlgorithmRelationController {
     }, description = "")
     @DeleteMapping("/{algorithmRelationId}")
     public ResponseEntity<Void> deleteAlgorithmRelation(@PathVariable UUID algorithmRelationId) {
-        algoRelationService.delete(algorithmRelationId);
+        algorithmRelationService.delete(algorithmRelationId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
@@ -110,7 +110,7 @@ public class AlgorithmRelationController {
     }, description = "")
     @GetMapping("/{algorithmRelationId}")
     public ResponseEntity<EntityModel<AlgorithmRelationDto>> getAlgorithmRelation(@PathVariable UUID algorithmRelationId) {
-        var algorithmRelation = algoRelationService.findById(algorithmRelationId);
+        var algorithmRelation = algorithmRelationService.findById(algorithmRelationId);
         return ResponseEntity.ok(algorithmRelationAssembler.toModel(algorithmRelation));
     }
 }

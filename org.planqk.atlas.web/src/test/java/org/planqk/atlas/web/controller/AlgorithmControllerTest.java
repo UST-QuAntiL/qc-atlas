@@ -26,7 +26,7 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.UUID;
 
-import org.planqk.atlas.core.model.AlgoRelationType;
+import org.planqk.atlas.core.model.AlgorithmRelationType;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
@@ -38,8 +38,8 @@ import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.model.PatternRelationType;
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.model.QuantumAlgorithm;
-import org.planqk.atlas.core.services.AlgoRelationService;
-import org.planqk.atlas.core.services.AlgoRelationTypeService;
+import org.planqk.atlas.core.services.AlgorithmRelationService;
+import org.planqk.atlas.core.services.AlgorithmRelationTypeService;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.core.services.ApplicationAreaService;
 import org.planqk.atlas.core.services.ComputeResourcePropertyService;
@@ -129,9 +129,9 @@ public class AlgorithmControllerTest {
     @MockBean
     private PublicationService publicationService;
     @MockBean
-    private AlgoRelationService algoRelationService;
+    private AlgorithmRelationService algorithmRelationService;
     @MockBean
-    private AlgoRelationTypeService algoRelationTypeService;
+    private AlgorithmRelationTypeService algorithmRelationTypeService;
     @MockBean
     private ImplementationService implementationService;
     @MockBean
@@ -162,7 +162,7 @@ public class AlgorithmControllerTest {
         type1.setName("ProblemType1");
         problemTypes.add(type1);
 
-        AlgoRelationType relType1 = new AlgoRelationType();
+        AlgorithmRelationType relType1 = new AlgorithmRelationType();
         relType1.setName("RelationType1");
 
         algorithm1 = new ClassicAlgorithm();
@@ -180,12 +180,12 @@ public class AlgorithmControllerTest {
         algorithmRelation1.setId(UUID.randomUUID());
         algorithmRelation1.setSourceAlgorithm(algorithm1);
         algorithmRelation1.setTargetAlgorithm(algorithm2);
-        algorithmRelation1.setAlgoRelationType(relType1);
+        algorithmRelation1.setAlgorithmRelationType(relType1);
         AlgorithmRelation algorithmRelation2 = new AlgorithmRelation();
         algorithmRelation2.setId(UUID.randomUUID());
         algorithmRelation2.setSourceAlgorithm(algorithm1);
         algorithmRelation2.setTargetAlgorithm(algorithm2);
-        algorithmRelation2.setAlgoRelationType(relType1);
+        algorithmRelation2.setAlgorithmRelationType(relType1);
         algorithmRelations = new HashSet<>();
         algorithmRelations.add(algorithmRelation1);
         algorithmRelations.add(algorithmRelation2);
@@ -723,7 +723,7 @@ public class AlgorithmControllerTest {
         type1.setName("ProblemType1");
         problemTypes.add(type1);
 
-        AlgoRelationType relType1 = new AlgoRelationType();
+        AlgorithmRelationType relType1 = new AlgorithmRelationType();
         relType1.setName("RelationType1");
 
         var algorithm1 = new QuantumAlgorithm();
@@ -741,12 +741,12 @@ public class AlgorithmControllerTest {
         algorithmRelation1.setId(UUID.randomUUID());
         algorithmRelation1.setSourceAlgorithm(algorithm1);
         algorithmRelation1.setTargetAlgorithm(algorithm2);
-        algorithmRelation1.setAlgoRelationType(relType1);
+        algorithmRelation1.setAlgorithmRelationType(relType1);
         AlgorithmRelation algorithmRelation2 = new AlgorithmRelation();
         algorithmRelation2.setId(UUID.randomUUID());
         algorithmRelation2.setSourceAlgorithm(algorithm1);
         algorithmRelation2.setTargetAlgorithm(algorithm2);
-        algorithmRelation2.setAlgoRelationType(relType1);
+        algorithmRelation2.setAlgorithmRelationType(relType1);
 
         var resReq = getValidResourceInput();
         var type = new ComputeResourcePropertyType();

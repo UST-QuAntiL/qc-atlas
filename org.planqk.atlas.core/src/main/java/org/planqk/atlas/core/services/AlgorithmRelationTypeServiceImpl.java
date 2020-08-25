@@ -22,9 +22,9 @@ package org.planqk.atlas.core.services;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
-import org.planqk.atlas.core.model.AlgoRelationType;
+import org.planqk.atlas.core.model.AlgorithmRelationType;
 import org.planqk.atlas.core.model.exceptions.ConsistencyException;
-import org.planqk.atlas.core.repository.AlgoRelationTypeRepository;
+import org.planqk.atlas.core.repository.AlgorithmRelationTypeRepository;
 import org.planqk.atlas.core.repository.AlgorithmRelationRepository;
 
 import lombok.extern.slf4j.Slf4j;
@@ -38,45 +38,45 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @AllArgsConstructor
 @Slf4j
-public class AlgoRelationTypeServiceImpl implements AlgoRelationTypeService {
+public class AlgorithmRelationTypeServiceImpl implements AlgorithmRelationTypeService {
 
-    private final AlgoRelationTypeRepository algoRelationTypeRepository;
+    private final AlgorithmRelationTypeRepository algorithmRelationTypeRepository;
     private final AlgorithmRelationRepository algorithmRelationRepository;
 
     @Override
     @Transactional
-    public AlgoRelationType create(AlgoRelationType algoRelationType) {
-        return algoRelationTypeRepository.save(algoRelationType);
+    public AlgorithmRelationType create(AlgorithmRelationType algorithmRelationType) {
+        return algorithmRelationTypeRepository.save(algorithmRelationType);
     }
 
     @Override
-    public Page<AlgoRelationType> findAll(Pageable pageable) {
-        return algoRelationTypeRepository.findAll(pageable);
+    public Page<AlgorithmRelationType> findAll(Pageable pageable) {
+        return algorithmRelationTypeRepository.findAll(pageable);
     }
 
     @Override
-    public AlgoRelationType findById(UUID algorithmRelationTypeId) {
-        return algoRelationTypeRepository.findById(algorithmRelationTypeId).orElseThrow(NoSuchElementException::new);
+    public AlgorithmRelationType findById(UUID algorithmRelationTypeId) {
+        return algorithmRelationTypeRepository.findById(algorithmRelationTypeId).orElseThrow(NoSuchElementException::new);
     }
 
     @Override
     @Transactional
-    public AlgoRelationType update(AlgoRelationType algoRelationType) {
-        var persistedAlgorithmRelationType = findById(algoRelationType.getId());
+    public AlgorithmRelationType update(AlgorithmRelationType algorithmRelationType) {
+        var persistedAlgorithmRelationType = findById(algorithmRelationType.getId());
 
-        persistedAlgorithmRelationType.setName(algoRelationType.getName());
+        persistedAlgorithmRelationType.setName(algorithmRelationType.getName());
 
-        return algoRelationTypeRepository.save(persistedAlgorithmRelationType);
+        return algorithmRelationTypeRepository.save(persistedAlgorithmRelationType);
     }
 
     @Override
     @Transactional
     public void delete(UUID algorithmRelationTypeId) {
-        if (algorithmRelationRepository.countByAlgoRelationType_Id(algorithmRelationTypeId) > 0) {
+        if (algorithmRelationRepository.countByAlgorithmRelationTypeId(algorithmRelationTypeId) > 0) {
             throw new ConsistencyException(
                     "Cannot delete AlgorithmRelationType since it is used by existing AlgorithmRelations.");
         }
 
-        algoRelationTypeRepository.deleteById(algorithmRelationTypeId);
+        algorithmRelationTypeRepository.deleteById(algorithmRelationTypeId);
     }
 }

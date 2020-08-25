@@ -31,7 +31,7 @@ import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.model.QuantumAlgorithm;
 import org.planqk.atlas.core.model.Sketch;
-import org.planqk.atlas.core.repository.AlgoRelationTypeRepository;
+import org.planqk.atlas.core.repository.AlgorithmRelationTypeRepository;
 import org.planqk.atlas.core.repository.AlgorithmRelationRepository;
 import org.planqk.atlas.core.repository.AlgorithmRepository;
 import org.planqk.atlas.core.repository.ApplicationAreaRepository;
@@ -58,9 +58,9 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 
     private final AlgorithmRelationRepository algorithmRelationRepository;
 
-    private final AlgoRelationService algoRelationService;
-    private final AlgoRelationTypeService algoRelationTypeService;
-    private final AlgoRelationTypeRepository algoRelationTypeRepository;
+    private final AlgorithmRelationService algorithmRelationService;
+    private final AlgorithmRelationTypeService algorithmRelationTypeService;
+    private final AlgorithmRelationTypeRepository algorithmRelationTypeRepository;
 
     private final ImplementationService implementationService;
     private final ImplementationRepository implementationRepository;

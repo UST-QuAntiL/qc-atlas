@@ -29,8 +29,8 @@ import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.model.Tag;
-import org.planqk.atlas.core.services.AlgoRelationService;
-import org.planqk.atlas.core.services.AlgoRelationTypeService;
+import org.planqk.atlas.core.services.AlgorithmRelationService;
+import org.planqk.atlas.core.services.AlgorithmRelationTypeService;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.core.services.ComputeResourcePropertyService;
 import org.planqk.atlas.core.services.ImplementationService;
@@ -101,10 +101,10 @@ public class AlgorithmController {
     private final AlgorithmService algorithmService;
     private final AlgorithmAssembler algorithmAssembler;
 
-    private final AlgoRelationService algoRelationService;
+    private final AlgorithmRelationService algorithmRelationService;
     private final AlgorithmRelationAssembler algorithmRelationAssembler;
 
-    private final AlgoRelationTypeService algoRelationTypeService;
+    private final AlgorithmRelationTypeService algorithmRelationTypeService;
 
     private final PatternRelationService patternRelationService;
     private final PatternRelationAssembler patternRelationAssembler;

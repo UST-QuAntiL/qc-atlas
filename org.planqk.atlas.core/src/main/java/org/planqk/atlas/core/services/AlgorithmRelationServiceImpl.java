@@ -33,19 +33,19 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @AllArgsConstructor
-public class AlgoRelationServiceImpl implements AlgoRelationService {
+public class AlgorithmRelationServiceImpl implements AlgorithmRelationService {
 
     private final AlgorithmRelationRepository algorithmRelationRepository;
 
-    private final AlgoRelationTypeService algoRelationTypeService;
+    private final AlgorithmRelationTypeService algorithmRelationTypeService;
 
     private final AlgorithmRepository algorithmRepository;
 
     @Override
     @Transactional
     public AlgorithmRelation create(AlgorithmRelation algorithmRelation) {
-        algorithmRelation.setAlgoRelationType(
-                algoRelationTypeService.findById(algorithmRelation.getAlgoRelationType().getId()));
+        algorithmRelation.setAlgorithmRelationType(
+                algorithmRelationTypeService.findById(algorithmRelation.getAlgorithmRelationType().getId()));
 
         algorithmRelation.setSourceAlgorithm(findAlgorithmById(algorithmRelation.getSourceAlgorithm().getId()));
         algorithmRelation.setTargetAlgorithm(findAlgorithmById(algorithmRelation.getTargetAlgorithm().getId()));
@@ -63,8 +63,8 @@ public class AlgoRelationServiceImpl implements AlgoRelationService {
     public AlgorithmRelation update(AlgorithmRelation algorithmRelation) {
         AlgorithmRelation persistedAlgorithmRelation = findById(algorithmRelation.getId());
 
-        persistedAlgorithmRelation.setAlgoRelationType(
-                algoRelationTypeService.findById(algorithmRelation.getAlgoRelationType().getId()));
+        persistedAlgorithmRelation.setAlgorithmRelationType(
+                algorithmRelationTypeService.findById(algorithmRelation.getAlgorithmRelationType().getId()));
         persistedAlgorithmRelation.setDescription(algorithmRelation.getDescription());
 
         return algorithmRelationRepository.save(algorithmRelation);

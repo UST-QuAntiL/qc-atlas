@@ -21,8 +21,8 @@ package org.planqk.atlas.web.controller;
 
 import java.util.UUID;
 
-import org.planqk.atlas.core.model.AlgoRelationType;
-import org.planqk.atlas.core.services.AlgoRelationTypeService;
+import org.planqk.atlas.core.model.AlgorithmRelationType;
+import org.planqk.atlas.core.services.AlgorithmRelationTypeService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.AlgorithmRelationTypeDto;
 import org.planqk.atlas.web.linkassembler.AlgorithmRelationTypeAssembler;
@@ -60,7 +60,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class AlgorithmRelationTypeController {
 
-    private final AlgoRelationTypeService algoRelationTypeService;
+    private final AlgorithmRelationTypeService algorithmRelationTypeService;
     private final AlgorithmRelationTypeAssembler algorithmRelationTypeAssembler;
 
     @Operation(responses = {
@@ -70,7 +70,7 @@ public class AlgorithmRelationTypeController {
     @ListParametersDoc
     public ResponseEntity<PagedModel<EntityModel<AlgorithmRelationTypeDto>>> getAlgorithmRelationTypes(
             @Parameter(hidden = true) ListParameters params) {
-        var algorithmRelationTypes = algoRelationTypeService.findAll(params.getPageable());
+        var algorithmRelationTypes = algorithmRelationTypeService.findAll(params.getPageable());
         return ResponseEntity.ok(algorithmRelationTypeAssembler.toModel(algorithmRelationTypes));
     }
 
@@ -80,8 +80,8 @@ public class AlgorithmRelationTypeController {
     @PostMapping
     public ResponseEntity<EntityModel<AlgorithmRelationTypeDto>> createAlgorithmRelationType(
             @Validated(ValidationGroups.Create.class) @RequestBody AlgorithmRelationTypeDto AlgorithmRelationTypeDto) {
-        var entityInput = ModelMapperUtils.convert(AlgorithmRelationTypeDto, AlgoRelationType.class);
-        var savedAlgoRelationType = algoRelationTypeService.create(entityInput);
+        var entityInput = ModelMapperUtils.convert(AlgorithmRelationTypeDto, AlgorithmRelationType.class);
+        var savedAlgoRelationType = algorithmRelationTypeService.create(entityInput);
         return new ResponseEntity<>(algorithmRelationTypeAssembler.toModel(savedAlgoRelationType), HttpStatus.CREATED);
     }
 
@@ -93,8 +93,8 @@ public class AlgorithmRelationTypeController {
     @PutMapping
     public ResponseEntity<EntityModel<AlgorithmRelationTypeDto>> updateAlgorithmRelationType(
             @Validated(ValidationGroups.Update.class) @RequestBody AlgorithmRelationTypeDto AlgorithmRelationTypeDto) {
-        var entityInput = ModelMapperUtils.convert(AlgorithmRelationTypeDto, AlgoRelationType.class);
-        var savedAlgoRelationType = algoRelationTypeService.update(entityInput);
+        var entityInput = ModelMapperUtils.convert(AlgorithmRelationTypeDto, AlgorithmRelationType.class);
+        var savedAlgoRelationType = algorithmRelationTypeService.update(entityInput);
         return ResponseEntity.ok(algorithmRelationTypeAssembler.toModel(savedAlgoRelationType));
     }
 
@@ -105,7 +105,7 @@ public class AlgorithmRelationTypeController {
     }, description = "")
     @DeleteMapping("/{algorithmRelationTypeId}")
     public ResponseEntity<Void> deleteAlgorithmRelationType(@PathVariable UUID algorithmRelationTypeId) {
-        algoRelationTypeService.delete(algorithmRelationTypeId);
+        algorithmRelationTypeService.delete(algorithmRelationTypeId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
@@ -116,7 +116,7 @@ public class AlgorithmRelationTypeController {
     }, description = "")
     @GetMapping("/{algorithmRelationTypeId}")
     public ResponseEntity<EntityModel<AlgorithmRelationTypeDto>> getAlgorithmRelationType(@PathVariable UUID algorithmRelationTypeId) {
-        var algoRelationType = algoRelationTypeService.findById(algorithmRelationTypeId);
+        var algoRelationType = algorithmRelationTypeService.findById(algorithmRelationTypeId);
         return ResponseEntity.ok(algorithmRelationTypeAssembler.toModel(algoRelationType));
     }
 }

@@ -31,7 +31,7 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.planqk.atlas.core.model.AlgoRelationType;
+import org.planqk.atlas.core.model.AlgorithmRelationType;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.model.ApplicationArea;
@@ -430,7 +430,7 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
         assertThat(dbRelation.getDescription()).isEqualTo(compareRelation.getDescription());
         this.assertAlgorithmEquality(dbRelation.getSourceAlgorithm(), compareRelation.getSourceAlgorithm());
         this.assertAlgorithmEquality(dbRelation.getTargetAlgorithm(), compareRelation.getTargetAlgorithm());
-        assertThat(dbRelation.getAlgoRelationType().getName()).isEqualTo(compareRelation.getAlgoRelationType().getName());
+        assertThat(dbRelation.getAlgorithmRelationType().getName()).isEqualTo(compareRelation.getAlgorithmRelationType().getName());
     }
 
     private AlgorithmRelation getGenericAlgorithmRelation(Algorithm sourceAlgorithm, Algorithm targetAlgorithm) {
@@ -438,9 +438,9 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
         algorithmRelation.setDescription("testRelationDescription");
         algorithmRelation.setSourceAlgorithm(sourceAlgorithm);
         algorithmRelation.setTargetAlgorithm(targetAlgorithm);
-        AlgoRelationType algoRelationType = new AlgoRelationType();
-        algoRelationType.setName("testRelation");
-        algorithmRelation.setAlgoRelationType(algoRelationType);
+        AlgorithmRelationType algorithmRelationType = new AlgorithmRelationType();
+        algorithmRelationType.setName("testRelation");
+        algorithmRelation.setAlgorithmRelationType(algorithmRelationType);
         return algorithmRelation;
     }
 

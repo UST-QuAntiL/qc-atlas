@@ -29,7 +29,7 @@ public class AlgorithmRelation extends HasId {
     private Algorithm targetAlgorithm;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private AlgoRelationType algoRelationType;
+    private AlgorithmRelationType algorithmRelationType;
 
     private String description;
 

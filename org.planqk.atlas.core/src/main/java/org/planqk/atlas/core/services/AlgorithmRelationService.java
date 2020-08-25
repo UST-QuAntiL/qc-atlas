@@ -25,7 +25,7 @@ import org.planqk.atlas.core.model.AlgorithmRelation;
 
 import org.springframework.transaction.annotation.Transactional;
 
-public interface AlgoRelationService {
+public interface AlgorithmRelationService {
 
     @Transactional
     AlgorithmRelation create(AlgorithmRelation algorithmRelation);

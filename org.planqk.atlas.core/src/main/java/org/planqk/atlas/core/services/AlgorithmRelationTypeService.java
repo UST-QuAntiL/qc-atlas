@@ -21,22 +21,22 @@ package org.planqk.atlas.core.services;
 
 import java.util.UUID;
 
-import org.planqk.atlas.core.model.AlgoRelationType;
+import org.planqk.atlas.core.model.AlgorithmRelationType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
-public interface AlgoRelationTypeService {
+public interface AlgorithmRelationTypeService {
 
     @Transactional
-    AlgoRelationType create(AlgoRelationType algoRelationType);
+    AlgorithmRelationType create(AlgorithmRelationType algorithmRelationType);
 
-    Page<AlgoRelationType> findAll(Pageable pageable);
+    Page<AlgorithmRelationType> findAll(Pageable pageable);
 
-    AlgoRelationType findById(UUID algorithmRelationTypeId);
+    AlgorithmRelationType findById(UUID algorithmRelationTypeId);
 
     @Transactional
-    AlgoRelationType update(AlgoRelationType algoRelationType);
+    AlgorithmRelationType update(AlgorithmRelationType algorithmRelationType);
 
     @Transactional
     void delete(UUID algorithmRelationTypeId);
