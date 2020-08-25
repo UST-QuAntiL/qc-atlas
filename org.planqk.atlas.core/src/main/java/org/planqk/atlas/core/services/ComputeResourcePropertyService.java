@@ -31,7 +31,7 @@ import org.springframework.data.domain.Pageable;
 public interface ComputeResourcePropertyService {
 
     @Transactional
-    ComputeResourceProperty save(ComputeResourceProperty computeResourceProperty);
+    ComputeResourceProperty create(ComputeResourceProperty computeResourceProperty);
 
     ComputeResourceProperty findById(UUID computeResourcePropertyId);
 

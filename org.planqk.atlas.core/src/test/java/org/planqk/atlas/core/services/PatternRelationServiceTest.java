@@ -97,7 +97,7 @@ public class PatternRelationServiceTest extends AtlasDatabaseTestBase {
         relation1.setAlgorithm(savedAlgorithm);
         relation1.setPatternRelationType(savedType);
 
-        PatternRelation savedRelation = service.save(relation1);
+        PatternRelation savedRelation = service.create(relation1);
         assertFalse(Objects.isNull(service.findById(savedRelation.getId())));
     }
 
@@ -107,7 +107,7 @@ public class PatternRelationServiceTest extends AtlasDatabaseTestBase {
         relation1.setAlgorithm(savedAlgorithm);
         relation1.setPatternRelationType(type);
 
-        PatternRelation savedRelation = service.save(relation1);
+        PatternRelation savedRelation = service.create(relation1);
         assertFalse(Objects.isNull(service.findById(savedRelation.getId())));
         // PatternRelationType should have been created on the fly
         assertFalse(
@@ -122,7 +122,7 @@ public class PatternRelationServiceTest extends AtlasDatabaseTestBase {
         relation1.setPatternRelationType(type);
 
         assertThrows(NoSuchElementException.class, () -> {
-            service.save(relation1);
+            service.create(relation1);
         });
     }
 
@@ -134,7 +134,7 @@ public class PatternRelationServiceTest extends AtlasDatabaseTestBase {
         relation1.setPatternRelationType(type);
 
         assertThrows(NoSuchElementException.class, () -> {
-            service.save(relation1);
+            service.create(relation1);
         });
     }
 
@@ -157,7 +157,7 @@ public class PatternRelationServiceTest extends AtlasDatabaseTestBase {
         relation1.setPatternRelationType(type);
 
         // Update relation
-        PatternRelation savedRelation = service.save(relation1);
+        PatternRelation savedRelation = service.create(relation1);
         savedRelation.setDescription("UpdatedDescription");
         savedRelation.setPattern(URI.create("https://www.updated.com"));
 
@@ -180,8 +180,8 @@ public class PatternRelationServiceTest extends AtlasDatabaseTestBase {
         relation2.setAlgorithm(savedAlgorithm);
         relation2.setPatternRelationType(savedType);
 
-        service.save(relation1);
-        service.save(relation2);
+        service.create(relation1);
+        service.create(relation2);
         Page<PatternRelation> relations = service.findAll(pageable);
         assertEquals(relations.getContent().size(), 2);
     }
@@ -191,7 +191,7 @@ public class PatternRelationServiceTest extends AtlasDatabaseTestBase {
         relation1.setAlgorithm(savedAlgorithm);
         relation1.setPatternRelationType(savedType);
 
-        PatternRelation savedRelation = service.save(relation1);
+        PatternRelation savedRelation = service.create(relation1);
 
         assertEquals(service.findById(savedRelation.getId()).getId(), savedRelation.getId());
     }
@@ -215,7 +215,7 @@ public class PatternRelationServiceTest extends AtlasDatabaseTestBase {
         relation1.setAlgorithm(savedAlgorithm);
         relation1.setPatternRelationType(savedType);
 
-        PatternRelation savedRelation = service.save(relation1);
+        PatternRelation savedRelation = service.create(relation1);
         assertEquals(1, algorithmService.findById(savedAlgorithm.getId()).getRelatedPatterns().size());
 
         service.delete(savedRelation.getId());

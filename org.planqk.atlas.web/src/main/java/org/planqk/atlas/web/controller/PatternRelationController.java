@@ -82,7 +82,7 @@ public class PatternRelationController {
     @PostMapping()
     public ResponseEntity<EntityModel<PatternRelationDto>> createPatternRelation(
             @Validated({ValidationGroups.Create.class}) @RequestBody PatternRelationDto patternRelationDto) {
-        var savedPatternRelation = patternRelationService.save(
+        var savedPatternRelation = patternRelationService.create(
                 ModelMapperUtils.convert(patternRelationDto, PatternRelation.class));
         return new ResponseEntity<>(patternRelationAssembler.toModel(savedPatternRelation), HttpStatus.CREATED);
     }

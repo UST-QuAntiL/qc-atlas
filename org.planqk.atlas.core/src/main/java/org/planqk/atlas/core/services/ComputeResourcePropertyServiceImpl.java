@@ -50,15 +50,11 @@ public class ComputeResourcePropertyServiceImpl implements ComputeResourceProper
 
     @Override
     @Transactional
-    public ComputeResourceProperty save(ComputeResourceProperty computeResourceProperty) {
-        if (computeResourceProperty.getId() != null &&
-                !computeResourcePropertyRepository.existsById(computeResourceProperty.getId())) {
-            throw new NoSuchElementException("The use of Custom Ids is not allowed!");
-        }
-        if (computeResourceProperty.getComputeResourcePropertyType().getId() == null) {
-            var type = computeResourcePropertyTypeService.save(computeResourceProperty.getComputeResourcePropertyType());
-            computeResourceProperty.setComputeResourcePropertyType(type);
-        }
+    public ComputeResourceProperty create(ComputeResourceProperty computeResourceProperty) {
+        computeResourceProperty.setComputeResourcePropertyType(
+                computeResourcePropertyTypeService.findById(
+                        computeResourceProperty.getComputeResourcePropertyType().getId()));
+
         return computeResourcePropertyRepository.save(computeResourceProperty);
     }
 
@@ -113,7 +109,7 @@ public class ComputeResourcePropertyServiceImpl implements ComputeResourceProper
             UUID algorithmId, ComputeResourceProperty computeResourceProperty) {
         ComputeResourceProperty persistedComputeResourceProperty;
         if (computeResourceProperty.getId() == null) {
-            persistedComputeResourceProperty = this.save(computeResourceProperty);
+            persistedComputeResourceProperty = this.create(computeResourceProperty);
         } else {
             persistedComputeResourceProperty = findById(computeResourceProperty.getId());
         }
@@ -131,7 +127,7 @@ public class ComputeResourcePropertyServiceImpl implements ComputeResourceProper
             UUID implementationId, ComputeResourceProperty computeResourceProperty) {
         ComputeResourceProperty persistedComputeResourceProperty;
         if (computeResourceProperty.getId() == null) {
-            persistedComputeResourceProperty = this.save(computeResourceProperty);
+            persistedComputeResourceProperty = this.create(computeResourceProperty);
         } else {
             persistedComputeResourceProperty = findById(computeResourceProperty.getId());
         }
@@ -149,7 +145,7 @@ public class ComputeResourcePropertyServiceImpl implements ComputeResourceProper
             UUID computeResourceId, ComputeResourceProperty computeResourceProperty) {
         ComputeResourceProperty persistedComputeResourceProperty;
         if (computeResourceProperty.getId() == null) {
-            persistedComputeResourceProperty = this.save(computeResourceProperty);
+            persistedComputeResourceProperty = this.create(computeResourceProperty);
         } else {
             persistedComputeResourceProperty = findById(computeResourceProperty.getId());
         }

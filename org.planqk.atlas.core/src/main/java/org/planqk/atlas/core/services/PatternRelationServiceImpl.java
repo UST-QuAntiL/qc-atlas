@@ -45,14 +45,20 @@ public class PatternRelationServiceImpl implements PatternRelationService {
 
     @Override
     @Transactional
-    public PatternRelation save(PatternRelation patternRelation) {
+    public PatternRelation create(PatternRelation patternRelation) {
         if (patternRelation.getAlgorithm() == null
-                || patternRelation.getAlgorithm().getId() == null
-                || !algorithmRepository.existsById(patternRelation.getAlgorithm().getId())) {
-            throw new NoSuchElementException("The given algorithm is invalid or does not exist");
+                || patternRelation.getAlgorithm().getId() == null) {
+            throw new NoSuchElementException("The given algorithm is invalid");
         }
-        var patternRelationType = patternRelationTypeService.findById(patternRelation.getPatternRelationType().getId());
-        patternRelation.setPatternRelationType(patternRelationType);
+
+        patternRelation.setAlgorithm(algorithmRepository.findById(
+                patternRelation.getAlgorithm().getId())
+                .orElseThrow(() -> new NoSuchElementException(
+                        "No Algorithm with given ID \"" + patternRelation.getAlgorithm().getId() + "\" was found")));
+
+        patternRelation.setPatternRelationType(
+                patternRelationTypeService.findById(patternRelation.getPatternRelationType().getId()));
+
         return patternRelationRepository.save(patternRelation);
     }
 

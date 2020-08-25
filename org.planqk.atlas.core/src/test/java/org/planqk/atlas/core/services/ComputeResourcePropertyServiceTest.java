@@ -65,7 +65,7 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         var resource = new ComputeResourceProperty();
         resource.setComputeResourcePropertyType(resourceType);
 
-        var storedResource = resourceService.save(resource);
+        var storedResource = resourceService.create(resource);
 
         resourceService.delete(resource.getId());
         this.computeResourcePropertyTypeService.delete(storedResource.getComputeResourcePropertyType().getId());
@@ -82,7 +82,7 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         var resource = new ComputeResourceProperty();
         resource.setComputeResourcePropertyType(resourceType);
 
-        var storedResource = resourceService.save(resource);
+        var storedResource = resourceService.create(resource);
 
         Assertions.assertThrows(DataIntegrityViolationException.class, () -> {
             this.computeResourcePropertyTypeService.delete(storedResource.getComputeResourcePropertyType().getId());
@@ -159,7 +159,7 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         algo.setComputationModel(ComputationModel.QUANTUM);
         var storedAlgo = (QuantumAlgorithm) algorithmService.save(algo);
 
-        var storedResource = resourceService.save(resource);
+        var storedResource = resourceService.create(resource);
 
         resourceService.addComputeResourcePropertyToAlgorithm(storedAlgo.getId(), resource);
 

@@ -44,7 +44,6 @@ public class AlgoRelationServiceImpl implements AlgoRelationService {
     @Override
     @Transactional
     public AlgorithmRelation create(AlgorithmRelation algorithmRelation) {
-        validateAlgorithmRelationType(algorithmRelation);
         algorithmRelation.setAlgoRelationType(
                 algoRelationTypeService.findById(algorithmRelation.getAlgoRelationType().getId()));
 
@@ -64,7 +63,6 @@ public class AlgoRelationServiceImpl implements AlgoRelationService {
     public AlgorithmRelation update(AlgorithmRelation algorithmRelation) {
         AlgorithmRelation persistedAlgorithmRelation = findById(algorithmRelation.getId());
 
-        validateAlgorithmRelationType(algorithmRelation);
         persistedAlgorithmRelation.setAlgoRelationType(
                 algoRelationTypeService.findById(algorithmRelation.getAlgoRelationType().getId()));
         persistedAlgorithmRelation.setDescription(algorithmRelation.getDescription());
@@ -81,12 +79,5 @@ public class AlgoRelationServiceImpl implements AlgoRelationService {
     private Algorithm findAlgorithmById(UUID algorithmId) {
         return algorithmRepository.findById(algorithmId).orElseThrow(
                 () -> new NoSuchElementException("No Algorithm with given ID \"" + algorithmId + "\" was found"));
-    }
-
-    private void validateAlgorithmRelationType(AlgorithmRelation algorithmRelation) {
-        if (algorithmRelation.getAlgoRelationType() == null ||
-                algorithmRelation.getAlgoRelationType().getId() == null) {
-            throw new NoSuchElementException("Algorithm relation type is invalid");
-        }
     }
 }

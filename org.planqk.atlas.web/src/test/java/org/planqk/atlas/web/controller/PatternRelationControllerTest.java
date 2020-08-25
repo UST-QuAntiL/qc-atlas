@@ -171,7 +171,7 @@ public class PatternRelationControllerTest {
         // Ignore annontations when writing Java objects to Json to enable writing WRITE_ONLY field which are required as input
         mapper.configure(MapperFeature.USE_ANNOTATIONS, false);
 
-        when(patternRelationService.save(any())).thenReturn(relation1);
+        when(patternRelationService.create(any())).thenReturn(relation1);
 
         MvcResult result = mockMvc
                 .perform(post("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATIONS + "/").content(mapper.writeValueAsString(relation1Dto))
@@ -198,7 +198,7 @@ public class PatternRelationControllerTest {
         // Ignore annontations when writing Java objects to Json to enable writing WRITE_ONLY field which are required as input
         mapper.configure(MapperFeature.USE_ANNOTATIONS, false);
 
-        when(patternRelationService.save(any())).thenThrow(NoSuchElementException.class);
+        when(patternRelationService.create(any())).thenThrow(NoSuchElementException.class);
 
         mockMvc.perform(post("/" + Constants.PATTERN_RELATIONS + "/").content(mapper.writeValueAsString(relation2Dto))
                 .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
@@ -258,7 +258,7 @@ public class PatternRelationControllerTest {
         // Ignore annontations when writing Java objects to Json to enable writing WRITE_ONLY field which are required as input
         mapper.configure(MapperFeature.USE_ANNOTATIONS, false);
 
-        when(patternRelationService.save(any())).thenReturn(relationUpdated);
+        when(patternRelationService.create(any())).thenReturn(relationUpdated);
 
         MvcResult result = mockMvc.perform(put("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATIONS + "/{id}", relation1.getId())
                 .content(mapper.writeValueAsString(relation1Dto)).contentType(MediaType.APPLICATION_JSON)
@@ -289,7 +289,7 @@ public class PatternRelationControllerTest {
         // Ignore annontations when writing Java objects to Json to enable writing WRITE_ONLY field which are required as input
         mapper.configure(MapperFeature.USE_ANNOTATIONS, false);
 
-        when(patternRelationService.save(any())).thenThrow(NoSuchElementException.class);
+        when(patternRelationService.create(any())).thenThrow(NoSuchElementException.class);
 
         mockMvc.perform(put("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATIONS + "/{id}", UUID.randomUUID())
                 .content(mapper.writeValueAsString(relation1Dto)).contentType(MediaType.APPLICATION_JSON)
