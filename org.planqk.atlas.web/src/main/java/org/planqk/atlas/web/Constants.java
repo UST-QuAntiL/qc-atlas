@@ -73,4 +73,5 @@ public class Constants {
     public static final String TAG_ALGORITHM_RELATION_TYPE = "algorithm-relation-type";
     public static final String TAG_PUBLICATION = "publication";
     public static final String TAG_ROOT = "root";
+    public static final String TAG_API_TAG = "tag";
 }
