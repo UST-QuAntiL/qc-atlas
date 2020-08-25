@@ -2,7 +2,7 @@ package org.planqk.atlas.web.linkassembler;
 
 import java.util.UUID;
 
-import org.planqk.atlas.web.controller.AlgoRelationTypeController;
+import org.planqk.atlas.web.controller.AlgorithmRelationTypeController;
 import org.planqk.atlas.web.controller.AlgorithmController;
 import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
 
@@ -21,7 +21,7 @@ public class AlgorithmRelationAssembler extends GenericLinkAssembler<AlgorithmRe
         resource.add(links.linkTo(methodOn(AlgorithmController.class).getAlgorithm(getTargetAlgorithmId(resource)))
                 .withRel("targetAlgorithm"));
         resource.add(links.linkTo(
-                methodOn(AlgoRelationTypeController.class).getAlgorithmRelationType(getAlgoRelationTypeId(resource)))
+                methodOn(AlgorithmRelationTypeController.class).getAlgorithmRelationType(getAlgoRelationTypeId(resource)))
                 .withRel("algoRelationType"));
     }
 

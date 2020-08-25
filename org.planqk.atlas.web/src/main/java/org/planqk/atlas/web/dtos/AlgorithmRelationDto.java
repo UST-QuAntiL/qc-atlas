@@ -56,7 +56,7 @@ public class AlgorithmRelationDto implements Identifyable {
             message = "AlgorithmRelationType must have a type with an ID!")
     @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
             message = "AlgorithmRelationType must not be null!")
-    private AlgoRelationTypeDto algoRelationType;
+    private AlgorithmRelationTypeDto algoRelationType;
 
     private String description;
 }

@@ -24,8 +24,8 @@ import java.util.UUID;
 import org.planqk.atlas.core.model.AlgoRelationType;
 import org.planqk.atlas.core.services.AlgoRelationTypeService;
 import org.planqk.atlas.web.Constants;
-import org.planqk.atlas.web.dtos.AlgoRelationTypeDto;
-import org.planqk.atlas.web.linkassembler.AlgoRelationTypeAssembler;
+import org.planqk.atlas.web.dtos.AlgorithmRelationTypeDto;
+import org.planqk.atlas.web.linkassembler.AlgorithmRelationTypeAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
@@ -34,9 +34,9 @@ import org.planqk.atlas.web.utils.ValidationGroups;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
@@ -52,37 +52,37 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@io.swagger.v3.oas.annotations.tags.Tag(name = Constants.TAG_ALGORITHM_RELATION_TYPE)
+@Tag(name = Constants.TAG_ALGORITHM_RELATION_TYPE)
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/" + Constants.API_VERSION + "/" + Constants.ALGO_RELATION_TYPES)
 @AllArgsConstructor
 @Slf4j
-public class AlgoRelationTypeController {
+public class AlgorithmRelationTypeController {
 
     private final AlgoRelationTypeService algoRelationTypeService;
-    private final AlgoRelationTypeAssembler algoRelationTypeAssembler;
+    private final AlgorithmRelationTypeAssembler algorithmRelationTypeAssembler;
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200")
     }, description = "")
     @GetMapping
     @ListParametersDoc
-    public ResponseEntity<PagedModel<EntityModel<AlgoRelationTypeDto>>> getAlgorithmRelationTypes(
+    public ResponseEntity<PagedModel<EntityModel<AlgorithmRelationTypeDto>>> getAlgorithmRelationTypes(
             @Parameter(hidden = true) ListParameters params) {
         var algorithmRelationTypes = algoRelationTypeService.findAll(params.getPageable());
-        return ResponseEntity.ok(algoRelationTypeAssembler.toModel(algorithmRelationTypes));
+        return ResponseEntity.ok(algorithmRelationTypeAssembler.toModel(algorithmRelationTypes));
     }
 
     @Operation(responses = {
             @ApiResponse(responseCode = "201")
     }, description = "Custom ID will be ignored.")
     @PostMapping
-    public ResponseEntity<EntityModel<AlgoRelationTypeDto>> createAlgorithmRelationType(
-            @Validated(ValidationGroups.Create.class) @RequestBody AlgoRelationTypeDto algoRelationTypeDto) {
-        var entityInput = ModelMapperUtils.convert(algoRelationTypeDto, AlgoRelationType.class);
+    public ResponseEntity<EntityModel<AlgorithmRelationTypeDto>> createAlgorithmRelationType(
+            @Validated(ValidationGroups.Create.class) @RequestBody AlgorithmRelationTypeDto algorithmRelationTypeDto) {
+        var entityInput = ModelMapperUtils.convert(algorithmRelationTypeDto, AlgoRelationType.class);
         var savedAlgoRelationType = algoRelationTypeService.save(entityInput);
-        return new ResponseEntity<>(algoRelationTypeAssembler.toModel(savedAlgoRelationType), HttpStatus.CREATED);
+        return new ResponseEntity<>(algorithmRelationTypeAssembler.toModel(savedAlgoRelationType), HttpStatus.CREATED);
     }
 
     @Operation(responses = {
@@ -91,11 +91,11 @@ public class AlgoRelationTypeController {
             @ApiResponse(responseCode = "404", description = "Algorithm relation with given id doesn't exist")
     }, description = "Custom ID will be ignored.")
     @PutMapping
-    public ResponseEntity<EntityModel<AlgoRelationTypeDto>> updateAlgorithmRelationType(
-            @Validated(ValidationGroups.Update.class) @RequestBody AlgoRelationTypeDto algoRelationTypeDto) {
-        var entityInput = ModelMapperUtils.convert(algoRelationTypeDto, AlgoRelationType.class);
-        var savedAlgoRelationType = algoRelationTypeService.update(algoRelationTypeDto.getId(), entityInput);
-        return ResponseEntity.ok(algoRelationTypeAssembler.toModel(savedAlgoRelationType));
+    public ResponseEntity<EntityModel<AlgorithmRelationTypeDto>> updateAlgorithmRelationType(
+            @Validated(ValidationGroups.Update.class) @RequestBody AlgorithmRelationTypeDto algorithmRelationTypeDto) {
+        var entityInput = ModelMapperUtils.convert(algorithmRelationTypeDto, AlgoRelationType.class);
+        var savedAlgoRelationType = algoRelationTypeService.update(algorithmRelationTypeDto.getId(), entityInput);
+        return ResponseEntity.ok(algorithmRelationTypeAssembler.toModel(savedAlgoRelationType));
     }
 
     @Operation(responses = {
@@ -115,8 +115,8 @@ public class AlgoRelationTypeController {
             @ApiResponse(responseCode = "404", description = "Algorithm relation with given id doesn't exist")
     }, description = "")
     @GetMapping("/{algorithmRelationTypeId}")
-    public ResponseEntity<EntityModel<AlgoRelationTypeDto>> getAlgorithmRelationType(@PathVariable UUID algorithmRelationTypeId) {
+    public ResponseEntity<EntityModel<AlgorithmRelationTypeDto>> getAlgorithmRelationType(@PathVariable UUID algorithmRelationTypeId) {
         var algoRelationType = algoRelationTypeService.findById(algorithmRelationTypeId);
-        return ResponseEntity.ok(algoRelationTypeAssembler.toModel(algoRelationType));
+        return ResponseEntity.ok(algorithmRelationTypeAssembler.toModel(algoRelationType));
     }
 }

@@ -15,7 +15,7 @@ import org.springframework.hateoas.server.core.Relation;
 @Data
 @NoArgsConstructor
 @Relation(itemRelation = "algoRelationType", collectionRelation = "algoRelationTypes")
-public class AlgoRelationTypeDto implements Identifyable {
+public class AlgorithmRelationTypeDto implements Identifyable {
 
     @NotNull(groups = {ValidationGroups.Update.class}, message = "An id is required to perform an update")
     @Null(groups = {ValidationGroups.Create.class}, message = "The id must be null for creating an algorithm relation type")
