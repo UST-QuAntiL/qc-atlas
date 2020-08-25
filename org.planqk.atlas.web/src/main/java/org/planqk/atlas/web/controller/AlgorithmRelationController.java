@@ -74,9 +74,9 @@ public class AlgorithmRelationController {
     @PostMapping
     public ResponseEntity<EntityModel<AlgorithmRelationDto>> createAlgorithmRelation(
             @Validated(ValidationGroups.Create.class) @RequestBody AlgorithmRelationDto algorithmRelationDto) {
-        var entityInput = ModelMapperUtils.convert(algorithmRelationDto, AlgorithmRelation.class);
-        var savedAlgoRelationType = algoRelationService.save(entityInput);
-        return new ResponseEntity<>(algorithmRelationAssembler.toModel(savedAlgoRelationType), HttpStatus.CREATED);
+        var savedAlgorithmRelation = algoRelationService.create(
+                ModelMapperUtils.convert(algorithmRelationDto, AlgorithmRelation.class));
+        return new ResponseEntity<>(algorithmRelationAssembler.toModel(savedAlgorithmRelation), HttpStatus.CREATED);
     }
 
     @Operation(responses = {
@@ -87,9 +87,9 @@ public class AlgorithmRelationController {
     @PutMapping
     public ResponseEntity<EntityModel<AlgorithmRelationDto>> updateAlgorithmRelation(
             @Validated(ValidationGroups.Update.class) @RequestBody AlgorithmRelationDto algorithmRelationDto) {
-        var entityInput = ModelMapperUtils.convert(algorithmRelationDto, AlgorithmRelation.class);
-        var savedAlgoRelationType = algoRelationService.update(entityInput);
-        return ResponseEntity.ok(algorithmRelationAssembler.toModel(savedAlgoRelationType));
+        var savedAlgorithmRelation = algoRelationService.update(
+                ModelMapperUtils.convert(algorithmRelationDto, AlgorithmRelation.class));
+        return ResponseEntity.ok(algorithmRelationAssembler.toModel(savedAlgorithmRelation));
     }
 
     @Operation(responses = {
