@@ -69,12 +69,13 @@ public class PatternRelationServiceImpl implements PatternRelationService {
     @Override
     @Transactional
     public PatternRelation update(PatternRelation patternRelation) {
-        PatternRelation persistedRelation = findById(patternRelation.getId());
+        PatternRelation persistedPatternRelation = findById(patternRelation.getId());
 
-        persistedRelation.setPattern(patternRelation.getPattern());
-        persistedRelation.setDescription(patternRelation.getDescription());
+        persistedPatternRelation.setPattern(patternRelation.getPattern());
+        persistedPatternRelation.setDescription(patternRelation.getDescription());
+        persistedPatternRelation.setPatternRelationType(patternRelation.getPatternRelationType());
 
-        return save(persistedRelation);
+        return patternRelationRepository.save(persistedPatternRelation);
     }
 
     @Override

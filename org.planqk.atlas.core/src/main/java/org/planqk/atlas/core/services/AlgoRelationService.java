@@ -28,13 +28,13 @@ import org.springframework.transaction.annotation.Transactional;
 public interface AlgoRelationService {
 
     @Transactional
-    AlgorithmRelation save(AlgorithmRelation relation);
+    AlgorithmRelation save(AlgorithmRelation algorithmRelation);
+
+    AlgorithmRelation findById(UUID algorithmRelationId);
 
     @Transactional
-    AlgorithmRelation update(UUID id, AlgorithmRelation relation);
+    AlgorithmRelation update(AlgorithmRelation algorithmRelation);
 
     @Transactional
-    void delete(UUID id);
-
-    AlgorithmRelation findById(UUID relationId);
+    void delete(UUID algorithmRelationId);
 }

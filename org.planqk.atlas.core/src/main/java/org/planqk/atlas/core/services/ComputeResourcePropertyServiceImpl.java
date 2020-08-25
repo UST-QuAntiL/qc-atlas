@@ -51,7 +51,8 @@ public class ComputeResourcePropertyServiceImpl implements ComputeResourceProper
     @Override
     @Transactional
     public ComputeResourceProperty save(ComputeResourceProperty computeResourceProperty) {
-        if (computeResourceProperty.getId() != null && !computeResourcePropertyRepository.existsById(computeResourceProperty.getId())) {
+        if (computeResourceProperty.getId() != null &&
+                !computeResourcePropertyRepository.existsById(computeResourceProperty.getId())) {
             throw new NoSuchElementException("The use of Custom Ids is not allowed!");
         }
         if (computeResourceProperty.getComputeResourcePropertyType().getId() == null) {
@@ -63,20 +64,20 @@ public class ComputeResourcePropertyServiceImpl implements ComputeResourceProper
 
     @Override
     public ComputeResourceProperty findById(UUID computeResourcePropertyId) {
-        return computeResourcePropertyRepository.findById(computeResourcePropertyId).orElseThrow(NoSuchElementException::new);
+        return computeResourcePropertyRepository.findById(computeResourcePropertyId).orElseThrow(() -> {
+            throw new NoSuchElementException("Cannot find ComputeResourceProperty with the given ID");
+        });
     }
 
     @Override
     @Transactional
     public ComputeResourceProperty update(ComputeResourceProperty computeResourceProperty) {
-        var resourcePropertyFromDb = computeResourcePropertyRepository.findById(computeResourceProperty.getId()).orElseThrow(() -> {
-            throw new NoSuchElementException("Cannot find ComputeResourceProperty with the given ID");
-        });
+        var persistedComputeResourceProperty = findById(computeResourceProperty.getId());
 
-        resourcePropertyFromDb.setValue(computeResourceProperty.getValue());
-        resourcePropertyFromDb.setComputeResourcePropertyType(computeResourceProperty.getComputeResourcePropertyType());
+        persistedComputeResourceProperty.setValue(computeResourceProperty.getValue());
+        persistedComputeResourceProperty.setComputeResourcePropertyType(computeResourceProperty.getComputeResourcePropertyType());
 
-        return computeResourcePropertyRepository.save(resourcePropertyFromDb);
+        return computeResourcePropertyRepository.save(persistedComputeResourceProperty);
     }
 
     @Override

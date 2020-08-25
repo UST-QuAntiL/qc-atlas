@@ -32,13 +32,10 @@ import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.services.AlgoRelationService;
 import org.planqk.atlas.core.services.AlgoRelationTypeService;
 import org.planqk.atlas.core.services.AlgorithmService;
-import org.planqk.atlas.core.services.ApplicationAreaService;
 import org.planqk.atlas.core.services.ComputeResourcePropertyService;
 import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.core.services.LinkingService;
 import org.planqk.atlas.core.services.PatternRelationService;
-import org.planqk.atlas.core.services.PatternRelationTypeService;
-import org.planqk.atlas.core.services.ProblemTypeService;
 import org.planqk.atlas.core.services.TagService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.mixin.ComputeResourcePropertyMixin;
@@ -112,15 +109,11 @@ public class AlgorithmController {
     private final PatternRelationService patternRelationService;
     private final PatternRelationAssembler patternRelationAssembler;
 
-    private final PatternRelationTypeService patternRelationTypeService;
-
     private final ImplementationService implementationService;
     private final ImplementationAssembler implementationAssembler;
 
-    private final ProblemTypeService problemTypeService;
     private final ProblemTypeAssembler problemTypeAssembler;
 
-    private final ApplicationAreaService applicationAreaService;
     private final ApplicationAreaAssembler applicationAreaAssembler;
 
     private final TagService tagService;
@@ -443,14 +436,14 @@ public class AlgorithmController {
 //    }, description = "Add an algorithm relation from this algorithm to another given algorithm. " +
 //            "Custom ID will be ignored. For algorithm relation type only ID is required, other " +
 //            "algorithm relation type attributes will not change.")
-//    @PostMapping("/{algorithmId}/" + Constants.ALGORITHM_RELATIONS + "/{algoRelationId}")
+//    @PostMapping("/{algorithmId}/" + Constants.ALGORITHM_RELATIONS + "/{algorithmRelationId}")
 //    public ResponseEntity<Void> addAlgorithmRelationReferenceToAlgorithm(
 //            @PathVariable UUID algorithmId,
-//            @PathVariable UUID algoRelationId) {
-//        algorithmService.addAlgorithmRelationReference(algorithmId, algoRelationId);
+//            @PathVariable UUID algorithmRelationId) {
+//        algorithmService.addAlgorithmRelationReference(algorithmId, algorithmRelationId);
 //        return new ResponseEntity<>(HttpStatus.OK);
 //    }
-//
+
 //    @Operation(responses = {
 //            @ApiResponse(responseCode = "200"),
 //            @ApiResponse(responseCode = "404",
@@ -465,7 +458,7 @@ public class AlgorithmController {
 //        algoRelationService.delete(relationId);
 //        return new ResponseEntity<>(HttpStatus.OK);
 //    }
-//
+
 //    // TODO check if needed
 //    @Operation(responses = {
 //            @ApiResponse(responseCode = "200"),
@@ -485,7 +478,7 @@ public class AlgorithmController {
 //        }
 //        return ResponseEntity.ok(algorithmRelationAssembler.toModel(algorithmRelation));
 //    }
-//
+
 //    // TODO: check if needed
 //    @Operation(responses = {
 //            @ApiResponse(responseCode = "200"),

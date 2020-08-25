@@ -15,7 +15,7 @@ public class AlgoRelationTypeAssembler extends GenericLinkAssembler<AlgoRelation
 
     @Override
     public void addLinks(EntityModel<AlgoRelationTypeDto> resource) {
-        resource.add(links.linkTo(methodOn(AlgoRelationTypeController.class).getAlgoRelationTypeById(getId(resource)))
+        resource.add(links.linkTo(methodOn(AlgoRelationTypeController.class).getAlgorithmRelationType(getId(resource)))
                 .withSelfRel());
     }
 

@@ -20,7 +20,6 @@
 package org.planqk.atlas.core.services;
 
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.AlgorithmRelation;
@@ -28,6 +27,7 @@ import org.planqk.atlas.core.repository.AlgorithmRelationRepository;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @AllArgsConstructor
@@ -36,29 +36,30 @@ public class AlgoRelationServiceImpl implements AlgoRelationService {
     private final AlgorithmRelationRepository algorithmRelationRepository;
 
     @Override
-    public AlgorithmRelation save(AlgorithmRelation relation) {
-        return algorithmRelationRepository.save(relation);
+    @Transactional
+    public AlgorithmRelation save(AlgorithmRelation algorithmRelation) {
+        return algorithmRelationRepository.save(algorithmRelation);
     }
 
     @Override
-    public AlgorithmRelation update(UUID id, AlgorithmRelation relation) {
-        AlgorithmRelation persistedRelation = algorithmRelationRepository.findById(id).orElseThrow(NoSuchElementException::new);
-
-        return algorithmRelationRepository.save(relation);
+    public AlgorithmRelation findById(UUID algorithmRelationId) {
+        return algorithmRelationRepository.findById(algorithmRelationId).orElseThrow(NoSuchElementException::new);
     }
 
     @Override
-    public void delete(UUID id) {
-        Optional<AlgorithmRelation> relationOptional = algorithmRelationRepository.findById(id);
-        if (!relationOptional.isPresent()) {
-            return;
-        }
+    @Transactional
+    public AlgorithmRelation update(AlgorithmRelation algorithmRelation) {
+        AlgorithmRelation persistedAlgorithmRelation = findById(algorithmRelation.getId());
 
-        algorithmRelationRepository.delete(relationOptional.get());
+        persistedAlgorithmRelation.setDescription(algorithmRelation.getDescription());
+        persistedAlgorithmRelation.setAlgoRelationType(algorithmRelation.getAlgoRelationType());
+
+        return algorithmRelationRepository.save(algorithmRelation);
     }
 
     @Override
-    public AlgorithmRelation findById(UUID relationId) {
-        return algorithmRelationRepository.findById(relationId).orElseThrow(NoSuchElementException::new);
+    @Transactional
+    public void delete(UUID algorithmRelationId) {
+        algorithmRelationRepository.deleteById(algorithmRelationId);
     }
 }

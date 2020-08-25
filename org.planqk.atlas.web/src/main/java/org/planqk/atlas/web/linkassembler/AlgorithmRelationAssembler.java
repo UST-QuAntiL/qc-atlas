@@ -21,7 +21,7 @@ public class AlgorithmRelationAssembler extends GenericLinkAssembler<AlgorithmRe
         resource.add(links.linkTo(methodOn(AlgorithmController.class).getAlgorithm(getTargetAlgorithmId(resource)))
                 .withRel("targetAlgorithm"));
         resource.add(links.linkTo(
-                methodOn(AlgoRelationTypeController.class).getAlgoRelationTypeById(getAlgoRelationTypeId(resource)))
+                methodOn(AlgoRelationTypeController.class).getAlgorithmRelationType(getAlgoRelationTypeId(resource)))
                 .withRel("algoRelationType"));
     }
 

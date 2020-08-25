@@ -224,6 +224,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     }
 
     @Override
+    @Transactional
     public ComputeResourceProperty createComputeResourceProperty(UUID algoId, ComputeResourceProperty computeResourceProperty) {
         Algorithm algorithm = findById(algoId);
 
@@ -234,6 +235,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     }
 
     @Override
+    @Transactional
     public void deleteComputeResourceProperty(UUID algoId, UUID computeResourcePropertyId) {
         Algorithm algorithm = findById(algoId);
         var computeResourceProperty = computeResourcePropertyService.findById(computeResourcePropertyId);

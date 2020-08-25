@@ -90,7 +90,7 @@ public class AlgoRelationTypeControllerTest {
         algoRelationTypeDto.setId(UUID.randomUUID());
 
         var url = fromMethodCall(uriBuilder, on(AlgoRelationTypeController.class)
-                .createAlgoRelationType(null)).toUriString();
+                .createAlgorithmRelationType(null)).toUriString();
         mockMvc.perform(post(url)
                 .content(mapper.writeValueAsString(algoRelationTypeDto))
                 .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
@@ -102,7 +102,7 @@ public class AlgoRelationTypeControllerTest {
         when(algoRelationTypeService.save(any())).thenReturn(algoRelationType1);
 
         var url = fromMethodCall(uriBuilder, on(AlgoRelationTypeController.class)
-                .createAlgoRelationType(null)).toUriString();
+                .createAlgorithmRelationType(null)).toUriString();
         MvcResult result = mockMvc.perform(post(url)
                 .content(mapper.writeValueAsString(algoRelationType1Dto))
                 .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
@@ -120,7 +120,7 @@ public class AlgoRelationTypeControllerTest {
         algoRelationTypeDto.setId(UUID.randomUUID());
 
         var url = fromMethodCall(uriBuilder, on(AlgoRelationTypeController.class)
-                .updateAlgoRelationType(null)).toUriString();
+                .updateAlgorithmRelationType(null)).toUriString();
         mockMvc.perform(put(url)
                 .content(mapper.writeValueAsString(algoRelationTypeDto)).contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
@@ -131,7 +131,7 @@ public class AlgoRelationTypeControllerTest {
         when(algoRelationTypeService.update(any(), any())).thenReturn(algoRelationType1);
 
         var url = fromMethodCall(uriBuilder, on(AlgoRelationTypeController.class)
-                .updateAlgoRelationType(null)).toUriString();
+                .updateAlgorithmRelationType(null)).toUriString();
         MvcResult result = mockMvc
                 .perform(put(url)
                         .content(mapper.writeValueAsString(algoRelationType1Dto))
@@ -149,7 +149,7 @@ public class AlgoRelationTypeControllerTest {
         when(algoRelationTypeService.findAll(any())).thenReturn(Page.empty());
 
         var url = fromMethodCall(uriBuilder, on(AlgoRelationTypeController.class)
-                .getAlgoRelationTypes(ListParameters.getDefault())).toUriString();
+                .getAlgorithmRelationTypes(ListParameters.getDefault())).toUriString();
         MvcResult result = mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
@@ -171,7 +171,7 @@ public class AlgoRelationTypeControllerTest {
         when(algoRelationTypeService.findAll(any())).thenReturn(algoRelationPage);
 
         var url = fromMethodCall(uriBuilder, on(AlgoRelationTypeController.class)
-                .getAlgoRelationTypes(ListParameters.getDefault())).toUriString();
+                .getAlgorithmRelationTypes(ListParameters.getDefault())).toUriString();
 
         MvcResult result = mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
@@ -186,7 +186,7 @@ public class AlgoRelationTypeControllerTest {
         doThrow(new NoSuchElementException()).when(algoRelationTypeService).findById(any());
 
         var url = fromMethodCall(uriBuilder, on(AlgoRelationTypeController.class)
-                .getAlgoRelationTypeById(algoRelationType1.getId())).toUriString();
+                .getAlgorithmRelationType(algoRelationType1.getId())).toUriString();
         mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
@@ -196,7 +196,7 @@ public class AlgoRelationTypeControllerTest {
         when(algoRelationTypeService.findById(any())).thenReturn(algoRelationType1);
 
         var url = fromMethodCall(uriBuilder, on(AlgoRelationTypeController.class)
-                .getAlgoRelationTypeById(algoRelationType1.getId())).toUriString();
+                .getAlgorithmRelationType(algoRelationType1.getId())).toUriString();
 
         MvcResult result = mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
@@ -213,7 +213,7 @@ public class AlgoRelationTypeControllerTest {
         doThrow(NoSuchElementException.class).when(algoRelationTypeService).delete(any());
 
         var url = fromMethodCall(uriBuilder, on(AlgoRelationTypeController.class)
-                .deleteAlgoRelationType(algoRelationType1.getId())).toUriString();
+                .deleteAlgorithmRelationType(algoRelationType1.getId())).toUriString();
 
         mockMvc.perform(delete(url).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
@@ -224,7 +224,7 @@ public class AlgoRelationTypeControllerTest {
         doNothing().when(algoRelationTypeService).delete(any());
 
         var url = fromMethodCall(uriBuilder, on(AlgoRelationTypeController.class)
-                .deleteAlgoRelationType(algoRelationType1.getId())).toUriString();
+                .deleteAlgorithmRelationType(algoRelationType1.getId())).toUriString();
         mockMvc.perform(delete(url).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }

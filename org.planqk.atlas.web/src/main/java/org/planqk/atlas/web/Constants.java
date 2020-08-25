@@ -69,6 +69,7 @@ public class Constants {
     public static final String TAG_COMPUTE_RESOURCE_PROPERTY_TYPES = "compute-resource-property-types";
     public static final String TAG_COMPUTE_RESOURCE_PROPERTIES = "compute-resource-properties";
     public static final String TAG_APPLICATION_AREAS = "application-areas";
+    public static final String TAG_ALGORITHM_RELATIONS = "algorithm-relations";
     public static final String TAG_ALGORITHM_RELATION_TYPE = "algorithm-relation-type";
     public static final String TAG_PUBLICATION = "publication";
     public static final String TAG_ROOT = "root";
