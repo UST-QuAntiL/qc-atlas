@@ -32,8 +32,6 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 
-import org.springframework.lang.NonNull;
-
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -46,7 +44,7 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
-public class Algorithm extends AlgorOrImpl implements ModelWithPublications {
+public class Algorithm extends AlgorithmOrImplementation implements ModelWithPublications {
 
     private String name;
 

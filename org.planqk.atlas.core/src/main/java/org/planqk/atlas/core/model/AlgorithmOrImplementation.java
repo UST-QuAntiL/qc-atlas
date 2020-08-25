@@ -29,7 +29,7 @@ import lombok.NoArgsConstructor;
 @MappedSuperclass
 @NoArgsConstructor
 @Data
-public abstract class AlgorOrImpl extends KnowledgeArtifact {
+public abstract class AlgorithmOrImplementation extends KnowledgeArtifact {
 
     private String name;
 
