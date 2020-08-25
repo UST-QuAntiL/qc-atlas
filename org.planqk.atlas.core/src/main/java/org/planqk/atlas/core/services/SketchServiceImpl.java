@@ -1,11 +1,13 @@
 package org.planqk.atlas.core.services;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Image;
 import org.planqk.atlas.core.model.Sketch;
+import org.planqk.atlas.core.repository.AlgorithmRepository;
 import org.planqk.atlas.core.repository.ImageRepository;
 import org.planqk.atlas.core.repository.SketchRepository;
 import org.springframework.stereotype.Service;
@@ -22,6 +24,13 @@ public class SketchServiceImpl implements SketchService {
     private final AlgorithmService algorithmService;
 
     private ImageRepository imageRepository;
+
+    private AlgorithmRepository algorithmRepository;
+
+    @Override
+    public List<Sketch> findByAlgorithm(UUID algorithmId) {
+        return this.sketchRepository.findSketchesByAlgorithm_Id(algorithmId);
+    }
 
     @Override
     public Sketch addSketchToAlgorithm(UUID algorithmId, MultipartFile file, String description, String baseURL) {
@@ -62,4 +71,33 @@ public class SketchServiceImpl implements SketchService {
         }
         return null;
     }
+
+    @Override
+    public byte[] getImageByAlgorithmAndSketch(UUID algoId, UUID sketchId) {
+        final Image image = this.imageRepository.findImageBySketchId(sketchId);
+        return image.getImage();
+    }
+
+    @Override
+    public Sketch getSketchByAlgorithmAndSketch(UUID algoId, UUID sketchId) {
+        return this.getSketchByAlgoIdAndSketchId(algoId, sketchId);
+    }
+
+
+    private Sketch getSketchByAlgoIdAndSketchId(UUID algoId, UUID sketchId) {
+        final Optional<Algorithm> algorithmOptional = this.algorithmRepository.findById(algoId);
+        Algorithm persistedAlgorithm = null;
+        if (algorithmOptional.isPresent()) {
+            persistedAlgorithm = algorithmOptional.get();
+        }
+        Sketch sketch = new Sketch();
+
+        for (Sketch s : persistedAlgorithm.getSketches()) {
+            if (s.getId().compareTo(sketchId) == 0) {
+                sketch = s;
+            }
+        }
+        return sketch;
+    }
+
 }

@@ -19,6 +19,7 @@
 
 package org.planqk.atlas.web.controller;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
@@ -629,6 +630,15 @@ public class AlgorithmController {
         }
     }
 
+    @GetMapping("/{algoId}/" + Constants.SKETCHES)
+    public ResponseEntity<List<Sketch>> getSketches(@PathVariable UUID algoId) {
+        try {
+            return ResponseEntity.ok(sketchService.findByAlgorithm(algoId));
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+        }
+    }
+
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "404", description = "Algorithm or sketch with given id doesn't exist")}, description = "Delete a sketch of the algorithm.")
@@ -636,6 +646,29 @@ public class AlgorithmController {
     public ResponseEntity<Void> deleteSketch(@PathVariable UUID algoId, @PathVariable UUID sketchId) {
         sketchService.delete(sketchId);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/{algoId}/" + Constants.SKETCHES + "/{sketchId}")
+    public ResponseEntity<Sketch> getSketch(@PathVariable UUID algoId, @PathVariable UUID sketchId) {
+        try {
+            return ResponseEntity
+                    .ok(this.sketchService.getSketchByAlgorithmAndSketch(algoId, sketchId));
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+        }
+    }
+
+    @RequestMapping(value = "/{algoId}/" + Constants.SKETCHES + "/{sketchId}" + "/image", method = RequestMethod.GET,
+            produces = MediaType.IMAGE_JPEG_VALUE)
+    public ResponseEntity<byte[]> getSketchImage(@PathVariable UUID algoId, @PathVariable UUID sketchId) {
+        try {
+            return ResponseEntity
+                    .ok()
+                    .contentType(MediaType.IMAGE_JPEG)
+                    .body(this.sketchService.getImageByAlgorithmAndSketch(algoId, sketchId));
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+        }
     }
 
     private AlgorithmRelation handleRelationUpdate(AlgorithmRelationDto relationDto, UUID relationId) {
@@ -659,17 +692,5 @@ public class AlgorithmController {
         return patternRelationService.save(ModelMapperUtils.convert(relationDto, PatternRelation.class));
     }
 
-    @RequestMapping(value = "/{algoId}/" + Constants.SKETCHES + "/{sketchId}" + "/image", method = RequestMethod.GET,
-            produces = MediaType.IMAGE_JPEG_VALUE)
-    public ResponseEntity<byte[]> uploadSketch(@PathVariable UUID algoId, @PathVariable UUID sketchId) {
-        try {
-            return ResponseEntity
-                    .ok()
-                    .contentType(MediaType.IMAGE_JPEG)
-                    .body(this.algorithmService.getImageByAlgorithmAndSketch(algoId, sketchId));
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
-        }
-    }
 
 }

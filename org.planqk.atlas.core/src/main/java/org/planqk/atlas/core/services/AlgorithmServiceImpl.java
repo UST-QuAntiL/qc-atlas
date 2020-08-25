@@ -254,41 +254,6 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         return relations;
     }
 
-    @Override
-    public byte[] getImageByAlgorithmAndSketch(UUID algoId, UUID sketchId) {
-        // TODO optimize
-        List<Image> images = this.imageRepository.findAll();
-        Image image = null;
-        for(Image s: images) {
-            if(s.getSketch().getId().compareTo(sketchId) == 0) {
-                image = s;
-            }
-        }
-        return image.getImage();
-    }
-
-    @Override
-    public String getImageURLByAlgorithmAndSketch(UUID algoId, UUID sketchId) {
-        final Sketch sketch = this.getSketchByAlgoIdAndSketchId(algoId, sketchId);
-        return sketch.getImageURL();
-    }
-
-
-    private Sketch getSketchByAlgoIdAndSketchId(UUID algoId, UUID sketchId) {
-        final Optional<Algorithm> algorithmOptional = this.algorithmRepository.findById(algoId);
-        Algorithm persistedAlgorithm = null;
-        if (algorithmOptional.isPresent()) {
-            persistedAlgorithm = algorithmOptional.get();
-        }
-        Sketch sketch = new Sketch();
-
-        for (Sketch s : persistedAlgorithm.getSketches()) {
-            if (s.getId().compareTo(sketchId) == 0) {
-                sketch = s;
-            }
-        }
-        return sketch;
-    }
 
 
 }
