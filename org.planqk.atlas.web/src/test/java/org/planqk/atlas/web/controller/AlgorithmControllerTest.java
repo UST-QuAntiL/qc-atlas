@@ -41,6 +41,9 @@ import org.planqk.atlas.core.model.QuantumAlgorithm;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.core.services.ComputeResourcePropertyService;
 import org.planqk.atlas.core.services.ComputeResourcePropertyTypeService;
+import org.planqk.atlas.core.services.ImplementationService;
+import org.planqk.atlas.core.services.LinkingService;
+import org.planqk.atlas.core.services.TagService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.mixin.ComputeResourcePropertyMixin;
 import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
@@ -108,6 +111,12 @@ public class AlgorithmControllerTest {
     private ComputeResourcePropertyService computeResourcePropertyService;
     @MockBean
     private ComputeResourcePropertyTypeService computeResourcePropertyTypeService;
+    @MockBean
+    private ImplementationService implementationService;
+    @MockBean
+    private TagService tagService;
+    @MockBean
+    private LinkingService linkingService;
 
     @Autowired
     private MockMvc mockMvc;
@@ -304,6 +313,7 @@ public class AlgorithmControllerTest {
     @Test
     public void createAlgorithm_returnAlgorithm() throws Exception {
         initializeAlgorithms();
+        algorithm1Dto.setId(null);
         when(algorithmService.create(any())).thenReturn(algorithm1);
 
         var url = fromMethodCall(uriBuilder, on(AlgorithmController.class)
@@ -372,7 +382,7 @@ public class AlgorithmControllerTest {
         var url = fromMethodCall(uriBuilder, on(AlgorithmController.class)
                 .deleteAlgorithm(UUID.randomUUID())).toUriString();
         mockMvc.perform(delete(url))
-                .andExpect(status().isOk()).andReturn();
+                .andExpect(status().isNoContent()).andReturn();
     }
 
 //    @Test
@@ -581,11 +591,14 @@ public class AlgorithmControllerTest {
 
     @Test
     void testAddComputeResourceProperty_AlgoNotFound() throws Exception {
-        when(computeResourcePropertyService.addComputeResourcePropertyToComputeResource(any(), any()))
+        when(computeResourcePropertyService.addComputeResourcePropertyToAlgorithm(any(), any()))
                 .thenThrow(new NoSuchElementException());
+
+        mockComputeResourceTypeValidation(ComputeResourcePropertyDataType.FLOAT);
         var path = fromMethodCall(uriBuilder, on(AlgorithmController.class)
                 .createComputeResourcePropertyForAlgorithm(UUID.randomUUID(), null)).toUriString();
-        mockMvc.perform(post(path).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsBytes(getValidResourceInput())))
+        mockMvc.perform(post(path).contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsBytes(getValidResourceInput(false))))
                 .andExpect(status().isNotFound());
     }
 
@@ -596,7 +609,7 @@ public class AlgorithmControllerTest {
         algorithm.setName("alg1");
         algorithm.setComputationModel(ComputationModel.CLASSIC);
 
-        var resReq = getValidResourceInput();
+        var resReq = getValidResourceInput(false);
         var type = new ComputeResourcePropertyType();
         type.setDatatype(resReq.getType().getDatatype());
         type.setDescription(resReq.getType().getDescription());
@@ -608,12 +621,14 @@ public class AlgorithmControllerTest {
         resource.setValue(resReq.getValue());
         resource.setId(resReq.getId());
 
-        when(computeResourcePropertyService.addComputeResourcePropertyToComputeResource(any(), any())).thenReturn(resource);
+        mockComputeResourceTypeValidation(ComputeResourcePropertyDataType.FLOAT);
+
+        when(computeResourcePropertyService.addComputeResourcePropertyToAlgorithm(any(), any())).thenReturn(resource);
 
         var path = fromMethodCall(uriBuilder, on(AlgorithmController.class)
                 .createComputeResourcePropertyForAlgorithm(UUID.randomUUID(), null)).toUriString();
         mockMvc.perform(post(path).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsBytes(resReq)))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
     }
 
     @Test
@@ -624,8 +639,7 @@ public class AlgorithmControllerTest {
         algorithm.setName("alg1");
         algorithm.setComputationModel(ComputationModel.CLASSIC);
 
-        var resReq = getValidResourceInput();
-        // Should cause a fail, since the type s FLOAT
+        var resReq = getValidResourceInput(false);
         resReq.setValue("Hallo Welt");
 
         var type = new ComputeResourcePropertyType();
@@ -641,7 +655,8 @@ public class AlgorithmControllerTest {
 
         when(algorithmService.findById(any())).thenReturn(algorithm);
         when(computeResourcePropertyTypeService.findById(any())).thenReturn(type);
-        when(computeResourcePropertyService.addComputeResourcePropertyToAlgorithm(any(UUID.class), any(ComputeResourceProperty.class))).thenReturn(resource);
+        when(computeResourcePropertyService.addComputeResourcePropertyToAlgorithm(any(), any()))
+                .thenReturn(resource);
         var path = fromMethodCall(uriBuilder, on(AlgorithmController.class)
                 .createComputeResourcePropertyForAlgorithm(UUID.randomUUID(), null)).toUriString();
         mockMvc.perform(post(path).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsBytes(resReq)))
@@ -671,14 +686,16 @@ public class AlgorithmControllerTest {
         return resource;
     }
 
-    private ComputeResourcePropertyDto getValidResourceInput() {
+    private ComputeResourcePropertyDto getValidResourceInput(boolean addResourceId) {
         var type = new ComputeResourcePropertyTypeDto();
         type.setDatatype(ComputeResourcePropertyDataType.FLOAT);
         type.setName("test-type");
         type.setId(UUID.randomUUID());
         var resource = new ComputeResourcePropertyDto();
         resource.setType(type);
-        resource.setId(UUID.randomUUID());
+        if (addResourceId) {
+            resource.setId(UUID.randomUUID());
+        }
         resource.setValue("10.0");
         return resource;
     }
@@ -718,7 +735,7 @@ public class AlgorithmControllerTest {
         algorithmRelation2.setTargetAlgorithm(algorithm2);
         algorithmRelation2.setAlgorithmRelationType(relType1);
 
-        var resReq = getValidResourceInput();
+        var resReq = getValidResourceInput(false);
         var type = new ComputeResourcePropertyType();
         type.setDatatype(resReq.getType().getDatatype());
         type.setDescription(resReq.getType().getDescription());
@@ -730,11 +747,22 @@ public class AlgorithmControllerTest {
         resource.setValue(resReq.getValue());
         resource.setId(resReq.getId());
 
-        when(computeResourcePropertyService.addComputeResourcePropertyToComputeResource(any(), any())).thenReturn(resource);
+        mockComputeResourceTypeValidation(ComputeResourcePropertyDataType.FLOAT);
+
+        when(computeResourcePropertyService.addComputeResourcePropertyToAlgorithm(any(), any())).thenReturn(resource);
 
         var path = fromMethodCall(uriBuilder, on(AlgorithmController.class)
                 .createComputeResourcePropertyForAlgorithm(UUID.randomUUID(), null)).toUriString();
         mockMvc.perform(post(path).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsBytes(resReq)))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
+    }
+
+    private void mockComputeResourceTypeValidation(ComputeResourcePropertyDataType type) {
+        var propertyType = new ComputeResourcePropertyType();
+        propertyType.setDatatype(type);
+        propertyType.setName("test");
+        propertyType.setId(UUID.randomUUID());
+
+        when(computeResourcePropertyTypeService.findById(any())).thenReturn(propertyType);
     }
 }

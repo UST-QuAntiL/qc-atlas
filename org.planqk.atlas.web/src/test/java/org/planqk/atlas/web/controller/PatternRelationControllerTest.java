@@ -189,6 +189,8 @@ public class PatternRelationControllerTest {
     public void createRelation_returnRelation() throws Exception {
         // Ignore annontations when writing Java objects to Json to enable writing WRITE_ONLY field which are required as input
         mapper.configure(MapperFeature.USE_ANNOTATIONS, false);
+        var id = relation1Dto.getId();
+        relation1Dto.setId(null);
 
         when(patternRelationService.create(any())).thenReturn(relation1);
 
@@ -202,7 +204,7 @@ public class PatternRelationControllerTest {
                 new TypeReference<EntityModel<PatternRelationDto>>() {
                 });
 
-        assertEquals(response.getContent().getId(), relation1Dto.getId());
+        assertEquals(response.getContent().getId(), id);
     }
 
     @Test
@@ -279,7 +281,7 @@ public class PatternRelationControllerTest {
 
         when(patternRelationService.create(any())).thenReturn(relationUpdated);
 
-        MvcResult result = mockMvc.perform(put("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATIONS + "/{id}", relation1.getId())
+        MvcResult result = mockMvc.perform(put("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATIONS)
                 .content(mapper.writeValueAsString(relation1Dto)).contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
 
@@ -298,7 +300,7 @@ public class PatternRelationControllerTest {
     public void updateRelation_returnBadRequest() throws Exception {
         when(patternRelationService.update( relation1)).thenReturn(relationUpdated);
 
-        mockMvc.perform(put("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATIONS + "/{id}", type1.getId())
+        mockMvc.perform(put("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATIONS)
                 .content(mapper.writeValueAsString(missingReqParamRelation)).contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
     }
@@ -310,7 +312,7 @@ public class PatternRelationControllerTest {
 
         when(patternRelationService.create(any())).thenThrow(NoSuchElementException.class);
 
-        mockMvc.perform(put("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATIONS + "/{id}", UUID.randomUUID())
+        mockMvc.perform(put("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATIONS)
                 .content(mapper.writeValueAsString(relation1Dto)).contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
     }
@@ -320,7 +322,7 @@ public class PatternRelationControllerTest {
         doNothing().when(patternRelationService).delete(relation1.getId());
 
         mockMvc.perform(delete("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATIONS + "/{id}", relation1.getId())
-                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
+                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isNoContent());
     }
 
     @Test
