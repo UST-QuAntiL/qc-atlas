@@ -58,7 +58,7 @@ public class DiscussionCommentServiceTest extends AtlasDatabaseTestBase {
     private final Pageable pageable = PageRequest.of(page, size);
 
     @BeforeEach
-    public void initialize() throws Exception {
+    public void initialize() {
         var pub = PublicationServiceTest.getFullPublication("discussion");
         pub = publicationService.create(pub);
 
@@ -87,7 +87,27 @@ public class DiscussionCommentServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void updateDiscussionComment() {
+    void findAllDiscussionComments() {
+        topicService.create(this.topic);
+        commentService.create(this.comment);
+        commentService.create(this.comment2);
+
+        Page<DiscussionComment> discussionCommentPage = commentService.findAll(pageable);
+        assertThat(discussionCommentPage.getTotalElements()).isEqualTo(2);
+    }
+
+    @Test
+    void findDiscussionCommentById_ElementFound() {
+        // TODO
+    }
+
+    @Test
+    void findDiscussionCommentById_ElementNotFound() {
+        assertThrows(NoSuchElementException.class, () -> commentService.findById(UUID.randomUUID()));
+    }
+
+    @Test
+    void updateDiscussionComment_ElementFound() {
         topicService.create(this.topic);
         DiscussionComment comment = commentService.create(this.comment);
         comment.setText("New Text");
@@ -99,31 +119,13 @@ public class DiscussionCommentServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void updateDiscussionComment_notFound() {
-        assertThrows(NoSuchElementException.class, () -> {
-            commentService.update(comment);
-        });
+    void updateDiscussionComment_ElementNotFound() {
+        comment.setId(UUID.randomUUID());
+        assertThrows(NoSuchElementException.class, () -> commentService.update(comment));
     }
 
     @Test
-    void findDiscussionCommentById_notFound() {
-        assertThrows(NoSuchElementException.class, () -> {
-            commentService.findById(UUID.randomUUID());
-        });
-    }
-
-    @Test
-    void findAllDiscussionComments() {
-        topicService.create(this.topic);
-        commentService.create(this.comment);
-        commentService.create(this.comment2);
-
-        Page<DiscussionComment> discussionCommentPage = commentService.findAll(pageable);
-        assertThat(discussionCommentPage.getTotalElements()).isEqualTo(2);
-    }
-
-    @Test
-    void deleteDiscussionComment() {
+    void deleteDiscussionComment_ElementFound() {
         topicService.create(this.topic);
         DiscussionComment comment = commentService.create(this.comment);
         commentService.delete(comment.getId());
@@ -133,7 +135,12 @@ public class DiscussionCommentServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void existsDiscussionComment_exists(){
+    void deleteDiscussionComment_ElementNotFound() {
+        // TODO
+    }
+
+    @Test
+    void existsDiscussionComment_ElementFound(){
         topicService.create(this.topic);
         DiscussionComment comment = commentService.create(this.comment);
         boolean exists = commentService.existsDiscussionCommentById(comment.getId());
@@ -142,8 +149,7 @@ public class DiscussionCommentServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void existsDiscussionComment_notExists(){
-
+    void existsDiscussionComment_ElementNotFound(){
         boolean exists = commentService.existsDiscussionCommentById(UUID.randomUUID());
         assertThat(exists).isEqualTo(false);
     }

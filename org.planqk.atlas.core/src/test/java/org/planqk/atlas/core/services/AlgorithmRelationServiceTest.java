@@ -36,7 +36,7 @@ public class AlgorithmRelationServiceTest extends AtlasDatabaseTestBase {
     private AlgorithmService algorithmService;
 
     @Test
-    void createAlgorithmRelation() {
+    void createAlgorithmRelation_TypeFound() {
 
     }
 
@@ -44,7 +44,7 @@ public class AlgorithmRelationServiceTest extends AtlasDatabaseTestBase {
     void createAlgorithmRelation_TypeNotFound() {
 
     }
-    
+
     @Test
     void createAlgorithmRelation_AlgorithmNotFound() {
 
