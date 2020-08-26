@@ -82,7 +82,7 @@ public class ComputeResourcePropertyServiceImpl implements ComputeResourceProper
     @Override
     @Transactional
     public void delete(@NonNull UUID computeResourcePropertyId) {
-        if (computeResourcePropertyRepository.existsById(computeResourcePropertyId)) {
+        if (!computeResourcePropertyRepository.existsById(computeResourcePropertyId)) {
             throw new NoSuchElementException(
                     "Compute resource property with ID \"" + computeResourcePropertyId + "\" does not exist");
         }
