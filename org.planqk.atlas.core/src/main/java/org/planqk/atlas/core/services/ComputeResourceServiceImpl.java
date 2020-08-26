@@ -88,7 +88,7 @@ public class ComputeResourceServiceImpl implements ComputeResourceService {
         ServiceUtils.throwIfNotExists(computeResourceId, ComputeResource.class, computeResourceRepository);
         // TODO discuss if this is still wanted behavior
         if (cloudServiceRepository.countCloudServiceByComputeResource(computeResourceId) +
-                softwarePlatformRepository.countSoftwarePlatformByComputeResource(computeResourceId) < 1) {
+                softwarePlatformRepository.countSoftwarePlatformByComputeResource(computeResourceId) > 0) {
             throw new ConsistencyException(
                     "Cannot delete Compute Resource since it is used by existing Cloud services or Software platforms");
         }

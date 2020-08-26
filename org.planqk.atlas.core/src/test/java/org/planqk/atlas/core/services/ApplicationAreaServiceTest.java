@@ -43,8 +43,8 @@ public class ApplicationAreaServiceTest extends AtlasDatabaseTestBase {
     private ApplicationAreaRepository applicationAreaRepository;
 
     @Test
-    void createApplicationArea() {
-        var createdArea = createApplicationArea("my area");
+    void getFullApplicationArea() {
+        var createdArea = getFullApplicationArea("my area");
 
         var storedArea = applicationAreaRepository.findById(createdArea.getId()).get();
 
@@ -53,8 +53,8 @@ public class ApplicationAreaServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void findById_Found() {
-        var createdArea = createApplicationArea("my area");
+    void findApplicationAreaById_ElementFound() {
+        var createdArea = getFullApplicationArea("my area");
 
         var storedArea = applicationAreaService.findById(createdArea.getId());
 
@@ -63,18 +63,18 @@ public class ApplicationAreaServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void findById_NotFound() {
+    void findApplicationAreaById_ElementNotFound() {
         assertThrows(NoSuchElementException.class, () -> applicationAreaService.findById(UUID.randomUUID()));
     }
 
     @Test
-    void findById_IdNull() {
+    void findApplicationAreaById_IdNull() {
         assertThrows(NullPointerException.class, () -> applicationAreaService.findById(null));
     }
 
     @Test
-    void update_Found() {
-        var area = createApplicationArea("test");
+    void updateApplicationArea_ElementFound() {
+        var area = getFullApplicationArea("test");
 
         area.setName("My Test");
 
@@ -84,21 +84,21 @@ public class ApplicationAreaServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void update_IdNotFound() {
+    void updateApplicationArea_ElementNotFound() {
         ApplicationArea area = new ApplicationArea();
         area.setId(UUID.randomUUID());
         assertThrows(NoSuchElementException.class, () -> applicationAreaService.update(area));
     }
 
     @Test
-    void update_IdNull() {
+    void updateApplicationArea_IdNull() {
         ApplicationArea area = new ApplicationArea();
         assertThrows(NullPointerException.class, () -> applicationAreaService.update(area));
     }
 
     @Test
-    void delete() {
-        var area = createApplicationArea("TEST");
+    void deleteApplicationArea_ElementFound() {
+        var area = getFullApplicationArea("TEST");
 
         applicationAreaService.delete(area.getId());
 
@@ -106,20 +106,20 @@ public class ApplicationAreaServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void delete_notFound() {
+    void deleteApplicationArea_ElementNotFound() {
         assertThrows(NoSuchElementException.class, () -> applicationAreaService.delete(UUID.randomUUID()));
     }
 
     @Test
-    void delete_IdNull() {
+    void deleteApplicationArea_IdNull() {
         assertThrows(NullPointerException.class, () -> applicationAreaService.delete(null));
     }
 
     @Test
-    void findAll_MultipleElements() {
+    void findAllApplicationAreas_MultipleElements() {
         var areas = new HashSet<ApplicationArea>();
         for (int i = 0; i < 10; i++) {
-            areas.add(createApplicationArea("Area " + i));
+            areas.add(getFullApplicationArea("Area " + i));
         }
 
         var elements = applicationAreaService.findAll(Pageable.unpaged(), "");
@@ -128,9 +128,9 @@ public class ApplicationAreaServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void findAll_Search() {
+    void findAllApplicationArea_Search() {
         for (int i = 0; i < 10; i++) {
-            createApplicationArea("Area " + i);
+            getFullApplicationArea("Area " + i);
         }
 
         var elements = applicationAreaService.findAll(Pageable.unpaged(), "3");
@@ -138,7 +138,7 @@ public class ApplicationAreaServiceTest extends AtlasDatabaseTestBase {
         assertThat(elements.getContent().get(0).getName()).isEqualTo("Area 3");
     }
 
-    ApplicationArea createApplicationArea(String name) {
+    private ApplicationArea getFullApplicationArea(String name) {
         var applicationArea = new ApplicationArea();
         applicationArea.setName(name);
         return applicationAreaService.create(applicationArea);
