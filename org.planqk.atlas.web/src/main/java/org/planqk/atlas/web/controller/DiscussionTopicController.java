@@ -22,8 +22,6 @@ package org.planqk.atlas.web.controller;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
-import javax.validation.Valid;
-
 import org.planqk.atlas.core.model.DiscussionComment;
 import org.planqk.atlas.core.model.DiscussionTopic;
 import org.planqk.atlas.core.services.DiscussionCommentService;
@@ -34,6 +32,7 @@ import org.planqk.atlas.web.dtos.DiscussionTopicDto;
 import org.planqk.atlas.web.linkassembler.DiscussionTopicAssembler;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.RestUtils;
+import org.planqk.atlas.web.utils.ValidationGroups;
 
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
@@ -47,6 +46,7 @@ import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -114,7 +114,7 @@ public class DiscussionTopicController {
     }, description = "")
     @PostMapping()
     public HttpEntity<EntityModel<DiscussionTopicDto>> createDiscussionTopic(
-            @Valid @RequestBody DiscussionTopicDto discussionTopicDto) {
+            @Validated(ValidationGroups.Create.class) @RequestBody DiscussionTopicDto discussionTopicDto) {
         var discussionTopic = discussionTopicService.create(ModelMapperUtils.convert(discussionTopicDto, DiscussionTopic.class));
         return new ResponseEntity<>(discussionTopicAssembler.toModel(discussionTopic), HttpStatus.CREATED);
     }
@@ -173,7 +173,7 @@ public class DiscussionTopicController {
     public HttpEntity<EntityModel<DiscussionCommentDto>> updateDiscussionComment(
             @PathVariable UUID topicId,
             @PathVariable UUID commentId,
-            @Valid @RequestBody DiscussionCommentDto discussionCommentDto) {
+            @Validated(ValidationGroups.Update.class) @RequestBody DiscussionCommentDto discussionCommentDto) {
         DiscussionComment discussionComment = discussionCommentService.findById(commentId);
         if (!(discussionComment.getDiscussionTopic().getId().equals(topicId))) {
             log.debug("Not the matching topic id: {}", topicId);
@@ -191,7 +191,7 @@ public class DiscussionTopicController {
     @PostMapping("/{topicId}/" + Constants.DISCUSSION_COMMENTS)
     public HttpEntity<EntityModel<DiscussionCommentDto>> createDiscussionComment(
             @PathVariable UUID topicId,
-            @Valid @RequestBody DiscussionCommentDto discussionCommentDto) {
+            @Validated(ValidationGroups.Create.class) @RequestBody DiscussionCommentDto discussionCommentDto) {
         DiscussionTopic discussionTopic = discussionTopicService.findById(topicId);
         discussionCommentDto.setDiscussionTopic(ModelMapperUtils.convert(discussionTopic, DiscussionTopicDto.class));
         return discussionCommentController.createDiscussionComment(discussionCommentDto);
@@ -205,7 +205,7 @@ public class DiscussionTopicController {
     @PutMapping("/{topicId}")
     public HttpEntity<EntityModel<DiscussionTopicDto>> updateDiscussionTopic(
             @PathVariable UUID topicId,
-            @Valid @RequestBody DiscussionTopicDto discussionTopicDto) {
+            @Validated(ValidationGroups.Update.class) @RequestBody DiscussionTopicDto discussionTopicDto) {
         discussionTopicDto.setId(topicId);
         DiscussionTopic discussionTopic = discussionTopicService.update(ModelMapperUtils.convert(discussionTopicDto, DiscussionTopic.class));
         return ResponseEntity.ok(discussionTopicAssembler.toModel(discussionTopic));

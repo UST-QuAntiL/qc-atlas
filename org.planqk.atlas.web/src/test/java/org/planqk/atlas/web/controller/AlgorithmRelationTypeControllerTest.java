@@ -119,6 +119,8 @@ public class AlgorithmRelationTypeControllerTest {
     @Test
     public void createAlgoRelationType_returnCreate() throws Exception {
         when(algorithmRelationTypeService.create(any())).thenReturn(algorithmRelationType1);
+        var id = algoRelationType1Dto.getId();
+        algoRelationType1Dto.setId(null);
 
         var url = fromMethodCall(uriBuilder, on(AlgorithmRelationTypeController.class)
                 .createAlgorithmRelationType(null)).toUriString();
@@ -130,7 +132,7 @@ public class AlgorithmRelationTypeControllerTest {
         EntityModel<AlgorithmRelationDto> type = mapper.readValue(result.getResponse().getContentAsString(),
                 new TypeReference<>() {
                 });
-        assertEquals(type.getContent().getId(), algoRelationType1Dto.getId());
+        assertEquals(type.getContent().getId(), id);
     }
 
     @Test
@@ -245,6 +247,6 @@ public class AlgorithmRelationTypeControllerTest {
         var url = fromMethodCall(uriBuilder, on(AlgorithmRelationTypeController.class)
                 .deleteAlgorithmRelationType(algorithmRelationType1.getId())).toUriString();
         mockMvc.perform(delete(url).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
     }
 }

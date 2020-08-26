@@ -120,6 +120,7 @@ public class DiscussionCommentControllerTest {
     public void createDiscussionComment_returnDiscussionComment() throws Exception {
         when(discussionCommentService.create(any())).thenReturn(discussionComment);
         when(discussionTopicService.findById(discussionTopic.getId())).thenReturn(discussionTopic);
+        discussionCommentDto.setId(null);
 
         MvcResult result = mockMvc
                 .perform(post("/" + Constants.API_VERSION + "/" + Constants.DISCUSSION_TOPICS + "/" + discussionTopic.getId() + "/" + Constants.DISCUSSION_COMMENTS).content(mapper.writeValueAsString(discussionCommentDto))
@@ -131,7 +132,6 @@ public class DiscussionCommentControllerTest {
                 });
 
         assertEquals(response.getContent().getText(), discussionCommentDto.getText());
-        assertEquals(response.getContent().getId(), discussionCommentDto.getId());
     }
 
     @Test

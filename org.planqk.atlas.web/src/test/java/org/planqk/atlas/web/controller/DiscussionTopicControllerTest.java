@@ -112,9 +112,11 @@ public class DiscussionTopicControllerTest {
     @Test
     public void createDiscussionTopic_returnDiscussionTopic() throws Exception {
         when(discussionTopicService.create(any())).thenReturn(discussionTopic);
+        discussionTopicDto.setId(null);
 
         MvcResult result = mockMvc
-                .perform(post("/" + Constants.API_VERSION + "/" + Constants.DISCUSSION_TOPICS + "/").content(mapper.writeValueAsString(discussionTopicDto))
+                .perform(post("/" + Constants.API_VERSION + "/" + Constants.DISCUSSION_TOPICS + "/")
+                        .content(mapper.writeValueAsString(discussionTopicDto))
                         .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated()).andReturn();
 
@@ -124,7 +126,6 @@ public class DiscussionTopicControllerTest {
 
         assertEquals(response.getContent().getDate(), discussionTopicDto.getDate());
         assertEquals(response.getContent().getTitle(), discussionTopicDto.getTitle());
-        assertEquals(response.getContent().getId(), discussionTopicDto.getId());
         assertEquals(response.getContent().getStatus(), discussionTopicDto.getStatus());
     }
 
