@@ -19,6 +19,7 @@
 
 package org.planqk.atlas.core.services;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -27,10 +28,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.net.URI;
 import java.util.NoSuchElementException;
-import java.util.Objects;
 import java.util.UUID;
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -41,12 +42,10 @@ import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.model.PatternRelationType;
 import org.planqk.atlas.core.model.exceptions.ConsistencyException;
 import org.planqk.atlas.core.repository.AlgorithmRepository;
-import org.planqk.atlas.core.repository.PatternRelationRepository;
 import org.planqk.atlas.core.repository.PatternRelationTypeRepository;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -55,13 +54,13 @@ import org.springframework.data.domain.Pageable;
 public class PatternRelationTypeServiceTest extends AtlasDatabaseTestBase {
 
     @Autowired
-    private PatternRelationTypeService service;
+    private PatternRelationTypeService patternRelationTypeService;
     @Autowired
-    private PatternRelationTypeRepository repo;
+    private PatternRelationTypeRepository patternRelationTypeRepository;
     @Autowired
-    private PatternRelationRepository relationRepo;
+    private PatternRelationService patternRelationService;
     @Autowired
-    private AlgorithmRepository algoRepo;
+    private AlgorithmRepository algorithmRepository;
 
     private PatternRelationType type1;
     private PatternRelationType type2;
@@ -97,97 +96,90 @@ public class PatternRelationTypeServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void createType() {
-        PatternRelationType storedType1 = service.create(type1);
+    void createPatternRelationType() {
+        PatternRelationType storedType1 = patternRelationTypeService.create(type1);
 
-        assertFalse(Objects.isNull(storedType1.getId()));
-        assertEquals(storedType1.getName(), type1.getName());
-        assertTrue(repo.findById(storedType1.getId()).isPresent());
+        assertThat(storedType1.getId()).isNotNull();
+        assertThat(storedType1.getName()).isEqualTo(type1.getName());
+        Assertions.assertDoesNotThrow(() -> patternRelationTypeService.findById(storedType1.getId()));
     }
 
     @Test
-    void createType_updateType() {
-        PatternRelationType storedType1 = service.create(type1);
+    void findAll_empty() {
+        Page<PatternRelationType> typesPaged = patternRelationTypeService.findAll(pageable);
+
+        assertThat(typesPaged.getContent()).isEmpty();
+    }
+
+    @Test
+    void findAll_returnTwo() {
+        patternRelationTypeService.create(type1);
+        patternRelationTypeService.create(type2);
+        Page<PatternRelationType> typesPaged = patternRelationTypeService.findAll(pageable);
+
+        assertThat(typesPaged.getContent().size()).isEqualTo(2);
+    }
+
+    @Test
+    void getPatternRelationTypeById_ElementFound() {
+        PatternRelationType storedType1 = patternRelationTypeService.create(type1);
+
+        storedType1 = patternRelationTypeService.findById(storedType1.getId());
+
+        assertThat(storedType1.getId()).isNotNull();
+        assertThat(storedType1.getName()).isEqualTo(type1.getName());
+    }
+
+    @Test
+    void getPatternRelationTypeById_ElementNotFound() {
+        assertThrows(NoSuchElementException.class, () -> patternRelationTypeService.findById(UUID.randomUUID()));
+    }
+
+    @Test
+    void updatePatternRelationType_ElementFound() {
+        PatternRelationType storedType1 = patternRelationTypeService.create(type1);
         storedType1.setName(type1Updated.getName());
-        PatternRelationType updatedType1 = service.update(storedType1);
+        PatternRelationType updatedType1 = patternRelationTypeService.update(storedType1);
         assertEquals(updatedType1.getId(), storedType1.getId());
         assertEquals(updatedType1.getName(), type1Updated.getName());
-        assertTrue(repo.findById(updatedType1.getId()).isPresent());
+        assertTrue(patternRelationTypeRepository.findById(updatedType1.getId()).isPresent());
     }
 
     @Test
-    void updateType_notFound() {
-        type1Updated.setId(UUID.randomUUID());
-        assertThrows(NoSuchElementException.class, () ->
-            service.update(type1Updated));
+    void updatePatternRelationType_ElementNotFound() {
+        type1.setId(UUID.randomUUID());
+        assertThrows(NoSuchElementException.class, () -> patternRelationTypeService.update(type1));
     }
 
     @Test
-    void getType_returnType() {
-        PatternRelationType storedType1 = service.create(type1);
-
-        assertFalse(Objects.isNull(service.findById(storedType1.getId())));
-        assertEquals(service.findById(storedType1.getId()).getName(), type1.getName());
-    }
-
-    @Test
-    void getType_notFound() {
-        assertThrows(NoSuchElementException.class, () -> {
-            service.findById(UUID.randomUUID());
-        });
-    }
-
-    @Test
-    void getTypes_empty() {
-        Page<PatternRelationType> typesPaged = service.findAll(pageable);
-
-        assertTrue(typesPaged.getContent().isEmpty());
-    }
-
-    @Test
-    void getTypes_returnTwo() {
-        service.create(type1);
-        service.create(type2);
-        Page<PatternRelationType> typesPaged = service.findAll(pageable);
-
-        assertTrue(typesPaged.getContent().size() == 2);
-    }
-
-    @Test
-    void delete_success() {
-        PatternRelationType createType = service.create(type1);
-
-        assertFalse(Objects.isNull(createType.getId()));
-        assertTrue(repo.findById(createType.getId()).isPresent());
-
-        service.delete(createType.getId());
-        assertTrue(repo.findById(createType.getId()).isEmpty());
-    }
-
-    @Test
-    void delete_consistencyError() {
-        Algorithm storedAlgorithm = algoRepo.save(algorithm);
+    void deletePatternRelationType_UsedInRelation() {
+        Algorithm storedAlgorithm = algorithmRepository.save(algorithm);
         relation.setAlgorithm(storedAlgorithm);
 
-        assertTrue(algoRepo.findById(storedAlgorithm.getId()).isPresent());
+        PatternRelationType storedType1 = patternRelationTypeRepository.save(type1);
 
-        PatternRelationType storedType = repo.save(type1);
+        Assertions.assertDoesNotThrow(() -> patternRelationTypeService.findById(storedType1.getId()));
 
-        assertTrue(repo.findById(storedType.getId()).isPresent());
+        PatternRelation storedRelation = patternRelationService.create(relation);
 
-        PatternRelation storedRelation = relationRepo.save(relation);
-
-        assertTrue(relationRepo.findById(storedRelation.getId()).isPresent());
-
-        assertThrows(ConsistencyException.class, () -> {
-            service.delete(storedType.getId());
-        });
+        assertThrows(ConsistencyException.class, () ->
+            patternRelationTypeService.delete(storedType1.getId()));
     }
 
     @Test
-    void delete_noContent() {
-        assertThrows(EmptyResultDataAccessException.class, () -> {
-            service.delete(UUID.randomUUID());
-        });
+    void deletePatternRelationType_UnusedElementFound() {
+        PatternRelationType storedType1 = patternRelationTypeService.create(type1);
+
+        Assertions.assertDoesNotThrow(() -> patternRelationTypeService.findById(storedType1.getId()));
+
+        patternRelationTypeService.delete(storedType1.getId());
+
+        assertThrows(NoSuchElementException.class, () -> patternRelationTypeService.findById(storedType1.getId()));
+    }
+
+    @Test
+    void deletePatternRelationType_ElementNotFound() {
+        assertThrows(NoSuchElementException.class, () ->
+            patternRelationTypeService.delete(UUID.randomUUID()));
     }
 }

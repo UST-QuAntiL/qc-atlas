@@ -58,6 +58,11 @@ public class PatternRelationServiceImpl implements PatternRelationService {
                 .orElseThrow(() -> new NoSuchElementException(
                         "No Algorithm with given ID \"" + patternRelation.getAlgorithm().getId() + "\" was found")));
 
+        if (patternRelation.getPatternRelationType() == null
+                || patternRelation.getPatternRelationType().getId() == null) {
+            throw new NoSuchElementException("The given pattern relation type is invalid");
+        }
+
         patternRelation.setPatternRelationType(
                 patternRelationTypeService.findById(patternRelation.getPatternRelationType().getId()));
 
@@ -66,7 +71,8 @@ public class PatternRelationServiceImpl implements PatternRelationService {
 
     @Override
     public PatternRelation findById(UUID patternRelationId) {
-        return patternRelationRepository.findById(patternRelationId).orElseThrow(() -> new NoSuchElementException(NO_RELATION_ERROR));
+        return patternRelationRepository.findById(patternRelationId)
+                .orElseThrow(() -> new NoSuchElementException(NO_RELATION_ERROR));
     }
 
     @Override

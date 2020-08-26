@@ -57,7 +57,7 @@ public class DiscussionTopicServiceTest extends AtlasDatabaseTestBase {
     private final Pageable pageable = PageRequest.of(page, size);
 
     @BeforeEach
-    public void initialize() throws Exception {
+    public void initialize() {
         topic = new DiscussionTopic();
         topic.setDate(OffsetDateTime.now());
         topic.setTitle("Title");
@@ -88,7 +88,28 @@ public class DiscussionTopicServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void updateDiscussionTopic() {
+    void findAllDiscussionTopics() {
+        topicService.create(this.topic);
+        topicService.create(this.topic2);
+
+        Page<DiscussionTopic> discussionTopicPage = topicService.findAll(pageable);
+        assertThat(discussionTopicPage.getTotalElements()).isEqualTo(2);
+    }
+
+    @Test
+    void findDiscussionTopicById_ElementFound() {
+        // TODO
+    }
+
+    @Test
+    void findDiscussionTopicById_ElementNotFound() {
+        assertThrows(NoSuchElementException.class, () -> {
+            topicService.findById(UUID.randomUUID());
+        });
+    }
+
+    @Test
+    void updateDiscussionTopic_ElementFound() {
         DiscussionTopic topic = topicService.create(this.topic);
         topic.setTitle("New Title");
         DiscussionTopic update = topicService.update(topic);
@@ -99,30 +120,15 @@ public class DiscussionTopicServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void updateDiscussionTopic_notFound() {
+    void updateDiscussionTopic_ElementNotFound() {
+        topic.setId(UUID.randomUUID());
         assertThrows(NoSuchElementException.class, () -> {
             topicService.update(this.topic);
         });
     }
 
     @Test
-    void findDiscussionTopicById_notFound() {
-        assertThrows(NoSuchElementException.class, () -> {
-            topicService.findById(UUID.randomUUID());
-        });
-    }
-
-    @Test
-    void findAllDiscussionTopic() {
-        topicService.create(this.topic);
-        topicService.create(this.topic2);
-
-        Page<DiscussionTopic> discussionTopicPage = topicService.findAll(pageable);
-        assertThat(discussionTopicPage.getTotalElements()).isEqualTo(2);
-    }
-
-    @Test
-    void deleteDiscussionTopic() {
+    void deleteDiscussionTopic_ElementFound() {
         DiscussionTopic topic = topicService.create(this.topic);
         topicService.delete(topic.getId());
         assertThrows(NoSuchElementException.class, () -> {
@@ -131,7 +137,12 @@ public class DiscussionTopicServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void existsDiscussionTopic_exists() {
+    void deleteDiscussionTopic_ElementNotFound() {
+        // TODO
+    }
+
+    @Test
+    void existsDiscussionTopic_ElementFound() {
         DiscussionTopic topic = topicService.create(this.topic);
         boolean exists = topicService.existsDiscussionTopicById(topic.getId());
 
@@ -139,7 +150,7 @@ public class DiscussionTopicServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void existsDiscussionTopic_notExists() {
+    void existsDiscussionTopic_ElementNotFound() {
 
         boolean exists = topicService.existsDiscussionTopicById(UUID.randomUUID());
         assertThat(exists).isEqualTo(false);

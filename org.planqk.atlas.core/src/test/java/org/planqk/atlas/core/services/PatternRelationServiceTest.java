@@ -20,8 +20,8 @@
 package org.planqk.atlas.core.services;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.NoSuchElementException;
-import java.util.Objects;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
@@ -32,6 +32,7 @@ import org.planqk.atlas.core.model.PatternRelationType;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,16 +41,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 public class PatternRelationServiceTest extends AtlasDatabaseTestBase {
 
     @Autowired
-    private PatternRelationService service;
+    private PatternRelationService patternRelationService;
     @Autowired
     private AlgorithmService algorithmService;
     @Autowired
@@ -79,148 +78,176 @@ public class PatternRelationServiceTest extends AtlasDatabaseTestBase {
         type.setName("PatternRelationType");
 
         // Init Relation
-        relation1 = new PatternRelation();
-        relation1.setPattern(URI.create("http://www.relation1.de"));
-        relation1.setDescription("Description1");
+        relation1 = getFullPatternRelation("description1");
 
         // Init Relation2
-        relation2 = new PatternRelation();
-        relation2.setPattern(URI.create("http://www.relation2.de"));
-        relation2.setDescription("Description2");
-
-        // Init stored objects
-        savedAlgorithm = algorithmService.create(algorithm);
-        savedType = patternRelationTypeService.create(type);
+        relation2 = getFullPatternRelation("description2");
     }
 
     @Test
-    void createRelation_returnRelation() {
-        // Fill and save relation with existing Type and Algorithm
+    void createPatternRelation() {
+        savedAlgorithm = algorithmService.create(algorithm);
         relation1.setAlgorithm(savedAlgorithm);
+
+        savedType = patternRelationTypeService.create(type);
         relation1.setPatternRelationType(savedType);
 
-        PatternRelation savedRelation = service.create(relation1);
-        assertFalse(Objects.isNull(service.findById(savedRelation.getId())));
+        PatternRelation savedRelation = patternRelationService.create(relation1);
+
+        assertThat(savedRelation.getId()).isNotNull();
+        assertThat(savedRelation.getPattern()).isEqualTo(relation1.getPattern());
+        assertThat(savedRelation.getDescription()).isEqualTo(relation1.getDescription());
+
+        Assertions.assertDoesNotThrow(() -> patternRelationService.findById(savedRelation.getId()));
     }
 
     @Test
-    void createRelationAndTypeOnFly_returnRelation() {
-        // Fill and save relation with existing algorithm but new type
+    void createPatternRelation_TypeNotFound() {
+        savedAlgorithm = algorithmService.create(algorithm);
         relation1.setAlgorithm(savedAlgorithm);
+
+        type.setId(UUID.randomUUID());
         relation1.setPatternRelationType(type);
 
-        PatternRelation savedRelation = service.create(relation1);
-        assertFalse(Objects.isNull(service.findById(savedRelation.getId())));
-        // PatternRelationType should have been created on the fly
-        assertFalse(
-                Objects.isNull(patternRelationTypeService.findById(savedRelation.getPatternRelationType().getId())));
+        assertThrows(NoSuchElementException.class, () -> patternRelationService.create(relation1));
     }
 
     @Test
-    void createRelation_invalidRelationAlgoIdNull() {
-        // Fill non saved algorithm (without id)
-        algorithm.setId(null);
-        relation1.setAlgorithm(algorithm);
+    void createPatternRelation_TypeInvalid() {
+        savedAlgorithm = algorithmService.create(algorithm);
+        relation1.setAlgorithm(savedAlgorithm);
+
         relation1.setPatternRelationType(type);
 
-        assertThrows(NoSuchElementException.class, () -> {
-            service.create(relation1);
-        });
+        assertThrows(NoSuchElementException.class, () -> patternRelationService.create(relation1));
     }
 
     @Test
-    void createRelation_invalidRelationAlgoDoesNotExist() {
-        // Fill algorithm with random ID
+    void createPatternRelation_AlgorithmNotFound() {
         algorithm.setId(UUID.randomUUID());
         relation1.setAlgorithm(algorithm);
-        relation1.setPatternRelationType(type);
 
-        assertThrows(NoSuchElementException.class, () -> {
-            service.create(relation1);
-        });
-    }
-
-    @Test
-    void updateRelation_notFound() {
-        // Fill algorithm with random ID
-        relation1.setId(UUID.randomUUID());
-        relation1.setAlgorithm(savedAlgorithm);
+        savedType = patternRelationTypeService.create(type);
         relation1.setPatternRelationType(savedType);
 
-        assertThrows(NoSuchElementException.class, () -> {
-            service.update(relation1);
-        });
+        assertThrows(NoSuchElementException.class, () -> patternRelationService.create(relation1));
     }
 
     @Test
-    void updateRelation_returnRelation() {
-        // Fill and save relation with existing algorithm but new type
-        relation1.setAlgorithm(savedAlgorithm);
-        relation1.setPatternRelationType(type);
+    void createPatternRelation_AlgorithmInvalid() {
+        relation1.setAlgorithm(algorithm);
 
-        // Update relation
-        PatternRelation savedRelation = service.create(relation1);
-        savedRelation.setDescription("UpdatedDescription");
-        savedRelation.setPattern(URI.create("https://www.updated.com"));
+        savedType = patternRelationTypeService.create(type);
+        relation1.setPatternRelationType(savedType);
 
-        PatternRelation updatedRelation = service.update(savedRelation);
-
-        assertEquals(updatedRelation.getDescription(), savedRelation.getDescription());
-        assertEquals(updatedRelation.getPattern(), savedRelation.getPattern());
+        assertThrows(NoSuchElementException.class, () -> patternRelationService.create(relation1));
     }
 
     @Test
     void findAll_empty() {
-        Page<PatternRelation> relations = service.findAll(pageable);
-        assertTrue(relations.getContent().isEmpty());
+        Page<PatternRelation> relations = patternRelationService.findAll(pageable);
+        assertThat(relations.getContent()).isEmpty();
     }
 
     @Test
     void findAll_returnTwo() {
+        savedAlgorithm = algorithmService.create(algorithm);
         relation1.setAlgorithm(savedAlgorithm);
-        relation1.setPatternRelationType(savedType);
         relation2.setAlgorithm(savedAlgorithm);
+
+        savedType = patternRelationTypeService.create(type);
+        relation1.setPatternRelationType(savedType);
         relation2.setPatternRelationType(savedType);
 
-        service.create(relation1);
-        service.create(relation2);
-        Page<PatternRelation> relations = service.findAll(pageable);
-        assertEquals(relations.getContent().size(), 2);
+        patternRelationService.create(relation1);
+        patternRelationService.create(relation2);
+
+        Page<PatternRelation> relations = patternRelationService.findAll(pageable);
+        assertThat(relations.getContent().size()).isEqualTo(2);
     }
 
     @Test
-    void findOne_returnOne() {
+    void findPatternRelationById_ElementFound() {
+        savedAlgorithm = algorithmService.create(algorithm);
         relation1.setAlgorithm(savedAlgorithm);
+
+        savedType = patternRelationTypeService.create(type);
         relation1.setPatternRelationType(savedType);
 
-        PatternRelation savedRelation = service.create(relation1);
+        PatternRelation savedRelation = patternRelationService.create(relation1);
 
-        assertEquals(service.findById(savedRelation.getId()).getId(), savedRelation.getId());
+        savedRelation = patternRelationService.findById(savedRelation.getId());
+
+        assertThat(savedRelation.getId()).isNotNull();
+        assertThat(savedRelation.getPattern()).isEqualTo(relation1.getPattern());
+        assertThat(savedRelation.getDescription()).isEqualTo(relation1.getDescription());
     }
 
     @Test
-    void findOne_notFound() {
-        assertThrows(NoSuchElementException.class, () -> {
-            service.findById(UUID.randomUUID());
-        });
+    void findPatternRelationById_ElementNotFound() {
+        assertThrows(NoSuchElementException.class, () ->
+                patternRelationService.findById(UUID.randomUUID()));
     }
 
     @Test
-    void delete_noContent() {
-        assertThrows(EmptyResultDataAccessException.class, () -> {
-            service.delete(UUID.randomUUID());
-        });
+    void updatePatternRelation_ElementNotFound() {
+        relation1.setId(UUID.randomUUID());
+
+        assertThrows(NoSuchElementException.class, () ->
+            patternRelationService.update(relation1));
     }
 
     @Test
-    void delete_success() {
+    void updatePatternRelation_ElementFound() {
+        savedAlgorithm = algorithmService.create(algorithm);
         relation1.setAlgorithm(savedAlgorithm);
+
+        savedType = patternRelationTypeService.create(type);
         relation1.setPatternRelationType(savedType);
 
-        PatternRelation savedRelation = service.create(relation1);
-        assertEquals(1, algorithmService.findById(savedAlgorithm.getId()).getRelatedPatterns().size());
+        PatternRelation savedRelation = patternRelationService.create(relation1);
 
-        service.delete(savedRelation.getId());
-        assertEquals(0, algorithmService.findById(savedAlgorithm.getId()).getRelatedPatterns().size());
+        savedRelation.setDescription("updatedDescription");
+        savedRelation.setPattern(URI.create("https://www.updated.com"));
+
+        PatternRelation updatedRelation = patternRelationService.update(savedRelation);
+
+        assertThat(updatedRelation.getDescription()).isEqualTo(savedRelation.getDescription());
+        assertThat(updatedRelation.getPattern()).isEqualTo(savedRelation.getPattern());
+    }
+
+    @Test
+    void deletePatternRelation_ElementNotFound() {
+        assertThrows(EmptyResultDataAccessException.class, () ->
+            patternRelationService.delete(UUID.randomUUID()));
+    }
+
+    @Test
+    void deletePatternRelation_ElementFound() {
+        savedAlgorithm = algorithmService.create(algorithm);
+        relation1.setAlgorithm(savedAlgorithm);
+
+        savedType = patternRelationTypeService.create(type);
+        relation1.setPatternRelationType(savedType);
+
+        PatternRelation savedRelation = patternRelationService.create(relation1);
+
+        Assertions.assertDoesNotThrow(() -> patternRelationService.findById(savedRelation.getId()));
+
+        patternRelationService.delete(savedRelation.getId());
+
+        assertThrows(NoSuchElementException.class, () -> patternRelationService.findById(savedRelation.getId()));
+    }
+
+    private PatternRelation getFullPatternRelation(String description) {
+        var patternRelation = new PatternRelation();
+
+        try {
+            patternRelation.setPattern(new URI("http://www.example.de"));
+        } catch (URISyntaxException ignored) {
+        }
+        patternRelation.setDescription(description);
+
+        return patternRelation;
     }
 }

@@ -76,6 +76,10 @@ public class PatternRelationTypeServiceImpl implements PatternRelationTypeServic
     @Override
     @Transactional
     public void delete(UUID patternRelationTypeId) {
+        if (!patternRelationTypeRepository.existsById(patternRelationTypeId)) {
+            throw new NoSuchElementException("Pattern relation type with ID \"" + patternRelationTypeId + "\" does not exist");
+        }
+
         if (patternRelationRepository.countByPatternRelationTypeId(patternRelationTypeId) > 0)
             throw new ConsistencyException("Can not delete an used Pattern relation type!");
 
