@@ -35,15 +35,15 @@ public interface DiscussionTopicService {
 
     Page<DiscussionTopic> findAll(Pageable pageable);
 
-    Page<DiscussionTopic> findByKnowledgeArtifact(KnowledgeArtifact artifact, Pageable pageable);
+    Page<DiscussionTopic> findByKnowledgeArtifact(KnowledgeArtifact knowledgeArtifact, Pageable pageable);
 
-    DiscussionTopic findById(UUID id);
-
-    @Transactional
-    void delete(UUID id);
+    DiscussionTopic findById(UUID topicId);
 
     @Transactional
     DiscussionTopic update(DiscussionTopic topic);
 
-    boolean existsDiscussionTopicById(UUID id);
+    @Transactional
+    void delete(UUID topicId);
+
+    boolean existsDiscussionTopicById(UUID topicId);
 }

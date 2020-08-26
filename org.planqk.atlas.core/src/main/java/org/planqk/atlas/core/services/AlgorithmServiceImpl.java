@@ -40,6 +40,7 @@ import org.planqk.atlas.core.repository.PublicationRepository;
 import org.planqk.atlas.core.repository.SketchRepository;
 
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -75,7 +76,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     }
 
     @Override
-    public Page<Algorithm> findAll(Pageable pageable, String search) {
+    public Page<Algorithm> findAll(@NonNull Pageable pageable, String search) {
         if (!Objects.isNull(search) && !search.isEmpty()) {
             return algorithmRepository.findAll(search, pageable);
         }
@@ -83,13 +84,13 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     }
 
     @Override
-    public Algorithm findById(UUID algorithmId) {
+    public Algorithm findById(@NonNull UUID algorithmId) {
         return algorithmRepository.findById(algorithmId).orElseThrow(NoSuchElementException::new);
     }
 
     @Override
     @Transactional
-    public Algorithm update(Algorithm algorithm) {
+    public Algorithm update(@NonNull Algorithm algorithm) {
         Algorithm persistedAlgorithm = findById(algorithm.getId());
 
         // remove all attached sketches
@@ -131,7 +132,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 
     @Override
     @Transactional
-    public void delete(UUID algorithmId) {
+    public void delete(@NonNull UUID algorithmId) {
         Algorithm algorithm = findById(algorithmId);
 
         removeReferences(algorithm);
@@ -139,7 +140,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         algorithmRepository.deleteById(algorithmId);
     }
 
-    private void removeReferences(Algorithm algorithm) {
+    private void removeReferences(@NonNull Algorithm algorithm) {
         // delete related implementations
         algorithm.getImplementations().forEach(
                 implementation -> implementationService.delete(implementation.getId()));
@@ -157,7 +158,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     }
 
     @Override
-    public Page<Publication> findPublications(UUID algorithmId, Pageable pageable) {
+    public Page<Publication> findPublications(@NonNull UUID algorithmId, @NonNull Pageable pageable) {
         if (algorithmRepository.existsAlgorithmById(algorithmId)) {
             throw new NoSuchElementException();
         }
@@ -166,7 +167,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     }
 
     @Override
-    public Page<ProblemType> findProblemTypes(UUID algorithmId, Pageable pageable) {
+    public Page<ProblemType> findProblemTypes(@NonNull UUID algorithmId, @NonNull Pageable pageable) {
         if (algorithmRepository.existsAlgorithmById(algorithmId)) {
             throw new NoSuchElementException();
         }
@@ -175,7 +176,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     }
 
     @Override
-    public Page<ApplicationArea> findApplicationAreas(UUID algorithmId, Pageable pageable) {
+    public Page<ApplicationArea> findApplicationAreas(@NonNull UUID algorithmId, @NonNull Pageable pageable) {
         if (algorithmRepository.existsAlgorithmById(algorithmId)) {
             throw new NoSuchElementException();
         }
@@ -184,7 +185,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     }
 
     @Override
-    public Page<PatternRelation> findPatternRelations(UUID algorithmId, Pageable pageable) {
+    public Page<PatternRelation> findPatternRelations(@NonNull UUID algorithmId, @NonNull Pageable pageable) {
         if (algorithmRepository.existsAlgorithmById(algorithmId)) {
             throw new NoSuchElementException();
         }
@@ -193,7 +194,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     }
 
     @Override
-    public Page<AlgorithmRelation> findAlgorithmRelations(UUID algorithmId, Pageable pageable) {
+    public Page<AlgorithmRelation> findAlgorithmRelations(@NonNull UUID algorithmId, @NonNull Pageable pageable) {
         if (algorithmRepository.existsAlgorithmById(algorithmId)) {
             throw new NoSuchElementException();
         }
@@ -201,7 +202,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         return getAlgorithmRelations(algorithmId, pageable);
     }
 
-    private Page<AlgorithmRelation> getAlgorithmRelations(UUID algorithmId, Pageable pageable) {
+    private Page<AlgorithmRelation> getAlgorithmRelations(@NonNull UUID algorithmId, @NonNull Pageable pageable) {
         return algorithmRelationRepository.findBySourceAlgorithmIdOrTargetAlgorithmId(algorithmId, algorithmId, pageable);
     }
 }

@@ -29,6 +29,7 @@ import org.planqk.atlas.core.repository.AlgorithmRepository;
 import org.planqk.atlas.core.repository.PatternRelationRepository;
 
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -47,7 +48,7 @@ public class PatternRelationServiceImpl implements PatternRelationService {
 
     @Override
     @Transactional
-    public PatternRelation create(PatternRelation patternRelation) {
+    public PatternRelation create(@NonNull PatternRelation patternRelation) {
         if (patternRelation.getAlgorithm() == null
                 || patternRelation.getAlgorithm().getId() == null) {
             throw new NoSuchElementException("The given algorithm is invalid");
@@ -70,19 +71,19 @@ public class PatternRelationServiceImpl implements PatternRelationService {
     }
 
     @Override
-    public PatternRelation findById(UUID patternRelationId) {
+    public PatternRelation findById(@NonNull UUID patternRelationId) {
         return patternRelationRepository.findById(patternRelationId)
                 .orElseThrow(() -> new NoSuchElementException(NO_RELATION_ERROR));
     }
 
     @Override
-    public Page<PatternRelation> findAll(Pageable pageable) {
+    public Page<PatternRelation> findAll(@NonNull Pageable pageable) {
         return patternRelationRepository.findAll(pageable);
     }
 
     @Override
     @Transactional
-    public PatternRelation update(PatternRelation patternRelation) {
+    public PatternRelation update(@NonNull PatternRelation patternRelation) {
         PatternRelation persistedPatternRelation = findById(patternRelation.getId());
 
         persistedPatternRelation.setPattern(patternRelation.getPattern());
@@ -94,7 +95,11 @@ public class PatternRelationServiceImpl implements PatternRelationService {
 
     @Override
     @Transactional
-    public void delete(UUID patternRelationId) {
+    public void delete(@NonNull UUID patternRelationId) {
+        if (patternRelationRepository.existsById(patternRelationId)) {
+            throw new NoSuchElementException();
+        }
+
         patternRelationRepository.deleteById(patternRelationId);
     }
 }

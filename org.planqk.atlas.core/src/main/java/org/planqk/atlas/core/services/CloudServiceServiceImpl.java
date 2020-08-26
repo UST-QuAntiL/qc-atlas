@@ -30,6 +30,7 @@ import org.planqk.atlas.core.repository.ComputeResourceRepository;
 import org.planqk.atlas.core.repository.SoftwarePlatformRepository;
 
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -46,29 +47,29 @@ public class CloudServiceServiceImpl implements CloudServiceService {
     private final SoftwarePlatformRepository softwarePlatformRepository;
 
     @Override
-    public Page<CloudService> searchAllByName(String name, Pageable p) {
-        return cloudServiceRepository.findAllByNameContainingIgnoreCase(name, p);
+    public Page<CloudService> searchAllByName(String name, @NonNull Pageable pageable) {
+        return cloudServiceRepository.findAllByNameContainingIgnoreCase(name, pageable);
     }
 
     @Override
     @Transactional
-    public CloudService create(CloudService cloudService) {
+    public CloudService create(@NonNull CloudService cloudService) {
         return this.cloudServiceRepository.save(cloudService);
     }
 
     @Override
-    public Page<CloudService> findAll(Pageable pageable) {
+    public Page<CloudService> findAll(@NonNull Pageable pageable) {
         return cloudServiceRepository.findAll(pageable);
     }
 
     @Override
-    public CloudService findById(UUID cloudServiceId) {
+    public CloudService findById(@NonNull UUID cloudServiceId) {
         return cloudServiceRepository.findById(cloudServiceId).orElseThrow(NoSuchElementException::new);
     }
 
     @Override
     @Transactional
-    public CloudService update(CloudService cloudService) {
+    public CloudService update(@NonNull CloudService cloudService) {
         CloudService persistedCloudService = findById(cloudService.getId());
 
         persistedCloudService.setName(cloudService.getName());
@@ -82,7 +83,7 @@ public class CloudServiceServiceImpl implements CloudServiceService {
 
     @Override
     @Transactional
-    public void delete(UUID cloudServiceId) {
+    public void delete(@NonNull UUID cloudServiceId) {
         CloudService cloudService = findById(cloudServiceId);
 
         removeReferences(cloudService);
@@ -90,7 +91,7 @@ public class CloudServiceServiceImpl implements CloudServiceService {
         cloudServiceRepository.deleteById(cloudServiceId);
     }
 
-    private void removeReferences(CloudService cloudService) {
+    private void removeReferences(@NonNull CloudService cloudService) {
         cloudService.getSoftwarePlatforms().forEach(
                 softwarePlatform -> softwarePlatform.removeCloudService(cloudService));
         cloudService.getProvidedComputeResources().forEach(
@@ -98,15 +99,15 @@ public class CloudServiceServiceImpl implements CloudServiceService {
     }
 
     @Override
-    public Page<ComputeResource> findComputeResources(UUID serviceId, Pageable pageable) {
-        if (!cloudServiceRepository.existsCloudServiceById(serviceId)) {
+    public Page<ComputeResource> findComputeResources(@NonNull UUID cloudServiceId, @NonNull Pageable pageable) {
+        if (!cloudServiceRepository.existsCloudServiceById(cloudServiceId)) {
             throw new NoSuchElementException();
         }
-        return computeResourceRepository.findComputeResourcesByCloudServiceId(serviceId, pageable);
+        return computeResourceRepository.findComputeResourcesByCloudServiceId(cloudServiceId, pageable);
     }
 
     @Override
-    public Page<SoftwarePlatform> findLinkedSoftwarePlatforms(UUID serviceId, Pageable pageable) {
-        return softwarePlatformRepository.findSoftwarePlatformsByCloudServiceId(serviceId, pageable);
+    public Page<SoftwarePlatform> findLinkedSoftwarePlatforms(@NonNull UUID cloudServiceId, @NonNull Pageable pageable) {
+        return softwarePlatformRepository.findSoftwarePlatformsByCloudServiceId(cloudServiceId, pageable);
     }
 }

@@ -31,22 +31,22 @@ import org.springframework.transaction.annotation.Transactional;
 
 public interface ComputeResourceService {
 
-    Page<ComputeResource> searchAllByName(String name, Pageable p);
+    Page<ComputeResource> searchAllByName(String name, Pageable pageable);
 
     @Transactional
     ComputeResource create(ComputeResource computeResource);
 
     Page<ComputeResource> findAll(Pageable pageable);
 
-    ComputeResource findById(UUID id);
+    ComputeResource findById(UUID computeResourceId);
 
     @Transactional
     ComputeResource update(ComputeResource computeResource);
 
     @Transactional
-    void delete(UUID id);
+    void delete(UUID computeResourceId);
 
-    Page<CloudService> findLinkedComputeResources(UUID id, Pageable p);
+    Page<CloudService> findLinkedComputeResources(UUID computeResourceId, Pageable pageable);
 
-    Page<SoftwarePlatform> findLinkedSoftwarePlatforms(UUID id, Pageable p);
+    Page<SoftwarePlatform> findLinkedSoftwarePlatforms(UUID computeResourceId, Pageable pageable);
 }

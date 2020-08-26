@@ -58,8 +58,8 @@ public class ApplicationAreaServiceImpl implements ApplicationAreaService {
     }
 
     @Override
-    public ApplicationArea findById(@NonNull UUID id) {
-        return applicationAreaRepository.findById(id).orElseThrow(NoSuchElementException::new);
+    public ApplicationArea findById(@NonNull UUID applicationAreaId) {
+        return applicationAreaRepository.findById(applicationAreaId).orElseThrow(NoSuchElementException::new);
     }
 
     @Override

@@ -31,7 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 public interface CloudServiceService {
 
-    Page<CloudService> searchAllByName(String name, Pageable p);
+    Page<CloudService> searchAllByName(String name, Pageable pageable);
 
     @Transactional
     CloudService create(CloudService cloudService);
@@ -46,7 +46,7 @@ public interface CloudServiceService {
     @Transactional
     void delete(UUID cloudServiceId);
 
-    Page<SoftwarePlatform> findLinkedSoftwarePlatforms(UUID serviceId, Pageable pageable);
+    Page<SoftwarePlatform> findLinkedSoftwarePlatforms(UUID cloudServiceId, Pageable pageable);
 
-    Page<ComputeResource> findComputeResources(UUID serviceId, Pageable pageable);
+    Page<ComputeResource> findComputeResources(UUID cloudServiceId, Pageable pageable);
 }

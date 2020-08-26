@@ -28,6 +28,7 @@ import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.repository.TagRepository;
 
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -47,33 +48,33 @@ public class TagServiceImpl implements TagService {
 
     @Override
     @Transactional
-    public Tag create(Tag tag) {
+    public Tag create(@NonNull Tag tag) {
         return tagRepository.save(tag);
     }
 
     @Override
-    public Page<Tag> findAll(Pageable pageable) {
+    public Page<Tag> findAll(@NonNull Pageable pageable) {
         return tagRepository.findAll(pageable);
     }
 
     @Override
-    public Page<Tag> findAllByContent(String search, Pageable pageable) {
+    public Page<Tag> findAllByContent(String search, @NonNull Pageable pageable) {
         return tagRepository.findByValueContainingIgnoreCaseOrCategoryContainingIgnoreCase(search, search, pageable);
     }
 
     @Override
-    public Page<Tag> findAllByCategory(String category, Pageable pageable) {
+    public Page<Tag> findAllByCategory(@NonNull String category, @NonNull Pageable pageable) {
         return tagRepository.findByCategory(category, pageable);
     }
 
     @Override
-    public Tag findByValue(String value) {
+    public Tag findByValue(@NonNull String value) {
         return tagRepository.findByValue(value);
     }
 
     @Override
     @Transactional
-    public void addTagToAlgorithm(UUID algorithmId, Tag tag) {
+    public void addTagToAlgorithm(@NonNull UUID algorithmId, @NonNull Tag tag) {
         Algorithm algorithm = algorithmService.findById(algorithmId);
 
         algorithm.addTag(createTagIfNotExists(tag));
@@ -81,7 +82,7 @@ public class TagServiceImpl implements TagService {
 
     @Override
     @Transactional
-    public void removeTagFromAlgorithm(UUID algorithmId, Tag tag) {
+    public void removeTagFromAlgorithm(@NonNull UUID algorithmId, @NonNull Tag tag) {
         Algorithm algorithm = algorithmService.findById(algorithmId);
 
         algorithm.removeTag(tag);
@@ -89,7 +90,7 @@ public class TagServiceImpl implements TagService {
 
     @Override
     @Transactional
-    public void addTagToImplementation(UUID implementationId, Tag tag) {
+    public void addTagToImplementation(@NonNull UUID implementationId, @NonNull Tag tag) {
         Implementation implementation = implementationService.findById(implementationId);
 
         implementation.addTag(createTagIfNotExists(tag));
@@ -97,13 +98,13 @@ public class TagServiceImpl implements TagService {
 
     @Override
     @Transactional
-    public void removeTagFromImplementation(UUID implementationId, Tag tag) {
+    public void removeTagFromImplementation(@NonNull UUID implementationId, @NonNull Tag tag) {
         Implementation implementation = implementationService.findById(implementationId);
 
         implementation.removeTag(tag);
     }
 
-    private Tag createTagIfNotExists(Tag tag) {
+    private Tag createTagIfNotExists(@NonNull Tag tag) {
         if (tagRepository.existsTagByValue(tag.getValue())) {
             return tag;
         }

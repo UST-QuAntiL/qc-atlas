@@ -32,6 +32,7 @@ import org.planqk.atlas.core.repository.ImplementationRepository;
 import org.planqk.atlas.core.repository.PublicationRepository;
 
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -49,12 +50,12 @@ public class PublicationServiceImpl implements PublicationService {
 
     @Override
     @Transactional
-    public Publication create(Publication publication) {
+    public Publication create(@NonNull Publication publication) {
         return publicationRepository.save(publication);
     }
 
     @Override
-    public Page<Publication> findAll(Pageable pageable, String search) {
+    public Page<Publication> findAll(@NonNull Pageable pageable, String search) {
         if (!Objects.isNull(search) && !search.isEmpty()) {
             return publicationRepository.findAll(search, pageable);
         }
@@ -62,13 +63,13 @@ public class PublicationServiceImpl implements PublicationService {
     }
 
     @Override
-    public Publication findById(UUID publicationId) {
+    public Publication findById(@NonNull UUID publicationId) {
         return publicationRepository.findById(publicationId).orElseThrow(NoSuchElementException::new);
     }
 
     @Override
     @Transactional
-    public Publication update(Publication publication) {
+    public Publication update(@NonNull Publication publication) {
         var persistedPublication = findById(publication.getId());
 
         persistedPublication.setTitle(publication.getTitle());
@@ -81,7 +82,7 @@ public class PublicationServiceImpl implements PublicationService {
 
     @Override
     @Transactional
-    public void delete(UUID publicationId) {
+    public void delete(@NonNull UUID publicationId) {
         Publication publication = findById(publicationId);
 
         removeReferences(publication);
@@ -89,14 +90,14 @@ public class PublicationServiceImpl implements PublicationService {
         publicationRepository.deleteById(publicationId);
     }
 
-    private void removeReferences(Publication publication) {
+    private void removeReferences(@NonNull Publication publication) {
         publication.getAlgorithms().forEach(algorithm -> algorithm.removePublication(publication));
 
         publication.getImplementations().forEach(implementation -> implementation.removePublication(publication));
     }
 
     @Override
-    public Page<Algorithm> findAlgorithmsOfPublication(UUID publicationId, Pageable pageable) {
+    public Page<Algorithm> findAlgorithmsOfPublication(@NonNull UUID publicationId, @NonNull Pageable pageable) {
         if (!publicationRepository.existsById(publicationId)) {
             throw new NoSuchElementException("Publication with id " + publicationId.toString() + " Does not exist");
         }
@@ -104,7 +105,7 @@ public class PublicationServiceImpl implements PublicationService {
     }
 
     @Override
-    public Page<Implementation> findImplementationsOfPublication(UUID publicationId, Pageable pageable) {
+    public Page<Implementation> findImplementationsOfPublication(@NonNull UUID publicationId, @NonNull Pageable pageable) {
         if (!publicationRepository.existsById(publicationId)) {
             throw new NoSuchElementException("Publication with id " + publicationId.toString() + " Does not exist");
         }
@@ -113,7 +114,7 @@ public class PublicationServiceImpl implements PublicationService {
 
     @Override
     @Transactional
-    public void deletePublications(Set<UUID> publicationIds) {
+    public void deletePublications(@NonNull Set<UUID> publicationIds) {
         publicationRepository.deleteByIdIn(publicationIds);
     }
 }
