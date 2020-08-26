@@ -26,9 +26,10 @@ import java.util.UUID;
 
 import javax.transaction.Transactional;
 
+import org.planqk.atlas.core.exceptions.ConsistencyException;
 import org.planqk.atlas.core.model.ProblemType;
-import org.planqk.atlas.core.model.exceptions.ConsistencyException;
 import org.planqk.atlas.core.repository.ProblemTypeRepository;
+import org.planqk.atlas.core.util.ServiceUtils;
 
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
@@ -57,7 +58,7 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
 
     @Override
     public ProblemType findById(@NonNull UUID problemTypeId) {
-        return problemTypeRepository.findById(problemTypeId).orElseThrow(NoSuchElementException::new);
+        return ServiceUtils.findById(problemTypeId, ProblemType.class, problemTypeRepository);
     }
 
     @Override

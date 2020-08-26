@@ -19,11 +19,11 @@
 
 package org.planqk.atlas.core.services;
 
-import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.DiscussionComment;
 import org.planqk.atlas.core.repository.DiscussionCommentRepository;
+import org.planqk.atlas.core.util.ServiceUtils;
 
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
@@ -58,32 +58,22 @@ public class DiscussionCommentServiceImpl implements DiscussionCommentService {
 
     @Override
     public DiscussionComment findById(@NonNull UUID commentId) {
-        return discussionCommentRepository.findById(commentId).orElseThrow(() -> new NoSuchElementException("Not found"));
+        return ServiceUtils.findById(commentId, DiscussionComment.class, discussionCommentRepository);
     }
 
     @Override
     @Transactional
     public DiscussionComment update(@NonNull DiscussionComment comment) {
+        ServiceUtils.throwIfNotExists(comment.getId(), DiscussionComment.class, discussionCommentRepository);
 
-        if (!this.existsDiscussionCommentById(comment.getId())) {
-            throw new NoSuchElementException();
-        }
         return discussionCommentRepository.save(comment);
     }
 
     @Override
     @Transactional
     public void delete(@NonNull UUID commentId) {
-        if (!discussionCommentRepository.existsById(commentId)) {
-            throw new NoSuchElementException("Discussion comment with ID \"" + commentId + "\" does not exist");
-        }
+        ServiceUtils.throwIfNotExists(commentId, DiscussionComment.class, discussionCommentRepository);
 
         discussionCommentRepository.deleteById(commentId);
-    }
-
-    @Override
-    public boolean existsDiscussionCommentById(@NonNull UUID commentId) {
-
-        return discussionCommentRepository.existsById(commentId);
     }
 }

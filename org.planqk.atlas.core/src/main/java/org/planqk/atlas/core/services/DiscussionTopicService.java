@@ -44,6 +44,4 @@ public interface DiscussionTopicService {
 
     @Transactional
     void delete(UUID topicId);
-
-    boolean existsDiscussionTopicById(UUID topicId);
 }

@@ -19,7 +19,6 @@
 
 package org.planqk.atlas.core.services;
 
-import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
@@ -30,6 +29,7 @@ import org.planqk.atlas.core.repository.AlgorithmRepository;
 import org.planqk.atlas.core.repository.ComputeResourcePropertyRepository;
 import org.planqk.atlas.core.repository.ComputeResourceRepository;
 import org.planqk.atlas.core.repository.ImplementationRepository;
+import org.planqk.atlas.core.util.ServiceUtils;
 
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
@@ -63,9 +63,8 @@ public class ComputeResourcePropertyServiceImpl implements ComputeResourceProper
 
     @Override
     public ComputeResourceProperty findById(@NonNull UUID computeResourcePropertyId) {
-        return computeResourcePropertyRepository.findById(computeResourcePropertyId).orElseThrow(() -> {
-            throw new NoSuchElementException("Cannot find ComputeResourceProperty with the given ID");
-        });
+        return ServiceUtils.findById(computeResourcePropertyId, ComputeResourceProperty.class,
+                computeResourcePropertyRepository);
     }
 
     @Override
@@ -82,10 +81,8 @@ public class ComputeResourcePropertyServiceImpl implements ComputeResourceProper
     @Override
     @Transactional
     public void delete(@NonNull UUID computeResourcePropertyId) {
-        if (!computeResourcePropertyRepository.existsById(computeResourcePropertyId)) {
-            throw new NoSuchElementException(
-                    "Compute resource property with ID \"" + computeResourcePropertyId + "\" does not exist");
-        }
+        ServiceUtils.throwIfNotExists(computeResourcePropertyId, ComputeResourceProperty.class,
+                computeResourcePropertyRepository);
 
         computeResourcePropertyRepository.deleteById(computeResourcePropertyId);
     }
@@ -93,18 +90,21 @@ public class ComputeResourcePropertyServiceImpl implements ComputeResourceProper
     @Override
     public Page<ComputeResourceProperty> findComputeResourcePropertiesOfAlgorithm(
             @NonNull UUID algorithmId, @NonNull Pageable pageable) {
+        ServiceUtils.throwIfNotExists(algorithmId, Algorithm.class, algorithmRepository);
         return computeResourcePropertyRepository.findAllByAlgorithmId(algorithmId, pageable);
     }
 
     @Override
     public Page<ComputeResourceProperty> findComputeResourcePropertiesOfImplementation(
             @NonNull UUID implementationId, @NonNull Pageable pageable) {
+        ServiceUtils.throwIfNotExists(implementationId, Implementation.class, implementationRepository);
         return computeResourcePropertyRepository.findAllByImplementationId(implementationId, pageable);
     }
 
     @Override
     public Page<ComputeResourceProperty> findComputeResourcePropertiesOfComputeResource(
             @NonNull UUID computeResourceId, @NonNull Pageable pageable) {
+        ServiceUtils.throwIfNotExists(computeResourceId, ComputeResource.class, computeResourceRepository);
         return computeResourcePropertyRepository.findAllByComputeResourceId(computeResourceId, pageable);
     }
 
@@ -119,8 +119,7 @@ public class ComputeResourcePropertyServiceImpl implements ComputeResourceProper
             persistedComputeResourceProperty = findById(computeResourceProperty.getId());
         }
 
-        Algorithm algorithm = algorithmRepository.findById(algorithmId)
-                .orElseThrow(NoSuchElementException::new);
+        Algorithm algorithm = ServiceUtils.findById(algorithmId, Algorithm.class, algorithmRepository);
 
         persistedComputeResourceProperty.setAlgorithm(algorithm);
         return this.computeResourcePropertyRepository.save(persistedComputeResourceProperty);
@@ -137,8 +136,8 @@ public class ComputeResourcePropertyServiceImpl implements ComputeResourceProper
             persistedComputeResourceProperty = findById(computeResourceProperty.getId());
         }
 
-        Implementation implementation = implementationRepository.findById(implementationId)
-                .orElseThrow(NoSuchElementException::new);
+        Implementation implementation = ServiceUtils
+                .findById(implementationId, Implementation.class, implementationRepository);
 
         persistedComputeResourceProperty.setImplementation(implementation);
         return this.computeResourcePropertyRepository.save(persistedComputeResourceProperty);
@@ -155,8 +154,8 @@ public class ComputeResourcePropertyServiceImpl implements ComputeResourceProper
             persistedComputeResourceProperty = findById(computeResourceProperty.getId());
         }
 
-        ComputeResource computeResource = computeResourceRepository.findById(computeResourceId)
-                .orElseThrow(NoSuchElementException::new);
+        ComputeResource computeResource = ServiceUtils
+                .findById(computeResourceId, ComputeResource.class, computeResourceRepository);
 
         persistedComputeResourceProperty.setComputeResource(computeResource);
         return this.computeResourcePropertyRepository.save(persistedComputeResourceProperty);

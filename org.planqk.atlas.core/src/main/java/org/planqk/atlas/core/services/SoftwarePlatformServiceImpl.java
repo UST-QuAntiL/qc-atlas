@@ -19,7 +19,6 @@
 
 package org.planqk.atlas.core.services;
 
-import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.CloudService;
@@ -30,6 +29,7 @@ import org.planqk.atlas.core.repository.CloudServiceRepository;
 import org.planqk.atlas.core.repository.ComputeResourceRepository;
 import org.planqk.atlas.core.repository.ImplementationRepository;
 import org.planqk.atlas.core.repository.SoftwarePlatformRepository;
+import org.planqk.atlas.core.util.ServiceUtils;
 
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
@@ -54,6 +54,9 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
 
     @Override
     public Page<SoftwarePlatform> searchAllByName(String name, @NonNull Pageable pageable) {
+        if (name == null) {
+            name = "";
+        }
         return softwarePlatformRepository.findAllByNameContainingIgnoreCase(name, pageable);
     }
 
@@ -70,7 +73,7 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
 
     @Override
     public SoftwarePlatform findById(@NonNull UUID softwarePlatformId) {
-        return softwarePlatformRepository.findById(softwarePlatformId).orElseThrow(NoSuchElementException::new);
+        return ServiceUtils.findById(softwarePlatformId, SoftwarePlatform.class, softwarePlatformRepository);
     }
 
     @Override
@@ -107,27 +110,21 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
 
     @Override
     public Page<Implementation> findImplementations(@NonNull UUID softwarePlatformId, @NonNull Pageable pageable) {
-        if (!softwarePlatformRepository.existsSoftwarePlatformById(softwarePlatformId)) {
-            throw new NoSuchElementException();
-        }
+        ServiceUtils.throwIfNotExists(softwarePlatformId, SoftwarePlatform.class, softwarePlatformRepository);
 
         return implementationRepository.findImplementationsBySoftwarePlatformId(softwarePlatformId, pageable);
     }
 
     @Override
     public Page<CloudService> findCloudServices(@NonNull UUID softwarePlatformId, @NonNull Pageable pageable) {
-        if (!softwarePlatformRepository.existsSoftwarePlatformById(softwarePlatformId)) {
-            throw new NoSuchElementException();
-        }
+        ServiceUtils.throwIfNotExists(softwarePlatformId, SoftwarePlatform.class, softwarePlatformRepository);
 
         return cloudServiceRepository.findCloudServicesBySoftwarePlatformId(softwarePlatformId, pageable);
     }
 
     @Override
     public Page<ComputeResource> findComputeResources(@NonNull UUID softwarePlatformId, @NonNull Pageable pageable) {
-        if (!softwarePlatformRepository.existsSoftwarePlatformById(softwarePlatformId)) {
-            throw new NoSuchElementException();
-        }
+        ServiceUtils.throwIfNotExists(softwarePlatformId, SoftwarePlatform.class, softwarePlatformRepository);
 
         return computeResourceRepository.findComputeResourcesBySoftwarePlatformId(softwarePlatformId, pageable);
     }

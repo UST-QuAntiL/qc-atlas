@@ -17,21 +17,29 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.planqk.atlas.core.repository;
-
-import java.util.UUID;
-
-import org.planqk.atlas.core.model.Sketch;
-
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.rest.core.annotation.RepositoryRestResource;
-import org.springframework.stereotype.Repository;
+package org.planqk.atlas.core.exceptions;
 
 /**
- * Repository to access {@link Sketch}s.
+ * This exception is thrown when database consistency is about to be violated.
+ *
  */
-@Repository
-@RepositoryRestResource(exported = false)
-public interface SketchRepository extends JpaRepository<Sketch, UUID> {
+public class ConsistencyException extends RuntimeException {
+
+    private static final long serialVersionUID = 1697519892942333680L;
+
+    public ConsistencyException() {
+    }
+
+    public ConsistencyException(String message) {
+        super(message);
+    }
+
+    public ConsistencyException(Throwable cause) {
+        super(cause);
+    }
+
+    public ConsistencyException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
 }

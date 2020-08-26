@@ -43,6 +43,4 @@ public interface DiscussionCommentService {
 
     @Transactional
     void delete(UUID commentId);
-
-    boolean existsDiscussionCommentById(UUID commentId);
 }

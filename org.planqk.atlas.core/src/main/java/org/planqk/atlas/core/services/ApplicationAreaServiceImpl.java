@@ -19,15 +19,15 @@
 
 package org.planqk.atlas.core.services;
 
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.UUID;
 
 import javax.transaction.Transactional;
 
+import org.planqk.atlas.core.exceptions.ConsistencyException;
 import org.planqk.atlas.core.model.ApplicationArea;
-import org.planqk.atlas.core.model.exceptions.ConsistencyException;
 import org.planqk.atlas.core.repository.ApplicationAreaRepository;
+import org.planqk.atlas.core.util.ServiceUtils;
 
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
@@ -59,7 +59,7 @@ public class ApplicationAreaServiceImpl implements ApplicationAreaService {
 
     @Override
     public ApplicationArea findById(@NonNull UUID applicationAreaId) {
-        return applicationAreaRepository.findById(applicationAreaId).orElseThrow(NoSuchElementException::new);
+        return ServiceUtils.findById(applicationAreaId, ApplicationArea.class, applicationAreaRepository);
     }
 
     @Override

@@ -18,14 +18,20 @@
  *******************************************************************************/
 package org.planqk.atlas.core.model;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
-import javax.persistence.*;
-
 import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.Set;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
 @Data

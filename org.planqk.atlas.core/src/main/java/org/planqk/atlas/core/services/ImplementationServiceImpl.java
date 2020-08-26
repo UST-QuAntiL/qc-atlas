@@ -19,7 +19,6 @@
 
 package org.planqk.atlas.core.services;
 
-import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
@@ -30,6 +29,7 @@ import org.planqk.atlas.core.repository.AlgorithmRepository;
 import org.planqk.atlas.core.repository.ImplementationRepository;
 import org.planqk.atlas.core.repository.PublicationRepository;
 import org.planqk.atlas.core.repository.SoftwarePlatformRepository;
+import org.planqk.atlas.core.util.ServiceUtils;
 
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
@@ -53,8 +53,7 @@ public class ImplementationServiceImpl implements ImplementationService {
     @Override
     @Transactional
     public Implementation create(@NonNull Implementation implementation, @NonNull UUID implementedAlgorithmId) {
-        Algorithm implementedAlgorithm = algorithmRepository.findById(implementedAlgorithmId)
-                .orElseThrow(() -> new NoSuchElementException("The algorithm does not exist"));
+        Algorithm implementedAlgorithm = ServiceUtils.findById(implementedAlgorithmId, Algorithm.class, algorithmRepository);
         implementation.setImplementedAlgorithm(implementedAlgorithm);
         Implementation savedImplementation = implementationRepository.save(implementation);
         implementedAlgorithm.getImplementations().add(savedImplementation);
@@ -68,7 +67,7 @@ public class ImplementationServiceImpl implements ImplementationService {
 
     @Override
     public Implementation findById(@NonNull UUID implementationId) {
-        return implementationRepository.findById(implementationId).orElseThrow(NoSuchElementException::new);
+        return ServiceUtils.findById(implementationId, Implementation.class, implementationRepository);
     }
 
     @Override
@@ -112,20 +111,22 @@ public class ImplementationServiceImpl implements ImplementationService {
 
     @Override
     public Page<Implementation> findByImplementedAlgorithm(@NonNull UUID algorithmId, @NonNull Pageable pageable) {
-        if (!algorithmRepository.existsAlgorithmById(algorithmId)) {
-            throw new NoSuchElementException("Algorithm with ID \"" + algorithmId + "\" does not exist");
-        }
+        ServiceUtils.throwIfNotExists(algorithmId, Algorithm.class, algorithmRepository);
 
         return implementationRepository.findByImplementedAlgorithmId(algorithmId, pageable);
     }
 
     @Override
     public Page<SoftwarePlatform> findLinkedSoftwarePlatforms(@NonNull UUID implementationId, @NonNull Pageable pageable) {
+        ServiceUtils.throwIfNotExists(implementationId, Implementation.class, implementationRepository);
+
         return softwarePlatformRepository.findSoftwarePlatformsByImplementationId(implementationId, pageable);
     }
 
     @Override
     public Page<Publication> findLinkedPublications(@NonNull UUID implementationId, @NonNull Pageable pageable) {
+        ServiceUtils.throwIfNotExists(implementationId, Implementation.class, implementationRepository);
+
         return publicationRepository.findPublicationsByImplementationId(implementationId, pageable);
     }
 }

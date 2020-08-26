@@ -139,18 +139,4 @@ public class DiscussionCommentServiceTest extends AtlasDatabaseTestBase {
         // TODO
     }
 
-    @Test
-    void existsDiscussionComment_ElementFound(){
-        topicService.create(this.topic);
-        DiscussionComment comment = commentService.create(this.comment);
-        boolean exists = commentService.existsDiscussionCommentById(comment.getId());
-
-        assertThat(exists).isEqualTo(true);
-    }
-
-    @Test
-    void existsDiscussionComment_ElementNotFound(){
-        boolean exists = commentService.existsDiscussionCommentById(UUID.randomUUID());
-        assertThat(exists).isEqualTo(false);
-    }
 }

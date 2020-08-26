@@ -23,11 +23,11 @@ import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
+import org.planqk.atlas.core.exceptions.ConsistencyException;
 import org.planqk.atlas.core.model.ComputeResource;
 import org.planqk.atlas.core.model.ComputeResourceProperty;
 import org.planqk.atlas.core.model.ComputeResourcePropertyDataType;
 import org.planqk.atlas.core.model.ComputeResourcePropertyType;
-import org.planqk.atlas.core.model.exceptions.ConsistencyException;
 import org.planqk.atlas.core.services.ComputeResourcePropertyService;
 import org.planqk.atlas.core.services.ComputeResourceService;
 import org.planqk.atlas.web.Constants;

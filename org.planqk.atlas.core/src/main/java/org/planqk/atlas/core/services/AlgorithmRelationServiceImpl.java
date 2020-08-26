@@ -19,13 +19,13 @@
 
 package org.planqk.atlas.core.services;
 
-import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.repository.AlgorithmRelationRepository;
 import org.planqk.atlas.core.repository.AlgorithmRepository;
+import org.planqk.atlas.core.util.ServiceUtils;
 
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
@@ -58,7 +58,7 @@ public class AlgorithmRelationServiceImpl implements AlgorithmRelationService {
 
     @Override
     public AlgorithmRelation findById(@NonNull UUID algorithmRelationId) {
-        return algorithmRelationRepository.findById(algorithmRelationId).orElseThrow(NoSuchElementException::new);
+        return ServiceUtils.findById(algorithmRelationId, AlgorithmRelation.class, algorithmRelationRepository);
     }
 
     @Override
@@ -76,11 +76,11 @@ public class AlgorithmRelationServiceImpl implements AlgorithmRelationService {
     @Override
     @Transactional
     public void delete(@NonNull UUID algorithmRelationId) {
+        ServiceUtils.throwIfNotExists(algorithmRelationId, AlgorithmRelation.class, algorithmRelationRepository);
         algorithmRelationRepository.deleteById(algorithmRelationId);
     }
 
     private Algorithm findAlgorithmById(@NonNull UUID algorithmId) {
-        return algorithmRepository.findById(algorithmId).orElseThrow(
-                () -> new NoSuchElementException("No Algorithm with given ID \"" + algorithmId + "\" was found"));
+        return ServiceUtils.findById(algorithmId, Algorithm.class, algorithmRepository);
     }
 }

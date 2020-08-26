@@ -21,13 +21,13 @@ package org.planqk.atlas.core.services;
 
 import java.util.UUID;
 
-import lombok.AllArgsConstructor;
-
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.repository.TagRepository;
+import org.planqk.atlas.core.util.ServiceUtils;
 
+import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -69,7 +69,7 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public Tag findByValue(@NonNull String value) {
-        return tagRepository.findByValue(value);
+        return ServiceUtils.findById(value, Tag.class, tagRepository);
     }
 
     @Override
@@ -105,9 +105,7 @@ public class TagServiceImpl implements TagService {
     }
 
     private Tag createTagIfNotExists(@NonNull Tag tag) {
-        if (tagRepository.existsTagByValue(tag.getValue())) {
-            return tag;
-        }
+        ServiceUtils.throwIfNotExists(tag.getValue(), Tag.class, tagRepository);
         return create(tag);
     }
 }

@@ -19,15 +19,17 @@
 
 package org.planqk.atlas.core.services;
 
-import java.util.NoSuchElementException;
 import java.util.UUID;
 
+import org.planqk.atlas.core.exceptions.ConsistencyException;
 import org.planqk.atlas.core.model.ComputeResourcePropertyType;
 import org.planqk.atlas.core.repository.ComputeResourcePropertyTypeRepository;
+import org.planqk.atlas.core.util.ServiceUtils;
 
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -53,8 +55,10 @@ public class ComputeResourcePropertyTypeServiceImpl implements ComputeResourcePr
 
     @Override
     public ComputeResourcePropertyType findById(@NonNull UUID computeResourcePropertyTypeId) {
-        return this.computeResourcePropertyTypeRepository
-                .findById(computeResourcePropertyTypeId).orElseThrow(NoSuchElementException::new);
+        return ServiceUtils.findById(
+                computeResourcePropertyTypeId,
+                ComputeResourcePropertyType.class,
+                computeResourcePropertyTypeRepository);
     }
 
     @Override
@@ -72,11 +76,16 @@ public class ComputeResourcePropertyTypeServiceImpl implements ComputeResourcePr
     @Override
     @Transactional
     public void delete(@NonNull UUID computeResourcePropertyTypeId) {
-        if (!computeResourcePropertyTypeRepository.existsById(computeResourcePropertyTypeId)) {
-            throw new NoSuchElementException(
-                    "Compute resource property type with ID \"" + computeResourcePropertyTypeId + "\" does not exist");
+        ServiceUtils.throwIfNotExists(
+                computeResourcePropertyTypeId,
+                ComputeResourcePropertyType.class,
+                computeResourcePropertyTypeRepository);
+        // TODO Check if it works as intended!
+        try {
+            this.computeResourcePropertyTypeRepository.deleteById(computeResourcePropertyTypeId);
+        } catch (DataIntegrityViolationException e) {
+            throw new ConsistencyException("ComputeResourcePropertyType with ID \""
+                    + computeResourcePropertyTypeId + "\" cannot be deleted, because it is still in use", e);
         }
-        // TODO throw consistency exception if object is still linked!
-        this.computeResourcePropertyTypeRepository.deleteById(computeResourcePropertyTypeId);
     }
 }

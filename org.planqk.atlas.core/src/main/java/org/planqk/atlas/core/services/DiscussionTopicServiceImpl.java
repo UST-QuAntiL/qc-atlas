@@ -19,12 +19,12 @@
 
 package org.planqk.atlas.core.services;
 
-import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.DiscussionTopic;
 import org.planqk.atlas.core.model.KnowledgeArtifact;
 import org.planqk.atlas.core.repository.DiscussionTopicRepository;
+import org.planqk.atlas.core.util.ServiceUtils;
 
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
@@ -60,30 +60,22 @@ public class DiscussionTopicServiceImpl implements DiscussionTopicService {
 
     @Override
     public DiscussionTopic findById(@NonNull UUID topicId) {
-        return discussionTopicRepository.findById(topicId).orElseThrow(() -> new NoSuchElementException("Not found"));
+        return ServiceUtils.findById(topicId, DiscussionTopic.class, discussionTopicRepository);
     }
 
     @Override
     @Transactional
     public DiscussionTopic update(@NonNull DiscussionTopic topic) {
-        if (!this.existsDiscussionTopicById(topic.getId())) {
-            throw new NoSuchElementException();
-        }
+        ServiceUtils.throwIfNotExists(topic.getId(), DiscussionTopic.class, discussionTopicRepository);
         return discussionTopicRepository.save(topic);
     }
 
     @Override
     @Transactional
     public void delete(@NonNull UUID topicId) {
-        if (!discussionTopicRepository.existsById(topicId)) {
-            throw new NoSuchElementException();
-        }
+        ServiceUtils.throwIfNotExists(topicId, DiscussionTopic.class, discussionTopicRepository);
 
         discussionTopicRepository.deleteById(topicId);
     }
 
-    @Override
-    public boolean existsDiscussionTopicById(@NonNull UUID topicId) {
-        return discussionTopicRepository.existsById(topicId);
-    }
 }

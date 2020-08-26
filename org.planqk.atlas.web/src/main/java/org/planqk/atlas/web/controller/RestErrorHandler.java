@@ -20,7 +20,7 @@ package org.planqk.atlas.web.controller;
 
 import java.util.NoSuchElementException;
 
-import org.planqk.atlas.core.model.exceptions.ConsistencyException;
+import org.planqk.atlas.core.exceptions.ConsistencyException;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;

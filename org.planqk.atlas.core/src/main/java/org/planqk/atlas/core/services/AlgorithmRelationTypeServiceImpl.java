@@ -19,21 +19,20 @@
 
 package org.planqk.atlas.core.services;
 
-import java.util.NoSuchElementException;
 import java.util.UUID;
 
+import org.planqk.atlas.core.exceptions.ConsistencyException;
 import org.planqk.atlas.core.model.AlgorithmRelationType;
-import org.planqk.atlas.core.model.exceptions.ConsistencyException;
-import org.planqk.atlas.core.repository.AlgorithmRelationTypeRepository;
 import org.planqk.atlas.core.repository.AlgorithmRelationRepository;
+import org.planqk.atlas.core.repository.AlgorithmRelationTypeRepository;
+import org.planqk.atlas.core.util.ServiceUtils;
 
+import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import lombok.AllArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
@@ -57,7 +56,7 @@ public class AlgorithmRelationTypeServiceImpl implements AlgorithmRelationTypeSe
 
     @Override
     public AlgorithmRelationType findById(@NonNull UUID algorithmRelationTypeId) {
-        return algorithmRelationTypeRepository.findById(algorithmRelationTypeId).orElseThrow(NoSuchElementException::new);
+        return ServiceUtils.findById(algorithmRelationTypeId, AlgorithmRelationType.class, algorithmRelationTypeRepository);
     }
 
     @Override
@@ -73,10 +72,7 @@ public class AlgorithmRelationTypeServiceImpl implements AlgorithmRelationTypeSe
     @Override
     @Transactional
     public void delete(@NonNull UUID algorithmRelationTypeId) {
-        if (!algorithmRelationTypeRepository.existsById(algorithmRelationTypeId)) {
-            throw new NoSuchElementException(
-                    "Algorithm relation type with ID \"" + algorithmRelationTypeId + "\" does not exist");
-        }
+        ServiceUtils.throwIfNotExists(algorithmRelationTypeId, AlgorithmRelationType.class, algorithmRelationTypeRepository);
 
         if (algorithmRelationRepository.countByAlgorithmRelationTypeId(algorithmRelationTypeId) > 0) {
             throw new ConsistencyException(

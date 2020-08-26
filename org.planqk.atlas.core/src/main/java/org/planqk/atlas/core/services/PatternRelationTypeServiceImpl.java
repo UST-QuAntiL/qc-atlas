@@ -19,30 +19,27 @@
 
 package org.planqk.atlas.core.services;
 
-import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import javax.transaction.Transactional;
 
+import org.planqk.atlas.core.exceptions.ConsistencyException;
 import org.planqk.atlas.core.model.PatternRelationType;
-import org.planqk.atlas.core.model.exceptions.ConsistencyException;
 import org.planqk.atlas.core.repository.PatternRelationRepository;
 import org.planqk.atlas.core.repository.PatternRelationTypeRepository;
+import org.planqk.atlas.core.util.ServiceUtils;
 
+import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import lombok.AllArgsConstructor;
-
 @Slf4j
 @Service
 @AllArgsConstructor
 public class PatternRelationTypeServiceImpl implements PatternRelationTypeService {
-
-    private static final String NO_TYPE_ERROR = "PatternRelationType does not exist!";
 
     private final PatternRelationTypeRepository patternRelationTypeRepository;
     private final PatternRelationRepository patternRelationRepository;
@@ -55,8 +52,7 @@ public class PatternRelationTypeServiceImpl implements PatternRelationTypeServic
 
     @Override
     public PatternRelationType findById(@NonNull UUID patternRelationTypeId) {
-        return patternRelationTypeRepository.findById(patternRelationTypeId)
-                .orElseThrow(() -> new NoSuchElementException(NO_TYPE_ERROR));
+        return ServiceUtils.findById(patternRelationTypeId, PatternRelationType.class, patternRelationTypeRepository);
     }
 
     @Override
@@ -77,10 +73,9 @@ public class PatternRelationTypeServiceImpl implements PatternRelationTypeServic
     @Override
     @Transactional
     public void delete(@NonNull UUID patternRelationTypeId) {
-        if (!patternRelationTypeRepository.existsById(patternRelationTypeId)) {
-            throw new NoSuchElementException("Pattern relation type with ID \"" + patternRelationTypeId + "\" does not exist");
-        }
+        ServiceUtils.throwIfNotExists(patternRelationTypeId, PatternRelationType.class, patternRelationTypeRepository);
 
+        // TODO Reevalute
         if (patternRelationRepository.countByPatternRelationTypeId(patternRelationTypeId) > 0)
             throw new ConsistencyException("Can not delete an used Pattern relation type!");
 

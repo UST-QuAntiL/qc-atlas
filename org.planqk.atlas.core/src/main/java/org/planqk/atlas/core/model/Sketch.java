@@ -22,12 +22,11 @@ package org.planqk.atlas.core.model;
 import javax.persistence.Entity;
 import javax.persistence.Lob;
 
-import org.hibernate.annotations.Type;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Type;
 
 /**
  * Entity representing a sketch with an image and a description.

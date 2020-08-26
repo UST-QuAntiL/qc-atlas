@@ -19,8 +19,6 @@
 
 package org.planqk.atlas.core.services;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -28,12 +26,9 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.UUID;
 
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-import org.planqk.atlas.core.model.AlgorithmRelationType;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
+import org.planqk.atlas.core.model.AlgorithmRelationType;
 import org.planqk.atlas.core.model.ApplicationArea;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
 import org.planqk.atlas.core.model.ComputationModel;
@@ -42,8 +37,14 @@ import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.model.QuantumAlgorithm;
 import org.planqk.atlas.core.model.QuantumComputationModel;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
+
+import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
@@ -184,6 +185,7 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
         storedAlgorithm = algorithmService.findById(storedAlgorithm.getId());
 
         assertAlgorithmEquality(storedAlgorithm, algorithm);
+        assertThat(storedAlgorithm).isInstanceOf(ClassicAlgorithm.class);
     }
 
     @Test

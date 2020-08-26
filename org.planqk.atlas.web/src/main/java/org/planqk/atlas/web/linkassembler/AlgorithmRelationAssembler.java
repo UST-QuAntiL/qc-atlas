@@ -21,8 +21,8 @@ package org.planqk.atlas.web.linkassembler;
 
 import java.util.UUID;
 
-import org.planqk.atlas.web.controller.AlgorithmRelationTypeController;
 import org.planqk.atlas.web.controller.AlgorithmController;
+import org.planqk.atlas.web.controller.AlgorithmRelationTypeController;
 import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
 
 import org.springframework.hateoas.EntityModel;

@@ -19,17 +19,16 @@
 
 package org.planqk.atlas.core.services;
 
-import java.util.NoSuchElementException;
-import java.util.Set;
 import java.util.UUID;
 
+import org.planqk.atlas.core.exceptions.ConsistencyException;
 import org.planqk.atlas.core.model.CloudService;
 import org.planqk.atlas.core.model.ComputeResource;
 import org.planqk.atlas.core.model.SoftwarePlatform;
-import org.planqk.atlas.core.model.exceptions.ConsistencyException;
 import org.planqk.atlas.core.repository.CloudServiceRepository;
 import org.planqk.atlas.core.repository.ComputeResourceRepository;
 import org.planqk.atlas.core.repository.SoftwarePlatformRepository;
+import org.planqk.atlas.core.util.ServiceUtils;
 
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
@@ -67,7 +66,7 @@ public class ComputeResourceServiceImpl implements ComputeResourceService {
 
     @Override
     public ComputeResource findById(@NonNull UUID computeResourceId) {
-        return computeResourceRepository.findById(computeResourceId).orElseThrow(NoSuchElementException::new);
+        return ServiceUtils.findById(computeResourceId, ComputeResource.class, computeResourceRepository);
     }
 
     @Override
@@ -86,9 +85,7 @@ public class ComputeResourceServiceImpl implements ComputeResourceService {
     @Override
     @Transactional
     public void delete(@NonNull UUID computeResourceId) {
-        if (!computeResourceRepository.existsById(computeResourceId)) {
-            throw new NoSuchElementException();
-        }
+        ServiceUtils.throwIfNotExists(computeResourceId, ComputeResource.class, computeResourceRepository);
         // TODO discuss if this is still wanted behavior
         if (cloudServiceRepository.countCloudServiceByComputeResource(computeResourceId) +
                 softwarePlatformRepository.countSoftwarePlatformByComputeResource(computeResourceId) < 1) {
@@ -115,11 +112,13 @@ public class ComputeResourceServiceImpl implements ComputeResourceService {
 
     @Override
     public Page<CloudService> findLinkedComputeResources(@NonNull UUID computeResourceId, @NonNull Pageable pageable) {
+        ServiceUtils.throwIfNotExists(computeResourceId, ComputeResource.class, computeResourceRepository);
         return cloudServiceRepository.findCloudServicesByComputeResourceId(computeResourceId, pageable);
     }
 
     @Override
     public Page<SoftwarePlatform> findLinkedSoftwarePlatforms(@NonNull UUID computeResourceId, @NonNull Pageable pageable) {
+        ServiceUtils.throwIfNotExists(computeResourceId, ComputeResource.class, computeResourceRepository);
         return softwarePlatformRepository.findSoftwarePlatformsByComputeResourceId(computeResourceId, pageable);
     }
 }

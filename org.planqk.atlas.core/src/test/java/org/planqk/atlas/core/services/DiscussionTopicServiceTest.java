@@ -142,21 +142,6 @@ public class DiscussionTopicServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void existsDiscussionTopic_ElementFound() {
-        DiscussionTopic topic = topicService.create(this.topic);
-        boolean exists = topicService.existsDiscussionTopicById(topic.getId());
-
-        assertThat(exists).isEqualTo(true);
-    }
-
-    @Test
-    void existsDiscussionTopic_ElementNotFound() {
-
-        boolean exists = topicService.existsDiscussionTopicById(UUID.randomUUID());
-        assertThat(exists).isEqualTo(false);
-    }
-
-    @Test
     void findByKnowledgeArtifact() {
         topicService.create(topic);
         topicService.create(topic2);

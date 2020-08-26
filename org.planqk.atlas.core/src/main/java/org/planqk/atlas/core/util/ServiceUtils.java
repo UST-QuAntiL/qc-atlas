@@ -17,29 +17,22 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.planqk.atlas.core.model.exceptions;
+package org.planqk.atlas.core.util;
 
-/**
- * This exception is thrown when database consistency is about to be violated.
- *
- */
-public class ConsistencyException extends RuntimeException {
+import java.util.NoSuchElementException;
 
-    private static final long serialVersionUID = 1697519892942333680L;
+import org.springframework.data.repository.CrudRepository;
 
-    public ConsistencyException() {
+public class ServiceUtils {
+    public static <T, ID> void throwIfNotExists(ID id, Class<? extends T> resourceClass, CrudRepository<T, ID> repository) {
+        if (!repository.existsById(id)) {
+            throw new NoSuchElementException(resourceClass.getName() +
+                    " with ID \"" + id.toString() + "\" does not exist");
+        }
     }
 
-    public ConsistencyException(String message) {
-        super(message);
+    public static <T, ID> T findById(ID id, Class<? extends T> resourceClass, CrudRepository<T, ID> repository) {
+        return repository.findById(id).orElseThrow(() -> new NoSuchElementException(resourceClass.getName() +
+                " with ID \"" + id.toString() + "\" does not exist"));
     }
-
-    public ConsistencyException(Throwable cause) {
-        super(cause);
-    }
-
-    public ConsistencyException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
 }

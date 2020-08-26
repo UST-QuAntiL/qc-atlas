@@ -19,7 +19,6 @@
 
 package org.planqk.atlas.core.services;
 
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -38,6 +37,7 @@ import org.planqk.atlas.core.repository.PatternRelationRepository;
 import org.planqk.atlas.core.repository.ProblemTypeRepository;
 import org.planqk.atlas.core.repository.PublicationRepository;
 import org.planqk.atlas.core.repository.SketchRepository;
+import org.planqk.atlas.core.util.ServiceUtils;
 
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
@@ -85,7 +85,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 
     @Override
     public Algorithm findById(@NonNull UUID algorithmId) {
-        return algorithmRepository.findById(algorithmId).orElseThrow(NoSuchElementException::new);
+        return ServiceUtils.findById(algorithmId, Algorithm.class, algorithmRepository);
     }
 
     @Override
@@ -159,45 +159,35 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 
     @Override
     public Page<Publication> findPublications(@NonNull UUID algorithmId, @NonNull Pageable pageable) {
-        if (algorithmRepository.existsAlgorithmById(algorithmId)) {
-            throw new NoSuchElementException();
-        }
+        ServiceUtils.throwIfNotExists(algorithmId, Algorithm.class, algorithmRepository);
 
         return publicationRepository.findPublicationsByAlgorithmId(algorithmId, pageable);
     }
 
     @Override
     public Page<ProblemType> findProblemTypes(@NonNull UUID algorithmId, @NonNull Pageable pageable) {
-        if (algorithmRepository.existsAlgorithmById(algorithmId)) {
-            throw new NoSuchElementException();
-        }
+        ServiceUtils.throwIfNotExists(algorithmId, Algorithm.class, algorithmRepository);
 
         return problemTypeRepository.findProblemTypesByAlgorithmId(algorithmId, pageable);
     }
 
     @Override
     public Page<ApplicationArea> findApplicationAreas(@NonNull UUID algorithmId, @NonNull Pageable pageable) {
-        if (algorithmRepository.existsAlgorithmById(algorithmId)) {
-            throw new NoSuchElementException();
-        }
+        ServiceUtils.throwIfNotExists(algorithmId, Algorithm.class, algorithmRepository);
 
         return applicationAreaRepository.findApplicationAreasByAlgorithmId(algorithmId, pageable);
     }
 
     @Override
     public Page<PatternRelation> findPatternRelations(@NonNull UUID algorithmId, @NonNull Pageable pageable) {
-        if (algorithmRepository.existsAlgorithmById(algorithmId)) {
-            throw new NoSuchElementException();
-        }
+        ServiceUtils.throwIfNotExists(algorithmId, Algorithm.class, algorithmRepository);
 
         return patternRelationRepository.findByAlgorithmId(algorithmId, pageable);
     }
 
     @Override
     public Page<AlgorithmRelation> findAlgorithmRelations(@NonNull UUID algorithmId, @NonNull Pageable pageable) {
-        if (algorithmRepository.existsAlgorithmById(algorithmId)) {
-            throw new NoSuchElementException();
-        }
+        ServiceUtils.throwIfNotExists(algorithmId, Algorithm.class, algorithmRepository);
 
         return getAlgorithmRelations(algorithmId, pageable);
     }

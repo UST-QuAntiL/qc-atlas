@@ -24,9 +24,11 @@ import java.util.UUID;
 
 import javax.transaction.Transactional;
 
+import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.repository.AlgorithmRepository;
 import org.planqk.atlas.core.repository.PatternRelationRepository;
+import org.planqk.atlas.core.util.ServiceUtils;
 
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
@@ -40,12 +42,11 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class PatternRelationServiceImpl implements PatternRelationService {
 
-    private static final String NO_RELATION_ERROR = "Pattern relation does not exist!";
-
     private final PatternRelationRepository patternRelationRepository;
     private final PatternRelationTypeService patternRelationTypeService;
     private final AlgorithmRepository algorithmRepository;
 
+    // TODO Replace NoSuchElementException with an exception telling the user that the needed object is missing
     @Override
     @Transactional
     public PatternRelation create(@NonNull PatternRelation patternRelation) {
@@ -54,10 +55,8 @@ public class PatternRelationServiceImpl implements PatternRelationService {
             throw new NoSuchElementException("The given algorithm is invalid");
         }
 
-        patternRelation.setAlgorithm(algorithmRepository.findById(
-                patternRelation.getAlgorithm().getId())
-                .orElseThrow(() -> new NoSuchElementException(
-                        "No Algorithm with given ID \"" + patternRelation.getAlgorithm().getId() + "\" was found")));
+        patternRelation.setAlgorithm(
+                ServiceUtils.findById(patternRelation.getAlgorithm().getId(), Algorithm.class, algorithmRepository));
 
         if (patternRelation.getPatternRelationType() == null
                 || patternRelation.getPatternRelationType().getId() == null) {
@@ -72,8 +71,7 @@ public class PatternRelationServiceImpl implements PatternRelationService {
 
     @Override
     public PatternRelation findById(@NonNull UUID patternRelationId) {
-        return patternRelationRepository.findById(patternRelationId)
-                .orElseThrow(() -> new NoSuchElementException(NO_RELATION_ERROR));
+        return ServiceUtils.findById(patternRelationId, PatternRelation.class, patternRelationRepository);
     }
 
     @Override
@@ -96,9 +94,7 @@ public class PatternRelationServiceImpl implements PatternRelationService {
     @Override
     @Transactional
     public void delete(@NonNull UUID patternRelationId) {
-        if (!patternRelationRepository.existsById(patternRelationId)) {
-            throw new NoSuchElementException();
-        }
+        ServiceUtils.throwIfNotExists(patternRelationId, PatternRelation.class, patternRelationRepository);
 
         patternRelationRepository.deleteById(patternRelationId);
     }

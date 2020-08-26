@@ -19,7 +19,6 @@
 
 package org.planqk.atlas.core.services;
 
-import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.CloudService;
@@ -28,6 +27,7 @@ import org.planqk.atlas.core.model.SoftwarePlatform;
 import org.planqk.atlas.core.repository.CloudServiceRepository;
 import org.planqk.atlas.core.repository.ComputeResourceRepository;
 import org.planqk.atlas.core.repository.SoftwarePlatformRepository;
+import org.planqk.atlas.core.util.ServiceUtils;
 
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
@@ -64,7 +64,7 @@ public class CloudServiceServiceImpl implements CloudServiceService {
 
     @Override
     public CloudService findById(@NonNull UUID cloudServiceId) {
-        return cloudServiceRepository.findById(cloudServiceId).orElseThrow(NoSuchElementException::new);
+        return ServiceUtils.findById(cloudServiceId, CloudService.class, cloudServiceRepository);
     }
 
     @Override
@@ -98,16 +98,16 @@ public class CloudServiceServiceImpl implements CloudServiceService {
                 computeResource -> computeResource.removeCloudService(cloudService));
     }
 
+    // TODO Use consistent name!
     @Override
     public Page<ComputeResource> findComputeResources(@NonNull UUID cloudServiceId, @NonNull Pageable pageable) {
-        if (!cloudServiceRepository.existsCloudServiceById(cloudServiceId)) {
-            throw new NoSuchElementException();
-        }
+        ServiceUtils.throwIfNotExists(cloudServiceId, CloudService.class, cloudServiceRepository);
         return computeResourceRepository.findComputeResourcesByCloudServiceId(cloudServiceId, pageable);
     }
 
     @Override
     public Page<SoftwarePlatform> findLinkedSoftwarePlatforms(@NonNull UUID cloudServiceId, @NonNull Pageable pageable) {
+        ServiceUtils.throwIfNotExists(cloudServiceId, CloudService.class, cloudServiceRepository);
         return softwarePlatformRepository.findSoftwarePlatformsByCloudServiceId(cloudServiceId, pageable);
     }
 }

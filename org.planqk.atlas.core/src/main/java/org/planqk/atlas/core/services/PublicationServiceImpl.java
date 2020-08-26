@@ -19,8 +19,6 @@
 
 package org.planqk.atlas.core.services;
 
-import java.util.NoSuchElementException;
-import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -30,6 +28,7 @@ import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.repository.AlgorithmRepository;
 import org.planqk.atlas.core.repository.ImplementationRepository;
 import org.planqk.atlas.core.repository.PublicationRepository;
+import org.planqk.atlas.core.util.ServiceUtils;
 
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
@@ -56,7 +55,7 @@ public class PublicationServiceImpl implements PublicationService {
 
     @Override
     public Page<Publication> findAll(@NonNull Pageable pageable, String search) {
-        if (!Objects.isNull(search) && !search.isEmpty()) {
+        if (search != null && !search.isEmpty()) {
             return publicationRepository.findAll(search, pageable);
         }
         return publicationRepository.findAll(pageable);
@@ -64,7 +63,7 @@ public class PublicationServiceImpl implements PublicationService {
 
     @Override
     public Publication findById(@NonNull UUID publicationId) {
-        return publicationRepository.findById(publicationId).orElseThrow(NoSuchElementException::new);
+        return ServiceUtils.findById(publicationId, Publication.class, publicationRepository);
     }
 
     @Override
@@ -98,23 +97,21 @@ public class PublicationServiceImpl implements PublicationService {
 
     @Override
     public Page<Algorithm> findAlgorithmsOfPublication(@NonNull UUID publicationId, @NonNull Pageable pageable) {
-        if (!publicationRepository.existsById(publicationId)) {
-            throw new NoSuchElementException("Publication with id " + publicationId.toString() + " Does not exist");
-        }
+        ServiceUtils.throwIfNotExists(publicationId, Publication.class, publicationRepository);
         return algorithmRepository.findAlgorithmsByPublicationId(publicationId, pageable);
     }
 
     @Override
     public Page<Implementation> findImplementationsOfPublication(@NonNull UUID publicationId, @NonNull Pageable pageable) {
-        if (!publicationRepository.existsById(publicationId)) {
-            throw new NoSuchElementException("Publication with id " + publicationId.toString() + " Does not exist");
-        }
+        ServiceUtils.throwIfNotExists(publicationId, Publication.class, publicationRepository);
         return implementationRepository.findImplementationsByPublicationId(publicationId, pageable);
     }
 
     @Override
     @Transactional
     public void deletePublications(@NonNull Set<UUID> publicationIds) {
+        publicationIds.forEach(publicationId ->
+                ServiceUtils.throwIfNotExists(publicationId, Publication.class, publicationRepository));
         publicationRepository.deleteByIdIn(publicationIds);
     }
 }
