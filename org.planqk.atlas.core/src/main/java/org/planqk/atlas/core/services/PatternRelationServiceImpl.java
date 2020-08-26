@@ -96,7 +96,7 @@ public class PatternRelationServiceImpl implements PatternRelationService {
     @Override
     @Transactional
     public void delete(@NonNull UUID patternRelationId) {
-        if (patternRelationRepository.existsById(patternRelationId)) {
+        if (!patternRelationRepository.existsById(patternRelationId)) {
             throw new NoSuchElementException();
         }
 

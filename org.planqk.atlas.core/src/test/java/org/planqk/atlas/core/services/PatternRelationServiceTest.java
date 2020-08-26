@@ -218,7 +218,7 @@ public class PatternRelationServiceTest extends AtlasDatabaseTestBase {
 
     @Test
     void deletePatternRelation_ElementNotFound() {
-        assertThrows(EmptyResultDataAccessException.class, () ->
+        assertThrows(NoSuchElementException.class, () ->
             patternRelationService.delete(UUID.randomUUID()));
     }
 
