@@ -107,12 +107,11 @@ public class ComputeResourceControllerTest {
     @Test
     public void addComputeResource_returnCreated() throws Exception {
         var resource = new ComputeResourceDto();
-        resource.setId(UUID.randomUUID());
         resource.setName("Hello World");
 
         var returnedResource = new ComputeResource();
         returnedResource.setName(resource.getName());
-        returnedResource.setId(resource.getId());
+        returnedResource.setId(UUID.randomUUID());
 
         doReturn(returnedResource).when(computeResourceService).create(any());
 
@@ -126,8 +125,8 @@ public class ComputeResourceControllerTest {
                         .accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id").value(resource.getId().toString()))
-                .andExpect(jsonPath("$.name").value(resource.getName()));
+                .andExpect(jsonPath("$.id").value(returnedResource.getId().toString()))
+                .andExpect(jsonPath("$.name").value(returnedResource.getName()));
     }
 
     @Test
@@ -380,7 +379,7 @@ public class ComputeResourceControllerTest {
     }
 
     @Test
-    void deleteCloudService_returnOk() throws Exception {
+    void deleteCloudService_returnNoContent() throws Exception {
         doNothing().when(computeResourceService).delete(any());
         mockMvc.perform(
                 delete(
@@ -388,7 +387,7 @@ public class ComputeResourceControllerTest {
                                 on(ComputeResourceController.class).deleteComputeResource(UUID.randomUUID())
                         ).toUriString()
                 ).accept(MediaType.APPLICATION_JSON)
-        ).andExpect(status().isOk());
+        ).andExpect(status().isNoContent());
     }
 
     @Test

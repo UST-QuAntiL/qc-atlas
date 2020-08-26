@@ -114,11 +114,10 @@ public class SoftwarePlatformControllerTest {
     @Test
     public void addSoftwarePlatform_returnCreate() throws Exception {
         SoftwarePlatform softwarePlatform = new SoftwarePlatform();
-        softwarePlatform.setId(UUID.randomUUID());
         softwarePlatform.setName("test platform");
         SoftwarePlatformDto softwarePlatformDto = ModelMapperUtils.convert(softwarePlatform, SoftwarePlatformDto.class);
 
-        when(softwarePlatformService.create(any(SoftwarePlatform.class))).thenReturn(softwarePlatform);
+        when(softwarePlatformService.create(any())).thenReturn(softwarePlatform);
 
         MvcResult result = mockMvc.perform(
                 post(
@@ -305,7 +304,7 @@ public class SoftwarePlatformControllerTest {
     }
 
     @Test
-    public void deleteSoftwarePlatform_returnOk() throws Exception {
+    public void deleteSoftwarePlatform_returnNoContent() throws Exception {
         SoftwarePlatform softwarePlatform = new SoftwarePlatform();
         softwarePlatform.setId(UUID.randomUUID());
         softwarePlatform.setName("test software platform");
@@ -317,7 +316,7 @@ public class SoftwarePlatformControllerTest {
                                 on(SoftwarePlatformController.class).deleteSoftwarePlatform(softwarePlatform.getId())
                         ).toUriString()
                 ).accept(MediaType.APPLICATION_JSON)
-        ).andExpect(status().isOk());
+        ).andExpect(status().isNoContent());
     }
 
     @Test
@@ -686,7 +685,7 @@ public class SoftwarePlatformControllerTest {
 //    }
 
     @Test
-    void createReferenceToComputeResource_returnOk() throws Exception {
+    void createReferenceToComputeResource_returnNoContent() throws Exception {
         doNothing().when(linkingService).linkSoftwarePlatformAndComputeResource(any(), any());
         mockMvc.perform(
                 post(
@@ -695,11 +694,11 @@ public class SoftwarePlatformControllerTest {
                                         .linkSoftwarePlatformAndComputeResource(UUID.randomUUID(), UUID.randomUUID())
                         ).toUriString()
                 ).accept(MediaType.APPLICATION_JSON)
-        ).andExpect(status().isOk());
+        ).andExpect(status().isNoContent());
     }
 
     @Test
-    void deleteReferenceToComputeResource_returnOk() throws Exception {
+    void deleteReferenceToComputeResource_returnNoContent() throws Exception {
         doNothing().when(linkingService).unlinkSoftwarePlatformAndComputeResource(any(), any());
         mockMvc.perform(
                 delete(
@@ -708,7 +707,7 @@ public class SoftwarePlatformControllerTest {
                                         .unlinkSoftwarePlatformAndComputeResource(UUID.randomUUID(), UUID.randomUUID())
                         ).toUriString()
                 ).accept(MediaType.APPLICATION_JSON)
-        ).andExpect(status().isOk());
+        ).andExpect(status().isNoContent());
     }
 
     @Test
@@ -764,7 +763,7 @@ public class SoftwarePlatformControllerTest {
     }
 
     @Test
-    void createReferenceToCloudService_returnOk() throws Exception {
+    void createReferenceToCloudService_returnNoContent() throws Exception {
         doNothing().when(linkingService).linkSoftwarePlatformAndCloudService(any(), any());
         mockMvc.perform(
                 post(
@@ -773,11 +772,11 @@ public class SoftwarePlatformControllerTest {
                                         .linkSoftwarePlatformAndCloudService(UUID.randomUUID(), UUID.randomUUID())
                         ).toUriString()
                 ).accept(MediaType.APPLICATION_JSON)
-        ).andExpect(status().isOk());
+        ).andExpect(status().isNoContent());
     }
 
     @Test
-    void deleteReferenceToCloudService_returnOk() throws Exception {
+    void deleteReferenceToCloudService_returnNoContent() throws Exception {
         doNothing().when(linkingService).unlinkSoftwarePlatformAndCloudService(any(), any());
         mockMvc.perform(
                 delete(
@@ -786,7 +785,7 @@ public class SoftwarePlatformControllerTest {
                                         .unlinkSoftwarePlatformAndCloudService(UUID.randomUUID(), UUID.randomUUID())
                         ).toUriString()
                 ).accept(MediaType.APPLICATION_JSON)
-        ).andExpect(status().isOk());
+        ).andExpect(status().isNoContent());
     }
 
     @Test
