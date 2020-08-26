@@ -30,6 +30,7 @@ import org.planqk.atlas.core.model.exceptions.ConsistencyException;
 import org.planqk.atlas.core.repository.ApplicationAreaRepository;
 
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -44,12 +45,12 @@ public class ApplicationAreaServiceImpl implements ApplicationAreaService {
 
     @Override
     @Transactional
-    public ApplicationArea create(ApplicationArea applicationArea) {
+    public ApplicationArea create(@NonNull ApplicationArea applicationArea) {
         return applicationAreaRepository.save(applicationArea);
     }
 
     @Override
-    public Page<ApplicationArea> findAll(Pageable pageable, String search) {
+    public Page<ApplicationArea> findAll(@NonNull Pageable pageable, String search) {
         if (!Objects.isNull(search) && !search.isEmpty()) {
             return applicationAreaRepository.findAll(search, pageable);
         }
@@ -57,13 +58,13 @@ public class ApplicationAreaServiceImpl implements ApplicationAreaService {
     }
 
     @Override
-    public ApplicationArea findById(UUID id) {
+    public ApplicationArea findById(@NonNull UUID id) {
         return applicationAreaRepository.findById(id).orElseThrow(NoSuchElementException::new);
     }
 
     @Override
     @Transactional
-    public ApplicationArea update(ApplicationArea applicationArea) {
+    public ApplicationArea update(@NonNull ApplicationArea applicationArea) {
         ApplicationArea persistedApplicationArea = findById(applicationArea.getId());
 
         persistedApplicationArea.setName(applicationArea.getName());
@@ -73,7 +74,7 @@ public class ApplicationAreaServiceImpl implements ApplicationAreaService {
 
     @Override
     @Transactional
-    public void delete(UUID applicationAreaId) {
+    public void delete(@NonNull UUID applicationAreaId) {
         ApplicationArea applicationArea = findById(applicationAreaId);
 
         if (applicationArea.getAlgorithms().size() > 0) {
