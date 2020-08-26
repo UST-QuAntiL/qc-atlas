@@ -26,6 +26,7 @@ import org.planqk.atlas.core.model.DiscussionComment;
 import org.planqk.atlas.core.repository.DiscussionCommentRepository;
 
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -41,32 +42,28 @@ public class DiscussionCommentServiceImpl implements DiscussionCommentService {
 
     @Override
     @Transactional
-    public DiscussionComment create(DiscussionComment discussionComment) {
+    public DiscussionComment create(@NonNull DiscussionComment discussionComment) {
         return discussionCommentRepository.save(discussionComment);
     }
 
     @Override
-    public Page<DiscussionComment> findAll(Pageable pageable) {
+    public Page<DiscussionComment> findAll(@NonNull Pageable pageable) {
         return discussionCommentRepository.findAll(pageable);
     }
 
     @Override
-    public Page<DiscussionComment> findAllByTopic(UUID topicId, Pageable pageable) {
+    public Page<DiscussionComment> findAllByTopic(@NonNull UUID topicId, @NonNull Pageable pageable) {
         return discussionCommentRepository.findByDiscussionTopicId(topicId, pageable);
     }
 
     @Override
-    public DiscussionComment findById(UUID id) {
-
-        if (!this.existsDiscussionCommentById(id)) {
-            throw new NoSuchElementException();
-        }
-        return discussionCommentRepository.findById(id).get();
+    public DiscussionComment findById(@NonNull UUID commentId) {
+        return discussionCommentRepository.findById(commentId).orElseThrow(() -> new NoSuchElementException("Not found"));
     }
 
     @Override
     @Transactional
-    public DiscussionComment update(DiscussionComment comment) {
+    public DiscussionComment update(@NonNull DiscussionComment comment) {
 
         if (!this.existsDiscussionCommentById(comment.getId())) {
             throw new NoSuchElementException();
@@ -76,13 +73,17 @@ public class DiscussionCommentServiceImpl implements DiscussionCommentService {
 
     @Override
     @Transactional
-    public void delete(UUID id) {
-        discussionCommentRepository.deleteById(id);
+    public void delete(@NonNull UUID commentId) {
+        if (!discussionCommentRepository.existsById(commentId)) {
+            throw new NoSuchElementException("Discussion comment with ID \"" + commentId + "\" does not exist");
+        }
+
+        discussionCommentRepository.deleteById(commentId);
     }
 
     @Override
-    public boolean existsDiscussionCommentById(UUID id) {
+    public boolean existsDiscussionCommentById(@NonNull UUID commentId) {
 
-        return discussionCommentRepository.existsById(id);
+        return discussionCommentRepository.existsById(commentId);
     }
 }

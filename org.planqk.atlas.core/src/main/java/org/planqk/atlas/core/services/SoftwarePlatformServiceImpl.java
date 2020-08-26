@@ -32,6 +32,7 @@ import org.planqk.atlas.core.repository.ImplementationRepository;
 import org.planqk.atlas.core.repository.SoftwarePlatformRepository;
 
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -52,29 +53,29 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
     private final CloudServiceRepository cloudServiceRepository;
 
     @Override
-    public Page<SoftwarePlatform> searchAllByName(String name, Pageable p) {
-        return softwarePlatformRepository.findAllByNameContainingIgnoreCase(name, p);
+    public Page<SoftwarePlatform> searchAllByName(String name, @NonNull Pageable pageable) {
+        return softwarePlatformRepository.findAllByNameContainingIgnoreCase(name, pageable);
     }
 
     @Override
     @Transactional
-    public SoftwarePlatform create(SoftwarePlatform softwarePlatform) {
+    public SoftwarePlatform create(@NonNull SoftwarePlatform softwarePlatform) {
         return this.softwarePlatformRepository.save(softwarePlatform);
     }
 
     @Override
-    public Page<SoftwarePlatform> findAll(Pageable pageable) {
+    public Page<SoftwarePlatform> findAll(@NonNull Pageable pageable) {
         return softwarePlatformRepository.findAll(pageable);
     }
 
     @Override
-    public SoftwarePlatform findById(UUID softwarePlatformId) {
+    public SoftwarePlatform findById(@NonNull UUID softwarePlatformId) {
         return softwarePlatformRepository.findById(softwarePlatformId).orElseThrow(NoSuchElementException::new);
     }
 
     @Override
     @Transactional
-    public SoftwarePlatform update(SoftwarePlatform softwarePlatform) {
+    public SoftwarePlatform update(@NonNull SoftwarePlatform softwarePlatform) {
         SoftwarePlatform persistedSoftwarePlatform = findById(softwarePlatform.getId());
 
         persistedSoftwarePlatform.setName(softwarePlatform.getName());
@@ -87,7 +88,7 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
 
     @Override
     @Transactional
-    public void delete(UUID softwarePlatformId) {
+    public void delete(@NonNull UUID softwarePlatformId) {
         SoftwarePlatform softwarePlatform = findById(softwarePlatformId);
 
         removeReferences(softwarePlatform);
@@ -95,7 +96,7 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
         softwarePlatformRepository.deleteById(softwarePlatformId);
     }
 
-    private void removeReferences(SoftwarePlatform softwarePlatform) {
+    private void removeReferences(@NonNull SoftwarePlatform softwarePlatform) {
         softwarePlatform.getImplementations().forEach(
                 implementation -> implementation.removeSoftwarePlatform(softwarePlatform));
         softwarePlatform.getSupportedCloudServices().forEach(
@@ -105,7 +106,7 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
     }
 
     @Override
-    public Page<Implementation> findImplementations(UUID softwarePlatformId, Pageable pageable) {
+    public Page<Implementation> findImplementations(@NonNull UUID softwarePlatformId, @NonNull Pageable pageable) {
         if (!softwarePlatformRepository.existsSoftwarePlatformById(softwarePlatformId)) {
             throw new NoSuchElementException();
         }
@@ -114,7 +115,7 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
     }
 
     @Override
-    public Page<CloudService> findCloudServices(UUID softwarePlatformId, Pageable pageable) {
+    public Page<CloudService> findCloudServices(@NonNull UUID softwarePlatformId, @NonNull Pageable pageable) {
         if (!softwarePlatformRepository.existsSoftwarePlatformById(softwarePlatformId)) {
             throw new NoSuchElementException();
         }
@@ -123,7 +124,7 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
     }
 
     @Override
-    public Page<ComputeResource> findComputeResources(UUID softwarePlatformId, Pageable pageable) {
+    public Page<ComputeResource> findComputeResources(@NonNull UUID softwarePlatformId, @NonNull Pageable pageable) {
         if (!softwarePlatformRepository.existsSoftwarePlatformById(softwarePlatformId)) {
             throw new NoSuchElementException();
         }

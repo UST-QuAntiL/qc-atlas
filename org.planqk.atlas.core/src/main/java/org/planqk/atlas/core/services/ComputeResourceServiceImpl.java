@@ -32,6 +32,7 @@ import org.planqk.atlas.core.repository.ComputeResourceRepository;
 import org.planqk.atlas.core.repository.SoftwarePlatformRepository;
 
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -49,29 +50,29 @@ public class ComputeResourceServiceImpl implements ComputeResourceService {
     private final ComputeResourcePropertyService computeResourcePropertyService;
 
     @Override
-    public Page<ComputeResource> searchAllByName(String name, Pageable p) {
-        return computeResourceRepository.findAllByNameContainingIgnoreCase(name, p);
+    public Page<ComputeResource> searchAllByName(String name, @NonNull Pageable pageable) {
+        return computeResourceRepository.findAllByNameContainingIgnoreCase(name, pageable);
     }
 
     @Override
     @Transactional
-    public ComputeResource create(ComputeResource computeResource) {
+    public ComputeResource create(@NonNull ComputeResource computeResource) {
         return computeResourceRepository.save(computeResource);
     }
 
     @Override
-    public Page<ComputeResource> findAll(Pageable pageable) {
+    public Page<ComputeResource> findAll(@NonNull Pageable pageable) {
         return computeResourceRepository.findAll(pageable);
     }
 
     @Override
-    public ComputeResource findById(UUID id) {
-        return computeResourceRepository.findById(id).orElseThrow(NoSuchElementException::new);
+    public ComputeResource findById(@NonNull UUID computeResourceId) {
+        return computeResourceRepository.findById(computeResourceId).orElseThrow(NoSuchElementException::new);
     }
 
     @Override
     @Transactional
-    public ComputeResource update(ComputeResource computeResource) {
+    public ComputeResource update(@NonNull ComputeResource computeResource) {
         ComputeResource persistedComputeResource = findById(computeResource.getId());
 
         persistedComputeResource.setName(computeResource.getName());
@@ -84,27 +85,25 @@ public class ComputeResourceServiceImpl implements ComputeResourceService {
 
     @Override
     @Transactional
-    public void delete(UUID id) {
-        if (!computeResourceRepository.existsById(id)) {
+    public void delete(@NonNull UUID computeResourceId) {
+        if (!computeResourceRepository.existsById(computeResourceId)) {
             throw new NoSuchElementException();
         }
-
-        // only delete if unused in SoftwarePlatforms and CloudServices
-        long count = cloudServiceRepository.countCloudServiceByComputeResource(id) +
-                softwarePlatformRepository.countSoftwarePlatformByComputeResource(id);
-        if (count == 0) {
-            ComputeResource computeResource = findById(id);
-
-            removeReferences(computeResource);
-
-            computeResourceRepository.deleteById(id);
-        } else {
+        // TODO discuss if this is still wanted behavior
+        if (cloudServiceRepository.countCloudServiceByComputeResource(computeResourceId) +
+                softwarePlatformRepository.countSoftwarePlatformByComputeResource(computeResourceId) < 1) {
             throw new ConsistencyException(
-                    "Cannot delete Compute Resource since it is used by existing CloudService or SoftwarePlatform");
+                    "Cannot delete Compute Resource since it is used by existing Cloud services or Software platforms");
         }
+
+        ComputeResource computeResource = findById(computeResourceId);
+
+        removeReferences(computeResource);
+
+        computeResourceRepository.deleteById(computeResourceId);
     }
 
-    private void removeReferences(ComputeResource computeResource) {
+    private void removeReferences(@NonNull ComputeResource computeResource) {
         computeResource.getSoftwarePlatforms().forEach(
                 softwarePlatform -> softwarePlatform.removeComputeResource(computeResource));
         computeResource.getCloudServices().forEach(
@@ -115,12 +114,12 @@ public class ComputeResourceServiceImpl implements ComputeResourceService {
     }
 
     @Override
-    public Page<CloudService> findLinkedComputeResources(UUID computeresourceid, Pageable p) {
-        return cloudServiceRepository.findCloudServicesByComputeResourceId(computeresourceid, p);
+    public Page<CloudService> findLinkedComputeResources(@NonNull UUID computeResourceId, @NonNull Pageable pageable) {
+        return cloudServiceRepository.findCloudServicesByComputeResourceId(computeResourceId, pageable);
     }
 
     @Override
-    public Page<SoftwarePlatform> findLinkedSoftwarePlatforms(UUID id, Pageable p) {
-        return softwarePlatformRepository.findSoftwarePlatformsByComputeResourceId(id, p);
+    public Page<SoftwarePlatform> findLinkedSoftwarePlatforms(@NonNull UUID computeResourceId, @NonNull Pageable pageable) {
+        return softwarePlatformRepository.findSoftwarePlatformsByComputeResourceId(computeResourceId, pageable);
     }
 }

@@ -28,6 +28,7 @@ import org.planqk.atlas.core.repository.AlgorithmRelationRepository;
 import org.planqk.atlas.core.repository.AlgorithmRepository;
 
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,7 +46,7 @@ public class AlgorithmRelationServiceImpl implements AlgorithmRelationService {
 
     @Override
     @Transactional
-    public AlgorithmRelation create(AlgorithmRelation algorithmRelation) {
+    public AlgorithmRelation create(@NonNull AlgorithmRelation algorithmRelation) {
         algorithmRelation.setAlgorithmRelationType(
                 algorithmRelationTypeService.findById(algorithmRelation.getAlgorithmRelationType().getId()));
 
@@ -56,13 +57,13 @@ public class AlgorithmRelationServiceImpl implements AlgorithmRelationService {
     }
 
     @Override
-    public AlgorithmRelation findById(UUID algorithmRelationId) {
+    public AlgorithmRelation findById(@NonNull UUID algorithmRelationId) {
         return algorithmRelationRepository.findById(algorithmRelationId).orElseThrow(NoSuchElementException::new);
     }
 
     @Override
     @Transactional
-    public AlgorithmRelation update(AlgorithmRelation algorithmRelation) {
+    public AlgorithmRelation update(@NonNull AlgorithmRelation algorithmRelation) {
         AlgorithmRelation persistedAlgorithmRelation = findById(algorithmRelation.getId());
 
         persistedAlgorithmRelation.setAlgorithmRelationType(
@@ -74,11 +75,11 @@ public class AlgorithmRelationServiceImpl implements AlgorithmRelationService {
 
     @Override
     @Transactional
-    public void delete(UUID algorithmRelationId) {
+    public void delete(@NonNull UUID algorithmRelationId) {
         algorithmRelationRepository.deleteById(algorithmRelationId);
     }
 
-    private Algorithm findAlgorithmById(UUID algorithmId) {
+    private Algorithm findAlgorithmById(@NonNull UUID algorithmId) {
         return algorithmRepository.findById(algorithmId).orElseThrow(
                 () -> new NoSuchElementException("No Algorithm with given ID \"" + algorithmId + "\" was found"));
     }

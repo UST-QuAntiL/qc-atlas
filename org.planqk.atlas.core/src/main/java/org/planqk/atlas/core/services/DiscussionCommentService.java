@@ -36,13 +36,13 @@ public interface DiscussionCommentService {
 
     Page<DiscussionComment> findAllByTopic(UUID topicId, Pageable pageable);
 
-    DiscussionComment findById(UUID id);
+    DiscussionComment findById(UUID commentId);
 
     @Transactional
     DiscussionComment update(DiscussionComment comment);
 
     @Transactional
-    void delete(UUID id);
+    void delete(UUID commentId);
 
-    boolean existsDiscussionCommentById(UUID id);
+    boolean existsDiscussionCommentById(UUID commentId);
 }

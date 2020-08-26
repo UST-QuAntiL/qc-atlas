@@ -32,7 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 public interface SoftwarePlatformService {
 
-    Page<SoftwarePlatform> searchAllByName(String name, Pageable p);
+    Page<SoftwarePlatform> searchAllByName(String name, Pageable pageable);
 
     @Transactional
     SoftwarePlatform create(SoftwarePlatform softwarePlatform);

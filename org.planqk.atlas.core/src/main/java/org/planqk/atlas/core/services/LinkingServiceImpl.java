@@ -33,6 +33,7 @@ import org.planqk.atlas.core.model.SoftwarePlatform;
 import org.planqk.atlas.core.model.exceptions.ConsistencyException;
 
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,7 +63,7 @@ public class LinkingServiceImpl implements LinkingService {
 
     @Override
     @Transactional
-    public void linkAlgorithmAndPublication(UUID algorithmId, UUID publicationId) {
+    public void linkAlgorithmAndPublication(@NonNull UUID algorithmId, @NonNull UUID publicationId) {
         Algorithm algorithm = algorithmService.findById(algorithmId);
         Publication publication = publicationService.findById(publicationId);
 
@@ -75,7 +76,7 @@ public class LinkingServiceImpl implements LinkingService {
 
     @Override
     @Transactional
-    public void unlinkAlgorithmAndPublication(UUID algorithmId, UUID publicationId) {
+    public void unlinkAlgorithmAndPublication(@NonNull UUID algorithmId, @NonNull UUID publicationId) {
         Algorithm algorithm = algorithmService.findById(algorithmId);
         Publication publication = publicationService.findById(publicationId);
 
@@ -88,7 +89,7 @@ public class LinkingServiceImpl implements LinkingService {
 
     @Override
     @Transactional
-    public void linkAlgorithmAndProblemType(UUID algorithmId, UUID problemTypeId) {
+    public void linkAlgorithmAndProblemType(@NonNull UUID algorithmId, @NonNull UUID problemTypeId) {
         Algorithm algorithm = algorithmService.findById(algorithmId);
         ProblemType problemType = problemTypeService.findById(problemTypeId);
 
@@ -101,7 +102,7 @@ public class LinkingServiceImpl implements LinkingService {
 
     @Override
     @Transactional
-    public void unlinkAlgorithmAndProblemType(UUID algorithmId, UUID problemTypeId) {
+    public void unlinkAlgorithmAndProblemType(@NonNull UUID algorithmId, @NonNull UUID problemTypeId) {
         Algorithm algorithm = algorithmService.findById(algorithmId);
         ProblemType problemType = problemTypeService.findById(problemTypeId);
 
@@ -114,7 +115,7 @@ public class LinkingServiceImpl implements LinkingService {
 
     @Override
     @Transactional
-    public void linkAlgorithmAndApplicationArea(UUID algorithmId, UUID applicationAreaId) {
+    public void linkAlgorithmAndApplicationArea(@NonNull UUID algorithmId, @NonNull UUID applicationAreaId) {
         Algorithm algorithm = algorithmService.findById(algorithmId);
         ApplicationArea applicationArea = applicationAreaService.findById(applicationAreaId);
 
@@ -127,7 +128,7 @@ public class LinkingServiceImpl implements LinkingService {
 
     @Override
     @Transactional
-    public void unlinkAlgorithmAndApplicationArea(UUID algorithmId, UUID applicationAreaId) {
+    public void unlinkAlgorithmAndApplicationArea(@NonNull UUID algorithmId, @NonNull UUID applicationAreaId) {
         Algorithm algorithm = algorithmService.findById(algorithmId);
         ApplicationArea applicationArea = applicationAreaService.findById(applicationAreaId);
 
@@ -140,7 +141,7 @@ public class LinkingServiceImpl implements LinkingService {
 
     @Override
     @Transactional
-    public void linkAlgorithmAndPatternRelation(UUID algorithmId, UUID patternRelationId) {
+    public void linkAlgorithmAndPatternRelation(@NonNull UUID algorithmId, @NonNull UUID patternRelationId) {
         Algorithm algorithm = algorithmService.findById(algorithmId);
         PatternRelation patternRelation = patternRelationService.findById(patternRelationId);
 
@@ -153,7 +154,7 @@ public class LinkingServiceImpl implements LinkingService {
 
     @Override
     @Transactional
-    public void unlinkAlgorithmAndPatternRelation(UUID algorithmId, UUID patternRelationId) {
+    public void unlinkAlgorithmAndPatternRelation(@NonNull UUID algorithmId, @NonNull UUID patternRelationId) {
         Algorithm algorithm = algorithmService.findById(algorithmId);
         PatternRelation patternRelation = patternRelationService.findById(patternRelationId);
 
@@ -166,7 +167,7 @@ public class LinkingServiceImpl implements LinkingService {
 
     @Override
     @Transactional
-    public void linkImplementationAndPublication(UUID implementationId, UUID publicationId) {
+    public void linkImplementationAndPublication(@NonNull UUID implementationId, @NonNull UUID publicationId) {
         Implementation implementation = implementationService.findById(implementationId);
         Publication publication = publicationService.findById(publicationId);
 
@@ -179,7 +180,7 @@ public class LinkingServiceImpl implements LinkingService {
 
     @Override
     @Transactional
-    public void unlinkImplementationAndPublication(UUID implementationId, UUID publicationId) {
+    public void unlinkImplementationAndPublication(@NonNull UUID implementationId, @NonNull UUID publicationId) {
         Implementation implementation = implementationService.findById(implementationId);
         Publication publication = publicationService.findById(publicationId);
 
@@ -192,7 +193,7 @@ public class LinkingServiceImpl implements LinkingService {
 
     @Override
     @Transactional
-    public void linkImplementationAndSoftwarePlatform(UUID implementationId, UUID softwarePlatformId) {
+    public void linkImplementationAndSoftwarePlatform(@NonNull UUID implementationId, @NonNull UUID softwarePlatformId) {
         Implementation implementation = implementationService.findById(implementationId);
         SoftwarePlatform softwarePlatform = softwarePlatformService.findById(softwarePlatformId);
 
@@ -205,7 +206,7 @@ public class LinkingServiceImpl implements LinkingService {
 
     @Override
     @Transactional
-    public void unlinkImplementationAndSoftwarePlatform(UUID implementationId, UUID softwarePlatformId) {
+    public void unlinkImplementationAndSoftwarePlatform(@NonNull UUID implementationId, @NonNull UUID softwarePlatformId) {
         Implementation implementation = implementationService.findById(implementationId);
         SoftwarePlatform softwarePlatform = softwarePlatformService.findById(softwarePlatformId);
 
@@ -218,7 +219,7 @@ public class LinkingServiceImpl implements LinkingService {
 
     @Override
     @Transactional
-    public void linkSoftwarePlatformAndCloudService(UUID softwarePlatformId, UUID cloudServiceId) {
+    public void linkSoftwarePlatformAndCloudService(@NonNull UUID softwarePlatformId, @NonNull UUID cloudServiceId) {
         SoftwarePlatform softwarePlatform = softwarePlatformService.findById(softwarePlatformId);
         CloudService cloudService = cloudServiceService.findById(cloudServiceId);
 
@@ -231,7 +232,7 @@ public class LinkingServiceImpl implements LinkingService {
 
     @Override
     @Transactional
-    public void unlinkSoftwarePlatformAndCloudService(UUID softwarePlatformId, UUID cloudServiceId) {
+    public void unlinkSoftwarePlatformAndCloudService(@NonNull UUID softwarePlatformId, @NonNull UUID cloudServiceId) {
         SoftwarePlatform softwarePlatform = softwarePlatformService.findById(softwarePlatformId);
         CloudService cloudService = cloudServiceService.findById(cloudServiceId);
 
@@ -244,7 +245,7 @@ public class LinkingServiceImpl implements LinkingService {
 
     @Override
     @Transactional
-    public void linkSoftwarePlatformAndComputeResource(UUID softwarePlatformId, UUID computeResourceId) {
+    public void linkSoftwarePlatformAndComputeResource(@NonNull UUID softwarePlatformId, @NonNull UUID computeResourceId) {
         SoftwarePlatform softwarePlatform = softwarePlatformService.findById(softwarePlatformId);
         ComputeResource computeResource = computeResourceService.findById(computeResourceId);
 
@@ -257,7 +258,7 @@ public class LinkingServiceImpl implements LinkingService {
 
     @Override
     @Transactional
-    public void unlinkSoftwarePlatformAndComputeResource(UUID softwarePlatformId, UUID computeResourceId) {
+    public void unlinkSoftwarePlatformAndComputeResource(@NonNull UUID softwarePlatformId, @NonNull UUID computeResourceId) {
         SoftwarePlatform softwarePlatform = softwarePlatformService.findById(softwarePlatformId);
         ComputeResource computeResource = computeResourceService.findById(computeResourceId);
 
@@ -270,7 +271,7 @@ public class LinkingServiceImpl implements LinkingService {
 
     @Override
     @Transactional
-    public void linkCloudServiceAndComputeResource(UUID cloudServiceId, UUID computeResourceId) {
+    public void linkCloudServiceAndComputeResource(@NonNull UUID cloudServiceId, @NonNull UUID computeResourceId) {
         var cloudService = cloudServiceService.findById(cloudServiceId);
         var computeResource = computeResourceService.findById(computeResourceId);
 
@@ -283,7 +284,7 @@ public class LinkingServiceImpl implements LinkingService {
 
     @Override
     @Transactional
-    public void unlinkCloudServiceAndComputeResource(UUID cloudServiceId, UUID computeResourceId) {
+    public void unlinkCloudServiceAndComputeResource(@NonNull UUID cloudServiceId, @NonNull UUID computeResourceId) {
         var cloudService = cloudServiceService.findById(cloudServiceId);
         var computeResource = computeResourceService.findById(computeResourceId);
 

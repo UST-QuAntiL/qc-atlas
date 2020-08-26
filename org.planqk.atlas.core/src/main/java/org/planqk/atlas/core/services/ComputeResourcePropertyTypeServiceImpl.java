@@ -26,6 +26,7 @@ import org.planqk.atlas.core.model.ComputeResourcePropertyType;
 import org.planqk.atlas.core.repository.ComputeResourcePropertyTypeRepository;
 
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -41,24 +42,24 @@ public class ComputeResourcePropertyTypeServiceImpl implements ComputeResourcePr
 
     @Override
     @Transactional
-    public ComputeResourcePropertyType create(ComputeResourcePropertyType computeResourcePropertyType) {
+    public ComputeResourcePropertyType create(@NonNull ComputeResourcePropertyType computeResourcePropertyType) {
         return computeResourcePropertyTypeRepository.save(computeResourcePropertyType);
     }
 
     @Override
-    public Page<ComputeResourcePropertyType> findAll(Pageable pageable) {
+    public Page<ComputeResourcePropertyType> findAll(@NonNull Pageable pageable) {
         return computeResourcePropertyTypeRepository.findAll(pageable);
     }
 
     @Override
-    public ComputeResourcePropertyType findById(UUID computeResourcePropertyTypeId) {
+    public ComputeResourcePropertyType findById(@NonNull UUID computeResourcePropertyTypeId) {
         return this.computeResourcePropertyTypeRepository
                 .findById(computeResourcePropertyTypeId).orElseThrow(NoSuchElementException::new);
     }
 
     @Override
     @Transactional
-    public ComputeResourcePropertyType update(ComputeResourcePropertyType computeResourcePropertyType) {
+    public ComputeResourcePropertyType update(@NonNull ComputeResourcePropertyType computeResourcePropertyType) {
         var persistedComputeResourcePropertyType = findById(computeResourcePropertyType.getId());
 
         persistedComputeResourcePropertyType.setName(computeResourcePropertyType.getName());
@@ -70,7 +71,11 @@ public class ComputeResourcePropertyTypeServiceImpl implements ComputeResourcePr
 
     @Override
     @Transactional
-    public void delete(UUID computeResourcePropertyTypeId) {
+    public void delete(@NonNull UUID computeResourcePropertyTypeId) {
+        if (!computeResourcePropertyTypeRepository.existsById(computeResourcePropertyTypeId)) {
+            throw new NoSuchElementException(
+                    "Compute resource property type with ID \"" + computeResourcePropertyTypeId + "\" does not exist");
+        }
         // TODO throw consistency exception if object is still linked!
         this.computeResourcePropertyTypeRepository.deleteById(computeResourcePropertyTypeId);
     }

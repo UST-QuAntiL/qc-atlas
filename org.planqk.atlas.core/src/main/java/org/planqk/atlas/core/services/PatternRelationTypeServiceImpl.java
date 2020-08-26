@@ -29,6 +29,7 @@ import org.planqk.atlas.core.model.exceptions.ConsistencyException;
 import org.planqk.atlas.core.repository.PatternRelationRepository;
 import org.planqk.atlas.core.repository.PatternRelationTypeRepository;
 
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -48,24 +49,24 @@ public class PatternRelationTypeServiceImpl implements PatternRelationTypeServic
 
     @Override
     @Transactional
-    public PatternRelationType create(PatternRelationType patternRelationType) {
+    public PatternRelationType create(@NonNull PatternRelationType patternRelationType) {
         return patternRelationTypeRepository.save(patternRelationType);
     }
 
     @Override
-    public PatternRelationType findById(UUID patternRelationTypeId) {
+    public PatternRelationType findById(@NonNull UUID patternRelationTypeId) {
         return patternRelationTypeRepository.findById(patternRelationTypeId)
                 .orElseThrow(() -> new NoSuchElementException(NO_TYPE_ERROR));
     }
 
     @Override
-    public Page<PatternRelationType> findAll(Pageable pageable) {
+    public Page<PatternRelationType> findAll(@NonNull Pageable pageable) {
         return patternRelationTypeRepository.findAll(pageable);
     }
 
     @Override
     @Transactional
-    public PatternRelationType update(PatternRelationType patternRelationType) {
+    public PatternRelationType update(@NonNull PatternRelationType patternRelationType) {
         PatternRelationType persistedPatternRelationType = findById(patternRelationType.getId());
 
         persistedPatternRelationType.setName(patternRelationType.getName());
@@ -75,7 +76,7 @@ public class PatternRelationTypeServiceImpl implements PatternRelationTypeServic
 
     @Override
     @Transactional
-    public void delete(UUID patternRelationTypeId) {
+    public void delete(@NonNull UUID patternRelationTypeId) {
         if (!patternRelationTypeRepository.existsById(patternRelationTypeId)) {
             throw new NoSuchElementException("Pattern relation type with ID \"" + patternRelationTypeId + "\" does not exist");
         }

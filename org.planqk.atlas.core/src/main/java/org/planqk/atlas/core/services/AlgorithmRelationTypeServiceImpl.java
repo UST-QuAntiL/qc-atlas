@@ -27,6 +27,7 @@ import org.planqk.atlas.core.model.exceptions.ConsistencyException;
 import org.planqk.atlas.core.repository.AlgorithmRelationTypeRepository;
 import org.planqk.atlas.core.repository.AlgorithmRelationRepository;
 
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -45,23 +46,23 @@ public class AlgorithmRelationTypeServiceImpl implements AlgorithmRelationTypeSe
 
     @Override
     @Transactional
-    public AlgorithmRelationType create(AlgorithmRelationType algorithmRelationType) {
+    public AlgorithmRelationType create(@NonNull AlgorithmRelationType algorithmRelationType) {
         return algorithmRelationTypeRepository.save(algorithmRelationType);
     }
 
     @Override
-    public Page<AlgorithmRelationType> findAll(Pageable pageable) {
+    public Page<AlgorithmRelationType> findAll(@NonNull Pageable pageable) {
         return algorithmRelationTypeRepository.findAll(pageable);
     }
 
     @Override
-    public AlgorithmRelationType findById(UUID algorithmRelationTypeId) {
+    public AlgorithmRelationType findById(@NonNull UUID algorithmRelationTypeId) {
         return algorithmRelationTypeRepository.findById(algorithmRelationTypeId).orElseThrow(NoSuchElementException::new);
     }
 
     @Override
     @Transactional
-    public AlgorithmRelationType update(AlgorithmRelationType algorithmRelationType) {
+    public AlgorithmRelationType update(@NonNull AlgorithmRelationType algorithmRelationType) {
         var persistedAlgorithmRelationType = findById(algorithmRelationType.getId());
 
         persistedAlgorithmRelationType.setName(algorithmRelationType.getName());
@@ -71,7 +72,12 @@ public class AlgorithmRelationTypeServiceImpl implements AlgorithmRelationTypeSe
 
     @Override
     @Transactional
-    public void delete(UUID algorithmRelationTypeId) {
+    public void delete(@NonNull UUID algorithmRelationTypeId) {
+        if (!algorithmRelationTypeRepository.existsById(algorithmRelationTypeId)) {
+            throw new NoSuchElementException(
+                    "Algorithm relation type with ID \"" + algorithmRelationTypeId + "\" does not exist");
+        }
+
         if (algorithmRelationRepository.countByAlgorithmRelationTypeId(algorithmRelationTypeId) > 0) {
             throw new ConsistencyException(
                     "Cannot delete AlgorithmRelationType since it is used by existing AlgorithmRelations.");

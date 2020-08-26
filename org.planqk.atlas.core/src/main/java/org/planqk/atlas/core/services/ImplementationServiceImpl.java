@@ -32,6 +32,7 @@ import org.planqk.atlas.core.repository.PublicationRepository;
 import org.planqk.atlas.core.repository.SoftwarePlatformRepository;
 
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -51,7 +52,7 @@ public class ImplementationServiceImpl implements ImplementationService {
 
     @Override
     @Transactional
-    public Implementation create(Implementation implementation, UUID implementedAlgorithmId) {
+    public Implementation create(@NonNull Implementation implementation, @NonNull UUID implementedAlgorithmId) {
         Algorithm implementedAlgorithm = algorithmRepository.findById(implementedAlgorithmId)
                 .orElseThrow(() -> new NoSuchElementException("The algorithm does not exist"));
         implementation.setImplementedAlgorithm(implementedAlgorithm);
@@ -61,18 +62,18 @@ public class ImplementationServiceImpl implements ImplementationService {
     }
 
     @Override
-    public Page<Implementation> findAll(Pageable pageable) {
+    public Page<Implementation> findAll(@NonNull Pageable pageable) {
         return this.implementationRepository.findAll(pageable);
     }
 
     @Override
-    public Implementation findById(UUID implementationId) {
+    public Implementation findById(@NonNull UUID implementationId) {
         return implementationRepository.findById(implementationId).orElseThrow(NoSuchElementException::new);
     }
 
     @Override
     @Transactional
-    public Implementation update(Implementation implementation) {
+    public Implementation update(@NonNull Implementation implementation) {
         Implementation persistedImplementation = findById(implementation.getId());
 
         persistedImplementation.setName(implementation.getName());
@@ -90,7 +91,7 @@ public class ImplementationServiceImpl implements ImplementationService {
 
     @Override
     @Transactional
-    public void delete(UUID implementationId) {
+    public void delete(@NonNull UUID implementationId) {
         Implementation implementation = findById(implementationId);
 
         removeReferences(implementation);
@@ -98,7 +99,7 @@ public class ImplementationServiceImpl implements ImplementationService {
         implementationRepository.deleteById(implementationId);
     }
 
-    private void removeReferences(Implementation implementation) {
+    private void removeReferences(@NonNull Implementation implementation) {
         // TODO rethink the model implementation
         implementation.setImplementedAlgorithm(null);
 
@@ -110,7 +111,7 @@ public class ImplementationServiceImpl implements ImplementationService {
     }
 
     @Override
-    public Page<Implementation> findByImplementedAlgorithm(UUID algorithmId, Pageable pageable) {
+    public Page<Implementation> findByImplementedAlgorithm(@NonNull UUID algorithmId, @NonNull Pageable pageable) {
         if (!algorithmRepository.existsAlgorithmById(algorithmId)) {
             throw new NoSuchElementException("Algorithm with ID \"" + algorithmId + "\" does not exist");
         }
@@ -119,12 +120,12 @@ public class ImplementationServiceImpl implements ImplementationService {
     }
 
     @Override
-    public Page<SoftwarePlatform> findLinkedSoftwarePlatforms(UUID implementationId, Pageable pageable) {
+    public Page<SoftwarePlatform> findLinkedSoftwarePlatforms(@NonNull UUID implementationId, @NonNull Pageable pageable) {
         return softwarePlatformRepository.findSoftwarePlatformsByImplementationId(implementationId, pageable);
     }
 
     @Override
-    public Page<Publication> findLinkedPublications(UUID implementationId, Pageable pageable) {
+    public Page<Publication> findLinkedPublications(@NonNull UUID implementationId, @NonNull Pageable pageable) {
         return publicationRepository.findPublicationsByImplementationId(implementationId, pageable);
     }
 }

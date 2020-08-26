@@ -27,6 +27,7 @@ import org.planqk.atlas.core.model.KnowledgeArtifact;
 import org.planqk.atlas.core.repository.DiscussionTopicRepository;
 
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -38,49 +39,51 @@ import org.springframework.transaction.annotation.Transactional;
 @AllArgsConstructor
 public class DiscussionTopicServiceImpl implements DiscussionTopicService {
 
-    private final DiscussionTopicRepository repository;
+    private final DiscussionTopicRepository discussionTopicRepository;
 
     @Override
     @Transactional
-    public DiscussionTopic create(DiscussionTopic discussionTopic) {
-        return repository.save(discussionTopic);
+    public DiscussionTopic create(@NonNull DiscussionTopic discussionTopic) {
+        return discussionTopicRepository.save(discussionTopic);
     }
 
     @Override
-    public Page<DiscussionTopic> findAll(Pageable pageable) {
-        return repository.findAll(pageable);
+    public Page<DiscussionTopic> findAll(@NonNull Pageable pageable) {
+        return discussionTopicRepository.findAll(pageable);
     }
 
     @Override
-    public Page<DiscussionTopic> findByKnowledgeArtifact(KnowledgeArtifact artifact, Pageable pageable) {
-        return repository.findByKnowledgeArtifact(artifact, pageable);
+    public Page<DiscussionTopic> findByKnowledgeArtifact(
+            @NonNull KnowledgeArtifact knowledgeArtifact, @NonNull Pageable pageable) {
+        return discussionTopicRepository.findByKnowledgeArtifact(knowledgeArtifact, pageable);
     }
 
     @Override
-    public DiscussionTopic findById(UUID id) {
-        if (!this.existsDiscussionTopicById(id)) {
-            throw new NoSuchElementException();
-        }
-        return repository.findById(id).get();
+    public DiscussionTopic findById(@NonNull UUID topicId) {
+        return discussionTopicRepository.findById(topicId).orElseThrow(() -> new NoSuchElementException("Not found"));
     }
 
     @Override
     @Transactional
-    public DiscussionTopic update(DiscussionTopic topic) {
+    public DiscussionTopic update(@NonNull DiscussionTopic topic) {
         if (!this.existsDiscussionTopicById(topic.getId())) {
             throw new NoSuchElementException();
         }
-        return repository.save(topic);
-    }
-
-    @Override
-    public boolean existsDiscussionTopicById(UUID id) {
-        return repository.existsById(id);
+        return discussionTopicRepository.save(topic);
     }
 
     @Override
     @Transactional
-    public void delete(UUID id) {
-        repository.deleteById(id);
+    public void delete(@NonNull UUID topicId) {
+        if (!discussionTopicRepository.existsById(topicId)) {
+            throw new NoSuchElementException();
+        }
+
+        discussionTopicRepository.deleteById(topicId);
+    }
+
+    @Override
+    public boolean existsDiscussionTopicById(@NonNull UUID topicId) {
+        return discussionTopicRepository.existsById(topicId);
     }
 }

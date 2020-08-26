@@ -31,6 +31,7 @@ import org.planqk.atlas.core.model.exceptions.ConsistencyException;
 import org.planqk.atlas.core.repository.ProblemTypeRepository;
 
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -45,23 +46,23 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
 
     @Override
     @Transactional
-    public ProblemType create(ProblemType problemType) {
+    public ProblemType create(@NonNull ProblemType problemType) {
         return problemTypeRepository.save(problemType);
     }
 
     @Override
-    public Page<ProblemType> findAll(Pageable pageable) {
+    public Page<ProblemType> findAll(@NonNull Pageable pageable) {
         return problemTypeRepository.findAll(pageable);
     }
 
     @Override
-    public ProblemType findById(UUID problemTypeId) {
+    public ProblemType findById(@NonNull UUID problemTypeId) {
         return problemTypeRepository.findById(problemTypeId).orElseThrow(NoSuchElementException::new);
     }
 
     @Override
     @Transactional
-    public ProblemType update(ProblemType problemType) {
+    public ProblemType update(@NonNull ProblemType problemType) {
         ProblemType persistedProblemType = findById(problemType.getId());
 
         persistedProblemType.setName(problemType.getName());
@@ -72,7 +73,7 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
 
     @Override
     @Transactional
-    public void delete(UUID problemTypeId) {
+    public void delete(@NonNull UUID problemTypeId) {
         ProblemType problemType = findById(problemTypeId);
 
         if (problemType.getAlgorithms().size() > 0) {
@@ -85,12 +86,12 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
         problemTypeRepository.deleteById(problemTypeId);
     }
 
-    private void removeReferences(ProblemType problemType) {
+    private void removeReferences(@NonNull ProblemType problemType) {
         problemType.getAlgorithms().forEach(algorithm -> algorithm.removeProblemType(problemType));
     }
 
     @Override
-    public List<ProblemType> getParentList(UUID problemTypeId) {
+    public List<ProblemType> getParentList(@NonNull UUID problemTypeId) {
         ProblemType requestedProblemType = findById(problemTypeId);
 
         List<ProblemType> parentTree = new ArrayList<>();
@@ -104,7 +105,7 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
         return parentTree;
     }
 
-    private ProblemType getParent(ProblemType child) {
+    private ProblemType getParent(@NonNull ProblemType child) {
         try {
             if (child.getParentProblemType() != null) {
                 return findById(child.getParentProblemType());
