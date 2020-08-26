@@ -23,18 +23,16 @@ import java.sql.Driver;
 import java.sql.DriverManager;
 import java.util.Properties;
 
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.extension.ConditionEvaluationResult;
 import org.junit.jupiter.api.extension.ExecutionCondition;
 import org.junit.jupiter.api.extension.ExtensionContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static org.junit.jupiter.api.extension.ConditionEvaluationResult.disabled;
 import static org.junit.jupiter.api.extension.ConditionEvaluationResult.enabled;
 
+@Slf4j
 public class DatabaseExtension implements ExecutionCondition {
-
-    private static final Logger LOG = LoggerFactory.getLogger(DatabaseExtension.class);
 
     private static Properties applicationProps;
     private static boolean enforceSkip = false;
@@ -45,7 +43,7 @@ public class DatabaseExtension implements ExecutionCondition {
             applicationProps = new Properties();
             applicationProps.load(input);
         } catch (Exception e) {
-            LOG.warn("Failed to load property file for database tests", e);
+            log.warn("Failed to load property file for database tests", e);
             enforceSkip = true;
         }
     }
@@ -74,7 +72,7 @@ public class DatabaseExtension implements ExecutionCondition {
             try {
                 DriverManager.deregisterDriver(driverInstance);
             } catch (Exception e) {
-                LOG.warn("Removing db driver failed", e);
+                log.warn("Removing db driver failed", e);
             }
         }
         return enabled("Database available");
