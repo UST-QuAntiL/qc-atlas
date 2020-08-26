@@ -66,8 +66,8 @@ public class AlgorithmRelationTypeController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200")
     }, description = "")
-    @GetMapping
     @ListParametersDoc
+    @GetMapping
     public ResponseEntity<PagedModel<EntityModel<AlgorithmRelationTypeDto>>> getAlgorithmRelationTypes(
             @Parameter(hidden = true) ListParameters params) {
         var algorithmRelationTypes = algorithmRelationTypeService.findAll(params.getPageable());

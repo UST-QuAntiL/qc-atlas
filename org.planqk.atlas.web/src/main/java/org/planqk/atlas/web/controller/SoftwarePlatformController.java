@@ -79,8 +79,8 @@ public class SoftwarePlatformController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
     }, description = "Retrieve all software platforms")
-    @GetMapping()
     @ListParametersDoc
+    @GetMapping
     public ResponseEntity<PagedModel<EntityModel<SoftwarePlatformDto>>> getSoftwarePlatforms(
             @Parameter(hidden = true) ListParameters listParameters) {
         Page<SoftwarePlatform> entities;
@@ -99,7 +99,7 @@ public class SoftwarePlatformController {
             "References to sub-objects (e.g. a compute resource) " +
             "can be added via sub-routes (e.g. /software-platforms/{id}/compute-resources). " +
             "Custom ID will be ignored.")
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<EntityModel<SoftwarePlatformDto>> createSoftwarePlatform(
             @Validated(ValidationGroups.Create.class) @RequestBody SoftwarePlatformDto softwarePlatformDto) {
         var savedPlatform = softwarePlatformService.create(ModelMapperUtils.convert(softwarePlatformDto, SoftwarePlatform.class));
@@ -114,7 +114,7 @@ public class SoftwarePlatformController {
             "References to sub-objects (e.g. a compute resource) are not updated via this operation - " +
             "use the corresponding sub-route for updating them (e.g. /software-platforms/{id}/compute-resources). " +
             "Custom ID will be ignored.")
-    @PutMapping()
+    @PutMapping
     public ResponseEntity<EntityModel<SoftwarePlatformDto>> updateSoftwarePlatform(
             @Validated(ValidationGroups.Update.class) @RequestBody SoftwarePlatformDto softwarePlatformDto) {
         var softwarePlatform = softwarePlatformService
@@ -152,8 +152,8 @@ public class SoftwarePlatformController {
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Software Platform or Implementation with given id does not exist"),
     }, description = "Get referenced implementations for a software platform.")
-    @GetMapping("/{softwarePlatformId}/" + Constants.IMPLEMENTATIONS)
     @ListParametersDoc
+    @GetMapping("/{softwarePlatformId}/" + Constants.IMPLEMENTATIONS)
     public ResponseEntity<PagedModel<EntityModel<ImplementationDto>>> getImplementationsOfSoftwarePlatform(
             @PathVariable UUID softwarePlatformId,
             @Parameter(hidden = true) ListParameters listParameters) {
@@ -166,8 +166,8 @@ public class SoftwarePlatformController {
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Software Platform or Cloud Service with given id does not exist"),
     }, description = "Get referenced cloud services for a software platform.")
+    @ListParametersDoc
     @GetMapping("/{softwarePlatformId}/" + Constants.CLOUD_SERVICES)
-    @ListParametersDoc()
     public ResponseEntity<PagedModel<EntityModel<CloudServiceDto>>> getCloudServicesOfSoftwarePlatform(
             @PathVariable UUID softwarePlatformId,
             @Parameter(hidden = true) ListParameters listParameters) {
@@ -209,8 +209,8 @@ public class SoftwarePlatformController {
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Software Platform or Compute Resource with given id does not exist"),
     }, description = "Get referenced compute resources for a software platform.")
+    @ListParametersDoc
     @GetMapping("/{softwarePlatformId}/" + Constants.COMPUTE_RESOURCES)
-    @ListParametersDoc()
     public ResponseEntity<PagedModel<EntityModel<ComputeResourceDto>>> getComputeResourcesOfSoftwarePlatform(
             @PathVariable UUID softwarePlatformId,
             @Parameter(hidden = true) ListParameters listParameters) {

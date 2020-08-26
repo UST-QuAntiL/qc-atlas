@@ -66,8 +66,8 @@ public class ApplicationAreaController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200")
     }, description = "")
-    @GetMapping()
-    @ListParametersDoc()
+    @ListParametersDoc
+    @GetMapping
     public ResponseEntity<PagedModel<EntityModel<ApplicationAreaDto>>> getApplicationAreas(
             @Parameter(hidden = true) ListParameters listParameters) {
         return ResponseEntity.ok(applicationAreaAssembler
@@ -78,7 +78,7 @@ public class ApplicationAreaController {
             @ApiResponse(responseCode = "201"),
             @ApiResponse(responseCode = "400"),
     }, description = "Custom ID will be ignored.")
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<EntityModel<ApplicationAreaDto>> createApplicationArea(
             @Validated(ValidationGroups.Create.class) @RequestBody ApplicationAreaDto applicationAreaDto) {
         var savedApplicationArea = applicationAreaService.create(

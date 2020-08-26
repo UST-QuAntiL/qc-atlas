@@ -47,7 +47,6 @@ import org.planqk.atlas.web.utils.ValidationUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -98,8 +97,8 @@ public class ImplementationController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
     }, description = "Retrieve all implementations")
-    @GetMapping()
     @ListParametersDoc
+    @GetMapping
     public ResponseEntity<PagedModel<EntityModel<ImplementationDto>>> getImplementations(
             @Parameter(hidden = true) ListParameters listParameters) {
         var implementations = implementationService.findAll(listParameters.getPageable());
@@ -111,7 +110,7 @@ public class ImplementationController {
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Implementation doesn't exist")
     }, description = "Custom ID will be ignored.")
-    @PutMapping()
+    @PutMapping
     public ResponseEntity<EntityModel<ImplementationDto>> updateImplementation(
             @Validated(ValidationGroups.Update.class) @RequestBody ImplementationDto implementationDto) {
         Implementation updatedImplementation = implementationService.update(
@@ -184,10 +183,10 @@ public class ImplementationController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404", content = @Content, description = "Implementation doesn't exist")
+            @ApiResponse(responseCode = "404", description = "Implementation doesn't exist")
     }, description = "Get referenced publications for an implementation")
-    @GetMapping("/{implementationId}/" + Constants.PUBLICATIONS)
     @ListParametersDoc
+    @GetMapping("/{implementationId}/" + Constants.PUBLICATIONS)
     public ResponseEntity<PagedModel<EntityModel<PublicationDto>>> getPublicationsOfImplementation(
             @PathVariable UUID implementationId,
             @Parameter(hidden = true) ListParameters listParameters) {
@@ -198,8 +197,7 @@ public class ImplementationController {
     @Operation(responses = {
             @ApiResponse(responseCode = "204"),
             @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404", content = @Content,
-                    description = "Implementation or publication does not exist.")
+            @ApiResponse(responseCode = "404", description = "Implementation or publication does not exist.")
     }, description = "Add a reference to an existing publication " +
             "(that was previously created via a POST on /publications/). Custom ID will be ignored. " +
             "For publication only ID is required, other publication attributes will not change. " +
@@ -228,10 +226,10 @@ public class ImplementationController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404", content = @Content, description = "Implementation doesn't exist")
+            @ApiResponse(responseCode = "404", description = "Implementation doesn't exist")
     }, description = "Get referenced software platform for an implementation")
-    @GetMapping("/{implementationId}/" + Constants.SOFTWARE_PLATFORMS)
     @ListParametersDoc
+    @GetMapping("/{implementationId}/" + Constants.SOFTWARE_PLATFORMS)
     public ResponseEntity<CollectionModel<EntityModel<SoftwarePlatformDto>>> getSoftwarePlatformsOfImplementation(
             @PathVariable UUID implementationId,
             @Parameter(hidden = true) ListParameters listParameters) {
@@ -242,8 +240,7 @@ public class ImplementationController {
     @Operation(responses = {
             @ApiResponse(responseCode = "204"),
             @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404", content = @Content,
-                    description = "Software platform or publication does not exist")
+            @ApiResponse(responseCode = "404", description = "Software platform or publication does not exist")
     }, description = "Add a reference to an existing software platform" +
             "(that was previously created via a POST on /software-platforms/)." +
             "Custom ID will be ignored. For software platform only ID is required," +
@@ -260,8 +257,7 @@ public class ImplementationController {
     @Operation(responses = {
             @ApiResponse(responseCode = "204"),
             @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404", content = @Content,
-                    description = "Software platform or publication does not exist")
+            @ApiResponse(responseCode = "404", description = "Software platform or publication does not exist")
     }, description = "Delete a reference to a software platform of the implementation")
     @DeleteMapping("/{implementationId}/" + Constants.SOFTWARE_PLATFORMS + "/{softwarePlatformId}")
     public ResponseEntity<Void> unlinkImplementationAndSoftwarePlatform(
@@ -276,8 +272,8 @@ public class ImplementationController {
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Implementation doesn't exist")
     }, description = "Retrieve the required computing resources of an implementation")
-    @GetMapping("/{implementationId}/" + Constants.COMPUTE_RESOURCES_PROPERTIES)
     @ListParametersDoc
+    @GetMapping("/{implementationId}/" + Constants.COMPUTE_RESOURCES_PROPERTIES)
     public ResponseEntity<PagedModel<EntityModel<ComputeResourcePropertyDto>>> getComputeResourcePropertiesOfImplementation(
             @PathVariable UUID implementationId,
             @Parameter(hidden = true) ListParameters listParameters) {

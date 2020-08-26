@@ -135,7 +135,7 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void findAll() {
+    void findAllSoftwarePlatforms() {
         SoftwarePlatform softwarePlatform1 = getFullSoftwarePlatform("softwarePlatformName1");
         softwarePlatformService.create(softwarePlatform1);
         SoftwarePlatform softwarePlatform2 = getFullSoftwarePlatform("softwarePlatformName2");
@@ -147,7 +147,7 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void searchAll() {
+    void searchAllSoftwarePlatformsByName() {
         SoftwarePlatform softwarePlatform1 = getFullSoftwarePlatform("softwarePlatformName1");
         softwarePlatformService.create(softwarePlatform1);
         SoftwarePlatform softwarePlatform2 = getFullSoftwarePlatform("softwarePlatformName2");

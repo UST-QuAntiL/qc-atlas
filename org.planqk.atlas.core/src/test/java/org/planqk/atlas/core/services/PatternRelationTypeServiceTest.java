@@ -102,14 +102,14 @@ public class PatternRelationTypeServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void findAll_empty() {
+    void findAllPatternRelationTypes_empty() {
         Page<PatternRelationType> typesPaged = patternRelationTypeService.findAll(pageable);
 
         assertThat(typesPaged.getContent()).isEmpty();
     }
 
     @Test
-    void findAll_returnTwo() {
+    void findAllPatternRelationTypes_returnTwo() {
         patternRelationTypeService.create(type1);
         patternRelationTypeService.create(type2);
         Page<PatternRelationType> typesPaged = patternRelationTypeService.findAll(pageable);

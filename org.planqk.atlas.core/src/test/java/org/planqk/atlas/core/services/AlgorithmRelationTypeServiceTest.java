@@ -60,7 +60,7 @@ public class AlgorithmRelationTypeServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void findAll() {
+    void findAllAlgorithmRelationTypes() {
         AlgorithmRelationType relationType1 = getFullAlgorithmRelationType("relationTypeName1");
         algorithmRelationTypeService.create(relationType1);
         AlgorithmRelationType relationType2 = getFullAlgorithmRelationType("relationTypeName2");

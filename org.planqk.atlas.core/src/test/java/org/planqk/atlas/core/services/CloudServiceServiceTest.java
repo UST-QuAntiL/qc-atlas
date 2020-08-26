@@ -80,7 +80,7 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void searchAll() {
+    void searchAllCloudServicesByName() {
         CloudService cloudService1 = getFullCloudService("cloudServiceName1");
         cloudServiceService.create(cloudService1);
         CloudService cloudService2 = getFullCloudService("cloudServiceName2");
@@ -92,7 +92,7 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void findAll() {
+    void findAllCloudServices() {
         CloudService cloudService1 = getFullCloudService("cloudServiceName1");
         cloudServiceService.create(cloudService1);
         CloudService cloudService2 = getFullCloudService("cloudServiceName2");

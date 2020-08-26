@@ -64,33 +64,42 @@ public class TagController {
     private final AlgorithmAssembler algorithmAssembler;
     private final ImplementationAssembler implementationAssembler;
 
-    @Operation(responses = {@ApiResponse(responseCode = "200")})
-    @GetMapping(value = "/")
-    @ListParametersDoc()
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200")
+    }, description = "")
+    @ListParametersDoc
+    @GetMapping
     public ResponseEntity<PagedModel<EntityModel<TagDto>>> getTags(
             @Parameter(hidden = true) ListParameters listParameters) {
         return new ResponseEntity<>(tagAssembler.toModel(
                 this.tagService.findAllByContent(listParameters.getSearch(), listParameters.getPageable())), HttpStatus.OK);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "201")})
-    @PostMapping(value = "/")
+    @Operation(responses = {
+            @ApiResponse(responseCode = "201")
+    }, description = "")
+    @PostMapping
     public ResponseEntity<EntityModel<TagDto>> createTag(
             @Validated @RequestBody TagDto tagDto) {
         Tag savedTag = this.tagService.create(ModelMapperUtils.convert(tagDto, Tag.class));
         return new ResponseEntity<>(tagAssembler.toModel(savedTag), HttpStatus.CREATED);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404")})
-    @GetMapping(value = "/{value}")
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404")
+    }, description = "")
+    @GetMapping("/{value}")
     public ResponseEntity<EntityModel<TagDto>> getTag(@PathVariable String value) {
         Tag tag = this.tagService.findByValue(value);
         var tagDto = tagAssembler.toModel(tag);
         return ResponseEntity.ok(tagDto);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200")})
-    @GetMapping(value = "/{value}/" + Constants.ALGORITHMS)
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200")
+    }, description = "")
+    @GetMapping("/{value}/" + Constants.ALGORITHMS)
     public ResponseEntity<CollectionModel<EntityModel<AlgorithmDto>>> getAlgorithmsOfTag(@PathVariable String value) {
         Tag tag = this.tagService.findByValue(value);
         CollectionModel<EntityModel<AlgorithmDto>> algorithms = algorithmAssembler.toModel(tag.getImplementations());
@@ -99,8 +108,10 @@ public class TagController {
         return new ResponseEntity<>(algorithms, HttpStatus.OK);
     }
 
-    @Operation(responses = {@ApiResponse(responseCode = "200")})
-    @GetMapping(value = "/{value}/" + Constants.IMPLEMENTATIONS)
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200")
+    }, description = "")
+    @GetMapping("/{value}/" + Constants.IMPLEMENTATIONS)
     public ResponseEntity<CollectionModel<EntityModel<ImplementationDto>>> getImplementationsOfTag(
             @PathVariable String value) {
         Tag tag = this.tagService.findByValue(value);

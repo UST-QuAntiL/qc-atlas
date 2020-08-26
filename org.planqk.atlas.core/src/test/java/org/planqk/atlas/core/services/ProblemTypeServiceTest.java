@@ -60,7 +60,7 @@ public class ProblemTypeServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void findAll() {
+    void findAllProblemTypes() {
         ProblemType problemType1 = getFullProblemType("problemTypeName1");
         problemTypeService.create(problemType1);
         ProblemType problemType2 = getFullProblemType("problemTypeName2");
