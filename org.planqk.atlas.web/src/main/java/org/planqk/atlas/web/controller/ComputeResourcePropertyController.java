@@ -66,9 +66,10 @@ public class ComputeResourcePropertyController {
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404"),
     }, description = "")
-    @GetMapping("/{id}")
-    public HttpEntity<EntityModel<ComputeResourcePropertyDto>> getComputeResourceProperty(@PathVariable UUID id) {
-        var resource = computeResourcePropertyService.findById(id);
+    @GetMapping("/{ComputeResourcePropertyId}")
+    public HttpEntity<EntityModel<ComputeResourcePropertyDto>> getComputeResourceProperty(
+            @PathVariable UUID ComputeResourcePropertyId) {
+        var resource = computeResourcePropertyService.findById(ComputeResourcePropertyId);
         return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(resource));
     }
 
@@ -92,9 +93,10 @@ public class ComputeResourcePropertyController {
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Computing resource with given id doesn't exist"),
     }, description = "")
-    @DeleteMapping("/{id}")
-    public HttpEntity<Void> deleteComputeResourceProperty(@PathVariable UUID id) {
-        computeResourcePropertyService.delete(id);
+    @DeleteMapping("/{ComputeResourcePropertyId}")
+    public HttpEntity<Void> deleteComputeResourceProperty(
+            @PathVariable UUID ComputeResourcePropertyId) {
+        computeResourcePropertyService.delete(ComputeResourcePropertyId);
         return ResponseEntity.noContent().build();
     }
 

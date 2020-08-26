@@ -73,8 +73,8 @@ public class PublicationController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200")
     }, description = "")
-    @GetMapping()
-    @ListParametersDoc()
+    @ListParametersDoc
+    @GetMapping
     public ResponseEntity<PagedModel<EntityModel<PublicationDto>>> getPublications(
             @Parameter(hidden = true) ListParameters listParameters) {
         var entities = publicationService.findAll(listParameters.getPageable(), listParameters.getSearch());
@@ -86,7 +86,7 @@ public class PublicationController {
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404")
     })
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<EntityModel<PublicationDto>> createPublication(
             @Validated(ValidationGroups.Create.class) @RequestBody PublicationDto publicationDto) {
         Publication publication = publicationService.create(ModelMapperUtils.convert(publicationDto, Publication.class));
@@ -98,7 +98,7 @@ public class PublicationController {
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404")
     })
-    @PutMapping()
+    @PutMapping
     public ResponseEntity<EntityModel<PublicationDto>> updatePublication(
             @Validated(ValidationGroups.Update.class) @RequestBody PublicationDto publicationDto) {
         Publication publication = publicationService.update(
@@ -133,8 +133,8 @@ public class PublicationController {
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404")
     }, description = "")
-    @GetMapping("/{publicationId}/" + Constants.ALGORITHMS)
     @ListParametersDoc
+    @GetMapping("/{publicationId}/" + Constants.ALGORITHMS)
     public ResponseEntity<PagedModel<EntityModel<AlgorithmDto>>> getAlgorithmsOfPublication(
             @PathVariable UUID publicationId,
             @Parameter(hidden = true) ListParameters params) {
@@ -147,8 +147,8 @@ public class PublicationController {
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404")
     }, description = "")
-    @GetMapping("/{publicationId}/" + Constants.IMPLEMENTATIONS)
     @ListParametersDoc
+    @GetMapping("/{publicationId}/" + Constants.IMPLEMENTATIONS)
     public ResponseEntity<PagedModel<EntityModel<ImplementationDto>>> getImplementationsOfPublication(
             @PathVariable UUID publicationId,
             @Parameter(hidden = true) ListParameters params) {

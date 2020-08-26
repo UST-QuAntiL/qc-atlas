@@ -66,8 +66,8 @@ public class ComputeResourcePropertyTypeController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200")
     }, description = "")
-    @GetMapping()
     @ListParametersDoc
+    @GetMapping
     public ResponseEntity<PagedModel<EntityModel<ComputeResourcePropertyTypeDto>>> getResourcePropertyTypes(
             @Parameter(hidden = true)ListParameters listParameters) {
         var savedComputeResourcePropertyType = computeResourcePropertyTypeService.findAll(listParameters.getPageable());
@@ -78,7 +78,7 @@ public class ComputeResourcePropertyTypeController {
             @ApiResponse(responseCode = "201"),
             @ApiResponse(responseCode = "400"),
     }, description = "Custom ID will not be accepted.")
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<EntityModel<ComputeResourcePropertyTypeDto>> createComputingResourcePropertyType(
             @Validated(ValidationGroups.Create.class) @RequestBody ComputeResourcePropertyTypeDto computeResourcePropertyTypeDto) {
         var savedComputeResourcePropertyType = computeResourcePropertyTypeService.create(

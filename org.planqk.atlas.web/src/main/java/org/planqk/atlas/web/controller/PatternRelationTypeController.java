@@ -66,8 +66,8 @@ public class PatternRelationTypeController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200")
     }, description = "")
-    @GetMapping()
-    @ListParametersDoc()
+    @ListParametersDoc
+    @GetMapping
     public ResponseEntity<PagedModel<EntityModel<PatternRelationTypeDto>>> getPatternRelationTypes(
             @Parameter(hidden = true) ListParameters listParameters) {
         var patternRelationTypes = patternRelationTypeService.findAll(listParameters.getPageable());
@@ -78,7 +78,7 @@ public class PatternRelationTypeController {
             @ApiResponse(responseCode = "201"),
             @ApiResponse(responseCode = "400")
     }, description = "Custom ID will be ignored.")
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<EntityModel<PatternRelationTypeDto>> createPatternRelationType(
             @Validated(ValidationGroups.Create.class) @RequestBody PatternRelationTypeDto patternRelationTypeDto) {
         PatternRelationType savedRelationType = patternRelationTypeService
@@ -91,7 +91,7 @@ public class PatternRelationTypeController {
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404")
     }, description = "Custom ID will be ignored.")
-    @PutMapping()
+    @PutMapping
     public ResponseEntity<EntityModel<PatternRelationTypeDto>> updatePatternRelationType(
             @Validated(ValidationGroups.Update.class) @RequestBody PatternRelationTypeDto patternRelationTypeDto) {
         var relationType = patternRelationTypeService.update(

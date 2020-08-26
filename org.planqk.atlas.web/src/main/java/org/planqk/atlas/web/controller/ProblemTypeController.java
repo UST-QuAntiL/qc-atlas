@@ -66,8 +66,8 @@ public class ProblemTypeController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200")
     }, description = "")
-    @GetMapping()
-    @ListParametersDoc()
+    @ListParametersDoc
+    @GetMapping
     public ResponseEntity<PagedModel<EntityModel<ProblemTypeDto>>> getProblemTypes(
             @Parameter(hidden = true) ListParameters listParameters) {
         return ResponseEntity.ok(problemTypeAssembler
@@ -78,7 +78,7 @@ public class ProblemTypeController {
             @ApiResponse(responseCode = "201"),
             @ApiResponse(responseCode = "400"),
     }, description = "Custom ID will be ignored.")
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<EntityModel<ProblemTypeDto>> createProblemType(
             @Validated(ValidationGroups.Create.class) @RequestBody ProblemTypeDto problemTypeDto) {
         var savedProblemType = problemTypeService.create(ModelMapperUtils.convert(problemTypeDto, ProblemType.class));
@@ -90,7 +90,7 @@ public class ProblemTypeController {
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Problem type with given id doesn't exist")
     }, description = "Custom ID will be ignored.")
-    @PutMapping()
+    @PutMapping
     public ResponseEntity<EntityModel<ProblemTypeDto>> updateProblemType(
             @Validated(ValidationGroups.Update.class) @RequestBody ProblemTypeDto problemTypeDto) {
         var updatedProblemType = problemTypeService.update(
@@ -125,8 +125,8 @@ public class ProblemTypeController {
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Problem type with given id doesn't exist")
     }, description = "")
-    @GetMapping("/{problemTypeId}/" + Constants.PROBLEM_TYPE_PARENT_LIST)
     @ListParametersDoc
+    @GetMapping("/{problemTypeId}/" + Constants.PROBLEM_TYPE_PARENT_LIST)
     public ResponseEntity<CollectionModel<EntityModel<ProblemTypeDto>>> getProblemTypeParentList(
             @PathVariable UUID problemTypeId) {
         var problemTypeParentList = problemTypeService.getParentList(problemTypeId);

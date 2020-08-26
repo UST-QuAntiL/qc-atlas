@@ -42,7 +42,6 @@ import org.planqk.atlas.web.utils.ValidationUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
@@ -87,8 +86,8 @@ public class ComputeResourceController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200")
     }, description = "Retrieve all compute resources")
-    @GetMapping
     @ListParametersDoc
+    @GetMapping
     public ResponseEntity<PagedModel<EntityModel<ComputeResourceDto>>> getComputeResources(
             @Parameter(hidden = true) ListParameters listParameters) {
         Page<ComputeResource> entities;
@@ -161,10 +160,10 @@ public class ComputeResourceController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404", content = @Content, description = "Resource doesn't exist")
+            @ApiResponse(responseCode = "404", description = "Resource doesn't exist")
     }, description = "Get referenced software platform for a compute resource")
-    @GetMapping("/{computeResourceId}/" + Constants.SOFTWARE_PLATFORMS)
     @ListParametersDoc
+    @GetMapping("/{computeResourceId}/" + Constants.SOFTWARE_PLATFORMS)
     public ResponseEntity<CollectionModel<EntityModel<SoftwarePlatformDto>>> getSoftwarePlatformsOfComputeResource(
             @PathVariable UUID computeResourceId,
             @Parameter(hidden = true) ListParameters listParameters) {
@@ -175,10 +174,10 @@ public class ComputeResourceController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404", content = @Content, description = "Resource doesn't exist")
+            @ApiResponse(responseCode = "404", description = "Resource doesn't exist")
     }, description = "Get referenced cloud services for a compute resource")
-    @GetMapping("/{computeResourceId}/" + Constants.CLOUD_SERVICES)
     @ListParametersDoc
+    @GetMapping("/{computeResourceId}/" + Constants.CLOUD_SERVICES)
     public ResponseEntity<CollectionModel<EntityModel<CloudServiceDto>>> getCloudServicesOfComputeResource(
             @PathVariable UUID computeResourceId,
             @Parameter(hidden = true) ListParameters listParameters) {
@@ -191,8 +190,8 @@ public class ComputeResourceController {
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Compute Resource with given id does not exist")
     }, description = "Get referenced compute resource properties for a compute resource.")
-    @GetMapping("/{computeResourceId}/" + Constants.COMPUTE_RESOURCES_PROPERTIES)
     @ListParametersDoc
+    @GetMapping("/{computeResourceId}/" + Constants.COMPUTE_RESOURCES_PROPERTIES)
     public ResponseEntity<PagedModel<EntityModel<ComputeResourcePropertyDto>>> getComputingResourcePropertiesOfComputeResource(
             @PathVariable UUID computeResourceId,
             @Parameter(hidden = true) ListParameters listParameters) {

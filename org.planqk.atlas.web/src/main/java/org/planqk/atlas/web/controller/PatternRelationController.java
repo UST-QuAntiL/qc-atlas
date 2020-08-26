@@ -65,8 +65,8 @@ public class PatternRelationController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200")
     }, description = "Retrieve all pattern relations")
-    @GetMapping()
     @ListParametersDoc
+    @GetMapping
     public ResponseEntity<PagedModel<EntityModel<PatternRelationDto>>> getPatternRelations(
             @Parameter(hidden = true) ListParameters listParameters) {
         var patternRelations = patternRelationService.findAll(listParameters.getPageable());
@@ -80,7 +80,7 @@ public class PatternRelationController {
     }, description = "Add a pattern relation from an algorithm to a given pattern." +
             "Custom ID will be ignored. For pattern relation type only ID is required," +
             "other pattern relation type attributes will not change.")
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<EntityModel<PatternRelationDto>> createPatternRelation(
             @Validated({ValidationGroups.Create.class}) @RequestBody PatternRelationDto patternRelationDto) {
         var savedPatternRelation = patternRelationService.create(
@@ -97,7 +97,7 @@ public class PatternRelationController {
     }, description = "Update a reference to a pattern. " +
             "Custom ID will be ignored. For pattern relation type only ID is required, " +
             "other pattern relation type attributes will not change.")
-    @PutMapping()
+    @PutMapping
     public ResponseEntity<EntityModel<PatternRelationDto>> updatePatternRelation(
             @Validated({ValidationGroups.Update.class}) @RequestBody PatternRelationDto patternRelationDto) {
         var savedPatternRelation = patternRelationService.update(

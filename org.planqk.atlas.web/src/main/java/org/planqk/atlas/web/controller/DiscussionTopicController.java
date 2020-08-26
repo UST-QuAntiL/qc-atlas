@@ -30,17 +30,17 @@ import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.DiscussionCommentDto;
 import org.planqk.atlas.web.dtos.DiscussionTopicDto;
 import org.planqk.atlas.web.linkassembler.DiscussionTopicAssembler;
+import org.planqk.atlas.web.utils.ListParameters;
+import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
-import org.planqk.atlas.web.utils.RestUtils;
 import org.planqk.atlas.web.utils.ValidationGroups;
 
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpEntity;
@@ -55,7 +55,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Hidden
@@ -76,12 +75,11 @@ public class DiscussionTopicController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200")
     }, description = "")
-    @GetMapping()
+    @ListParametersDoc
+    @GetMapping
     public HttpEntity<PagedModel<EntityModel<DiscussionTopicDto>>> getDiscussionTopics(
-            @RequestParam(required = false) Integer page,
-            @RequestParam(required = false) Integer size) {
-        Pageable pageable = RestUtils.getPageableFromRequestParams(page, size);
-        var topics = discussionTopicService.findAll(pageable);
+            @Parameter(hidden = true) ListParameters listParameters) {
+        var topics = discussionTopicService.findAll(listParameters.getPageable());
         return ResponseEntity.ok(discussionTopicAssembler.toModel(topics));
     }
 
@@ -109,7 +107,7 @@ public class DiscussionTopicController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "201"),
-            @ApiResponse(responseCode = "400", content = @Content),
+            @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404")
     }, description = "")
     @PostMapping()
@@ -124,12 +122,12 @@ public class DiscussionTopicController {
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404")
     }, description = "")
+    @ListParametersDoc
     @GetMapping("/{topicId}/" + Constants.DISCUSSION_COMMENTS)
     public HttpEntity<PagedModel<EntityModel<DiscussionCommentDto>>> getDiscussionComments(
             @PathVariable UUID topicId,
-            @RequestParam(required = false) Integer page,
-            @RequestParam(required = false) Integer size) {
-        return discussionCommentController.getDiscussionComments(topicId, page, size);
+            @Parameter(hidden = true) ListParameters listParameters) {
+        return discussionCommentController.getDiscussionCommentsOfTopic(topicId, listParameters);
     }
 
     @Operation(responses = {

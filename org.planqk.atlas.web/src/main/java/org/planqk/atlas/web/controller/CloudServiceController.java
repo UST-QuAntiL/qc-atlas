@@ -38,7 +38,6 @@ import org.planqk.atlas.web.utils.ValidationGroups;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
@@ -77,8 +76,8 @@ public class CloudServiceController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
     }, description = "Retrieve all cloud services")
-    @GetMapping()
     @ListParametersDoc
+    @GetMapping
     public ResponseEntity<PagedModel<EntityModel<CloudServiceDto>>> getCloudServices(
             @Parameter(hidden = true) ListParameters listParameters) {
         Page<CloudService> entities;
@@ -97,7 +96,7 @@ public class CloudServiceController {
             "References to sub-objects (e.g. a compute resource) " +
             "can be added via sub-routes (e.g. /cloud-services/{id}/compute-resources). " +
             "Custom ID will be ignored.")
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<EntityModel<CloudServiceDto>> createCloudService(
             @Validated(ValidationGroups.Create.class) @RequestBody CloudServiceDto cloudServiceDto) {
         var savedCloudService = cloudServiceService.create(ModelMapperUtils.convert(cloudServiceDto, CloudService.class));
@@ -112,7 +111,7 @@ public class CloudServiceController {
             "References to sub-objects (e.g. a compute resource) are not updated via this operation - " +
             "use the corresponding sub-route for updating them (e.g. /cloud-services/{id}/compute-resources). " +
             "Custom ID will be ignored.")
-    @PutMapping()
+    @PutMapping
     public ResponseEntity<EntityModel<CloudServiceDto>> updateCloudService(
             @Validated(ValidationGroups.Update.class) @RequestBody CloudServiceDto cloudServiceDto) {
         var updatedCloudService = cloudServiceService.update(
@@ -149,10 +148,10 @@ public class CloudServiceController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404", content = @Content, description = "Resource doesn't exist")
+            @ApiResponse(responseCode = "404", description = "Resource doesn't exist")
     }, description = "Get referenced software platforms for a cloud service")
-    @GetMapping("/{cloudServiceId}/" + Constants.SOFTWARE_PLATFORMS)
     @ListParametersDoc
+    @GetMapping("/{cloudServiceId}/" + Constants.SOFTWARE_PLATFORMS)
     public ResponseEntity<PagedModel<EntityModel<SoftwarePlatformDto>>> getSoftwarePlatformsOfCloudService(
             @PathVariable UUID cloudServiceId,
             @Parameter(hidden = true) ListParameters listParameters) {
@@ -165,8 +164,8 @@ public class CloudServiceController {
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Cloud Service or Compute Resource with given id does not exist"),
     }, description = "Get referenced compute resources for a software platform.")
+    @ListParametersDoc
     @GetMapping("/{cloudServiceId}/" + Constants.COMPUTE_RESOURCES)
-    @ListParametersDoc()
     public ResponseEntity<PagedModel<EntityModel<ComputeResourceDto>>> getComputeResourcesOfCloudService(
             @PathVariable UUID cloudServiceId,
             @Parameter(hidden = true) ListParameters listParameters) {

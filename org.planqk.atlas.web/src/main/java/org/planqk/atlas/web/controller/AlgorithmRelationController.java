@@ -100,7 +100,8 @@ public class AlgorithmRelationController {
             @ApiResponse(responseCode = "404", description = "Algorithm relation with given id doesn't exist")
     }, description = "")
     @DeleteMapping("/{algorithmRelationId}")
-    public ResponseEntity<Void> deleteAlgorithmRelation(@PathVariable UUID algorithmRelationId) {
+    public ResponseEntity<Void> deleteAlgorithmRelation(
+            @PathVariable UUID algorithmRelationId) {
         algorithmRelationService.delete(algorithmRelationId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -111,7 +112,8 @@ public class AlgorithmRelationController {
             @ApiResponse(responseCode = "404", description = "Algorithm relation with given id doesn't exist")
     }, description = "")
     @GetMapping("/{algorithmRelationId}")
-    public ResponseEntity<EntityModel<AlgorithmRelationDto>> getAlgorithmRelation(@PathVariable UUID algorithmRelationId) {
+    public ResponseEntity<EntityModel<AlgorithmRelationDto>> getAlgorithmRelation(
+            @PathVariable UUID algorithmRelationId) {
         var algorithmRelation = algorithmRelationService.findById(algorithmRelationId);
         return ResponseEntity.ok(algorithmRelationAssembler.toModel(algorithmRelation));
     }
