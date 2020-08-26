@@ -93,7 +93,7 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void findAll() {
+    void findAllComputeResources() {
         ComputeResource computeResource1 = getFullComputeResource("computeResourceName1");
         ComputeResource computeResource2 = getFullComputeResource("computeResourceName2");
         computeResourceService.create(computeResource1);
@@ -105,7 +105,7 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void searchAll() {
+    void searchAllComputeResourcesByName() {
         ComputeResource computeResource1 = getFullComputeResource("computeResourceName1");
         ComputeResource computeResource2 = getFullComputeResource("computeResourceName2");
         computeResourceService.create(computeResource1);

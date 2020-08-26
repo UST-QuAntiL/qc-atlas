@@ -143,13 +143,13 @@ public class PatternRelationServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void findAll_empty() {
+    void findAllPatternRelations_empty() {
         Page<PatternRelation> relations = patternRelationService.findAll(pageable);
         assertThat(relations.getContent()).isEmpty();
     }
 
     @Test
-    void findAll_returnTwo() {
+    void findAllPatternRelations_returnTwo() {
         savedAlgorithm = algorithmService.create(algorithm);
         relation1.setAlgorithm(savedAlgorithm);
         relation2.setAlgorithm(savedAlgorithm);
