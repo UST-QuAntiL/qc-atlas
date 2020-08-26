@@ -69,7 +69,7 @@ public class DiscussionTopicServiceTest extends AtlasDatabaseTestBase {
         topic2.setDescription("Description");
         topic2.setStatus(Status.CLOSED);
 
-        var pub = PublicationServiceTest.getGenericTestPublication("discussion");
+        var pub = PublicationServiceTest.getFullPublication("discussion");
         pub = publicationService.create(pub);
 
         topic.setKnowledgeArtifact(pub);

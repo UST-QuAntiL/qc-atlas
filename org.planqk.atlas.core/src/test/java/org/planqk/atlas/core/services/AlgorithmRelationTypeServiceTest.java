@@ -27,7 +27,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.model.AlgorithmRelationType;
+import org.planqk.atlas.core.model.ClassicAlgorithm;
+import org.planqk.atlas.core.model.ComputationModel;
+import org.planqk.atlas.core.model.exceptions.ConsistencyException;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -40,11 +45,13 @@ public class AlgorithmRelationTypeServiceTest extends AtlasDatabaseTestBase {
     @Autowired
     private AlgorithmRelationTypeService algorithmRelationTypeService;
     @Autowired
+    private AlgorithmRelationService algorithmRelationService;
+    @Autowired
     private AlgorithmService algorithmService;
 
     @Test
-    void testAddAlgoRelationType() {
-        AlgorithmRelationType relationType = getGenericAlgoRelationType("testRelation");
+    void createAlgorithmRelationType() {
+        AlgorithmRelationType relationType = getFullAlgorithmRelationType("relationTypeName");
 
         AlgorithmRelationType storedRelationType = algorithmRelationTypeService.create(relationType);
 
@@ -53,37 +60,26 @@ public class AlgorithmRelationTypeServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void testUpdateAlgoRelationType_ElementNotFound() {
-        Assertions.assertThrows(NoSuchElementException.class, () ->
-                algorithmRelationTypeService.update(null));
+    void findAll() {
+        AlgorithmRelationType relationType1 = getFullAlgorithmRelationType("relationTypeName1");
+        algorithmRelationTypeService.create(relationType1);
+        AlgorithmRelationType relationType2 = getFullAlgorithmRelationType("relationTypeName2");
+        algorithmRelationTypeService.create(relationType2);
+
+        List<AlgorithmRelationType> algorithmRelationTypes = algorithmRelationTypeService.findAll(Pageable.unpaged()).getContent();
+
+        assertThat(algorithmRelationTypes.size()).isEqualTo(2);
     }
 
     @Test
-    void testUpdateAlgoRelationType_ElementFound() {
-        AlgorithmRelationType relationType = getGenericAlgoRelationType("testRelation");
-        AlgorithmRelationType compareRelationType = getGenericAlgoRelationType("testRelation");
-
-        AlgorithmRelationType storedRelationType = algorithmRelationTypeService.create(relationType);
-        compareRelationType.setId(storedRelationType.getId());
-        String editName = "editedRelation";
-        storedRelationType.setName(editName);
-        storedRelationType = algorithmRelationTypeService.update(storedRelationType);
-
-        assertThat(storedRelationType.getId()).isNotNull();
-        assertThat(storedRelationType.getId()).isEqualTo(compareRelationType.getId());
-        assertThat(storedRelationType.getName()).isNotEqualTo(compareRelationType.getName());
-        assertThat(storedRelationType.getName()).isEqualTo(editName);
-    }
-
-    @Test
-    void testFindAlgoRelationTypeById_ElementNotFound() {
+    void findAlgorithmRelationTypeById_ElementNotFound() {
         Assertions.assertThrows(NoSuchElementException.class, () ->
                 algorithmRelationTypeService.findById(UUID.randomUUID()));
     }
 
     @Test
-    void testFindAlgoRelationTypeById_ElementFound() {
-        AlgorithmRelationType relationType = getGenericAlgoRelationType("testRelation");
+    void findAlgorithmRelationTypeById_ElementFound() {
+        AlgorithmRelationType relationType = getFullAlgorithmRelationType("relationTypeName");
 
         AlgorithmRelationType storedRelationType = algorithmRelationTypeService.create(relationType);
 
@@ -94,47 +90,61 @@ public class AlgorithmRelationTypeServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void testFindAll() {
-        AlgorithmRelationType relationType1 = getGenericAlgoRelationType("testRelationType1");
-        algorithmRelationTypeService.create(relationType1);
-        AlgorithmRelationType relationType2 = getGenericAlgoRelationType("testRelationType2");
-        algorithmRelationTypeService.create(relationType2);
-
-        List<AlgorithmRelationType> algorithmRelationTypes = algorithmRelationTypeService.findAll(Pageable.unpaged()).getContent();
-
-        assertThat(algorithmRelationTypes.size()).isEqualTo(2);
+    void UpdateAlgorithmRelationType_ElementNotFound() {
+        AlgorithmRelationType relationType = getFullAlgorithmRelationType("relationTypeName");
+        relationType.setId(UUID.randomUUID());
+        Assertions.assertThrows(NoSuchElementException.class, () ->
+                algorithmRelationTypeService.update(relationType));
     }
 
-//    @Test
-//    void testDeleteAlgoRelationType_HasReferences() {
-//        Algorithm sourceAlgorithm = new ClassicAlgorithm();
-//        sourceAlgorithm.setName("sourceAlgorithm");
-//        sourceAlgorithm.setComputationModel(ComputationModel.CLASSIC);
-//        Algorithm storedSourceAlgorithm = algorithmService.save(sourceAlgorithm);
-//        Algorithm targetAlgorithm = new ClassicAlgorithm();
-//        targetAlgorithm.setName("sourceAlgorithm");
-//        targetAlgorithm.setComputationModel(ComputationModel.CLASSIC);
-//        algorithmService.save(targetAlgorithm);
-//
-//        AlgoRelationType relationType = getGenericAlgoRelationType("testRelation");
-//        AlgoRelationType storedRelationType = algoRelationTypeService.save(relationType);
-//
-//        AlgorithmRelation algorithmRelation = new AlgorithmRelation();
-//        algorithmRelation.setDescription("testRelationDescription");
-//        algorithmRelation.setSourceAlgorithm(sourceAlgorithm);
-//        algorithmRelation.setTargetAlgorithm(targetAlgorithm);
-//        algorithmRelation.setAlgoRelationType(storedRelationType);
-//
-//        algorithmService.addOrUpdateAlgorithmRelation(storedSourceAlgorithm.getId(), algorithmRelation);
-//
-//        Assertions.assertThrows(ConsistencyException.class, () -> algoRelationTypeService.delete(storedRelationType.getId()));
-//
-//        Assertions.assertDoesNotThrow(() -> algoRelationTypeService.findById(storedRelationType.getId()));
-//    }
+    @Test
+    void updateAlgorithmRelationType_ElementFound() {
+        AlgorithmRelationType relationType = getFullAlgorithmRelationType("relationTypeName");
+        AlgorithmRelationType compareRelationType = getFullAlgorithmRelationType("relationTypeName");
+
+        AlgorithmRelationType storedRelationType = algorithmRelationTypeService.create(relationType);
+        compareRelationType.setId(storedRelationType.getId());
+        String editName = "editedRelationTypeName";
+        storedRelationType.setName(editName);
+        storedRelationType = algorithmRelationTypeService.update(storedRelationType);
+
+        assertThat(storedRelationType.getId()).isNotNull();
+        assertThat(storedRelationType.getId()).isEqualTo(compareRelationType.getId());
+        assertThat(storedRelationType.getName()).isNotEqualTo(compareRelationType.getName());
+        assertThat(storedRelationType.getName()).isEqualTo(editName);
+    }
 
     @Test
-    void testDeleteAlgoRelationType_NoReferences() {
-        AlgorithmRelationType relationType = getGenericAlgoRelationType("testRelation");
+    void deleteAlgorithmRelationType_UsedInRelation() {
+        Algorithm sourceAlgorithm = new ClassicAlgorithm();
+        sourceAlgorithm.setName("sourceAlgorithm");
+        sourceAlgorithm.setComputationModel(ComputationModel.CLASSIC);
+        Algorithm storedSourceAlgorithm = algorithmService.create(sourceAlgorithm);
+
+        Algorithm targetAlgorithm = new ClassicAlgorithm();
+        targetAlgorithm.setName("targetAlgorithm");
+        targetAlgorithm.setComputationModel(ComputationModel.CLASSIC);
+        Algorithm storedTargetAlgorithm = algorithmService.create(targetAlgorithm);
+
+        AlgorithmRelationType relationType = getFullAlgorithmRelationType("relationTypeName");
+        AlgorithmRelationType storedRelationType = algorithmRelationTypeService.create(relationType);
+
+        AlgorithmRelation algorithmRelation = new AlgorithmRelation();
+        algorithmRelation.setDescription("relationDescription");
+        algorithmRelation.setSourceAlgorithm(storedSourceAlgorithm);
+        algorithmRelation.setTargetAlgorithm(storedTargetAlgorithm);
+        algorithmRelation.setAlgorithmRelationType(storedRelationType);
+
+        algorithmRelationService.create(algorithmRelation);
+
+        Assertions.assertThrows(ConsistencyException.class, () -> algorithmRelationTypeService.delete(storedRelationType.getId()));
+
+        Assertions.assertDoesNotThrow(() -> algorithmRelationTypeService.findById(storedRelationType.getId()));
+    }
+
+    @Test
+    void deleteAlgorithmRelationType_Unused() {
+        AlgorithmRelationType relationType = getFullAlgorithmRelationType("relationTypeName");
         AlgorithmRelationType storedRelationType = algorithmRelationTypeService.create(relationType);
 
         Assertions.assertDoesNotThrow(() -> algorithmRelationTypeService.findById(storedRelationType.getId()));
@@ -145,7 +155,7 @@ public class AlgorithmRelationTypeServiceTest extends AtlasDatabaseTestBase {
                 algorithmRelationTypeService.findById(storedRelationType.getId()));
     }
 
-    private AlgorithmRelationType getGenericAlgoRelationType(String typeName) {
+    private AlgorithmRelationType getFullAlgorithmRelationType(String typeName) {
         AlgorithmRelationType algorithmRelationType = new AlgorithmRelationType();
         algorithmRelationType.setName(typeName);
         return algorithmRelationType;

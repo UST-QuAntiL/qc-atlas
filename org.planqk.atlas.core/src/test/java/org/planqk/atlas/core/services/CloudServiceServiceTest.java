@@ -50,31 +50,22 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
     private LinkingService linkingService;
 
     @Test
-    void createMinimalCloudService() {
-        CloudService cloudService = new CloudService();
-        cloudService.setName("test cloud service");
+    void createCloudService() {
+        CloudService cloudService = getFullCloudService("cloudServiceName");
 
         CloudService storedCloudService = cloudServiceService.create(cloudService);
         assertCloudServiceEquality(storedCloudService, cloudService);
     }
 
     @Test
-    void createMaximalCloudService() {
-        CloudService cloudService = getTestCloudService("test cloud service");
-
-        CloudService storedCloudService = cloudServiceService.create(cloudService);
-        assertCloudServiceEquality(storedCloudService, cloudService);
-    }
-
-    @Test
-    void addComputeResourceReference() {
-        CloudService cloudService = getTestCloudService("test cloud service");
+    void createComputeResource_WithComputeResource() {
+        CloudService cloudService = getFullCloudService("cloudServiceName");
         CloudService storedCloudService = cloudServiceService.create(cloudService);
 
         ComputeResource computeResource = new ComputeResource();
-        computeResource.setName("test compute resource");
-        computeResource.setVendor("test vendor");
-        computeResource.setTechnology("test technology");
+        computeResource.setName("computeResourceName");
+        computeResource.setVendor("vendor");
+        computeResource.setTechnology("technology");
         computeResource.setQuantumComputationModel(QuantumComputationModel.QUANTUM_ANNEALING);
         ComputeResource storedComputeResource = computeResourceService.create(computeResource);
 
@@ -89,19 +80,62 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void updateCloudService_ElementNotFound() {
+    void searchAll() {
+        CloudService cloudService1 = getFullCloudService("cloudServiceName1");
+        cloudServiceService.create(cloudService1);
+        CloudService cloudService2 = getFullCloudService("cloudServiceName2");
+        cloudServiceService.create(cloudService2);
+
+        List<CloudService> cloudServices = cloudServiceService.searchAllByName("1", Pageable.unpaged()).getContent();
+
+        assertThat(cloudServices.size()).isEqualTo(1);
+    }
+
+    @Test
+    void findAll() {
+        CloudService cloudService1 = getFullCloudService("cloudServiceName1");
+        cloudServiceService.create(cloudService1);
+        CloudService cloudService2 = getFullCloudService("cloudServiceName2");
+        cloudServiceService.create(cloudService2);
+
+        List<CloudService> cloudServices = cloudServiceService.findAll(Pageable.unpaged()).getContent();
+
+        assertThat(cloudServices.size()).isEqualTo(2);
+    }
+
+    @Test
+    void findCloudServiceById_ElementNotFound() {
         Assertions.assertThrows(NoSuchElementException.class, () ->
-                cloudServiceService.update(null));
+                cloudServiceService.findById(UUID.randomUUID()));
+    }
+
+    @Test
+    void findCloudServiceById_ElementFound() {
+        CloudService cloudService = getFullCloudService("cloudServiceName");
+
+        CloudService storedCloudService = cloudServiceService.create(cloudService);
+
+        storedCloudService = cloudServiceService.findById(storedCloudService.getId());
+
+        assertCloudServiceEquality(storedCloudService, cloudService);
+    }
+
+    @Test
+    void updateCloudService_ElementNotFound() {
+        CloudService cloudService = getFullCloudService("cloudServiceName");
+        cloudService.setId(UUID.randomUUID());
+        Assertions.assertThrows(NoSuchElementException.class, () ->
+                cloudServiceService.update(cloudService));
     }
 
     @Test
     void updateCloudService_ElementFound() {
-        CloudService cloudService = getTestCloudService("test cloud service");
-        CloudService storedCloudService = getTestCloudService("test cloud service");
+        CloudService cloudService = getFullCloudService("cloudServiceName");
+        CloudService storedCloudService = getFullCloudService("cloudServiceName");
 
         CloudService storedEditedCloudService = cloudServiceService.create(cloudService);
         storedCloudService.setId(storedEditedCloudService.getId());
-        String editName = "edited cloud service";
+        String editName = "editedCloudServiceName";
         storedEditedCloudService.setName(editName);
         storedEditedCloudService = cloudServiceService.update(storedEditedCloudService);
 
@@ -114,49 +148,8 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void findCloudServiceById_ElementNotFound() {
-        Assertions.assertThrows(NoSuchElementException.class, () ->
-                cloudServiceService.findById(UUID.randomUUID()));
-    }
-
-    @Test
-    void findCloudServiceById_ElementFound() {
-        CloudService cloudService = getTestCloudService("test cloud service");
-
-        CloudService storedCloudService = cloudServiceService.create(cloudService);
-
-        storedCloudService = cloudServiceService.findById(storedCloudService.getId());
-
-        assertCloudServiceEquality(storedCloudService, cloudService);
-    }
-
-    @Test
-    void findAll() {
-        CloudService cloudService1 = getTestCloudService("test cloud service1");
-        cloudServiceService.create(cloudService1);
-        CloudService cloudService2 = getTestCloudService("test cloud service2");
-        cloudServiceService.create(cloudService2);
-
-        List<CloudService> cloudServices = cloudServiceService.findAll(Pageable.unpaged()).getContent();
-
-        assertThat(cloudServices.size()).isEqualTo(2);
-    }
-
-    @Test
-    void searchAll() {
-        CloudService cloudService1 = getTestCloudService("test cloud service1");
-        cloudServiceService.create(cloudService1);
-        CloudService cloudService2 = getTestCloudService("test cloud service2");
-        cloudServiceService.create(cloudService2);
-
-        List<CloudService> cloudServices = cloudServiceService.searchAllByName("1", Pageable.unpaged()).getContent();
-
-        assertThat(cloudServices.size()).isEqualTo(1);
-    }
-
-    @Test
     void deleteCloudService_NoReferences() {
-        CloudService cloudService = getTestCloudService("test cloud service");
+        CloudService cloudService = getFullCloudService("cloudServiceName");
 
         CloudService storedCloudService = cloudServiceService.create(cloudService);
 
@@ -170,14 +163,14 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
 
     @Test
     void deleteCloudService_HasReferences() {
-        CloudService cloudService = getTestCloudService("test cloud service");
+        CloudService cloudService = getFullCloudService("cloudServiceName");
         CloudService storedCloudService = cloudServiceService.create(cloudService);
 
         Assertions.assertDoesNotThrow(() -> cloudServiceService.findById(storedCloudService.getId()));
 
         // Add Compute Resource Reference
         ComputeResource computeResource = new ComputeResource();
-        computeResource.setName("test compute resource");
+        computeResource.setName("computeResource");
         ComputeResource storedComputeResource = computeResourceService.create(computeResource);
         linkingService.linkCloudServiceAndComputeResource(storedCloudService.getId(), storedComputeResource.getId());
 
@@ -192,13 +185,13 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
 
     @Test
     void deleteComputeResourceReference() {
-        CloudService cloudService = getTestCloudService("test cloud service");
+        CloudService cloudService = getFullCloudService("cloudServiceName");
         CloudService storedCloudService = cloudServiceService.create(cloudService);
 
         ComputeResource computeResource = new ComputeResource();
-        computeResource.setName("test compute resource");
-        computeResource.setVendor("test vendor");
-        computeResource.setTechnology("test technology");
+        computeResource.setName("computeResource");
+        computeResource.setVendor("vendor");
+        computeResource.setTechnology("technology");
         computeResource.setQuantumComputationModel(QuantumComputationModel.QUANTUM_ANNEALING);
         ComputeResource storedComputeResource = computeResourceService.create(computeResource);
 
@@ -225,15 +218,15 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
         assertThat(dbCloudService.getCostModel()).isEqualTo(compareCloudService.getCostModel());
     }
 
-    private CloudService getTestCloudService(String name) {
+    private CloudService getFullCloudService(String name) {
         CloudService cloudService = new CloudService();
         cloudService.setName(name);
-        cloudService.setProvider("test provider");
+        cloudService.setProvider("provider");
         try {
             cloudService.setUrl(new URL("http://example.com"));
         } catch (MalformedURLException ignored) {
         }
-        cloudService.setCostModel("test cost model");
+        cloudService.setCostModel("costModel");
         return cloudService;
     }
 }

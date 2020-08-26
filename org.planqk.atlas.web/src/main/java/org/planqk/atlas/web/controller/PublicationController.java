@@ -102,7 +102,7 @@ public class PublicationController {
     public ResponseEntity<EntityModel<PublicationDto>> updatePublication(
             @Validated(ValidationGroups.Update.class) @RequestBody PublicationDto publicationDto) {
         Publication publication = publicationService.update(
-                publicationDto.getId(), ModelMapperUtils.convert(publicationDto, Publication.class));
+                ModelMapperUtils.convert(publicationDto, Publication.class));
         return new ResponseEntity<>(publicationAssembler.toModel(publication), HttpStatus.OK);
     }
 

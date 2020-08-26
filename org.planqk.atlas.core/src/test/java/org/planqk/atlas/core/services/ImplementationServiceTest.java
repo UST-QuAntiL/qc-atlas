@@ -48,7 +48,7 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
 //    private TagRepository tagRepository;
 
     @Test
-    void testAddImplementation() {
+    void createImplementation() {
         // Tags will be used/tested and included in the future
 //        var tag = new Tag();
 //        tag.setKey("test");
@@ -81,7 +81,7 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void testFindByImplementedAlgorithm() {
+    void findByImplementedAlgorithm() {
         Algorithm algo = new Algorithm();
         algo.setName("dummy");
         algo = algorithmService.create(algo);
@@ -99,4 +99,6 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
 
         assertThat(implementations.size()).isEqualTo(2);
     }
+
+    // TODO a LOT more tests
 }

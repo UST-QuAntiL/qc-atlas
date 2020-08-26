@@ -51,7 +51,7 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
     @Test
     void createMinimalComputeResource() {
         ComputeResource computeResource = new ComputeResource();
-        computeResource.setName("test compute resource");
+        computeResource.setName("computeResourceName");
 
         ComputeResource storedComputeResource = computeResourceService.create(computeResource);
 
@@ -60,7 +60,7 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
 
     @Test
     void createMaximalComputeResource() {
-        ComputeResource computeResource = getGenericTestComputeResource("test compute resource");
+        ComputeResource computeResource = getFullComputeResource("computeResourceName");
 
         ComputeResource storedComputeResource = computeResourceService.create(computeResource);
 
@@ -69,23 +69,23 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
 
     @Test
     void createComputeResource_WithComputingResourceProperty() {
-        ComputeResource computeResource = getGenericTestComputeResource("test compute resource");
+        ComputeResource computeResource = getFullComputeResource("computeResourceName");
         ComputeResource storedComputeResource = computeResourceService.create(computeResource);
 
         Assertions.assertDoesNotThrow(() -> computeResourceService.findById(storedComputeResource.getId()));
 
         // Add Computing Resource Property Reference
-        var computingResourceProperty = new ComputeResourceProperty();
-        var computingResourcePropertyType = new ComputeResourcePropertyType();
-        computingResourcePropertyType.setName("test name");
-        computingResourcePropertyType.setDatatype(ComputeResourcePropertyDataType.STRING);
-        computingResourcePropertyType.setDescription("test description");
-        var storedType = computeResourcePropertyTypeService.create(computingResourcePropertyType);
-        computingResourceProperty.setComputeResourcePropertyType(storedType);
-        computingResourceProperty.setValue("test value");
+        var computeResourceProperty = new ComputeResourceProperty();
+        var computeResourcePropertyType = new ComputeResourcePropertyType();
+        computeResourcePropertyType.setName("computeResourcePropertyTypeName");
+        computeResourcePropertyType.setDatatype(ComputeResourcePropertyDataType.STRING);
+        computeResourcePropertyType.setDescription("description");
+        var storedType = computeResourcePropertyTypeService.create(computeResourcePropertyType);
+        computeResourceProperty.setComputeResourcePropertyType(storedType);
+        computeResourceProperty.setValue("value");
 
         var storedProperty = computeResourcePropertyService.addComputeResourcePropertyToComputeResource(
-                storedComputeResource.getId(), computingResourceProperty);
+                storedComputeResource.getId(), computeResourceProperty);
 
         var storedComputeResourceWithReference = computeResourceService.findById(storedComputeResource.getId());
 
@@ -93,19 +93,63 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void updateComputeResource_ElementNotFound() {
+    void findAll() {
+        ComputeResource computeResource1 = getFullComputeResource("computeResourceName1");
+        ComputeResource computeResource2 = getFullComputeResource("computeResourceName2");
+        computeResourceService.create(computeResource1);
+        computeResourceService.create(computeResource2);
+
+        List<ComputeResource> storedComputeResources = computeResourceService.findAll(Pageable.unpaged()).getContent();
+
+        assertThat(storedComputeResources.size()).isEqualTo(2);
+    }
+
+    @Test
+    void searchAll() {
+        ComputeResource computeResource1 = getFullComputeResource("computeResourceName1");
+        ComputeResource computeResource2 = getFullComputeResource("computeResourceName2");
+        computeResourceService.create(computeResource1);
+        computeResourceService.create(computeResource2);
+
+        List<ComputeResource> storedComputeResources = computeResourceService
+                .searchAllByName("1", Pageable.unpaged()).getContent();
+
+        assertThat(storedComputeResources.size()).isEqualTo(1);
+    }
+
+    @Test
+    void findComputeResourceById_ElementNotFound() {
         Assertions.assertThrows(NoSuchElementException.class, () ->
-                computeResourceService.update(null));
+                computeResourceService.findById(UUID.randomUUID()));
+    }
+
+    @Test
+    void findComputeResourceById_ElementFound() {
+        ComputeResource computeResource = getFullComputeResource("computeResourceName");
+
+        ComputeResource storedComputeResource = computeResourceService.create(computeResource);
+
+        storedComputeResource = computeResourceService.findById(storedComputeResource.getId());
+
+        assertComputeResourceEquality(storedComputeResource, computeResource);
+    }
+
+    @Test
+    void updateComputeResource_ElementNotFound() {
+        ComputeResource computeResource = getFullComputeResource("computeResourceName");
+        computeResource.setId(UUID.randomUUID());
+        Assertions.assertThrows(NoSuchElementException.class, () ->
+                computeResourceService.update(computeResource));
     }
 
     @Test
     void updateComputeResource_ElementFound() {
-        ComputeResource computeResource = getGenericTestComputeResource("test compute resource");
-        ComputeResource storedComputeResource = getGenericTestComputeResource("test compute resource");
+        ComputeResource computeResource = getFullComputeResource("computeResourceName");
+        ComputeResource storedComputeResource = getFullComputeResource("computeResourceName");
 
         ComputeResource storedEditedComputeResource = computeResourceService.create(computeResource);
         storedComputeResource.setId(storedEditedComputeResource.getId());
-        String editName = "edited compute resource";
+        String editName = "editedComputeResourceName";
         storedEditedComputeResource.setName(editName);
         computeResourceService.create(storedEditedComputeResource);
 
@@ -118,49 +162,8 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void findComputeResourceById_ElementNotFound() {
-        Assertions.assertThrows(NoSuchElementException.class, () ->
-                computeResourceService.findById(UUID.randomUUID()));
-    }
-
-    @Test
-    void findComputeResourceById_ElementFound() {
-        ComputeResource computeResource = getGenericTestComputeResource("test compute resource");
-
-        ComputeResource storedComputeResource = computeResourceService.create(computeResource);
-
-        storedComputeResource = computeResourceService.findById(storedComputeResource.getId());
-
-        assertComputeResourceEquality(storedComputeResource, computeResource);
-    }
-
-    @Test
-    void findAll() {
-        ComputeResource computeResource1 = getGenericTestComputeResource("test compute resource1");
-        ComputeResource computeResource2 = getGenericTestComputeResource("test compute resource2");
-        computeResourceService.create(computeResource1);
-        computeResourceService.create(computeResource2);
-
-        List<ComputeResource> storedComputeResources = computeResourceService.findAll(Pageable.unpaged()).getContent();
-
-        assertThat(storedComputeResources.size()).isEqualTo(2);
-    }
-
-    @Test
-    void searchAll() {
-        ComputeResource computeResource1 = getGenericTestComputeResource("test compute resource1");
-        ComputeResource computeResource2 = getGenericTestComputeResource("test compute resource2");
-        computeResourceService.create(computeResource1);
-        computeResourceService.create(computeResource2);
-
-        List<ComputeResource> storedComputeResources = computeResourceService.searchAllByName("1", Pageable.unpaged()).getContent();
-
-        assertThat(storedComputeResources.size()).isEqualTo(1);
-    }
-
-    @Test
     void deleteComputeResource_NoReferences() {
-        ComputeResource computeResource = getGenericTestComputeResource("test compute resource");
+        ComputeResource computeResource = getFullComputeResource("computeResourceName");
 
         ComputeResource storedComputeResource = computeResourceService.create(computeResource);
 
@@ -173,24 +176,29 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
+    void deleteComputeResource_ElementNotFound() {
+        // TODO
+    }
+
+    @Test
     void deleteComputeResource_HasReferences() {
-        ComputeResource computeResource = getGenericTestComputeResource("test compute resource");
+        ComputeResource computeResource = getFullComputeResource("computeResourceName");
         ComputeResource storedComputeResource = computeResourceService.create(computeResource);
 
         Assertions.assertDoesNotThrow(() -> computeResourceService.findById(storedComputeResource.getId()));
 
         // Add Computing Resource Property Reference
-        var computingResourceProperty = new ComputeResourceProperty();
-        var computingResourcePropertyType = new ComputeResourcePropertyType();
-        computingResourcePropertyType.setName("test name");
-        computingResourcePropertyType.setDatatype(ComputeResourcePropertyDataType.STRING);
-        computingResourcePropertyType.setDescription("test description");
-        var storedType = computeResourcePropertyTypeService.create(computingResourcePropertyType);
-        computingResourceProperty.setComputeResourcePropertyType(storedType);
-        computingResourceProperty.setValue("test value");
+        var computeResourceProperty = new ComputeResourceProperty();
+        var computeResourcePropertyType = new ComputeResourcePropertyType();
+        computeResourcePropertyType.setName("computeResourcePropertyTypeName");
+        computeResourcePropertyType.setDatatype(ComputeResourcePropertyDataType.STRING);
+        computeResourcePropertyType.setDescription("description");
+        var storedType = computeResourcePropertyTypeService.create(computeResourcePropertyType);
+        computeResourceProperty.setComputeResourcePropertyType(storedType);
+        computeResourceProperty.setValue("value");
 
         var storedProperty = computeResourcePropertyService.addComputeResourcePropertyToComputeResource(
-                storedComputeResource.getId(), computingResourceProperty);
+                storedComputeResource.getId(), computeResourceProperty);
 
         // Delete
         computeResourceService.delete(storedComputeResource.getId());
@@ -211,12 +219,12 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
         assertThat(dbComputeResource.getVendor()).isEqualTo(compareComputeResource.getVendor());
     }
 
-    private ComputeResource getGenericTestComputeResource(String name) {
+    private ComputeResource getFullComputeResource(String name) {
         ComputeResource computeResource = new ComputeResource();
         computeResource.setName(name);
         computeResource.setQuantumComputationModel(QuantumComputationModel.QUANTUM_ANNEALING);
-        computeResource.setTechnology("test technology");
-        computeResource.setVendor("test vendor");
+        computeResource.setTechnology("technology");
+        computeResource.setVendor("vendor");
         return computeResource;
     }
 }

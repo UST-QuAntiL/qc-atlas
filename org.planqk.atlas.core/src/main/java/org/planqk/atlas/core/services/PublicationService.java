@@ -40,7 +40,7 @@ public interface PublicationService {
     Publication findById(UUID publicationId);
 
     @Transactional
-    Publication update(UUID publicationId, Publication publication);
+    Publication update(Publication publication);
 
     @Transactional
     void delete(UUID publicationId);

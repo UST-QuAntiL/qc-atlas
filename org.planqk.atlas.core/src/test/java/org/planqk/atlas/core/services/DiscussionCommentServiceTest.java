@@ -59,7 +59,7 @@ public class DiscussionCommentServiceTest extends AtlasDatabaseTestBase {
 
     @BeforeEach
     public void initialize() throws Exception {
-        var pub = PublicationServiceTest.getGenericTestPublication("discussion");
+        var pub = PublicationServiceTest.getFullPublication("discussion");
         pub = publicationService.create(pub);
 
         topic = new DiscussionTopic();

@@ -21,7 +21,6 @@ package org.planqk.atlas.core.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -52,8 +51,9 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
     @Autowired
     private AlgorithmService algorithmService;
 
-    //    @Autowired
+//    @Autowired
 //    private TagService tagService;
+
     @Autowired
     private ProblemTypeService problemTypeService;
 
@@ -61,19 +61,17 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
     private PublicationService publicationService;
 
     @Test
-    void testAddAlgorithm_WithoutRelations() {
-        Algorithm algorithm = getGenericAlgorithmWithoutReferences("testAlgorithm");
+    void createAlgorithm_NoLinks() {
+        Algorithm algorithm = getFullAlgorithm("algorithmName");
 
         Algorithm storedAlgorithm = algorithmService.create(algorithm);
 
         assertAlgorithmEquality(storedAlgorithm, algorithm);
     }
 
-    // Tags will be used/tested and included in the future
-
 //    @Test
 //    void testAddAlgorithm_WithTags() {
-//        Algorithm algorithm = getGenericAlgorithmWithoutReferences("testAlgorithm");
+//        Algorithm algorithm = getGenericAlgorithmWithoutReferences("algorithmName");
 //
 //        Set<Tag> tags = new HashSet<>();
 //        Tag tag = new Tag();
@@ -96,8 +94,8 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
 //    }
 
     @Test
-    void testAddAlgorithm_WithProblemTypes() {
-        Algorithm algorithm = getGenericAlgorithmWithoutReferences("testAlgorithm");
+    void createAlgorithm_WithProblemTypes() {
+        Algorithm algorithm = getFullAlgorithm("algorithmName");
 
         Set<ProblemType> problemTypes = new HashSet<>();
         ProblemType problemType = new ProblemType();
@@ -121,8 +119,8 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void testAddAlgorithm_WithPublications() throws MalformedURLException {
-        Algorithm algorithm = getGenericAlgorithmWithoutReferences("testAlgorithm");
+    void createAlgorithm_WithPublications() {
+        Algorithm algorithm = getFullAlgorithm("algorithmName");
 
         Set<Publication> publications = new HashSet<>();
         Publication publication = new Publication();
@@ -160,13 +158,42 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void testUpdateAlgorithm_ElementFound() {
-        Algorithm algorithm = getGenericAlgorithmWithoutReferences("testAlgorithm");
-        Algorithm compareAlgorithm = getGenericAlgorithmWithoutReferences("testAlgorithm");
+    void findAll() {
+        Algorithm algorithm1 = getFullAlgorithm("algorithmName1");
+        algorithmService.create(algorithm1);
+        Algorithm algorithm2 = getFullAlgorithm("algorithmName2");
+        algorithmService.create(algorithm2);
+
+        List<Algorithm> algorithms = algorithmService.findAll(Pageable.unpaged(), null).getContent();
+
+        assertThat(algorithms.size()).isEqualTo(2);
+    }
+
+    @Test
+    void findAlgorithmById_ElementNotFound() {
+        Assertions.assertThrows(NoSuchElementException.class, () ->
+                algorithmService.findById(UUID.randomUUID()));
+    }
+
+    @Test
+    void findAlgorithmById_ElementFound() {
+        Algorithm algorithm = getFullAlgorithm("algorithmName");
+
+        Algorithm storedAlgorithm = algorithmService.create(algorithm);
+
+        storedAlgorithm = algorithmService.findById(storedAlgorithm.getId());
+
+        assertAlgorithmEquality(storedAlgorithm, algorithm);
+    }
+
+    @Test
+    void updateAlgorithm_ElementFound() {
+        Algorithm algorithm = getFullAlgorithm("algorithmName");
+        Algorithm compareAlgorithm = getFullAlgorithm("algorithmName");
 
         Algorithm storedAlgorithm = algorithmService.create(algorithm);
         compareAlgorithm.setId(storedAlgorithm.getId());
-        String editName = "editedAlgorithm";
+        String editName = "editedAlgorithmName";
         storedAlgorithm.setName(editName);
         Algorithm editedAlgorithm = algorithmService.update(storedAlgorithm);
 
@@ -191,23 +218,23 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void testUpdateAlgorithm_ElementNotFound() {
-        Algorithm algorithm = getGenericAlgorithmWithoutReferences("testAlgorithm");
-
+    void updateAlgorithm_ElementNotFound() {
+        Algorithm algorithm = getFullAlgorithm("algorithmName");
+        algorithm.setId(UUID.randomUUID());
         Assertions.assertThrows(NoSuchElementException.class, () ->
                 algorithmService.update(algorithm));
     }
 
     @Test
-    void testUpdateAlgorithm_QuantumAlgorithm() {
+    void updateAlgorithm_QuantumAlgorithm() {
         QuantumAlgorithm algorithm = new QuantumAlgorithm();
-        algorithm.setName("testQuantumAlgorithm");
+        algorithm.setName("quantumAlgorithmName");
         algorithm.setComputationModel(ComputationModel.QUANTUM);
         algorithm.setNisqReady(false);
         algorithm.setSpeedUp("2");
         algorithm.setQuantumComputationModel(QuantumComputationModel.QUANTUM_ANNEALING);
         QuantumAlgorithm compareAlgorithm = new QuantumAlgorithm();
-        compareAlgorithm.setName("testQuantumAlgorithm");
+        compareAlgorithm.setName("quantumAlgorithmName");
         compareAlgorithm.setComputationModel(ComputationModel.QUANTUM);
         compareAlgorithm.setNisqReady(false);
         compareAlgorithm.setSpeedUp("2");
@@ -215,7 +242,7 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
 
         QuantumAlgorithm storedAlgorithm = (QuantumAlgorithm) algorithmService.create(algorithm);
         compareAlgorithm.setId(storedAlgorithm.getId());
-        String editName = "editedQuantumAlgorithm";
+        String editName = "editedQuantumAlgorithmName";
         storedAlgorithm.setName(editName);
         QuantumAlgorithm editedAlgorithm = (QuantumAlgorithm) algorithmService.update(storedAlgorithm);
 
@@ -230,37 +257,8 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void testFindAlgorithmById_ElementNotFound() {
-        Assertions.assertThrows(NoSuchElementException.class, () ->
-                algorithmService.findById(UUID.randomUUID()));
-    }
-
-    @Test
-    void testFindAlgorithmById_ElementFound() {
-        Algorithm algorithm = getGenericAlgorithmWithoutReferences("testAlgorithm");
-
-        Algorithm storedAlgorithm = algorithmService.create(algorithm);
-
-        storedAlgorithm = algorithmService.findById(storedAlgorithm.getId());
-
-        assertAlgorithmEquality(storedAlgorithm, algorithm);
-    }
-
-    @Test
-    void testFindAll() {
-        Algorithm algorithm1 = getGenericAlgorithmWithoutReferences("testAlgorithm1");
-        algorithmService.create(algorithm1);
-        Algorithm algorithm2 = getGenericAlgorithmWithoutReferences("testAlgorithm2");
-        algorithmService.create(algorithm2);
-
-        List<Algorithm> algorithms = algorithmService.findAll(Pageable.unpaged(), null).getContent();
-
-        assertThat(algorithms.size()).isEqualTo(2);
-    }
-
-    @Test
-    void testDeleteAlgorithm_WithoutRelations() {
-        Algorithm algorithm = getGenericAlgorithmWithoutReferences("testAlgorithm");
+    void deleteAlgorithm_NoLinks() {
+        Algorithm algorithm = getFullAlgorithm("algorithmName");
 
         Algorithm storedAlgorithm = algorithmService.create(algorithm);
 
@@ -273,8 +271,8 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void testDeleteAlgorithm_WithRelations() throws MalformedURLException {
-        Algorithm algorithm = getGenericAlgorithmWithoutReferences("testAlgorithm");
+    void deleteAlgorithm_WithLinks() {
+        Algorithm algorithm = getFullAlgorithm("algorithmName");
 
 //        Set<Tag> tags = new HashSet<>();
 //        Tag tag = new Tag();
@@ -446,7 +444,7 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
         return algorithmRelation;
     }
 
-    private Algorithm getGenericAlgorithmWithoutReferences(String name) {
+    private Algorithm getFullAlgorithm(String name) {
         Algorithm algorithm = new ClassicAlgorithm();
         algorithm.setName(name);
         algorithm.setAcronym("testAcronym");

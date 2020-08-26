@@ -19,7 +19,6 @@
 
 package org.planqk.atlas.core.services;
 
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -50,28 +49,46 @@ public class PublicationServiceTest extends AtlasDatabaseTestBase {
     private AlgorithmService algorithmService;
 
     @Test
-    void testAddPublication() throws MalformedURLException {
-        Publication publication = getGenericTestPublication("testPublicationTitle");
+    void createPublication() {
+        Publication publication = getFullPublication("publicationTitle");
 
         Publication storedPublication = publicationService.create(publication);
         assertPublicationEquality(storedPublication, publication);
     }
 
     @Test
-    void testUpdatePublication_ElementNotFound() {
+    void findPublicationById_ElementNotFound() {
         Assertions.assertThrows(NoSuchElementException.class, () ->
-                publicationService.update(UUID.randomUUID(), null));
+                publicationService.findById(UUID.randomUUID()));
     }
 
     @Test
-    void testUpdatePublication_ElementFound() throws MalformedURLException {
-        Publication publication = getGenericTestPublication("testPublicationTitle");
-        Publication comparePublication = getGenericTestPublication("testPublicationTitle");
+    void findPublicationById_ElementFound() {
+        Publication publication = getFullPublication("publicationTitle");
+        Publication storedPublication = publicationService.create(publication);
+
+        storedPublication = publicationService.findById(storedPublication.getId());
+
+        assertPublicationEquality(storedPublication, publication);
+    }
+
+    @Test
+    void updatePublication_ElementNotFound() {
+        Publication publication = getFullPublication("publicationTitle");
+        publication.setId(UUID.randomUUID());
+        Assertions.assertThrows(NoSuchElementException.class, () ->
+                publicationService.update(publication));
+    }
+
+    @Test
+    void updatePublication_ElementFound() {
+        Publication publication = getFullPublication("publicationTitle");
+        Publication comparePublication = getFullPublication("publicationTitle");
 
         Publication storedPublication = publicationService.create(publication);
         comparePublication.setId(storedPublication.getId());
         storedPublication.setTitle("editedPublicationTitle");
-        Publication editedProblemType = publicationService.update(storedPublication.getId(), storedPublication);
+        Publication editedProblemType = publicationService.update(storedPublication);
 
         assertThat(editedProblemType.getId()).isNotNull();
         assertThat(editedProblemType.getId()).isEqualTo(comparePublication.getId());
@@ -84,29 +101,60 @@ public class PublicationServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void testFindPublicationById_ElementNotFound() {
+    void deletePublication_ElementNotFound() {
         Assertions.assertThrows(NoSuchElementException.class, () ->
-                publicationService.findById(UUID.randomUUID()));
+                publicationService.delete(UUID.randomUUID()));
     }
 
     @Test
-    void testFindPublicationById_ElementFound() throws MalformedURLException {
-        Publication publication = getGenericTestPublication("testPublicationTitle");
+    void deletePublication_ElementFound() {
+        Publication publication = getFullPublication("publicationTitle");
         Publication storedPublication = publicationService.create(publication);
 
-        storedPublication = publicationService.findById(storedPublication.getId());
+        Assertions.assertDoesNotThrow(() -> publicationService.findById(storedPublication.getId()));
 
-        assertPublicationEquality(storedPublication, publication);
+        publicationService.delete(storedPublication.getId());
+
+        Assertions.assertThrows(NoSuchElementException.class, () ->
+                publicationService.findById(storedPublication.getId()));
     }
 
     @Test
-    void testFindPublicationAlgorithms() throws MalformedURLException {
+    void deletePublications() {
+        Publication publication1 = getFullPublication("publicationTitle1");
+        Publication storedPublication1 = publicationService.create(publication1);
+        Publication publication2 = getFullPublication("publicationTitle2");
+        Publication storedPublication2 = publicationService.create(publication2);
+
+        Set<UUID> publicationIds = new HashSet<>();
+        publicationIds.add(storedPublication1.getId());
+        publicationIds.add(storedPublication2.getId());
+
+        Assertions.assertDoesNotThrow(() -> publicationService.findById(storedPublication1.getId()));
+        Assertions.assertDoesNotThrow(() -> publicationService.findById(storedPublication2.getId()));
+
+        publicationService.deletePublications(publicationIds);
+
+        Assertions.assertThrows(NoSuchElementException.class, () ->
+                publicationService.findById(storedPublication1.getId()));
+        Assertions.assertThrows(NoSuchElementException.class, () ->
+                publicationService.findById(storedPublication2.getId()));
+    }
+
+    @Test
+    void findAlgorithmsOfPublication_PublicationNotFound() {
+        Assertions.assertThrows(NoSuchElementException.class, () ->
+                publicationService.findAlgorithmsOfPublication(UUID.randomUUID(), Pageable.unpaged()));
+    }
+
+    @Test
+    void findAlgorithmsOfPublication_PublicationFound() {
         Algorithm algorithm = new ClassicAlgorithm();
         algorithm.setName("testName");
         algorithm.setComputationModel(ComputationModel.CLASSIC);
 
         Set<Publication> publications = new HashSet<>();
-        Publication publication = getGenericTestPublication("testPublicationTitle");
+        Publication publication = getFullPublication("publicationTitle");
         Set<Algorithm> algorithms = new HashSet<>();
         algorithms.add(algorithm);
         publication.setAlgorithms(algorithms);
@@ -125,38 +173,14 @@ public class PublicationServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void testDeletePublication() throws MalformedURLException {
-        Publication publication = getGenericTestPublication("testPublicationTitle");
-        Publication storedPublication = publicationService.create(publication);
-
-        Assertions.assertDoesNotThrow(() -> publicationService.findById(storedPublication.getId()));
-
-        publicationService.delete(storedPublication.getId());
-
+    void findImplementationsOfPublication_PublicationNotFound() {
         Assertions.assertThrows(NoSuchElementException.class, () ->
-                publicationService.findById(storedPublication.getId()));
+                publicationService.findImplementationsOfPublication(UUID.randomUUID(), Pageable.unpaged()));
     }
 
     @Test
-    void testDeletePublications() throws MalformedURLException {
-        Publication publication1 = getGenericTestPublication("testPublicationTitle1");
-        Publication storedPublication1 = publicationService.create(publication1);
-        Publication publication2 = getGenericTestPublication("testPublicationTitle2");
-        Publication storedPublication2 = publicationService.create(publication2);
-
-        Set<UUID> publicationIds = new HashSet<>();
-        publicationIds.add(storedPublication1.getId());
-        publicationIds.add(storedPublication2.getId());
-
-        Assertions.assertDoesNotThrow(() -> publicationService.findById(storedPublication1.getId()));
-        Assertions.assertDoesNotThrow(() -> publicationService.findById(storedPublication2.getId()));
-
-        publicationService.deletePublications(publicationIds);
-
-        Assertions.assertThrows(NoSuchElementException.class, () ->
-                publicationService.findById(storedPublication1.getId()));
-        Assertions.assertThrows(NoSuchElementException.class, () ->
-                publicationService.findById(storedPublication2.getId()));
+    void findImplementationsOfPublication_PublicationFound() {
+        // TODO
     }
 
     private void assertPublicationEquality(Publication dbPublication, Publication comparePublication) {
@@ -169,13 +193,13 @@ public class PublicationServiceTest extends AtlasDatabaseTestBase {
                 .count()).isEqualTo(comparePublication.getAuthors().size());
     }
 
-    static Publication getGenericTestPublication(String title) throws MalformedURLException {
+    static Publication getFullPublication(String title) {
         Publication publication = new Publication();
         publication.setTitle(title);
         publication.setUrl("http://example.com");
-        publication.setDoi("testDoi");
+        publication.setDoi("doi");
         List<String> publicationAuthors = new ArrayList<>();
-        publicationAuthors.add("test publication author");
+        publicationAuthors.add("publicationAuthor1");
         publication.setAuthors(publicationAuthors);
         return publication;
     }

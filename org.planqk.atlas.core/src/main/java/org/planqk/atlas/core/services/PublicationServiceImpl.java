@@ -68,8 +68,8 @@ public class PublicationServiceImpl implements PublicationService {
 
     @Override
     @Transactional
-    public Publication update(UUID publicationId, Publication publication) {
-        var persistedPublication = findById(publicationId);
+    public Publication update(Publication publication) {
+        var persistedPublication = findById(publication.getId());
 
         persistedPublication.setTitle(publication.getTitle());
         persistedPublication.setDoi(publication.getDoi());
