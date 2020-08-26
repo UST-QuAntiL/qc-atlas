@@ -75,11 +75,11 @@ public class ComputeResourcePropertyTypeControllerTest {
     private final UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromPath("/");
 
     @Test
-    void deleteType_returnOk() throws Exception {
+    void deleteType_returnNoContent() throws Exception {
         doNothing().when(computeResourcePropertyTypeService).delete(any());
         var url = fromMethodCall(uriBuilder, on(ComputeResourcePropertyTypeController.class)
                 .deleteComputingResourcePropertyType(UUID.randomUUID())).toUriString();
-        mockMvc.perform(delete(url)).andExpect(status().isOk());
+        mockMvc.perform(delete(url)).andExpect(status().isNoContent());
     }
 
     @Test
