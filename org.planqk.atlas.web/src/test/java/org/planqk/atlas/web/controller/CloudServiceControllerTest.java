@@ -103,12 +103,11 @@ public class CloudServiceControllerTest {
     @Test
     public void addCloudService_returnCreated() throws Exception {
         var service = new CloudServiceDto();
-        service.setId(UUID.randomUUID());
         service.setName("Hello World");
 
         var returnedService = new CloudService();
         returnedService.setName(service.getName());
-        returnedService.setId(service.getId());
+        returnedService.setId(UUID.randomUUID());
 
         doReturn(returnedService).when(cloudServiceService).create(any());
 
@@ -120,8 +119,8 @@ public class CloudServiceControllerTest {
                 .accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id").value(service.getId().toString()))
-                .andExpect(jsonPath("$.name").value(service.getName()));
+                .andExpect(jsonPath("$.id").value(returnedService.getId().toString()))
+                .andExpect(jsonPath("$.name").value(returnedService.getName()));
     }
 
     @Test
@@ -277,12 +276,12 @@ public class CloudServiceControllerTest {
     }
 
     @Test
-    void deleteCloudService_returnOk() throws Exception {
+    void deleteCloudService_returnNoContent() throws Exception {
         doNothing().when(cloudServiceService).delete(any());
         var url = fromMethodCall(uriBuilder, on(CloudServiceController.class)
                 .deleteCloudService(UUID.randomUUID())).toUriString();
         mockMvc.perform(delete(url).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
     }
 
     @Test
@@ -336,11 +335,11 @@ public class CloudServiceControllerTest {
     }
 
     @Test
-    void linkCloudServiceToComputeResource_returnOk() throws Exception {
+    void linkCloudServiceToComputeResource_returnNoContent() throws Exception {
         doNothing().when(linkingService).linkCloudServiceAndComputeResource(any(), any());
         var url = fromMethodCall(uriBuilder, on(CloudServiceController.class)
                 .linkCloudServiceAndComputeResource(UUID.randomUUID(), UUID.randomUUID())).toUriString();
-        mockMvc.perform(post(url).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
+        mockMvc.perform(post(url).accept(MediaType.APPLICATION_JSON)).andExpect(status().isNoContent());
     }
 
     @Test
@@ -353,11 +352,11 @@ public class CloudServiceControllerTest {
     }
 
     @Test
-    void unlinkCloudServiceToComputeResource_returnOk() throws Exception {
+    void unlinkCloudServiceAndComputeResource_returnNoContent() throws Exception {
         doNothing().when(linkingService).unlinkCloudServiceAndComputeResource(any(), any());
         var url = fromMethodCall(uriBuilder, on(CloudServiceController.class)
                 .unlinkCloudServiceAndComputeResource(UUID.randomUUID(), UUID.randomUUID())).toUriString();
-        mockMvc.perform(delete(url).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
+        mockMvc.perform(delete(url).accept(MediaType.APPLICATION_JSON)).andExpect(status().isNoContent());
     }
 
     @Test
