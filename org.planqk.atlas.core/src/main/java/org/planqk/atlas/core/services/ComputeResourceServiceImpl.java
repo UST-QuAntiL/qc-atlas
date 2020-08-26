@@ -20,7 +20,6 @@
 package org.planqk.atlas.core.services;
 
 import java.util.NoSuchElementException;
-import java.util.Set;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.CloudService;
@@ -91,7 +90,7 @@ public class ComputeResourceServiceImpl implements ComputeResourceService {
         }
         // TODO discuss if this is still wanted behavior
         if (cloudServiceRepository.countCloudServiceByComputeResource(computeResourceId) +
-                softwarePlatformRepository.countSoftwarePlatformByComputeResource(computeResourceId) < 1) {
+                softwarePlatformRepository.countSoftwarePlatformByComputeResource(computeResourceId) > 0) {
             throw new ConsistencyException(
                     "Cannot delete Compute Resource since it is used by existing Cloud services or Software platforms");
         }
