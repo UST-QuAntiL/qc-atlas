@@ -43,15 +43,12 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
-public class Implementation extends AlgorithmOrImplementation implements ModelWithPublications {
+public class Implementation extends AlgorithmOrImplementation {
 
-    private String name;
     private String description;
     private String contributors;
     private String assumptions;
-    private String inputFormat;
     private String parameter;
-    private String outputFormat;
     private URL link;
     private String dependencies;
 
@@ -78,7 +75,9 @@ public class Implementation extends AlgorithmOrImplementation implements ModelWi
     private Set<Tag> tags = new HashSet<>();
 
     @EqualsAndHashCode.Exclude
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "implementation", orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL,
+            mappedBy = "implementation",
+            orphanRemoval = true)
     private Set<ComputeResourceProperty> requiredComputeResourceProperties = new HashSet<>();
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
@@ -106,17 +105,6 @@ public class Implementation extends AlgorithmOrImplementation implements ModelWi
         tag.removeImplementation(this);
     }
 
-    public void setTags(Set<Tag> tags) {
-        this.tags.clear();
-        if (tags != null) {
-            this.tags.addAll(tags);
-        }
-    }
-
-    public Set<Publication> getPublications() {
-        return new HashSet<Publication>(publications);
-    }
-
     public void addPublication(Publication publication) {
         if (publications.contains(publication)) {
             return;
@@ -131,10 +119,6 @@ public class Implementation extends AlgorithmOrImplementation implements ModelWi
         }
         publications.remove(publication);
         publication.removeImplementation(this);
-    }
-
-    public Set<SoftwarePlatform> getSoftwarePlatforms() {
-        return new HashSet<SoftwarePlatform>(softwarePlatforms);
     }
 
     public void addSoftwarePlatform(SoftwarePlatform softwarePlatform) {

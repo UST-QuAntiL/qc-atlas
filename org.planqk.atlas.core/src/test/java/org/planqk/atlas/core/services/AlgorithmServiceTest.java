@@ -137,29 +137,23 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
         List<String> publicationAuthors = new ArrayList<>();
         publicationAuthors.add("test publication author");
         publication.setAuthors(publicationAuthors);
-        Set<Algorithm> publicationAlgorithms = new HashSet<>();
-        publicationAlgorithms.add(algorithm);
         publications.add(publication);
-        algorithm.setPublications(publications);
-        Set<ApplicationArea> applicationAreas = new HashSet<>();
+        publications.forEach(algorithm::addPublication);
         ApplicationArea applicationArea = new ApplicationArea();
         applicationArea.setName("test");
-        applicationAreas.add(applicationArea);
-        algorithm.setApplicationAreas(applicationAreas);
 
         Algorithm storedAlgorithm = algorithmService.create(algorithm);
 
         assertAlgorithmEquality(storedAlgorithm, algorithm);
 
-        Publication finalPublication = publication;
         storedAlgorithm.getPublications().forEach(pub -> {
             assertThat(pub.getId()).isNotNull();
-            assertThat(pub.getTitle()).isEqualTo(finalPublication.getTitle());
-            assertThat(pub.getUrl()).isEqualTo(finalPublication.getUrl());
-            assertThat(pub.getDoi()).isEqualTo(finalPublication.getDoi());
+            assertThat(pub.getTitle()).isEqualTo(publication.getTitle());
+            assertThat(pub.getUrl()).isEqualTo(publication.getUrl());
+            assertThat(pub.getDoi()).isEqualTo(publication.getDoi());
             assertThat(
-                    pub.getAuthors().stream().filter(e -> finalPublication.getAuthors().contains(e)).count()
-            ).isEqualTo(finalPublication.getAuthors().size());
+                    pub.getAuthors().stream().filter(e -> publication.getAuthors().contains(e)).count()
+            ).isEqualTo(publication.getAuthors().size());
             Assertions.assertDoesNotThrow(() -> publicationService.findById(pub.getId()));
         });
     }
@@ -296,7 +290,6 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
         problemTypes.add(problemType);
         algorithm.setProblemTypes(problemTypes);
 
-        Set<Publication> publications = new HashSet<>();
         Publication publication = new Publication();
         publication.setTitle("testPublicationTitle");
         publication.setUrl("http://example.com");
@@ -308,8 +301,7 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
         publicationAlgorithms.add(algorithm);
         publication.setAlgorithms(publicationAlgorithms);
         publication = publicationService.create(publication);
-        publications.add(publication);
-        algorithm.setPublications(publications);
+        algorithm.addPublication(publication);
 
         Algorithm storedAlgorithm = algorithmService.create(algorithm);
 
@@ -376,7 +368,6 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
         assertThat(dbAlgorithm.getSolution()).isEqualTo(compareAlgorithm.getSolution());
         assertThat(dbAlgorithm.getAssumptions()).isEqualTo(compareAlgorithm.getAssumptions());
         assertThat(dbAlgorithm.getComputationModel()).isEqualTo(compareAlgorithm.getComputationModel());
-        assertThat(dbAlgorithm.getApplicationAreas()).isEqualTo(compareAlgorithm.getApplicationAreas());
     }
 
     private void assertAlgorithmRelationEquality(AlgorithmRelation dbRelation, AlgorithmRelation compareRelation) {

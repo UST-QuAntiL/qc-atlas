@@ -36,6 +36,7 @@ import javax.persistence.OneToMany;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import lombok.ToString;
 
 /**
@@ -45,7 +46,7 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
-public class Algorithm extends AlgorithmOrImplementation implements ModelWithPublications {
+public class Algorithm extends AlgorithmOrImplementation {
 
     private String name;
 
@@ -79,7 +80,10 @@ public class Algorithm extends AlgorithmOrImplementation implements ModelWithPub
     @EqualsAndHashCode.Exclude
     private Set<AlgorithmRelation> targetAlgorithmRelations = new HashSet<>();
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "algorithm", orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL,
+            mappedBy = "algorithm",
+            orphanRemoval = true)
     @EqualsAndHashCode.Exclude
     private Set<ComputeResourceProperty> requiredComputeResourceProperties = new HashSet<>();
 
@@ -102,9 +106,9 @@ public class Algorithm extends AlgorithmOrImplementation implements ModelWithPub
 
     private ComputationModel computationModel;
 
-    @OneToMany(mappedBy = "algorithm",
-            fetch = FetchType.LAZY,
+    @OneToMany(fetch = FetchType.LAZY,
             cascade = CascadeType.ALL,
+            mappedBy = "algorithm",
             orphanRemoval = true)
     @EqualsAndHashCode.Exclude
     private Set<PatternRelation> relatedPatterns = new HashSet<>();
@@ -139,7 +143,7 @@ public class Algorithm extends AlgorithmOrImplementation implements ModelWithPub
     @ToString.Exclude
     private Set<Implementation> implementations = new HashSet<>();
 
-    public void addTag(Tag tag) {
+    public void addTag(@NonNull Tag tag) {
         if (tags.contains(tag)) {
             return;
         }
@@ -147,7 +151,7 @@ public class Algorithm extends AlgorithmOrImplementation implements ModelWithPub
         tag.addAlgorithm(this);
     }
 
-    public void removeTag(Tag tag) {
+    public void removeTag(@NonNull Tag tag) {
         if (!tags.contains(tag)) {
             return;
         }
@@ -155,7 +159,7 @@ public class Algorithm extends AlgorithmOrImplementation implements ModelWithPub
         tag.removeAlgorithm(this);
     }
 
-    public void addAlgorithmRelation(AlgorithmRelation algorithmRelation) {
+    public void addAlgorithmRelation(@NonNull AlgorithmRelation algorithmRelation) {
         if (algorithmRelation.getSourceAlgorithm().getId() == this.getId()) {
             sourceAlgorithmRelations.add(algorithmRelation);
             algorithmRelation.setSourceAlgorithm(this);
@@ -165,7 +169,7 @@ public class Algorithm extends AlgorithmOrImplementation implements ModelWithPub
         }
     }
 
-    public void removeAlgorithmRelation(AlgorithmRelation algorithmRelation) {
+    public void removeAlgorithmRelation(@NonNull AlgorithmRelation algorithmRelation) {
         if (algorithmRelation.getSourceAlgorithm().getId() == this.getId()) {
             sourceAlgorithmRelations.remove(algorithmRelation);
             algorithmRelation.setSourceAlgorithm(null);
@@ -181,22 +185,14 @@ public class Algorithm extends AlgorithmOrImplementation implements ModelWithPub
         return algorithmRelations;
     }
 
-    public void setRelatedPatterns(Set<PatternRelation> relatedPatterns) {
+    public void setRelatedPatterns(@NonNull Set<PatternRelation> relatedPatterns) {
         this.relatedPatterns.clear();
         if (relatedPatterns != null) {
             this.relatedPatterns.addAll(relatedPatterns);
         }
     }
 
-    public void addComputeResourceProperty(ComputeResourceProperty resourceProperty) {
-        this.requiredComputeResourceProperties.add(resourceProperty);
-    }
-
-    public Set<Publication> getPublications() {
-        return new HashSet<>(publications);
-    }
-
-    public void addPublication(Publication publication) {
+    public void addPublication(@NonNull Publication publication) {
         if (publications.contains(publication)) {
             return;
         }
@@ -204,7 +200,7 @@ public class Algorithm extends AlgorithmOrImplementation implements ModelWithPub
         publication.addAlgorithm(this);
     }
 
-    public void removePublication(Publication publication) {
+    public void removePublication(@NonNull Publication publication) {
         if (!publications.contains(publication)) {
             return;
         }
@@ -212,11 +208,7 @@ public class Algorithm extends AlgorithmOrImplementation implements ModelWithPub
         publication.removeAlgorithm(this);
     }
 
-    public Set<ApplicationArea> getApplicationAreas() {
-        return new HashSet<ApplicationArea>(applicationAreas);
-    }
-
-    public void addApplicationArea(ApplicationArea applicationArea) {
+    public void addApplicationArea(@NonNull ApplicationArea applicationArea) {
         if (applicationAreas.contains(applicationArea)) {
             return;
         }
@@ -224,7 +216,7 @@ public class Algorithm extends AlgorithmOrImplementation implements ModelWithPub
         applicationArea.addAlgorithm(this);
     }
 
-    public void removeApplicationArea(ApplicationArea applicationArea) {
+    public void removeApplicationArea(@NonNull ApplicationArea applicationArea) {
         if (!applicationAreas.contains(applicationArea)) {
             return;
         }
@@ -232,11 +224,7 @@ public class Algorithm extends AlgorithmOrImplementation implements ModelWithPub
         applicationArea.removeAlgorithm(this);
     }
 
-    public Set<ProblemType> getProblemTypes() {
-        return new HashSet<ProblemType>(problemTypes);
-    }
-
-    public void addProblemType(ProblemType problemType) {
+    public void addProblemType(@NonNull ProblemType problemType) {
         if (problemTypes.contains(problemType)) {
             return;
         }
@@ -244,7 +232,7 @@ public class Algorithm extends AlgorithmOrImplementation implements ModelWithPub
         problemType.addAlgorithm(this);
     }
 
-    public void removeProblemType(ProblemType problemType) {
+    public void removeProblemType(@NonNull ProblemType problemType) {
         if (!problemTypes.contains(problemType)) {
             return;
         }
@@ -252,11 +240,11 @@ public class Algorithm extends AlgorithmOrImplementation implements ModelWithPub
         problemType.removeAlgorithm(this);
     }
 
-    public void addSketch(Sketch sketch) {
+    public void addSketch(@NonNull Sketch sketch) {
         sketches.add(sketch);
     }
 
-    public void removeSketches(List<Sketch> sketches) {
+    public void removeSketches(@NonNull List<Sketch> sketches) {
         sketches.removeAll(sketches);
     }
 

@@ -565,7 +565,7 @@ public class AlgorithmControllerTest {
             resource.setComputeResourcePropertyType(type);
             resource.setId(UUID.randomUUID());
             resources.add(resource);
-            algo.addComputeResourceProperty(resource);
+            algo.getRequiredComputeResourceProperties().add(resource);
         }
 
         when(computeResourcePropertyService.findComputeResourcePropertiesOfAlgorithm(any(), any())).thenReturn(new PageImpl<>(resources));
@@ -647,7 +647,7 @@ public class AlgorithmControllerTest {
         resource.setComputeResourcePropertyType(type);
         resource.setValue(resReq.getValue());
         resource.setId(resReq.getId());
-        
+
         when(computeResourcePropertyService.addComputeResourcePropertyToAlgorithm(any(), any()))
                 .thenThrow((new InvalidResourceTypeValueException("")));
 
