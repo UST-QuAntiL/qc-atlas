@@ -24,6 +24,7 @@ import java.util.UUID;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.model.ApplicationArea;
+import org.planqk.atlas.core.model.ComputeResourceProperty;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.model.ProblemType;
@@ -35,7 +36,6 @@ import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.core.services.LinkingService;
 import org.planqk.atlas.core.services.TagService;
 import org.planqk.atlas.web.Constants;
-import org.planqk.atlas.web.controller.mixin.ComputeResourcePropertyMixin;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
 import org.planqk.atlas.web.dtos.ApplicationAreaDto;
@@ -59,7 +59,6 @@ import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.RestUtils;
 import org.planqk.atlas.web.utils.ValidationGroups;
-import org.planqk.atlas.web.utils.ValidationUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -117,8 +116,6 @@ public class AlgorithmController {
     private final ComputeResourcePropertyAssembler computeResourcePropertyAssembler;
 
     private final LinkingService linkingService;
-
-    private final ComputeResourcePropertyMixin computeResourcePropertyMixin;
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200")
@@ -472,8 +469,7 @@ public class AlgorithmController {
     public ResponseEntity<EntityModel<ComputeResourcePropertyDto>> createComputeResourcePropertyForAlgorithm(
             @PathVariable UUID algorithmId,
             @Validated(ValidationGroups.Create.class) @RequestBody ComputeResourcePropertyDto computeResourcePropertyDto) {
-        var computeResourceProperty = computeResourcePropertyMixin.fromDto(computeResourcePropertyDto);
-        ValidationUtils.validateComputingResourceProperty(computeResourceProperty);
+        var computeResourceProperty = ModelMapperUtils.convert(computeResourcePropertyDto, ComputeResourceProperty.class);
         var createdComputeResourceProperty = computeResourcePropertyService
                 .addComputeResourcePropertyToAlgorithm(algorithmId, computeResourceProperty);
         return new ResponseEntity<>(computeResourcePropertyAssembler.toModel(createdComputeResourceProperty), HttpStatus.CREATED);

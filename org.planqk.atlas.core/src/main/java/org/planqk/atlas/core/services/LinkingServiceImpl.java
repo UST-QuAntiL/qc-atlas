@@ -21,7 +21,7 @@ package org.planqk.atlas.core.services;
 
 import java.util.UUID;
 
-import org.planqk.atlas.core.exceptions.ConsistencyException;
+import org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.ApplicationArea;
 import org.planqk.atlas.core.model.CloudService;
@@ -68,7 +68,7 @@ public class LinkingServiceImpl implements LinkingService {
         Publication publication = publicationService.findById(publicationId);
 
         if (algorithm.getPublications().contains(publication)) {
-            throw new ConsistencyException("Algorithm and Publication are already linked");
+            throw new EntityReferenceConstraintViolationException("Algorithm and Publication are already linked");
         }
 
         algorithm.addPublication(publication);
@@ -81,7 +81,7 @@ public class LinkingServiceImpl implements LinkingService {
         Publication publication = publicationService.findById(publicationId);
 
         if (!algorithm.getPublications().contains(publication)) {
-            throw new ConsistencyException("Algorithm and Publication are not linked");
+            throw new EntityReferenceConstraintViolationException("Algorithm and Publication are not linked");
         }
 
         algorithm.removePublication(publication);
@@ -94,7 +94,7 @@ public class LinkingServiceImpl implements LinkingService {
         ProblemType problemType = problemTypeService.findById(problemTypeId);
 
         if (algorithm.getProblemTypes().contains(problemType)) {
-            throw new ConsistencyException("Algorithm and Problem type are already linked");
+            throw new EntityReferenceConstraintViolationException("Algorithm and Problem type are already linked");
         }
 
         algorithm.addProblemType(problemType);
@@ -107,7 +107,7 @@ public class LinkingServiceImpl implements LinkingService {
         ProblemType problemType = problemTypeService.findById(problemTypeId);
 
         if (!algorithm.getProblemTypes().contains(problemType)) {
-            throw new ConsistencyException("Algorithm and Problem type are not linked");
+            throw new EntityReferenceConstraintViolationException("Algorithm and Problem type are not linked");
         }
 
         algorithm.removeProblemType(problemType);
@@ -120,7 +120,7 @@ public class LinkingServiceImpl implements LinkingService {
         ApplicationArea applicationArea = applicationAreaService.findById(applicationAreaId);
 
         if (algorithm.getApplicationAreas().contains(applicationArea)) {
-            throw new ConsistencyException("Algorithm and Application area are already linked");
+            throw new EntityReferenceConstraintViolationException("Algorithm and Application area are already linked");
         }
 
         algorithm.addApplicationArea(applicationArea);
@@ -133,7 +133,7 @@ public class LinkingServiceImpl implements LinkingService {
         ApplicationArea applicationArea = applicationAreaService.findById(applicationAreaId);
 
         if (!algorithm.getApplicationAreas().contains(applicationArea)) {
-            throw new ConsistencyException("Algorithm and Application area are not linked");
+            throw new EntityReferenceConstraintViolationException("Algorithm and Application area are not linked");
         }
 
         algorithm.removeApplicationArea(applicationArea);
@@ -146,7 +146,7 @@ public class LinkingServiceImpl implements LinkingService {
         PatternRelation patternRelation = patternRelationService.findById(patternRelationId);
 
         if (algorithm.getRelatedPatterns().contains(patternRelation)) {
-            throw new ConsistencyException("Algorithm and Pattern relation are already linked");
+            throw new EntityReferenceConstraintViolationException("Algorithm and Pattern relation are already linked");
         }
 
         algorithm.getRelatedPatterns().add(patternRelation);
@@ -159,7 +159,7 @@ public class LinkingServiceImpl implements LinkingService {
         PatternRelation patternRelation = patternRelationService.findById(patternRelationId);
 
         if (!algorithm.getRelatedPatterns().contains(patternRelation)) {
-            throw new ConsistencyException("Algorithm and Pattern relation are not linked");
+            throw new EntityReferenceConstraintViolationException("Algorithm and Pattern relation are not linked");
         }
 
         algorithm.getRelatedPatterns().remove(patternRelation);
@@ -172,7 +172,7 @@ public class LinkingServiceImpl implements LinkingService {
         Publication publication = publicationService.findById(publicationId);
 
         if (implementation.getPublications().contains(publication)) {
-            throw new ConsistencyException("Implementation and Publication are already linked");
+            throw new EntityReferenceConstraintViolationException("Implementation and Publication are already linked");
         }
 
         implementation.addPublication(publication);
@@ -185,7 +185,7 @@ public class LinkingServiceImpl implements LinkingService {
         Publication publication = publicationService.findById(publicationId);
 
         if (!implementation.getPublications().contains(publication)) {
-            throw new ConsistencyException("Implementation and Publication are not linked");
+            throw new EntityReferenceConstraintViolationException("Implementation and Publication are not linked");
         }
 
         implementation.removePublication(publication);
@@ -198,7 +198,7 @@ public class LinkingServiceImpl implements LinkingService {
         SoftwarePlatform softwarePlatform = softwarePlatformService.findById(softwarePlatformId);
 
         if (implementation.getSoftwarePlatforms().contains(softwarePlatform)) {
-            throw new ConsistencyException("Implementation and Software platform are already linked");
+            throw new EntityReferenceConstraintViolationException("Implementation and Software platform are already linked");
         }
 
         implementation.addSoftwarePlatform(softwarePlatform);
@@ -211,7 +211,7 @@ public class LinkingServiceImpl implements LinkingService {
         SoftwarePlatform softwarePlatform = softwarePlatformService.findById(softwarePlatformId);
 
         if (!implementation.getSoftwarePlatforms().contains(softwarePlatform)) {
-            throw new ConsistencyException("Implementation and Software platform are not linked");
+            throw new EntityReferenceConstraintViolationException("Implementation and Software platform are not linked");
         }
 
         implementation.removeSoftwarePlatform(softwarePlatform);
@@ -224,7 +224,7 @@ public class LinkingServiceImpl implements LinkingService {
         CloudService cloudService = cloudServiceService.findById(cloudServiceId);
 
         if (softwarePlatform.getSupportedCloudServices().contains(cloudService)) {
-            throw new ConsistencyException("Software platform and Cloud service are already linked");
+            throw new EntityReferenceConstraintViolationException("Software platform and Cloud service are already linked");
         }
 
         softwarePlatform.addCloudService(cloudService);
@@ -237,7 +237,7 @@ public class LinkingServiceImpl implements LinkingService {
         CloudService cloudService = cloudServiceService.findById(cloudServiceId);
 
         if (!softwarePlatform.getSupportedCloudServices().contains(cloudService)) {
-            throw new ConsistencyException("Software platform and Cloud service are not linked");
+            throw new EntityReferenceConstraintViolationException("Software platform and Cloud service are not linked");
         }
 
         softwarePlatform.removeCloudService(cloudService);
@@ -250,7 +250,7 @@ public class LinkingServiceImpl implements LinkingService {
         ComputeResource computeResource = computeResourceService.findById(computeResourceId);
 
         if (softwarePlatform.getSupportedComputeResources().contains(computeResource)) {
-            throw new ConsistencyException("Software platform and Compute resource are already linked");
+            throw new EntityReferenceConstraintViolationException("Software platform and Compute resource are already linked");
         }
 
         softwarePlatform.addComputeResource(computeResource);
@@ -263,7 +263,7 @@ public class LinkingServiceImpl implements LinkingService {
         ComputeResource computeResource = computeResourceService.findById(computeResourceId);
 
         if (!softwarePlatform.getSupportedComputeResources().contains(computeResource)) {
-            throw new ConsistencyException("Software platform and Compute resource are not linked");
+            throw new EntityReferenceConstraintViolationException("Software platform and Compute resource are not linked");
         }
 
         softwarePlatform.removeComputeResource(computeResource);
@@ -276,7 +276,7 @@ public class LinkingServiceImpl implements LinkingService {
         var computeResource = computeResourceService.findById(computeResourceId);
 
         if (cloudService.getProvidedComputeResources().contains(computeResource)) {
-            throw new ConsistencyException("Cloud service and Compute Resource are already linked");
+            throw new EntityReferenceConstraintViolationException("Cloud service and Compute Resource are already linked");
         }
 
         cloudService.addComputeResource(computeResource);
@@ -289,7 +289,7 @@ public class LinkingServiceImpl implements LinkingService {
         var computeResource = computeResourceService.findById(computeResourceId);
 
         if (!cloudService.getProvidedComputeResources().contains(computeResource)) {
-            throw new ConsistencyException("Cloud service and Compute Resource are not linked");
+            throw new EntityReferenceConstraintViolationException("Cloud service and Compute Resource are not linked");
         }
 
         cloudService.removeComputeResource(computeResource);

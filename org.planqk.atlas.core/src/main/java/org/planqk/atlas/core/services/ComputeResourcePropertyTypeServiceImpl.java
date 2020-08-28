@@ -21,7 +21,7 @@ package org.planqk.atlas.core.services;
 
 import java.util.UUID;
 
-import org.planqk.atlas.core.exceptions.ConsistencyException;
+import org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException;
 import org.planqk.atlas.core.model.ComputeResourcePropertyType;
 import org.planqk.atlas.core.repository.ComputeResourcePropertyTypeRepository;
 import org.planqk.atlas.core.util.ServiceUtils;
@@ -84,7 +84,7 @@ public class ComputeResourcePropertyTypeServiceImpl implements ComputeResourcePr
         try {
             this.computeResourcePropertyTypeRepository.deleteById(computeResourcePropertyTypeId);
         } catch (DataIntegrityViolationException e) {
-            throw new ConsistencyException("ComputeResourcePropertyType with ID \""
+            throw new EntityReferenceConstraintViolationException("ComputeResourcePropertyType with ID \""
                     + computeResourcePropertyTypeId + "\" cannot be deleted, because it is still in use", e);
         }
     }

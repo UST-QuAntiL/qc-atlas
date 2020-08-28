@@ -20,7 +20,7 @@ package org.planqk.atlas.web.controller;
 
 import java.util.NoSuchElementException;
 
-import org.planqk.atlas.core.exceptions.ConsistencyException;
+import org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -48,8 +48,8 @@ public class RestErrorHandler {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(ConsistencyException.class)
-    public ResponseEntity<?> handleSqlConsistencyException(ConsistencyException e) {
+    @ExceptionHandler(EntityReferenceConstraintViolationException.class)
+    public ResponseEntity<?> handleSqlConsistencyException(EntityReferenceConstraintViolationException e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 

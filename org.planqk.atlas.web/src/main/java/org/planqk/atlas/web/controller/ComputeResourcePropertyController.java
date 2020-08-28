@@ -21,13 +21,13 @@ package org.planqk.atlas.web.controller;
 
 import java.util.UUID;
 
+import org.planqk.atlas.core.model.ComputeResourceProperty;
 import org.planqk.atlas.core.services.ComputeResourcePropertyService;
 import org.planqk.atlas.web.Constants;
-import org.planqk.atlas.web.controller.mixin.ComputeResourcePropertyMixin;
 import org.planqk.atlas.web.dtos.ComputeResourcePropertyDto;
 import org.planqk.atlas.web.linkassembler.ComputeResourcePropertyAssembler;
+import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.ValidationGroups;
-import org.planqk.atlas.web.utils.ValidationUtils;
 
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
@@ -59,7 +59,6 @@ public class ComputeResourcePropertyController {
 
     private final ComputeResourcePropertyAssembler computeResourcePropertyAssembler;
     private final ComputeResourcePropertyService computeResourcePropertyService;
-    private final ComputeResourcePropertyMixin computeResourcePropertyMixin;
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
@@ -82,8 +81,7 @@ public class ComputeResourcePropertyController {
     @PutMapping()
     public ResponseEntity<EntityModel<ComputeResourcePropertyDto>> updateComputeResourceProperty(
             @Validated(ValidationGroups.Update.class) @RequestBody ComputeResourcePropertyDto resourceDto) {
-        var resource = computeResourcePropertyMixin.fromDto(resourceDto);
-        ValidationUtils.validateComputingResourceProperty(resource);
+        var resource = ModelMapperUtils.convert(resourceDto, ComputeResourceProperty.class);
         var updatedResource = computeResourcePropertyService.update(resource);
         return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(updatedResource));
     }

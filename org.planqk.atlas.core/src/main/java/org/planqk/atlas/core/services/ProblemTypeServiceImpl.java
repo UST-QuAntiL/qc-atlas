@@ -26,7 +26,7 @@ import java.util.UUID;
 
 import javax.transaction.Transactional;
 
-import org.planqk.atlas.core.exceptions.ConsistencyException;
+import org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException;
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.repository.ProblemTypeRepository;
 import org.planqk.atlas.core.util.ServiceUtils;
@@ -78,7 +78,7 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
         ProblemType problemType = findById(problemTypeId);
 
         if (problemType.getAlgorithms().size() > 0) {
-            throw new ConsistencyException("Cannot delete ProblemType with ID \"" + problemTypeId +
+            throw new EntityReferenceConstraintViolationException("Cannot delete ProblemType with ID \"" + problemTypeId +
                     "\". It is used by existing algorithms!");
         }
 

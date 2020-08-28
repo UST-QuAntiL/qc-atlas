@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
-import org.planqk.atlas.core.exceptions.ConsistencyException;
+import org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.CloudService;
 import org.planqk.atlas.core.model.ComputeResource;
@@ -738,7 +738,7 @@ public class SoftwarePlatformControllerTest {
 
     @Test
     void createReferenceToComputeResource_returnBadRequest() throws Exception {
-        doThrow(new ConsistencyException()).when(linkingService).linkSoftwarePlatformAndComputeResource(any(), any());
+        doThrow(new EntityReferenceConstraintViolationException("")).when(linkingService).linkSoftwarePlatformAndComputeResource(any(), any());
         mockMvc.perform(
                 post(
                         fromMethodCall(uriBuilder,
@@ -751,7 +751,7 @@ public class SoftwarePlatformControllerTest {
 
     @Test
     void deleteReferenceToComputeResource_returnBadRequest() throws Exception {
-        doThrow(new ConsistencyException()).when(linkingService).unlinkSoftwarePlatformAndComputeResource(any(), any());
+        doThrow(new EntityReferenceConstraintViolationException("")).when(linkingService).unlinkSoftwarePlatformAndComputeResource(any(), any());
         mockMvc.perform(
                 delete(
                         fromMethodCall(uriBuilder,
@@ -816,7 +816,7 @@ public class SoftwarePlatformControllerTest {
 
     @Test
     void createReferenceToCloudService_returnBadRequest() throws Exception {
-        doThrow(new ConsistencyException()).when(linkingService).linkSoftwarePlatformAndCloudService(any(), any());
+        doThrow(new EntityReferenceConstraintViolationException("")).when(linkingService).linkSoftwarePlatformAndCloudService(any(), any());
         mockMvc.perform(
                 post(
                         fromMethodCall(uriBuilder,
@@ -829,7 +829,7 @@ public class SoftwarePlatformControllerTest {
 
     @Test
     void deleteReferenceToCloudService_returnBadRequest() throws Exception {
-        doThrow(new ConsistencyException()).when(linkingService).unlinkSoftwarePlatformAndCloudService(any(), any());
+        doThrow(new EntityReferenceConstraintViolationException("")).when(linkingService).unlinkSoftwarePlatformAndCloudService(any(), any());
         mockMvc.perform(
                 delete(
                         fromMethodCall(uriBuilder,

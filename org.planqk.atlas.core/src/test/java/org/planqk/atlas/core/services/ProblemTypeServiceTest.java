@@ -25,7 +25,7 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.UUID;
 
-import org.planqk.atlas.core.exceptions.ConsistencyException;
+import org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
 import org.planqk.atlas.core.model.ComputationModel;
@@ -129,7 +129,7 @@ public class ProblemTypeServiceTest extends AtlasDatabaseTestBase {
         Set<ProblemType> storedProblemTypes = storedAlgorithm.getProblemTypes();
         storedProblemTypes.forEach(pt -> {
             Assertions.assertDoesNotThrow(() -> problemTypeService.findById(pt.getId()));
-            Assertions.assertThrows(ConsistencyException.class, () -> problemTypeService.delete(pt.getId()));
+            Assertions.assertThrows(EntityReferenceConstraintViolationException.class, () -> problemTypeService.delete(pt.getId()));
             Assertions.assertDoesNotThrow(() -> problemTypeService.findById(pt.getId()));
         });
     }

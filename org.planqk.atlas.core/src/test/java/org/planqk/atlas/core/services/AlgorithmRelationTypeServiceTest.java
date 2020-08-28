@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
-import org.planqk.atlas.core.exceptions.ConsistencyException;
+import org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.model.AlgorithmRelationType;
@@ -137,7 +137,7 @@ public class AlgorithmRelationTypeServiceTest extends AtlasDatabaseTestBase {
 
         algorithmRelationService.create(algorithmRelation);
 
-        Assertions.assertThrows(ConsistencyException.class, () -> algorithmRelationTypeService.delete(storedRelationType.getId()));
+        Assertions.assertThrows(EntityReferenceConstraintViolationException.class, () -> algorithmRelationTypeService.delete(storedRelationType.getId()));
 
         Assertions.assertDoesNotThrow(() -> algorithmRelationTypeService.findById(storedRelationType.getId()));
     }

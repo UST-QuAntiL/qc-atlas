@@ -23,7 +23,7 @@ import java.util.UUID;
 
 import javax.transaction.Transactional;
 
-import org.planqk.atlas.core.exceptions.ConsistencyException;
+import org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException;
 import org.planqk.atlas.core.model.PatternRelationType;
 import org.planqk.atlas.core.repository.PatternRelationRepository;
 import org.planqk.atlas.core.repository.PatternRelationTypeRepository;
@@ -77,7 +77,7 @@ public class PatternRelationTypeServiceImpl implements PatternRelationTypeServic
 
         // TODO Reevalute
         if (patternRelationRepository.countByPatternRelationTypeId(patternRelationTypeId) > 0)
-            throw new ConsistencyException("Can not delete an used Pattern relation type!");
+            throw new EntityReferenceConstraintViolationException("Can not delete an used Pattern relation type!");
 
         patternRelationTypeRepository.deleteById(patternRelationTypeId);
     }

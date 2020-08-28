@@ -24,7 +24,7 @@ import java.util.UUID;
 
 import javax.transaction.Transactional;
 
-import org.planqk.atlas.core.exceptions.ConsistencyException;
+import org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException;
 import org.planqk.atlas.core.model.ApplicationArea;
 import org.planqk.atlas.core.repository.ApplicationAreaRepository;
 import org.planqk.atlas.core.util.ServiceUtils;
@@ -78,7 +78,7 @@ public class ApplicationAreaServiceImpl implements ApplicationAreaService {
         ApplicationArea applicationArea = findById(applicationAreaId);
 
         if (applicationArea.getAlgorithms().size() > 0) {
-            throw new ConsistencyException("Cannot delete application area with ID \"" + applicationAreaId +
+            throw new EntityReferenceConstraintViolationException("Cannot delete application area with ID \"" + applicationAreaId +
                     "\". It is used by existing an algorithms!");
         }
 

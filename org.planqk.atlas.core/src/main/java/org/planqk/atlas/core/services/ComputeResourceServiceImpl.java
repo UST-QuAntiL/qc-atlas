@@ -21,7 +21,7 @@ package org.planqk.atlas.core.services;
 
 import java.util.UUID;
 
-import org.planqk.atlas.core.exceptions.ConsistencyException;
+import org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException;
 import org.planqk.atlas.core.model.CloudService;
 import org.planqk.atlas.core.model.ComputeResource;
 import org.planqk.atlas.core.model.SoftwarePlatform;
@@ -89,7 +89,7 @@ public class ComputeResourceServiceImpl implements ComputeResourceService {
         // TODO discuss if this is still wanted behavior
         if (cloudServiceRepository.countCloudServiceByComputeResource(computeResourceId) +
                 softwarePlatformRepository.countSoftwarePlatformByComputeResource(computeResourceId) > 0) {
-            throw new ConsistencyException(
+            throw new EntityReferenceConstraintViolationException(
                     "Cannot delete Compute Resource since it is used by existing Cloud services or Software platforms");
         }
 

@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
-import org.planqk.atlas.core.exceptions.ConsistencyException;
+import org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException;
 import org.planqk.atlas.core.model.CloudService;
 import org.planqk.atlas.core.model.ComputeResource;
 import org.planqk.atlas.core.services.CloudServiceService;
@@ -369,7 +369,7 @@ public class CloudServiceControllerTest {
 
     @Test
     void unlinkCloudServiceToComputeResource_returnBadRequest() throws Exception {
-        doThrow(new ConsistencyException()).when(linkingService).unlinkCloudServiceAndComputeResource(any(), any());
+        doThrow(new EntityReferenceConstraintViolationException("")).when(linkingService).unlinkCloudServiceAndComputeResource(any(), any());
         var url = fromMethodCall(uriBuilder, on(CloudServiceController.class)
                 .unlinkCloudServiceAndComputeResource(UUID.randomUUID(), UUID.randomUUID())).toUriString();
         mockMvc.perform(delete(url).accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());

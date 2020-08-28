@@ -17,44 +17,19 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.planqk.atlas.web.utils;
+package org.planqk.atlas.core.util;
 
 import org.planqk.atlas.core.model.ComputeResourceProperty;
 import org.planqk.atlas.core.model.ComputeResourcePropertyDataType;
 import org.planqk.atlas.core.model.ComputeResourcePropertyType;
-import org.planqk.atlas.web.dtos.ComputeResourcePropertyDto;
-import org.planqk.atlas.web.dtos.ComputeResourcePropertyTypeDto;
-import org.planqk.atlas.web.exceptions.InvalidResourceTypeValueException;
+import org.planqk.atlas.core.util.ValidationUtils;
+import org.planqk.atlas.core.exceptions.InvalidResourceTypeValueException;
 
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ValidationUtilsTest {
-
-    @Test
-    void validate_ComputationResourcePropertyDto_Valid() {
-        var type = new ComputeResourcePropertyTypeDto();
-        type.setDatatype(ComputeResourcePropertyDataType.FLOAT);
-        var resource = new ComputeResourcePropertyDto();
-        resource.setType(type);
-        resource.setValue("10.0");
-
-        ValidationUtils.validateComputingResourceProperty(resource);
-    }
-
-    @Test
-    void validate_ComputationResourcePropertyDto_Invalid() {
-        var type = new ComputeResourcePropertyTypeDto();
-        type.setDatatype(ComputeResourcePropertyDataType.FLOAT);
-        var resource = new ComputeResourcePropertyDto();
-        resource.setType(type);
-        resource.setValue("10-0");
-
-        assertThrows(InvalidResourceTypeValueException.class, () -> {
-            ValidationUtils.validateComputingResourceProperty(resource);
-        });
-    }
 
     @Test
     void validate_ComputationResourceProperty_Valid() {
@@ -64,7 +39,7 @@ public class ValidationUtilsTest {
         resource.setComputeResourcePropertyType(type);
         resource.setValue("10.0");
 
-        ValidationUtils.validateComputingResourceProperty(resource);
+        ValidationUtils.validateComputeResourceProperty(resource);
     }
 
     @Test
@@ -76,7 +51,7 @@ public class ValidationUtilsTest {
         resource.setValue("10-0");
 
         assertThrows(InvalidResourceTypeValueException.class, () -> {
-            ValidationUtils.validateComputingResourceProperty(resource);
+            ValidationUtils.validateComputeResourceProperty(resource);
         });
     }
 }

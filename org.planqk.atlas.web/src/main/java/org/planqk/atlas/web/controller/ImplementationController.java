@@ -21,6 +21,7 @@ package org.planqk.atlas.web.controller;
 
 import java.util.UUID;
 
+import org.planqk.atlas.core.model.ComputeResourceProperty;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.services.ComputeResourcePropertyService;
@@ -28,7 +29,6 @@ import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.core.services.LinkingService;
 import org.planqk.atlas.core.services.TagService;
 import org.planqk.atlas.web.Constants;
-import org.planqk.atlas.web.controller.mixin.ComputeResourcePropertyMixin;
 import org.planqk.atlas.web.dtos.ComputeResourcePropertyDto;
 import org.planqk.atlas.web.dtos.ImplementationDto;
 import org.planqk.atlas.web.dtos.PublicationDto;
@@ -43,7 +43,6 @@ import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.ValidationGroups;
-import org.planqk.atlas.web.utils.ValidationUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -91,8 +90,6 @@ public class ImplementationController {
     private final SoftwarePlatformAssembler softwarePlatformAssembler;
 
     private final LinkingService linkingService;
-
-    private final ComputeResourcePropertyMixin computeResourcePropertyMixin;
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
@@ -295,8 +292,8 @@ public class ImplementationController {
     public ResponseEntity<EntityModel<ComputeResourcePropertyDto>> createComputeResourcePropertyForImplementation(
             @PathVariable UUID implementationId,
             @Validated(ValidationGroups.Create.class) @RequestBody ComputeResourcePropertyDto computeResourcePropertyDto) {
-        var computeResourceProperty = computeResourcePropertyMixin.fromDto(computeResourcePropertyDto);
-        ValidationUtils.validateComputingResourceProperty(computeResourceProperty);
+        var computeResourceProperty = ModelMapperUtils.convert(computeResourcePropertyDto, ComputeResourceProperty.class);
+
         var createdComputeResourceProperty = computeResourcePropertyService
                 .addComputeResourcePropertyToImplementation(implementationId, computeResourceProperty);
         return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(createdComputeResourceProperty));

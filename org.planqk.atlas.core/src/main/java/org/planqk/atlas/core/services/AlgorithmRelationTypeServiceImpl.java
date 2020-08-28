@@ -21,7 +21,7 @@ package org.planqk.atlas.core.services;
 
 import java.util.UUID;
 
-import org.planqk.atlas.core.exceptions.ConsistencyException;
+import org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException;
 import org.planqk.atlas.core.model.AlgorithmRelationType;
 import org.planqk.atlas.core.repository.AlgorithmRelationRepository;
 import org.planqk.atlas.core.repository.AlgorithmRelationTypeRepository;
@@ -75,7 +75,7 @@ public class AlgorithmRelationTypeServiceImpl implements AlgorithmRelationTypeSe
         ServiceUtils.throwIfNotExists(algorithmRelationTypeId, AlgorithmRelationType.class, algorithmRelationTypeRepository);
 
         if (algorithmRelationRepository.countByAlgorithmRelationTypeId(algorithmRelationTypeId) > 0) {
-            throw new ConsistencyException(
+            throw new EntityReferenceConstraintViolationException(
                     "Cannot delete AlgorithmRelationType since it is used by existing AlgorithmRelations.");
         }
 

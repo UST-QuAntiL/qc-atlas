@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
-import org.planqk.atlas.core.exceptions.ConsistencyException;
+import org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException;
 import org.planqk.atlas.core.model.ComputeResourcePropertyDataType;
 import org.planqk.atlas.core.model.ComputeResourcePropertyType;
 import org.planqk.atlas.core.services.ComputeResourcePropertyService;
@@ -84,7 +84,7 @@ public class ComputeResourcePropertyTypeControllerTest {
 
     @Test
     void deleteType_returnBadRequest() throws Exception {
-        doThrow(new ConsistencyException()).when(computeResourcePropertyTypeService).delete(any());
+        doThrow(new EntityReferenceConstraintViolationException("")).when(computeResourcePropertyTypeService).delete(any());
         var url = fromMethodCall(uriBuilder, on(ComputeResourcePropertyTypeController.class)
                 .deleteComputingResourcePropertyType(UUID.randomUUID())).toUriString();
         mockMvc.perform(delete(url)).andExpect(status().isBadRequest());

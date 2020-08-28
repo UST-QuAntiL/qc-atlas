@@ -30,6 +30,7 @@ import org.planqk.atlas.core.repository.ComputeResourcePropertyRepository;
 import org.planqk.atlas.core.repository.ComputeResourceRepository;
 import org.planqk.atlas.core.repository.ImplementationRepository;
 import org.planqk.atlas.core.util.ServiceUtils;
+import org.planqk.atlas.core.util.ValidationUtils;
 
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
@@ -70,10 +71,13 @@ public class ComputeResourcePropertyServiceImpl implements ComputeResourceProper
     @Override
     @Transactional
     public ComputeResourceProperty update(@NonNull ComputeResourceProperty computeResourceProperty) {
-        var persistedComputeResourceProperty = findById(computeResourceProperty.getId());
+        var computeResourcePropertyWithType = validateComputeResourceProperty(computeResourceProperty);
 
-        persistedComputeResourceProperty.setValue(computeResourceProperty.getValue());
-        persistedComputeResourceProperty.setComputeResourcePropertyType(computeResourceProperty.getComputeResourcePropertyType());
+        var persistedComputeResourceProperty = findById(computeResourcePropertyWithType.getId());
+
+        persistedComputeResourceProperty.setValue(computeResourcePropertyWithType.getValue());
+        persistedComputeResourceProperty.setComputeResourcePropertyType(
+                computeResourcePropertyWithType.getComputeResourcePropertyType());
 
         return computeResourcePropertyRepository.save(persistedComputeResourceProperty);
     }
@@ -112,11 +116,13 @@ public class ComputeResourcePropertyServiceImpl implements ComputeResourceProper
     @Transactional
     public ComputeResourceProperty addComputeResourcePropertyToAlgorithm(
             @NonNull UUID algorithmId, @NonNull ComputeResourceProperty computeResourceProperty) {
+        var computeResourcePropertyWithType = validateComputeResourceProperty(computeResourceProperty);
+
         ComputeResourceProperty persistedComputeResourceProperty;
-        if (computeResourceProperty.getId() == null) {
-            persistedComputeResourceProperty = this.create(computeResourceProperty);
+        if (computeResourcePropertyWithType.getId() == null) {
+            persistedComputeResourceProperty = this.create(computeResourcePropertyWithType);
         } else {
-            persistedComputeResourceProperty = findById(computeResourceProperty.getId());
+            persistedComputeResourceProperty = findById(computeResourcePropertyWithType.getId());
         }
 
         Algorithm algorithm = ServiceUtils.findById(algorithmId, Algorithm.class, algorithmRepository);
@@ -129,11 +135,13 @@ public class ComputeResourcePropertyServiceImpl implements ComputeResourceProper
     @Transactional
     public ComputeResourceProperty addComputeResourcePropertyToImplementation(
             @NonNull UUID implementationId, @NonNull ComputeResourceProperty computeResourceProperty) {
+        var computeResourcePropertyWithType = validateComputeResourceProperty(computeResourceProperty);
+
         ComputeResourceProperty persistedComputeResourceProperty;
-        if (computeResourceProperty.getId() == null) {
-            persistedComputeResourceProperty = this.create(computeResourceProperty);
+        if (computeResourcePropertyWithType.getId() == null) {
+            persistedComputeResourceProperty = this.create(computeResourcePropertyWithType);
         } else {
-            persistedComputeResourceProperty = findById(computeResourceProperty.getId());
+            persistedComputeResourceProperty = findById(computeResourcePropertyWithType.getId());
         }
 
         Implementation implementation = ServiceUtils
@@ -147,11 +155,13 @@ public class ComputeResourcePropertyServiceImpl implements ComputeResourceProper
     @Transactional
     public ComputeResourceProperty addComputeResourcePropertyToComputeResource(
             @NonNull UUID computeResourceId, @NonNull ComputeResourceProperty computeResourceProperty) {
+        var computeResourcePropertyWithType = validateComputeResourceProperty(computeResourceProperty);
+
         ComputeResourceProperty persistedComputeResourceProperty;
-        if (computeResourceProperty.getId() == null) {
-            persistedComputeResourceProperty = this.create(computeResourceProperty);
+        if (computeResourcePropertyWithType.getId() == null) {
+            persistedComputeResourceProperty = this.create(computeResourcePropertyWithType);
         } else {
-            persistedComputeResourceProperty = findById(computeResourceProperty.getId());
+            persistedComputeResourceProperty = findById(computeResourcePropertyWithType.getId());
         }
 
         ComputeResource computeResource = ServiceUtils
@@ -159,5 +169,14 @@ public class ComputeResourcePropertyServiceImpl implements ComputeResourceProper
 
         persistedComputeResourceProperty.setComputeResource(computeResource);
         return this.computeResourcePropertyRepository.save(persistedComputeResourceProperty);
+    }
+
+    private ComputeResourceProperty validateComputeResourceProperty(ComputeResourceProperty computeResourceProperty) {
+        computeResourceProperty.setComputeResourcePropertyType(computeResourcePropertyTypeService
+                .findById(computeResourceProperty.getComputeResourcePropertyType().getId()));
+
+        ValidationUtils.validateComputeResourceProperty(computeResourceProperty);
+
+        return computeResourceProperty;
     }
 }

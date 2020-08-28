@@ -17,29 +17,17 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.planqk.atlas.core.exceptions;
+package org.planqk.atlas.core.util;
 
-/**
- * This exception is thrown when database consistency is about to be violated.
- *
- */
-public class ConsistencyException extends RuntimeException {
+import org.planqk.atlas.core.exceptions.InvalidResourceTypeValueException;
+import org.planqk.atlas.core.model.ComputeResourceProperty;
 
-    private static final long serialVersionUID = 1697519892942333680L;
+public class ValidationUtils {
 
-    public ConsistencyException() {
+    public static void validateComputeResourceProperty(ComputeResourceProperty resource) {
+        if (!resource.getComputeResourcePropertyType().getDatatype().isValid(resource.getValue())) {
+            throw new InvalidResourceTypeValueException("The value \"" + resource.getValue() +
+                    "\" is not valid for the Type " + resource.getComputeResourcePropertyType().getDatatype().name());
+        }
     }
-
-    public ConsistencyException(String message) {
-        super(message);
-    }
-
-    public ConsistencyException(Throwable cause) {
-        super(cause);
-    }
-
-    public ConsistencyException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
 }

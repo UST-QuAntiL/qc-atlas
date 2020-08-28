@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
-import org.planqk.atlas.core.exceptions.ConsistencyException;
+import org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException;
 import org.planqk.atlas.core.model.ComputeResource;
 import org.planqk.atlas.core.model.ComputeResourceProperty;
 import org.planqk.atlas.core.model.ComputeResourcePropertyDataType;
@@ -31,7 +31,6 @@ import org.planqk.atlas.core.model.ComputeResourcePropertyType;
 import org.planqk.atlas.core.services.ComputeResourcePropertyService;
 import org.planqk.atlas.core.services.ComputeResourceService;
 import org.planqk.atlas.web.Constants;
-import org.planqk.atlas.web.controller.mixin.ComputeResourcePropertyMixin;
 import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
 import org.planqk.atlas.web.dtos.ComputeResourceDto;
 import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
@@ -77,8 +76,7 @@ public class ComputeResourceControllerTest {
     private ComputeResourceService computeResourceService;
     @MockBean
     private ComputeResourcePropertyService computeResourcePropertyService;
-    @MockBean
-    private ComputeResourcePropertyMixin mixin;
+
     @Autowired
     private MockMvc mockMvc;
     private final ObjectMapper mapper = ObjectMapperUtils.newTestMapper();
@@ -392,7 +390,7 @@ public class ComputeResourceControllerTest {
 
     @Test
     void deleteCloudService_returnBadRequest() throws Exception {
-        doThrow(new ConsistencyException()).when(computeResourceService).delete(any());
+        doThrow(new EntityReferenceConstraintViolationException("")).when(computeResourceService).delete(any());
         mockMvc.perform(
                 delete(
                         fromMethodCall(uriBuilder,

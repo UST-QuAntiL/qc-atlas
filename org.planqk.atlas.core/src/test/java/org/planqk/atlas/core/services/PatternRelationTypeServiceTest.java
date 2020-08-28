@@ -23,7 +23,7 @@ import java.net.URI;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
-import org.planqk.atlas.core.exceptions.ConsistencyException;
+import org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
 import org.planqk.atlas.core.model.ComputationModel;
@@ -159,7 +159,7 @@ public class PatternRelationTypeServiceTest extends AtlasDatabaseTestBase {
 
         PatternRelation storedRelation = patternRelationService.create(relation);
 
-        assertThrows(ConsistencyException.class, () ->
+        assertThrows(EntityReferenceConstraintViolationException.class, () ->
             patternRelationTypeService.delete(storedType1.getId()));
     }
 
