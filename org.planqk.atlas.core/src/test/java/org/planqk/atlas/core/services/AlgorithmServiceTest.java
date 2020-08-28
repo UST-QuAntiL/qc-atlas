@@ -61,6 +61,12 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
     @Autowired
     private PublicationService publicationService;
 
+    @Autowired
+    private AlgorithmRelationService algorithmRelationService;
+
+    @Autowired
+    private AlgorithmRelationTypeService algorithmRelationTypeService;
+
     @Test
     void createAlgorithm_NoLinks() {
         Algorithm algorithm = getFullAlgorithm("algorithmName");
@@ -328,7 +334,34 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
                 Assertions.assertDoesNotThrow(() ->
                         publicationService.findById(pub.getId())));
     }
-    
+
+    @Test
+    void findLinkedAlgorithmRelations() {
+        Algorithm sourceAlgorithm = getFullAlgorithm("sourceAlgorithmName");
+        Algorithm targetAlgorithm = getFullAlgorithm("targetAlgorithmName");
+        var persistedSourceAlgorithm = algorithmService.create(sourceAlgorithm);
+        var persistedTargetAlgorithm = algorithmService.create(targetAlgorithm);
+
+        var algorithmRelation = new AlgorithmRelation();
+        algorithmRelation.setDescription("algorithmRelationDescription");
+        algorithmRelation.setSourceAlgorithm(persistedSourceAlgorithm);
+        algorithmRelation.setTargetAlgorithm(persistedTargetAlgorithm);
+        var algorithmRelationType = new AlgorithmRelationType();
+        algorithmRelationType.setName("relationName");
+        algorithmRelation.setAlgorithmRelationType(algorithmRelationTypeService.create(algorithmRelationType));
+
+        var relation = algorithmRelationService.create(algorithmRelation);
+        System.out.println(relation.getSourceAlgorithm().getAlgorithmRelations());
+
+        var sourceAlgo = algorithmService.findById(relation.getSourceAlgorithm().getId());
+        System.out.println(sourceAlgo.getAlgorithmRelations());
+
+        var targetAlgo = algorithmService.findById(relation.getTargetAlgorithm().getId());
+        System.out.println(targetAlgo.getAlgorithmRelations());
+
+        assertThat(sourceAlgo.getAlgorithmRelations().size()).isEqualTo(1);
+    }
+
     private void assertAlgorithmEquality(Algorithm dbAlgorithm, Algorithm compareAlgorithm) {
         assertThat(dbAlgorithm.getId()).isNotNull();
         assertThat(dbAlgorithm.getName()).isEqualTo(compareAlgorithm.getName());

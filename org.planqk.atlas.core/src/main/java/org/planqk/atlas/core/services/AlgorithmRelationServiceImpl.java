@@ -50,10 +50,19 @@ public class AlgorithmRelationServiceImpl implements AlgorithmRelationService {
         algorithmRelation.setAlgorithmRelationType(
                 algorithmRelationTypeService.findById(algorithmRelation.getAlgorithmRelationType().getId()));
 
-        algorithmRelation.setSourceAlgorithm(findAlgorithmById(algorithmRelation.getSourceAlgorithm().getId()));
-        algorithmRelation.setTargetAlgorithm(findAlgorithmById(algorithmRelation.getTargetAlgorithm().getId()));
+        var sourceAlgorithm = findAlgorithmById(algorithmRelation.getSourceAlgorithm().getId());
+        var targetAlgorithm = findAlgorithmById(algorithmRelation.getTargetAlgorithm().getId());
+        algorithmRelation.setSourceAlgorithm(sourceAlgorithm);
+        algorithmRelation.setTargetAlgorithm(targetAlgorithm);
 
-        return algorithmRelationRepository.save(algorithmRelation);
+        AlgorithmRelation persistedAlgorithmRelation = algorithmRelationRepository.save(algorithmRelation);
+
+        sourceAlgorithm.addAlgorithmRelation(persistedAlgorithmRelation);
+        algorithmRepository.save(sourceAlgorithm);
+//        targetAlgorithm.addAlgorithmRelation(persistedAlgorithmRelation);
+//        algorithmRepository.save(targetAlgorithm);
+
+        return persistedAlgorithmRelation;
     }
 
     @Override

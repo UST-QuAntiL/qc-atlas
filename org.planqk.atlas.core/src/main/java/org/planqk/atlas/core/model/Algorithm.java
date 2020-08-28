@@ -146,22 +146,12 @@ public class Algorithm extends AlgorithmOrImplementation implements ModelWithPub
         tag.removeAlgorithm(this);
     }
 
-    public void setTags(Set<Tag> tags) {
-        this.tags.clear();
-        if (tags != null) {
-            this.tags.addAll(tags);
-        }
+    public void addAlgorithmRelation(AlgorithmRelation algorithmRelation) {
+        algorithmRelations.add(algorithmRelation);
     }
 
-    public boolean addAlgorithmRelation(AlgorithmRelation relation) {
-        return algorithmRelations.add(relation);
-    }
-
-    public void setAlgorithmRelations(Set<AlgorithmRelation> algorithmRelations) {
-        this.algorithmRelations.clear();
-        if (algorithmRelations != null) {
-            this.algorithmRelations.addAll(algorithmRelations);
-        }
+    public void removeAlgorithmRelation(AlgorithmRelation algorithmRelation) {
+        algorithmRelations.remove(algorithmRelation);
     }
 
     public void setRelatedPatterns(Set<PatternRelation> relatedPatterns) {

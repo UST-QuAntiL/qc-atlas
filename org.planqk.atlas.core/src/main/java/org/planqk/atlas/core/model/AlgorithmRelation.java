@@ -27,7 +27,6 @@ import javax.persistence.ManyToOne;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Setter;
 import lombok.ToString;
 
 @EqualsAndHashCode(callSuper = true)
@@ -37,7 +36,6 @@ public class AlgorithmRelation extends HasId {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @EqualsAndHashCode.Exclude
-    @Setter
     @ToString.Exclude
     private Algorithm sourceAlgorithm;
 

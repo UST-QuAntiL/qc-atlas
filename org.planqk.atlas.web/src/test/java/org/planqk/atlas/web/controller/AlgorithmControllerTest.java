@@ -148,7 +148,6 @@ public class AlgorithmControllerTest {
         algorithm2.setId(UUID.randomUUID());
         algorithm2.setName("alg2");
         algorithm2.setComputationModel(ComputationModel.CLASSIC);
-        algorithm2.setAlgorithmRelations(new HashSet<>());
 
         algorithmRelation1 = new AlgorithmRelation();
         algorithmRelation1.setId(UUID.randomUUID());
@@ -186,7 +185,7 @@ public class AlgorithmControllerTest {
         patternRelations.add(patternRelation2);
         algorithm1.setRelatedPatterns(patternRelations);
 
-        algorithm1.setAlgorithmRelations(algorithmRelations);
+        algorithmRelations.forEach(algorithmRelation -> algorithm1.addAlgorithmRelation(algorithmRelation));
         algorithm1.setProblemTypes(problemTypes);
 
         algorithm2.setProblemTypes(problemTypes);
@@ -717,7 +716,6 @@ public class AlgorithmControllerTest {
         algorithm2.setId(UUID.randomUUID());
         algorithm2.setName("alg2");
         algorithm2.setComputationModel(ComputationModel.CLASSIC);
-        algorithm2.setAlgorithmRelations(new HashSet<>());
 
         var algorithmRelation1 = new AlgorithmRelation();
         algorithmRelation1.setId(UUID.randomUUID());
