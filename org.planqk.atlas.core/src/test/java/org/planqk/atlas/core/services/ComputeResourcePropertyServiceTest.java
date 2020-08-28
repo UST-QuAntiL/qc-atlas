@@ -27,8 +27,6 @@ import org.planqk.atlas.core.model.ComputeResourceProperty;
 import org.planqk.atlas.core.model.ComputeResourcePropertyDataType;
 import org.planqk.atlas.core.model.ComputeResourcePropertyType;
 import org.planqk.atlas.core.model.QuantumAlgorithm;
-import org.planqk.atlas.core.repository.ComputeResourcePropertyRepository;
-import org.planqk.atlas.core.repository.ComputeResourcePropertyTypeRepository;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 
 import lombok.extern.slf4j.Slf4j;

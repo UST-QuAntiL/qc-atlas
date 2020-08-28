@@ -21,7 +21,6 @@ package org.planqk.atlas.web.linkassembler;
 
 import java.util.UUID;
 
-import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.DiscussionTopicController;
 import org.planqk.atlas.web.dtos.DiscussionTopicDto;
 

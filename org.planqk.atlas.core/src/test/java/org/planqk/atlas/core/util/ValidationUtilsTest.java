@@ -19,11 +19,10 @@
 
 package org.planqk.atlas.core.util;
 
+import org.planqk.atlas.core.exceptions.InvalidResourceTypeValueException;
 import org.planqk.atlas.core.model.ComputeResourceProperty;
 import org.planqk.atlas.core.model.ComputeResourcePropertyDataType;
 import org.planqk.atlas.core.model.ComputeResourcePropertyType;
-import org.planqk.atlas.core.util.ValidationUtils;
-import org.planqk.atlas.core.exceptions.InvalidResourceTypeValueException;
 
 import org.junit.jupiter.api.Test;
 
