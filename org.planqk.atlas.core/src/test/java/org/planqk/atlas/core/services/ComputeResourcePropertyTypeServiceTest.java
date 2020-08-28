@@ -70,9 +70,25 @@ public class ComputeResourcePropertyTypeServiceTest extends AtlasDatabaseTestBas
         assertThrows(NoSuchElementException.class, () -> computeResourcePropertyTypeService.findById(UUID.randomUUID()));
     }
 
-    // @Test
+    @Test
     void updateComputeResourcePropertyType_ElementFound() {
-        // TODO
+        var propertyType = getFullComputeResourcePropertyType("computeResourcePropertyTypeName");
+        var comparePropertyType = getFullComputeResourcePropertyType("computeResourcePropertyTypeName");
+
+        var storedType = computeResourcePropertyTypeService.create(propertyType);
+        comparePropertyType.setId(storedType.getId());
+
+        String editedName = "editedComputeResourcePropertyTypeName";
+        storedType.setName(editedName);
+
+        var editedType = computeResourcePropertyTypeService.update(storedType);
+
+        assertThat(editedType.getId()).isNotNull();
+        assertThat(editedType.getId()).isEqualTo(storedType.getId());
+        assertThat(editedType.getName()).isNotEqualTo(comparePropertyType.getName());
+        assertThat(editedType.getName()).isEqualTo(editedName);
+        assertThat(editedType.getDescription()).isEqualTo(comparePropertyType.getDescription());
+        assertThat(editedType.getDatatype()).isEqualTo(comparePropertyType.getDatatype());
     }
 
     @Test
@@ -96,9 +112,10 @@ public class ComputeResourcePropertyTypeServiceTest extends AtlasDatabaseTestBas
                 computeResourcePropertyTypeService.findById(storedType.getId()));
     }
 
-    // @Test
+    @Test
     void deleteComputeResourcePropertyType_ElementNotFound() {
-        // TODO
+        Assertions.assertThrows(NoSuchElementException.class, () ->
+                computeResourcePropertyTypeService.delete(UUID.randomUUID()));
     }
 
     @Test
