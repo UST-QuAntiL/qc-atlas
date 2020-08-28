@@ -65,10 +65,19 @@ public class Algorithm extends AlgorithmOrImplementation implements ModelWithPub
     @Column(columnDefinition = "text")
     private String problem;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, orphanRemoval = true)
-    @JoinColumn(name = "sourceAlgorithm", referencedColumnName = "id")
+    @OneToMany(fetch = FetchType.LAZY,
+            cascade = {CascadeType.ALL},
+            mappedBy = "sourceAlgorithm",
+            orphanRemoval = true)
     @EqualsAndHashCode.Exclude
-    private Set<AlgorithmRelation> algorithmRelations = new HashSet<>();
+    private Set<AlgorithmRelation> sourceAlgorithmRelations = new HashSet<>();
+
+    @OneToMany(fetch = FetchType.LAZY,
+            cascade = {CascadeType.ALL},
+            mappedBy = "targetAlgorithm",
+            orphanRemoval = true)
+    @EqualsAndHashCode.Exclude
+    private Set<AlgorithmRelation> targetAlgorithmRelations = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "algorithm", orphanRemoval = true)
     @EqualsAndHashCode.Exclude
@@ -147,11 +156,29 @@ public class Algorithm extends AlgorithmOrImplementation implements ModelWithPub
     }
 
     public void addAlgorithmRelation(AlgorithmRelation algorithmRelation) {
-        algorithmRelations.add(algorithmRelation);
+        if (algorithmRelation.getSourceAlgorithm().getId() == this.getId()) {
+            sourceAlgorithmRelations.add(algorithmRelation);
+            algorithmRelation.setSourceAlgorithm(this);
+        } else if (algorithmRelation.getTargetAlgorithm().getId() == this.getId()) {
+            targetAlgorithmRelations.add(algorithmRelation);
+            algorithmRelation.setTargetAlgorithm(this);
+        }
     }
 
     public void removeAlgorithmRelation(AlgorithmRelation algorithmRelation) {
-        algorithmRelations.remove(algorithmRelation);
+        if (algorithmRelation.getSourceAlgorithm().getId() == this.getId()) {
+            sourceAlgorithmRelations.remove(algorithmRelation);
+            algorithmRelation.setSourceAlgorithm(null);
+        } else if (algorithmRelation.getTargetAlgorithm().getId() == this.getId()) {
+            targetAlgorithmRelations.remove(algorithmRelation);
+            algorithmRelation.setTargetAlgorithm(null);
+        }
+    }
+
+    public Set<AlgorithmRelation> getAlgorithmRelations() {
+        Set<AlgorithmRelation> algorithmRelations = new HashSet<>(sourceAlgorithmRelations);
+        algorithmRelations.addAll(targetAlgorithmRelations);
+        return algorithmRelations;
     }
 
     public void setRelatedPatterns(Set<PatternRelation> relatedPatterns) {

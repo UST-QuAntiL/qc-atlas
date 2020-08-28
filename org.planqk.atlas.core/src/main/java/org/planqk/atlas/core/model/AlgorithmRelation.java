@@ -34,13 +34,16 @@ import lombok.ToString;
 @Entity
 public class AlgorithmRelation extends HasId {
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY,
+            cascade = { CascadeType.MERGE })
+    @JoinColumn(name = "sourceAlgorithm")
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Algorithm sourceAlgorithm;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.MERGE, CascadeType.REFRESH })
-    @JoinColumn(name = "targetAlgorithm", referencedColumnName = "id")
+    @ManyToOne(fetch = FetchType.LAZY,
+            cascade = { CascadeType.MERGE })
+    @JoinColumn(name = "targetAlgorithm")
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Algorithm targetAlgorithm;

@@ -26,6 +26,7 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.UUID;
 
+import org.planqk.atlas.core.exceptions.InvalidResourceTypeValueException;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.model.AlgorithmRelationType;
@@ -646,11 +647,10 @@ public class AlgorithmControllerTest {
         resource.setComputeResourcePropertyType(type);
         resource.setValue(resReq.getValue());
         resource.setId(resReq.getId());
-
-        when(algorithmService.findById(any())).thenReturn(algorithm);
-        when(computeResourcePropertyTypeService.findById(any())).thenReturn(type);
+        
         when(computeResourcePropertyService.addComputeResourcePropertyToAlgorithm(any(), any()))
-                .thenReturn(resource);
+                .thenThrow((new InvalidResourceTypeValueException("")));
+
         var path = fromMethodCall(uriBuilder, on(AlgorithmController.class)
                 .createComputeResourcePropertyForAlgorithm(UUID.randomUUID(), null)).toUriString();
         mockMvc.perform(post(path).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsBytes(resReq)))
