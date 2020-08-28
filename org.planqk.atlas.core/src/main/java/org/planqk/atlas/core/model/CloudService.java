@@ -32,6 +32,7 @@ import javax.persistence.ManyToMany;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NonNull;
 import lombok.ToString;
 
 /**
@@ -66,7 +67,7 @@ public class CloudService extends HasId {
             mappedBy = "supportedCloudServices")
     private Set<SoftwarePlatform> softwarePlatforms = new HashSet<>();
 
-    public void addSoftwarePlatform(SoftwarePlatform softwarePlatform) {
+    public void addSoftwarePlatform(@NonNull SoftwarePlatform softwarePlatform) {
         if (softwarePlatforms.contains(softwarePlatform)) {
             return;
         }
@@ -74,7 +75,7 @@ public class CloudService extends HasId {
         softwarePlatform.addCloudService(this);
     }
 
-    public void removeSoftwarePlatform(SoftwarePlatform softwarePlatform) {
+    public void removeSoftwarePlatform(@NonNull SoftwarePlatform softwarePlatform) {
         if (!softwarePlatforms.contains(softwarePlatform)) {
             return;
         }
@@ -82,7 +83,7 @@ public class CloudService extends HasId {
         softwarePlatform.removeCloudService(this);
     }
 
-    public void addComputeResource(ComputeResource computeResource) {
+    public void addComputeResource(@NonNull ComputeResource computeResource) {
         if (providedComputeResources.contains(computeResource)) {
             return;
         }
@@ -90,7 +91,7 @@ public class CloudService extends HasId {
         computeResource.addCloudService(this);
     }
 
-    public void removeComputeResource(ComputeResource computeResource) {
+    public void removeComputeResource(@NonNull ComputeResource computeResource) {
         if (!providedComputeResources.contains(computeResource)) {
             return;
         }

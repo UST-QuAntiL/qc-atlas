@@ -34,6 +34,7 @@ import javax.persistence.OneToMany;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import lombok.ToString;
 
 /**
@@ -89,7 +90,7 @@ public class Implementation extends AlgorithmOrImplementation {
     @ToString.Exclude
     private Set<SoftwarePlatform> softwarePlatforms = new HashSet<>();
 
-    public void addTag(Tag tag) {
+    public void addTag(@NonNull Tag tag) {
         if (tags.contains(tag)) {
             return;
         }
@@ -97,7 +98,7 @@ public class Implementation extends AlgorithmOrImplementation {
         tag.addImplementation(this);
     }
 
-    public void removeTag(Tag tag) {
+    public void removeTag(@NonNull Tag tag) {
         if (!tags.contains(tag)) {
             return;
         }
@@ -105,7 +106,7 @@ public class Implementation extends AlgorithmOrImplementation {
         tag.removeImplementation(this);
     }
 
-    public void addPublication(Publication publication) {
+    public void addPublication(@NonNull Publication publication) {
         if (publications.contains(publication)) {
             return;
         }
@@ -113,7 +114,7 @@ public class Implementation extends AlgorithmOrImplementation {
         publication.addImplementation(this);
     }
 
-    public void removePublication(Publication publication) {
+    public void removePublication(@NonNull Publication publication) {
         if (!publications.contains(publication)) {
             return;
         }
@@ -121,7 +122,7 @@ public class Implementation extends AlgorithmOrImplementation {
         publication.removeImplementation(this);
     }
 
-    public void addSoftwarePlatform(SoftwarePlatform softwarePlatform) {
+    public void addSoftwarePlatform(@NonNull SoftwarePlatform softwarePlatform) {
         if (softwarePlatforms.contains(softwarePlatform)) {
             return;
         }
@@ -129,7 +130,7 @@ public class Implementation extends AlgorithmOrImplementation {
         softwarePlatform.addImplementation(this);
     }
 
-    public void removeSoftwarePlatform(SoftwarePlatform softwarePlatform) {
+    public void removeSoftwarePlatform(@NonNull SoftwarePlatform softwarePlatform) {
         if (!softwarePlatforms.contains(softwarePlatform)) {
             return;
         }

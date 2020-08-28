@@ -46,11 +46,14 @@ public class DiscussionTopic extends KnowledgeArtifact {
 
     private OffsetDateTime date;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY,
+            optional = false)
     @EqualsAndHashCode.Exclude
     private KnowledgeArtifact knowledgeArtifact;
 
     @EqualsAndHashCode.Exclude
-    @OneToMany(mappedBy = "discussionTopic", orphanRemoval = true, cascade = {CascadeType.MERGE, CascadeType.REFRESH})
+    @OneToMany(mappedBy = "discussionTopic",
+            orphanRemoval = true,
+            cascade = {CascadeType.MERGE, CascadeType.REFRESH})
     private Set<DiscussionComment> discussionComments = new HashSet<>();
 }

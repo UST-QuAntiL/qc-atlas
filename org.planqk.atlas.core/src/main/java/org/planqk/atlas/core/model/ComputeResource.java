@@ -32,6 +32,7 @@ import javax.persistence.OneToMany;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NonNull;
 import lombok.ToString;
 
 /**
@@ -48,22 +49,29 @@ public class ComputeResource extends HasId {
     private String vendor;
     private String technology;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, mappedBy = "computeResource" ,orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY,
+            cascade = {CascadeType.ALL},
+            mappedBy = "computeResource",
+            orphanRemoval = true)
     private Set<ComputeResourceProperty> providedComputingResourceProperties = new HashSet<>();
 
     private QuantumComputationModel quantumComputationModel;
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE}, mappedBy = "supportedComputeResources")
+    @ManyToMany(fetch = FetchType.LAZY,
+            cascade = {CascadeType.MERGE},
+            mappedBy = "supportedComputeResources")
     private Set<SoftwarePlatform> softwarePlatforms = new HashSet<>();
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE}, mappedBy = "providedComputeResources")
+    @ManyToMany(fetch = FetchType.LAZY,
+            cascade = {CascadeType.MERGE},
+            mappedBy = "providedComputeResources")
     private Set<CloudService> cloudServices = new HashSet<>();
 
-    public void addSoftwarePlatform(SoftwarePlatform softwarePlatform) {
+    public void addSoftwarePlatform(@NonNull SoftwarePlatform softwarePlatform) {
         if (softwarePlatforms.contains(softwarePlatform)) {
             return;
         }
@@ -71,7 +79,7 @@ public class ComputeResource extends HasId {
         softwarePlatform.addComputeResource(this);
     }
 
-    public void removeSoftwarePlatform(SoftwarePlatform softwarePlatform) {
+    public void removeSoftwarePlatform(@NonNull SoftwarePlatform softwarePlatform) {
         if (!softwarePlatforms.contains(softwarePlatform)) {
             return;
         }
@@ -79,7 +87,7 @@ public class ComputeResource extends HasId {
         softwarePlatform.removeComputeResource(this);
     }
 
-    public void addCloudService(CloudService cloudService) {
+    public void addCloudService(@NonNull CloudService cloudService) {
         if (cloudServices.contains(cloudService)) {
             return;
         }
@@ -87,7 +95,7 @@ public class ComputeResource extends HasId {
         cloudService.addComputeResource(this);
     }
 
-    public void removeCloudService(CloudService cloudService) {
+    public void removeCloudService(@NonNull CloudService cloudService) {
         if (!cloudServices.contains(cloudService)) {
             return;
         }

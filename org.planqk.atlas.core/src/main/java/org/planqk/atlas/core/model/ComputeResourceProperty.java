@@ -38,7 +38,8 @@ import static lombok.EqualsAndHashCode.Exclude;
 @TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
 public class ComputeResourceProperty extends HasId {
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @ManyToOne(fetch = FetchType.LAZY,
+            cascade = CascadeType.MERGE)
     private ComputeResourcePropertyType computeResourcePropertyType;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -40,6 +40,7 @@ public class DiscussionComment extends HasId {
     @OneToOne
     private DiscussionComment replyTo;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.REFRESH, CascadeType.MERGE})
+    @ManyToOne(fetch = FetchType.LAZY,
+            cascade = {CascadeType.REFRESH, CascadeType.MERGE})
     private DiscussionTopic discussionTopic;
 }

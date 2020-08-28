@@ -29,9 +29,8 @@ import javax.persistence.ManyToMany;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.NonNull;
 
 @EqualsAndHashCode
 @NoArgsConstructor
@@ -39,13 +38,9 @@ import lombok.Setter;
 @Data
 public class Tag {
 
-    @Getter
-    @Setter
     String category;
 
     @Id
-    @Getter
-    @Setter
     String value;
 
     @ManyToMany(mappedBy = "tags", cascade = { CascadeType.MERGE, CascadeType.PERSIST })
@@ -56,7 +51,7 @@ public class Tag {
     @EqualsAndHashCode.Exclude
     private Set<Implementation> implementations = new HashSet<>();
 
-    public void addAlgorithm(Algorithm algorithm) {
+    public void addAlgorithm(@NonNull Algorithm algorithm) {
         if (algorithms.contains(algorithm)) {
             return;
         }
@@ -64,7 +59,7 @@ public class Tag {
         algorithm.addTag(this);
     }
 
-    public void removeAlgorithm(Algorithm algorithm) {
+    public void removeAlgorithm(@NonNull Algorithm algorithm) {
         if (!algorithms.contains(algorithm)) {
             return;
         }
@@ -72,7 +67,7 @@ public class Tag {
         algorithm.removeTag(this);
     }
 
-    public void addImplementation(Implementation implementation) {
+    public void addImplementation(@NonNull Implementation implementation) {
         if (implementations.contains(implementation)) {
             return;
         }
@@ -80,7 +75,7 @@ public class Tag {
         implementation.addTag(this);
     }
 
-    public void removeImplementation(Implementation implementation) {
+    public void removeImplementation(@NonNull Implementation implementation) {
         if (!implementations.contains(implementation)) {
             return;
         }

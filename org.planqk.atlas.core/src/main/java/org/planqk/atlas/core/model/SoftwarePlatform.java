@@ -32,6 +32,7 @@ import javax.persistence.ManyToMany;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NonNull;
 import lombok.ToString;
 
 /**
@@ -74,11 +75,7 @@ public class SoftwarePlatform extends HasId {
             mappedBy = "softwarePlatforms")
     private Set<Implementation> implementations = new HashSet<>();
 
-    public Set<Implementation> getImplementations() {
-        return new HashSet<>(implementations);
-    }
-
-    public void addImplementation(Implementation implementation) {
+    public void addImplementation(@NonNull Implementation implementation) {
         if (implementations.contains(implementation)) {
             return;
         }
@@ -86,7 +83,7 @@ public class SoftwarePlatform extends HasId {
         implementation.addSoftwarePlatform(this);
     }
 
-    public void removeImplementation(Implementation implementation) {
+    public void removeImplementation(@NonNull Implementation implementation) {
         if (!implementations.contains(implementation)) {
             return;
         }
@@ -94,11 +91,7 @@ public class SoftwarePlatform extends HasId {
         implementation.removeSoftwarePlatform(this);
     }
 
-    public Set<CloudService> getSupportedCloudServices() {
-        return new HashSet<>(supportedCloudServices);
-    }
-
-    public void addCloudService(CloudService cloudService) {
+    public void addCloudService(@NonNull CloudService cloudService) {
         if (supportedCloudServices.contains(cloudService)) {
             return;
         }
@@ -106,7 +99,7 @@ public class SoftwarePlatform extends HasId {
         cloudService.addSoftwarePlatform(this);
     }
 
-    public void removeCloudService(CloudService cloudService) {
+    public void removeCloudService(@NonNull CloudService cloudService) {
         if (!supportedCloudServices.contains(cloudService)) {
             return;
         }
@@ -114,11 +107,7 @@ public class SoftwarePlatform extends HasId {
         cloudService.removeSoftwarePlatform(this);
     }
 
-    public Set<ComputeResource> getSupportedComputeResources() {
-        return new HashSet<>(supportedComputeResources);
-    }
-
-    public void addComputeResource(ComputeResource computeResource) {
+    public void addComputeResource(@NonNull ComputeResource computeResource) {
         if (supportedComputeResources.contains(computeResource)) {
             return;
         }
@@ -126,7 +115,7 @@ public class SoftwarePlatform extends HasId {
         computeResource.addSoftwarePlatform(this);
     }
 
-    public void removeComputeResource(ComputeResource computeResource) {
+    public void removeComputeResource(@NonNull ComputeResource computeResource) {
         if (!supportedComputeResources.contains(computeResource)) {
             return;
         }

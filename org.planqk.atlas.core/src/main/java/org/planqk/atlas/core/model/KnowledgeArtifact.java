@@ -36,7 +36,9 @@ import lombok.NoArgsConstructor;
 @Inheritance(strategy = InheritanceType.JOINED)
 @NoArgsConstructor
 public class KnowledgeArtifact extends HasId {
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "knowledgeArtifact", orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL,
+            mappedBy = "knowledgeArtifact",
+            orphanRemoval = true)
     @EqualsAndHashCode.Exclude
     private Set<DiscussionTopic> discussionTopics = new HashSet<>();
 
