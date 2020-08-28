@@ -21,17 +21,24 @@ package org.planqk.atlas.core.services;
 
 import java.util.HashSet;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.ClassicAlgorithm;
+import org.planqk.atlas.core.model.ClassicImplementation;
+import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.repository.TagRepository;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -42,35 +49,19 @@ public class TagServiceTest extends AtlasDatabaseTestBase {
     @Autowired
     private TagService tagService;
     @Autowired
-    private TagRepository tagRepository;
+    private AlgorithmService algorithmService;
+    @Autowired
+    private ImplementationService implementationService;
 
     @Test
     void createTag() {
         var tag = new Tag();
-        tag.setValue("Hello");
-        tag.setCategory("World");
-        tag = tagService.create(tag);
+        tag.setValue("value");
+        tag.setCategory("category");
 
-        var dbTag = tagRepository.findById(tag.getValue()).get();
-        assertThat(dbTag).isEqualTo(tag);
-    }
+        var storedTag = tagService.create(tag);
 
-    @Test
-    void findTagById_ElementNotFound() {
-        assertThrows(NoSuchElementException.class, () -> {
-            tagService.findByValue(UUID.randomUUID().toString());
-        });
-    }
-
-    @Test
-    void findTagById_ElementFound() {
-        var tag = new Tag();
-        tag.setValue("Hello");
-        tag.setCategory("World");
-        tag = tagService.create(tag);
-        var dbTag = tagService.findByValue(tag.getValue());
-        assertThat(dbTag.getValue()).isEqualTo(tag.getValue());
-        assertThat(dbTag.getCategory()).isEqualTo(tag.getCategory());
+        assertThat(storedTag).isEqualTo(tag);
     }
 
     @Test
@@ -78,13 +69,157 @@ public class TagServiceTest extends AtlasDatabaseTestBase {
         var tags = new HashSet<Tag>();
         for (int i = 0; i < 10; i++) {
             var tag = new Tag();
-            tag.setValue("Hello " + i);
-            tag.setCategory("World " + i);
-            tags.add(tag);
+            tag.setValue("value " + i);
+            tag.setCategory("category " + i);
+            tags.add(tagService.create(tag));
         }
-        var updatedSet = tags.stream().map(e -> tagService.create(e)).collect(Collectors.toSet());
-        var dbOutput = tagService.findAll(Pageable.unpaged()).getContent();
 
-        updatedSet.forEach(e -> assertThat(dbOutput).contains(e));
+        var allPersistedTags = tagService.findAll(Pageable.unpaged()).getContent();
+
+        assertThat(allPersistedTags.containsAll(tags)).isTrue();
+        assertThat(tags.containsAll(allPersistedTags)).isTrue();
+    }
+
+    @Test
+    void findAllTagsByContent() {
+        var tags = new HashSet<Tag>();
+        for (int i = 0; i < 10; i++) {
+            var tag = new Tag();
+            tag.setValue("value " + i);
+            tag.setCategory("category " + i);
+            tags.add(tagService.create(tag));
+        }
+
+        var filteredTags = tags.stream().filter(e -> e.getCategory().contains("1") || e.getValue().contains("1"))
+                .collect(Collectors.toSet());
+        var searchedTags = tagService.findAllByContent("1", Pageable.unpaged()).getContent();
+
+        assertThat(filteredTags.containsAll(searchedTags)).isTrue();
+        assertThat(searchedTags.containsAll(filteredTags)).isTrue();
+    }
+
+    @Test
+    void findTagByValue_ElementNotFound() {
+        assertThrows(NoSuchElementException.class, () -> {
+            tagService.findByValue(UUID.randomUUID().toString());
+        });
+    }
+
+    @Test
+    void findTagByValue_ElementFound() {
+        var tag = new Tag();
+        tag.setValue("value");
+        tag.setCategory("category");
+
+        tag = tagService.create(tag);
+
+        var dbTag = tagService.findByValue(tag.getValue());
+
+        assertThat(dbTag.getValue()).isEqualTo(tag.getValue());
+        assertThat(dbTag.getCategory()).isEqualTo(tag.getCategory());
+    }
+
+    @Test
+    void addTagToAlgorithm() {
+        Algorithm algorithm = new ClassicAlgorithm();
+        algorithm.setName("algorithmName");
+        algorithm = algorithmService.create(algorithm);
+
+        var tag1 = new Tag();
+        tag1.setValue("value1");
+        tag1.setCategory("category1");
+
+        tagService.addTagToAlgorithm(algorithm.getId(), tag1);
+
+        var tag2 = new Tag();
+        tag2.setValue("value2");
+        tag2.setCategory("category2");
+        tag2 = tagService.create(tag2);
+
+        tagService.addTagToAlgorithm(algorithm.getId(), tag2);
+
+        var finalAlgorithm = algorithmService.findById(algorithm.getId());
+        var tagsOfAlgorithm = finalAlgorithm.getTags();
+        assertThat(tagsOfAlgorithm.size()).isEqualTo(2);
+        assertThat(tagsOfAlgorithm.contains(tag1)).isTrue();
+        assertThat(tagsOfAlgorithm.contains(tag2)).isTrue();
+    }
+
+    @Test
+    void removeTagFromAlgorithm() {
+        Algorithm algorithm = new ClassicAlgorithm();
+        algorithm.setName("algorithmName");
+        algorithm = algorithmService.create(algorithm);
+
+        var tag = new Tag();
+        tag.setValue("value1");
+        tag.setCategory("category1");
+
+        tagService.addTagToAlgorithm(algorithm.getId(), tag);
+
+        Assertions.assertDoesNotThrow(() -> tagService.findByValue(tag.getValue()));
+
+        tagService.removeTagFromAlgorithm(algorithm.getId(), tag);
+
+        Assertions.assertDoesNotThrow(() -> tagService.findByValue(tag.getValue()));
+        var tagsOfAlgorithm = algorithmService.findById(algorithm.getId()).getTags();
+
+        assertThat(tagsOfAlgorithm.size()).isEqualTo(0);
+    }
+
+    @Test
+    void addTagToImplementation() {
+        Algorithm algorithm = new ClassicAlgorithm();
+        algorithm.setName("algorithmName");
+        algorithm = algorithmService.create(algorithm);
+
+        Implementation implementation = new ClassicImplementation();
+        implementation.setName("implementationName");
+        implementation = implementationService.create(implementation, algorithm.getId());
+
+        var tag1 = new Tag();
+        tag1.setValue("value1");
+        tag1.setCategory("category1");
+
+        tagService.addTagToImplementation(implementation.getId(), tag1);
+
+        var tag2 = new Tag();
+        tag2.setValue("value2");
+        tag2.setCategory("category2");
+        tag2 = tagService.create(tag2);
+
+        tagService.addTagToImplementation(implementation.getId(), tag2);
+
+        var finalImplementation = implementationService.findById(implementation.getId());
+        var tagsOfImplementation = finalImplementation.getTags();
+        assertThat(tagsOfImplementation.size()).isEqualTo(2);
+        assertThat(tagsOfImplementation.contains(tag1)).isTrue();
+        assertThat(tagsOfImplementation.contains(tag2)).isTrue();
+    }
+
+    @Test
+    void removeTagFromImplementation() {
+        Algorithm algorithm = new ClassicAlgorithm();
+        algorithm.setName("algorithmName");
+        algorithm = algorithmService.create(algorithm);
+
+        Implementation implementation = new ClassicImplementation();
+        implementation.setName("implementationName");
+        implementation = implementationService.create(implementation, algorithm.getId());
+
+        var tag = new Tag();
+        tag.setValue("value1");
+        tag.setCategory("category1");
+
+        tagService.addTagToImplementation(implementation.getId(), tag);
+
+        Assertions.assertDoesNotThrow(() -> tagService.findByValue(tag.getValue()));
+
+        tagService.removeTagFromImplementation(implementation.getId(), tag);
+
+        Assertions.assertDoesNotThrow(() -> tagService.findByValue(tag.getValue()));
+        var tagsOfImplementation = implementationService.findById(implementation.getId()).getTags();
+
+        assertThat(tagsOfImplementation.size()).isEqualTo(0);
     }
 }

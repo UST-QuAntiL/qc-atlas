@@ -33,6 +33,7 @@ import org.planqk.atlas.core.model.Sketch;
 import org.planqk.atlas.core.repository.AlgorithmRelationRepository;
 import org.planqk.atlas.core.repository.AlgorithmRepository;
 import org.planqk.atlas.core.repository.ApplicationAreaRepository;
+import org.planqk.atlas.core.repository.ComputeResourcePropertyRepository;
 import org.planqk.atlas.core.repository.PatternRelationRepository;
 import org.planqk.atlas.core.repository.ProblemTypeRepository;
 import org.planqk.atlas.core.repository.PublicationRepository;
@@ -65,6 +66,8 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     private final ProblemTypeRepository problemTypeRepository;
 
     private final ApplicationAreaRepository applicationAreaRepository;
+
+    private final ComputeResourcePropertyRepository computeResourcePropertyRepository;
 
     private final PatternRelationService patternRelationService;
     private final PatternRelationRepository patternRelationRepository;
@@ -145,6 +148,9 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         algorithm.getImplementations().forEach(
                 implementation -> implementationService.delete(implementation.getId()));
 
+        // delete compute resource property
+        algorithm.getRequiredComputeResourceProperties().forEach(computeResourcePropertyRepository::delete);
+
         // delete algorithm relations
         algorithm.getAlgorithmRelations().forEach(algorithmRelationRepository::delete);
 
@@ -152,9 +158,20 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         algorithm.getRelatedPatterns().forEach(
                 patternRelation -> patternRelationService.delete(patternRelation.getId()));
 
-        // delete all references to publications
+        // remove links to publications
         algorithm.getPublications().forEach(
                 publication -> publication.removeAlgorithm(algorithm));
+
+        // remove links to application areas
+        algorithm.getApplicationAreas().forEach(
+                applicationArea -> applicationArea.removeAlgorithm(algorithm));
+
+        // remove links to problem types
+        algorithm.getProblemTypes().forEach(
+                problemType -> problemType.removeAlgorithm(algorithm));
+
+        // remove link to tag
+        algorithm.getTags().forEach(tag -> tag.removeAlgorithm(algorithm));
     }
 
     @Override

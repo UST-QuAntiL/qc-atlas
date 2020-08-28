@@ -19,6 +19,7 @@
 
 package org.planqk.atlas.core.services;
 
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
@@ -85,7 +86,7 @@ public class TagServiceImpl implements TagService {
     public void removeTagFromAlgorithm(@NonNull UUID algorithmId, @NonNull Tag tag) {
         Algorithm algorithm = algorithmService.findById(algorithmId);
 
-        algorithm.removeTag(tag);
+        algorithm.removeTag(findByValue(tag.getValue()));
     }
 
     @Override
@@ -101,12 +102,16 @@ public class TagServiceImpl implements TagService {
     public void removeTagFromImplementation(@NonNull UUID implementationId, @NonNull Tag tag) {
         Implementation implementation = implementationService.findById(implementationId);
 
-        implementation.removeTag(tag);
+        implementation.removeTag(findByValue(tag.getValue()));
     }
 
     private Tag createTagIfNotExists(@NonNull Tag tag) {
-        ServiceUtils.throwIfNotExists(tag.getValue(), Tag.class, tagRepository);
-        return create(tag);
+        try {
+            ServiceUtils.throwIfNotExists(tag.getValue(), Tag.class, tagRepository);
+            return findByValue(tag.getValue());
+        } catch (NoSuchElementException e) {
+            return create(tag);
+        }
     }
 }
 
