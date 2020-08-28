@@ -49,7 +49,8 @@ public class RestErrorHandler {
     }
 
     @ExceptionHandler(EntityReferenceConstraintViolationException.class)
-    public ResponseEntity<?> handleSqlConsistencyException(EntityReferenceConstraintViolationException e) {
+    public ResponseEntity<?> handleEntityReferenceConstraintViolationException(
+            EntityReferenceConstraintViolationException e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
@@ -60,11 +61,11 @@ public class RestErrorHandler {
 
     @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<?> handleNoSuchElementException(NoSuchElementException e) {
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(EmptyResultDataAccessException.class)
     public ResponseEntity<?> handleEmptyResultDataAccessException(EmptyResultDataAccessException e) {
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
     }
 }

@@ -78,8 +78,8 @@ public class ApplicationAreaServiceImpl implements ApplicationAreaService {
         ApplicationArea applicationArea = findById(applicationAreaId);
 
         if (applicationArea.getAlgorithms().size() > 0) {
-            throw new EntityReferenceConstraintViolationException("Cannot delete application area with ID \"" + applicationAreaId +
-                    "\". It is used by existing an algorithms!");
+            throw new EntityReferenceConstraintViolationException("ApplicationArea with ID \""
+                    + applicationAreaId + "\" cannot be deleted, because it is still in use");
         }
 
         removeReferences(applicationArea);

@@ -53,7 +53,7 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
     void createComputeResourceProperty() {
         var resourceType = getFullComputeResourcePropertyType();
 
-        var resource = getFullComputeResourceProperty("value");
+        var resource = getFullComputeResourceProperty("0.1");
         resource.setComputeResourcePropertyType(resourceType);
 
         var storedResource = computeResourcePropertyService.create(resource);
@@ -65,7 +65,7 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
     void findComputeResourcePropertyById_ElementFound() {
         var resourceType = getFullComputeResourcePropertyType();
 
-        var resource = getFullComputeResourceProperty("value");
+        var resource = getFullComputeResourceProperty("0.1");
         resource.setComputeResourcePropertyType(resourceType);
 
         var storedResource = computeResourcePropertyService.create(resource);
@@ -85,9 +85,21 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         // TODO
     }
 
+    // @Test
+    void updateComputeResourcePropertyById_ValidationFail() {
+        // TODO
+    }
+
+    // @Test
+    void updateComputeResourcePropertyById_ValidationFailTypeNotFound() {
+        // TODO
+    }
+
     @Test
     void updateComputeResourcePropertyById_ElementNotFound() {
-        var resource = getFullComputeResourceProperty("value");
+        var resourceType = getFullComputeResourcePropertyType();
+        var resource = getFullComputeResourceProperty("0.1");
+        resource.setComputeResourcePropertyType(resourceType);
         resource.setId(UUID.randomUUID());
         assertThrows(NoSuchElementException.class, () -> computeResourcePropertyService.update(resource));
     }
@@ -96,7 +108,7 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
     void deleteComputeResourceProperty_ElementFound() {
         var resourceType = getFullComputeResourcePropertyType();
 
-        var resource = getFullComputeResourceProperty("value");
+        var resource = getFullComputeResourceProperty("0.1");
         resource.setComputeResourcePropertyType(resourceType);
 
         var storedResource = computeResourcePropertyService.create(resource);
@@ -119,7 +131,7 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
     void deleteComputeResourceProperty_ByAlgorithmDelete() {
         var resourceType = getFullComputeResourcePropertyType();
 
-        var resource = getFullComputeResourceProperty("value");
+        var resource = getFullComputeResourceProperty("0.1");
         resource.setComputeResourcePropertyType(resourceType);
 
         var algo = new QuantumAlgorithm();
@@ -141,7 +153,7 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
     void deleteComputeResourceProperty_ByImplementationDelete() {
         var resourceType = getFullComputeResourcePropertyType();
 
-        var resource = getFullComputeResourceProperty("value");
+        var resource = getFullComputeResourceProperty("0.1");
         resource.setComputeResourcePropertyType(resourceType);
         // TODO
     }
@@ -150,7 +162,7 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
     void deleteComputeResourceProperty_ByComputeResourceDelete() {
         var resourceType = getFullComputeResourcePropertyType();
 
-        var resource = getFullComputeResourceProperty("value");
+        var resource = getFullComputeResourceProperty("0.1");
         resource.setComputeResourcePropertyType(resourceType);
         // TODO
     }
@@ -159,7 +171,7 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
     void findComputeResourcePropertiesOfAlgorithm() {
         var resourceType = getFullComputeResourcePropertyType();
 
-        var resource = getFullComputeResourceProperty("value");
+        var resource = getFullComputeResourceProperty("0.1");
         resource.setComputeResourcePropertyType(resourceType);
 
         var storedResource = computeResourcePropertyService.create(resource);
@@ -193,7 +205,7 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
     void addComputeResourcePropertyToAlgorithm_PropertyExists() {
         var resourceType = getFullComputeResourcePropertyType();
 
-        var resource = getFullComputeResourceProperty("value");
+        var resource = getFullComputeResourceProperty("0.1");
         resource.setComputeResourcePropertyType(resourceType);
         var storedResource = computeResourcePropertyService.create(resource);
 

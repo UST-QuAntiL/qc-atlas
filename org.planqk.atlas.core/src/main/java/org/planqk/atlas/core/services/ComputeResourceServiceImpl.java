@@ -90,7 +90,8 @@ public class ComputeResourceServiceImpl implements ComputeResourceService {
         if (cloudServiceRepository.countCloudServiceByComputeResource(computeResourceId) +
                 softwarePlatformRepository.countSoftwarePlatformByComputeResource(computeResourceId) > 0) {
             throw new EntityReferenceConstraintViolationException(
-                    "Cannot delete Compute Resource since it is used by existing Cloud services or Software platforms");
+                    "ComputeResource with ID \"" + computeResourceId + "\" cannot be deleted, " +
+                            "because it is still in linked to existing software platforms or cloud services");
         }
 
         ComputeResource computeResource = findById(computeResourceId);

@@ -68,7 +68,8 @@ public class LinkingServiceImpl implements LinkingService {
         Publication publication = publicationService.findById(publicationId);
 
         if (algorithm.getPublications().contains(publication)) {
-            throw new EntityReferenceConstraintViolationException("Algorithm and Publication are already linked");
+            throw new EntityReferenceConstraintViolationException("Algorithm with ID \"" + algorithmId +
+                    "\" and Publication with ID \"" + publicationId + "\" are already linked");
         }
 
         algorithm.addPublication(publication);
@@ -81,7 +82,8 @@ public class LinkingServiceImpl implements LinkingService {
         Publication publication = publicationService.findById(publicationId);
 
         if (!algorithm.getPublications().contains(publication)) {
-            throw new EntityReferenceConstraintViolationException("Algorithm and Publication are not linked");
+            throw new EntityReferenceConstraintViolationException("Algorithm with ID \"" + algorithmId +
+                    "\" and Publication with ID \"" + publicationId + "\" are not linked");
         }
 
         algorithm.removePublication(publication);
@@ -94,7 +96,8 @@ public class LinkingServiceImpl implements LinkingService {
         ProblemType problemType = problemTypeService.findById(problemTypeId);
 
         if (algorithm.getProblemTypes().contains(problemType)) {
-            throw new EntityReferenceConstraintViolationException("Algorithm and Problem type are already linked");
+            throw new EntityReferenceConstraintViolationException("Algorithm with ID \"" + algorithmId +
+                    "\" and ProblemType with ID \"" + problemTypeId + "\" are already linked");
         }
 
         algorithm.addProblemType(problemType);
@@ -107,7 +110,8 @@ public class LinkingServiceImpl implements LinkingService {
         ProblemType problemType = problemTypeService.findById(problemTypeId);
 
         if (!algorithm.getProblemTypes().contains(problemType)) {
-            throw new EntityReferenceConstraintViolationException("Algorithm and Problem type are not linked");
+            throw new EntityReferenceConstraintViolationException("Algorithm with ID \"" + algorithmId +
+                    "\" and ProblemType with ID \"" + problemTypeId + "\" are not linked");
         }
 
         algorithm.removeProblemType(problemType);
@@ -120,7 +124,8 @@ public class LinkingServiceImpl implements LinkingService {
         ApplicationArea applicationArea = applicationAreaService.findById(applicationAreaId);
 
         if (algorithm.getApplicationAreas().contains(applicationArea)) {
-            throw new EntityReferenceConstraintViolationException("Algorithm and Application area are already linked");
+            throw new EntityReferenceConstraintViolationException("Algorithm with ID \"" + algorithmId +
+                    "\" and ApplicationArea with ID \"" + applicationAreaId + "\" are already linked");
         }
 
         algorithm.addApplicationArea(applicationArea);
@@ -133,7 +138,8 @@ public class LinkingServiceImpl implements LinkingService {
         ApplicationArea applicationArea = applicationAreaService.findById(applicationAreaId);
 
         if (!algorithm.getApplicationAreas().contains(applicationArea)) {
-            throw new EntityReferenceConstraintViolationException("Algorithm and Application area are not linked");
+            throw new EntityReferenceConstraintViolationException("Algorithm with ID \"" + algorithmId +
+                    "\" and ApplicationArea with ID \"" + applicationAreaId + "\" are not linked");
         }
 
         algorithm.removeApplicationArea(applicationArea);
@@ -146,7 +152,8 @@ public class LinkingServiceImpl implements LinkingService {
         PatternRelation patternRelation = patternRelationService.findById(patternRelationId);
 
         if (algorithm.getRelatedPatterns().contains(patternRelation)) {
-            throw new EntityReferenceConstraintViolationException("Algorithm and Pattern relation are already linked");
+            throw new EntityReferenceConstraintViolationException("Algorithm with ID \"" + algorithmId +
+                    "\" and PatternRelation with ID \"" + patternRelationId + "\" are already linked");
         }
 
         algorithm.getRelatedPatterns().add(patternRelation);
@@ -159,7 +166,8 @@ public class LinkingServiceImpl implements LinkingService {
         PatternRelation patternRelation = patternRelationService.findById(patternRelationId);
 
         if (!algorithm.getRelatedPatterns().contains(patternRelation)) {
-            throw new EntityReferenceConstraintViolationException("Algorithm and Pattern relation are not linked");
+            throw new EntityReferenceConstraintViolationException("Algorithm with ID \"" + algorithmId +
+                    "\" and PatternRelation with ID \"" + patternRelationId + "\" are not linked");
         }
 
         algorithm.getRelatedPatterns().remove(patternRelation);
@@ -172,7 +180,8 @@ public class LinkingServiceImpl implements LinkingService {
         Publication publication = publicationService.findById(publicationId);
 
         if (implementation.getPublications().contains(publication)) {
-            throw new EntityReferenceConstraintViolationException("Implementation and Publication are already linked");
+            throw new EntityReferenceConstraintViolationException("Implementation with ID \"" + implementationId +
+                    "\" and Publication with ID \"" + publicationId + "\" are already linked");
         }
 
         implementation.addPublication(publication);
@@ -185,7 +194,8 @@ public class LinkingServiceImpl implements LinkingService {
         Publication publication = publicationService.findById(publicationId);
 
         if (!implementation.getPublications().contains(publication)) {
-            throw new EntityReferenceConstraintViolationException("Implementation and Publication are not linked");
+            throw new EntityReferenceConstraintViolationException("Implementation with ID \"" + implementationId +
+                    "\" and Publication with ID \"" + publicationId + "\" are not linked");
         }
 
         implementation.removePublication(publication);
@@ -198,7 +208,8 @@ public class LinkingServiceImpl implements LinkingService {
         SoftwarePlatform softwarePlatform = softwarePlatformService.findById(softwarePlatformId);
 
         if (implementation.getSoftwarePlatforms().contains(softwarePlatform)) {
-            throw new EntityReferenceConstraintViolationException("Implementation and Software platform are already linked");
+            throw new EntityReferenceConstraintViolationException("Implementation with ID \"" + implementationId +
+                    "\" and SoftwarePlatform with ID \"" + softwarePlatformId + "\" are already linked");
         }
 
         implementation.addSoftwarePlatform(softwarePlatform);
@@ -211,7 +222,8 @@ public class LinkingServiceImpl implements LinkingService {
         SoftwarePlatform softwarePlatform = softwarePlatformService.findById(softwarePlatformId);
 
         if (!implementation.getSoftwarePlatforms().contains(softwarePlatform)) {
-            throw new EntityReferenceConstraintViolationException("Implementation and Software platform are not linked");
+            throw new EntityReferenceConstraintViolationException("Implementation with ID \"" + implementationId +
+                    "\" and SoftwarePlatform with ID \"" + softwarePlatformId + "\" are not linked");
         }
 
         implementation.removeSoftwarePlatform(softwarePlatform);
@@ -224,7 +236,8 @@ public class LinkingServiceImpl implements LinkingService {
         CloudService cloudService = cloudServiceService.findById(cloudServiceId);
 
         if (softwarePlatform.getSupportedCloudServices().contains(cloudService)) {
-            throw new EntityReferenceConstraintViolationException("Software platform and Cloud service are already linked");
+            throw new EntityReferenceConstraintViolationException("SoftwarePlatform with ID \"" + softwarePlatformId +
+                    "\" and CloudService with ID \"" + cloudServiceId + "\" are already linked");
         }
 
         softwarePlatform.addCloudService(cloudService);
@@ -237,7 +250,8 @@ public class LinkingServiceImpl implements LinkingService {
         CloudService cloudService = cloudServiceService.findById(cloudServiceId);
 
         if (!softwarePlatform.getSupportedCloudServices().contains(cloudService)) {
-            throw new EntityReferenceConstraintViolationException("Software platform and Cloud service are not linked");
+            throw new EntityReferenceConstraintViolationException("SoftwarePlatform with ID \"" + softwarePlatformId +
+                    "\" and CloudService with ID \"" + cloudServiceId + "\" are not linked");
         }
 
         softwarePlatform.removeCloudService(cloudService);
@@ -250,7 +264,8 @@ public class LinkingServiceImpl implements LinkingService {
         ComputeResource computeResource = computeResourceService.findById(computeResourceId);
 
         if (softwarePlatform.getSupportedComputeResources().contains(computeResource)) {
-            throw new EntityReferenceConstraintViolationException("Software platform and Compute resource are already linked");
+            throw new EntityReferenceConstraintViolationException("SoftwarePlatform with ID \"" + softwarePlatformId +
+                    "\" and ComputeResource with ID \"" + computeResourceId + "\" are already linked");
         }
 
         softwarePlatform.addComputeResource(computeResource);
@@ -263,7 +278,8 @@ public class LinkingServiceImpl implements LinkingService {
         ComputeResource computeResource = computeResourceService.findById(computeResourceId);
 
         if (!softwarePlatform.getSupportedComputeResources().contains(computeResource)) {
-            throw new EntityReferenceConstraintViolationException("Software platform and Compute resource are not linked");
+            throw new EntityReferenceConstraintViolationException("SoftwarePlatform with ID \"" + softwarePlatformId +
+                    "\" and ComputeResource with ID \"" + computeResourceId + "\" are not linked");
         }
 
         softwarePlatform.removeComputeResource(computeResource);
@@ -276,7 +292,8 @@ public class LinkingServiceImpl implements LinkingService {
         var computeResource = computeResourceService.findById(computeResourceId);
 
         if (cloudService.getProvidedComputeResources().contains(computeResource)) {
-            throw new EntityReferenceConstraintViolationException("Cloud service and Compute Resource are already linked");
+            throw new EntityReferenceConstraintViolationException("CloudService with ID \"" + cloudServiceId +
+                    "\" and ComputeResource with ID \"" + computeResourceId + "\" are already linked");
         }
 
         cloudService.addComputeResource(computeResource);
@@ -289,7 +306,8 @@ public class LinkingServiceImpl implements LinkingService {
         var computeResource = computeResourceService.findById(computeResourceId);
 
         if (!cloudService.getProvidedComputeResources().contains(computeResource)) {
-            throw new EntityReferenceConstraintViolationException("Cloud service and Compute Resource are not linked");
+            throw new EntityReferenceConstraintViolationException("CloudService with ID \"" + cloudServiceId +
+                    "\" and ComputeResource with ID \"" + computeResourceId + "\" are not linked");
         }
 
         cloudService.removeComputeResource(computeResource);

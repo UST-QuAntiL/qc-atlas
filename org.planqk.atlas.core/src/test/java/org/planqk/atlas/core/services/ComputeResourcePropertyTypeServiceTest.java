@@ -22,6 +22,7 @@ package org.planqk.atlas.core.services;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
+import org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException;
 import org.planqk.atlas.core.model.ComputeResourceProperty;
 import org.planqk.atlas.core.model.ComputeResourcePropertyDataType;
 import org.planqk.atlas.core.model.ComputeResourcePropertyType;
@@ -110,7 +111,7 @@ public class ComputeResourcePropertyTypeServiceTest extends AtlasDatabaseTestBas
 
         var storedProperty = computeResourcePropertyService.create(property);
 
-        Assertions.assertThrows(DataIntegrityViolationException.class, () -> {
+        Assertions.assertThrows(EntityReferenceConstraintViolationException.class, () -> {
             this.computeResourcePropertyTypeService.delete(propertyType.getId());
         });
 
