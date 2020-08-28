@@ -96,7 +96,7 @@ public class DiscussionTopicServiceTest extends AtlasDatabaseTestBase {
         assertThat(discussionTopicPage.getTotalElements()).isEqualTo(2);
     }
 
-    @Test
+    // @Test
     void findDiscussionTopicById_ElementFound() {
         // TODO
     }
@@ -136,7 +136,7 @@ public class DiscussionTopicServiceTest extends AtlasDatabaseTestBase {
         });
     }
 
-    @Test
+    // @Test
     void deleteDiscussionTopic_ElementNotFound() {
         // TODO
     }

@@ -33,6 +33,8 @@ import org.springframework.stereotype.Repository;
 @RepositoryRestResource(exported = false)
 public interface ComputeResourcePropertyRepository extends JpaRepository<ComputeResourceProperty, UUID> {
 
+    long countByComputeResourcePropertyTypeId(UUID computeResourcePropertyTypeId);
+
     Page<ComputeResourceProperty> findAllByAlgorithmId(UUID algorithmId, Pageable pageable);
 
     Page<ComputeResourceProperty> findAllByImplementationId(UUID implementationId, Pageable pageable);

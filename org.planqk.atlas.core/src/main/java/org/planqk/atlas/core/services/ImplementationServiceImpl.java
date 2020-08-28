@@ -99,7 +99,6 @@ public class ImplementationServiceImpl implements ImplementationService {
     }
 
     private void removeReferences(@NonNull Implementation implementation) {
-        // TODO rethink the model implementation
         implementation.setImplementedAlgorithm(null);
 
         implementation.getPublications().forEach(publication ->

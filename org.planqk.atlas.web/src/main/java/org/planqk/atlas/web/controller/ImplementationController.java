@@ -279,7 +279,6 @@ public class ImplementationController {
         return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(resources));
     }
 
-    // TODO refactor
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400", description = "Id of the passed computing resource type is null"),

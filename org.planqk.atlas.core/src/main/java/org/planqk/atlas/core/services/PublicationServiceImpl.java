@@ -96,13 +96,13 @@ public class PublicationServiceImpl implements PublicationService {
     }
 
     @Override
-    public Page<Algorithm> findAlgorithmsOfPublication(@NonNull UUID publicationId, @NonNull Pageable pageable) {
+    public Page<Algorithm> findLinkedAlgorithms(@NonNull UUID publicationId, @NonNull Pageable pageable) {
         ServiceUtils.throwIfNotExists(publicationId, Publication.class, publicationRepository);
         return algorithmRepository.findAlgorithmsByPublicationId(publicationId, pageable);
     }
 
     @Override
-    public Page<Implementation> findImplementationsOfPublication(@NonNull UUID publicationId, @NonNull Pageable pageable) {
+    public Page<Implementation> findLinkedImplementations(@NonNull UUID publicationId, @NonNull Pageable pageable) {
         ServiceUtils.throwIfNotExists(publicationId, Publication.class, publicationRepository);
         return implementationRepository.findImplementationsByPublicationId(publicationId, pageable);
     }

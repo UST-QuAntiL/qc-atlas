@@ -36,7 +36,7 @@ import org.springframework.stereotype.Repository;
 @RepositoryRestResource(exported = false)
 public interface PatternRelationRepository extends JpaRepository<PatternRelation, UUID> {
 
-    long countByPatternRelationTypeId(UUID id);
+    long countByPatternRelationTypeId(UUID patternRelationTypeId);
 
     Page<PatternRelation> findByAlgorithmId(UUID algorithmId, Pageable pageable);
 }

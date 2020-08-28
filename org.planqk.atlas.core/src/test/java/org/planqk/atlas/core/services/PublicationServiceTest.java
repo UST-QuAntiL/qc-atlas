@@ -142,13 +142,13 @@ public class PublicationServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void findAlgorithmsOfPublication_PublicationNotFound() {
+    void findLinkedAlgorithms_PublicationNotFound() {
         Assertions.assertThrows(NoSuchElementException.class, () ->
-                publicationService.findAlgorithmsOfPublication(UUID.randomUUID(), Pageable.unpaged()));
+                publicationService.findLinkedAlgorithms(UUID.randomUUID(), Pageable.unpaged()));
     }
 
     @Test
-    void findAlgorithmsOfPublication_PublicationFound() {
+    void findLinkedAlgorithms_PublicationFound() {
         Algorithm algorithm = new ClassicAlgorithm();
         algorithm.setName("testName");
         algorithm.setComputationModel(ComputationModel.CLASSIC);
@@ -173,13 +173,13 @@ public class PublicationServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void findImplementationsOfPublication_PublicationNotFound() {
+    void findLinkedImplementations_PublicationNotFound() {
         Assertions.assertThrows(NoSuchElementException.class, () ->
-                publicationService.findImplementationsOfPublication(UUID.randomUUID(), Pageable.unpaged()));
+                publicationService.findLinkedImplementations(UUID.randomUUID(), Pageable.unpaged()));
     }
 
-    @Test
-    void findImplementationsOfPublication_PublicationFound() {
+    // @Test
+    void findLinkedImplementations_PublicationFound() {
         // TODO
     }
 

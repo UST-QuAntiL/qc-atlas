@@ -112,28 +112,8 @@ public class PatternRelationServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void createPatternRelation_TypeInvalid() {
-        savedAlgorithm = algorithmService.create(algorithm);
-        relation1.setAlgorithm(savedAlgorithm);
-
-        relation1.setPatternRelationType(type);
-
-        assertThrows(NoSuchElementException.class, () -> patternRelationService.create(relation1));
-    }
-
-    @Test
     void createPatternRelation_AlgorithmNotFound() {
         algorithm.setId(UUID.randomUUID());
-        relation1.setAlgorithm(algorithm);
-
-        savedType = patternRelationTypeService.create(type);
-        relation1.setPatternRelationType(savedType);
-
-        assertThrows(NoSuchElementException.class, () -> patternRelationService.create(relation1));
-    }
-
-    @Test
-    void createPatternRelation_AlgorithmInvalid() {
         relation1.setAlgorithm(algorithm);
 
         savedType = patternRelationTypeService.create(type);

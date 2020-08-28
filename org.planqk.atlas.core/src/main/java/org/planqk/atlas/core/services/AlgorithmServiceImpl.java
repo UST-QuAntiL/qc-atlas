@@ -158,35 +158,35 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     }
 
     @Override
-    public Page<Publication> findPublications(@NonNull UUID algorithmId, @NonNull Pageable pageable) {
+    public Page<Publication> findLinkedPublications(@NonNull UUID algorithmId, @NonNull Pageable pageable) {
         ServiceUtils.throwIfNotExists(algorithmId, Algorithm.class, algorithmRepository);
 
         return publicationRepository.findPublicationsByAlgorithmId(algorithmId, pageable);
     }
 
     @Override
-    public Page<ProblemType> findProblemTypes(@NonNull UUID algorithmId, @NonNull Pageable pageable) {
+    public Page<ProblemType> findLinkedProblemTypes(@NonNull UUID algorithmId, @NonNull Pageable pageable) {
         ServiceUtils.throwIfNotExists(algorithmId, Algorithm.class, algorithmRepository);
 
         return problemTypeRepository.findProblemTypesByAlgorithmId(algorithmId, pageable);
     }
 
     @Override
-    public Page<ApplicationArea> findApplicationAreas(@NonNull UUID algorithmId, @NonNull Pageable pageable) {
+    public Page<ApplicationArea> findLinkedApplicationAreas(@NonNull UUID algorithmId, @NonNull Pageable pageable) {
         ServiceUtils.throwIfNotExists(algorithmId, Algorithm.class, algorithmRepository);
 
         return applicationAreaRepository.findApplicationAreasByAlgorithmId(algorithmId, pageable);
     }
 
     @Override
-    public Page<PatternRelation> findPatternRelations(@NonNull UUID algorithmId, @NonNull Pageable pageable) {
+    public Page<PatternRelation> findLinkedPatternRelations(@NonNull UUID algorithmId, @NonNull Pageable pageable) {
         ServiceUtils.throwIfNotExists(algorithmId, Algorithm.class, algorithmRepository);
 
         return patternRelationRepository.findByAlgorithmId(algorithmId, pageable);
     }
 
     @Override
-    public Page<AlgorithmRelation> findAlgorithmRelations(@NonNull UUID algorithmId, @NonNull Pageable pageable) {
+    public Page<AlgorithmRelation> findLinkedAlgorithmRelations(@NonNull UUID algorithmId, @NonNull Pageable pageable) {
         ServiceUtils.throwIfNotExists(algorithmId, Algorithm.class, algorithmRepository);
 
         return getAlgorithmRelations(algorithmId, pageable);

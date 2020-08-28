@@ -45,9 +45,9 @@ public interface PublicationService {
     @Transactional
     void delete(UUID publicationId);
 
-    Page<Algorithm> findAlgorithmsOfPublication(UUID publicationId, Pageable pageable);
+    Page<Algorithm> findLinkedAlgorithms(UUID publicationId, Pageable pageable);
 
-    Page<Implementation> findImplementationsOfPublication(UUID publicationId, Pageable pageable);
+    Page<Implementation> findLinkedImplementations(UUID publicationId, Pageable pageable);
 
     @Transactional
     void deletePublications(Set<UUID> publicationIds);

@@ -51,11 +51,6 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
     @Autowired
     private AlgorithmService algorithmService;
 
-    @Autowired
-    private ComputeResourcePropertyTypeRepository computeResourcePropertyTypeRepository;
-    @Autowired
-    private ComputeResourcePropertyRepository computeResourcePropertyRepository;
-
     @Test
     void createComputeResourceProperty() {
         var resourceType = getFullComputeResourcePropertyType();
@@ -87,7 +82,7 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         assertThrows(NoSuchElementException.class, () -> computeResourcePropertyService.findById(UUID.randomUUID()));
     }
 
-    @Test
+    // @Test
     void updateComputeResourcePropertyById_ElementFound() {
         // TODO
     }
@@ -144,7 +139,7 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
                 computeResourcePropertyService.findById(storedResource.getId()));
     }
 
-    @Test
+    // @Test
     void deleteComputeResourceProperty_ByImplementationDelete() {
         var resourceType = getFullComputeResourcePropertyType();
 
@@ -153,7 +148,7 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         // TODO
     }
 
-    @Test
+    // @Test
     void deleteComputeResourceProperty_ByComputeResourceDelete() {
         var resourceType = getFullComputeResourcePropertyType();
 
@@ -186,12 +181,12 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         assertThat(resources.size()).isEqualTo(1);
     }
 
-    @Test
+    // @Test
     void findComputeResourcePropertiesOfImplementation() {
         // TODO
     }
 
-    @Test
+    // @Test
     void findComputeResourcePropertiesOfComputeResource() {
         // TODO
     }
@@ -227,42 +222,42 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         });
     }
 
-    @Test
+    // @Test
     void addComputeResourcePropertyToAlgorithm_PropertyNotExists() {
         // TODO
     }
 
-    @Test
+    // @Test
     void addComputeResourcePropertyToAlgorithm_AlgorithmNotExists() {
         // TODO
     }
 
-    @Test
+    // @Test
     void addComputeResourcePropertyToImplementation_PropertyExists() {
         // TODO
     }
 
-    @Test
+    // @Test
     void addComputeResourcePropertyToImplementation_PropertyNotExists() {
         // TODO
     }
 
-    @Test
+    // @Test
     void addComputeResourcePropertyToImplementation_ImplementationNotExists() {
         // TODO
     }
 
-    @Test
+    // @Test
     void addComputeResourcePropertyToComputeResource_PropertyExists() {
         // TODO
     }
 
-    @Test
+    // @Test
     void addComputeResourcePropertyToComputeResource_PropertyNotExists() {
         // TODO
     }
 
-    @Test
+    // @Test
     void addComputeResourcePropertyToComputeResource_ComputeResourceNotExists() {
         // TODO
     }

@@ -136,8 +136,6 @@ public class ComputeResourceController {
     @DeleteMapping("/{computeResourceId}")
     public ResponseEntity<Void> deleteComputeResource(
             @PathVariable UUID computeResourceId) {
-        // only deletes if not used in any CloudService or SoftwarePlatform
-        // we have to decide if this is acceptable behavior - TODO
         computeResourceService.delete(computeResourceId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -178,7 +176,7 @@ public class ComputeResourceController {
     public ResponseEntity<CollectionModel<EntityModel<CloudServiceDto>>> getCloudServicesOfComputeResource(
             @PathVariable UUID computeResourceId,
             @Parameter(hidden = true) ListParameters listParameters) {
-        var cloudServices = computeResourceService.findLinkedComputeResources(computeResourceId, listParameters.getPageable());
+        var cloudServices = computeResourceService.findLinkedCloudServices(computeResourceId, listParameters.getPageable());
         return ResponseEntity.ok(cloudServiceAssembler.toModel(cloudServices));
     }
 

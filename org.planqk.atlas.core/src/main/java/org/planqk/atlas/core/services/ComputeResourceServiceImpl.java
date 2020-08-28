@@ -86,7 +86,7 @@ public class ComputeResourceServiceImpl implements ComputeResourceService {
     @Transactional
     public void delete(@NonNull UUID computeResourceId) {
         ServiceUtils.throwIfNotExists(computeResourceId, ComputeResource.class, computeResourceRepository);
-        // TODO discuss if this is still wanted behavior
+        // TODO only deletes if not used in any CloudService or SoftwarePlatform. Discuss if this is still wanted behavior
         if (cloudServiceRepository.countCloudServiceByComputeResource(computeResourceId) +
                 softwarePlatformRepository.countSoftwarePlatformByComputeResource(computeResourceId) > 0) {
             throw new EntityReferenceConstraintViolationException(
@@ -111,7 +111,7 @@ public class ComputeResourceServiceImpl implements ComputeResourceService {
     }
 
     @Override
-    public Page<CloudService> findLinkedComputeResources(@NonNull UUID computeResourceId, @NonNull Pageable pageable) {
+    public Page<CloudService> findLinkedCloudServices(@NonNull UUID computeResourceId, @NonNull Pageable pageable) {
         ServiceUtils.throwIfNotExists(computeResourceId, ComputeResource.class, computeResourceRepository);
         return cloudServiceRepository.findCloudServicesByComputeResourceId(computeResourceId, pageable);
     }

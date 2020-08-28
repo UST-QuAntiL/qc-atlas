@@ -47,13 +47,13 @@ public interface AlgorithmService {
     @Transactional
     void delete(UUID algorithmId);
 
-    Page<Publication> findPublications(UUID algorithmId, Pageable pageable);
+    Page<Publication> findLinkedPublications(UUID algorithmId, Pageable pageable);
 
-    Page<ProblemType> findProblemTypes(UUID algorithmId, Pageable pageable);
+    Page<ProblemType> findLinkedProblemTypes(UUID algorithmId, Pageable pageable);
 
-    Page<ApplicationArea> findApplicationAreas(UUID algorithmId, Pageable pageable);
+    Page<ApplicationArea> findLinkedApplicationAreas(UUID algorithmId, Pageable pageable);
 
-    Page<PatternRelation> findPatternRelations(UUID algorithmId, Pageable pageable);
+    Page<PatternRelation> findLinkedPatternRelations(UUID algorithmId, Pageable pageable);
 
-    Page<AlgorithmRelation> findAlgorithmRelations(UUID algorithmId, Pageable pageable);
+    Page<AlgorithmRelation> findLinkedAlgorithmRelations(UUID algorithmId, Pageable pageable);
 }

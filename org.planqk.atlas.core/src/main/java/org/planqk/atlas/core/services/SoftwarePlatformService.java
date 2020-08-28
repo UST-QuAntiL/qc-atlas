@@ -47,9 +47,9 @@ public interface SoftwarePlatformService {
     @Transactional
     void delete(UUID softwarePlatformId);
 
-    Page<Implementation> findImplementations(UUID softwarePlatformId, Pageable pageable);
+    Page<Implementation> findLinkedImplementations(UUID softwarePlatformId, Pageable pageable);
 
-    Page<CloudService> findCloudServices(UUID softwarePlatformId, Pageable pageable);
+    Page<CloudService> findLinkedCloudServices(UUID softwarePlatformId, Pageable pageable);
 
-    Page<ComputeResource> findComputeResources(UUID softwarePlatformId, Pageable pageable);
+    Page<ComputeResource> findLinkedComputeResources(UUID softwarePlatformId, Pageable pageable);
 }

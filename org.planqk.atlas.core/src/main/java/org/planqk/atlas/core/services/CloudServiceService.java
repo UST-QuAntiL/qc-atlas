@@ -48,5 +48,5 @@ public interface CloudServiceService {
 
     Page<SoftwarePlatform> findLinkedSoftwarePlatforms(UUID cloudServiceId, Pageable pageable);
 
-    Page<ComputeResource> findComputeResources(UUID cloudServiceId, Pageable pageable);
+    Page<ComputeResource> findLinkedComputeResources(UUID cloudServiceId, Pageable pageable);
 }

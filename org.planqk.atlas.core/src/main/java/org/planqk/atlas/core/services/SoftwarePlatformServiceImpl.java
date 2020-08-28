@@ -109,21 +109,21 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
     }
 
     @Override
-    public Page<Implementation> findImplementations(@NonNull UUID softwarePlatformId, @NonNull Pageable pageable) {
+    public Page<Implementation> findLinkedImplementations(@NonNull UUID softwarePlatformId, @NonNull Pageable pageable) {
         ServiceUtils.throwIfNotExists(softwarePlatformId, SoftwarePlatform.class, softwarePlatformRepository);
 
         return implementationRepository.findImplementationsBySoftwarePlatformId(softwarePlatformId, pageable);
     }
 
     @Override
-    public Page<CloudService> findCloudServices(@NonNull UUID softwarePlatformId, @NonNull Pageable pageable) {
+    public Page<CloudService> findLinkedCloudServices(@NonNull UUID softwarePlatformId, @NonNull Pageable pageable) {
         ServiceUtils.throwIfNotExists(softwarePlatformId, SoftwarePlatform.class, softwarePlatformRepository);
 
         return cloudServiceRepository.findCloudServicesBySoftwarePlatformId(softwarePlatformId, pageable);
     }
 
     @Override
-    public Page<ComputeResource> findComputeResources(@NonNull UUID softwarePlatformId, @NonNull Pageable pageable) {
+    public Page<ComputeResource> findLinkedComputeResources(@NonNull UUID softwarePlatformId, @NonNull Pageable pageable) {
         ServiceUtils.throwIfNotExists(softwarePlatformId, SoftwarePlatform.class, softwarePlatformRepository);
 
         return computeResourceRepository.findComputeResourcesBySoftwarePlatformId(softwarePlatformId, pageable);

@@ -138,7 +138,7 @@ public class PublicationController {
     public ResponseEntity<PagedModel<EntityModel<AlgorithmDto>>> getAlgorithmsOfPublication(
             @PathVariable UUID publicationId,
             @Parameter(hidden = true) ListParameters params) {
-        var publications = publicationService.findAlgorithmsOfPublication(publicationId, params.getPageable());
+        var publications = publicationService.findLinkedAlgorithms(publicationId, params.getPageable());
         return ResponseEntity.ok(algorithmAssembler.toModel(publications));
     }
 
@@ -152,7 +152,7 @@ public class PublicationController {
     public ResponseEntity<PagedModel<EntityModel<ImplementationDto>>> getImplementationsOfPublication(
             @PathVariable UUID publicationId,
             @Parameter(hidden = true) ListParameters params) {
-        var implementations = publicationService.findImplementationsOfPublication(publicationId, params.getPageable());
+        var implementations = publicationService.findLinkedImplementations(publicationId, params.getPageable());
         return ResponseEntity.ok(implementationAssembler.toModel(implementations));
     }
 }

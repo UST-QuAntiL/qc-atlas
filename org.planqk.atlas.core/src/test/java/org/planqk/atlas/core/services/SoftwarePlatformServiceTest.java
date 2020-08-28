@@ -81,7 +81,7 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
 
         linkingService.linkImplementationAndSoftwarePlatform(storedImplementation.getId(), storedSoftwarePlatform.getId());
 
-        Set<Implementation> implementations = softwarePlatformService.findImplementations(
+        Set<Implementation> implementations = softwarePlatformService.findLinkedImplementations(
                 storedSoftwarePlatform.getId(), Pageable.unpaged()).toSet();
 
         assertThat(implementations.size()).isEqualTo(1);
@@ -105,7 +105,7 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
 
         linkingService.linkSoftwarePlatformAndCloudService(storedSoftwarePlatform.getId(), storedCloudService.getId());
 
-        Set<CloudService> cloudServices = softwarePlatformService.findCloudServices(
+        Set<CloudService> cloudServices = softwarePlatformService.findLinkedCloudServices(
                 storedSoftwarePlatform.getId(), Pageable.unpaged()).toSet();
 
         assertThat(cloudServices.size()).isEqualTo(1);
@@ -127,7 +127,7 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
         linkingService.linkSoftwarePlatformAndComputeResource(
                 storedSoftwarePlatform.getId(), storedComputeResource.getId());
 
-        Set<ComputeResource> computeResources = softwarePlatformService.findComputeResources(
+        Set<ComputeResource> computeResources = softwarePlatformService.findLinkedComputeResources(
                 storedSoftwarePlatform.getId(), Pageable.unpaged()).toSet();
 
         assertThat(computeResources.size()).isEqualTo(1);
@@ -160,7 +160,7 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void findImplementations() {
+    void findLinkedImplementations() {
         SoftwarePlatform softwarePlatform = getFullSoftwarePlatform("softwarePlatformName");
         SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.create(softwarePlatform);
 
@@ -175,7 +175,7 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
             storedImplementations.add(storedImplementation);
             linkingService.linkImplementationAndSoftwarePlatform(storedImplementation.getId(), storedSoftwarePlatform.getId());
         }
-        Set<Implementation> implementations = softwarePlatformService.findImplementations(
+        Set<Implementation> implementations = softwarePlatformService.findLinkedImplementations(
                 storedSoftwarePlatform.getId(), Pageable.unpaged()).toSet();
 
         assertThat(implementations.size()).isEqualTo(10);
@@ -183,7 +183,7 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void findCloudServices() {
+    void findLinkedCloudServices() {
         SoftwarePlatform softwarePlatform = getFullSoftwarePlatform("softwarePlatformName");
         SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.create(softwarePlatform);
 
@@ -201,7 +201,7 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
             storedCloudServices.add(storedCloudService);
             linkingService.linkSoftwarePlatformAndCloudService(storedSoftwarePlatform.getId(), storedCloudService.getId());
         }
-        Set<CloudService> cloudServices = softwarePlatformService.findCloudServices(
+        Set<CloudService> cloudServices = softwarePlatformService.findLinkedCloudServices(
                 storedSoftwarePlatform.getId(), Pageable.unpaged()).toSet();
 
         assertThat(cloudServices.size()).isEqualTo(10);
@@ -209,7 +209,7 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void findComputeResources() {
+    void findLinkedComputeResources() {
         SoftwarePlatform softwarePlatform = getFullSoftwarePlatform("softwarePlatformName");
         SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.create(softwarePlatform);
 
@@ -224,7 +224,7 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
             storedComputeResources.add(storedComputeResource);
             linkingService.linkSoftwarePlatformAndComputeResource(storedSoftwarePlatform.getId(), storedComputeResource.getId());
         }
-        Set<ComputeResource> computeResources = softwarePlatformService.findComputeResources(
+        Set<ComputeResource> computeResources = softwarePlatformService.findLinkedComputeResources(
                 storedSoftwarePlatform.getId(), Pageable.unpaged()).toSet();
 
         assertThat(computeResources.size()).isEqualTo(10);
@@ -343,13 +343,13 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
 
         linkingService.linkImplementationAndSoftwarePlatform(storedImplementation.getId(), storedSoftwarePlatform.getId());
 
-        Set<Implementation> implementations = softwarePlatformService.findImplementations(
+        Set<Implementation> implementations = softwarePlatformService.findLinkedImplementations(
                 storedSoftwarePlatform.getId(), Pageable.unpaged()).toSet();
         assertThat(implementations.size()).isEqualTo(1);
 
         linkingService.unlinkImplementationAndSoftwarePlatform(storedImplementation.getId(), storedSoftwarePlatform.getId());
 
-        implementations = softwarePlatformService.findImplementations(
+        implementations = softwarePlatformService.findLinkedImplementations(
                 storedSoftwarePlatform.getId(), Pageable.unpaged()).toSet();
         assertThat(implementations.size()).isEqualTo(0);
     }
@@ -371,13 +371,13 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
 
         linkingService.linkSoftwarePlatformAndCloudService(storedSoftwarePlatform.getId(), storedCloudService.getId());
 
-        Set<CloudService> cloudServices = softwarePlatformService.findCloudServices(
+        Set<CloudService> cloudServices = softwarePlatformService.findLinkedCloudServices(
                 storedSoftwarePlatform.getId(), Pageable.unpaged()).toSet();
         assertThat(cloudServices.size()).isEqualTo(1);
 
         linkingService.unlinkSoftwarePlatformAndCloudService(storedSoftwarePlatform.getId(), storedCloudService.getId());
 
-        cloudServices = softwarePlatformService.findCloudServices(
+        cloudServices = softwarePlatformService.findLinkedCloudServices(
                 storedSoftwarePlatform.getId(), Pageable.unpaged()).toSet();
         assertThat(cloudServices.size()).isEqualTo(0);
     }
@@ -397,14 +397,14 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
         linkingService.linkSoftwarePlatformAndComputeResource(
                 storedSoftwarePlatform.getId(), storedComputeResource.getId());
 
-        Set<ComputeResource> computeResources = softwarePlatformService.findComputeResources(
+        Set<ComputeResource> computeResources = softwarePlatformService.findLinkedComputeResources(
                 storedSoftwarePlatform.getId(), Pageable.unpaged()).toSet();
         assertThat(computeResources.size()).isEqualTo(1);
 
         linkingService.unlinkSoftwarePlatformAndComputeResource(
                 storedSoftwarePlatform.getId(), storedComputeResource.getId());
 
-        computeResources = softwarePlatformService.findComputeResources(
+        computeResources = softwarePlatformService.findLinkedComputeResources(
                 storedSoftwarePlatform.getId(), Pageable.unpaged()).toSet();
         assertThat(computeResources.size()).isEqualTo(0);
     }

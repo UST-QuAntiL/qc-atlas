@@ -169,7 +169,7 @@ public class CloudServiceController {
     public ResponseEntity<PagedModel<EntityModel<ComputeResourceDto>>> getComputeResourcesOfCloudService(
             @PathVariable UUID cloudServiceId,
             @Parameter(hidden = true) ListParameters listParameters) {
-        var computeResources = cloudServiceService.findComputeResources(cloudServiceId, listParameters.getPageable());
+        var computeResources = cloudServiceService.findLinkedComputeResources(cloudServiceId, listParameters.getPageable());
         return ResponseEntity.ok(computeResourceAssembler.toModel(computeResources));
     }
 

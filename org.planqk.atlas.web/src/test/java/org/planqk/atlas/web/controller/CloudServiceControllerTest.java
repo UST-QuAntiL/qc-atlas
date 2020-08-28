@@ -287,7 +287,7 @@ public class CloudServiceControllerTest {
     @Test
     @SuppressWarnings("ConstantConditions")
     void listComputeResourcesOfCloudService_empty() throws Exception {
-        doReturn(Page.empty()).when(cloudServiceService).findComputeResources(any(), any());
+        doReturn(Page.empty()).when(cloudServiceService).findLinkedComputeResources(any(), any());
 
         var url = fromMethodCall(uriBuilder, on(CloudServiceController.class)
                 .getComputeResourcesOfCloudService(UUID.randomUUID(), null)).toUriString();
@@ -312,7 +312,7 @@ public class CloudServiceControllerTest {
             element.setId(UUID.randomUUID());
             inputList.add(element);
         }
-        doReturn(new PageImpl<>(inputList)).when(cloudServiceService).findComputeResources(any(), any());
+        doReturn(new PageImpl<>(inputList)).when(cloudServiceService).findLinkedComputeResources(any(), any());
 
         var url = fromMethodCall(uriBuilder, on(CloudServiceController.class)
                 .getComputeResourcesOfCloudService(UUID.randomUUID(), null)).toUriString();

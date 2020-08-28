@@ -46,22 +46,11 @@ public class PatternRelationServiceImpl implements PatternRelationService {
     private final PatternRelationTypeService patternRelationTypeService;
     private final AlgorithmRepository algorithmRepository;
 
-    // TODO Replace NoSuchElementException with an exception telling the user that the needed object is missing
     @Override
     @Transactional
     public PatternRelation create(@NonNull PatternRelation patternRelation) {
-        if (patternRelation.getAlgorithm() == null
-                || patternRelation.getAlgorithm().getId() == null) {
-            throw new NoSuchElementException("The given algorithm is invalid");
-        }
-
         patternRelation.setAlgorithm(
                 ServiceUtils.findById(patternRelation.getAlgorithm().getId(), Algorithm.class, algorithmRepository));
-
-        if (patternRelation.getPatternRelationType() == null
-                || patternRelation.getPatternRelationType().getId() == null) {
-            throw new NoSuchElementException("The given pattern relation type is invalid");
-        }
 
         patternRelation.setPatternRelationType(
                 patternRelationTypeService.findById(patternRelation.getPatternRelationType().getId()));

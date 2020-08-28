@@ -157,7 +157,7 @@ public class SoftwarePlatformController {
     public ResponseEntity<PagedModel<EntityModel<ImplementationDto>>> getImplementationsOfSoftwarePlatform(
             @PathVariable UUID softwarePlatformId,
             @Parameter(hidden = true) ListParameters listParameters) {
-        var implementations = softwarePlatformService.findImplementations(softwarePlatformId, listParameters.getPageable());
+        var implementations = softwarePlatformService.findLinkedImplementations(softwarePlatformId, listParameters.getPageable());
         return ResponseEntity.ok(implementationAssembler.toModel(implementations));
     }
 
@@ -171,7 +171,7 @@ public class SoftwarePlatformController {
     public ResponseEntity<PagedModel<EntityModel<CloudServiceDto>>> getCloudServicesOfSoftwarePlatform(
             @PathVariable UUID softwarePlatformId,
             @Parameter(hidden = true) ListParameters listParameters) {
-        var cloudServices = softwarePlatformService.findCloudServices(softwarePlatformId, listParameters.getPageable());
+        var cloudServices = softwarePlatformService.findLinkedCloudServices(softwarePlatformId, listParameters.getPageable());
         return ResponseEntity.ok(cloudServiceAssembler.toModel(cloudServices));
     }
 
@@ -214,7 +214,7 @@ public class SoftwarePlatformController {
     public ResponseEntity<PagedModel<EntityModel<ComputeResourceDto>>> getComputeResourcesOfSoftwarePlatform(
             @PathVariable UUID softwarePlatformId,
             @Parameter(hidden = true) ListParameters listParameters) {
-        var computeResources = softwarePlatformService.findComputeResources(softwarePlatformId, listParameters.getPageable());
+        var computeResources = softwarePlatformService.findLinkedComputeResources(softwarePlatformId, listParameters.getPageable());
         return ResponseEntity.ok(computeResourceAssembler.toModel(computeResources));
     }
 

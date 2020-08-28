@@ -23,6 +23,7 @@ import java.util.UUID;
 
 import org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException;
 import org.planqk.atlas.core.model.ComputeResourcePropertyType;
+import org.planqk.atlas.core.repository.ComputeResourcePropertyRepository;
 import org.planqk.atlas.core.repository.ComputeResourcePropertyTypeRepository;
 import org.planqk.atlas.core.util.ServiceUtils;
 
@@ -41,6 +42,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ComputeResourcePropertyTypeServiceImpl implements ComputeResourcePropertyTypeService {
 
     private final ComputeResourcePropertyTypeRepository computeResourcePropertyTypeRepository;
+    private final ComputeResourcePropertyRepository computeResourcePropertyRepository;
 
     @Override
     @Transactional
@@ -80,12 +82,12 @@ public class ComputeResourcePropertyTypeServiceImpl implements ComputeResourcePr
                 computeResourcePropertyTypeId,
                 ComputeResourcePropertyType.class,
                 computeResourcePropertyTypeRepository);
-        // TODO Check if it works as intended!
-        try {
-            this.computeResourcePropertyTypeRepository.deleteById(computeResourcePropertyTypeId);
-        } catch (DataIntegrityViolationException e) {
+
+        if (computeResourcePropertyRepository.countByComputeResourcePropertyTypeId(computeResourcePropertyTypeId) > 0) {
             throw new EntityReferenceConstraintViolationException("ComputeResourcePropertyType with ID \""
-                    + computeResourcePropertyTypeId + "\" cannot be deleted, because it is still in use", e);
+                    + computeResourcePropertyTypeId + "\" cannot be deleted, because it is still in use");
         }
+
+        this.computeResourcePropertyTypeRepository.deleteById(computeResourcePropertyTypeId);
     }
 }

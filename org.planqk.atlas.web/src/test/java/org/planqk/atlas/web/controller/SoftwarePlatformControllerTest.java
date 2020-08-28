@@ -384,7 +384,7 @@ public class SoftwarePlatformControllerTest {
     @Test
     @SuppressWarnings("ConstantConditions")
     void listImplementations_returnNotFound() throws Exception {
-        doThrow(new NoSuchElementException()).when(softwarePlatformService).findImplementations(any(), any());
+        doThrow(new NoSuchElementException()).when(softwarePlatformService).findLinkedImplementations(any(), any());
 
         mockMvc.perform(
                 get(
@@ -401,7 +401,7 @@ public class SoftwarePlatformControllerTest {
     @Test
     @SuppressWarnings("ConstantConditions")
     void listCloudServices_returnNotFound() throws Exception {
-        doThrow(new NoSuchElementException()).when(softwarePlatformService).findCloudServices(any(), any());
+        doThrow(new NoSuchElementException()).when(softwarePlatformService).findLinkedCloudServices(any(), any());
 
         mockMvc.perform(
                 get(
@@ -418,7 +418,7 @@ public class SoftwarePlatformControllerTest {
     @Test
     @SuppressWarnings("ConstantConditions")
     void listComputeResources_returnNotFound() throws Exception {
-        doThrow(new NoSuchElementException()).when(softwarePlatformService).findComputeResources(any(), any());
+        doThrow(new NoSuchElementException()).when(softwarePlatformService).findLinkedComputeResources(any(), any());
 
         mockMvc.perform(
                 get(
@@ -435,7 +435,7 @@ public class SoftwarePlatformControllerTest {
     @Test
     @SuppressWarnings("ConstantConditions")
     void listImplementations_empty() throws Exception {
-        doReturn(Page.empty()).when(softwarePlatformService).findImplementations(any(), any());
+        doReturn(Page.empty()).when(softwarePlatformService).findLinkedImplementations(any(), any());
 
         var mvcResult = mockMvc.perform(
                 get(
@@ -457,7 +457,7 @@ public class SoftwarePlatformControllerTest {
     @Test
     @SuppressWarnings("ConstantConditions")
     void listCloudServices_empty() throws Exception {
-        doReturn(Page.empty()).when(softwarePlatformService).findCloudServices(any(), any());
+        doReturn(Page.empty()).when(softwarePlatformService).findLinkedCloudServices(any(), any());
 
         var mvcResult = mockMvc.perform(
                 get(
@@ -479,7 +479,7 @@ public class SoftwarePlatformControllerTest {
     @Test
     @SuppressWarnings("ConstantConditions")
     void listComputeResources_empty() throws Exception {
-        doReturn(Page.empty()).when(softwarePlatformService).findComputeResources(any(), any());
+        doReturn(Page.empty()).when(softwarePlatformService).findLinkedComputeResources(any(), any());
 
         var mvcResult = mockMvc.perform(
                 get(
@@ -511,7 +511,7 @@ public class SoftwarePlatformControllerTest {
             element.setId(UUID.randomUUID());
             inputList.add(element);
         }
-        doReturn(new PageImpl<>(inputList)).when(softwarePlatformService).findImplementations(any(), any());
+        doReturn(new PageImpl<>(inputList)).when(softwarePlatformService).findLinkedImplementations(any(), any());
 
         var mvcResult = mockMvc.perform(
                 get(
@@ -546,7 +546,7 @@ public class SoftwarePlatformControllerTest {
             element.setId(UUID.randomUUID());
             inputList.add(element);
         }
-        doReturn(new PageImpl<>(inputList)).when(softwarePlatformService).findCloudServices(any(), any());
+        doReturn(new PageImpl<>(inputList)).when(softwarePlatformService).findLinkedCloudServices(any(), any());
 
         var mvcResult = mockMvc.perform(
                 get(
@@ -581,7 +581,7 @@ public class SoftwarePlatformControllerTest {
             element.setId(UUID.randomUUID());
             inputList.add(element);
         }
-        doReturn(new PageImpl<>(inputList)).when(softwarePlatformService).findComputeResources(any(), any());
+        doReturn(new PageImpl<>(inputList)).when(softwarePlatformService).findLinkedComputeResources(any(), any());
 
         var mvcResult = mockMvc.perform(
                 get(

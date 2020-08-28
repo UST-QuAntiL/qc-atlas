@@ -175,7 +175,7 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
                 computeResourceService.findById(storedComputeResource.getId()));
     }
 
-    @Test
+    // @Test
     void deleteComputeResource_ElementNotFound() {
         // TODO
     }

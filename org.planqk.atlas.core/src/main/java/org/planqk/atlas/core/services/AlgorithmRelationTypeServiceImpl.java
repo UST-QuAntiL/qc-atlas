@@ -75,8 +75,8 @@ public class AlgorithmRelationTypeServiceImpl implements AlgorithmRelationTypeSe
         ServiceUtils.throwIfNotExists(algorithmRelationTypeId, AlgorithmRelationType.class, algorithmRelationTypeRepository);
 
         if (algorithmRelationRepository.countByAlgorithmRelationTypeId(algorithmRelationTypeId) > 0) {
-            throw new EntityReferenceConstraintViolationException(
-                    "Cannot delete AlgorithmRelationType since it is used by existing AlgorithmRelations.");
+            throw new EntityReferenceConstraintViolationException("AlgorithmRelationType with ID \""
+                    + algorithmRelationTypeId + "\" cannot be deleted, because it is still in use");
         }
 
         algorithmRelationTypeRepository.deleteById(algorithmRelationTypeId);

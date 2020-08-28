@@ -230,7 +230,7 @@ public class AlgorithmController {
     public ResponseEntity<PagedModel<EntityModel<PublicationDto>>> getPublicationsOfAlgorithm(
             @PathVariable UUID algorithmId,
             @Parameter(hidden = true) ListParameters listParameters) {
-        Page<Publication> publications = algorithmService.findPublications(algorithmId, listParameters.getPageable());
+        Page<Publication> publications = algorithmService.findLinkedPublications(algorithmId, listParameters.getPageable());
         return ResponseEntity.ok(publicationAssembler.toModel(publications));
     }
 
@@ -275,7 +275,7 @@ public class AlgorithmController {
     public ResponseEntity<PagedModel<EntityModel<ProblemTypeDto>>> getProblemTypesOfAlgorithm(
             @PathVariable UUID algorithmId,
             @Parameter(hidden = true) ListParameters listParameters) {
-        Page<ProblemType> problemTypes = algorithmService.findProblemTypes(algorithmId, listParameters.getPageable());
+        Page<ProblemType> problemTypes = algorithmService.findLinkedProblemTypes(algorithmId, listParameters.getPageable());
         return ResponseEntity.ok(problemTypeAssembler.toModel(problemTypes));
     }
 
@@ -321,7 +321,7 @@ public class AlgorithmController {
     public ResponseEntity<PagedModel<EntityModel<ApplicationAreaDto>>> getApplicationAreasOfAlgorithm(
             @PathVariable UUID algorithmId,
             @Parameter(hidden = true) ListParameters listParameters) {
-        Page<ApplicationArea> applicationAreas = algorithmService.findApplicationAreas(algorithmId, listParameters.getPageable());
+        Page<ApplicationArea> applicationAreas = algorithmService.findLinkedApplicationAreas(algorithmId, listParameters.getPageable());
         return ResponseEntity.ok(applicationAreaAssembler.toModel(applicationAreas));
     }
 
@@ -367,7 +367,7 @@ public class AlgorithmController {
     public ResponseEntity<PagedModel<EntityModel<PatternRelationDto>>> getPatternRelationsOfAlgorithm(
             @PathVariable UUID algorithmId,
             @Parameter(hidden = true) ListParameters listParameters) {
-        Page<PatternRelation> patternRelations = algorithmService.findPatternRelations(algorithmId, listParameters.getPageable());
+        Page<PatternRelation> patternRelations = algorithmService.findLinkedPatternRelations(algorithmId, listParameters.getPageable());
         return ResponseEntity.ok(patternRelationAssembler.toModel(patternRelations));
     }
 
@@ -412,7 +412,7 @@ public class AlgorithmController {
     public ResponseEntity<PagedModel<EntityModel<AlgorithmRelationDto>>> getAlgorithmRelationsOfAlgorithm(
             @PathVariable UUID algorithmId,
             @Parameter(hidden = true) ListParameters listParameters) {
-        Page<AlgorithmRelation> algorithmRelations = algorithmService.findAlgorithmRelations(algorithmId, listParameters.getPageable());
+        Page<AlgorithmRelation> algorithmRelations = algorithmService.findLinkedAlgorithmRelations(algorithmId, listParameters.getPageable());
         return ResponseEntity.ok(algorithmRelationAssembler.toModel(algorithmRelations));
     }
 

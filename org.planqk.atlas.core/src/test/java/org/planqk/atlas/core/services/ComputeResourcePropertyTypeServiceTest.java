@@ -69,7 +69,7 @@ public class ComputeResourcePropertyTypeServiceTest extends AtlasDatabaseTestBas
         assertThrows(NoSuchElementException.class, () -> computeResourcePropertyTypeService.findById(UUID.randomUUID()));
     }
 
-    @Test
+    // @Test
     void updateComputeResourcePropertyType_ElementFound() {
         // TODO
     }
@@ -95,7 +95,7 @@ public class ComputeResourcePropertyTypeServiceTest extends AtlasDatabaseTestBas
                 computeResourcePropertyTypeService.findById(storedType.getId()));
     }
 
-    @Test
+    // @Test
     void deleteComputeResourcePropertyType_ElementNotFound() {
         // TODO
     }

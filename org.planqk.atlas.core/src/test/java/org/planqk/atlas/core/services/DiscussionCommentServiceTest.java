@@ -96,7 +96,7 @@ public class DiscussionCommentServiceTest extends AtlasDatabaseTestBase {
         assertThat(discussionCommentPage.getTotalElements()).isEqualTo(2);
     }
 
-    @Test
+    // @Test
     void findDiscussionCommentById_ElementFound() {
         // TODO
     }
@@ -134,7 +134,7 @@ public class DiscussionCommentServiceTest extends AtlasDatabaseTestBase {
         });
     }
 
-    @Test
+    // @Test
     void deleteDiscussionComment_ElementNotFound() {
         // TODO
     }

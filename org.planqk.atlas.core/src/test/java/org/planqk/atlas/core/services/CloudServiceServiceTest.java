@@ -72,7 +72,7 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
         linkingService.linkCloudServiceAndComputeResource(
                 storedCloudService.getId(), storedComputeResource.getId());
 
-        Set<ComputeResource> computeResources = cloudServiceService.findComputeResources(
+        Set<ComputeResource> computeResources = cloudServiceService.findLinkedComputeResources(
                 storedCloudService.getId(), Pageable.unpaged()).toSet();
 
         assertThat(computeResources.size()).isEqualTo(1);
@@ -198,14 +198,14 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
         linkingService.linkCloudServiceAndComputeResource(
                 storedCloudService.getId(), storedComputeResource.getId());
 
-        Set<ComputeResource> computeResources = cloudServiceService.findComputeResources(
+        Set<ComputeResource> computeResources = cloudServiceService.findLinkedComputeResources(
                 storedCloudService.getId(), Pageable.unpaged()).toSet();
         assertThat(computeResources.size()).isEqualTo(1);
 
         linkingService.unlinkCloudServiceAndComputeResource(
                 storedCloudService.getId(), storedComputeResource.getId());
 
-        computeResources = cloudServiceService.findComputeResources(
+        computeResources = cloudServiceService.findLinkedComputeResources(
                 storedCloudService.getId(), Pageable.unpaged()).toSet();
         assertThat(computeResources.size()).isEqualTo(0);
     }

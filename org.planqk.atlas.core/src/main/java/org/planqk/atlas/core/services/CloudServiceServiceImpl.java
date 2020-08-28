@@ -98,9 +98,8 @@ public class CloudServiceServiceImpl implements CloudServiceService {
                 computeResource -> computeResource.removeCloudService(cloudService));
     }
 
-    // TODO Use consistent name!
     @Override
-    public Page<ComputeResource> findComputeResources(@NonNull UUID cloudServiceId, @NonNull Pageable pageable) {
+    public Page<ComputeResource> findLinkedComputeResources(@NonNull UUID cloudServiceId, @NonNull Pageable pageable) {
         ServiceUtils.throwIfNotExists(cloudServiceId, CloudService.class, cloudServiceRepository);
         return computeResourceRepository.findComputeResourcesByCloudServiceId(cloudServiceId, pageable);
     }

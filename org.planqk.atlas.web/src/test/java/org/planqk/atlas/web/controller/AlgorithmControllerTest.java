@@ -493,7 +493,7 @@ public class AlgorithmControllerTest {
     @Test
     public void getPatternRelations_returnTwo() throws Exception {
         initializeAlgorithms();
-        when(algorithmService.findPatternRelations(any(), any()))
+        when(algorithmService.findLinkedPatternRelations(any(), any()))
                 .thenReturn(new PageImpl<>(new ArrayList<>(algorithm1.getRelatedPatterns())));
 
         var url = fromMethodCall(uriBuilder, on(AlgorithmController.class)
@@ -511,7 +511,7 @@ public class AlgorithmControllerTest {
     @Test
     public void getPatternRelations_returnNotFound() throws Exception {
         initializeAlgorithms();
-        when(algorithmService.findPatternRelations(any(), any()))
+        when(algorithmService.findLinkedPatternRelations(any(), any()))
                 .thenThrow(NoSuchElementException.class);
 
         var url = fromMethodCall(uriBuilder, on(AlgorithmController.class)
