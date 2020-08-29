@@ -44,12 +44,6 @@ public interface LinkingService {
     void unlinkAlgorithmAndApplicationArea(UUID algorithmId, UUID applicationAreaId);
 
     @Transactional
-    void linkAlgorithmAndPatternRelation(UUID algorithmId, UUID patternRelationId);
-
-    @Transactional
-    void unlinkAlgorithmAndPatternRelation(UUID algorithmId, UUID patternRelationId);
-
-    @Transactional
     void linkImplementationAndPublication(UUID implementationId, UUID publicationId);
 
     @Transactional

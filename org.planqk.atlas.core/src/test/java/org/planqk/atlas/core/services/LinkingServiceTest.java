@@ -222,26 +222,6 @@ public class LinkingServiceTest extends AtlasDatabaseTestBase {
                 linkingService.unlinkAlgorithmAndApplicationArea(algorithm.getId(), applicationArea.getId()));
     }
 
-    //@Test
-    void linkAlgorithmAndPatternRelation() {
-
-    }
-
-    //@Test
-    void linkAlgorithmAndPatternRelation_AlreadyLinked() {
-
-    }
-
-    //@Test
-    void unlinkAlgorithmAndPatternRelation() {
-
-    }
-
-    //@Test
-    void unlinkAlgorithmAndPatternRelation_NotLinked() {
-
-    }
-
     @Test
     void linkImplementationAndPublication() {
         Publication publication = getCreatedPublication();

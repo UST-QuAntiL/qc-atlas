@@ -147,34 +147,6 @@ public class LinkingServiceImpl implements LinkingService {
 
     @Override
     @Transactional
-    public void linkAlgorithmAndPatternRelation(@NonNull UUID algorithmId, @NonNull UUID patternRelationId) {
-        Algorithm algorithm = algorithmService.findById(algorithmId);
-        PatternRelation patternRelation = patternRelationService.findById(patternRelationId);
-
-        if (algorithm.getRelatedPatterns().contains(patternRelation)) {
-            throw new EntityReferenceConstraintViolationException("Algorithm with ID \"" + algorithmId +
-                    "\" and PatternRelation with ID \"" + patternRelationId + "\" are already linked");
-        }
-
-        algorithm.getRelatedPatterns().add(patternRelation);
-    }
-
-    @Override
-    @Transactional
-    public void unlinkAlgorithmAndPatternRelation(@NonNull UUID algorithmId, @NonNull UUID patternRelationId) {
-        Algorithm algorithm = algorithmService.findById(algorithmId);
-        PatternRelation patternRelation = patternRelationService.findById(patternRelationId);
-
-        if (!algorithm.getRelatedPatterns().contains(patternRelation)) {
-            throw new EntityReferenceConstraintViolationException("Algorithm with ID \"" + algorithmId +
-                    "\" and PatternRelation with ID \"" + patternRelationId + "\" are not linked");
-        }
-
-        algorithm.getRelatedPatterns().remove(patternRelation);
-    }
-
-    @Override
-    @Transactional
     public void linkImplementationAndPublication(@NonNull UUID implementationId, @NonNull UUID publicationId) {
         Implementation implementation = implementationService.findById(implementationId);
         Publication publication = publicationService.findById(publicationId);

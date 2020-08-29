@@ -175,6 +175,20 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     }
 
     @Override
+    public Page<AlgorithmRelation> findLinkedAlgorithmRelations(@NonNull UUID algorithmId, @NonNull Pageable pageable) {
+        ServiceUtils.throwIfNotExists(algorithmId, Algorithm.class, algorithmRepository);
+
+        return getAlgorithmRelations(algorithmId, pageable);
+    }
+
+    @Override
+    public Page<PatternRelation> findLinkedPatternRelations(@NonNull UUID algorithmId, @NonNull Pageable pageable) {
+        ServiceUtils.throwIfNotExists(algorithmId, Algorithm.class, algorithmRepository);
+
+        return patternRelationRepository.findByAlgorithmId(algorithmId, pageable);
+    }
+
+    @Override
     public Page<Publication> findLinkedPublications(@NonNull UUID algorithmId, @NonNull Pageable pageable) {
         ServiceUtils.throwIfNotExists(algorithmId, Algorithm.class, algorithmRepository);
 
@@ -194,21 +208,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 
         return applicationAreaRepository.findApplicationAreasByAlgorithmId(algorithmId, pageable);
     }
-
-    @Override
-    public Page<PatternRelation> findLinkedPatternRelations(@NonNull UUID algorithmId, @NonNull Pageable pageable) {
-        ServiceUtils.throwIfNotExists(algorithmId, Algorithm.class, algorithmRepository);
-
-        return patternRelationRepository.findByAlgorithmId(algorithmId, pageable);
-    }
-
-    @Override
-    public Page<AlgorithmRelation> findLinkedAlgorithmRelations(@NonNull UUID algorithmId, @NonNull Pageable pageable) {
-        ServiceUtils.throwIfNotExists(algorithmId, Algorithm.class, algorithmRepository);
-
-        return getAlgorithmRelations(algorithmId, pageable);
-    }
-
+    
     private Page<AlgorithmRelation> getAlgorithmRelations(@NonNull UUID algorithmId, @NonNull Pageable pageable) {
         return algorithmRelationRepository.findBySourceAlgorithmIdOrTargetAlgorithmId(algorithmId, algorithmId, pageable);
     }

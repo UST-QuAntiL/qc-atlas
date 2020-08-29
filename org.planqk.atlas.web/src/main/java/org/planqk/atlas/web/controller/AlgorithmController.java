@@ -360,51 +360,6 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Algorithm or Pattern Type doesn't exist in the database")
-    }, description = "Get pattern relations for an algorithms.")
-    @ListParametersDoc
-    @GetMapping("/{algorithmId}/" + Constants.PATTERN_RELATIONS)
-    public ResponseEntity<PagedModel<EntityModel<PatternRelationDto>>> getPatternRelationsOfAlgorithm(
-            @PathVariable UUID algorithmId,
-            @Parameter(hidden = true) ListParameters listParameters) {
-        Page<PatternRelation> patternRelations = algorithmService.findLinkedPatternRelations(algorithmId, listParameters.getPageable());
-        return ResponseEntity.ok(patternRelationAssembler.toModel(patternRelations));
-    }
-
-    @Operation(responses = {
-            @ApiResponse(responseCode = "204"),
-            @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404",
-                    description = "Algorithm or pattern type doesn't exist in the database")
-    }, description = "Add a Pattern Relation from this Algorithm to a given Pattern. " +
-            "Custom ID will be ignored. For pattern relation type only ID is required, " +
-            "other pattern relation type attributes will not change.")
-    @PostMapping("/{algorithmId}/" + Constants.PATTERN_RELATIONS + "{patternRelationId}")
-    public ResponseEntity<Void> linkAlgorithmAndPatternRelation(
-            @PathVariable UUID algorithmId,
-            @PathVariable UUID patternRelationId) {
-        linkingService.linkAlgorithmAndPatternRelation(algorithmId, patternRelationId);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-
-    @Operation(responses = {
-            @ApiResponse(responseCode = "204"),
-            @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404",
-                    description = "Pattern relation or algorithm with given id doesn't exist")
-    }, description = "")
-    @DeleteMapping("/{algorithmId}/" + Constants.PATTERN_RELATIONS + "/{patternRelationId}")
-    public ResponseEntity<Void> unlinkAlgorithmAndPatternRelation(
-            @PathVariable UUID algorithmId,
-            @PathVariable UUID patternRelationId) {
-        linkingService.unlinkAlgorithmAndPatternRelation(algorithmId, patternRelationId);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-
-    @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404",
                     description = "Algorithm with the given id doesn't exist")
     }, description = "Retrieve all relations for an algorithm.")
     @ListParametersDoc
@@ -473,5 +428,20 @@ public class AlgorithmController {
         var createdComputeResourceProperty = computeResourcePropertyService
                 .addComputeResourcePropertyToAlgorithm(algorithmId, computeResourceProperty);
         return new ResponseEntity<>(computeResourcePropertyAssembler.toModel(createdComputeResourceProperty), HttpStatus.CREATED);
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404",
+                    description = "Algorithm or Pattern Type doesn't exist in the database")
+    }, description = "Get pattern relations for an algorithms.")
+    @ListParametersDoc
+    @GetMapping("/{algorithmId}/" + Constants.PATTERN_RELATIONS)
+    public ResponseEntity<PagedModel<EntityModel<PatternRelationDto>>> getPatternRelationsOfAlgorithm(
+            @PathVariable UUID algorithmId,
+            @Parameter(hidden = true) ListParameters listParameters) {
+        Page<PatternRelation> patternRelations = algorithmService.findLinkedPatternRelations(algorithmId, listParameters.getPageable());
+        return ResponseEntity.ok(patternRelationAssembler.toModel(patternRelations));
     }
 }
