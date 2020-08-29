@@ -19,15 +19,13 @@
 
 package org.planqk.atlas.core.util;
 
-import java.net.URL;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.model.CloudService;
 import org.planqk.atlas.core.model.ComputeResource;
+import org.planqk.atlas.core.model.ComputeResourceProperty;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.model.SoftwarePlatform;
@@ -35,10 +33,6 @@ import org.planqk.atlas.core.model.SoftwarePlatform;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ServiceTestUtils {
-
-    public static <T> HashSet<T> hashSetOf(T... elems) {
-        return new HashSet<T>(Arrays.asList(elems));
-    }
 
     public static void assertCollectionEquality(Collection<?> collection1, Collection<?> collection2) {
         assertThat(collection1.containsAll(collection2)).isTrue();
@@ -110,5 +104,18 @@ public class ServiceTestUtils {
         assertThat(computeResource1.getQuantumComputationModel()).isEqualTo(computeResource2.getQuantumComputationModel());
         assertThat(computeResource1.getTechnology()).isEqualTo(computeResource2.getTechnology());
         assertThat(computeResource1.getVendor()).isEqualTo(computeResource2.getVendor());
+    }
+
+    public static void assertComputeResourcePropertyEquality(
+            ComputeResourceProperty computeResourceProperty1, ComputeResourceProperty computeResourceProperty2) {
+        assertThat(computeResourceProperty1.getValue()).isEqualTo(computeResourceProperty2.getValue());
+        assertThat(computeResourceProperty1.getComputeResourcePropertyType().getId())
+                .isEqualTo(computeResourceProperty2.getComputeResourcePropertyType().getId());
+        assertThat(computeResourceProperty1.getComputeResourcePropertyType().getName())
+                .isEqualTo(computeResourceProperty2.getComputeResourcePropertyType().getName());
+        assertThat(computeResourceProperty1.getComputeResourcePropertyType().getDescription())
+                .isEqualTo(computeResourceProperty2.getComputeResourcePropertyType().getDescription());
+        assertThat(computeResourceProperty1.getComputeResourcePropertyType().getDatatype())
+                .isEqualTo(computeResourceProperty2.getComputeResourcePropertyType().getDatatype());
     }
 }

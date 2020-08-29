@@ -30,6 +30,7 @@ import org.planqk.atlas.core.model.ClassicImplementation;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
+import org.planqk.atlas.core.util.ServiceTestUtils;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -73,8 +74,7 @@ public class TagServiceTest extends AtlasDatabaseTestBase {
 
         var allPersistedTags = tagService.findAll(Pageable.unpaged()).getContent();
 
-        assertThat(allPersistedTags.containsAll(tags)).isTrue();
-        assertThat(tags.containsAll(allPersistedTags)).isTrue();
+        ServiceTestUtils.assertCollectionEquality(allPersistedTags, tags);
     }
 
     @Test
@@ -91,15 +91,12 @@ public class TagServiceTest extends AtlasDatabaseTestBase {
                 .collect(Collectors.toSet());
         var searchedTags = tagService.findAllByContent("1", Pageable.unpaged()).getContent();
 
-        assertThat(filteredTags.containsAll(searchedTags)).isTrue();
-        assertThat(searchedTags.containsAll(filteredTags)).isTrue();
+        ServiceTestUtils.assertCollectionEquality(filteredTags, searchedTags);
     }
 
     @Test
     void findTagByValue_ElementNotFound() {
-        assertThrows(NoSuchElementException.class, () -> {
-            tagService.findByValue(UUID.randomUUID().toString());
-        });
+        assertThrows(NoSuchElementException.class, () -> tagService.findByValue(UUID.randomUUID().toString()));
     }
 
     @Test

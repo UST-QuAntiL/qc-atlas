@@ -22,12 +22,17 @@ package org.planqk.atlas.core.services;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
+import org.planqk.atlas.core.exceptions.InvalidResourceTypeValueException;
 import org.planqk.atlas.core.model.ComputationModel;
+import org.planqk.atlas.core.model.ComputeResource;
 import org.planqk.atlas.core.model.ComputeResourceProperty;
 import org.planqk.atlas.core.model.ComputeResourcePropertyDataType;
 import org.planqk.atlas.core.model.ComputeResourcePropertyType;
 import org.planqk.atlas.core.model.QuantumAlgorithm;
+import org.planqk.atlas.core.model.QuantumComputationModel;
+import org.planqk.atlas.core.model.QuantumImplementation;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
+import org.planqk.atlas.core.util.ServiceTestUtils;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -47,22 +52,27 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
     private ComputeResourcePropertyTypeService computeResourcePropertyTypeService;
     @Autowired
     private AlgorithmService algorithmService;
+    @Autowired
+    private ImplementationService implementationService;
+    @Autowired
+    private ComputeResourceService computeResourceService;
 
     @Test
     void createComputeResourceProperty() {
-        var resourceType = getFullComputeResourcePropertyType();
+        var resourceType = getCreatedComputeResourcePropertyType();
 
         var resource = getFullComputeResourceProperty("0.1");
         resource.setComputeResourcePropertyType(resourceType);
 
         var storedResource = computeResourcePropertyService.create(resource);
 
-        assertComputeResourcePropertyEquality(storedResource, resource);
+        assertThat(storedResource.getId()).isNotNull();
+        ServiceTestUtils.assertComputeResourcePropertyEquality(storedResource, resource);
     }
 
     @Test
     void findComputeResourcePropertyById_ElementFound() {
-        var resourceType = getFullComputeResourcePropertyType();
+        var resourceType = getCreatedComputeResourcePropertyType();
 
         var resource = getFullComputeResourceProperty("0.1");
         resource.setComputeResourcePropertyType(resourceType);
@@ -71,7 +81,8 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
 
         storedResource = computeResourcePropertyService.findById(storedResource.getId());
 
-        assertComputeResourcePropertyEquality(storedResource, resource);
+        assertThat(storedResource.getId()).isNotNull();
+        ServiceTestUtils.assertComputeResourcePropertyEquality(storedResource, resource);
     }
 
     @Test
@@ -79,24 +90,86 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         assertThrows(NoSuchElementException.class, () -> computeResourcePropertyService.findById(UUID.randomUUID()));
     }
 
-    // @Test
+    @Test
     void updateComputeResourcePropertyById_ElementFound() {
-        // TODO
+        var propertyType = getCreatedComputeResourcePropertyType();
+
+        var property = getFullComputeResourceProperty("0.1");
+        property.setComputeResourcePropertyType(propertyType);
+        var compareProperty = getFullComputeResourceProperty("0.1");
+        compareProperty.setComputeResourcePropertyType(propertyType);
+
+        var storedProperty = computeResourcePropertyService.create(property);
+
+        compareProperty.setId(storedProperty.getId());
+
+        var editedPropertyType = getCreatedComputeResourcePropertyType("editComputeResourcePropertyTypeName");
+        var editedValue = "0.5";
+        storedProperty.setComputeResourcePropertyType(editedPropertyType);
+        storedProperty.setValue(editedValue);
+
+        var editedProperty = computeResourcePropertyService.update(storedProperty);
+
+        assertThat(editedProperty.getId()).isEqualTo(compareProperty.getId());
+
+        assertThat(editedProperty.getValue()).isEqualTo(editedValue);
+        assertThat(editedProperty.getValue()).isNotEqualTo(compareProperty.getValue());
+
+        assertThat(editedProperty.getComputeResourcePropertyType().getId())
+                .isNotEqualTo(compareProperty.getComputeResourcePropertyType().getId());
+        assertThat(editedProperty.getComputeResourcePropertyType().getId()).isEqualTo(editedPropertyType.getId());
+
+        assertThat(editedProperty.getComputeResourcePropertyType().getName())
+                .isNotEqualTo(compareProperty.getComputeResourcePropertyType().getName());
+        assertThat(editedProperty.getComputeResourcePropertyType().getName()).isEqualTo(editedPropertyType.getName());
+
+        assertThat(editedProperty.getComputeResourcePropertyType().getDescription())
+                .isEqualTo(compareProperty.getComputeResourcePropertyType().getDescription());
+        assertThat(editedProperty.getComputeResourcePropertyType().getDatatype())
+                .isEqualTo(compareProperty.getComputeResourcePropertyType().getDatatype());
     }
 
-    // @Test
+    @Test
     void updateComputeResourcePropertyById_ValidationFail() {
-        // TODO
+        var propertyType = getCreatedComputeResourcePropertyType();
+
+        var property = getFullComputeResourceProperty("0.1");
+        property.setComputeResourcePropertyType(propertyType);
+
+        var storedProperty = computeResourcePropertyService.create(property);
+
+        var editedPropertyType = getCreatedComputeResourcePropertyType("editComputeResourcePropertyTypeName");
+        var editedValue = "0-5";
+        storedProperty.setComputeResourcePropertyType(editedPropertyType);
+        storedProperty.setValue(editedValue);
+
+        assertThrows(InvalidResourceTypeValueException.class, () ->
+                computeResourcePropertyService.update(storedProperty));
     }
 
-    // @Test
+    @Test
     void updateComputeResourcePropertyById_ValidationFailTypeNotFound() {
-        // TODO
+        var propertyType = getCreatedComputeResourcePropertyType();
+
+        var property = getFullComputeResourceProperty("0.1");
+        property.setComputeResourcePropertyType(propertyType);
+
+        var storedProperty = computeResourcePropertyService.create(property);
+
+        var editedPropertyType = new ComputeResourcePropertyType();
+        editedPropertyType.setName("editComputeResourcePropertyTypeName");
+        editedPropertyType.setId(UUID.randomUUID());
+        var editedValue = "0.5";
+        storedProperty.setComputeResourcePropertyType(editedPropertyType);
+        storedProperty.setValue(editedValue);
+
+        assertThrows(NoSuchElementException.class, () ->
+                computeResourcePropertyService.update(storedProperty));
     }
 
     @Test
     void updateComputeResourcePropertyById_ElementNotFound() {
-        var resourceType = getFullComputeResourcePropertyType();
+        var resourceType = getCreatedComputeResourcePropertyType();
         var resource = getFullComputeResourceProperty("0.1");
         resource.setComputeResourcePropertyType(resourceType);
         resource.setId(UUID.randomUUID());
@@ -105,7 +178,7 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
 
     @Test
     void deleteComputeResourceProperty_ElementFound() {
-        var resourceType = getFullComputeResourcePropertyType();
+        var resourceType = getCreatedComputeResourcePropertyType();
 
         var resource = getFullComputeResourceProperty("0.1");
         resource.setComputeResourcePropertyType(resourceType);
@@ -128,103 +201,128 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
 
     @Test
     void deleteComputeResourceProperty_ByAlgorithmDelete() {
-        var resourceType = getFullComputeResourcePropertyType();
+        var resourceType = getCreatedComputeResourcePropertyType();
+        QuantumAlgorithm algorithm = getCreatedQuantumAlgorithm("quantumAlgorithmName");
 
         var resource = getFullComputeResourceProperty("0.1");
         resource.setComputeResourcePropertyType(resourceType);
 
-        var algo = new QuantumAlgorithm();
-        algo.setNisqReady(true);
-        algo.setName("quantumAlgorithmName");
-        algo.setSpeedUp("speedUp");
-        algo.setComputationModel(ComputationModel.QUANTUM);
-        var storedAlgo = (QuantumAlgorithm) algorithmService.create(algo);
+        var storedResource = computeResourcePropertyService
+                .addComputeResourcePropertyToAlgorithm(algorithm.getId(), resource);
 
-        var storedResource = computeResourcePropertyService.addComputeResourcePropertyToAlgorithm(storedAlgo.getId(), resource);
+        assertDoesNotThrow(() -> computeResourcePropertyService.findById(storedResource.getId()));
 
-        algorithmService.delete(storedAlgo.getId());
+        algorithmService.delete(algorithm.getId());
 
         assertThrows(NoSuchElementException.class, () ->
                 computeResourcePropertyService.findById(storedResource.getId()));
     }
 
-    // @Test
+    @Test
     void deleteComputeResourceProperty_ByImplementationDelete() {
-        var resourceType = getFullComputeResourcePropertyType();
+        var resourceType = getCreatedComputeResourcePropertyType();
+        QuantumImplementation implementation = getCreatedQuantumImplementation("quantumImplementationName");
 
         var resource = getFullComputeResourceProperty("0.1");
         resource.setComputeResourcePropertyType(resourceType);
-        // TODO
+
+        var storedResource = computeResourcePropertyService
+                .addComputeResourcePropertyToImplementation(implementation.getId(), resource);
+
+        assertDoesNotThrow(() -> computeResourcePropertyService.findById(storedResource.getId()));
+
+        implementationService.delete(implementation.getId());
+
+        assertThrows(NoSuchElementException.class, () ->
+                computeResourcePropertyService.findById(storedResource.getId()));
     }
 
-    // @Test
+    @Test
     void deleteComputeResourceProperty_ByComputeResourceDelete() {
-        var resourceType = getFullComputeResourcePropertyType();
+        var resourceType = getCreatedComputeResourcePropertyType();
+        ComputeResource computeResource = getCreatedComputeResource("computeResourceName");
 
         var resource = getFullComputeResourceProperty("0.1");
         resource.setComputeResourcePropertyType(resourceType);
-        // TODO
+
+        var storedResource = computeResourcePropertyService
+                .addComputeResourcePropertyToComputeResource(computeResource.getId(), resource);
+
+        assertDoesNotThrow(() -> computeResourcePropertyService.findById(storedResource.getId()));
+
+        computeResourceService.delete(computeResource.getId());
+
+        assertThrows(NoSuchElementException.class, () ->
+                computeResourcePropertyService.findById(storedResource.getId()));
     }
 
     @Test
     void findComputeResourcePropertiesOfAlgorithm() {
-        var resourceType = getFullComputeResourcePropertyType();
+        var resourceType = getCreatedComputeResourcePropertyType();
+        QuantumAlgorithm algorithm = getCreatedQuantumAlgorithm("quantumAlgorithmName");
 
         var resource = getFullComputeResourceProperty("0.1");
         resource.setComputeResourcePropertyType(resourceType);
 
-        var storedResource = computeResourcePropertyService.create(resource);
-
-        var algo = new QuantumAlgorithm();
-        algo.setNisqReady(true);
-        algo.setName("quantumAlgorithmName");
-        algo.setSpeedUp("speedUp");
-        algo.setComputationModel(ComputationModel.QUANTUM);
-        var storedAlgo = (QuantumAlgorithm) algorithmService.create(algo);
-
-        computeResourcePropertyService.addComputeResourcePropertyToAlgorithm(storedAlgo.getId(), storedResource);
+        computeResourcePropertyService.addComputeResourcePropertyToAlgorithm(algorithm.getId(), resource);
 
         var resources = computeResourcePropertyService.findComputeResourcePropertiesOfAlgorithm(
-                storedAlgo.getId(), Pageable.unpaged()).getContent();
+                algorithm.getId(), Pageable.unpaged()).getContent();
 
         assertThat(resources.size()).isEqualTo(1);
     }
 
-    // @Test
+    @Test
     void findComputeResourcePropertiesOfImplementation() {
-        // TODO
+        var resourceType = getCreatedComputeResourcePropertyType();
+        QuantumImplementation implementation = getCreatedQuantumImplementation("quantumImplementationName");
+
+        var resource = getFullComputeResourceProperty("0.1");
+        resource.setComputeResourcePropertyType(resourceType);
+
+        computeResourcePropertyService.addComputeResourcePropertyToImplementation(implementation.getId(), resource);
+
+        var resources = computeResourcePropertyService.findComputeResourcePropertiesOfImplementation(
+                implementation.getId(), Pageable.unpaged()).getContent();
+
+        assertThat(resources.size()).isEqualTo(1);
     }
 
-    // @Test
+    @Test
     void findComputeResourcePropertiesOfComputeResource() {
-        // TODO
+        var resourceType = getCreatedComputeResourcePropertyType();
+        ComputeResource computeResource = getCreatedComputeResource("computeResourceName");
+
+        var resource = getFullComputeResourceProperty("0.1");
+        resource.setComputeResourcePropertyType(resourceType);
+
+        computeResourcePropertyService.addComputeResourcePropertyToComputeResource(computeResource.getId(), resource);
+
+        var resources = computeResourcePropertyService.findComputeResourcePropertiesOfComputeResource(
+                computeResource.getId(), Pageable.unpaged()).getContent();
+
+        assertThat(resources.size()).isEqualTo(1);
     }
 
     @Test
     void addComputeResourcePropertyToAlgorithm_PropertyExists() {
-        var resourceType = getFullComputeResourcePropertyType();
+        var resourceType = getCreatedComputeResourcePropertyType();
+        QuantumAlgorithm algorithm = getCreatedQuantumAlgorithm("quantumAlgorithmName");
 
         var resource = getFullComputeResourceProperty("0.1");
         resource.setComputeResourcePropertyType(resourceType);
-        var storedResource = computeResourcePropertyService.create(resource);
+        resource = computeResourcePropertyService.create(resource);
 
-        var algo = new QuantumAlgorithm();
-        algo.setNisqReady(true);
-        algo.setName("quantumAlgorithmName");
-        algo.setSpeedUp("speedUp");
-        algo.setComputationModel(ComputationModel.QUANTUM);
-        var storedAlgo = (QuantumAlgorithm) algorithmService.create(algo);
+        var storedResource = computeResourcePropertyService
+                .addComputeResourcePropertyToAlgorithm(algorithm.getId(), resource);
 
-        var addedResource = computeResourcePropertyService
-                .addComputeResourcePropertyToAlgorithm(storedAlgo.getId(), storedResource);
+        var resultAlgorithm = (QuantumAlgorithm) algorithmService.findById(algorithm.getId());
 
-        var resultAlgo = ((QuantumAlgorithm) algorithmService.findById(algo.getId()));
+        assertThat(storedResource.getId()).isEqualTo(resource.getId());
+        ServiceTestUtils.assertComputeResourcePropertyEquality(storedResource, resource);
 
-        assertThat(storedResource.getId()).isEqualTo(addedResource.getId());
-        assertComputeResourcePropertyEquality(storedResource, addedResource);
-
-        assertThat(resultAlgo.getRequiredComputeResourceProperties().size()).isEqualTo(1);
-        resultAlgo.getRequiredComputeResourceProperties().forEach(resultResource -> {
+        assertThat(resultAlgorithm.getRequiredComputeResourceProperties().size()).isEqualTo(1);
+        resultAlgorithm.getRequiredComputeResourceProperties().forEach(resultResource -> {
             assertThat(storedResource.getId()).isEqualTo(resultResource.getId());
             assertDoesNotThrow(() -> computeResourcePropertyService.findById(resultResource.getId()));
             assertThat(storedResource.getComputeResourcePropertyType().getId())
@@ -232,58 +330,164 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         });
     }
 
-    // @Test
+    @Test
     void addComputeResourcePropertyToAlgorithm_PropertyNotExists() {
-        // TODO
+        var resourceType = getCreatedComputeResourcePropertyType();
+        QuantumAlgorithm algorithm = getCreatedQuantumAlgorithm("quantumAlgorithmName");
+
+        var resource = getFullComputeResourceProperty("0.1");
+        resource.setComputeResourcePropertyType(resourceType);
+
+        var storedResource = computeResourcePropertyService
+                .addComputeResourcePropertyToAlgorithm(algorithm.getId(), resource);
+
+        var resultAlgorithm = (QuantumAlgorithm) algorithmService.findById(algorithm.getId());
+
+        assertThat(storedResource.getId()).isNotNull();
+        ServiceTestUtils.assertComputeResourcePropertyEquality(storedResource, resource);
+
+        assertThat(resultAlgorithm.getRequiredComputeResourceProperties().size()).isEqualTo(1);
+        resultAlgorithm.getRequiredComputeResourceProperties().forEach(resultResource -> {
+            assertThat(storedResource.getId()).isEqualTo(resultResource.getId());
+            assertDoesNotThrow(() -> computeResourcePropertyService.findById(resultResource.getId()));
+            assertThat(storedResource.getComputeResourcePropertyType().getId())
+                    .isEqualTo(resultResource.getComputeResourcePropertyType().getId());
+        });
     }
 
-    // @Test
+    @Test
     void addComputeResourcePropertyToAlgorithm_AlgorithmNotExists() {
-        // TODO
+        var resourceType = getCreatedComputeResourcePropertyType();
+
+        var resource = getFullComputeResourceProperty("0.1");
+        resource.setComputeResourcePropertyType(resourceType);
+
+        assertThrows(NoSuchElementException.class, () -> computeResourcePropertyService
+                .addComputeResourcePropertyToAlgorithm(UUID.randomUUID(), resource));
     }
 
-    // @Test
+    @Test
     void addComputeResourcePropertyToImplementation_PropertyExists() {
-        // TODO
+        var resourceType = getCreatedComputeResourcePropertyType();
+        QuantumImplementation implementation = getCreatedQuantumImplementation("quantumImplementationName");
+
+        var resource = getFullComputeResourceProperty("0.1");
+        resource.setComputeResourcePropertyType(resourceType);
+        resource = computeResourcePropertyService.create(resource);
+
+        var storedResource = computeResourcePropertyService
+                .addComputeResourcePropertyToImplementation(implementation.getId(), resource);
+
+        var resultImplementation = (QuantumImplementation) implementationService.findById(implementation.getId());
+
+        assertThat(storedResource.getId()).isNotNull();
+        ServiceTestUtils.assertComputeResourcePropertyEquality(storedResource, resource);
+
+        assertThat(resultImplementation.getRequiredComputeResourceProperties().size()).isEqualTo(1);
+        resultImplementation.getRequiredComputeResourceProperties().forEach(resultResource -> {
+            assertThat(storedResource.getId()).isEqualTo(resultResource.getId());
+            assertDoesNotThrow(() -> computeResourcePropertyService.findById(resultResource.getId()));
+            assertThat(storedResource.getComputeResourcePropertyType().getId())
+                    .isEqualTo(resultResource.getComputeResourcePropertyType().getId());
+        });
     }
 
-    // @Test
+    @Test
     void addComputeResourcePropertyToImplementation_PropertyNotExists() {
-        // TODO
+        var resourceType = getCreatedComputeResourcePropertyType();
+        QuantumImplementation implementation = getCreatedQuantumImplementation("quantumImplementationName");
+
+        var resource = getFullComputeResourceProperty("0.1");
+        resource.setComputeResourcePropertyType(resourceType);
+
+        var storedResource = computeResourcePropertyService
+                .addComputeResourcePropertyToImplementation(implementation.getId(), resource);
+
+        var resultImplementation = (QuantumImplementation) implementationService.findById(implementation.getId());
+
+        assertThat(storedResource.getId()).isNotNull();
+        ServiceTestUtils.assertComputeResourcePropertyEquality(storedResource, resource);
+
+        assertThat(resultImplementation.getRequiredComputeResourceProperties().size()).isEqualTo(1);
+        resultImplementation.getRequiredComputeResourceProperties().forEach(resultResource -> {
+            assertThat(storedResource.getId()).isEqualTo(resultResource.getId());
+            assertDoesNotThrow(() -> computeResourcePropertyService.findById(resultResource.getId()));
+            assertThat(storedResource.getComputeResourcePropertyType().getId())
+                    .isEqualTo(resultResource.getComputeResourcePropertyType().getId());
+        });
     }
 
-    // @Test
+    @Test
     void addComputeResourcePropertyToImplementation_ImplementationNotExists() {
-        // TODO
+        var resourceType = getCreatedComputeResourcePropertyType();
+
+        var resource = getFullComputeResourceProperty("0.1");
+        resource.setComputeResourcePropertyType(resourceType);
+
+        assertThrows(NoSuchElementException.class, () -> computeResourcePropertyService
+                .addComputeResourcePropertyToImplementation(UUID.randomUUID(), resource));
     }
 
-    // @Test
+    @Test
     void addComputeResourcePropertyToComputeResource_PropertyExists() {
-        // TODO
+        var resourceType = getCreatedComputeResourcePropertyType();
+        ComputeResource computeResource = getCreatedComputeResource("computeResourceName");
+
+        var resource = getFullComputeResourceProperty("0.1");
+        resource.setComputeResourcePropertyType(resourceType);
+        resource = computeResourcePropertyService.create(resource);
+
+        var storedResource = computeResourcePropertyService
+                .addComputeResourcePropertyToComputeResource(computeResource.getId(), resource);
+
+        var resultComputeResource = computeResourceService.findById(computeResource.getId());
+
+        assertThat(storedResource.getId()).isNotNull();
+        ServiceTestUtils.assertComputeResourcePropertyEquality(storedResource, resource);
+
+        assertThat(resultComputeResource.getProvidedComputingResourceProperties().size()).isEqualTo(1);
+        resultComputeResource.getProvidedComputingResourceProperties().forEach(resultResource -> {
+            assertThat(storedResource.getId()).isEqualTo(resultResource.getId());
+            assertDoesNotThrow(() -> computeResourcePropertyService.findById(resultResource.getId()));
+            assertThat(storedResource.getComputeResourcePropertyType().getId())
+                    .isEqualTo(resultResource.getComputeResourcePropertyType().getId());
+        });
     }
 
-    // @Test
+    @Test
     void addComputeResourcePropertyToComputeResource_PropertyNotExists() {
-        // TODO
+        var resourceType = getCreatedComputeResourcePropertyType();
+        ComputeResource computeResource = getCreatedComputeResource("computeResourceName");
+
+        var resource = getFullComputeResourceProperty("0.1");
+        resource.setComputeResourcePropertyType(resourceType);
+
+        var storedResource = computeResourcePropertyService
+                .addComputeResourcePropertyToComputeResource(computeResource.getId(), resource);
+
+        var resultComputeResource = computeResourceService.findById(computeResource.getId());
+
+        assertThat(storedResource.getId()).isNotNull();
+        ServiceTestUtils.assertComputeResourcePropertyEquality(storedResource, resource);
+
+        assertThat(resultComputeResource.getProvidedComputingResourceProperties().size()).isEqualTo(1);
+        resultComputeResource.getProvidedComputingResourceProperties().forEach(resultResource -> {
+            assertThat(storedResource.getId()).isEqualTo(resultResource.getId());
+            assertDoesNotThrow(() -> computeResourcePropertyService.findById(resultResource.getId()));
+            assertThat(storedResource.getComputeResourcePropertyType().getId())
+                    .isEqualTo(resultResource.getComputeResourcePropertyType().getId());
+        });
     }
 
-    // @Test
+    @Test
     void addComputeResourcePropertyToComputeResource_ComputeResourceNotExists() {
-        // TODO
-    }
+        var resourceType = getCreatedComputeResourcePropertyType();
 
-    private void assertComputeResourcePropertyEquality(
-            ComputeResourceProperty persistedProperty, ComputeResourceProperty property) {
-        assertThat(persistedProperty.getId()).isNotNull();
-        assertThat(persistedProperty.getValue()).isEqualTo(property.getValue());
-        assertThat(persistedProperty.getComputeResourcePropertyType().getId())
-                .isEqualTo(property.getComputeResourcePropertyType().getId());
-        assertThat(persistedProperty.getComputeResourcePropertyType().getName())
-                .isEqualTo(property.getComputeResourcePropertyType().getName());
-        assertThat(persistedProperty.getComputeResourcePropertyType().getDescription())
-                .isEqualTo(property.getComputeResourcePropertyType().getDescription());
-        assertThat(persistedProperty.getComputeResourcePropertyType().getDatatype())
-                .isEqualTo(property.getComputeResourcePropertyType().getDatatype());
+        var resource = getFullComputeResourceProperty("0.1");
+        resource.setComputeResourcePropertyType(resourceType);
+
+        assertThrows(NoSuchElementException.class, () -> computeResourcePropertyService
+                .addComputeResourcePropertyToComputeResource(UUID.randomUUID(), resource));
     }
 
     private ComputeResourceProperty getFullComputeResourceProperty(String value) {
@@ -294,13 +498,48 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         return computeResourceProperty;
     }
 
-    private ComputeResourcePropertyType getFullComputeResourcePropertyType() {
+    private ComputeResourcePropertyType getCreatedComputeResourcePropertyType() {
+        var computeResourcePropertyType = getCreatedComputeResourcePropertyType("computeResourcePropertyTypeName");
+
+        return computeResourcePropertyTypeService.create(computeResourcePropertyType);
+    }
+
+    private ComputeResourcePropertyType getCreatedComputeResourcePropertyType(String name) {
         var computeResourcePropertyType = new ComputeResourcePropertyType();
 
         computeResourcePropertyType.setDescription("description");
-        computeResourcePropertyType.setName("computeResourcePropertyTypeName");
+        computeResourcePropertyType.setName(name);
         computeResourcePropertyType.setDatatype(ComputeResourcePropertyDataType.FLOAT);
 
         return computeResourcePropertyTypeService.create(computeResourcePropertyType);
+    }
+
+    private QuantumAlgorithm getCreatedQuantumAlgorithm(String name) {
+        QuantumAlgorithm algorithm = new QuantumAlgorithm();
+
+        algorithm.setName(name);
+        algorithm.setComputationModel(ComputationModel.QUANTUM);
+        algorithm.setQuantumComputationModel(QuantumComputationModel.GATE_BASED);
+
+        return (QuantumAlgorithm) algorithmService.create(algorithm);
+    }
+
+    private QuantumImplementation getCreatedQuantumImplementation(String name) {
+        QuantumAlgorithm algorithm = getCreatedQuantumAlgorithm("quantumAlgorithmName");
+        QuantumImplementation implementation = new QuantumImplementation();
+
+        implementation.setName(name);
+        implementation.setImplementedAlgorithm(algorithm);
+
+        return (QuantumImplementation) implementationService.create(implementation, algorithm.getId());
+    }
+
+    private ComputeResource getCreatedComputeResource(String name) {
+        ComputeResource computeResource = new ComputeResource();
+
+        computeResource.setName(name);
+        computeResource.setQuantumComputationModel(QuantumComputationModel.GATE_BASED);
+
+        return computeResourceService.create(computeResource);
     }
 }
