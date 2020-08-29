@@ -35,14 +35,14 @@ import lombok.ToString;
 public class AlgorithmRelation extends HasId {
 
     @ManyToOne(fetch = FetchType.LAZY,
-            cascade = { CascadeType.MERGE })
+            cascade = {CascadeType.MERGE})
     @JoinColumn(name = "sourceAlgorithm")
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Algorithm sourceAlgorithm;
 
     @ManyToOne(fetch = FetchType.LAZY,
-            cascade = { CascadeType.MERGE })
+            cascade = {CascadeType.MERGE})
     @JoinColumn(name = "targetAlgorithm")
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
@@ -52,5 +52,4 @@ public class AlgorithmRelation extends HasId {
     private AlgorithmRelationType algorithmRelationType;
 
     private String description;
-
 }

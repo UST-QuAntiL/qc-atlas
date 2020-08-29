@@ -161,5 +161,4 @@ public class AlgorithmRelationTypeServiceTest extends AtlasDatabaseTestBase {
         algorithmRelationType.setName(typeName);
         return algorithmRelationType;
     }
-
 }

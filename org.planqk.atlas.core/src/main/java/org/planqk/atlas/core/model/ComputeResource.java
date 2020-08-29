@@ -36,7 +36,8 @@ import lombok.NonNull;
 import lombok.ToString;
 
 /**
- * A compute resource is a QPU or a Simulator which are both able to run Quantum Algorithms. E.g. ibmq_rome or qasm_simulator.
+ * A compute resource is a QPU or a Simulator which are both able to run Quantum Algorithms. E.g. ibmq_rome or
+ * qasm_simulator.
  */
 
 @EqualsAndHashCode(callSuper = true)

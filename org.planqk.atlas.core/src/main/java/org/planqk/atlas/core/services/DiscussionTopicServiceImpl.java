@@ -77,5 +77,4 @@ public class DiscussionTopicServiceImpl implements DiscussionTopicService {
 
         discussionTopicRepository.deleteById(topicId);
     }
-
 }

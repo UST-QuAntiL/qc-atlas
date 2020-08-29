@@ -32,7 +32,6 @@ public class LinkBuilderServiceTest {
     private RequestMappingHandlerMapping mappings = new RequestMappingHandlerMapping();
     private LinkBuilderService service = new LinkBuilderService(mappings);
 
-
     @Test
     public void invalid() {
         assertEquals("/", service.linkTo(methodOn(NonController.class).test()).withSelfRel().getHref());

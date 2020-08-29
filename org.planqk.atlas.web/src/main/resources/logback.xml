@@ -33,6 +33,6 @@
     <!--set individual log levels for individual namespaces here -->
     <logger name="org.planqk" level="DEBUG"/>
     <logger name="org.springframework.web.filter.CommonsRequestLoggingFilter">
-        <level value="DEBUG" />
+        <level value="DEBUG"/>
     </logger>
 </configuration>

@@ -134,7 +134,7 @@ public class ComputeResourcePropertyTypeServiceTest extends AtlasDatabaseTestBas
         assertDoesNotThrow(() -> computeResourcePropertyTypeService.findById(storedType.getId()));
     }
 
-    private void assertPropertyTypeEquality(ComputeResourcePropertyType persistedType, ComputeResourcePropertyType type){
+    private void assertPropertyTypeEquality(ComputeResourcePropertyType persistedType, ComputeResourcePropertyType type) {
         assertThat(persistedType.getId()).isNotNull();
         assertThat(persistedType.getName()).isEqualTo(type.getName());
         assertThat(persistedType.getDescription()).isEqualTo(type.getDescription());

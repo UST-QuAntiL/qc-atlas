@@ -67,7 +67,7 @@ public class Implementation extends AlgorithmOrImplementation {
     @ToString.Exclude
     private Algorithm implementedAlgorithm;
 
-    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "implementation_tag",
             joinColumns = @JoinColumn(name = "implementation_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_value"))

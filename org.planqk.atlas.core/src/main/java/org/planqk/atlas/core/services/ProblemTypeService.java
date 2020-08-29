@@ -44,5 +44,4 @@ public interface ProblemTypeService {
     void delete(UUID problemTypeId);
 
     List<ProblemType> getParentList(UUID problemTypeId);
-
 }

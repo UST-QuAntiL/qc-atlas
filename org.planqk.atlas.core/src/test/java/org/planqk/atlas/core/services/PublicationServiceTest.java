@@ -86,7 +86,7 @@ public class PublicationServiceTest extends AtlasDatabaseTestBase {
         var publications = publicationService.findAll(Pageable.unpaged(), "1").getContent();
 
         assertThat(publications.size()).isEqualTo(1);
-        publications.forEach( pub -> {
+        publications.forEach(pub -> {
             assertThat(pub.getId()).isEqualTo(storedPublication1.getId());
             ServiceTestUtils.assertPublicationEquality(pub, storedPublication1);
         });

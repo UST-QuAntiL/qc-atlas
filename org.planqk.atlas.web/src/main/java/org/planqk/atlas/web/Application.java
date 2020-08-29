@@ -52,7 +52,7 @@ public class Application extends SpringBootServletInitializer {
 
     /**
      * Launch the embedded Tomcat server.
-     *
+     * <p>
      * See `application.properties` for its configuration.
      *
      * @param args

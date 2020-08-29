@@ -38,11 +38,9 @@ import org.hibernate.annotations.Type;
 @NoArgsConstructor
 public class Sketch extends KnowledgeArtifact {
 
-
     @Lob
     @Type(type = "org.hibernate.type.TextType")
     private String image;
 
     private String description;
-
 }

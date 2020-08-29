@@ -30,5 +30,4 @@ import lombok.EqualsAndHashCode;
 public class AlgorithmRelationType extends HasId {
 
     private String name;
-
 }

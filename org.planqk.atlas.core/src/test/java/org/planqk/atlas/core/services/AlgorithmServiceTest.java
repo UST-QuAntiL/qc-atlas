@@ -40,7 +40,6 @@ import org.planqk.atlas.core.model.QuantumComputationModel;
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 import org.planqk.atlas.core.util.ServiceTestUtils;
-import org.planqk.atlas.core.util.ServiceUtils;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -262,7 +261,7 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
         assertDoesNotThrow(() -> algorithmService.findById(finalAlgorithm.getId()));
 
         finalAlgorithm.getTags().forEach(t ->
-            assertDoesNotThrow(() -> tagService.findByValue(t.getValue())));
+                assertDoesNotThrow(() -> tagService.findByValue(t.getValue())));
         finalAlgorithm.getPublications().forEach(pub ->
                 assertDoesNotThrow(() -> publicationService.findById(pub.getId())));
         finalAlgorithm.getProblemTypes().forEach(pt ->

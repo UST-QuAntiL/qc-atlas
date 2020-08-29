@@ -66,7 +66,7 @@ import static org.springframework.web.servlet.mvc.method.annotation.MvcUriCompon
 import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.on;
 
 @WebMvcTest(controllers = {CloudServiceController.class})
-@ExtendWith({MockitoExtension.class})
+@ExtendWith( {MockitoExtension.class})
 @AutoConfigureMockMvc
 @EnableLinkAssemblers
 public class CloudServiceControllerTest {

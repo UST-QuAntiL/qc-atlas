@@ -27,7 +27,7 @@ import org.springframework.web.util.UriComponents;
 
 /**
  * Helper class that mimics {@link org.springframework.hateoas.server.mvc.WebMvcLinkBuilder}
- *
+ * <p>
  * Needed to retain WebMvcLinkBuilder's flexibility and interface.
  */
 public class LinkBuilder extends TemplateVariableAwareLinkBuilderSupport<LinkBuilder> {

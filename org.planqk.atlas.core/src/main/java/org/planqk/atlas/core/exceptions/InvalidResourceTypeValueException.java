@@ -1,4 +1,3 @@
-
 /*******************************************************************************
  * Copyright (c) 2020 University of Stuttgart
  *
@@ -29,5 +28,4 @@ public class InvalidResourceTypeValueException extends RuntimeException {
     public InvalidResourceTypeValueException(String message) {
         super(message);
     }
-
 }

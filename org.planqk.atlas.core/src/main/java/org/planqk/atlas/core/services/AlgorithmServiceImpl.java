@@ -208,7 +208,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 
         return applicationAreaRepository.findApplicationAreasByAlgorithmId(algorithmId, pageable);
     }
-    
+
     private Page<AlgorithmRelation> getAlgorithmRelations(@NonNull UUID algorithmId, @NonNull Pageable pageable) {
         return algorithmRelationRepository.findBySourceAlgorithmIdOrTargetAlgorithmId(algorithmId, algorithmId, pageable);
     }

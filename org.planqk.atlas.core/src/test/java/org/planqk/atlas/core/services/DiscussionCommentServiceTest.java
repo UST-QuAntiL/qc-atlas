@@ -140,5 +140,4 @@ public class DiscussionCommentServiceTest extends AtlasDatabaseTestBase {
     void deleteDiscussionComment_ElementNotFound() {
         // TODO
     }
-
 }

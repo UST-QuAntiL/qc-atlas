@@ -127,7 +127,7 @@ public class Algorithm extends AlgorithmOrImplementation {
     @EqualsAndHashCode.Exclude
     private Set<ApplicationArea> applicationAreas = new HashSet<>();
 
-    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "algorithm_tag",
             joinColumns = @JoinColumn(name = "algorithm_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_value"))
@@ -247,5 +247,4 @@ public class Algorithm extends AlgorithmOrImplementation {
     public void removeSketches(@NonNull List<Sketch> sketches) {
         sketches.removeAll(sketches);
     }
-
 }

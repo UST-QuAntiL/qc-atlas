@@ -90,7 +90,6 @@ public class LinkingServiceTest extends AtlasDatabaseTestBase {
 
         assertThrows(EntityReferenceConstraintViolationException.class, () ->
                 linkingService.linkAlgorithmAndPublication(algorithm.getId(), publication.getId()));
-
     }
 
     @Test
@@ -406,7 +405,6 @@ public class LinkingServiceTest extends AtlasDatabaseTestBase {
         assertThrows(EntityReferenceConstraintViolationException.class, () ->
                 linkingService.linkSoftwarePlatformAndComputeResource(
                         softwarePlatform.getId(), computeResource.getId()));
-
     }
 
     @Test

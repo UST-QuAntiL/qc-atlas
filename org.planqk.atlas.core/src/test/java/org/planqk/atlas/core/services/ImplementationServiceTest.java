@@ -291,7 +291,8 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
         implementation.setDependencies("dependencies");
         try {
             implementation.setLink(new URL("http://www.example.com"));
-        } catch (MalformedURLException ignored) {}
+        } catch (MalformedURLException ignored) {
+        }
 
         return implementation;
     }

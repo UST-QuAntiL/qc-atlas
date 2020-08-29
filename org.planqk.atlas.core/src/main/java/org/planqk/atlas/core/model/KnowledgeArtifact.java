@@ -41,5 +41,4 @@ public class KnowledgeArtifact extends HasId {
             orphanRemoval = true)
     @EqualsAndHashCode.Exclude
     private Set<DiscussionTopic> discussionTopics = new HashSet<>();
-
 }

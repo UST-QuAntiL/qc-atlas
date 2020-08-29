@@ -33,5 +33,4 @@ import org.springframework.stereotype.Repository;
 @RepositoryRestResource(exported = false)
 public interface DiscussionTopicRepository extends JpaRepository<DiscussionTopic, UUID> {
     Page<DiscussionTopic> findByKnowledgeArtifact(KnowledgeArtifact knowledgeArtifact, Pageable pageable);
-
 }

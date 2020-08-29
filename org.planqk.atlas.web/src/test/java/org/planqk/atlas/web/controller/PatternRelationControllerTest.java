@@ -298,7 +298,7 @@ public class PatternRelationControllerTest {
 
     @Test
     public void updateRelation_returnBadRequest() throws Exception {
-        when(patternRelationService.update( relation1)).thenReturn(relationUpdated);
+        when(patternRelationService.update(relation1)).thenReturn(relationUpdated);
 
         mockMvc.perform(put("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATIONS)
                 .content(mapper.writeValueAsString(missingReqParamRelation)).contentType(MediaType.APPLICATION_JSON)

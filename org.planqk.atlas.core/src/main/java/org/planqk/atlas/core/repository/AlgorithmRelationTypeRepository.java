@@ -28,8 +28,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.stereotype.Repository;
 
 /**
- * Repository to access {@link AlgorithmRelationType}s available in the data base
- * with different queries.
+ * Repository to access {@link AlgorithmRelationType}s available in the data base with different queries.
  */
 @Repository
 @RepositoryRestResource(exported = false)

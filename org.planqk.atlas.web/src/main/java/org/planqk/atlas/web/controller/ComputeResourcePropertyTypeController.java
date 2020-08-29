@@ -69,7 +69,7 @@ public class ComputeResourcePropertyTypeController {
     @ListParametersDoc
     @GetMapping
     public ResponseEntity<PagedModel<EntityModel<ComputeResourcePropertyTypeDto>>> getResourcePropertyTypes(
-            @Parameter(hidden = true)ListParameters listParameters) {
+            @Parameter(hidden = true) ListParameters listParameters) {
         var savedComputeResourcePropertyType = computeResourcePropertyTypeService.findAll(listParameters.getPageable());
         return ResponseEntity.ok(computeResourcePropertyTypeAssembler.toModel(savedComputeResourcePropertyType));
     }

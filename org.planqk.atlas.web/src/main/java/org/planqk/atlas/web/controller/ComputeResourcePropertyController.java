@@ -97,5 +97,4 @@ public class ComputeResourcePropertyController {
         computeResourcePropertyService.delete(ComputeResourcePropertyId);
         return ResponseEntity.noContent().build();
     }
-
 }

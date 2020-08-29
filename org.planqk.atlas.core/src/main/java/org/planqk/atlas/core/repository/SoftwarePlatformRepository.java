@@ -37,7 +37,7 @@ public interface SoftwarePlatformRepository extends JpaRepository<SoftwarePlatfo
 
     Page<SoftwarePlatform> findAllByNameContainingIgnoreCase(String name, Pageable p);
 
-    boolean existsSoftwarePlatformById (UUID id);
+    boolean existsSoftwarePlatformById(UUID id);
 
     @Query("SELECT sp " +
             "FROM SoftwarePlatform sp " +

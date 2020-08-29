@@ -31,7 +31,6 @@ import org.springframework.stereotype.Component;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
-
 @Component
 public class TagAssembler extends GenericLinkAssembler<TagDto> {
 
@@ -54,5 +53,5 @@ public class TagAssembler extends GenericLinkAssembler<TagDto> {
 
     private String getName(EntityModel<TagDto> resource) {
         return resource.getContent().getValue();
-  }
+    }
 }

@@ -161,7 +161,6 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
 
         assertDoesNotThrow(() -> softwarePlatformService.findById(storedSoftwarePlatform.getId()));
 
-
         // Add Implementation Reference
         Algorithm algorithm = new Algorithm();
         algorithm = algorithmService.create(algorithm);

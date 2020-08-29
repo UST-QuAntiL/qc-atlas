@@ -46,5 +46,4 @@ public class PublicationAssembler extends GenericLinkAssembler<PublicationDto> {
 //    public void addImplementationLink(CollectionModel<EntityModel<ImplementationDto>> resources, UUID id) {
 //        resources.add(links.linkTo(methodOn(PublicationController.class).getPublicationImplementations(id)).withSelfRel());
 //    }
-
 }

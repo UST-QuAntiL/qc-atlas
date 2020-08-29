@@ -56,5 +56,4 @@ public interface AlgorithmService {
     Page<ProblemType> findLinkedProblemTypes(UUID algorithmId, Pageable pageable);
 
     Page<ApplicationArea> findLinkedApplicationAreas(UUID algorithmId, Pageable pageable);
-
 }

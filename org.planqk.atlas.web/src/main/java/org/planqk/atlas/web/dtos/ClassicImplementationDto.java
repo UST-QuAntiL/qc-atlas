@@ -31,5 +31,4 @@ import org.springframework.hateoas.server.core.Relation;
 public class ClassicImplementationDto extends ImplementationDto {
 
     private ClassicAlgorithmDto algorithm;
-
 }

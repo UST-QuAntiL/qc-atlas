@@ -36,5 +36,4 @@ public class ClassicImplementation extends Implementation {
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private ClassicAlgorithm algorithm;
-
 }

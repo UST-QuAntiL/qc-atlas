@@ -19,6 +19,6 @@
 
 package org.planqk.atlas.core.model;
 
-public enum  Status {
+public enum Status {
     OPEN, CLOSED
 }

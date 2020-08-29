@@ -82,7 +82,7 @@ public class PatternRelationController {
             "other pattern relation type attributes will not change.")
     @PostMapping
     public ResponseEntity<EntityModel<PatternRelationDto>> createPatternRelation(
-            @Validated({ValidationGroups.Create.class}) @RequestBody PatternRelationDto patternRelationDto) {
+            @Validated( {ValidationGroups.Create.class}) @RequestBody PatternRelationDto patternRelationDto) {
         var savedPatternRelation = patternRelationService.create(
                 ModelMapperUtils.convert(patternRelationDto, PatternRelation.class));
         return new ResponseEntity<>(patternRelationAssembler.toModel(savedPatternRelation), HttpStatus.CREATED);
@@ -99,7 +99,7 @@ public class PatternRelationController {
             "other pattern relation type attributes will not change.")
     @PutMapping
     public ResponseEntity<EntityModel<PatternRelationDto>> updatePatternRelation(
-            @Validated({ValidationGroups.Update.class}) @RequestBody PatternRelationDto patternRelationDto) {
+            @Validated( {ValidationGroups.Update.class}) @RequestBody PatternRelationDto patternRelationDto) {
         var savedPatternRelation = patternRelationService.update(
                 ModelMapperUtils.convert(patternRelationDto, PatternRelation.class));
         return ResponseEntity.ok(patternRelationAssembler.toModel(savedPatternRelation));

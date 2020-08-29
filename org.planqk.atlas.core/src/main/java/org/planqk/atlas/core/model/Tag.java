@@ -43,11 +43,11 @@ public class Tag {
     @Id
     String value;
 
-    @ManyToMany(mappedBy = "tags", cascade = { CascadeType.MERGE, CascadeType.PERSIST })
+    @ManyToMany(mappedBy = "tags", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @EqualsAndHashCode.Exclude
     private Set<Algorithm> algorithms = new HashSet<>();
 
-    @ManyToMany(mappedBy = "tags", cascade = { CascadeType.MERGE, CascadeType.PERSIST })
+    @ManyToMany(mappedBy = "tags", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @EqualsAndHashCode.Exclude
     private Set<Implementation> implementations = new HashSet<>();
 

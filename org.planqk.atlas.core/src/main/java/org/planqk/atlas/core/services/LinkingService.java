@@ -72,5 +72,4 @@ public interface LinkingService {
 
     @Transactional
     void unlinkCloudServiceAndComputeResource(UUID cloudServiceId, UUID computeResourceId);
-
 }

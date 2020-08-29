@@ -177,9 +177,7 @@ public class AlgorithmRelationServiceTest extends AtlasDatabaseTestBase {
                 algorithmRelationService.delete(UUID.randomUUID()));
     }
 
-
-
-    private AlgorithmRelation buildAlgorithmRelation (
+    private AlgorithmRelation buildAlgorithmRelation(
             Algorithm source, Algorithm target, AlgorithmRelationType type, String description) {
         AlgorithmRelation algorithmRelation = new AlgorithmRelation();
         algorithmRelation.setDescription(description);

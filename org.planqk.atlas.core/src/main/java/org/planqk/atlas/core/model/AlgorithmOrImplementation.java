@@ -36,5 +36,4 @@ public abstract class AlgorithmOrImplementation extends KnowledgeArtifact {
     private String inputFormat;
 
     private String outputFormat;
-
 }

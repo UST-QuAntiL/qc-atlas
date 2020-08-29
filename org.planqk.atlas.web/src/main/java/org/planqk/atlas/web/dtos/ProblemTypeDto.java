@@ -43,5 +43,4 @@ public class ProblemTypeDto implements Identifyable {
     private String name;
 
     private UUID parentProblemType;
-
 }

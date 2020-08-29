@@ -172,7 +172,7 @@ public class PatternRelationServiceTest extends AtlasDatabaseTestBase {
         relation1.setId(UUID.randomUUID());
 
         assertThrows(NoSuchElementException.class, () ->
-            patternRelationService.update(relation1));
+                patternRelationService.update(relation1));
     }
 
     @Test
@@ -202,7 +202,7 @@ public class PatternRelationServiceTest extends AtlasDatabaseTestBase {
     @Test
     void deletePatternRelation_ElementNotFound() {
         assertThrows(NoSuchElementException.class, () ->
-            patternRelationService.delete(UUID.randomUUID()));
+                patternRelationService.delete(UUID.randomUUID()));
     }
 
     @Test
