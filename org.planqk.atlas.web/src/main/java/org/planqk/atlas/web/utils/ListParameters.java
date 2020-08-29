@@ -33,10 +33,11 @@ import org.springframework.lang.Nullable;
 @RequiredArgsConstructor
 @Data
 public class ListParameters {
-    private final @NonNull
-    Pageable pageable;
-    private final @Nullable
-    String search;
+    @NonNull
+    private final Pageable pageable;
+
+    @Nullable
+    private final String search;
 
     public static ListParameters getDefault() {
         return new ListParameters(PageRequest.of(Constants.DEFAULT_PAGE_NUMBER, Constants.DEFAULT_PAGE_SIZE), "");

@@ -21,9 +21,14 @@ package org.planqk.atlas.core.exceptions;
 
 /**
  * Exception that is thrown when a reference constraint violation occurs. Such a reference constraint violation happens
- * when: - An Entity is trying to be deleted, but it is still referenced in another object which should not be cascade
- * deleted - Two Entities are already linked and it is attempted to link them again - Two Entities are not linked and it
- * is attempted to unlink them
+ * when:
+ * <p>
+ * - An Entity is trying to be deleted, but it is still referenced in another object which should not be cascade
+ * deleted
+ * <p>
+ * - Two Entities are already linked and it is attempted to link them again
+ * <p>
+ * - Two Entities are not linked and it is attempted to unlink them
  */
 public class EntityReferenceConstraintViolationException extends RuntimeException {
 
