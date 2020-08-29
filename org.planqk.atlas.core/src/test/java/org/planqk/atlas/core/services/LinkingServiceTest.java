@@ -19,18 +19,18 @@
 
 package org.planqk.atlas.core.services;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Set;
 
 import org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException;
 import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.ApplicationArea;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
 import org.planqk.atlas.core.model.ClassicImplementation;
 import org.planqk.atlas.core.model.CloudService;
-import org.planqk.atlas.core.model.ComputationModel;
 import org.planqk.atlas.core.model.ComputeResource;
 import org.planqk.atlas.core.model.Implementation;
+import org.planqk.atlas.core.model.ProblemType;
+import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.model.QuantumComputationModel;
 import org.planqk.atlas.core.model.SoftwarePlatform;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
@@ -68,64 +68,158 @@ public class LinkingServiceTest extends AtlasDatabaseTestBase {
     @Autowired
     private ComputeResourceService computeResourceService;
 
-    //@Test
+    @Test
     void linkAlgorithmAndPublication() {
+        Algorithm algorithm = getCreatedAlgorithm();
+        Publication publication = getCreatedPublication();
 
+        linkingService.linkAlgorithmAndPublication(algorithm.getId(), publication.getId());
+
+        var publications = algorithmService.findLinkedPublications(
+                algorithm.getId(), Pageable.unpaged()).toSet();
+
+        assertThat(publications.size()).isEqualTo(1);
     }
 
-    //@Test
+    @Test
     void linkAlgorithmAndPublication_AlreadyLinked() {
+        Algorithm algorithm = getCreatedAlgorithm();
+        Publication publication = getCreatedPublication();
+
+        assertDoesNotThrow(() -> linkingService.linkAlgorithmAndPublication(algorithm.getId(), publication.getId()));
+
+        assertThrows(EntityReferenceConstraintViolationException.class, () ->
+                linkingService.linkAlgorithmAndPublication(algorithm.getId(), publication.getId()));
 
     }
 
-    //@Test
+    @Test
     void unlinkAlgorithmAndPublication() {
+        Algorithm algorithm = getCreatedAlgorithm();
+        Publication publication = getCreatedPublication();
 
+        linkingService.linkAlgorithmAndPublication(algorithm.getId(), publication.getId());
+
+        var publications = algorithmService.findLinkedPublications(
+                algorithm.getId(), Pageable.unpaged()).toSet();
+        assertThat(publications.size()).isEqualTo(1);
+
+        linkingService.unlinkAlgorithmAndPublication(algorithm.getId(), publication.getId());
+
+        publications = algorithmService.findLinkedPublications(
+                algorithm.getId(), Pageable.unpaged()).toSet();
+        assertThat(publications.size()).isEqualTo(0);
     }
 
-    //@Test
+    @Test
     void unlinkAlgorithmAndPublication_NotLinked() {
+        Algorithm algorithm = getCreatedAlgorithm();
+        Publication publication = getCreatedPublication();
 
+        assertThrows(EntityReferenceConstraintViolationException.class, () ->
+                linkingService.unlinkAlgorithmAndPublication(algorithm.getId(), publication.getId()));
     }
 
-    //@Test
+    @Test
     void linkAlgorithmAndProblemType() {
+        Algorithm algorithm = getCreatedAlgorithm();
+        ProblemType problemType = getCreatedProblemType();
 
+        linkingService.linkAlgorithmAndProblemType(algorithm.getId(), problemType.getId());
+
+        var problemTypes = algorithmService.findLinkedProblemTypes(
+                algorithm.getId(), Pageable.unpaged()).toSet();
+
+        assertThat(problemTypes.size()).isEqualTo(1);
     }
 
-    //@Test
+    @Test
     void linkAlgorithmAndProblemType_AlreadyLinked() {
+        Algorithm algorithm = getCreatedAlgorithm();
+        ProblemType problemType = getCreatedProblemType();
 
+        assertDoesNotThrow(() -> linkingService.linkAlgorithmAndProblemType(algorithm.getId(), problemType.getId()));
+
+        assertThrows(EntityReferenceConstraintViolationException.class, () ->
+                linkingService.linkAlgorithmAndProblemType(algorithm.getId(), problemType.getId()));
     }
 
-    //@Test
+    @Test
     void unlinkAlgorithmAndProblemType() {
+        Algorithm algorithm = getCreatedAlgorithm();
+        ProblemType problemType = getCreatedProblemType();
 
+        linkingService.linkAlgorithmAndProblemType(algorithm.getId(), problemType.getId());
+
+        var problemTypes = algorithmService.findLinkedProblemTypes(
+                algorithm.getId(), Pageable.unpaged()).toSet();
+        assertThat(problemTypes.size()).isEqualTo(1);
+
+        linkingService.unlinkAlgorithmAndProblemType(algorithm.getId(), problemType.getId());
+
+        problemTypes = algorithmService.findLinkedProblemTypes(
+                algorithm.getId(), Pageable.unpaged()).toSet();
+        assertThat(problemTypes.size()).isEqualTo(0);
     }
 
-    //@Test
+    @Test
     void unlinkAlgorithmAndProblemType_NotLinked() {
+        Algorithm algorithm = getCreatedAlgorithm();
+        ProblemType problemType = getCreatedProblemType();
 
+        assertThrows(EntityReferenceConstraintViolationException.class, () ->
+                linkingService.unlinkAlgorithmAndProblemType(algorithm.getId(), problemType.getId()));
     }
 
-    //@Test
+    @Test
     void linkAlgorithmAndApplicationArea() {
+        Algorithm algorithm = getCreatedAlgorithm();
+        ApplicationArea applicationArea = getCreatedApplicationArea();
 
+        linkingService.linkAlgorithmAndApplicationArea(algorithm.getId(), applicationArea.getId());
+
+        var applicationAreas = algorithmService.findLinkedApplicationAreas(
+                algorithm.getId(), Pageable.unpaged()).toSet();
+
+        assertThat(applicationAreas.size()).isEqualTo(1);
     }
 
-    //@Test
+    @Test
     void linkAlgorithmAndApplicationArea_AlreadyLinked() {
+        Algorithm algorithm = getCreatedAlgorithm();
+        ApplicationArea applicationArea = getCreatedApplicationArea();
 
+        assertDoesNotThrow(() -> linkingService.linkAlgorithmAndApplicationArea(algorithm.getId(), applicationArea.getId()));
+
+        assertThrows(EntityReferenceConstraintViolationException.class, () ->
+                linkingService.linkAlgorithmAndApplicationArea(algorithm.getId(), applicationArea.getId()));
     }
 
-    //@Test
+    @Test
     void unlinkAlgorithmAndApplicationArea() {
+        Algorithm algorithm = getCreatedAlgorithm();
+        ApplicationArea applicationArea = getCreatedApplicationArea();
 
+        linkingService.linkAlgorithmAndApplicationArea(algorithm.getId(), applicationArea.getId());
+
+        var applicationAreas = algorithmService.findLinkedApplicationAreas(
+                algorithm.getId(), Pageable.unpaged()).toSet();
+        assertThat(applicationAreas.size()).isEqualTo(1);
+
+        linkingService.unlinkAlgorithmAndApplicationArea(algorithm.getId(), applicationArea.getId());
+
+        applicationAreas = algorithmService.findLinkedApplicationAreas(
+                algorithm.getId(), Pageable.unpaged()).toSet();
+        assertThat(applicationAreas.size()).isEqualTo(0);
     }
 
-    //@Test
+    @Test
     void unlinkAlgorithmAndApplicationArea_NotLinked() {
+        Algorithm algorithm = getCreatedAlgorithm();
+        ApplicationArea applicationArea = getCreatedApplicationArea();
 
+        assertThrows(EntityReferenceConstraintViolationException.class, () ->
+                linkingService.unlinkAlgorithmAndApplicationArea(algorithm.getId(), applicationArea.getId()));
     }
 
     //@Test
@@ -148,24 +242,57 @@ public class LinkingServiceTest extends AtlasDatabaseTestBase {
 
     }
 
-    //@Test
+    @Test
     void linkImplementationAndPublication() {
+        Publication publication = getCreatedPublication();
+        Implementation implementation = getCreatedImplementation();
 
+        linkingService.linkImplementationAndPublication(implementation.getId(), publication.getId());
+
+        var publications = implementationService.findLinkedPublications(
+                implementation.getId(), Pageable.unpaged()).toSet();
+
+        assertThat(publications.size()).isEqualTo(1);
     }
 
-    //@Test
+    @Test
     void linkImplementationAndPublication_AlreadyLinked() {
+        Publication publication = getCreatedPublication();
+        Implementation implementation = getCreatedImplementation();
 
+        assertDoesNotThrow(() -> linkingService
+                .linkImplementationAndPublication(implementation.getId(), publication.getId()));
+
+        assertThrows(EntityReferenceConstraintViolationException.class, () ->
+                linkingService.linkImplementationAndPublication(implementation.getId(), publication.getId()));
     }
 
-    //@Test
+    @Test
     void unlinkImplementationAndPublication() {
+        Publication publication = getCreatedPublication();
+        Implementation implementation = getCreatedImplementation();
 
+        linkingService.linkImplementationAndPublication(implementation.getId(), publication.getId());
+
+        var publications = implementationService.findLinkedPublications(
+                implementation.getId(), Pageable.unpaged()).toSet();
+        assertThat(publications.size()).isEqualTo(1);
+
+        linkingService.unlinkImplementationAndPublication(implementation.getId(), publication.getId());
+
+        publications = implementationService.findLinkedPublications(
+                implementation.getId(), Pageable.unpaged()).toSet();
+        assertThat(publications.size()).isEqualTo(0);
     }
 
-    //@Test
+    @Test
     void unlinkImplementationAndPublication_NotLinked() {
+        Publication publication = getCreatedPublication();
+        Implementation implementation = getCreatedImplementation();
 
+        assertThrows(EntityReferenceConstraintViolationException.class, () ->
+                linkingService.unlinkImplementationAndPublication(
+                        implementation.getId(), publication.getId()));
     }
 
     @Test
@@ -179,7 +306,6 @@ public class LinkingServiceTest extends AtlasDatabaseTestBase {
                 softwarePlatform.getId(), Pageable.unpaged()).toSet();
 
         assertThat(implementations.size()).isEqualTo(1);
-        assertThat(implementations.contains(implementation)).isTrue();
     }
 
     @Test
@@ -233,7 +359,6 @@ public class LinkingServiceTest extends AtlasDatabaseTestBase {
                 softwarePlatform.getId(), Pageable.unpaged()).toSet();
 
         assertThat(cloudServices.size()).isEqualTo(1);
-        assertThat(cloudServices.contains(cloudService)).isTrue();
     }
 
     @Test
@@ -288,7 +413,6 @@ public class LinkingServiceTest extends AtlasDatabaseTestBase {
                 softwarePlatform.getId(), Pageable.unpaged()).toSet();
 
         assertThat(computeResources.size()).isEqualTo(1);
-        assertThat(computeResources.contains(computeResource)).isTrue();
     }
 
     @Test
@@ -347,7 +471,6 @@ public class LinkingServiceTest extends AtlasDatabaseTestBase {
                 cloudService.getId(), Pageable.unpaged()).toSet();
 
         assertThat(computeResources.size()).isEqualTo(1);
-        assertThat(computeResources.contains(computeResource)).isTrue();
     }
 
     @Test
@@ -405,6 +528,24 @@ public class LinkingServiceTest extends AtlasDatabaseTestBase {
         implementation.setName("implementationName");
         implementation.setImplementedAlgorithm(implementedAlgorithm);
         return implementationService.create(implementation, implementedAlgorithm.getId());
+    }
+
+    private ProblemType getCreatedProblemType() {
+        ProblemType problemType = new ProblemType();
+        problemType.setName("problemTypeName");
+        return problemTypeService.create(problemType);
+    }
+
+    private ApplicationArea getCreatedApplicationArea() {
+        ApplicationArea applicationArea = new ApplicationArea();
+        applicationArea.setName("applicationAreaName");
+        return applicationAreaService.create(applicationArea);
+    }
+
+    private Publication getCreatedPublication() {
+        Publication publication = new Publication();
+        publication.setTitle("publicationTitle");
+        return publicationService.create(publication);
     }
 
     private SoftwarePlatform getCreatedSoftwarePlatform() {
