@@ -66,24 +66,7 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
 
     @Test
     void createComputeResource_WithComputeResource() {
-        CloudService cloudService = getFullCloudService("cloudServiceName");
-        CloudService storedCloudService = cloudServiceService.create(cloudService);
 
-        ComputeResource computeResource = new ComputeResource();
-        computeResource.setName("computeResourceName");
-        computeResource.setVendor("vendor");
-        computeResource.setTechnology("technology");
-        computeResource.setQuantumComputationModel(QuantumComputationModel.QUANTUM_ANNEALING);
-        ComputeResource storedComputeResource = computeResourceService.create(computeResource);
-
-        linkingService.linkCloudServiceAndComputeResource(
-                storedCloudService.getId(), storedComputeResource.getId());
-
-        Set<ComputeResource> computeResources = cloudServiceService.findLinkedComputeResources(
-                storedCloudService.getId(), Pageable.unpaged()).toSet();
-
-        assertThat(computeResources.size()).isEqualTo(1);
-        assertThat(computeResources.contains(storedComputeResource)).isTrue();
     }
 
     @Test

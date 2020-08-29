@@ -109,63 +109,6 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
         assertThat(storedAlgorithm).isInstanceOf(QuantumAlgorithm.class);
         ServiceTestUtils.assertAlgorithmEquality(storedAlgorithm, algorithm);
     }
-// TODO mode to linking service tests
-//
-//    @Test
-//    void createAlgorithm_WithProblemTypes() {
-//        Algorithm algorithm = getFullAlgorithm("algorithmName");
-//
-//        Set<ProblemType> problemTypes = new HashSet<>();
-//        ProblemType problemType = new ProblemType();
-//        problemType.setName("testProblemType");
-//        problemType.setParentProblemType(UUID.randomUUID());
-//        problemTypes.add(problemType);
-//        ProblemType problemType2 = new ProblemType();
-//        problemType2.setName("testProblemType");
-//        problemType2.setParentProblemType(UUID.randomUUID());
-//        problemTypes.add(problemType2);
-//        algorithm.setProblemTypes(problemTypes);
-//
-//        Algorithm storedAlgorithm = algorithmService.create(algorithm);
-//
-//        assertAlgorithmEquality(storedAlgorithm, algorithm);
-//
-//        storedAlgorithm.getProblemTypes().forEach(pt -> {
-//            assertThat(pt.getId()).isNotNull();
-//            Assertions.assertDoesNotThrow(() -> problemTypeService.findById(pt.getId()));
-//        });
-//    }
-//
-//    @Test
-//    void createAlgorithm_WithPublications() {
-//        Algorithm algorithm = getFullAlgorithm("algorithmName");
-//
-//        Set<Publication> publications = new HashSet<>();
-//        Publication publication = new Publication();
-//        publication.setTitle("testPublicationTitle");
-//        publication.setUrl("http://example.com");
-//        publication.setDoi("testDoi");
-//        List<String> publicationAuthors = new ArrayList<>();
-//        publicationAuthors.add("test publication author");
-//        publication.setAuthors(publicationAuthors);
-//        publications.add(publication);
-//        publications.forEach(algorithm::addPublication);
-//
-//        Algorithm storedAlgorithm = algorithmService.create(algorithm);
-//
-//        assertAlgorithmEquality(storedAlgorithm, algorithm);
-//
-//        storedAlgorithm.getPublications().forEach(pub -> {
-//            assertThat(pub.getId()).isNotNull();
-//            assertThat(pub.getTitle()).isEqualTo(publication.getTitle());
-//            assertThat(pub.getUrl()).isEqualTo(publication.getUrl());
-//            assertThat(pub.getDoi()).isEqualTo(publication.getDoi());
-//            assertThat(
-//                    pub.getAuthors().stream().filter(e -> publication.getAuthors().contains(e)).count()
-//            ).isEqualTo(publication.getAuthors().size());
-//            Assertions.assertDoesNotThrow(() -> publicationService.findById(pub.getId()));
-//        });
-//    }
 
     @Test
     void findAllAlgorithms() {
