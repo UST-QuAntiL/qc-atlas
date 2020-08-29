@@ -34,14 +34,16 @@ import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.QuantumComputationModel;
 import org.planqk.atlas.core.model.SoftwarePlatform;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
+import org.planqk.atlas.core.util.ServiceTestUtils;
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Slf4j
 public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
@@ -64,7 +66,9 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
         SoftwarePlatform softwarePlatform = getFullSoftwarePlatform("softwarePlatformName");
 
         SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.create(softwarePlatform);
-        assertSoftwarePlatformEquality(storedSoftwarePlatform, softwarePlatform);
+
+        assertThat(storedSoftwarePlatform.getId()).isNotNull();
+        ServiceTestUtils.assertSoftwarePlatformEquality(storedSoftwarePlatform, softwarePlatform);
     }
 
     @Test
@@ -233,7 +237,7 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
 
     @Test
     void findSoftwarePlatformById_ElementNotFound() {
-        Assertions.assertThrows(NoSuchElementException.class, () ->
+        assertThrows(NoSuchElementException.class, () ->
                 softwarePlatformService.findById(UUID.randomUUID()));
     }
 
@@ -244,14 +248,15 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
 
         storedSoftwarePlatform = softwarePlatformService.findById(storedSoftwarePlatform.getId());
 
-        assertSoftwarePlatformEquality(storedSoftwarePlatform, softwarePlatform);
+        assertThat(storedSoftwarePlatform.getId()).isNotNull();
+        ServiceTestUtils.assertSoftwarePlatformEquality(storedSoftwarePlatform, softwarePlatform);
     }
 
     @Test
     void updateSoftwarePlatform_ElementNotFound() {
         SoftwarePlatform softwarePlatform = getFullSoftwarePlatform("softwarePlatformName");
         softwarePlatform.setId(UUID.randomUUID());
-        Assertions.assertThrows(NoSuchElementException.class, () ->
+        assertThrows(NoSuchElementException.class, () ->
                 softwarePlatformService.update(softwarePlatform));
     }
 
@@ -280,11 +285,11 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
 
         SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.create(softwarePlatform);
 
-        Assertions.assertDoesNotThrow(() -> softwarePlatformService.findById(storedSoftwarePlatform.getId()));
+        assertDoesNotThrow(() -> softwarePlatformService.findById(storedSoftwarePlatform.getId()));
 
         softwarePlatformService.delete(storedSoftwarePlatform.getId());
 
-        Assertions.assertThrows(NoSuchElementException.class, () ->
+        assertThrows(NoSuchElementException.class, () ->
                 softwarePlatformService.findById(storedSoftwarePlatform.getId()));
     }
 
@@ -293,7 +298,7 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
         SoftwarePlatform softwarePlatform = getFullSoftwarePlatform("softwarePlatformName");
         SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.create(softwarePlatform);
 
-        Assertions.assertDoesNotThrow(() -> softwarePlatformService.findById(storedSoftwarePlatform.getId()));
+        assertDoesNotThrow(() -> softwarePlatformService.findById(storedSoftwarePlatform.getId()));
 
 
         // Add Implementation Reference
@@ -320,7 +325,7 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
         // Delete
         softwarePlatformService.delete(storedSoftwarePlatform.getId());
 
-        Assertions.assertThrows(NoSuchElementException.class, () ->
+        assertThrows(NoSuchElementException.class, () ->
                 softwarePlatformService.findById(storedSoftwarePlatform.getId()));
 
         // Test if references are removed
@@ -407,14 +412,6 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
         computeResources = softwarePlatformService.findLinkedComputeResources(
                 storedSoftwarePlatform.getId(), Pageable.unpaged()).toSet();
         assertThat(computeResources.size()).isEqualTo(0);
-    }
-
-    private void assertSoftwarePlatformEquality(SoftwarePlatform dbSoftwarePlatform, SoftwarePlatform compareSoftwarePlatform) {
-        assertThat(dbSoftwarePlatform.getId()).isNotNull();
-        assertThat(dbSoftwarePlatform.getName()).isEqualTo(compareSoftwarePlatform.getName());
-        assertThat(dbSoftwarePlatform.getLink()).isEqualTo(compareSoftwarePlatform.getLink());
-        assertThat(dbSoftwarePlatform.getVersion()).isEqualTo(compareSoftwarePlatform.getVersion());
-        assertThat(dbSoftwarePlatform.getLicence()).isEqualTo(compareSoftwarePlatform.getLicence());
     }
 
     private SoftwarePlatform getFullSoftwarePlatform(String name) {

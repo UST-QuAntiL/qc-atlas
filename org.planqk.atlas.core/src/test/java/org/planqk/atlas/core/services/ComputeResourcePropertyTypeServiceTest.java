@@ -29,12 +29,11 @@ import org.planqk.atlas.core.model.ComputeResourcePropertyType;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Slf4j
@@ -104,17 +103,17 @@ public class ComputeResourcePropertyTypeServiceTest extends AtlasDatabaseTestBas
 
         var storedType = computeResourcePropertyTypeService.create(propertyType);
 
-        Assertions.assertDoesNotThrow(() -> computeResourcePropertyTypeService.findById(storedType.getId()));
+        assertDoesNotThrow(() -> computeResourcePropertyTypeService.findById(storedType.getId()));
 
         computeResourcePropertyTypeService.delete(storedType.getId());
 
-        Assertions.assertThrows(NoSuchElementException.class, () ->
+        assertThrows(NoSuchElementException.class, () ->
                 computeResourcePropertyTypeService.findById(storedType.getId()));
     }
 
     @Test
     void deleteComputeResourcePropertyType_ElementNotFound() {
-        Assertions.assertThrows(NoSuchElementException.class, () ->
+        assertThrows(NoSuchElementException.class, () ->
                 computeResourcePropertyTypeService.delete(UUID.randomUUID()));
     }
 
@@ -128,11 +127,11 @@ public class ComputeResourcePropertyTypeServiceTest extends AtlasDatabaseTestBas
 
         var storedProperty = computeResourcePropertyService.create(property);
 
-        Assertions.assertThrows(EntityReferenceConstraintViolationException.class, () -> {
+        assertThrows(EntityReferenceConstraintViolationException.class, () -> {
             this.computeResourcePropertyTypeService.delete(propertyType.getId());
         });
 
-        Assertions.assertDoesNotThrow(() -> computeResourcePropertyTypeService.findById(storedType.getId()));
+        assertDoesNotThrow(() -> computeResourcePropertyTypeService.findById(storedType.getId()));
     }
 
     private void assertPropertyTypeEquality(ComputeResourcePropertyType persistedType, ComputeResourcePropertyType type){

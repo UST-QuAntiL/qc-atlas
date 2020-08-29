@@ -30,13 +30,12 @@ import org.planqk.atlas.core.model.QuantumAlgorithm;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Slf4j
@@ -113,17 +112,17 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
 
         var storedResource = computeResourcePropertyService.create(resource);
 
-        Assertions.assertDoesNotThrow(() -> computeResourcePropertyService.findById(storedResource.getId()));
+        assertDoesNotThrow(() -> computeResourcePropertyService.findById(storedResource.getId()));
 
         computeResourcePropertyService.delete(storedResource.getId());
 
-        Assertions.assertThrows(NoSuchElementException.class, () ->
+        assertThrows(NoSuchElementException.class, () ->
                 computeResourcePropertyService.findById(storedResource.getId()));
     }
 
     @Test
     void deleteComputeResourceProperty_ElementNotFound() {
-        Assertions.assertThrows(NoSuchElementException.class, () ->
+        assertThrows(NoSuchElementException.class, () ->
                 computeResourcePropertyService.delete(UUID.randomUUID()));
     }
 
@@ -145,7 +144,7 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
 
         algorithmService.delete(storedAlgo.getId());
 
-        Assertions.assertThrows(NoSuchElementException.class, () ->
+        assertThrows(NoSuchElementException.class, () ->
                 computeResourcePropertyService.findById(storedResource.getId()));
     }
 
@@ -224,11 +223,12 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         assertThat(storedResource.getId()).isEqualTo(addedResource.getId());
         assertComputeResourcePropertyEquality(storedResource, addedResource);
 
-        assertEquals(1, resultAlgo.getRequiredComputeResourceProperties().size());
+        assertThat(resultAlgo.getRequiredComputeResourceProperties().size()).isEqualTo(1);
         resultAlgo.getRequiredComputeResourceProperties().forEach(resultResource -> {
-            assertEquals(storedResource.getId(), resultResource.getId());
-            Assertions.assertDoesNotThrow(() -> computeResourcePropertyService.findById(resultResource.getId()));
-            assertEquals(storedResource.getComputeResourcePropertyType().getId(), resultResource.getComputeResourcePropertyType().getId());
+            assertThat(storedResource.getId()).isEqualTo(resultResource.getId());
+            assertDoesNotThrow(() -> computeResourcePropertyService.findById(resultResource.getId()));
+            assertThat(storedResource.getComputeResourcePropertyType().getId())
+                    .isEqualTo(resultResource.getComputeResourcePropertyType().getId());
         });
     }
 

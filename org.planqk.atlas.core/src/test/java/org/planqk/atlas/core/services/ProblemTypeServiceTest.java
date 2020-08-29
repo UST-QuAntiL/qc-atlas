@@ -33,12 +33,13 @@ import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Slf4j
 public class ProblemTypeServiceTest extends AtlasDatabaseTestBase {
@@ -73,7 +74,7 @@ public class ProblemTypeServiceTest extends AtlasDatabaseTestBase {
 
     @Test
     void findProblemTypeById_ElementNotFound() {
-        Assertions.assertThrows(NoSuchElementException.class, () -> problemTypeService.findById(UUID.randomUUID()));
+        assertThrows(NoSuchElementException.class, () -> problemTypeService.findById(UUID.randomUUID()));
     }
 
     @Test
@@ -92,7 +93,7 @@ public class ProblemTypeServiceTest extends AtlasDatabaseTestBase {
     void updateProblemType_ElementNotFound() {
         ProblemType problemType = getFullProblemType("problemTypeName");
         problemType.setId(UUID.randomUUID());
-        Assertions.assertThrows(NoSuchElementException.class, () -> {
+        assertThrows(NoSuchElementException.class, () -> {
             problemTypeService.update(problemType);
         });
     }
@@ -128,9 +129,9 @@ public class ProblemTypeServiceTest extends AtlasDatabaseTestBase {
 
         Set<ProblemType> storedProblemTypes = storedAlgorithm.getProblemTypes();
         storedProblemTypes.forEach(pt -> {
-            Assertions.assertDoesNotThrow(() -> problemTypeService.findById(pt.getId()));
-            Assertions.assertThrows(EntityReferenceConstraintViolationException.class, () -> problemTypeService.delete(pt.getId()));
-            Assertions.assertDoesNotThrow(() -> problemTypeService.findById(pt.getId()));
+            assertDoesNotThrow(() -> problemTypeService.findById(pt.getId()));
+            assertThrows(EntityReferenceConstraintViolationException.class, () -> problemTypeService.delete(pt.getId()));
+            assertDoesNotThrow(() -> problemTypeService.findById(pt.getId()));
         });
     }
 
@@ -139,11 +140,11 @@ public class ProblemTypeServiceTest extends AtlasDatabaseTestBase {
         ProblemType problemType = getFullProblemType("problemTypeName");
         ProblemType storedProblemType = problemTypeService.create(problemType);
 
-        Assertions.assertDoesNotThrow(() -> problemTypeService.findById(storedProblemType.getId()));
+        assertDoesNotThrow(() -> problemTypeService.findById(storedProblemType.getId()));
 
         problemTypeService.delete(storedProblemType.getId());
 
-        Assertions.assertThrows(NoSuchElementException.class, () -> problemTypeService.findById(storedProblemType.getId()));
+        assertThrows(NoSuchElementException.class, () -> problemTypeService.findById(storedProblemType.getId()));
     }
 
     @Test

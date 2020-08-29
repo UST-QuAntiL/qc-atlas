@@ -34,7 +34,6 @@ import org.planqk.atlas.core.repository.PatternRelationTypeRepository;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,9 +42,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 public class PatternRelationTypeServiceTest extends AtlasDatabaseTestBase {
@@ -98,7 +96,7 @@ public class PatternRelationTypeServiceTest extends AtlasDatabaseTestBase {
 
         assertThat(storedType1.getId()).isNotNull();
         assertThat(storedType1.getName()).isEqualTo(type1.getName());
-        Assertions.assertDoesNotThrow(() -> patternRelationTypeService.findById(storedType1.getId()));
+        assertDoesNotThrow(() -> patternRelationTypeService.findById(storedType1.getId()));
     }
 
     @Test
@@ -137,9 +135,10 @@ public class PatternRelationTypeServiceTest extends AtlasDatabaseTestBase {
         PatternRelationType storedType1 = patternRelationTypeService.create(type1);
         storedType1.setName(type1Updated.getName());
         PatternRelationType updatedType1 = patternRelationTypeService.update(storedType1);
-        assertEquals(updatedType1.getId(), storedType1.getId());
-        assertEquals(updatedType1.getName(), type1Updated.getName());
-        assertTrue(patternRelationTypeRepository.findById(updatedType1.getId()).isPresent());
+
+        assertThat(updatedType1.getId()).isEqualTo(storedType1.getId());
+        assertThat(updatedType1.getName()).isEqualTo(type1Updated.getName());
+        assertThat(patternRelationTypeRepository.findById(updatedType1.getId()).isPresent()).isTrue();
     }
 
     @Test
@@ -155,7 +154,7 @@ public class PatternRelationTypeServiceTest extends AtlasDatabaseTestBase {
 
         PatternRelationType storedType1 = patternRelationTypeRepository.save(type1);
 
-        Assertions.assertDoesNotThrow(() -> patternRelationTypeService.findById(storedType1.getId()));
+        assertDoesNotThrow(() -> patternRelationTypeService.findById(storedType1.getId()));
 
         PatternRelation storedRelation = patternRelationService.create(relation);
 
@@ -167,7 +166,7 @@ public class PatternRelationTypeServiceTest extends AtlasDatabaseTestBase {
     void deletePatternRelationType_UnusedElementFound() {
         PatternRelationType storedType1 = patternRelationTypeService.create(type1);
 
-        Assertions.assertDoesNotThrow(() -> patternRelationTypeService.findById(storedType1.getId()));
+        assertDoesNotThrow(() -> patternRelationTypeService.findById(storedType1.getId()));
 
         patternRelationTypeService.delete(storedType1.getId());
 

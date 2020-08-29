@@ -25,6 +25,7 @@ import java.util.UUID;
 
 import org.planqk.atlas.core.model.DiscussionComment;
 import org.planqk.atlas.core.model.DiscussionTopic;
+import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 
 import lombok.extern.slf4j.Slf4j;
@@ -59,7 +60,8 @@ public class DiscussionCommentServiceTest extends AtlasDatabaseTestBase {
 
     @BeforeEach
     public void initialize() {
-        var pub = PublicationServiceTest.getFullPublication("discussion");
+        var pub = new Publication();
+        pub.setTitle("discussion");
         pub = publicationService.create(pub);
 
         topic = new DiscussionTopic();

@@ -20,7 +20,6 @@
 package org.planqk.atlas.core.services;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
@@ -32,7 +31,6 @@ import org.planqk.atlas.core.model.PatternRelationType;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +39,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Slf4j
@@ -97,7 +96,7 @@ public class PatternRelationServiceTest extends AtlasDatabaseTestBase {
         assertThat(savedRelation.getPattern()).isEqualTo(relation1.getPattern());
         assertThat(savedRelation.getDescription()).isEqualTo(relation1.getDescription());
 
-        Assertions.assertDoesNotThrow(() -> patternRelationService.findById(savedRelation.getId()));
+        assertDoesNotThrow(() -> patternRelationService.findById(savedRelation.getId()));
     }
 
     @Test
@@ -186,13 +185,18 @@ public class PatternRelationServiceTest extends AtlasDatabaseTestBase {
 
         PatternRelation savedRelation = patternRelationService.create(relation1);
 
-        savedRelation.setDescription("updatedDescription");
-        savedRelation.setPattern(URI.create("https://www.updated.com"));
+        var editedDescription = "updatedDescription";
+        var editedPattern = URI.create("https://www.updated.com");
+        savedRelation.setDescription(editedDescription);
+        savedRelation.setPattern(editedPattern);
 
         PatternRelation updatedRelation = patternRelationService.update(savedRelation);
 
+        assertThat(updatedRelation.getId()).isEqualTo(savedRelation.getId());
         assertThat(updatedRelation.getDescription()).isEqualTo(savedRelation.getDescription());
+        assertThat(updatedRelation.getDescription()).isEqualTo(editedDescription);
         assertThat(updatedRelation.getPattern()).isEqualTo(savedRelation.getPattern());
+        assertThat(updatedRelation.getPattern()).isEqualTo(editedPattern);
     }
 
     @Test
@@ -211,7 +215,7 @@ public class PatternRelationServiceTest extends AtlasDatabaseTestBase {
 
         PatternRelation savedRelation = patternRelationService.create(relation1);
 
-        Assertions.assertDoesNotThrow(() -> patternRelationService.findById(savedRelation.getId()));
+        assertDoesNotThrow(() -> patternRelationService.findById(savedRelation.getId()));
 
         patternRelationService.delete(savedRelation.getId());
 
@@ -221,10 +225,7 @@ public class PatternRelationServiceTest extends AtlasDatabaseTestBase {
     private PatternRelation getFullPatternRelation(String description) {
         var patternRelation = new PatternRelation();
 
-        try {
-            patternRelation.setPattern(new URI("http://www.example.de"));
-        } catch (URISyntaxException ignored) {
-        }
+        patternRelation.setPattern(URI.create("http://www.example.de"));
         patternRelation.setDescription(description);
 
         return patternRelation;

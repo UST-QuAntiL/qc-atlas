@@ -21,10 +21,8 @@ package org.planqk.atlas.core.services;
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Set;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
@@ -41,14 +39,16 @@ import org.planqk.atlas.core.model.QuantumAlgorithm;
 import org.planqk.atlas.core.model.QuantumComputationModel;
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
+import org.planqk.atlas.core.util.ServiceTestUtils;
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Slf4j
 public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
@@ -89,7 +89,7 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
 
         Algorithm storedAlgorithm = algorithmService.create(algorithm);
 
-        assertAlgorithmEquality(storedAlgorithm, algorithm);
+        ServiceTestUtils.assertAlgorithmEquality(storedAlgorithm, algorithm);
     }
 // TODO mode to linking service tests
 //
@@ -163,7 +163,7 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
 
     @Test
     void findAlgorithmById_ElementNotFound() {
-        Assertions.assertThrows(NoSuchElementException.class, () ->
+        assertThrows(NoSuchElementException.class, () ->
                 algorithmService.findById(UUID.randomUUID()));
     }
 
@@ -175,7 +175,8 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
 
         storedAlgorithm = algorithmService.findById(storedAlgorithm.getId());
 
-        assertAlgorithmEquality(storedAlgorithm, algorithm);
+        assertThat(storedAlgorithm.getId()).isNotNull();
+        ServiceTestUtils.assertAlgorithmEquality(storedAlgorithm, algorithm);
         assertThat(storedAlgorithm).isInstanceOf(ClassicAlgorithm.class);
     }
 
@@ -212,7 +213,7 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
     void updateAlgorithm_ElementNotFound() {
         Algorithm algorithm = getFullAlgorithm("algorithmName");
         algorithm.setId(UUID.randomUUID());
-        Assertions.assertThrows(NoSuchElementException.class, () ->
+        assertThrows(NoSuchElementException.class, () ->
                 algorithmService.update(algorithm));
     }
 
@@ -253,11 +254,11 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
 
         Algorithm storedAlgorithm = algorithmService.create(algorithm);
 
-        Assertions.assertDoesNotThrow(() -> algorithmService.findById(storedAlgorithm.getId()));
+        assertDoesNotThrow(() -> algorithmService.findById(storedAlgorithm.getId()));
 
         algorithmService.delete(storedAlgorithm.getId());
 
-        Assertions.assertThrows(NoSuchElementException.class, () ->
+        assertThrows(NoSuchElementException.class, () ->
                 algorithmService.findById(storedAlgorithm.getId()));
     }
 
@@ -297,20 +298,20 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
         linkingService.linkAlgorithmAndApplicationArea(algorithm.getId(), applicationArea.getId());
 
         Algorithm finalAlgorithm = algorithmService.findById(algorithm.getId());
-        Assertions.assertDoesNotThrow(() -> algorithmService.findById(finalAlgorithm.getId()));
+        assertDoesNotThrow(() -> algorithmService.findById(finalAlgorithm.getId()));
 
         finalAlgorithm.getTags().forEach(t ->
-            Assertions.assertDoesNotThrow(() -> tagService.findByValue(t.getValue())));
+            assertDoesNotThrow(() -> tagService.findByValue(t.getValue())));
         finalAlgorithm.getPublications().forEach(pub ->
-                Assertions.assertDoesNotThrow(() -> publicationService.findById(pub.getId())));
+                assertDoesNotThrow(() -> publicationService.findById(pub.getId())));
         finalAlgorithm.getProblemTypes().forEach(pt ->
-                Assertions.assertDoesNotThrow(() -> problemTypeService.findById(pt.getId())));
+                assertDoesNotThrow(() -> problemTypeService.findById(pt.getId())));
         finalAlgorithm.getApplicationAreas().forEach(area ->
-                Assertions.assertDoesNotThrow(() -> applicationAreaService.findById(area.getId())));
+                assertDoesNotThrow(() -> applicationAreaService.findById(area.getId())));
 
         algorithmService.delete(finalAlgorithm.getId());
 
-        Assertions.assertThrows(NoSuchElementException.class, () ->
+        assertThrows(NoSuchElementException.class, () ->
                 algorithmService.findById(finalAlgorithm.getId()));
 
         // check if algorithm links are removed
@@ -508,23 +509,6 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
         assertThat(persistedTargetAlgorithm2.getAlgorithmRelations().size()).isEqualTo(1);
     }
 
-    private void assertAlgorithmEquality(Algorithm persistedAlgorithm, Algorithm algorithm) {
-        assertThat(persistedAlgorithm.getId()).isNotNull();
-        assertThat(persistedAlgorithm.getName()).isEqualTo(algorithm.getName());
-        assertThat(persistedAlgorithm.getAcronym()).isEqualTo(algorithm.getAcronym());
-        assertThat(persistedAlgorithm.getIntent()).isEqualTo(algorithm.getIntent());
-        assertThat(persistedAlgorithm.getProblem()).isEqualTo(algorithm.getProblem());
-        assertThat(persistedAlgorithm.getInputFormat()).isEqualTo(algorithm.getInputFormat());
-        assertThat(persistedAlgorithm.getAlgoParameter()).isEqualTo(algorithm.getAlgoParameter());
-        assertThat(persistedAlgorithm.getOutputFormat()).isEqualTo(algorithm.getOutputFormat());
-        assertThat(persistedAlgorithm.getSolution()).isEqualTo(algorithm.getSolution());
-        assertThat(persistedAlgorithm.getAssumptions()).isEqualTo(algorithm.getAssumptions());
-        assertThat(persistedAlgorithm.getComputationModel()).isEqualTo(algorithm.getComputationModel());
-
-        persistedAlgorithm.getSketches().containsAll(algorithm.getSketches());
-        algorithm.getSketches().containsAll(persistedAlgorithm.getSketches());
-    }
-
     private Algorithm getFullAlgorithm(String name) {
         Algorithm algorithm = new ClassicAlgorithm();
         algorithm.setName(name);
@@ -539,24 +523,5 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
         algorithm.setAssumptions("testAssumptions");
         algorithm.setComputationModel(ComputationModel.CLASSIC);
         return algorithm;
-    }
-
-    private void assertAlgorithmRelationEquality(AlgorithmRelation dbRelation, AlgorithmRelation compareRelation) {
-        assertThat(dbRelation.getId()).isNotNull();
-        assertThat(dbRelation.getDescription()).isEqualTo(compareRelation.getDescription());
-        this.assertAlgorithmEquality(dbRelation.getSourceAlgorithm(), compareRelation.getSourceAlgorithm());
-        this.assertAlgorithmEquality(dbRelation.getTargetAlgorithm(), compareRelation.getTargetAlgorithm());
-        assertThat(dbRelation.getAlgorithmRelationType().getName()).isEqualTo(compareRelation.getAlgorithmRelationType().getName());
-    }
-
-    private AlgorithmRelation getGenericAlgorithmRelation(Algorithm sourceAlgorithm, Algorithm targetAlgorithm) {
-        AlgorithmRelation algorithmRelation = new AlgorithmRelation();
-        algorithmRelation.setDescription("testRelationDescription");
-        algorithmRelation.setSourceAlgorithm(sourceAlgorithm);
-        algorithmRelation.setTargetAlgorithm(targetAlgorithm);
-        AlgorithmRelationType algorithmRelationType = new AlgorithmRelationType();
-        algorithmRelationType.setName("testRelation");
-        algorithmRelation.setAlgorithmRelationType(algorithmRelationType);
-        return algorithmRelation;
     }
 }

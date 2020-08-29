@@ -27,13 +27,15 @@ import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.model.AlgorithmRelationType;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
+import org.planqk.atlas.core.util.ServiceTestUtils;
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Slf4j
 public class AlgorithmRelationServiceTest extends AtlasDatabaseTestBase {
@@ -57,7 +59,8 @@ public class AlgorithmRelationServiceTest extends AtlasDatabaseTestBase {
 
         var persistedAlgorithmRelation = algorithmRelationService.create(algorithmRelation);
 
-        assertAlgorithmRelationEquality(persistedAlgorithmRelation, algorithmRelation);
+        assertThat(persistedAlgorithmRelation.getId()).isNotNull();
+        ServiceTestUtils.assertAlgorithmRelationEquality(persistedAlgorithmRelation, algorithmRelation);
     }
 
     @Test
@@ -74,7 +77,7 @@ public class AlgorithmRelationServiceTest extends AtlasDatabaseTestBase {
         AlgorithmRelation algorithmRelation = buildAlgorithmRelation(
                 sourceAlgorithm, targetAlgorithm, algorithmRelationType, "description");
 
-        Assertions.assertThrows(NoSuchElementException.class, () -> algorithmRelationService.create(algorithmRelation));
+        assertThrows(NoSuchElementException.class, () -> algorithmRelationService.create(algorithmRelation));
     }
 
     @Test
@@ -91,12 +94,13 @@ public class AlgorithmRelationServiceTest extends AtlasDatabaseTestBase {
 
         persistedAlgorithmRelation = algorithmRelationService.findById(persistedAlgorithmRelation.getId());
 
-        assertAlgorithmRelationEquality(persistedAlgorithmRelation, algorithmRelation);
+        assertThat(persistedAlgorithmRelation.getId()).isNotNull();
+        ServiceTestUtils.assertAlgorithmRelationEquality(persistedAlgorithmRelation, algorithmRelation);
     }
 
     @Test
     void findAlgorithmRelationById_ElementNotFound() {
-        Assertions.assertThrows(NoSuchElementException.class, () -> algorithmRelationService.findById(UUID.randomUUID()));
+        assertThrows(NoSuchElementException.class, () -> algorithmRelationService.findById(UUID.randomUUID()));
     }
 
     @Test
@@ -133,8 +137,10 @@ public class AlgorithmRelationServiceTest extends AtlasDatabaseTestBase {
                 .isNotEqualTo(compareAlgorithmRelation.getAlgorithmRelationType().getName());
         assertThat(updatedAlgorithmRelation.getAlgorithmRelationType().getName())
                 .isEqualTo(editedType.getName());
-        assertThat(updatedAlgorithmRelation.getSourceAlgorithm().getId()).isEqualTo(compareAlgorithmRelation.getSourceAlgorithm().getId());
-        assertThat(updatedAlgorithmRelation.getTargetAlgorithm().getId()).isEqualTo(compareAlgorithmRelation.getTargetAlgorithm().getId());
+        assertThat(updatedAlgorithmRelation.getSourceAlgorithm().getId())
+                .isEqualTo(compareAlgorithmRelation.getSourceAlgorithm().getId());
+        assertThat(updatedAlgorithmRelation.getTargetAlgorithm().getId())
+                .isEqualTo(compareAlgorithmRelation.getTargetAlgorithm().getId());
     }
 
     @Test
@@ -142,7 +148,7 @@ public class AlgorithmRelationServiceTest extends AtlasDatabaseTestBase {
         AlgorithmRelation algorithmRelation = buildAlgorithmRelation(
                 null, null, null, "description");
         algorithmRelation.setId(UUID.randomUUID());
-        Assertions.assertThrows(NoSuchElementException.class, () -> algorithmRelationService.update(algorithmRelation));
+        assertThrows(NoSuchElementException.class, () -> algorithmRelationService.update(algorithmRelation));
     }
 
     @Test
@@ -157,30 +163,21 @@ public class AlgorithmRelationServiceTest extends AtlasDatabaseTestBase {
 
         var persistedAlgorithmRelation = algorithmRelationService.create(algorithmRelation);
 
-        Assertions.assertDoesNotThrow(() -> algorithmRelationService.findById(persistedAlgorithmRelation.getId()));
+        assertDoesNotThrow(() -> algorithmRelationService.findById(persistedAlgorithmRelation.getId()));
 
         algorithmRelationService.delete(persistedAlgorithmRelation.getId());
 
-        Assertions.assertThrows(NoSuchElementException.class, () ->
+        assertThrows(NoSuchElementException.class, () ->
                 algorithmRelationService.findById(persistedAlgorithmRelation.getId()));
     }
 
     @Test
     void deleteAlgorithmRelation_ElementNotFound() {
-        Assertions.assertThrows(NoSuchElementException.class, () ->
+        assertThrows(NoSuchElementException.class, () ->
                 algorithmRelationService.delete(UUID.randomUUID()));
     }
 
-    private void assertAlgorithmRelationEquality(AlgorithmRelation persistedRelation, AlgorithmRelation relation) {
-        assertThat(persistedRelation.getId()).isNotNull();
-        assertThat(persistedRelation.getDescription()).isEqualTo(relation.getDescription());
-        assertThat(persistedRelation.getAlgorithmRelationType().getId())
-                .isEqualTo(relation.getAlgorithmRelationType().getId());
-        assertThat(persistedRelation.getAlgorithmRelationType().getName())
-                .isEqualTo(relation.getAlgorithmRelationType().getName());
-        assertThat(persistedRelation.getSourceAlgorithm().getId()).isEqualTo(relation.getSourceAlgorithm().getId());
-        assertThat(persistedRelation.getTargetAlgorithm().getId()).isEqualTo(relation.getTargetAlgorithm().getId());
-    }
+
 
     private AlgorithmRelation buildAlgorithmRelation (
             Algorithm source, Algorithm target, AlgorithmRelationType type, String description) {

@@ -25,6 +25,7 @@ import java.util.UUID;
 
 import org.planqk.atlas.core.model.DiscussionTopic;
 import org.planqk.atlas.core.model.KnowledgeArtifact;
+import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.model.Status;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 
@@ -69,7 +70,8 @@ public class DiscussionTopicServiceTest extends AtlasDatabaseTestBase {
         topic2.setDescription("Description");
         topic2.setStatus(Status.CLOSED);
 
-        var pub = PublicationServiceTest.getFullPublication("discussion");
+        var pub = new Publication();
+        pub.setTitle("discussion");
         pub = publicationService.create(pub);
 
         topic.setKnowledgeArtifact(pub);

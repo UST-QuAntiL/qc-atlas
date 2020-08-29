@@ -17,12 +17,13 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.planqk.atlas.core.util;
+package org.planqk.atlas.core.model;
 
 import org.planqk.atlas.core.exceptions.InvalidResourceTypeValueException;
 import org.planqk.atlas.core.model.ComputeResourceProperty;
 import org.planqk.atlas.core.model.ComputeResourcePropertyDataType;
 import org.planqk.atlas.core.model.ComputeResourcePropertyType;
+import org.planqk.atlas.core.util.ValidationUtils;
 
 import org.junit.jupiter.api.Test;
 

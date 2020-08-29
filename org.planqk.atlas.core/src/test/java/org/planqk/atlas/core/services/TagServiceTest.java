@@ -21,7 +21,6 @@ package org.planqk.atlas.core.services;
 
 import java.util.HashSet;
 import java.util.NoSuchElementException;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -30,17 +29,15 @@ import org.planqk.atlas.core.model.ClassicAlgorithm;
 import org.planqk.atlas.core.model.ClassicImplementation;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Tag;
-import org.planqk.atlas.core.repository.TagRepository;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
-import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Slf4j
@@ -157,11 +154,11 @@ public class TagServiceTest extends AtlasDatabaseTestBase {
 
         tagService.addTagToAlgorithm(algorithm.getId(), tag);
 
-        Assertions.assertDoesNotThrow(() -> tagService.findByValue(tag.getValue()));
+        assertDoesNotThrow(() -> tagService.findByValue(tag.getValue()));
 
         tagService.removeTagFromAlgorithm(algorithm.getId(), tag);
 
-        Assertions.assertDoesNotThrow(() -> tagService.findByValue(tag.getValue()));
+        assertDoesNotThrow(() -> tagService.findByValue(tag.getValue()));
         var tagsOfAlgorithm = algorithmService.findById(algorithm.getId()).getTags();
 
         assertThat(tagsOfAlgorithm.size()).isEqualTo(0);
@@ -213,11 +210,11 @@ public class TagServiceTest extends AtlasDatabaseTestBase {
 
         tagService.addTagToImplementation(implementation.getId(), tag);
 
-        Assertions.assertDoesNotThrow(() -> tagService.findByValue(tag.getValue()));
+        assertDoesNotThrow(() -> tagService.findByValue(tag.getValue()));
 
         tagService.removeTagFromImplementation(implementation.getId(), tag);
 
-        Assertions.assertDoesNotThrow(() -> tagService.findByValue(tag.getValue()));
+        assertDoesNotThrow(() -> tagService.findByValue(tag.getValue()));
         var tagsOfImplementation = implementationService.findById(implementation.getId()).getTags();
 
         assertThat(tagsOfImplementation.size()).isEqualTo(0);

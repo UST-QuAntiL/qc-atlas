@@ -29,14 +29,16 @@ import org.planqk.atlas.core.model.ComputeResourcePropertyDataType;
 import org.planqk.atlas.core.model.ComputeResourcePropertyType;
 import org.planqk.atlas.core.model.QuantumComputationModel;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
+import org.planqk.atlas.core.util.ServiceTestUtils;
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Slf4j
 public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
@@ -49,22 +51,13 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
     private ComputeResourcePropertyTypeService computeResourcePropertyTypeService;
 
     @Test
-    void createMinimalComputeResource() {
-        ComputeResource computeResource = new ComputeResource();
-        computeResource.setName("computeResourceName");
-
-        ComputeResource storedComputeResource = computeResourceService.create(computeResource);
-
-        assertComputeResourceEquality(storedComputeResource, computeResource);
-    }
-
-    @Test
-    void createMaximalComputeResource() {
+    void createComputeResource() {
         ComputeResource computeResource = getFullComputeResource("computeResourceName");
 
         ComputeResource storedComputeResource = computeResourceService.create(computeResource);
 
-        assertComputeResourceEquality(storedComputeResource, computeResource);
+        assertThat(storedComputeResource.getId()).isNotNull();
+        ServiceTestUtils.assertComputeResourceEquality(storedComputeResource, computeResource);
     }
 
     @Test
@@ -72,7 +65,7 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
         ComputeResource computeResource = getFullComputeResource("computeResourceName");
         ComputeResource storedComputeResource = computeResourceService.create(computeResource);
 
-        Assertions.assertDoesNotThrow(() -> computeResourceService.findById(storedComputeResource.getId()));
+        assertDoesNotThrow(() -> computeResourceService.findById(storedComputeResource.getId()));
 
         // Add Computing Resource Property Reference
         var computeResourceProperty = new ComputeResourceProperty();
@@ -119,7 +112,7 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
 
     @Test
     void findComputeResourceById_ElementNotFound() {
-        Assertions.assertThrows(NoSuchElementException.class, () ->
+        assertThrows(NoSuchElementException.class, () ->
                 computeResourceService.findById(UUID.randomUUID()));
     }
 
@@ -131,14 +124,15 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
 
         storedComputeResource = computeResourceService.findById(storedComputeResource.getId());
 
-        assertComputeResourceEquality(storedComputeResource, computeResource);
+        assertThat(storedComputeResource.getId()).isNotNull();
+        ServiceTestUtils.assertComputeResourceEquality(storedComputeResource, computeResource);
     }
 
     @Test
     void updateComputeResource_ElementNotFound() {
         ComputeResource computeResource = getFullComputeResource("computeResourceName");
         computeResource.setId(UUID.randomUUID());
-        Assertions.assertThrows(NoSuchElementException.class, () ->
+        assertThrows(NoSuchElementException.class, () ->
                 computeResourceService.update(computeResource));
     }
 
@@ -167,11 +161,11 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
 
         ComputeResource storedComputeResource = computeResourceService.create(computeResource);
 
-        Assertions.assertDoesNotThrow(() -> computeResourceService.findById(storedComputeResource.getId()));
+        assertDoesNotThrow(() -> computeResourceService.findById(storedComputeResource.getId()));
 
         computeResourceService.delete(storedComputeResource.getId());
 
-        Assertions.assertThrows(NoSuchElementException.class, () ->
+        assertThrows(NoSuchElementException.class, () ->
                 computeResourceService.findById(storedComputeResource.getId()));
     }
 
@@ -185,7 +179,7 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
         ComputeResource computeResource = getFullComputeResource("computeResourceName");
         ComputeResource storedComputeResource = computeResourceService.create(computeResource);
 
-        Assertions.assertDoesNotThrow(() -> computeResourceService.findById(storedComputeResource.getId()));
+        assertDoesNotThrow(() -> computeResourceService.findById(storedComputeResource.getId()));
 
         // Add Computing Resource Property Reference
         var computeResourceProperty = new ComputeResourceProperty();
@@ -203,20 +197,12 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
         // Delete
         computeResourceService.delete(storedComputeResource.getId());
 
-        Assertions.assertThrows(NoSuchElementException.class, () ->
+        assertThrows(NoSuchElementException.class, () ->
                 computeResourceService.findById(storedComputeResource.getId()));
 
         // Test if references are removed
-        Assertions.assertThrows(NoSuchElementException.class, () ->
+        assertThrows(NoSuchElementException.class, () ->
                 computeResourcePropertyService.findById(storedProperty.getId()));
-    }
-
-    private void assertComputeResourceEquality(ComputeResource dbComputeResource, ComputeResource compareComputeResource) {
-        assertThat(dbComputeResource.getId()).isNotNull();
-        assertThat(dbComputeResource.getName()).isEqualTo(compareComputeResource.getName());
-        assertThat(dbComputeResource.getQuantumComputationModel()).isEqualTo(compareComputeResource.getQuantumComputationModel());
-        assertThat(dbComputeResource.getTechnology()).isEqualTo(compareComputeResource.getTechnology());
-        assertThat(dbComputeResource.getVendor()).isEqualTo(compareComputeResource.getVendor());
     }
 
     private ComputeResource getFullComputeResource(String name) {

@@ -32,12 +32,13 @@ import org.planqk.atlas.core.model.ComputationModel;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Slf4j
 public class AlgorithmRelationTypeServiceTest extends AtlasDatabaseTestBase {
@@ -73,7 +74,7 @@ public class AlgorithmRelationTypeServiceTest extends AtlasDatabaseTestBase {
 
     @Test
     void findAlgorithmRelationTypeById_ElementNotFound() {
-        Assertions.assertThrows(NoSuchElementException.class, () ->
+        assertThrows(NoSuchElementException.class, () ->
                 algorithmRelationTypeService.findById(UUID.randomUUID()));
     }
 
@@ -93,7 +94,7 @@ public class AlgorithmRelationTypeServiceTest extends AtlasDatabaseTestBase {
     void UpdateAlgorithmRelationType_ElementNotFound() {
         AlgorithmRelationType relationType = getFullAlgorithmRelationType("relationTypeName");
         relationType.setId(UUID.randomUUID());
-        Assertions.assertThrows(NoSuchElementException.class, () ->
+        assertThrows(NoSuchElementException.class, () ->
                 algorithmRelationTypeService.update(relationType));
     }
 
@@ -137,9 +138,9 @@ public class AlgorithmRelationTypeServiceTest extends AtlasDatabaseTestBase {
 
         algorithmRelationService.create(algorithmRelation);
 
-        Assertions.assertThrows(EntityReferenceConstraintViolationException.class, () -> algorithmRelationTypeService.delete(storedRelationType.getId()));
+        assertThrows(EntityReferenceConstraintViolationException.class, () -> algorithmRelationTypeService.delete(storedRelationType.getId()));
 
-        Assertions.assertDoesNotThrow(() -> algorithmRelationTypeService.findById(storedRelationType.getId()));
+        assertDoesNotThrow(() -> algorithmRelationTypeService.findById(storedRelationType.getId()));
     }
 
     @Test
@@ -147,11 +148,11 @@ public class AlgorithmRelationTypeServiceTest extends AtlasDatabaseTestBase {
         AlgorithmRelationType relationType = getFullAlgorithmRelationType("relationTypeName");
         AlgorithmRelationType storedRelationType = algorithmRelationTypeService.create(relationType);
 
-        Assertions.assertDoesNotThrow(() -> algorithmRelationTypeService.findById(storedRelationType.getId()));
+        assertDoesNotThrow(() -> algorithmRelationTypeService.findById(storedRelationType.getId()));
 
         algorithmRelationTypeService.delete(storedRelationType.getId());
 
-        Assertions.assertThrows(NoSuchElementException.class, () ->
+        assertThrows(NoSuchElementException.class, () ->
                 algorithmRelationTypeService.findById(storedRelationType.getId()));
     }
 

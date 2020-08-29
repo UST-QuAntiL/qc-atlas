@@ -28,17 +28,21 @@ import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
+import org.planqk.atlas.core.model.ClassicImplementation;
 import org.planqk.atlas.core.model.ComputationModel;
+import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
+import org.planqk.atlas.core.util.ServiceTestUtils;
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Slf4j
 public class PublicationServiceTest extends AtlasDatabaseTestBase {
@@ -47,18 +51,22 @@ public class PublicationServiceTest extends AtlasDatabaseTestBase {
     private PublicationService publicationService;
     @Autowired
     private AlgorithmService algorithmService;
+    @Autowired
+    private ImplementationService implementationService;
+    @Autowired
+    private LinkingService linkingService;
 
     @Test
     void createPublication() {
         Publication publication = getFullPublication("publicationTitle");
 
         Publication storedPublication = publicationService.create(publication);
-        assertPublicationEquality(storedPublication, publication);
+        ServiceTestUtils.assertPublicationEquality(storedPublication, publication);
     }
 
     @Test
     void findPublicationById_ElementNotFound() {
-        Assertions.assertThrows(NoSuchElementException.class, () ->
+        assertThrows(NoSuchElementException.class, () ->
                 publicationService.findById(UUID.randomUUID()));
     }
 
@@ -69,14 +77,15 @@ public class PublicationServiceTest extends AtlasDatabaseTestBase {
 
         storedPublication = publicationService.findById(storedPublication.getId());
 
-        assertPublicationEquality(storedPublication, publication);
+        assertThat(storedPublication.getId()).isNotNull();
+        ServiceTestUtils.assertPublicationEquality(storedPublication, publication);
     }
 
     @Test
     void updatePublication_ElementNotFound() {
         Publication publication = getFullPublication("publicationTitle");
         publication.setId(UUID.randomUUID());
-        Assertions.assertThrows(NoSuchElementException.class, () ->
+        assertThrows(NoSuchElementException.class, () ->
                 publicationService.update(publication));
     }
 
@@ -87,22 +96,23 @@ public class PublicationServiceTest extends AtlasDatabaseTestBase {
 
         Publication storedPublication = publicationService.create(publication);
         comparePublication.setId(storedPublication.getId());
-        storedPublication.setTitle("editedPublicationTitle");
+        String editedTitle = "editedPublicationTitle";
+        storedPublication.setTitle(editedTitle);
         Publication editedProblemType = publicationService.update(storedPublication);
 
         assertThat(editedProblemType.getId()).isNotNull();
         assertThat(editedProblemType.getId()).isEqualTo(comparePublication.getId());
         assertThat(editedProblemType.getTitle()).isNotEqualTo(comparePublication.getTitle());
+        assertThat(editedProblemType.getTitle()).isEqualTo(editedTitle);
         assertThat(storedPublication.getUrl()).isEqualTo(comparePublication.getUrl());
         assertThat(storedPublication.getDoi()).isEqualTo(comparePublication.getDoi());
-        assertThat(storedPublication.getAuthors().stream().filter(author ->
-                comparePublication.getAuthors().contains(author))
-                .count()).isEqualTo(comparePublication.getAuthors().size());
+
+        ServiceTestUtils.assertCollectionEquality(storedPublication.getAuthors(), comparePublication.getAuthors());
     }
 
     @Test
     void deletePublication_ElementNotFound() {
-        Assertions.assertThrows(NoSuchElementException.class, () ->
+        assertThrows(NoSuchElementException.class, () ->
                 publicationService.delete(UUID.randomUUID()));
     }
 
@@ -111,11 +121,11 @@ public class PublicationServiceTest extends AtlasDatabaseTestBase {
         Publication publication = getFullPublication("publicationTitle");
         Publication storedPublication = publicationService.create(publication);
 
-        Assertions.assertDoesNotThrow(() -> publicationService.findById(storedPublication.getId()));
+        assertDoesNotThrow(() -> publicationService.findById(storedPublication.getId()));
 
         publicationService.delete(storedPublication.getId());
 
-        Assertions.assertThrows(NoSuchElementException.class, () ->
+        assertThrows(NoSuchElementException.class, () ->
                 publicationService.findById(storedPublication.getId()));
     }
 
@@ -130,68 +140,75 @@ public class PublicationServiceTest extends AtlasDatabaseTestBase {
         publicationIds.add(storedPublication1.getId());
         publicationIds.add(storedPublication2.getId());
 
-        Assertions.assertDoesNotThrow(() -> publicationService.findById(storedPublication1.getId()));
-        Assertions.assertDoesNotThrow(() -> publicationService.findById(storedPublication2.getId()));
+        assertDoesNotThrow(() -> publicationService.findById(storedPublication1.getId()));
+        assertDoesNotThrow(() -> publicationService.findById(storedPublication2.getId()));
 
         publicationService.deletePublications(publicationIds);
 
-        Assertions.assertThrows(NoSuchElementException.class, () ->
+        assertThrows(NoSuchElementException.class, () ->
                 publicationService.findById(storedPublication1.getId()));
-        Assertions.assertThrows(NoSuchElementException.class, () ->
+        assertThrows(NoSuchElementException.class, () ->
                 publicationService.findById(storedPublication2.getId()));
     }
 
     @Test
     void findLinkedAlgorithms_PublicationNotFound() {
-        Assertions.assertThrows(NoSuchElementException.class, () ->
+        assertThrows(NoSuchElementException.class, () ->
                 publicationService.findLinkedAlgorithms(UUID.randomUUID(), Pageable.unpaged()));
     }
 
     @Test
     void findLinkedAlgorithms_PublicationFound() {
         Algorithm algorithm = new ClassicAlgorithm();
-        algorithm.setName("testName");
+        algorithm.setName("algorithmName");
         algorithm.setComputationModel(ComputationModel.CLASSIC);
+        algorithm = algorithmService.create(algorithm);
 
         Publication publication = getFullPublication("publicationTitle");
-        Set<Algorithm> algorithms = new HashSet<>();
-        algorithms.add(algorithm);
-        publication.setAlgorithms(algorithms);
-        Publication storedPublication = publicationService.create(publication);
+        publication = publicationService.create(publication);
 
-        algorithm.addPublication(publication);
+        linkingService.linkAlgorithmAndPublication(algorithm.getId(), publication.getId());
 
-        Algorithm storedAlgorithm = algorithmService.create(algorithm);
+        Set<Algorithm> publicationAlgorithms = publicationService
+                .findLinkedAlgorithms(publication.getId(), Pageable.unpaged()).toSet();
 
-        Set<Algorithm> publicationAlgorithms = storedPublication.getAlgorithms();
-
+        Algorithm finalAlgorithm = algorithm;
         publicationAlgorithms.forEach(algo -> {
-            assertThat(algo.getId()).isEqualTo(storedAlgorithm.getId());
+            assertThat(algo.getId()).isEqualTo(finalAlgorithm.getId());
         });
     }
 
     @Test
     void findLinkedImplementations_PublicationNotFound() {
-        Assertions.assertThrows(NoSuchElementException.class, () ->
+        assertThrows(NoSuchElementException.class, () ->
                 publicationService.findLinkedImplementations(UUID.randomUUID(), Pageable.unpaged()));
     }
 
-    // @Test
+    @Test
     void findLinkedImplementations_PublicationFound() {
-        // TODO
+        Algorithm algorithm = new ClassicAlgorithm();
+        algorithm.setName("algorithmName");
+        algorithm = algorithmService.create(algorithm);
+
+        Implementation implementation = new ClassicImplementation();
+        implementation.setName("implementationName");
+        implementation = implementationService.create(implementation, algorithm.getId());
+
+        Publication publication = getFullPublication("publicationTitle");
+        publication = publicationService.create(publication);
+
+        linkingService.linkImplementationAndPublication(implementation.getId(), publication.getId());
+
+        Set<Implementation> publicationImplementations = publicationService
+                .findLinkedImplementations(publication.getId(), Pageable.unpaged()).toSet();
+
+        Implementation finalImplementation = implementation;
+        publicationImplementations.forEach(impl -> {
+            assertThat(impl.getId()).isEqualTo(finalImplementation.getId());
+        });
     }
 
-    private void assertPublicationEquality(Publication dbPublication, Publication comparePublication) {
-        assertThat(dbPublication.getId()).isNotNull();
-        assertThat(dbPublication.getTitle()).isEqualTo(comparePublication.getTitle());
-        assertThat(dbPublication.getUrl()).isEqualTo(comparePublication.getUrl());
-        assertThat(dbPublication.getDoi()).isEqualTo(comparePublication.getDoi());
-        assertThat(dbPublication.getAuthors().stream().filter(author ->
-                comparePublication.getAuthors().contains(author))
-                .count()).isEqualTo(comparePublication.getAuthors().size());
-    }
-
-    static Publication getFullPublication(String title) {
+    private Publication getFullPublication(String title) {
         Publication publication = new Publication();
         publication.setTitle(title);
         publication.setUrl("http://example.com");

@@ -30,14 +30,16 @@ import org.planqk.atlas.core.model.CloudService;
 import org.planqk.atlas.core.model.ComputeResource;
 import org.planqk.atlas.core.model.QuantumComputationModel;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
+import org.planqk.atlas.core.util.ServiceTestUtils;
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Slf4j
 public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
@@ -54,7 +56,9 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
         CloudService cloudService = getFullCloudService("cloudServiceName");
 
         CloudService storedCloudService = cloudServiceService.create(cloudService);
-        assertCloudServiceEquality(storedCloudService, cloudService);
+
+        assertThat(storedCloudService.getId()).isNotNull();
+        ServiceTestUtils.assertCloudServiceEquality(storedCloudService, cloudService);
     }
 
     @Test
@@ -105,7 +109,7 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
 
     @Test
     void findCloudServiceById_ElementNotFound() {
-        Assertions.assertThrows(NoSuchElementException.class, () ->
+        assertThrows(NoSuchElementException.class, () ->
                 cloudServiceService.findById(UUID.randomUUID()));
     }
 
@@ -117,14 +121,15 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
 
         storedCloudService = cloudServiceService.findById(storedCloudService.getId());
 
-        assertCloudServiceEquality(storedCloudService, cloudService);
+        assertThat(storedCloudService.getId()).isNotNull();
+        ServiceTestUtils.assertCloudServiceEquality(storedCloudService, cloudService);
     }
 
     @Test
     void updateCloudService_ElementNotFound() {
         CloudService cloudService = getFullCloudService("cloudServiceName");
         cloudService.setId(UUID.randomUUID());
-        Assertions.assertThrows(NoSuchElementException.class, () ->
+        assertThrows(NoSuchElementException.class, () ->
                 cloudServiceService.update(cloudService));
     }
 
@@ -153,11 +158,11 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
 
         CloudService storedCloudService = cloudServiceService.create(cloudService);
 
-        Assertions.assertDoesNotThrow(() -> cloudServiceService.findById(storedCloudService.getId()));
+        assertDoesNotThrow(() -> cloudServiceService.findById(storedCloudService.getId()));
 
         cloudServiceService.delete(storedCloudService.getId());
 
-        Assertions.assertThrows(NoSuchElementException.class, () ->
+        assertThrows(NoSuchElementException.class, () ->
                 cloudServiceService.findById(storedCloudService.getId()));
     }
 
@@ -166,7 +171,7 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
         CloudService cloudService = getFullCloudService("cloudServiceName");
         CloudService storedCloudService = cloudServiceService.create(cloudService);
 
-        Assertions.assertDoesNotThrow(() -> cloudServiceService.findById(storedCloudService.getId()));
+        assertDoesNotThrow(() -> cloudServiceService.findById(storedCloudService.getId()));
 
         // Add Compute Resource Reference
         ComputeResource computeResource = new ComputeResource();
@@ -176,7 +181,7 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
 
         // Delete
         cloudServiceService.delete(storedCloudService.getId());
-        Assertions.assertThrows(NoSuchElementException.class, () ->
+        assertThrows(NoSuchElementException.class, () ->
                 cloudServiceService.findById(storedCloudService.getId()));
 
         // Test if references are removed
@@ -208,14 +213,6 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
         computeResources = cloudServiceService.findLinkedComputeResources(
                 storedCloudService.getId(), Pageable.unpaged()).toSet();
         assertThat(computeResources.size()).isEqualTo(0);
-    }
-
-    private void assertCloudServiceEquality(CloudService dbCloudService, CloudService compareCloudService) {
-        assertThat(dbCloudService.getId()).isNotNull();
-        assertThat(dbCloudService.getName()).isEqualTo(compareCloudService.getName());
-        assertThat(dbCloudService.getProvider()).isEqualTo(compareCloudService.getProvider());
-        assertThat(dbCloudService.getUrl()).isEqualTo(compareCloudService.getUrl());
-        assertThat(dbCloudService.getCostModel()).isEqualTo(compareCloudService.getCostModel());
     }
 
     private CloudService getFullCloudService(String name) {
