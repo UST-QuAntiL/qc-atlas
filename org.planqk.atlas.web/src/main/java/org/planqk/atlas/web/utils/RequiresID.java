@@ -39,7 +39,7 @@ import javax.validation.Payload;
 @Constraint(validatedBy = RequiresIDValidator.class)
 @Documented
 public @interface RequiresID {
-    String message() default "Invalid password";
+    String message() default "Invalid ID";
 
     Class<?>[] groups() default {};
 
