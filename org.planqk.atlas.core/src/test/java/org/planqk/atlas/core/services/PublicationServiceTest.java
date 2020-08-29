@@ -65,6 +65,34 @@ public class PublicationServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
+    void findAllPublications() {
+        Publication publication1 = getFullPublication("publicationTitle1");
+        publicationService.create(publication1);
+        Publication publication2 = getFullPublication("publicationTitle2");
+        publicationService.create(publication2);
+
+        var publications = publicationService.findAll(Pageable.unpaged(), "").getContent();
+
+        assertThat(publications.size()).isEqualTo(2);
+    }
+
+    @Test
+    void findAllPublications_Search() {
+        Publication publication1 = getFullPublication("publicationTitle1");
+        Publication storedPublication1 = publicationService.create(publication1);
+        Publication publication2 = getFullPublication("publicationTitle2");
+        Publication storedPublication2 = publicationService.create(publication2);
+
+        var publications = publicationService.findAll(Pageable.unpaged(), "1").getContent();
+
+        assertThat(publications.size()).isEqualTo(1);
+        publications.forEach( pub -> {
+            assertThat(pub.getId()).isEqualTo(storedPublication1.getId());
+            ServiceTestUtils.assertPublicationEquality(pub, storedPublication1);
+        });
+    }
+
+    @Test
     void findPublicationById_ElementNotFound() {
         assertThrows(NoSuchElementException.class, () ->
                 publicationService.findById(UUID.randomUUID()));

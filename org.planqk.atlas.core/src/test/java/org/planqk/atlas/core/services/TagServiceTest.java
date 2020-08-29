@@ -91,6 +91,28 @@ public class TagServiceTest extends AtlasDatabaseTestBase {
                 .collect(Collectors.toSet());
         var searchedTags = tagService.findAllByContent("1", Pageable.unpaged()).getContent();
 
+        assertThat(searchedTags.size()).isEqualTo(1);
+        ServiceTestUtils.assertCollectionEquality(filteredTags, searchedTags);
+    }
+
+    @Test
+    void findAllTagsByCategory() {
+        var tags = new HashSet<Tag>();
+        for (int i = 0; i < 10; i++) {
+            var tag = new Tag();
+            tag.setValue("value " + i);
+            if (i % 2 == 0) {
+                tag.setCategory("categorySearch");
+            } else {
+                tag.setCategory("category" + i);
+            }
+            tags.add(tagService.create(tag));
+        }
+
+        var filteredTags = tags.stream().filter(e -> e.getCategory().contains("categorySearch")).collect(Collectors.toSet());
+        var searchedTags = tagService.findAllByCategory("categorySearch", Pageable.unpaged()).getContent();
+
+        assertThat(searchedTags.size()).isEqualTo(5);
         ServiceTestUtils.assertCollectionEquality(filteredTags, searchedTags);
     }
 

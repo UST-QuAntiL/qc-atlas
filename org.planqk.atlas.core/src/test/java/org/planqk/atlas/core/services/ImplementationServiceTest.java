@@ -29,9 +29,11 @@ import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
 import org.planqk.atlas.core.model.ClassicImplementation;
 import org.planqk.atlas.core.model.Implementation;
+import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.model.QuantumAlgorithm;
 import org.planqk.atlas.core.model.QuantumComputationModel;
 import org.planqk.atlas.core.model.QuantumImplementation;
+import org.planqk.atlas.core.model.SoftwarePlatform;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 import org.planqk.atlas.core.util.ServiceTestUtils;
 
@@ -49,9 +51,14 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
 
     @Autowired
     private ImplementationService implementationService;
-
     @Autowired
     private AlgorithmService algorithmService;
+    @Autowired
+    private PublicationService publicationService;
+    @Autowired
+    private SoftwarePlatformService softwarePlatformService;
+    @Autowired
+    private LinkingService linkingService;
 
     @Test
     void createImplementation_Classic() {
@@ -216,6 +223,60 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
                 .findByImplementedAlgorithm(algorithm.getId(), Pageable.unpaged()).getContent();
 
         assertThat(implementations.size()).isEqualTo(2);
+    }
+
+    @Test
+    void findLinkedSoftwarePlatforms() {
+        Algorithm algorithm = new ClassicAlgorithm();
+        algorithm.setName("algorithmName");
+        algorithm = algorithmService.create(algorithm);
+
+        var implementation = new ClassicImplementation();
+        implementation.setName("implementationName");
+        implementation.setImplementedAlgorithm(algorithm);
+
+        var storedImplementation = implementationService.create(implementation, algorithm.getId());
+
+        SoftwarePlatform softwarePlatform1 = new SoftwarePlatform();
+        softwarePlatform1.setName("softwarePlatformName1");
+        softwarePlatform1 = softwarePlatformService.create(softwarePlatform1);
+        linkingService.linkImplementationAndSoftwarePlatform(storedImplementation.getId(), softwarePlatform1.getId());
+        SoftwarePlatform softwarePlatform2 = new SoftwarePlatform();
+        softwarePlatform2.setName("softwarePlatformName1");
+        softwarePlatform2 = softwarePlatformService.create(softwarePlatform2);
+        linkingService.linkImplementationAndSoftwarePlatform(storedImplementation.getId(), softwarePlatform2.getId());
+
+        var linkedSoftwarePlatforms = implementationService
+                .findLinkedSoftwarePlatforms(storedImplementation.getId(), Pageable.unpaged());
+
+        assertThat(linkedSoftwarePlatforms.getTotalElements()).isEqualTo(2);
+    }
+
+    @Test
+    void findLinkedPublications() {
+        Algorithm algorithm = new ClassicAlgorithm();
+        algorithm.setName("algorithmName");
+        algorithm = algorithmService.create(algorithm);
+
+        var implementation = new ClassicImplementation();
+        implementation.setName("implementationName");
+        implementation.setImplementedAlgorithm(algorithm);
+
+        var storedImplementation = implementationService.create(implementation, algorithm.getId());
+
+        Publication publication1 = new Publication();
+        publication1.setTitle("publicationTitle1");
+        publication1 = publicationService.create(publication1);
+        linkingService.linkImplementationAndPublication(storedImplementation.getId(), publication1.getId());
+        Publication publication2 = new Publication();
+        publication2.setTitle("publicationTitle2");
+        publication2 = publicationService.create(publication2);
+        linkingService.linkImplementationAndPublication(storedImplementation.getId(), publication2.getId());
+
+        var linkedPublications = implementationService
+                .findLinkedPublications(storedImplementation.getId(), Pageable.unpaged());
+
+        assertThat(linkedPublications.getTotalElements()).isEqualTo(2);
     }
 
     private Implementation getFullImplementation(String name, Algorithm implementedAlgorithm) {
