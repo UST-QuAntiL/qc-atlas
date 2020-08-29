@@ -40,6 +40,7 @@ import org.planqk.atlas.core.model.QuantumComputationModel;
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 import org.planqk.atlas.core.util.ServiceTestUtils;
+import org.planqk.atlas.core.util.ServiceUtils;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -84,11 +85,28 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
     private PatternRelationTypeService patternRelationTypeService;
 
     @Test
-    void createAlgorithm() {
-        Algorithm algorithm = getFullAlgorithm("algorithmName");
+    void createAlgorithm_Classic() {
+        ClassicAlgorithm algorithm = (ClassicAlgorithm) getFullAlgorithm("classicAlgorithmName");
 
-        Algorithm storedAlgorithm = algorithmService.create(algorithm);
+        ClassicAlgorithm storedAlgorithm = (ClassicAlgorithm) algorithmService.create(algorithm);
 
+        assertThat(storedAlgorithm.getId()).isNotNull();
+        assertThat(storedAlgorithm).isInstanceOf(ClassicAlgorithm.class);
+        ServiceTestUtils.assertAlgorithmEquality(storedAlgorithm, algorithm);
+    }
+
+    @Test
+    void createAlgorithm_Quantum() {
+        QuantumAlgorithm algorithm = new QuantumAlgorithm();
+        algorithm.setName("quantumAlgorithmName");
+        algorithm.setQuantumComputationModel(QuantumComputationModel.QUANTUM_ANNEALING);
+        algorithm.setSpeedUp("speedUp");
+        algorithm.setNisqReady(true);
+
+        QuantumAlgorithm storedAlgorithm = (QuantumAlgorithm) algorithmService.create(algorithm);
+
+        assertThat(storedAlgorithm.getId()).isNotNull();
+        assertThat(storedAlgorithm).isInstanceOf(QuantumAlgorithm.class);
         ServiceTestUtils.assertAlgorithmEquality(storedAlgorithm, algorithm);
     }
 // TODO mode to linking service tests
@@ -218,7 +236,7 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void updateAlgorithm_QuantumAlgorithm() {
+    void updateAlgorithm_Quantum() {
         QuantumAlgorithm algorithm = new QuantumAlgorithm();
         algorithm.setName("quantumAlgorithmName");
         algorithm.setComputationModel(ComputationModel.QUANTUM);

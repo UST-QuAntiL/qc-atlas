@@ -24,10 +24,12 @@ import java.util.Collection;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.model.CloudService;
+import org.planqk.atlas.core.model.ComputationModel;
 import org.planqk.atlas.core.model.ComputeResource;
 import org.planqk.atlas.core.model.ComputeResourceProperty;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Publication;
+import org.planqk.atlas.core.model.QuantumAlgorithm;
 import org.planqk.atlas.core.model.SoftwarePlatform;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -51,6 +53,17 @@ public class ServiceTestUtils {
         assertThat(algorithm1.getAssumptions()).isEqualTo(algorithm2.getAssumptions());
         assertThat(algorithm1.getComputationModel()).isEqualTo(algorithm2.getComputationModel());
 
+        if (algorithm1.getComputationModel() == ComputationModel.QUANTUM
+                || algorithm1.getComputationModel() == ComputationModel.HYBRID) {
+            var quantumAlgorithm1 = (QuantumAlgorithm) algorithm1;
+            var quantumAlgorithm2 = (QuantumAlgorithm) algorithm2;
+
+            assertThat(quantumAlgorithm1.getQuantumComputationModel())
+                    .isEqualTo(quantumAlgorithm2.getQuantumComputationModel());
+            assertThat(quantumAlgorithm1.getSpeedUp()).isEqualTo(quantumAlgorithm2.getSpeedUp());
+            assertThat(quantumAlgorithm1.isNisqReady()).isEqualTo(quantumAlgorithm2.isNisqReady());
+        }
+
         assertCollectionEquality(algorithm1.getSketches(), algorithm2.getSketches());
     }
 
@@ -66,6 +79,7 @@ public class ServiceTestUtils {
     }
 
     public static void assertImplementationEquality(Implementation implementation1, Implementation implementation2) {
+        assertThat(implementation1.getName()).isEqualTo(implementation2.getName());
         assertThat(implementation1.getDescription()).isEqualTo(implementation2.getDescription());
         assertThat(implementation1.getContributors()).isEqualTo(implementation2.getContributors());
         assertThat(implementation1.getAssumptions()).isEqualTo(implementation2.getAssumptions());

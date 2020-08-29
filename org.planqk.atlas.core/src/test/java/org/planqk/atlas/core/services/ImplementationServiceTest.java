@@ -19,12 +19,21 @@
 
 package org.planqk.atlas.core.services;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
+import org.planqk.atlas.core.model.ClassicImplementation;
 import org.planqk.atlas.core.model.Implementation;
+import org.planqk.atlas.core.model.QuantumAlgorithm;
+import org.planqk.atlas.core.model.QuantumComputationModel;
+import org.planqk.atlas.core.model.QuantumImplementation;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
+import org.planqk.atlas.core.util.ServiceTestUtils;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -32,6 +41,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Slf4j
 public class ImplementationServiceTest extends AtlasDatabaseTestBase {
@@ -42,63 +53,185 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
     @Autowired
     private AlgorithmService algorithmService;
 
-//    @Autowired
-//    private TagService tagService;
-    //    @Autowired
-//    private TagRepository tagRepository;
-
     @Test
-    void createImplementation() {
-        // Tags will be used/tested and included in the future
-//        var tag = new Tag();
-//        tag.setKey("test");
-//        tag.setValue("test");
-//        Set<Tag> tags = new HashSet<>();
-//        tags.add(tag);
+    void createImplementation_Classic() {
+        Algorithm algorithm = new ClassicAlgorithm();
+        algorithm.setName("algorithmName");
+        algorithm = algorithmService.create(algorithm);
 
-        Algorithm algo = new ClassicAlgorithm();
-        algo.setName("test");
-        algo = algorithmService.create(algo);
+        var implementation = new ClassicImplementation();
+        implementation.setName("implementationName");
+        implementation.setImplementedAlgorithm(algorithm);
 
-        var impl = new Implementation();
-        impl.setName("test-impl");
-        impl.setImplementedAlgorithm(algo);
-//        impl.setTags(tags);
-//        tags.forEach(e -> e.setImplementations(SetUtils.hashSetOf(impl)));
+        var storedImplementation = implementationService.create(implementation, algorithm.getId());
 
-        var returnedImpl = implementationService.create(impl, algo.getId());
-
-//        var returnedTag = tagService.getTagById(tag.getId());
-//        returnedTag.setImplementations(SetUtils.hashSetOf(impl));
-//        returnedImpl.setTags(SetUtils.hashSetOf(tag));
-
-        implementationService.create(returnedImpl, algo.getId());
-
-        var dbImpl = implementationService.findById(returnedImpl.getId());
-        assertThat(dbImpl.getName()).isEqualTo(impl.getName());
-        assertThat(dbImpl.getImplementedAlgorithm().getName()).isEqualTo(algo.getName());
-//        assertThat(dbImpl.getTags().size()).isEqualTo(1);
+        assertThat(storedImplementation.getId()).isNotNull();
+        assertThat(storedImplementation).isInstanceOf(ClassicImplementation.class);
+        ServiceTestUtils.assertImplementationEquality(storedImplementation, implementation);
     }
 
     @Test
-    void findByImplementedAlgorithm() {
-        Algorithm algo = new Algorithm();
-        algo.setName("dummy");
-        algo = algorithmService.create(algo);
+    void createImplementation_Quantum() {
+        QuantumAlgorithm algorithm = new QuantumAlgorithm();
+        algorithm.setName("algorithmName");
+        algorithm.setQuantumComputationModel(QuantumComputationModel.MEASUREMENT_BASED);
+        algorithm = (QuantumAlgorithm) algorithmService.create(algorithm);
+
+        var implementation = new QuantumImplementation();
+        implementation.setName("implementationName");
+        implementation.setImplementedAlgorithm(algorithm);
+
+        var storedImplementation = (QuantumImplementation) implementationService.create(implementation, algorithm.getId());
+
+        assertThat(storedImplementation.getId()).isNotNull();
+        assertThat(storedImplementation).isInstanceOf(QuantumImplementation.class);
+        ServiceTestUtils.assertImplementationEquality(storedImplementation, implementation);
+    }
+
+    @Test
+    void findAllImplementations() {
+        Algorithm algorithm = new Algorithm();
+        algorithm.setName("algorithmName");
+        algorithm = algorithmService.create(algorithm);
 
         Implementation implementation1 = new Implementation();
-        implementation1.setName("test-impl1");
-        implementation1.setImplementedAlgorithm(algo);
-        implementationService.create(implementation1, algo.getId());
+        implementation1.setName("implementationName1");
+        implementation1.setImplementedAlgorithm(algorithm);
+        implementationService.create(implementation1, algorithm.getId());
         Implementation implementation2 = new Implementation();
-        implementation2.setName("test-impl2");
-        implementation2.setImplementedAlgorithm(algo);
-        implementationService.create(implementation2, algo.getId());
+        implementation2.setName("implementationName2");
+        implementation2.setImplementedAlgorithm(algorithm);
+        implementationService.create(implementation2, algorithm.getId());
 
-        List<Implementation> implementations = implementationService.findByImplementedAlgorithm(algo.getId(), Pageable.unpaged()).getContent();
+        List<Implementation> implementations = implementationService.findAll(Pageable.unpaged()).getContent();
 
         assertThat(implementations.size()).isEqualTo(2);
     }
 
-    // TODO a LOT more tests
+    @Test
+    void findImplementationById_ElementFound() {
+        Algorithm algorithm = new ClassicAlgorithm();
+        algorithm.setName("algorithmName");
+        algorithm = algorithmService.create(algorithm);
+
+        var implementation = new ClassicImplementation();
+        implementation.setName("implementationName");
+        implementation.setImplementedAlgorithm(algorithm);
+
+        var storedImplementation = implementationService.create(implementation, algorithm.getId());
+
+        var foundImplementation = implementationService.findById(implementation.getId());
+
+        assertThat(storedImplementation.getId()).isEqualTo(foundImplementation.getId());
+        ServiceTestUtils.assertImplementationEquality(storedImplementation, foundImplementation);
+    }
+
+    @Test
+    void findImplementationById_ElementNotFound() {
+        assertThrows(NoSuchElementException.class, () -> implementationService.findById(UUID.randomUUID()));
+    }
+
+    @Test
+    void updateImplementation() {
+        Algorithm algorithm = new ClassicAlgorithm();
+        algorithm.setName("algorithmName");
+        algorithm = algorithmService.create(algorithm);
+
+        var implementation = getFullImplementation("implementationName", algorithm);
+        var compareImplementation = getFullImplementation("implementationName", algorithm);
+
+        var storedImplementation = implementationService.create(implementation, algorithm.getId());
+        compareImplementation.setId(storedImplementation.getId());
+
+        String editName = "editedAlgorithmName";
+        storedImplementation.setName(editName);
+
+        var editedImplementation = implementationService.update(storedImplementation);
+
+        assertThat(editedImplementation.getId()).isEqualTo(compareImplementation.getId());
+        assertThat(editedImplementation.getName()).isEqualTo(editName);
+        assertThat(editedImplementation.getName()).isNotEqualTo(compareImplementation.getId());
+
+        assertThat(editedImplementation.getDescription()).isEqualTo(compareImplementation.getDescription());
+        assertThat(editedImplementation.getContributors()).isEqualTo(compareImplementation.getContributors());
+        assertThat(editedImplementation.getAssumptions()).isEqualTo(compareImplementation.getAssumptions());
+        assertThat(editedImplementation.getParameter()).isEqualTo(compareImplementation.getParameter());
+        assertThat(editedImplementation.getLink()).isEqualTo(compareImplementation.getLink());
+        assertThat(editedImplementation.getDependencies()).isEqualTo(compareImplementation.getDependencies());
+        assertThat(editedImplementation.getImplementedAlgorithm().getId())
+                .isEqualTo(compareImplementation.getImplementedAlgorithm().getId());
+        ServiceTestUtils.assertAlgorithmEquality(
+                editedImplementation.getImplementedAlgorithm(), compareImplementation.getImplementedAlgorithm());
+    }
+
+    @Test
+    void deleteImplementation_ElementFound() {
+        Algorithm algorithm = new ClassicAlgorithm();
+        algorithm.setName("algorithmName");
+        algorithm = algorithmService.create(algorithm);
+
+        var implementation = new ClassicImplementation();
+        implementation.setName("implementationName");
+        implementation.setImplementedAlgorithm(algorithm);
+
+        var storedImplementation = implementationService.create(implementation, algorithm.getId());
+
+        assertDoesNotThrow(() -> implementationService.findById(storedImplementation.getId()));
+
+        implementationService.delete(storedImplementation.getId());
+
+        assertThrows(NoSuchElementException.class, () -> implementationService.findById(storedImplementation.getId()));
+    }
+
+    @Test
+    void deleteImplementation_ElementNotFound() {
+        Algorithm algorithm = new ClassicAlgorithm();
+        algorithm.setName("algorithmName");
+        algorithm = algorithmService.create(algorithm);
+
+        var implementation = new ClassicImplementation();
+        implementation.setName("implementationName");
+        implementation.setImplementedAlgorithm(algorithm);
+        implementation.setId(UUID.randomUUID());
+
+        assertThrows(NoSuchElementException.class, () -> implementationService.delete(implementation.getId()));
+    }
+
+    @Test
+    void findByImplementedAlgorithm() {
+        Algorithm algorithm = new Algorithm();
+        algorithm.setName("algorithmName");
+        algorithm = algorithmService.create(algorithm);
+
+        Implementation implementation1 = new Implementation();
+        implementation1.setName("implementationName1");
+        implementation1.setImplementedAlgorithm(algorithm);
+        implementationService.create(implementation1, algorithm.getId());
+        Implementation implementation2 = new Implementation();
+        implementation2.setName("implementationName2");
+        implementation2.setImplementedAlgorithm(algorithm);
+        implementationService.create(implementation2, algorithm.getId());
+
+        List<Implementation> implementations = implementationService
+                .findByImplementedAlgorithm(algorithm.getId(), Pageable.unpaged()).getContent();
+
+        assertThat(implementations.size()).isEqualTo(2);
+    }
+    
+    private Implementation getFullImplementation(String name, Algorithm implementedAlgorithm) {
+        Implementation implementation = new ClassicImplementation();
+
+        implementation.setName(name);
+        implementation.setImplementedAlgorithm(implementedAlgorithm);
+        implementation.setDescription("description");
+        implementation.setContributors("contributors");
+        implementation.setAssumptions("assumptions");
+        implementation.setParameter("parameter");
+        implementation.setDependencies("dependencies");
+        try {
+            implementation.setLink(new URL("http://www.example.com"));
+        } catch (MalformedURLException ignored) {}
+
+        return implementation;
+    }
 }
