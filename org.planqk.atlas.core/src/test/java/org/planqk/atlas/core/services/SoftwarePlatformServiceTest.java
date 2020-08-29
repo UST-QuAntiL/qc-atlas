@@ -164,78 +164,6 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void findLinkedImplementations() {
-        SoftwarePlatform softwarePlatform = getFullSoftwarePlatform("softwarePlatformName");
-        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.create(softwarePlatform);
-
-        Algorithm algorithm = new Algorithm();
-        algorithm = algorithmService.create(algorithm);
-
-        Set<Implementation> storedImplementations = new HashSet<>();
-        for (int i = 0; i < 10; i++) {
-            Implementation implementation = new Implementation();
-            implementation.setName("implementationName" + i);
-            Implementation storedImplementation = implementationService.create(implementation, algorithm.getId());
-            storedImplementations.add(storedImplementation);
-            linkingService.linkImplementationAndSoftwarePlatform(storedImplementation.getId(), storedSoftwarePlatform.getId());
-        }
-        Set<Implementation> implementations = softwarePlatformService.findLinkedImplementations(
-                storedSoftwarePlatform.getId(), Pageable.unpaged()).toSet();
-
-        assertThat(implementations.size()).isEqualTo(10);
-        implementations.forEach(implementation -> assertThat(storedImplementations.contains(implementation)).isTrue());
-    }
-
-    @Test
-    void findLinkedCloudServices() {
-        SoftwarePlatform softwarePlatform = getFullSoftwarePlatform("softwarePlatformName");
-        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.create(softwarePlatform);
-
-        Set<CloudService> storedCloudServices = new HashSet<>();
-        for (int i = 0; i < 10; i++) {
-            CloudService cloudService = new CloudService();
-            cloudService.setName("cloudServiceName" + i);
-            cloudService.setProvider("provider");
-            try {
-                cloudService.setUrl(new URL("http://example.com"));
-            } catch (MalformedURLException ignored) {
-            }
-            cloudService.setCostModel("costModel");
-            CloudService storedCloudService = cloudServiceService.create(cloudService);
-            storedCloudServices.add(storedCloudService);
-            linkingService.linkSoftwarePlatformAndCloudService(storedSoftwarePlatform.getId(), storedCloudService.getId());
-        }
-        Set<CloudService> cloudServices = softwarePlatformService.findLinkedCloudServices(
-                storedSoftwarePlatform.getId(), Pageable.unpaged()).toSet();
-
-        assertThat(cloudServices.size()).isEqualTo(10);
-        cloudServices.forEach(cloudService -> assertThat(storedCloudServices.contains(cloudService)).isTrue());
-    }
-
-    @Test
-    void findLinkedComputeResources() {
-        SoftwarePlatform softwarePlatform = getFullSoftwarePlatform("softwarePlatformName");
-        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.create(softwarePlatform);
-
-        Set<ComputeResource> storedComputeResources = new HashSet<>();
-        for (int i = 0; i < 10; i++) {
-            ComputeResource computeResource = new ComputeResource();
-            computeResource.setName("computeResource" + i);
-            computeResource.setVendor("vendor");
-            computeResource.setTechnology("technology");
-            computeResource.setQuantumComputationModel(QuantumComputationModel.QUANTUM_ANNEALING);
-            ComputeResource storedComputeResource = computeResourceService.create(computeResource);
-            storedComputeResources.add(storedComputeResource);
-            linkingService.linkSoftwarePlatformAndComputeResource(storedSoftwarePlatform.getId(), storedComputeResource.getId());
-        }
-        Set<ComputeResource> computeResources = softwarePlatformService.findLinkedComputeResources(
-                storedSoftwarePlatform.getId(), Pageable.unpaged()).toSet();
-
-        assertThat(computeResources.size()).isEqualTo(10);
-        computeResources.forEach(computeResource -> assertThat(storedComputeResources.contains(computeResource)).isTrue());
-    }
-
-    @Test
     void findSoftwarePlatformById_ElementNotFound() {
         assertThrows(NoSuchElementException.class, () ->
                 softwarePlatformService.findById(UUID.randomUUID()));
@@ -412,6 +340,78 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
         computeResources = softwarePlatformService.findLinkedComputeResources(
                 storedSoftwarePlatform.getId(), Pageable.unpaged()).toSet();
         assertThat(computeResources.size()).isEqualTo(0);
+    }
+
+    @Test
+    void findLinkedImplementations() {
+        SoftwarePlatform softwarePlatform = getFullSoftwarePlatform("softwarePlatformName");
+        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.create(softwarePlatform);
+
+        Algorithm algorithm = new Algorithm();
+        algorithm = algorithmService.create(algorithm);
+
+        Set<Implementation> storedImplementations = new HashSet<>();
+        for (int i = 0; i < 10; i++) {
+            Implementation implementation = new Implementation();
+            implementation.setName("implementationName" + i);
+            Implementation storedImplementation = implementationService.create(implementation, algorithm.getId());
+            storedImplementations.add(storedImplementation);
+            linkingService.linkImplementationAndSoftwarePlatform(storedImplementation.getId(), storedSoftwarePlatform.getId());
+        }
+        Set<Implementation> implementations = softwarePlatformService.findLinkedImplementations(
+                storedSoftwarePlatform.getId(), Pageable.unpaged()).toSet();
+
+        assertThat(implementations.size()).isEqualTo(10);
+        implementations.forEach(implementation -> assertThat(storedImplementations.contains(implementation)).isTrue());
+    }
+
+    @Test
+    void findLinkedCloudServices() {
+        SoftwarePlatform softwarePlatform = getFullSoftwarePlatform("softwarePlatformName");
+        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.create(softwarePlatform);
+
+        Set<CloudService> storedCloudServices = new HashSet<>();
+        for (int i = 0; i < 10; i++) {
+            CloudService cloudService = new CloudService();
+            cloudService.setName("cloudServiceName" + i);
+            cloudService.setProvider("provider");
+            try {
+                cloudService.setUrl(new URL("http://example.com"));
+            } catch (MalformedURLException ignored) {
+            }
+            cloudService.setCostModel("costModel");
+            CloudService storedCloudService = cloudServiceService.create(cloudService);
+            storedCloudServices.add(storedCloudService);
+            linkingService.linkSoftwarePlatformAndCloudService(storedSoftwarePlatform.getId(), storedCloudService.getId());
+        }
+        Set<CloudService> cloudServices = softwarePlatformService.findLinkedCloudServices(
+                storedSoftwarePlatform.getId(), Pageable.unpaged()).toSet();
+
+        assertThat(cloudServices.size()).isEqualTo(10);
+        cloudServices.forEach(cloudService -> assertThat(storedCloudServices.contains(cloudService)).isTrue());
+    }
+
+    @Test
+    void findLinkedComputeResources() {
+        SoftwarePlatform softwarePlatform = getFullSoftwarePlatform("softwarePlatformName");
+        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.create(softwarePlatform);
+
+        Set<ComputeResource> storedComputeResources = new HashSet<>();
+        for (int i = 0; i < 10; i++) {
+            ComputeResource computeResource = new ComputeResource();
+            computeResource.setName("computeResource" + i);
+            computeResource.setVendor("vendor");
+            computeResource.setTechnology("technology");
+            computeResource.setQuantumComputationModel(QuantumComputationModel.QUANTUM_ANNEALING);
+            ComputeResource storedComputeResource = computeResourceService.create(computeResource);
+            storedComputeResources.add(storedComputeResource);
+            linkingService.linkSoftwarePlatformAndComputeResource(storedSoftwarePlatform.getId(), storedComputeResource.getId());
+        }
+        Set<ComputeResource> computeResources = softwarePlatformService.findLinkedComputeResources(
+                storedSoftwarePlatform.getId(), Pageable.unpaged()).toSet();
+
+        assertThat(computeResources.size()).isEqualTo(10);
+        computeResources.forEach(computeResource -> assertThat(storedComputeResources.contains(computeResource)).isTrue());
     }
 
     private SoftwarePlatform getFullSoftwarePlatform(String name) {

@@ -23,11 +23,13 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
+import org.planqk.atlas.core.model.CloudService;
 import org.planqk.atlas.core.model.ComputeResource;
 import org.planqk.atlas.core.model.ComputeResourceProperty;
 import org.planqk.atlas.core.model.ComputeResourcePropertyDataType;
 import org.planqk.atlas.core.model.ComputeResourcePropertyType;
 import org.planqk.atlas.core.model.QuantumComputationModel;
+import org.planqk.atlas.core.model.SoftwarePlatform;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 import org.planqk.atlas.core.util.ServiceTestUtils;
 
@@ -49,6 +51,12 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
     private ComputeResourcePropertyService computeResourcePropertyService;
     @Autowired
     private ComputeResourcePropertyTypeService computeResourcePropertyTypeService;
+    @Autowired
+    private SoftwarePlatformService softwarePlatformService;
+    @Autowired
+    private CloudServiceService cloudServiceService;
+    @Autowired
+    private LinkingService linkingService;
 
     @Test
     void createComputeResource() {
@@ -139,20 +147,22 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
     @Test
     void updateComputeResource_ElementFound() {
         ComputeResource computeResource = getFullComputeResource("computeResourceName");
-        ComputeResource storedComputeResource = getFullComputeResource("computeResourceName");
+        ComputeResource compareComputeResource = getFullComputeResource("computeResourceName");
 
-        ComputeResource storedEditedComputeResource = computeResourceService.create(computeResource);
-        storedComputeResource.setId(storedEditedComputeResource.getId());
+        var storedComputeResource = computeResourceService.create(computeResource);
+        compareComputeResource.setId(storedComputeResource.getId());
         String editName = "editedComputeResourceName";
-        storedEditedComputeResource.setName(editName);
-        computeResourceService.create(storedEditedComputeResource);
+        storedComputeResource.setName(editName);
 
-        assertThat(storedEditedComputeResource.getId()).isNotNull();
-        assertThat(storedEditedComputeResource.getId()).isEqualTo(storedComputeResource.getId());
-        assertThat(storedEditedComputeResource.getName()).isNotEqualTo(storedComputeResource.getName());
-        assertThat(storedEditedComputeResource.getQuantumComputationModel()).isEqualTo(storedComputeResource.getQuantumComputationModel());
-        assertThat(storedEditedComputeResource.getTechnology()).isEqualTo(storedComputeResource.getTechnology());
-        assertThat(storedEditedComputeResource.getVendor()).isEqualTo(storedComputeResource.getVendor());
+        var editedComputeResource = computeResourceService.update(storedComputeResource);
+
+        assertThat(editedComputeResource.getId()).isNotNull();
+        assertThat(editedComputeResource.getId()).isEqualTo(compareComputeResource.getId());
+        assertThat(editedComputeResource.getName()).isNotEqualTo(compareComputeResource.getName());
+        assertThat(editedComputeResource.getName()).isEqualTo(editName);
+        assertThat(editedComputeResource.getQuantumComputationModel()).isEqualTo(compareComputeResource.getQuantumComputationModel());
+        assertThat(editedComputeResource.getTechnology()).isEqualTo(compareComputeResource.getTechnology());
+        assertThat(editedComputeResource.getVendor()).isEqualTo(compareComputeResource.getVendor());
     }
 
     @Test
@@ -169,11 +179,12 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
                 computeResourceService.findById(storedComputeResource.getId()));
     }
 
-    // @Test
+    @Test
     void deleteComputeResource_ElementNotFound() {
-        // TODO
+        assertThrows(NoSuchElementException.class, () -> computeResourceService.delete(UUID.randomUUID()));
     }
 
+    // TODO write one with link to cloud service and/or software platform
     @Test
     void deleteComputeResource_HasReferences() {
         ComputeResource computeResource = getFullComputeResource("computeResourceName");
@@ -203,6 +214,46 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
         // Test if references are removed
         assertThrows(NoSuchElementException.class, () ->
                 computeResourcePropertyService.findById(storedProperty.getId()));
+    }
+
+    @Test
+    void findLinkedSoftwarePlatforms() {
+        ComputeResource computeResource = getFullComputeResource("computeResourceName");
+        computeResource = computeResourceService.create(computeResource);
+
+        SoftwarePlatform softwarePlatform1 = new SoftwarePlatform();
+        softwarePlatform1.setName("softwarePlatformName1");
+        softwarePlatform1 = softwarePlatformService.create(softwarePlatform1);
+        linkingService.linkSoftwarePlatformAndComputeResource(softwarePlatform1.getId(), computeResource.getId());
+        SoftwarePlatform softwarePlatform2 = new SoftwarePlatform();
+        softwarePlatform2.setName("softwarePlatformName1");
+        softwarePlatform2 = softwarePlatformService.create(softwarePlatform2);
+        linkingService.linkSoftwarePlatformAndComputeResource(softwarePlatform2.getId(), computeResource.getId());
+
+        var softwarePlatforms = computeResourceService
+                .findLinkedSoftwarePlatforms(computeResource.getId(), Pageable.unpaged());
+
+        assertThat(softwarePlatforms.getTotalElements()).isEqualTo(2);
+    }
+
+    @Test
+    void findLinkedCloudServices() {
+        ComputeResource computeResource = getFullComputeResource("computeResourceName");
+        computeResource = computeResourceService.create(computeResource);
+
+        CloudService cloudService1 = new CloudService();
+        cloudService1.setName("cloudServiceName1");
+        cloudService1 = cloudServiceService.create(cloudService1);
+        linkingService.linkCloudServiceAndComputeResource(cloudService1.getId(), computeResource.getId());
+        CloudService cloudService2 = new CloudService();
+        cloudService2.setName("cloudServiceName1");
+        cloudService2 = cloudServiceService.create(cloudService2);
+        linkingService.linkCloudServiceAndComputeResource(cloudService2.getId(), computeResource.getId());
+
+        var cloudServices = computeResourceService
+                .findLinkedCloudServices(computeResource.getId(), Pageable.unpaged());
+
+        assertThat(cloudServices.getTotalElements()).isEqualTo(2);
     }
 
     private ComputeResource getFullComputeResource(String name) {

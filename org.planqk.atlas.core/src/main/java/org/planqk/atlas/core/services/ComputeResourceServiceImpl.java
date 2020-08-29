@@ -87,8 +87,8 @@ public class ComputeResourceServiceImpl implements ComputeResourceService {
     public void delete(@NonNull UUID computeResourceId) {
         ServiceUtils.throwIfNotExists(computeResourceId, ComputeResource.class, computeResourceRepository);
         // TODO only deletes if not used in any CloudService or SoftwarePlatform. Discuss if this is still wanted behavior
-        if (cloudServiceRepository.countCloudServiceByComputeResource(computeResourceId) +
-                softwarePlatformRepository.countSoftwarePlatformByComputeResource(computeResourceId) > 0) {
+        if ((cloudServiceRepository.countCloudServiceByComputeResource(computeResourceId) +
+                softwarePlatformRepository.countSoftwarePlatformByComputeResource(computeResourceId)) > 0) {
             throw new EntityReferenceConstraintViolationException(
                     "ComputeResource with ID \"" + computeResourceId + "\" cannot be deleted, " +
                             "because it is still in linked to existing software platforms or cloud services");
@@ -102,10 +102,10 @@ public class ComputeResourceServiceImpl implements ComputeResourceService {
     }
 
     private void removeReferences(@NonNull ComputeResource computeResource) {
-        computeResource.getSoftwarePlatforms().forEach(
-                softwarePlatform -> softwarePlatform.removeComputeResource(computeResource));
-        computeResource.getCloudServices().forEach(
-                cloudService -> cloudService.removeComputeResource(computeResource));
+//        computeResource.getSoftwarePlatforms().forEach(
+//                softwarePlatform -> softwarePlatform.removeComputeResource(computeResource));
+//        computeResource.getCloudServices().forEach(
+//                cloudService -> cloudService.removeComputeResource(computeResource));
 
         computeResource.getProvidedComputingResourceProperties().forEach(computingResourceProperty ->
                 computeResourcePropertyService.delete(computingResourceProperty.getId()));

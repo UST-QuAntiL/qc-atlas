@@ -217,7 +217,7 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
 
         assertThat(implementations.size()).isEqualTo(2);
     }
-    
+
     private Implementation getFullImplementation(String name, Algorithm implementedAlgorithm) {
         Implementation implementation = new ClassicImplementation();
 
