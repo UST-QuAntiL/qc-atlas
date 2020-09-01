@@ -658,6 +658,15 @@ public class AlgorithmController {
         }
     }
 
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200")}, description = "Update the properties of a sketch.")
+    @PutMapping("/{algoId}/" + Constants.SKETCHES + "/{sketchId}")
+    public ResponseEntity<Sketch> updateSketch(@PathVariable UUID algoId, @PathVariable UUID sketchId,
+                                                                 @Valid @RequestBody Sketch sketch) {
+        log.debug("Put to update sketch with id: {}.", sketchId);
+        return ResponseEntity.ok(this.sketchService.update(sketchId, sketch));
+    }
+
     @RequestMapping(value = "/{algoId}/" + Constants.SKETCHES + "/{sketchId}" + "/image", method = RequestMethod.GET,
             produces = MediaType.IMAGE_JPEG_VALUE)
     public ResponseEntity<byte[]> getSketchImage(@PathVariable UUID algoId, @PathVariable UUID sketchId) {

@@ -8,6 +8,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface SketchService {
 
+    public Sketch update(UUID id, Sketch sketch);
+
     public List<Sketch> findByAlgorithm(UUID algorithmId);
 
     public Sketch addSketchToAlgorithm(UUID algorithmId, MultipartFile file, String description, String baseURL);

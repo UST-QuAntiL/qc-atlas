@@ -1,6 +1,7 @@
 package org.planqk.atlas.core.services;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -26,6 +27,13 @@ public class SketchServiceImpl implements SketchService {
     private ImageRepository imageRepository;
 
     private AlgorithmRepository algorithmRepository;
+
+    @Override
+    public Sketch update(UUID id, Sketch sketch) {
+        final Sketch persistedSketch = sketchRepository.findById(id).orElseThrow(NoSuchElementException::new);
+        persistedSketch.setDescription(sketch.getDescription());
+        return this.sketchRepository.save(persistedSketch);
+    }
 
     @Override
     public List<Sketch> findByAlgorithm(UUID algorithmId) {
