@@ -37,6 +37,7 @@ import org.springframework.lang.NonNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 /**
  * Entity representing a quantum algorithm, e.g., Shors factorization algorithm.
@@ -111,10 +112,32 @@ public class Algorithm extends AlgorOrImpl implements ModelWithPublications {
     @EqualsAndHashCode.Exclude
     private Set<ApplicationArea> applicationAreas = new HashSet<>();
 
-    @ManyToMany(cascade = {CascadeType.MERGE})
-    @JoinTable(name = "algorithm_tag", joinColumns = @JoinColumn(name = "algorithm_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "algorithm_tag", joinColumns = @JoinColumn(name = "algorithm_id"), inverseJoinColumns = @JoinColumn(name = "tag_value"))
     @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private Set<Tag> tags = new HashSet<>();
+
+    public Set<Tag> getTags() {
+        return tags;
+    }
+
+    public void addTag(Tag tag) {
+        if (tag != null) {
+            this.tags.add(tag);
+        }
+    }
+
+    public void setTags(Set<Tag> tags) {
+        this.tags.clear();
+        if (tags != null) {
+            this.tags.addAll(tags);
+        }
+    }
+
+    public void removeTag(Tag tag) {
+        this.tags.remove(tag);
+    }
 
     @NonNull
     public boolean addAlgorithmRelation(AlgorithmRelation relation) {

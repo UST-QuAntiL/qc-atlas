@@ -32,12 +32,8 @@ import javax.validation.constraints.NotNull;
 @Relation(itemRelation = "tag", collectionRelation = "tags")
 public class TagDto {
 
-    @NotNull(message = "Tag key must not be null!")
-    private String key;
+    private String category;
 
     @NotNull(message = "Tag value must not be null!")
     private String value;
-
-    private UUID id;
-
 }

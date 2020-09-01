@@ -19,37 +19,54 @@
 
 package org.planqk.atlas.core.services;
 
-// tags will be used in the future
-//@Service
-//@AllArgsConstructor
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import lombok.AllArgsConstructor;
+import org.planqk.atlas.core.model.Tag;
+import org.planqk.atlas.core.repository.TagRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+@AllArgsConstructor
 public class TagServiceImpl implements TagService {
 
-//    private TagRepository tagRepository;
-//
-//    @Override
-//    public List<Tag> findByName(String key) {
-//        return tagRepository.findByKey(key);
-//    }
-//
-//    @Transactional
-//    @Override
-//    public Tag save(Tag tag) {
-//        return tagRepository.save(tag);
-//    }
-//
-//    @Override
-//    public Page<Tag> findAll(Pageable pageable) {
-//        return tagRepository.findAll(pageable);
-//    }
-//
-//    @Override
-//    public Tag getTagById(UUID tagId) {
-//        return tagRepository.findById(tagId).orElseThrow(NoSuchElementException::new);
-//    }
-//
-//    @Transactional
-//    @Override
-//    public Set<Tag> createOrUpdateAll(Set<Tag> algorithmTags) {
-//        return algorithmTags.stream().map(this::save).collect(Collectors.toSet());
-//    }
+    private TagRepository tagRepository;
+
+    @Override
+    public Tag findByName(String value) {
+        return tagRepository.findByValue(value);
+    }
+
+    @Override
+    public Set<Tag> findByCategory(String category) {
+        return tagRepository.findByCategory(category);
+    }
+
+    @Override
+    public Page<Tag> findAllByContent(String search, Pageable pageable) {
+        return tagRepository.findByValueContainingIgnoreCaseOrCategoryContainingIgnoreCase(search, search, pageable);
+    }
+
+    @Transactional
+    @Override
+    public Tag save(Tag tag) {
+        return tagRepository.save(tag);
+    }
+
+    @Override
+    public Page<Tag> findAll(Pageable pageable) {
+        return tagRepository.findAll(pageable);
+    }
+
+    @Transactional
+    @Override
+    public Set<Tag> createOrUpdateAll(Set<Tag> algorithmTags) {
+        return algorithmTags.stream().map(this::save).collect(Collectors.toSet());
+    }
 }
+

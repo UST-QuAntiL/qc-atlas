@@ -47,6 +47,7 @@ import org.planqk.atlas.core.services.PatternRelationService;
 import org.planqk.atlas.core.services.PatternRelationTypeService;
 import org.planqk.atlas.core.services.ProblemTypeService;
 import org.planqk.atlas.core.services.PublicationService;
+import org.planqk.atlas.core.services.TagService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.mixin.ComputeResourcePropertyMixin;
 import org.planqk.atlas.web.controller.mixin.PublicationMixin;
@@ -125,6 +126,8 @@ public class AlgorithmControllerTest {
     private AlgoRelationTypeService algoRelationTypeService;
     @MockBean
     private PatternRelationController patternRelationController;
+    @MockBean
+    private TagService tagService;
 
     @Autowired
     private MockMvc mockMvc;
