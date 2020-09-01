@@ -29,7 +29,6 @@ import org.planqk.atlas.web.linkassembler.ComputeResourcePropertyAssembler;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.ValidationGroups;
 
-import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -48,7 +47,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Hidden
 @Tag(name = Constants.TAG_COMPUTE_RESOURCE_PROPERTIES)
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
@@ -65,10 +63,10 @@ public class ComputeResourcePropertyController {
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404"),
     }, description = "")
-    @GetMapping("/{ComputeResourcePropertyId}")
+    @GetMapping("/{computeResourcePropertyId}")
     public HttpEntity<EntityModel<ComputeResourcePropertyDto>> getComputeResourceProperty(
-            @PathVariable UUID ComputeResourcePropertyId) {
-        var resource = computeResourcePropertyService.findById(ComputeResourcePropertyId);
+            @PathVariable UUID computeResourcePropertyId) {
+        var resource = computeResourcePropertyService.findById(computeResourcePropertyId);
         return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(resource));
     }
 
@@ -91,10 +89,10 @@ public class ComputeResourcePropertyController {
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Computing resource with given id doesn't exist"),
     }, description = "")
-    @DeleteMapping("/{ComputeResourcePropertyId}")
+    @DeleteMapping("/{computeResourcePropertyId}")
     public HttpEntity<Void> deleteComputeResourceProperty(
-            @PathVariable UUID ComputeResourcePropertyId) {
-        computeResourcePropertyService.delete(ComputeResourcePropertyId);
+            @PathVariable UUID computeResourcePropertyId) {
+        computeResourcePropertyService.delete(computeResourcePropertyId);
         return ResponseEntity.noContent().build();
     }
 }
