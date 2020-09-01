@@ -19,22 +19,29 @@
 
 package org.planqk.atlas.core.util;
 
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.containers.PostgreSQLContainer;
 
-@Testcontainers(disabledWithoutDocker = true)
-@ContextConfiguration(classes = { DatabaseTestEnvironmentConfiguration.class })
-@SpringBootTest
-@ExtendWith(MockitoExtension.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-public abstract class AtlasDatabaseTestBase {
+public class DatabaseContainer extends PostgreSQLContainer<DatabaseContainer> {
 
-    @Container
-    public static DatabaseContainer postgreSQLContainer = DatabaseContainer.getInstance();
+    private static final String IMAGE = "postgres:12-alpine";
+    private static DatabaseContainer instance = null;
 
+    public DatabaseContainer() {
+        super(IMAGE);
+    }
+
+    @Override
+    public void start() {
+        super.start();
+        System.setProperty("DB_JDBC_URL", this.getJdbcUrl());
+        System.setProperty("DB_USERNAME", this.getUsername());
+        System.setProperty("DB_PASSWORD", this.getPassword());
+    }
+
+    public static DatabaseContainer getInstance() {
+        if (instance == null) {
+            instance = new DatabaseContainer();
+        }
+        return instance;
+    }
 }
