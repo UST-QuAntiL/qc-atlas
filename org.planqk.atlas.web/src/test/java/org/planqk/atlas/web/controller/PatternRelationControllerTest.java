@@ -51,7 +51,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -327,7 +326,7 @@ public class PatternRelationControllerTest {
 
     @Test
     public void deleteRelation_returnNotFound() throws Exception {
-        doThrow(EmptyResultDataAccessException.class).when(patternRelationService).delete(any());
+        doThrow(NoSuchElementException.class).when(patternRelationService).delete(any());
 
         mockMvc.perform(delete("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATIONS + "/{id}", UUID.randomUUID())
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
