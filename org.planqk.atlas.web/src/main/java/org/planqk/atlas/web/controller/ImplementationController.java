@@ -92,6 +92,20 @@ public class ImplementationController {
     private final LinkingService linkingService;
 
     @Operation(responses = {
+            @ApiResponse(responseCode = "201"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", description = "Algorithm with given ID doesn't exist")
+    }, description = "Create a new implementation for the algorithm.")
+    @PostMapping
+    public ResponseEntity<EntityModel<ImplementationDto>> createImplementation(
+            @PathVariable UUID algorithmId,
+            @Validated(ValidationGroups.Create.class) @RequestBody ImplementationDto implementationDto) {
+        Implementation savedImplementation = implementationService.create(
+                ModelMapperUtils.convert(implementationDto, Implementation.class), algorithmId);
+        return new ResponseEntity<>(implementationAssembler.toModel(savedImplementation), HttpStatus.CREATED);
+    }
+
+    @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Implementation doesn't exist")
