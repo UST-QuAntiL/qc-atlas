@@ -403,7 +403,7 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "404")
     }, description = "Retrieve the required computing resources of an algorithm")
     @ListParametersDoc
-    @GetMapping("/{algorithmId}/" + Constants.COMPUTE_RESOURCES_PROPERTIES)
+    @GetMapping("/{algorithmId}/" + Constants.COMPUTE_RESOURCE_PROPERTIES)
     public ResponseEntity<PagedModel<EntityModel<ComputeResourcePropertyDto>>> getComputeResourcePropertiesOfAlgorithm(
             @PathVariable UUID algorithmId,
             @Parameter(hidden = true) ListParameters listParameters) {
@@ -420,7 +420,7 @@ public class AlgorithmController {
     }, description = "Add a computing resource (e.g. a certain number of qubits) that is required by an algorithm. " +
             "Custom ID will be ignored. For computing resource type only ID is required, " +
             "other computing resource type attributes will not change.")
-    @PostMapping("/{algorithmId}/" + Constants.COMPUTE_RESOURCES_PROPERTIES)
+    @PostMapping("/{algorithmId}/" + Constants.COMPUTE_RESOURCE_PROPERTIES)
     public ResponseEntity<EntityModel<ComputeResourcePropertyDto>> createComputeResourcePropertyForAlgorithm(
             @PathVariable UUID algorithmId,
             @Validated(ValidationGroups.Create.class) @RequestBody ComputeResourcePropertyDto computeResourcePropertyDto) {

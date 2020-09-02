@@ -186,7 +186,7 @@ public class ComputeResourceController {
             @ApiResponse(responseCode = "404", description = "Compute Resource with given id does not exist")
     }, description = "Get referenced compute resource properties for a compute resource.")
     @ListParametersDoc
-    @GetMapping("/{computeResourceId}/" + Constants.COMPUTE_RESOURCES_PROPERTIES)
+    @GetMapping("/{computeResourceId}/" + Constants.COMPUTE_RESOURCE_PROPERTIES)
     public ResponseEntity<PagedModel<EntityModel<ComputeResourcePropertyDto>>> getComputingResourcePropertiesOfComputeResource(
             @PathVariable UUID computeResourceId,
             @Parameter(hidden = true) ListParameters listParameters) {
@@ -202,7 +202,7 @@ public class ComputeResourceController {
     }, description = "Define the basic properties of a compute resource property and " +
             "add a reference to the defined compute resource property. " +
             "Custom ID will be ignored. ")
-    @PostMapping("/{computeResourceId}/" + Constants.COMPUTE_RESOURCES_PROPERTIES)
+    @PostMapping("/{computeResourceId}/" + Constants.COMPUTE_RESOURCE_PROPERTIES)
     public ResponseEntity<EntityModel<ComputeResourceDto>> createComputingResourcePropertyForComputeResource(
             @PathVariable UUID computeResourceId,
             @Validated(ValidationGroups.Create.class) @RequestBody ComputeResourcePropertyDto computeResourcePropertyDto) {

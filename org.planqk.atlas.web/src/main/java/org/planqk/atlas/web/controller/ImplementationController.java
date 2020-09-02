@@ -71,7 +71,7 @@ import org.springframework.web.bind.annotation.RestController;
 @io.swagger.v3.oas.annotations.tags.Tag(name = Constants.TAG_ALGORITHM)
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
-@RequestMapping("/" + Constants.API_VERSION + "/" + Constants.IMPLEMENTATIONS)
+@RequestMapping("/" + Constants.API_VERSION + "/" + Constants.ALGORITHMS + "/{algorithmId}/" + Constants.IMPLEMENTATIONS)
 @AllArgsConstructor
 @Slf4j
 public class ImplementationController {
@@ -93,22 +93,12 @@ public class ImplementationController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
-    }, description = "Retrieve all implementations")
-    @ListParametersDoc
-    @GetMapping
-    public ResponseEntity<PagedModel<EntityModel<ImplementationDto>>> getImplementations(
-            @Parameter(hidden = true) ListParameters listParameters) {
-        var implementations = implementationService.findAll(listParameters.getPageable());
-        return ResponseEntity.ok(implementationAssembler.toModel(implementations));
-    }
-
-    @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Implementation doesn't exist")
     }, description = "Custom ID will be ignored.")
     @PutMapping
     public ResponseEntity<EntityModel<ImplementationDto>> updateImplementation(
+            @PathVariable UUID algorithmId,
             @Validated(ValidationGroups.Update.class) @RequestBody ImplementationDto implementationDto) {
         Implementation updatedImplementation = implementationService.update(
                 ModelMapperUtils.convert(implementationDto, Implementation.class));
@@ -122,6 +112,7 @@ public class ImplementationController {
     }, description = "")
     @DeleteMapping("/{implementationId}/")
     public ResponseEntity<Void> deleteImplementation(
+            @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId) {
         implementationService.delete(implementationId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -134,6 +125,7 @@ public class ImplementationController {
     }, description = "Retrieve a specific implementation of the algorithm.")
     @GetMapping("/{implementationId}/")
     public ResponseEntity<EntityModel<ImplementationDto>> getImplementation(
+            @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId) {
         var implementation = implementationService.findById(implementationId);
         return ResponseEntity.ok(implementationAssembler.toModel(implementation));
@@ -146,6 +138,7 @@ public class ImplementationController {
     }, description = "")
     @GetMapping("/{implementationId}/" + Constants.TAGS)
     public ResponseEntity<CollectionModel<EntityModel<TagDto>>> getTagsOfImplementation(
+            @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId) {
         Implementation implementation = implementationService.findById(implementationId);
         return ResponseEntity.ok(tagAssembler.toModel(implementation.getTags()));
@@ -158,6 +151,7 @@ public class ImplementationController {
     }, description = "")
     @PutMapping("/{implementationId}/" + Constants.TAGS)
     public ResponseEntity<Void> addTagToImplementation(
+            @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId,
             @Validated @RequestBody TagDto tagDto) {
         tagService.addTagToImplementation(implementationId, ModelMapperUtils.convert(tagDto, Tag.class));
@@ -171,6 +165,7 @@ public class ImplementationController {
     }, description = "")
     @DeleteMapping("/{implementationId}/" + Constants.TAGS)
     public ResponseEntity<Void> removeTagFromImplementation(
+            @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId,
             @Validated @RequestBody TagDto tagDto) {
         tagService.removeTagFromImplementation(implementationId, ModelMapperUtils.convert(tagDto, Tag.class));
@@ -185,6 +180,7 @@ public class ImplementationController {
     @ListParametersDoc
     @GetMapping("/{implementationId}/" + Constants.PUBLICATIONS)
     public ResponseEntity<PagedModel<EntityModel<PublicationDto>>> getPublicationsOfImplementation(
+            @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId,
             @Parameter(hidden = true) ListParameters listParameters) {
         var publications = implementationService.findLinkedPublications(implementationId, listParameters.getPageable());
@@ -201,6 +197,7 @@ public class ImplementationController {
             "If the publication doesn't exist yet, a 404 error is thrown.")
     @PostMapping("/{implementationId}/" + Constants.PUBLICATIONS + "/{publicationId}")
     public ResponseEntity<Void> linkImplementationAndPublication(
+            @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId,
             @PathVariable UUID publicationId) {
         linkingService.linkImplementationAndPublication(implementationId, publicationId);
@@ -214,6 +211,7 @@ public class ImplementationController {
     }, description = "Delete a reference to a publication of the implementation.")
     @DeleteMapping("/{implementationId}/" + Constants.PUBLICATIONS + "/{publicationId}")
     public ResponseEntity<Void> unlinkImplementationAndPublication(
+            @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId,
             @PathVariable UUID publicationId) {
         linkingService.unlinkImplementationAndPublication(implementationId, publicationId);
@@ -228,6 +226,7 @@ public class ImplementationController {
     @ListParametersDoc
     @GetMapping("/{implementationId}/" + Constants.SOFTWARE_PLATFORMS)
     public ResponseEntity<CollectionModel<EntityModel<SoftwarePlatformDto>>> getSoftwarePlatformsOfImplementation(
+            @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId,
             @Parameter(hidden = true) ListParameters listParameters) {
         var softwarePlatforms = implementationService.findLinkedSoftwarePlatforms(implementationId, listParameters.getPageable());
@@ -245,6 +244,7 @@ public class ImplementationController {
             "If the software platform doesn't exist yet, a 404 error is thrown.")
     @PostMapping("/{implementationId}/" + Constants.SOFTWARE_PLATFORMS + "/{softwarePlatformId}")
     public ResponseEntity<CollectionModel<EntityModel<SoftwarePlatformDto>>> linkImplementationAndSoftwarePlatform(
+            @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId,
             @PathVariable UUID softwarePlatformId) {
         linkingService.linkImplementationAndSoftwarePlatform(implementationId, softwarePlatformId);
@@ -258,6 +258,7 @@ public class ImplementationController {
     }, description = "Delete a reference to a software platform of the implementation")
     @DeleteMapping("/{implementationId}/" + Constants.SOFTWARE_PLATFORMS + "/{softwarePlatformId}")
     public ResponseEntity<Void> unlinkImplementationAndSoftwarePlatform(
+            @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId,
             @PathVariable UUID softwarePlatformId) {
         linkingService.unlinkImplementationAndSoftwarePlatform(implementationId, softwarePlatformId);
@@ -270,8 +271,9 @@ public class ImplementationController {
             @ApiResponse(responseCode = "404", description = "Implementation doesn't exist")
     }, description = "Retrieve the required computing resources of an implementation")
     @ListParametersDoc
-    @GetMapping("/{implementationId}/" + Constants.COMPUTE_RESOURCES_PROPERTIES)
+    @GetMapping("/{implementationId}/" + Constants.COMPUTE_RESOURCE_PROPERTIES)
     public ResponseEntity<PagedModel<EntityModel<ComputeResourcePropertyDto>>> getComputeResourcePropertiesOfImplementation(
+            @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId,
             @Parameter(hidden = true) ListParameters listParameters) {
         var resources = computeResourcePropertyService.findComputeResourcePropertiesOfImplementation(
@@ -287,8 +289,9 @@ public class ImplementationController {
     }, description = "Add a computing resource (e.g. a certain number of qubits) " +
             "that is required by an implementation. Custom ID will be ignored. For computing " +
             "resource type only ID is required, other computing resource type attributes will not change")
-    @PostMapping("/{implementationId}/" + Constants.COMPUTE_RESOURCES_PROPERTIES)
+    @PostMapping("/{implementationId}/" + Constants.COMPUTE_RESOURCE_PROPERTIES)
     public ResponseEntity<EntityModel<ComputeResourcePropertyDto>> createComputeResourcePropertyForImplementation(
+            @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId,
             @Validated(ValidationGroups.Create.class) @RequestBody ComputeResourcePropertyDto computeResourcePropertyDto) {
         var computeResourceProperty = ModelMapperUtils.convert(computeResourcePropertyDto, ComputeResourceProperty.class);

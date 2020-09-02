@@ -55,7 +55,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = Constants.TAG_ALGORITHM_RELATION_TYPE)
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
-@RequestMapping("/" + Constants.API_VERSION + "/" + Constants.ALGO_RELATION_TYPES)
+@RequestMapping("/" + Constants.API_VERSION + "/" + Constants.ALGORITHM_RELATION_TYPES)
 @AllArgsConstructor
 @Slf4j
 public class AlgorithmRelationTypeController {

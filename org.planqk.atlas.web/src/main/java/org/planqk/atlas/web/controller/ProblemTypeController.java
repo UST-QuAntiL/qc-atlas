@@ -126,7 +126,7 @@ public class ProblemTypeController {
             @ApiResponse(responseCode = "404", description = "Problem type with given id doesn't exist")
     }, description = "")
     @ListParametersDoc
-    @GetMapping("/{problemTypeId}/" + Constants.PROBLEM_TYPE_PARENT_LIST)
+    @GetMapping("/{problemTypeId}/" + Constants.PROBLEM_TYPE_PARENTS)
     public ResponseEntity<CollectionModel<EntityModel<ProblemTypeDto>>> getProblemTypeParentList(
             @PathVariable UUID problemTypeId) {
         var problemTypeParentList = problemTypeService.getParentList(problemTypeId);

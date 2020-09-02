@@ -25,30 +25,25 @@ public class Constants {
 
     // URL snippets
     public static final String API_VERSION = "v1";
-    public static final String IMPLEMENTATIONS = "implementations";
-    public static final String ALGORITHMS = "algorithms";
-    public static final String TAGS = "tags";
-    public static final String SOFTWARE_PLATFORMS = "software-platforms";
-    public static final String CLOUD_SERVICES = "cloud-services";
-    public static final String PROBLEM_TYPES = "problem-types";
-    public static final String PROBLEM_TYPE_PARENT_LIST = "problem-type-parent-tree";
-    public static final String ALGORITHM_RELATIONS = "algorithm-relations";
-    public static final String ALGO_RELATION_TYPES = "algorithm-relation-types";
-    public static final String PATTERN_RELATION_TYPES = "pattern-relation-types";
-    public static final String PUBLICATIONS = "publications";
-    public static final String DISCUSSION_TOPICS = "discussion-topics";
-    public static final String DISCUSSION_COMMENTS = "discussion-comments";
-    public static final String COMPUTE_RESOURCES = "compute-resources";
-    public static final String PATTERN_RELATIONS = "pattern-relations";
-    public static final String COMPUTE_RESOURCES_PROPERTIES = "compute-resource-properties";
-    public static final String COMPUTE_RESOURCE_PROPERTY_TYPES = "compute-resource-property-types";
-    public static final String APPLICATION_AREAS = "application-areas";
 
-    // link names
-    public static final String ALGORITHM_LINK = "implementedAlgorithm";
-    public static final String ALGORITHM = "algorithm";
-    public static final String TAGS_LINK = "tags";
-    public static final String PUBLICATIONS_LINK = "publications";
+    public static final String ALGORITHMS = "algorithms";
+    public static final String ALGORITHM_RELATIONS = "algorithm-relations";
+    public static final String ALGORITHM_RELATION_TYPES = "algorithm-relation-types";
+    public static final String APPLICATION_AREAS = "application-areas";
+    public static final String CLOUD_SERVICES = "cloud-services";
+    public static final String COMPUTE_RESOURCES = "compute-resources";
+    public static final String COMPUTE_RESOURCE_PROPERTIES = "compute-resource-properties";
+    public static final String COMPUTE_RESOURCE_PROPERTY_TYPES = "compute-resource-property-types";
+    public static final String DISCUSSION_COMMENTS = "discussion-comments";
+    public static final String DISCUSSION_TOPICS = "discussion-topics";
+    public static final String IMPLEMENTATIONS = "implementations";
+    public static final String PATTERN_RELATIONS = "pattern-relations";
+    public static final String PATTERN_RELATION_TYPES = "pattern-relation-types";
+    public static final String PROBLEM_TYPES = "problem-types";
+    public static final String PROBLEM_TYPE_PARENTS = "problem-type-parents";
+    public static final String PUBLICATIONS = "publications";
+    public static final String SOFTWARE_PLATFORMS = "software-platforms";
+    public static final String TAGS = "tags";
 
     // default Pagination params that are exposed in HATEOAS links
     public static final Integer DEFAULT_PAGE_NUMBER = 0;
@@ -60,18 +55,18 @@ public class Constants {
     public static final String SEARCH = "search";
 
     // Swagger tag names
-    public static final String TAG_EXECUTION_ENVIRONMENTS = "execution-environments";
-    public static final String TAG_DISCUSSION_TOPIC = "discussion-topic";
-    public static final String TAG_PROBLEM_TYPE = "problem-type";
-    public static final String TAG_PATTERN_RELATION = "pattern-relation";
-    public static final String TAG_PATTERN_RELATION_TYPE = "pattern-relation-type";
     public static final String TAG_ALGORITHM = "algorithm";
-    public static final String TAG_COMPUTE_RESOURCE_PROPERTY_TYPES = "compute-resource-property-types";
-    public static final String TAG_COMPUTE_RESOURCE_PROPERTIES = "compute-resource-properties";
-    public static final String TAG_APPLICATION_AREAS = "application-areas";
     public static final String TAG_ALGORITHM_RELATIONS = "algorithm-relations";
     public static final String TAG_ALGORITHM_RELATION_TYPE = "algorithm-relation-type";
+    public static final String TAG_APPLICATION_AREAS = "application-areas";
+    public static final String TAG_COMPUTE_RESOURCE_PROPERTIES = "compute-resource-properties";
+    public static final String TAG_COMPUTE_RESOURCE_PROPERTY_TYPES = "compute-resource-property-types";
+    public static final String TAG_DISCUSSION_TOPIC = "discussion-topic";
+    public static final String TAG_EXECUTION_ENVIRONMENTS = "execution-environments";
+    public static final String TAG_PATTERN_RELATION = "pattern-relation";
+    public static final String TAG_PATTERN_RELATION_TYPE = "pattern-relation-type";
+    public static final String TAG_PROBLEM_TYPE = "problem-type";
     public static final String TAG_PUBLICATION = "publication";
     public static final String TAG_ROOT = "root";
-    public static final String TAG_API_TAG = "tag";
+    public static final String TAG_TAG = "tag";
 }
