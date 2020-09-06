@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>org.planqk.atlas.core</artifactId>
-    
+
     <dependencies>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -20,6 +20,24 @@
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-commons</artifactId>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+            <version>1.14.3</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>1.14.3</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>1.14.3</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>
