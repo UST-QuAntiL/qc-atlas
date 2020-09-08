@@ -22,6 +22,7 @@ package org.planqk.atlas.web.controller;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.SoftwarePlatform;
+import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.core.services.LinkingService;
 import org.planqk.atlas.core.services.SoftwarePlatformService;
 import org.planqk.atlas.web.Constants;
@@ -45,6 +46,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
@@ -70,6 +72,7 @@ public class SoftwarePlatformController {
 
     private final SoftwarePlatformService softwarePlatformService;
     private final SoftwarePlatformAssembler softwarePlatformAssembler;
+    private final ImplementationService implementationService;
     private final ImplementationAssembler implementationAssembler;
     private final ComputeResourceAssembler computeResourceAssembler;
     private final CloudServiceAssembler cloudServiceAssembler;
@@ -153,7 +156,7 @@ public class SoftwarePlatformController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Software Platform or Implementation with given id does not exist"),
-    }, description = "Get referenced implementations for a software platform.")
+    }, description = "Get a specific implementations for a software platform.")
     @ListParametersDoc
     @GetMapping("/{softwarePlatformId}/" + Constants.IMPLEMENTATIONS)
     public ResponseEntity<PagedModel<EntityModel<ImplementationDto>>> getImplementationsOfSoftwarePlatform(
@@ -161,6 +164,49 @@ public class SoftwarePlatformController {
             @Parameter(hidden = true) ListParameters listParameters) {
         var implementations = softwarePlatformService.findLinkedImplementations(softwarePlatformId, listParameters.getPageable());
         return ResponseEntity.ok(implementationAssembler.toModel(implementations));
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "204"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", description = "Software platform or publication does not exist")
+    }, description = "Add a reference to an existing software platform" +
+            "(that was previously created via a POST on /software-platforms/)." +
+            "Custom ID will be ignored. For software platform only ID is required," +
+            "other software platform attributes will not change." +
+            "If the software platform doesn't exist yet, a 404 error is thrown.")
+    @PostMapping("/{softwarePlatformId}/" + Constants.IMPLEMENTATIONS )
+    public ResponseEntity<CollectionModel<EntityModel<SoftwarePlatformDto>>> linkSoftwarePlatformAndImplementation(
+            @PathVariable UUID softwarePlatformId,
+            @Validated({ValidationGroups.Update.class}) ImplementationDto implementationDto) {
+        linkingService.linkImplementationAndSoftwarePlatform(implementationDto.getId(), softwarePlatformId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "204"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", description = "Software platform or publication does not exist")
+    }, description = "Delete a reference to a software platform of the implementation")
+    @DeleteMapping("/{softwarePlatformId}/" + Constants.IMPLEMENTATIONS + "/{implementationId}")
+    public ResponseEntity<Void> unlinkSoftwarePlatformAndImplementation(
+            @PathVariable UUID implementationId,
+            @PathVariable UUID softwarePlatformId) {
+        linkingService.unlinkImplementationAndSoftwarePlatform(implementationId, softwarePlatformId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", description = "Implementation doesn't exist")
+    }, description = "Retrieve a specific implementation of the algorithm.")
+    @GetMapping("/{softwarePlatformId}/" + Constants.IMPLEMENTATIONS + "/{implementationId}")
+    public ResponseEntity<EntityModel<ImplementationDto>> getImplementationOfSoftwarePlatform(
+            @PathVariable UUID softwarePlatformId,
+            @PathVariable UUID implementationId) {
+        var implementation = implementationService.findById(implementationId);
+        return ResponseEntity.ok(implementationAssembler.toModel(implementation));
     }
 
     @Operation(responses = {
