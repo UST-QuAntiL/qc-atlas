@@ -171,7 +171,7 @@ public class ImplementationController {
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404")
     }, description = "")
-    @PutMapping("/{implementationId}/" + Constants.TAGS)
+    @PostMapping("/{implementationId}/" + Constants.TAGS)
     public ResponseEntity<Void> addTagToImplementation(
             @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId,

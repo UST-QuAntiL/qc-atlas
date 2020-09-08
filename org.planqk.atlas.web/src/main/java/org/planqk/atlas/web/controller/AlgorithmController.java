@@ -206,7 +206,7 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Algorithm with given ID doesn't exist")
     }, description = "")
-    @PutMapping("/{algorithmId}/" + Constants.TAGS)
+    @PostMapping("/{algorithmId}/" + Constants.TAGS)
     public ResponseEntity<Void> addTagToAlgorithm(
             @PathVariable UUID algorithmId,
             @Validated @RequestBody TagDto tagDto) {
