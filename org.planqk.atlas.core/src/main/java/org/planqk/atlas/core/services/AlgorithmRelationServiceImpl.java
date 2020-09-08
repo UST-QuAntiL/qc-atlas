@@ -19,6 +19,7 @@
 
 package org.planqk.atlas.core.services;
 
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
@@ -78,6 +79,16 @@ public class AlgorithmRelationServiceImpl implements AlgorithmRelationService {
     public void delete(@NonNull UUID algorithmRelationId) {
         ServiceUtils.throwIfNotExists(algorithmRelationId, AlgorithmRelation.class, algorithmRelationRepository);
         algorithmRelationRepository.deleteById(algorithmRelationId);
+    }
+
+    public void checkIfAlgorithmIsInAlgorithmRelation(@NonNull UUID algorithmId, @NonNull UUID algorithmRelationId) {
+        AlgorithmRelation algorithmRelation = findById(algorithmRelationId);
+
+        if (algorithmRelation.getSourceAlgorithm().getId() != algorithmId
+                && algorithmRelation.getTargetAlgorithm().getId() != algorithmId) {
+            throw new NoSuchElementException("Algorithm with ID \"" + algorithmId
+                    + "\" is not part of AlgorithmRelation with ID \"" + algorithmRelationId +  "\"");
+        }
     }
 
     private Algorithm findAlgorithmById(@NonNull UUID algorithmId) {

@@ -17,26 +17,21 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.planqk.atlas.core.services;
+package org.planqk.atlas.web.utils;
 
 import java.util.UUID;
 
-import org.planqk.atlas.core.model.AlgorithmRelation;
+import org.planqk.atlas.web.controller.exceptions.InvalidRequestException;
+import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
 
-import org.springframework.transaction.annotation.Transactional;
+public class ControllerValidationUtils {
 
-public interface AlgorithmRelationService {
-
-    @Transactional
-    AlgorithmRelation create(AlgorithmRelation algorithmRelation);
-
-    AlgorithmRelation findById(UUID algorithmRelationId);
-
-    @Transactional
-    AlgorithmRelation update(AlgorithmRelation algorithmRelation);
-
-    @Transactional
-    void delete(UUID algorithmRelationId);
-
-    void checkIfAlgorithmIsInAlgorithmRelation(UUID algorithmId, UUID algorithmRelationId);
+    public static void checkIfAlgorithmIsInAlgorithmRelationDTO(
+            UUID algorithmId, AlgorithmRelationDto algorithmRelationDto) {
+        if (algorithmRelationDto.getSourceAlgorithmId() != algorithmId
+                && algorithmRelationDto.getTargetAlgorithmId() != algorithmId) {
+            throw new InvalidRequestException("AlgorithmId \"" + algorithmId + "\" does not match any Ids of the " +
+                    "AlgorithmRelation request body");
+        }
+    }
 }

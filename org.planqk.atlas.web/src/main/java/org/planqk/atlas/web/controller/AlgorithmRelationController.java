@@ -27,6 +27,7 @@ import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
 import org.planqk.atlas.web.linkassembler.AlgorithmRelationAssembler;
+import org.planqk.atlas.web.utils.ControllerValidationUtils;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
@@ -89,6 +90,8 @@ public class AlgorithmRelationController {
     public ResponseEntity<EntityModel<AlgorithmRelationDto>> createAlgorithmRelation(
             @PathVariable UUID algorithmId,
             @Validated(ValidationGroups.Create.class) @RequestBody AlgorithmRelationDto algorithmRelationDto) {
+        ControllerValidationUtils.checkIfAlgorithmIsInAlgorithmRelationDTO(algorithmId, algorithmRelationDto);
+
         var savedAlgorithmRelation = algorithmRelationService.create(
                 ModelMapperUtils.convert(algorithmRelationDto, AlgorithmRelation.class));
         return new ResponseEntity<>(algorithmRelationAssembler.toModel(savedAlgorithmRelation), HttpStatus.CREATED);
@@ -104,6 +107,9 @@ public class AlgorithmRelationController {
             @PathVariable UUID algorithmId,
             @PathVariable UUID algorithmRelationId,
             @Validated(ValidationGroups.Update.class) @RequestBody AlgorithmRelationDto algorithmRelationDto) {
+        ControllerValidationUtils.checkIfAlgorithmIsInAlgorithmRelationDTO(algorithmId, algorithmRelationDto);
+        algorithmRelationService.checkIfAlgorithmIsInAlgorithmRelation(algorithmId, algorithmRelationId);
+
         algorithmRelationDto.setId(algorithmRelationId);
         var savedAlgorithmRelation = algorithmRelationService.update(
                 ModelMapperUtils.convert(algorithmRelationDto, AlgorithmRelation.class));
@@ -119,6 +125,8 @@ public class AlgorithmRelationController {
     public ResponseEntity<Void> deleteAlgorithmRelation(
             @PathVariable UUID algorithmId,
             @PathVariable UUID algorithmRelationId) {
+        algorithmRelationService.checkIfAlgorithmIsInAlgorithmRelation(algorithmId, algorithmRelationId);
+
         algorithmRelationService.delete(algorithmRelationId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -132,6 +140,8 @@ public class AlgorithmRelationController {
     public ResponseEntity<EntityModel<AlgorithmRelationDto>> getAlgorithmRelation(
             @PathVariable UUID algorithmId,
             @PathVariable UUID algorithmRelationId) {
+        algorithmRelationService.checkIfAlgorithmIsInAlgorithmRelation(algorithmId, algorithmRelationId);
+
         var algorithmRelation = algorithmRelationService.findById(algorithmRelationId);
         return ResponseEntity.ok(algorithmRelationAssembler.toModel(algorithmRelation));
     }

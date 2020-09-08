@@ -22,6 +22,7 @@ import java.util.NoSuchElementException;
 
 import org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException;
 import org.planqk.atlas.core.exceptions.InvalidResourceTypeValueException;
+import org.planqk.atlas.web.controller.exceptions.InvalidRequestException;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -75,6 +76,12 @@ public class AtlasExceptionHandler {
     public ResponseEntity<NoSuchElementException> handleNoSuchElementException(NoSuchElementException e) {
         log.warn(e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e);
+    }
+
+    @ExceptionHandler(InvalidRequestException.class)
+    public ResponseEntity<InvalidRequestException> handleInvalidRequestException(InvalidRequestException e) {
+        log.warn(e.getMessage(), e);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
     }
 
     @ExceptionHandler(EmptyResultDataAccessException.class)

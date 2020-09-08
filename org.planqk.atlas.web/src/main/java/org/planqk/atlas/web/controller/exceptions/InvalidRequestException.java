@@ -17,26 +17,19 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.planqk.atlas.core.services;
+package org.planqk.atlas.web.controller.exceptions;
 
-import java.util.UUID;
+/**
+ * Exception that will be thrown when a request has invalid configuration that spring does not deem invalid,
+ * e.g. inconsistencies between request path and request body
+ */
+public class InvalidRequestException extends RuntimeException {
 
-import org.planqk.atlas.core.model.AlgorithmRelation;
+    public InvalidRequestException(String message) {
+        super(message);
+    }
 
-import org.springframework.transaction.annotation.Transactional;
-
-public interface AlgorithmRelationService {
-
-    @Transactional
-    AlgorithmRelation create(AlgorithmRelation algorithmRelation);
-
-    AlgorithmRelation findById(UUID algorithmRelationId);
-
-    @Transactional
-    AlgorithmRelation update(AlgorithmRelation algorithmRelation);
-
-    @Transactional
-    void delete(UUID algorithmRelationId);
-
-    void checkIfAlgorithmIsInAlgorithmRelation(UUID algorithmId, UUID algorithmRelationId);
+    public InvalidRequestException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

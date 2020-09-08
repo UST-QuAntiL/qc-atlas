@@ -110,7 +110,7 @@ public class ImplementationServiceImpl implements ImplementationService {
     }
 
     @Override
-    public void throwIfImplementationIsNotOfAlgorithm(UUID implementationId, UUID algorithmId) {
+    public void checkIfImplementationIsOfAlgorithm(@NonNull UUID implementationId, @NonNull UUID algorithmId) {
         Implementation implementation = findById(implementationId);
 
         if (implementation.getImplementedAlgorithm().getId() != algorithmId) {
