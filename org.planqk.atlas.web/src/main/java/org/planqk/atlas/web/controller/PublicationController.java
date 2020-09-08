@@ -98,9 +98,11 @@ public class PublicationController {
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404")
     })
-    @PutMapping
+    @PutMapping("/{publicationId}")
     public ResponseEntity<EntityModel<PublicationDto>> updatePublication(
+            @PathVariable UUID publicationId,
             @Validated(ValidationGroups.Update.class) @RequestBody PublicationDto publicationDto) {
+        publicationDto.setId(publicationId);
         Publication publication = publicationService.update(
                 ModelMapperUtils.convert(publicationDto, Publication.class));
         return new ResponseEntity<>(publicationAssembler.toModel(publication), HttpStatus.OK);

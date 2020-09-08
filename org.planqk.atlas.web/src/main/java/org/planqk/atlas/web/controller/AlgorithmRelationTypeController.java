@@ -91,11 +91,13 @@ public class AlgorithmRelationTypeController {
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Algorithm relation with given id doesn't exist")
     }, description = "Custom ID will be ignored.")
-    @PutMapping
+    @PutMapping("/{algorithmRelationTypeId}")
     public ResponseEntity<EntityModel<AlgorithmRelationTypeDto>> updateAlgorithmRelationType(
-            @Validated(ValidationGroups.Update.class) @RequestBody AlgorithmRelationTypeDto AlgorithmRelationTypeDto) {
+            @PathVariable UUID algorithmRelationTypeId,
+            @Validated(ValidationGroups.Update.class) @RequestBody AlgorithmRelationTypeDto algorithmRelationTypeDto) {
+        algorithmRelationTypeDto.setId(algorithmRelationTypeId);
         var savedAlgorithmRelationType = algorithmRelationTypeService.update(
-                ModelMapperUtils.convert(AlgorithmRelationTypeDto, AlgorithmRelationType.class));
+                ModelMapperUtils.convert(algorithmRelationTypeDto, AlgorithmRelationType.class));
         return ResponseEntity.ok(algorithmRelationTypeAssembler.toModel(savedAlgorithmRelationType));
     }
 

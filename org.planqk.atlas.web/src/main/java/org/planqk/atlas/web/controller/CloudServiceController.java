@@ -111,9 +111,11 @@ public class CloudServiceController {
             "References to sub-objects (e.g. a compute resource) are not updated via this operation - " +
             "use the corresponding sub-route for updating them (e.g. /cloud-services/{id}/compute-resources). " +
             "Custom ID will be ignored.")
-    @PutMapping
+    @PutMapping("/{cloudServiceId}")
     public ResponseEntity<EntityModel<CloudServiceDto>> updateCloudService(
+            @PathVariable UUID cloudServiceId,
             @Validated(ValidationGroups.Update.class) @RequestBody CloudServiceDto cloudServiceDto) {
+        cloudServiceDto.setId(cloudServiceId);
         var updatedCloudService = cloudServiceService.update(
                 ModelMapperUtils.convert(cloudServiceDto, CloudService.class));
         return ResponseEntity.ok(cloudServiceAssembler.toModel(updatedCloudService));

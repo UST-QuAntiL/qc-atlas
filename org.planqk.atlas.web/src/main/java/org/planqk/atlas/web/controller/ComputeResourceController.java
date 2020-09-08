@@ -119,9 +119,11 @@ public class ComputeResourceController {
             "References to sub-objects (e.g. a compute resource property) are not updated via this operation - " +
             "use the corresponding sub-route for updating them (e.g. /compute-resources/{id}/compute-resource-properties). " +
             "Custom ID will be ignored.")
-    @PutMapping
+    @PutMapping("/{computeResourceId}")
     public ResponseEntity<EntityModel<ComputeResourceDto>> updateComputeResource(
+            @PathVariable UUID computeResourceId,
             @Validated(ValidationGroups.Update.class) @RequestBody ComputeResourceDto computeResourceDto) {
+        computeResourceDto.setId(computeResourceId);
         ComputeResource computeResource = computeResourceService.update(
                 ModelMapperUtils.convert(computeResourceDto, ComputeResource.class));
         return ResponseEntity.ok(computeResourceAssembler.toModel(computeResource));

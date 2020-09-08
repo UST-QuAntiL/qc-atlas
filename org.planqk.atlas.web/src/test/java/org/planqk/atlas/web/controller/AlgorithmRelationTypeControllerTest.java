@@ -141,7 +141,7 @@ public class AlgorithmRelationTypeControllerTest {
         algorithmRelationTypeDto.setId(UUID.randomUUID());
 
         var url = fromMethodCall(uriBuilder, on(AlgorithmRelationTypeController.class)
-                .updateAlgorithmRelationType(null)).toUriString();
+                .updateAlgorithmRelationType(UUID.randomUUID(), null)).toUriString();
         mockMvc.perform(put(url)
                 .content(mapper.writeValueAsString(algorithmRelationTypeDto)).contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
@@ -152,7 +152,7 @@ public class AlgorithmRelationTypeControllerTest {
         when(algorithmRelationTypeService.update(any())).thenReturn(algorithmRelationType1);
 
         var url = fromMethodCall(uriBuilder, on(AlgorithmRelationTypeController.class)
-                .updateAlgorithmRelationType(null)).toUriString();
+                .updateAlgorithmRelationType(UUID.randomUUID(), null)).toUriString();
         MvcResult result = mockMvc
                 .perform(put(url)
                         .content(mapper.writeValueAsString(algoRelationType1Dto))

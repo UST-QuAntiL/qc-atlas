@@ -92,9 +92,11 @@ public class ApplicationAreaController {
             @ApiResponse(responseCode = "404",
                     description = "Application area with given id does not exist"),
     }, description = "Custom ID will be ignored.")
-    @PutMapping
+    @PutMapping("/{applicationAreaId}")
     public ResponseEntity<EntityModel<ApplicationAreaDto>> updateApplicationArea(
+            @PathVariable UUID applicationAreaId,
             @Validated(ValidationGroups.Update.class) @RequestBody ApplicationAreaDto applicationAreaDto) {
+        applicationAreaDto.setId(applicationAreaId);
         var updatedApplicationArea = applicationAreaService.update(
                 ModelMapperUtils.convert(applicationAreaDto, ApplicationArea.class));
         return ResponseEntity.ok(applicationAreaAssembler.toModel(updatedApplicationArea));

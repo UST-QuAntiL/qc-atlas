@@ -91,9 +91,11 @@ public class PatternRelationTypeController {
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404")
     }, description = "Custom ID will be ignored.")
-    @PutMapping
+    @PutMapping("/{patternRelationTypeId}")
     public ResponseEntity<EntityModel<PatternRelationTypeDto>> updatePatternRelationType(
+            @PathVariable UUID patternRelationTypeId,
             @Validated(ValidationGroups.Update.class) @RequestBody PatternRelationTypeDto patternRelationTypeDto) {
+        patternRelationTypeDto.setId(patternRelationTypeId);
         var relationType = patternRelationTypeService.update(
                 ModelMapperUtils.convert(patternRelationTypeDto, PatternRelationType.class));
         return ResponseEntity.ok(patternRelationTypeAssembler.toModel(relationType));

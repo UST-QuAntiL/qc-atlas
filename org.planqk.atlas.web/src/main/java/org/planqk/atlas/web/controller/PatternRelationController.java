@@ -97,9 +97,11 @@ public class PatternRelationController {
     }, description = "Update a reference to a pattern. " +
             "Custom ID will be ignored. For pattern relation type only ID is required, " +
             "other pattern relation type attributes will not change.")
-    @PutMapping
+    @PutMapping("/{patternRelationId}")
     public ResponseEntity<EntityModel<PatternRelationDto>> updatePatternRelation(
+            @PathVariable UUID patternRelationId,
             @Validated( {ValidationGroups.Update.class}) @RequestBody PatternRelationDto patternRelationDto) {
+        patternRelationDto.setId(patternRelationId);
         var savedPatternRelation = patternRelationService.update(
                 ModelMapperUtils.convert(patternRelationDto, PatternRelation.class));
         return ResponseEntity.ok(patternRelationAssembler.toModel(savedPatternRelation));

@@ -110,10 +110,12 @@ public class ImplementationController {
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Implementation doesn't exist")
     }, description = "Custom ID will be ignored.")
-    @PutMapping
+    @PutMapping("/{implementationId}")
     public ResponseEntity<EntityModel<ImplementationDto>> updateImplementation(
             @PathVariable UUID algorithmId,
+            @PathVariable UUID implementationId,
             @Validated(ValidationGroups.Update.class) @RequestBody ImplementationDto implementationDto) {
+        implementationDto.setId(implementationId);
         Implementation updatedImplementation = implementationService.update(
                 ModelMapperUtils.convert(implementationDto, Implementation.class));
         return ResponseEntity.ok(implementationAssembler.toModel(updatedImplementation));
@@ -124,7 +126,7 @@ public class ImplementationController {
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Implementation doesn't exist")
     }, description = "")
-    @DeleteMapping("/{implementationId}/")
+    @DeleteMapping("/{implementationId}")
     public ResponseEntity<Void> deleteImplementation(
             @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId) {
@@ -137,7 +139,7 @@ public class ImplementationController {
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Implementation doesn't exist")
     }, description = "Retrieve a specific implementation of the algorithm.")
-    @GetMapping("/{implementationId}/")
+    @GetMapping("/{implementationId}")
     public ResponseEntity<EntityModel<ImplementationDto>> getImplementation(
             @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId) {

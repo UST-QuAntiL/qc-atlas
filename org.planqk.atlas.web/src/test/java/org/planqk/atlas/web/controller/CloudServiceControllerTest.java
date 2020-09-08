@@ -132,7 +132,7 @@ public class CloudServiceControllerTest {
         doThrow(new NoSuchElementException()).when(cloudServiceService).update(any());
 
         var url = fromMethodCall(uriBuilder, on(CloudServiceController.class)
-                .updateCloudService(null)).toUriString();
+                .updateCloudService(UUID.randomUUID(), null)).toUriString();
 
         mockMvc.perform(put(url).content(mapper.writeValueAsString(resource))
                 .contentType(MediaType.APPLICATION_JSON)
@@ -146,7 +146,7 @@ public class CloudServiceControllerTest {
         resource.setId(UUID.randomUUID());
 
         var url = fromMethodCall(uriBuilder, on(CloudServiceController.class)
-                .updateCloudService(null)).toUriString();
+                .updateCloudService(UUID.randomUUID(), null)).toUriString();
 
         mockMvc.perform(put(url).content(mapper.writeValueAsString(resource))
                 .contentType(MediaType.APPLICATION_JSON)
@@ -167,7 +167,7 @@ public class CloudServiceControllerTest {
         doReturn(returnedResource).when(cloudServiceService).update(any());
 
         var url = fromMethodCall(uriBuilder, on(CloudServiceController.class)
-                .updateCloudService(null)).toUriString();
+                .updateCloudService(UUID.randomUUID(), null)).toUriString();
 
         mockMvc.perform(put(url).content(mapper.writeValueAsString(resource))
                 .contentType(MediaType.APPLICATION_JSON)

@@ -334,7 +334,7 @@ public class SoftwarePlatformControllerTest {
                 put(
                         fromMethodCall(uriBuilder,
                                 on(SoftwarePlatformController.class)
-                                        .updateSoftwarePlatform(null)
+                                        .updateSoftwarePlatform(UUID.randomUUID(), null)
                         ).toUriString()
                 ).content(mapper.writeValueAsBytes(sampleInput))
                         .contentType(MediaType.APPLICATION_JSON)
@@ -355,7 +355,7 @@ public class SoftwarePlatformControllerTest {
                 put(
                         fromMethodCall(uriBuilder,
                                 on(SoftwarePlatformController.class)
-                                        .updateSoftwarePlatform(null)
+                                        .updateSoftwarePlatform(UUID.randomUUID(), null)
                         ).toUriString()
                 ).content(mapper.writeValueAsBytes(sampleInput))
                         .contentType(MediaType.APPLICATION_JSON)
@@ -373,7 +373,7 @@ public class SoftwarePlatformControllerTest {
                 put(
                         fromMethodCall(uriBuilder,
                                 on(SoftwarePlatformController.class)
-                                        .updateSoftwarePlatform(null)
+                                        .updateSoftwarePlatform(UUID.randomUUID(), null)
                         ).toUriString()
                 ).content(mapper.writeValueAsBytes(sampleInput))
                         .contentType(MediaType.APPLICATION_JSON)

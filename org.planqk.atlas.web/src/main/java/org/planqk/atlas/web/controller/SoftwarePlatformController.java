@@ -114,9 +114,11 @@ public class SoftwarePlatformController {
             "References to sub-objects (e.g. a compute resource) are not updated via this operation - " +
             "use the corresponding sub-route for updating them (e.g. /software-platforms/{id}/compute-resources). " +
             "Custom ID will be ignored.")
-    @PutMapping
+    @PutMapping("/{softwarePlatformId}")
     public ResponseEntity<EntityModel<SoftwarePlatformDto>> updateSoftwarePlatform(
+            @PathVariable UUID softwarePlatformId,
             @Validated({ValidationGroups.Update.class}) @RequestBody SoftwarePlatformDto softwarePlatformDto) {
+        softwarePlatformDto.setId(softwarePlatformId);
         var softwarePlatform = softwarePlatformService
                 .update(
                         ModelMapperUtils.convert(softwarePlatformDto, SoftwarePlatform.class));

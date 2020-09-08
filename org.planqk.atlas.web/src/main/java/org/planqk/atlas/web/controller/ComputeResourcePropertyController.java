@@ -76,10 +76,12 @@ public class ComputeResourcePropertyController {
             @ApiResponse(responseCode = "404", description = "Algorithm with the given id doesn't exist")},
             description = "Update a computing resource of the algorithm. Custom ID will be ignored." +
                     "For computing resource type only ID is required, other computing resource type attributes will not change.")
-    @PutMapping()
+    @PutMapping("/{computeResourcePropertyId}")
     public ResponseEntity<EntityModel<ComputeResourcePropertyDto>> updateComputeResourceProperty(
-            @Validated(ValidationGroups.Update.class) @RequestBody ComputeResourcePropertyDto resourceDto) {
-        var resource = ModelMapperUtils.convert(resourceDto, ComputeResourceProperty.class);
+            @PathVariable UUID computeResourcePropertyId,
+            @Validated(ValidationGroups.Update.class) @RequestBody ComputeResourcePropertyDto computeResourcePropertyDto) {
+        computeResourcePropertyDto.setId(computeResourcePropertyId);
+        var resource = ModelMapperUtils.convert(computeResourcePropertyDto, ComputeResourceProperty.class);
         var updatedResource = computeResourcePropertyService.update(resource);
         return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(updatedResource));
     }

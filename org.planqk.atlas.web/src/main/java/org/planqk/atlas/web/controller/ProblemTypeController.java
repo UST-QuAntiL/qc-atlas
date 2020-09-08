@@ -90,9 +90,11 @@ public class ProblemTypeController {
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Problem type with given id doesn't exist")
     }, description = "Custom ID will be ignored.")
-    @PutMapping
+    @PutMapping("/{problemTypeId}")
     public ResponseEntity<EntityModel<ProblemTypeDto>> updateProblemType(
+            @PathVariable UUID problemTypeId,
             @Validated(ValidationGroups.Update.class) @RequestBody ProblemTypeDto problemTypeDto) {
+        problemTypeDto.setId(problemTypeId);
         var updatedProblemType = problemTypeService.update(
                 ModelMapperUtils.convert(problemTypeDto, ProblemType.class));
         return ResponseEntity.ok(problemTypeAssembler.toModel(updatedProblemType));

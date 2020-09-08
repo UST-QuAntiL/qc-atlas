@@ -92,9 +92,12 @@ public class ComputeResourcePropertyTypeController {
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Computing resource type with given id doesn't exist")
     }, description = "Custom ID will be ignored.")
-    @PutMapping
+    @PutMapping("/{computeResourcePropertyTypeId}")
     public ResponseEntity<EntityModel<ComputeResourcePropertyTypeDto>> updateComputingResourcePropertyType(
-            @Validated(ValidationGroups.Update.class) @RequestBody ComputeResourcePropertyTypeDto computeResourcePropertyTypeDto) {
+            @PathVariable UUID computeResourcePropertyTypeId,
+            @Validated(ValidationGroups.Update.class) @RequestBody
+                    ComputeResourcePropertyTypeDto computeResourcePropertyTypeDto) {
+        computeResourcePropertyTypeDto.setId(computeResourcePropertyTypeId);
         var savedComputeResourcePropertyType = computeResourcePropertyTypeService.create(
                 ModelMapperUtils.convert(computeResourcePropertyTypeDto, ComputeResourcePropertyType.class));
         return ResponseEntity.ok(computeResourcePropertyTypeAssembler.toModel(savedComputeResourcePropertyType));

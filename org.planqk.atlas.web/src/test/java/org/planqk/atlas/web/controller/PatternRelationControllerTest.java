@@ -280,7 +280,8 @@ public class PatternRelationControllerTest {
 
         when(patternRelationService.update(any())).thenReturn(relationUpdated);
 
-        MvcResult result = mockMvc.perform(put("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATIONS)
+        MvcResult result = mockMvc.perform(put("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATIONS
+        + "/" + relation1Dto.getId())
                 .content(mapper.writeValueAsString(relation1Dto)).contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
 
@@ -299,7 +300,8 @@ public class PatternRelationControllerTest {
     public void updateRelation_returnBadRequest() throws Exception {
         when(patternRelationService.update(relation1)).thenReturn(relationUpdated);
 
-        mockMvc.perform(put("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATIONS)
+        mockMvc.perform(put("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATIONS
+                + "/" + relation1Dto.getId())
                 .content(mapper.writeValueAsString(missingReqParamRelation)).contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
     }
@@ -311,7 +313,8 @@ public class PatternRelationControllerTest {
 
         when(patternRelationService.update(any())).thenThrow(NoSuchElementException.class);
 
-        mockMvc.perform(put("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATIONS)
+        mockMvc.perform(put("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATIONS
+                + "/" + relation1Dto.getId())
                 .content(mapper.writeValueAsString(relation1Dto)).contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
     }

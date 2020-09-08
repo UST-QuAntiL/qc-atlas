@@ -132,8 +132,7 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "400", description = "Request body has invalid fields"),
     }, description = "Define the basic properties of an algorithm. " +
             "References to sub-objects (e.g. a ProblemType) can be added via " +
-            "sub-routes (e.g. /" + Constants.ALGORITHMS + "/{algorithmId}/" + Constants.PROBLEM_TYPES +
-            "/{problemTypeId}).")
+            "sub-routes (e.g. POST on /" + Constants.ALGORITHMS + "/{algorithmId}/" + Constants.PROBLEM_TYPES + ").")
     @PostMapping
     public ResponseEntity<EntityModel<AlgorithmDto>> createAlgorithm(
             @Validated(ValidationGroups.Create.class) @RequestBody AlgorithmDto algorithmDto) {
@@ -148,9 +147,11 @@ public class AlgorithmController {
     }, description = "Update the basic properties of an algorithm (e.g. name). " +
             "References to sub-objects (e.g. a ProblemType) are not updated via this operation " +
             "- use the corresponding sub-route for updating them (e.g. /" + Constants.PROBLEM_TYPES + ").")
-    @PutMapping
+    @PutMapping("/{algorithmId}")
     public ResponseEntity<EntityModel<AlgorithmDto>> updateAlgorithm(
+            @PathVariable UUID algorithmId,
             @Validated(ValidationGroups.Update.class) @RequestBody AlgorithmDto algorithmDto) {
+        algorithmDto.setId(algorithmId);
         Algorithm updatedAlgorithm = algorithmService.update(
                 ModelMapperUtils.convert(algorithmDto, Algorithm.class));
         return ResponseEntity.ok(algorithmAssembler.toModel(updatedAlgorithm));

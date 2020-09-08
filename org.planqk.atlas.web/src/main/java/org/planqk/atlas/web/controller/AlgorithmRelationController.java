@@ -86,9 +86,11 @@ public class AlgorithmRelationController {
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Algorithm relation with given id doesn't exist")
     }, description = "Custom ID will be ignored.")
-    @PutMapping
+    @PutMapping("/{algorithmRelationId}")
     public ResponseEntity<EntityModel<AlgorithmRelationDto>> updateAlgorithmRelation(
+            @PathVariable UUID algorithmRelationId,
             @Validated(ValidationGroups.Update.class) @RequestBody AlgorithmRelationDto algorithmRelationDto) {
+        algorithmRelationDto.setId(algorithmRelationId);
         var savedAlgorithmRelation = algorithmRelationService.update(
                 ModelMapperUtils.convert(algorithmRelationDto, AlgorithmRelation.class));
         return ResponseEntity.ok(algorithmRelationAssembler.toModel(savedAlgorithmRelation));
