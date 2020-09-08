@@ -209,12 +209,12 @@ public class ImplementationController {
             "(that was previously created via a POST on /publications/). Custom ID will be ignored. " +
             "For publication only ID is required, other publication attributes will not change. " +
             "If the publication doesn't exist yet, a 404 error is thrown.")
-    @PostMapping("/{implementationId}/" + Constants.PUBLICATIONS + "/{publicationId}")
+    @PostMapping("/{implementationId}/" + Constants.PUBLICATIONS)
     public ResponseEntity<Void> linkImplementationAndPublication(
             @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId,
-            @PathVariable UUID publicationId) {
-        linkingService.linkImplementationAndPublication(implementationId, publicationId);
+            @Validated({ValidationGroups.Update.class}) @RequestBody PublicationDto publicationDto) {
+        linkingService.linkImplementationAndPublication(implementationId, publicationDto.getId());
         return ResponseEntity.noContent().build();
     }
 
@@ -256,12 +256,12 @@ public class ImplementationController {
             "Custom ID will be ignored. For software platform only ID is required," +
             "other software platform attributes will not change." +
             "If the software platform doesn't exist yet, a 404 error is thrown.")
-    @PostMapping("/{implementationId}/" + Constants.SOFTWARE_PLATFORMS + "/{softwarePlatformId}")
+    @PostMapping("/{implementationId}/" + Constants.SOFTWARE_PLATFORMS)
     public ResponseEntity<CollectionModel<EntityModel<SoftwarePlatformDto>>> linkImplementationAndSoftwarePlatform(
             @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId,
-            @PathVariable UUID softwarePlatformId) {
-        linkingService.linkImplementationAndSoftwarePlatform(implementationId, softwarePlatformId);
+            @Validated({ValidationGroups.Update.class}) SoftwarePlatformDto softwarePlatformDto) {
+        linkingService.linkImplementationAndSoftwarePlatform(implementationId, softwarePlatformDto.getId());
         return ResponseEntity.noContent().build();
     }
 

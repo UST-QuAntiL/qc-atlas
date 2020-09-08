@@ -242,11 +242,11 @@ public class AlgorithmController {
             "(that was previously created via a POST on /" + Constants.PUBLICATIONS + "). " +
             "For publication only ID is required, other publication attributes will not change. " +
             "If the publication doesn't exist yet, a 404 error is returned.")
-    @PostMapping("/{algorithmId}/" + Constants.PUBLICATIONS + "/{publicationId}")
+    @PostMapping("/{algorithmId}/" + Constants.PUBLICATIONS)
     public ResponseEntity<Void> linkAlgorithmAndPublication(
             @PathVariable UUID algorithmId,
-            @PathVariable UUID publicationId) {
-        linkingService.linkAlgorithmAndPublication(algorithmId, publicationId);
+            @Validated({ValidationGroups.Update.class}) @RequestBody PublicationDto publicationDto) {
+        linkingService.linkAlgorithmAndPublication(algorithmId, publicationDto.getId());
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
@@ -288,11 +288,11 @@ public class AlgorithmController {
             "(that was previously created via a POST on /" + Constants.PROBLEM_TYPES + "). " +
             "For problem type only ID is required, other problem type attributes will not change. " +
             "If the ProblemType doesn't exist yet, a 404 error is thrown.")
-    @PostMapping("/{algorithmId}/" + Constants.PROBLEM_TYPES + "/{problemTypeId}")
+    @PostMapping("/{algorithmId}/" + Constants.PROBLEM_TYPES)
     public ResponseEntity<Void> linkAlgorithmAndProblemType(
             @PathVariable UUID algorithmId,
-            @PathVariable UUID problemTypeId) {
-        linkingService.linkAlgorithmAndProblemType(algorithmId, problemTypeId);
+            @Validated({ValidationGroups.Update.class}) @RequestBody ProblemTypeDto problemTypeDto) {
+        linkingService.linkAlgorithmAndProblemType(algorithmId, problemTypeDto.getId());
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
@@ -333,11 +333,11 @@ public class AlgorithmController {
             "(that was previously created via a POST on /" + Constants.APPLICATION_AREAS + "). " +
             "For application area only ID is required, other attributes will not change. " +
             "If the applicationArea doesn't exist yet, a 404 error is thrown.")
-    @PostMapping("/{algorithmId}/" + Constants.APPLICATION_AREAS + "/{applicationAreaId}")
+    @PostMapping("/{algorithmId}/" + Constants.APPLICATION_AREAS)
     public ResponseEntity<Void> linkAlgorithmAndApplicationArea(
             @PathVariable UUID algorithmId,
-            @PathVariable UUID applicationAreaId) {
-        linkingService.linkAlgorithmAndApplicationArea(algorithmId, applicationAreaId);
+            @Validated({ValidationGroups.Update.class}) ApplicationAreaDto applicationAreaDto) {
+        linkingService.linkAlgorithmAndApplicationArea(algorithmId, applicationAreaDto.getId());
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 

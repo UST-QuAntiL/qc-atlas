@@ -686,14 +686,21 @@ public class SoftwarePlatformControllerTest {
 
     @Test
     void createReferenceToComputeResource_returnNoContent() throws Exception {
+        CloudServiceDto cloudServiceDto = new CloudServiceDto();
+        cloudServiceDto.setId(UUID.randomUUID());
+        cloudServiceDto.setName("CloudService");
+
         doNothing().when(linkingService).linkSoftwarePlatformAndComputeResource(any(), any());
+
         mockMvc.perform(
                 post(
                         fromMethodCall(uriBuilder,
                                 on(SoftwarePlatformController.class)
-                                        .linkSoftwarePlatformAndComputeResource(UUID.randomUUID(), UUID.randomUUID())
+                                        .linkSoftwarePlatformAndComputeResource(UUID.randomUUID(), new ComputeResourceDto())
                         ).toUriString()
-                ).accept(MediaType.APPLICATION_JSON)
+                ).content(mapper.writeValueAsString(cloudServiceDto))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isNoContent());
     }
 
@@ -712,14 +719,21 @@ public class SoftwarePlatformControllerTest {
 
     @Test
     void createReferenceToComputeResource_returnNotFound() throws Exception {
+        CloudServiceDto cloudServiceDto = new CloudServiceDto();
+        cloudServiceDto.setId(UUID.randomUUID());
+        cloudServiceDto.setName("CloudService");
+
         doThrow(new NoSuchElementException()).when(linkingService).linkSoftwarePlatformAndComputeResource(any(), any());
+
         mockMvc.perform(
                 post(
                         fromMethodCall(uriBuilder,
                                 on(SoftwarePlatformController.class)
-                                        .linkSoftwarePlatformAndComputeResource(UUID.randomUUID(), UUID.randomUUID())
+                                        .linkSoftwarePlatformAndComputeResource(UUID.randomUUID(), new ComputeResourceDto())
                         ).toUriString()
-                ).accept(MediaType.APPLICATION_JSON)
+                ).content(mapper.writeValueAsString(cloudServiceDto))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isNotFound());
     }
 
@@ -743,7 +757,7 @@ public class SoftwarePlatformControllerTest {
                 post(
                         fromMethodCall(uriBuilder,
                                 on(SoftwarePlatformController.class)
-                                        .linkSoftwarePlatformAndComputeResource(UUID.randomUUID(), UUID.randomUUID())
+                                        .linkSoftwarePlatformAndComputeResource(UUID.randomUUID(), new ComputeResourceDto())
                         ).toUriString()
                 ).accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isBadRequest());
@@ -764,14 +778,21 @@ public class SoftwarePlatformControllerTest {
 
     @Test
     void createReferenceToCloudService_returnNoContent() throws Exception {
+        CloudServiceDto cloudServiceDto = new CloudServiceDto();
+        cloudServiceDto.setId(UUID.randomUUID());
+        cloudServiceDto.setName("CloudService");
+
         doNothing().when(linkingService).linkSoftwarePlatformAndCloudService(any(), any());
+
         mockMvc.perform(
                 post(
                         fromMethodCall(uriBuilder,
                                 on(SoftwarePlatformController.class)
-                                        .linkSoftwarePlatformAndCloudService(UUID.randomUUID(), UUID.randomUUID())
+                                        .linkSoftwarePlatformAndCloudService(UUID.randomUUID(), null)
                         ).toUriString()
-                ).accept(MediaType.APPLICATION_JSON)
+                ).content(mapper.writeValueAsString(cloudServiceDto))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isNoContent());
     }
 
@@ -790,14 +811,21 @@ public class SoftwarePlatformControllerTest {
 
     @Test
     void createReferenceToCloudService_returnNotFound() throws Exception {
+        CloudServiceDto cloudServiceDto = new CloudServiceDto();
+        cloudServiceDto.setId(UUID.randomUUID());
+        cloudServiceDto.setName("CloudService");
+
         doThrow(new NoSuchElementException()).when(linkingService).linkSoftwarePlatformAndCloudService(any(), any());
+
         mockMvc.perform(
                 post(
                         fromMethodCall(uriBuilder,
                                 on(SoftwarePlatformController.class)
-                                        .linkSoftwarePlatformAndCloudService(UUID.randomUUID(), UUID.randomUUID())
+                                        .linkSoftwarePlatformAndCloudService(UUID.randomUUID(), new CloudServiceDto())
                         ).toUriString()
-                ).accept(MediaType.APPLICATION_JSON)
+                ).content(mapper.writeValueAsString(cloudServiceDto))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isNotFound());
     }
 
@@ -821,7 +849,7 @@ public class SoftwarePlatformControllerTest {
                 post(
                         fromMethodCall(uriBuilder,
                                 on(SoftwarePlatformController.class)
-                                        .linkSoftwarePlatformAndCloudService(UUID.randomUUID(), UUID.randomUUID())
+                                        .linkSoftwarePlatformAndCloudService(UUID.randomUUID(), new CloudServiceDto())
                         ).toUriString()
                 ).accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isBadRequest());

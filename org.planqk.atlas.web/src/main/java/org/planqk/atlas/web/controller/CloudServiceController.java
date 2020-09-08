@@ -159,6 +159,8 @@ public class CloudServiceController {
         return ResponseEntity.ok(softwarePlatformAssembler.toModel(softwarePlatforms));
     }
 
+    // TODO add link and unlink calls to software platform
+
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
@@ -181,11 +183,11 @@ public class CloudServiceController {
             "Custom ID will be ignored. " +
             "For the compute resource only the ID is required, other compute resource attributes will not change. " +
             "If the compute resource doesn't exist yet, a 404 error is thrown.")
-    @PostMapping("/{cloudServiceId}/" + Constants.COMPUTE_RESOURCES + "/{computeResourceId}")
+    @PostMapping("/{cloudServiceId}/" + Constants.COMPUTE_RESOURCES)
     public ResponseEntity<Void> linkCloudServiceAndComputeResource(
             @PathVariable UUID cloudServiceId,
-            @PathVariable UUID computeResourceId) {
-        linkingService.linkCloudServiceAndComputeResource(cloudServiceId, computeResourceId);
+            @Validated({ValidationGroups.Update.class}) @RequestBody ComputeResourceDto computeResourceDto) {
+        linkingService.linkCloudServiceAndComputeResource(cloudServiceId, computeResourceDto.getId());
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 

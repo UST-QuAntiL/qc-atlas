@@ -336,19 +336,34 @@ public class CloudServiceControllerTest {
 
     @Test
     void linkCloudServiceToComputeResource_returnNoContent() throws Exception {
+        ComputeResourceDto computeResourceDto = new ComputeResourceDto();
+        computeResourceDto.setId(UUID.randomUUID());
+        computeResourceDto.setName("computeResource");
+
         doNothing().when(linkingService).linkCloudServiceAndComputeResource(any(), any());
+
         var url = fromMethodCall(uriBuilder, on(CloudServiceController.class)
-                .linkCloudServiceAndComputeResource(UUID.randomUUID(), UUID.randomUUID())).toUriString();
-        mockMvc.perform(post(url).accept(MediaType.APPLICATION_JSON)).andExpect(status().isNoContent());
+                .linkCloudServiceAndComputeResource(UUID.randomUUID(), null)).toUriString();
+        mockMvc.perform(post(url)
+                .content(mapper.writeValueAsString(computeResourceDto))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isNoContent());
     }
 
     @Test
     void linkCloudServiceToComputeResource_returnNotFound() throws Exception {
+        ComputeResourceDto computeResourceDto = new ComputeResourceDto();
+        computeResourceDto.setId(UUID.randomUUID());
+        computeResourceDto.setName("computeResource");
+
         doThrow(new NoSuchElementException()).when(linkingService).linkCloudServiceAndComputeResource(any(), any());
 
         var url = fromMethodCall(uriBuilder, on(CloudServiceController.class)
-                .linkCloudServiceAndComputeResource(UUID.randomUUID(), UUID.randomUUID())).toUriString();
-        mockMvc.perform(post(url).accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
+                .linkCloudServiceAndComputeResource(UUID.randomUUID(), null)).toUriString();
+        mockMvc.perform(post(url)
+                .content(mapper.writeValueAsString(computeResourceDto))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
     }
 
     @Test

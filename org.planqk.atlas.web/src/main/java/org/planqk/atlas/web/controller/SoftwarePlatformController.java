@@ -101,7 +101,7 @@ public class SoftwarePlatformController {
             "Custom ID will be ignored.")
     @PostMapping
     public ResponseEntity<EntityModel<SoftwarePlatformDto>> createSoftwarePlatform(
-            @Validated(ValidationGroups.Create.class) @RequestBody SoftwarePlatformDto softwarePlatformDto) {
+            @Validated({ValidationGroups.Create.class}) @RequestBody SoftwarePlatformDto softwarePlatformDto) {
         var savedPlatform = softwarePlatformService.create(ModelMapperUtils.convert(softwarePlatformDto, SoftwarePlatform.class));
         return new ResponseEntity<>(softwarePlatformAssembler.toModel(savedPlatform), HttpStatus.CREATED);
     }
@@ -116,7 +116,7 @@ public class SoftwarePlatformController {
             "Custom ID will be ignored.")
     @PutMapping
     public ResponseEntity<EntityModel<SoftwarePlatformDto>> updateSoftwarePlatform(
-            @Validated(ValidationGroups.Update.class) @RequestBody SoftwarePlatformDto softwarePlatformDto) {
+            @Validated({ValidationGroups.Update.class}) @RequestBody SoftwarePlatformDto softwarePlatformDto) {
         var softwarePlatform = softwarePlatformService
                 .update(
                         ModelMapperUtils.convert(softwarePlatformDto, SoftwarePlatform.class));
@@ -183,11 +183,11 @@ public class SoftwarePlatformController {
             "Custom ID will be ignored. " +
             "For the cloud service only the ID is required, other cloud service attributes will not change. " +
             "If the cloud service doesn't exist yet, a 404 error is thrown.")
-    @PostMapping("/{softwarePlatformId}/" + Constants.CLOUD_SERVICES + "/{cloudServiceId}")
+    @PostMapping("/{softwarePlatformId}/" + Constants.CLOUD_SERVICES)
     public ResponseEntity<Void> linkSoftwarePlatformAndCloudService(
             @PathVariable UUID softwarePlatformId,
-            @PathVariable UUID cloudServiceId) {
-        linkingService.linkSoftwarePlatformAndCloudService(softwarePlatformId, cloudServiceId);
+            @Validated({ValidationGroups.Update.class}) @RequestBody CloudServiceDto cloudServiceDto) {
+        linkingService.linkSoftwarePlatformAndCloudService(softwarePlatformId, cloudServiceDto.getId());
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
@@ -226,11 +226,11 @@ public class SoftwarePlatformController {
             "Custom ID will be ignored. " +
             "For the compute resource only the ID is required, other compute resource attributes will not change. " +
             "If the compute resource doesn't exist yet, a 404 error is thrown.")
-    @PostMapping("/{softwarePlatformId}/" + Constants.COMPUTE_RESOURCES + "/{computeResourceId}")
+    @PostMapping("/{softwarePlatformId}/" + Constants.COMPUTE_RESOURCES)
     public ResponseEntity<Void> linkSoftwarePlatformAndComputeResource(
             @PathVariable UUID softwarePlatformId,
-            @PathVariable UUID computeResourceId) {
-        linkingService.linkSoftwarePlatformAndComputeResource(softwarePlatformId, computeResourceId);
+            @Validated({ValidationGroups.Update.class}) @RequestBody ComputeResourceDto computeResourceDto) {
+        linkingService.linkSoftwarePlatformAndComputeResource(softwarePlatformId, computeResourceDto.getId());
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
