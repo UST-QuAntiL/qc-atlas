@@ -44,6 +44,8 @@ public interface ImplementationService {
     @Transactional
     void delete(UUID implementationId);
 
+    void throwIfImplementationIsNotOfAlgorithm(UUID implementationId, UUID algorithmId);
+
     Page<Implementation> findByImplementedAlgorithm(UUID algorithmId, Pageable pageable);
 
     Page<SoftwarePlatform> findLinkedSoftwarePlatforms(UUID implementationId, Pageable pageable);

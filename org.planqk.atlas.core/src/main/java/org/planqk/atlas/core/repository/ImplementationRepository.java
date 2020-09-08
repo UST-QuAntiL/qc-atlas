@@ -38,8 +38,6 @@ import org.springframework.stereotype.Repository;
 @RepositoryRestResource(exported = false)
 public interface ImplementationRepository extends JpaRepository<Implementation, UUID> {
 
-    boolean existsImplementationById(UUID id);
-
     Page<Implementation> findByImplementedAlgorithmId(UUID implementedAlgorithmId, Pageable pageable);
 
     @Query("SELECT algo " +

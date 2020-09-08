@@ -121,6 +121,8 @@ public class ImplementationController {
             @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId,
             @Validated(ValidationGroups.Update.class) @RequestBody ImplementationDto implementationDto) {
+        implementationService.throwIfImplementationIsNotOfAlgorithm(implementationId, algorithmId);
+
         implementationDto.setId(implementationId);
         Implementation updatedImplementation = implementationService.update(
                 ModelMapperUtils.convert(implementationDto, Implementation.class));
@@ -136,6 +138,8 @@ public class ImplementationController {
     public ResponseEntity<Void> deleteImplementation(
             @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId) {
+        implementationService.throwIfImplementationIsNotOfAlgorithm(implementationId, algorithmId);
+
         implementationService.delete(implementationId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -149,6 +153,8 @@ public class ImplementationController {
     public ResponseEntity<EntityModel<ImplementationDto>> getImplementation(
             @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId) {
+        implementationService.throwIfImplementationIsNotOfAlgorithm(implementationId, algorithmId);
+
         var implementation = implementationService.findById(implementationId);
         return ResponseEntity.ok(implementationAssembler.toModel(implementation));
     }
@@ -162,6 +168,8 @@ public class ImplementationController {
     public ResponseEntity<CollectionModel<EntityModel<TagDto>>> getTagsOfImplementation(
             @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId) {
+        implementationService.throwIfImplementationIsNotOfAlgorithm(implementationId, algorithmId);
+
         Implementation implementation = implementationService.findById(implementationId);
         return ResponseEntity.ok(tagAssembler.toModel(implementation.getTags()));
     }
@@ -176,6 +184,8 @@ public class ImplementationController {
             @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId,
             @Validated @RequestBody TagDto tagDto) {
+        implementationService.throwIfImplementationIsNotOfAlgorithm(implementationId, algorithmId);
+
         tagService.addTagToImplementation(implementationId, ModelMapperUtils.convert(tagDto, Tag.class));
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
@@ -190,6 +200,8 @@ public class ImplementationController {
             @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId,
             @Validated @RequestBody TagDto tagDto) {
+        implementationService.throwIfImplementationIsNotOfAlgorithm(implementationId, algorithmId);
+
         tagService.removeTagFromImplementation(implementationId, ModelMapperUtils.convert(tagDto, Tag.class));
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -205,6 +217,8 @@ public class ImplementationController {
             @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId,
             @Parameter(hidden = true) ListParameters listParameters) {
+        implementationService.throwIfImplementationIsNotOfAlgorithm(implementationId, algorithmId);
+
         var publications = implementationService.findLinkedPublications(implementationId, listParameters.getPageable());
         return ResponseEntity.ok(publicationAssembler.toModel(publications));
     }
@@ -222,6 +236,8 @@ public class ImplementationController {
             @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId,
             @Validated({ValidationGroups.Update.class}) @RequestBody PublicationDto publicationDto) {
+        implementationService.throwIfImplementationIsNotOfAlgorithm(implementationId, algorithmId);
+
         linkingService.linkImplementationAndPublication(implementationId, publicationDto.getId());
         return ResponseEntity.noContent().build();
     }
@@ -236,6 +252,8 @@ public class ImplementationController {
             @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId,
             @PathVariable UUID publicationId) {
+        implementationService.throwIfImplementationIsNotOfAlgorithm(implementationId, algorithmId);
+
         linkingService.unlinkImplementationAndPublication(implementationId, publicationId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -250,6 +268,8 @@ public class ImplementationController {
             @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId,
             @PathVariable UUID publicationId) {
+        implementationService.throwIfImplementationIsNotOfAlgorithm(implementationId, algorithmId);
+
         Publication publication = publicationService.findById(publicationId);
         return new ResponseEntity<>(publicationAssembler.toModel(publication), HttpStatus.OK);
     }
@@ -265,6 +285,8 @@ public class ImplementationController {
             @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId,
             @Parameter(hidden = true) ListParameters listParameters) {
+        implementationService.throwIfImplementationIsNotOfAlgorithm(implementationId, algorithmId);
+
         var softwarePlatforms = implementationService.findLinkedSoftwarePlatforms(implementationId, listParameters.getPageable());
         return ResponseEntity.ok(softwarePlatformAssembler.toModel(softwarePlatforms));
     }
@@ -283,6 +305,8 @@ public class ImplementationController {
             @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId,
             @Validated({ValidationGroups.Update.class}) SoftwarePlatformDto softwarePlatformDto) {
+        implementationService.throwIfImplementationIsNotOfAlgorithm(implementationId, algorithmId);
+
         linkingService.linkImplementationAndSoftwarePlatform(implementationId, softwarePlatformDto.getId());
         return ResponseEntity.noContent().build();
     }
@@ -297,6 +321,8 @@ public class ImplementationController {
             @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId,
             @PathVariable UUID softwarePlatformId) {
+        implementationService.throwIfImplementationIsNotOfAlgorithm(implementationId, algorithmId);
+
         linkingService.unlinkImplementationAndSoftwarePlatform(implementationId, softwarePlatformId);
         return ResponseEntity.noContent().build();
     }
@@ -308,8 +334,11 @@ public class ImplementationController {
     }, description = "Retrieve a specific software platform and its basic properties.")
     @GetMapping("/{implementationId}/" + Constants.SOFTWARE_PLATFORMS + "/{softwarePlatformId}")
     public ResponseEntity<EntityModel<SoftwarePlatformDto>> getSoftwarePlatformOfImplementation(
+            @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId,
             @PathVariable UUID softwarePlatformId) {
+        implementationService.throwIfImplementationIsNotOfAlgorithm(implementationId, algorithmId);
+
         var softwarePlatform = softwarePlatformService.findById(softwarePlatformId);
         return ResponseEntity.ok(softwarePlatformAssembler.toModel(softwarePlatform));
     }
@@ -325,6 +354,8 @@ public class ImplementationController {
             @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId,
             @Parameter(hidden = true) ListParameters listParameters) {
+        implementationService.throwIfImplementationIsNotOfAlgorithm(implementationId, algorithmId);
+
         var resources = computeResourcePropertyService.findComputeResourcePropertiesOfImplementation(
                 implementationId, listParameters.getPageable());
         return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(resources));
@@ -343,6 +374,8 @@ public class ImplementationController {
             @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId,
             @Validated(ValidationGroups.Create.class) @RequestBody ComputeResourcePropertyDto computeResourcePropertyDto) {
+        implementationService.throwIfImplementationIsNotOfAlgorithm(implementationId, algorithmId);
+
         var computeResourceProperty = ModelMapperUtils.convert(computeResourcePropertyDto, ComputeResourceProperty.class);
 
         var createdComputeResourceProperty = computeResourcePropertyService
@@ -363,6 +396,8 @@ public class ImplementationController {
             @PathVariable UUID implementationId,
             @PathVariable UUID computeResourcePropertyId,
             @Validated(ValidationGroups.Update.class) @RequestBody ComputeResourcePropertyDto computeResourcePropertyDto) {
+        implementationService.throwIfImplementationIsNotOfAlgorithm(implementationId, algorithmId);
+
         computeResourcePropertyDto.setId(computeResourcePropertyId);
         var resource = ModelMapperUtils.convert(computeResourcePropertyDto, ComputeResourceProperty.class);
         var updatedResource = computeResourcePropertyService.update(resource);
@@ -379,6 +414,8 @@ public class ImplementationController {
             @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId,
             @PathVariable UUID computeResourcePropertyId) {
+        implementationService.throwIfImplementationIsNotOfAlgorithm(implementationId, algorithmId);
+
         computeResourcePropertyService.delete(computeResourcePropertyId);
         return ResponseEntity.noContent().build();
     }
@@ -393,6 +430,8 @@ public class ImplementationController {
             @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId,
             @PathVariable UUID computeResourcePropertyId) {
+        implementationService.throwIfImplementationIsNotOfAlgorithm(implementationId, algorithmId);
+
         var resource = computeResourcePropertyService.findById(computeResourcePropertyId);
         return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(resource));
     }

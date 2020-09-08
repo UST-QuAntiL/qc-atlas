@@ -19,6 +19,7 @@
 
 package org.planqk.atlas.core.services;
 
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
@@ -106,6 +107,16 @@ public class ImplementationServiceImpl implements ImplementationService {
 
         implementation.getSoftwarePlatforms().forEach(softwarePlatform ->
                 softwarePlatform.removeImplementation(implementation));
+    }
+
+    @Override
+    public void throwIfImplementationIsNotOfAlgorithm(UUID implementationId, UUID algorithmId) {
+        Implementation implementation = findById(implementationId);
+
+        if (implementation.getImplementedAlgorithm().getId() != algorithmId) {
+            throw new NoSuchElementException("Implementation with ID \"" + implementationId
+                    + "\" of Algorithm with ID \"" + algorithmId +  "\" does not exist");
+        }
     }
 
     @Override
