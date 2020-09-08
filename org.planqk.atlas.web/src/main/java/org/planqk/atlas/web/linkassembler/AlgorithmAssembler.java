@@ -23,6 +23,7 @@ import java.util.UUID;
 
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.AlgorithmController;
+import org.planqk.atlas.web.controller.AlgorithmRelationController;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
 import org.planqk.atlas.web.dtos.ApplicationAreaDto;
@@ -50,7 +51,7 @@ public class AlgorithmAssembler extends GenericLinkAssembler<AlgorithmDto> {
         resource.add(links.linkTo(methodOn(AlgorithmController.class)
                 .getProblemTypesOfAlgorithm(getId(resource), ListParameters.getDefault()))
                 .withRel(Constants.PROBLEM_TYPES));
-        resource.add(links.linkTo(methodOn(AlgorithmController.class)
+        resource.add(links.linkTo(methodOn(AlgorithmRelationController.class)
                 .getAlgorithmRelationsOfAlgorithm(getId(resource), ListParameters.getDefault()))
                 .withRel(Constants.ALGORITHM_RELATIONS));
         resource.add(links.linkTo(methodOn(AlgorithmController.class)
@@ -83,7 +84,7 @@ public class AlgorithmAssembler extends GenericLinkAssembler<AlgorithmDto> {
     public void addAlgorithmRelationLink(CollectionModel<EntityModel<AlgorithmRelationDto>> resultCollection,
                                          UUID sourceAlgorithm_id) {
         resultCollection.add(
-                links.linkTo(methodOn(AlgorithmController.class)
+                links.linkTo(methodOn(AlgorithmRelationController.class)
                         .getAlgorithmRelationsOfAlgorithm(sourceAlgorithm_id, ListParameters.getDefault())).withSelfRel());
     }
 

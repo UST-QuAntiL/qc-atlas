@@ -359,20 +359,6 @@ public class AlgorithmController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404", description = "Algorithm with given ID doesn't exist")
-    }, description = "Retrieve all relations for an algorithm.")
-    @ListParametersDoc
-    @GetMapping("/{algorithmId}/" + Constants.ALGORITHM_RELATIONS)
-    public ResponseEntity<PagedModel<EntityModel<AlgorithmRelationDto>>> getAlgorithmRelationsOfAlgorithm(
-            @PathVariable UUID algorithmId,
-            @Parameter(hidden = true) ListParameters listParameters) {
-        Page<AlgorithmRelation> algorithmRelations = algorithmService.findLinkedAlgorithmRelations(algorithmId, listParameters.getPageable());
-        return ResponseEntity.ok(algorithmRelationAssembler.toModel(algorithmRelations));
-    }
-
     // TODO decide if move to ImplementationController
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
