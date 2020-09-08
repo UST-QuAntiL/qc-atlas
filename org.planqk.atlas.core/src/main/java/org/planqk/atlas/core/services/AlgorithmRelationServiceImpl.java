@@ -81,6 +81,7 @@ public class AlgorithmRelationServiceImpl implements AlgorithmRelationService {
         algorithmRelationRepository.deleteById(algorithmRelationId);
     }
 
+    @Override
     public void checkIfAlgorithmIsInAlgorithmRelation(@NonNull UUID algorithmId, @NonNull UUID algorithmRelationId) {
         AlgorithmRelation algorithmRelation = findById(algorithmRelationId);
 
