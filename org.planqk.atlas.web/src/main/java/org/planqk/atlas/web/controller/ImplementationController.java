@@ -52,6 +52,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -315,5 +316,52 @@ public class ImplementationController {
         var createdComputeResourceProperty = computeResourcePropertyService
                 .addComputeResourcePropertyToImplementation(implementationId, computeResourceProperty);
         return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(createdComputeResourceProperty));
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", description = "Algorithm with the given id doesn't exist")},
+            description = "Update a Compute resource property of an implementation. " +
+                    "For compute resource property type only ID is required, other compute resource property type " +
+                    "attributes will not change.")
+    @PutMapping("/{implementationId}/" + Constants.COMPUTE_RESOURCE_PROPERTIES + "/{computeResourcePropertyId}")
+    public ResponseEntity<EntityModel<ComputeResourcePropertyDto>> updateComputeResourcePropertyOfAlgorithm(
+            @PathVariable UUID algorithmId,
+            @PathVariable UUID implementationId,
+            @PathVariable UUID computeResourcePropertyId,
+            @Validated(ValidationGroups.Update.class) @RequestBody ComputeResourcePropertyDto computeResourcePropertyDto) {
+        computeResourcePropertyDto.setId(computeResourcePropertyId);
+        var resource = ModelMapperUtils.convert(computeResourcePropertyDto, ComputeResourceProperty.class);
+        var updatedResource = computeResourcePropertyService.update(resource);
+        return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(updatedResource));
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", description = "Compute resource property with given id doesn't exist"),
+    }, description = "Delete a Compute resource property of an implementation")
+    @DeleteMapping("/{implementationId}/" + Constants.COMPUTE_RESOURCE_PROPERTIES + "/{computeResourcePropertyId}")
+    public HttpEntity<Void> deleteComputeResourceProperty(
+            @PathVariable UUID algorithmId,
+            @PathVariable UUID implementationId,
+            @PathVariable UUID computeResourcePropertyId) {
+        computeResourcePropertyService.delete(computeResourcePropertyId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404"),
+    }, description = "Retrieve a specific compute resource property of an implementation")
+    @GetMapping("/{implementationId}/" + Constants.COMPUTE_RESOURCE_PROPERTIES + "/{computeResourcePropertyId}")
+    public HttpEntity<EntityModel<ComputeResourcePropertyDto>> getComputeResourceProperty(
+            @PathVariable UUID algorithmId,
+            @PathVariable UUID implementationId,
+            @PathVariable UUID computeResourcePropertyId) {
+        var resource = computeResourcePropertyService.findById(computeResourcePropertyId);
+        return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(resource));
     }
 }

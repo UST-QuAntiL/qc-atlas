@@ -29,6 +29,7 @@ import org.planqk.atlas.web.linkassembler.ComputeResourcePropertyAssembler;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.ValidationGroups;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -47,6 +48,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+// Delete later
+@Hidden
 @Tag(name = Constants.TAG_COMPUTE_RESOURCE_PROPERTIES)
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
@@ -61,21 +64,10 @@ public class ComputeResourcePropertyController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404"),
-    }, description = "")
-    @GetMapping("/{computeResourcePropertyId}")
-    public HttpEntity<EntityModel<ComputeResourcePropertyDto>> getComputeResourceProperty(
-            @PathVariable UUID computeResourcePropertyId) {
-        var resource = computeResourcePropertyService.findById(computeResourcePropertyId);
-        return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(resource));
-    }
-
-    @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Algorithm with the given id doesn't exist")},
-            description = "Update a computing resource of the algorithm. Custom ID will be ignored." +
-                    "For computing resource type only ID is required, other computing resource type attributes will not change.")
+            description = "Update a Compute resource property of an algorithm. " +
+                    "For compute resource property type only ID is required, other compute resource property type " +
+                    "attributes will not change.")
     @PutMapping("/{computeResourcePropertyId}")
     public ResponseEntity<EntityModel<ComputeResourcePropertyDto>> updateComputeResourceProperty(
             @PathVariable UUID computeResourcePropertyId,
@@ -89,12 +81,24 @@ public class ComputeResourcePropertyController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404", description = "Computing resource with given id doesn't exist"),
-    }, description = "")
+            @ApiResponse(responseCode = "404", description = "Compute resource property with given id doesn't exist"),
+    }, description = "Delete a Compute resource property of an algorithm")
     @DeleteMapping("/{computeResourcePropertyId}")
     public HttpEntity<Void> deleteComputeResourceProperty(
             @PathVariable UUID computeResourcePropertyId) {
         computeResourcePropertyService.delete(computeResourcePropertyId);
         return ResponseEntity.noContent().build();
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404"),
+    }, description = "Retrieve a specific compute resource property of an algorithm")
+    @GetMapping("/{computeResourcePropertyId}")
+    public HttpEntity<EntityModel<ComputeResourcePropertyDto>> getComputeResourceProperty(
+            @PathVariable UUID computeResourcePropertyId) {
+        var resource = computeResourcePropertyService.findById(computeResourcePropertyId);
+        return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(resource));
     }
 }
