@@ -43,10 +43,10 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * Controller to access implementations outside of the context of its implemented algorithm.
  */
-@Tag(name = Constants.TAG_ALGORITHM)
+@Tag(name = Constants.TAG_IMPLEMENTATIONS)
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
-@RequestMapping("/" + Constants.API_VERSION + "/" + Constants.ALGORITHMS + "/" + Constants.IMPLEMENTATIONS)
+@RequestMapping("/" + Constants.API_VERSION + "/" + Constants.IMPLEMENTATIONS)
 @AllArgsConstructor
 @Slf4j
 public class ImplementationGlobalController {

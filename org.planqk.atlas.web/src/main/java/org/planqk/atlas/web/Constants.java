@@ -63,6 +63,7 @@ public class Constants {
     public static final String TAG_COMPUTE_RESOURCE_PROPERTY_TYPES = "compute-resource-property-types";
     public static final String TAG_DISCUSSION_TOPIC = "discussion-topic";
     public static final String TAG_EXECUTION_ENVIRONMENTS = "execution-environments";
+    public static final String TAG_IMPLEMENTATIONS = "implementations";
     public static final String TAG_PATTERN_RELATION = "pattern-relation";
     public static final String TAG_PATTERN_RELATION_TYPE = "pattern-relation-type";
     public static final String TAG_PROBLEM_TYPE = "problem-type";
