@@ -23,10 +23,13 @@ import java.util.UUID;
 
 import org.planqk.atlas.core.model.ComputeResourceProperty;
 import org.planqk.atlas.core.model.Implementation;
+import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.services.ComputeResourcePropertyService;
 import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.core.services.LinkingService;
+import org.planqk.atlas.core.services.PublicationService;
+import org.planqk.atlas.core.services.SoftwarePlatformService;
 import org.planqk.atlas.core.services.TagService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.ComputeResourcePropertyDto;
@@ -86,8 +89,10 @@ public class ImplementationController {
     private final ComputeResourcePropertyService computeResourcePropertyService;
     private final ComputeResourcePropertyAssembler computeResourcePropertyAssembler;
 
+    private final PublicationService publicationService;
     private final PublicationAssembler publicationAssembler;
 
+    private final SoftwarePlatformService softwarePlatformService;
     private final SoftwarePlatformAssembler softwarePlatformAssembler;
 
     private final LinkingService linkingService;
@@ -238,6 +243,20 @@ public class ImplementationController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404")
+    }, description = "Retrieve a publication of an implementation")
+    @GetMapping("/{implementationId}/" + Constants.PUBLICATIONS + "/{publicationId}")
+    public ResponseEntity<EntityModel<PublicationDto>> getPublicationOfImplementation(
+            @PathVariable UUID algorithmId,
+            @PathVariable UUID implementationId,
+            @PathVariable UUID publicationId) {
+        Publication publication = publicationService.findById(publicationId);
+        return new ResponseEntity<>(publicationAssembler.toModel(publication), HttpStatus.OK);
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Implementation doesn't exist")
     }, description = "Get referenced software platform for an implementation")
     @ListParametersDoc
@@ -280,6 +299,19 @@ public class ImplementationController {
             @PathVariable UUID softwarePlatformId) {
         linkingService.unlinkImplementationAndSoftwarePlatform(implementationId, softwarePlatformId);
         return ResponseEntity.noContent().build();
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", description = "Software Platform with given id does not exist"),
+    }, description = "Retrieve a specific software platform and its basic properties.")
+    @GetMapping("/{implementationId}/" + Constants.SOFTWARE_PLATFORMS + "/{softwarePlatformId}")
+    public ResponseEntity<EntityModel<SoftwarePlatformDto>> getSoftwarePlatformOfImplementation(
+            @PathVariable UUID implementationId,
+            @PathVariable UUID softwarePlatformId) {
+        var softwarePlatform = softwarePlatformService.findById(softwarePlatformId);
+        return ResponseEntity.ok(softwarePlatformAssembler.toModel(softwarePlatform));
     }
 
     @Operation(responses = {

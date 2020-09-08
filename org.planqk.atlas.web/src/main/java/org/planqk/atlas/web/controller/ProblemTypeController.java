@@ -115,7 +115,7 @@ public class ProblemTypeController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Problem type with given id doesn't exist")
-    }, description = "")
+    }, description = "Retrieve a specific problem type")
     @GetMapping("/{problemTypeId}")
     public ResponseEntity<EntityModel<ProblemTypeDto>> getProblemType(@PathVariable UUID problemTypeId) {
         ProblemType problemType = problemTypeService.findById(problemTypeId);

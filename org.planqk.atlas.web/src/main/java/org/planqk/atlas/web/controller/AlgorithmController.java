@@ -22,7 +22,6 @@ package org.planqk.atlas.web.controller;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
-import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.model.ApplicationArea;
 import org.planqk.atlas.core.model.ComputeResourceProperty;
 import org.planqk.atlas.core.model.PatternRelation;
@@ -30,13 +29,15 @@ import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.services.AlgorithmService;
+import org.planqk.atlas.core.services.ApplicationAreaService;
 import org.planqk.atlas.core.services.ComputeResourcePropertyService;
 import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.core.services.LinkingService;
+import org.planqk.atlas.core.services.ProblemTypeService;
+import org.planqk.atlas.core.services.PublicationService;
 import org.planqk.atlas.core.services.TagService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
-import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
 import org.planqk.atlas.web.dtos.ApplicationAreaDto;
 import org.planqk.atlas.web.dtos.ComputeResourcePropertyDto;
 import org.planqk.atlas.web.dtos.ImplementationDto;
@@ -103,13 +104,16 @@ public class AlgorithmController {
     private final ImplementationService implementationService;
     private final ImplementationAssembler implementationAssembler;
 
+    private final ProblemTypeService problemTypeService;
     private final ProblemTypeAssembler problemTypeAssembler;
 
+    private final ApplicationAreaService applicationAreaService;
     private final ApplicationAreaAssembler applicationAreaAssembler;
 
     private final TagService tagService;
     private final TagAssembler tagAssembler;
 
+    private final PublicationService publicationService;
     private final PublicationAssembler publicationAssembler;
 
     private final ComputeResourcePropertyService computeResourcePropertyService;
@@ -270,6 +274,19 @@ public class AlgorithmController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404")
+    }, description = "Retrieve a publication of an algorithm")
+    @GetMapping("/{algorithmId}/" + Constants.PUBLICATIONS + "/{publicationId}")
+    public ResponseEntity<EntityModel<PublicationDto>> getPublicationOfAlgorithm(
+            @PathVariable UUID algorithmId,
+            @PathVariable UUID publicationId) {
+        Publication publication = publicationService.findById(publicationId);
+        return new ResponseEntity<>(publicationAssembler.toModel(publication), HttpStatus.OK);
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Algorithm with given ID doesn't exist")
     }, description = "Get the problem types for an algorithm.")
     @ListParametersDoc
@@ -311,6 +328,19 @@ public class AlgorithmController {
             @PathVariable UUID problemTypeId) {
         linkingService.unlinkAlgorithmAndProblemType(algorithmId, problemTypeId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", description = "Problem type with given id doesn't exist")
+    }, description = "Retrieve a specific problem type of an algorithm")
+    @GetMapping("/{algorithmId}/" + Constants.PROBLEM_TYPES + "/{problemTypeId}")
+    public ResponseEntity<EntityModel<ProblemTypeDto>> getProblemType(
+            @PathVariable UUID algorithmId,
+            @PathVariable UUID problemTypeId) {
+        ProblemType problemType = problemTypeService.findById(problemTypeId);
+        return ResponseEntity.ok(problemTypeAssembler.toModel(problemType));
     }
 
     @Operation(responses = {
@@ -357,6 +387,19 @@ public class AlgorithmController {
             @PathVariable UUID applicationAreaId) {
         linkingService.unlinkAlgorithmAndApplicationArea(algorithmId, applicationAreaId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", description = "Application area with given id doesn't exist")
+    }, description = "Get a specific application area of an algorithm")
+    @GetMapping("/{algorithmId}/" + Constants.APPLICATION_AREAS + "/{applicationAreaId}")
+    public ResponseEntity<EntityModel<ApplicationAreaDto>> getApplicationAreaOfAlgorithm(
+            @PathVariable UUID algorithmId,
+            @PathVariable UUID applicationAreaId) {
+        ApplicationArea applicationArea = applicationAreaService.findById(applicationAreaId);
+        return ResponseEntity.ok(applicationAreaAssembler.toModel(applicationArea));
     }
 
     // TODO decide if move to ImplementationController

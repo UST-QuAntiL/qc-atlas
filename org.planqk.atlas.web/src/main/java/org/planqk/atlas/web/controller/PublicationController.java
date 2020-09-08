@@ -118,7 +118,7 @@ public class PublicationController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404")
-    }, description = "")
+    }, description = "Retrieve a publication")
     @GetMapping("/{publicationId}")
     public ResponseEntity<EntityModel<PublicationDto>> getPublication(@PathVariable UUID publicationId) {
         Publication publication = publicationService.findById(publicationId);

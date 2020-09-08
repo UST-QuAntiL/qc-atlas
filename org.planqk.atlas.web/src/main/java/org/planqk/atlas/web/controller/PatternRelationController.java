@@ -111,7 +111,7 @@ public class PatternRelationController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404")
-    }, description = "")
+    }, description = "Retrieve a specific pattern relation")
     @GetMapping("/{patternRelationId}")
     public ResponseEntity<EntityModel<PatternRelationDto>> getPatternRelation(@PathVariable UUID patternRelationId) {
         var patternRelation = patternRelationService.findById(patternRelationId);
