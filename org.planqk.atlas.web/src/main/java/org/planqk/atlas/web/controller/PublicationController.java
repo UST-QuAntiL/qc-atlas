@@ -21,6 +21,9 @@ package org.planqk.atlas.web.controller;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Publication;
+import org.planqk.atlas.core.services.AlgorithmService;
+import org.planqk.atlas.core.services.ImplementationService;
+import org.planqk.atlas.core.services.LinkingService;
 import org.planqk.atlas.core.services.PublicationService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
@@ -67,8 +70,11 @@ public class PublicationController {
 
     private final PublicationService publicationService;
     private final PublicationAssembler publicationAssembler;
+    private final AlgorithmService algorithmService;
     private final AlgorithmAssembler algorithmAssembler;
+    private final ImplementationService implementationService;
     private final ImplementationAssembler implementationAssembler;
+    private final LinkingService linkingService;
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200")
@@ -145,6 +151,51 @@ public class PublicationController {
     }
 
     @Operation(responses = {
+            @ApiResponse(responseCode = "204"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", description = "Algorithm or publication with given IDs don't exist or " +
+                    "relation between them already exists")
+    }, description = "Add a reference to an existing publication " +
+            "(that was previously created via a POST on /" + Constants.PUBLICATIONS + "). " +
+            "For publication only ID is required, other publication attributes will not change. " +
+            "If the publication doesn't exist yet, a 404 error is returned.")
+    @PostMapping("/{publicationId}/" + Constants.ALGORITHMS)
+    public ResponseEntity<Void> linkPublicationAndAlgorithm(
+            @PathVariable UUID publicationId,
+            @Validated({ValidationGroups.Update.class}) @RequestBody AlgorithmDto algorithmDto) {
+        linkingService.linkAlgorithmAndPublication(algorithmDto.getId(), publicationId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "204"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", description = "Algorithm or publication with given IDs don't exist or " +
+                    "no relation between them exists")
+    }, description = "Delete a reference to a publication of an algorithm. The reference has to be previously created " +
+            "via a POST on /" + Constants.ALGORITHMS + "/{algorithmId}/" + Constants.PUBLICATIONS + "/{publicationId}).")
+    @DeleteMapping("/{publicationId}/" + Constants.ALGORITHMS + "/{algorithmId}")
+    public ResponseEntity<Void> unlinkPublicationAndAlgorithm(
+            @PathVariable UUID algorithmId,
+            @PathVariable UUID publicationId) {
+        linkingService.unlinkAlgorithmAndPublication(algorithmId, publicationId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", description = "Algorithm with given ID doesn't exist")
+    }, description = "Retrieve a specific algorithm of a publication.")
+    @GetMapping("/{publicationId}/" + Constants.ALGORITHMS + "/{algorithmId}")
+    public ResponseEntity<EntityModel<AlgorithmDto>> getAlgorithmOfPublication(
+            @PathVariable UUID publicationId,
+            @PathVariable UUID algorithmId) {
+        var algorithm = algorithmService.findById(algorithmId);
+        return ResponseEntity.ok(algorithmAssembler.toModel(algorithm));
+    }
+
+    @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404")
@@ -156,6 +207,19 @@ public class PublicationController {
             @Parameter(hidden = true) ListParameters params) {
         var implementations = publicationService.findLinkedImplementations(publicationId, params.getPageable());
         return ResponseEntity.ok(implementationAssembler.toModel(implementations));
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", description = "Implementation doesn't exist")
+    }, description = "Retrieve a specific implementation of the algorithm.")
+    @GetMapping("/{publicationId}/" + Constants.IMPLEMENTATIONS + "/{implementationId}")
+    public ResponseEntity<EntityModel<ImplementationDto>> getImplementation(
+            @PathVariable UUID publicationId,
+            @PathVariable UUID implementationId) {
+        var implementation = implementationService.findById(implementationId);
+        return ResponseEntity.ok(implementationAssembler.toModel(implementation));
     }
 }
 
