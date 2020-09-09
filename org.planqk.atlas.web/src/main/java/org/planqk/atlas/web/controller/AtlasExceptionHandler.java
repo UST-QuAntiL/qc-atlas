@@ -18,6 +18,7 @@
  *******************************************************************************/
 package org.planqk.atlas.web.controller;
 
+import java.beans.PropertyChangeEvent;
 import java.util.NoSuchElementException;
 
 import org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException;
@@ -34,6 +35,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @ControllerAdvice
 @Slf4j
@@ -70,6 +72,12 @@ public class AtlasExceptionHandler {
             InvalidResourceTypeValueException e) {
         log.warn(e.getMessage(), e);
         return ResponseEntity.badRequest().body(e);
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<PropertyChangeEvent> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
+        log.warn(e.getMessage(), e);
+        return ResponseEntity.badRequest().body(e.getPropertyChangeEvent());
     }
 
     @ExceptionHandler(NoSuchElementException.class)

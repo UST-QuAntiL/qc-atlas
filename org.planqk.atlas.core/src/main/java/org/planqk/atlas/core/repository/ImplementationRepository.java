@@ -40,9 +40,9 @@ public interface ImplementationRepository extends JpaRepository<Implementation, 
 
     Page<Implementation> findByImplementedAlgorithmId(UUID implementedAlgorithmId, Pageable pageable);
 
-    @Query("SELECT algo " +
-            "FROM Algorithm algo " +
-            "JOIN algo.publications pub " +
+    @Query("SELECT impl " +
+            "FROM Implementation impl " +
+            "JOIN impl.publications pub " +
             "WHERE  pub.id = :pubId")
     Page<Implementation> findImplementationsByPublicationId(@Param("pubId") UUID publicationId, Pageable pageable);
 

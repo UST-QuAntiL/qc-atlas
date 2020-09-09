@@ -46,7 +46,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
@@ -175,10 +174,10 @@ public class SoftwarePlatformController {
             "Custom ID will be ignored. For software platform only ID is required," +
             "other software platform attributes will not change." +
             "If the software platform doesn't exist yet, a 404 error is thrown.")
-    @PostMapping("/{softwarePlatformId}/" + Constants.IMPLEMENTATIONS )
-    public ResponseEntity<CollectionModel<EntityModel<SoftwarePlatformDto>>> linkSoftwarePlatformAndImplementation(
+    @PostMapping("/{softwarePlatformId}/" + Constants.IMPLEMENTATIONS)
+    public ResponseEntity<Void> linkSoftwarePlatformAndImplementation(
             @PathVariable UUID softwarePlatformId,
-            @Validated({ValidationGroups.IDOnly.class}) ImplementationDto implementationDto) {
+            @Validated({ValidationGroups.IDOnly.class}) @RequestBody ImplementationDto implementationDto) {
         linkingService.linkImplementationAndSoftwarePlatform(implementationDto.getId(), softwarePlatformId);
         return ResponseEntity.noContent().build();
     }
