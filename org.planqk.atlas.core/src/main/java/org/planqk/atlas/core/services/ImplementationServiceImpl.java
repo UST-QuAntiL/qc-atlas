@@ -113,7 +113,7 @@ public class ImplementationServiceImpl implements ImplementationService {
     public void checkIfImplementationIsOfAlgorithm(@NonNull UUID implementationId, @NonNull UUID algorithmId) {
         Implementation implementation = findById(implementationId);
 
-        if (implementation.getImplementedAlgorithm().getId() != algorithmId) {
+        if (!implementation.getImplementedAlgorithm().getId().equals(algorithmId)) {
             throw new NoSuchElementException("Implementation with ID \"" + implementationId
                     + "\" of Algorithm with ID \"" + algorithmId +  "\" does not exist");
         }

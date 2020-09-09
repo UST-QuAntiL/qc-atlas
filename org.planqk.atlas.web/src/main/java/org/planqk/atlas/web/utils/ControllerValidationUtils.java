@@ -29,15 +29,15 @@ public class ControllerValidationUtils {
 
     public static void checkIfAlgorithmIsInAlgorithmRelationDTO(
             UUID algorithmId, AlgorithmRelationDto algorithmRelationDto) {
-        if (algorithmRelationDto.getSourceAlgorithmId() != algorithmId
-                && algorithmRelationDto.getTargetAlgorithmId() != algorithmId) {
+        if (!algorithmRelationDto.getSourceAlgorithmId().equals(algorithmId)
+                && !algorithmRelationDto.getTargetAlgorithmId().equals(algorithmId)) {
             throw new InvalidRequestException("AlgorithmId \"" + algorithmId + "\" does not match any Ids of the " +
                     "AlgorithmRelation request body");
         }
     }
 
     public static void checkIfAlgorithmIsInPatternRelationDTO(UUID algorithmId, PatternRelationDto patternRelationDto) {
-        if (patternRelationDto.getAlgorithmId() != algorithmId) {
+        if (!patternRelationDto.getAlgorithmId().equals(algorithmId)) {
             throw new InvalidRequestException("AlgorithmId \"" + algorithmId + "\" does not match Id of the " +
                     "PatternRelation request body");
         }

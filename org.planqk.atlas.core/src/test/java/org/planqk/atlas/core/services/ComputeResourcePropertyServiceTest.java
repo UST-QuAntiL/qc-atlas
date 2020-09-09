@@ -490,6 +490,28 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
                 .addComputeResourcePropertyToComputeResource(UUID.randomUUID(), resource));
     }
 
+    @Test
+    void checkIfComputeResourcePropertyIsOfAlgorithm_True() {
+        var resourceType = getCreatedComputeResourcePropertyType();
+        QuantumAlgorithm algorithm = getCreatedQuantumAlgorithm("quantumAlgorithmName");
+
+        var resource = getFullComputeResourceProperty("0.1");
+        resource.setComputeResourcePropertyType(resourceType);
+
+        var storedResource = computeResourcePropertyService
+                .addComputeResourcePropertyToAlgorithm(algorithm.getId(), resource);
+
+        var resultAlgorithm = (QuantumAlgorithm) algorithmService.findById(algorithm.getId());
+
+        assertDoesNotThrow(() -> computeResourcePropertyService
+                .checkIfComputeResourcePropertyIsOfAlgorithm(resultAlgorithm.getId(), storedResource.getId()));
+    }
+
+    //@Test
+    void checkIfComputeResourcePropertyIsOfAlgorithm_False() {
+
+    }
+
     private ComputeResourceProperty getFullComputeResourceProperty(String value) {
         var computeResourceProperty = new ComputeResourceProperty();
 

@@ -85,8 +85,8 @@ public class AlgorithmRelationServiceImpl implements AlgorithmRelationService {
     public void checkIfAlgorithmIsInAlgorithmRelation(@NonNull UUID algorithmId, @NonNull UUID algorithmRelationId) {
         AlgorithmRelation algorithmRelation = findById(algorithmRelationId);
 
-        if (algorithmRelation.getSourceAlgorithm().getId() != algorithmId
-                && algorithmRelation.getTargetAlgorithm().getId() != algorithmId) {
+        if (!algorithmRelation.getSourceAlgorithm().getId().equals(algorithmId)
+                && !algorithmRelation.getTargetAlgorithm().getId().equals(algorithmId)) {
             throw new NoSuchElementException("Algorithm with ID \"" + algorithmId
                     + "\" is not part of AlgorithmRelation with ID \"" + algorithmRelationId +  "\"");
         }

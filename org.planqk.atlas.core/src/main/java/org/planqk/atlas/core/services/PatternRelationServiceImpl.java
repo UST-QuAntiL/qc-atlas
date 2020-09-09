@@ -92,7 +92,7 @@ public class PatternRelationServiceImpl implements PatternRelationService {
     public void checkIfAlgorithmIsInPatternRelation(@NonNull UUID algorithmId, @NonNull UUID patternRelationId) {
         PatternRelation patternRelation = findById(patternRelationId);
 
-        if (patternRelation.getAlgorithm().getId() != algorithmId) {
+        if (!patternRelation.getAlgorithm().getId().equals(algorithmId)) {
             throw new NoSuchElementException("Algorithm with ID \"" + algorithmId
                     + "\" is not part of PatternRelation with ID \"" + patternRelationId +  "\"");
         }
