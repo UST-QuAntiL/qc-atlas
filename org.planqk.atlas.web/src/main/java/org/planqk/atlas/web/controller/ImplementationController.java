@@ -391,7 +391,7 @@ public class ImplementationController {
                     "For compute resource property type only ID is required, other compute resource property type " +
                     "attributes will not change.")
     @PutMapping("/{implementationId}/" + Constants.COMPUTE_RESOURCE_PROPERTIES + "/{computeResourcePropertyId}")
-    public ResponseEntity<EntityModel<ComputeResourcePropertyDto>> updateComputeResourcePropertyOfAlgorithm(
+    public ResponseEntity<EntityModel<ComputeResourcePropertyDto>> updateComputeResourcePropertyOfImplementation(
             @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId,
             @PathVariable UUID computeResourcePropertyId,
@@ -411,7 +411,7 @@ public class ImplementationController {
             @ApiResponse(responseCode = "404", description = "Compute resource property with given id doesn't exist"),
     }, description = "Delete a Compute resource property of an implementation")
     @DeleteMapping("/{implementationId}/" + Constants.COMPUTE_RESOURCE_PROPERTIES + "/{computeResourcePropertyId}")
-    public HttpEntity<Void> deleteComputeResourceProperty(
+    public HttpEntity<Void> deleteComputeResourcePropertyOfImplementation(
             @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId,
             @PathVariable UUID computeResourcePropertyId) {
@@ -428,7 +428,7 @@ public class ImplementationController {
             @ApiResponse(responseCode = "404"),
     }, description = "Retrieve a specific compute resource property of an implementation")
     @GetMapping("/{implementationId}/" + Constants.COMPUTE_RESOURCE_PROPERTIES + "/{computeResourcePropertyId}")
-    public HttpEntity<EntityModel<ComputeResourcePropertyDto>> getComputeResourceProperty(
+    public HttpEntity<EntityModel<ComputeResourcePropertyDto>> getComputeResourcePropertyOfImplementation(
             @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId,
             @PathVariable UUID computeResourcePropertyId) {
