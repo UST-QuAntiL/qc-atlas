@@ -51,4 +51,8 @@ public interface PublicationService {
 
     @Transactional
     void deletePublications(Set<UUID> publicationIds);
+
+    void checkIfAlgorithmIsLinkedToPublication(UUID publicationId, UUID algorithmId);
+
+    void checkIfImplementationIsLinkedToPublication(UUID publicationId, UUID implementationId);
 }

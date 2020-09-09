@@ -52,4 +52,6 @@ public interface SoftwarePlatformService {
     Page<CloudService> findLinkedCloudServices(UUID softwarePlatformId, Pageable pageable);
 
     Page<ComputeResource> findLinkedComputeResources(UUID softwarePlatformId, Pageable pageable);
+
+    void checkIfImplementationIsLinkedToSoftwarePlatform(UUID softwarePlatformId, UUID implementationId);
 }

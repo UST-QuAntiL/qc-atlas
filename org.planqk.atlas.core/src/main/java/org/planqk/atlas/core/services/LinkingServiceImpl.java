@@ -52,8 +52,6 @@ public class LinkingServiceImpl implements LinkingService {
 
     private final ApplicationAreaService applicationAreaService;
 
-    private final PatternRelationService patternRelationService;
-
     private final SoftwarePlatformService softwarePlatformService;
 
     private final CloudServiceService cloudServiceService;

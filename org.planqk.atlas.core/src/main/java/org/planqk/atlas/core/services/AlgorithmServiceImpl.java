@@ -19,6 +19,7 @@
 
 package org.planqk.atlas.core.services;
 
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -207,6 +208,39 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         ServiceUtils.throwIfNotExists(algorithmId, Algorithm.class, algorithmRepository);
 
         return applicationAreaRepository.findApplicationAreasByAlgorithmId(algorithmId, pageable);
+    }
+
+    @Override
+    public void checkIfPublicationIsLinkedToAlgorithm(UUID algorithmId, UUID publicationId) {
+        Algorithm algorithm = findById(algorithmId);
+        Publication publication = ServiceUtils.findById(publicationId, Publication.class, publicationRepository);
+
+        if (!algorithm.getPublications().contains(publication)) {
+            throw new NoSuchElementException("Publication with ID \"" + publicationId
+                    + "\" is not linked to Algorithm with ID \"" + algorithmId +  "\"");
+        }
+    }
+
+    @Override
+    public void checkIfProblemTypeIsLinkedToAlgorithm(UUID algorithmId, UUID problemTypeId) {
+        Algorithm algorithm = findById(algorithmId);
+        ProblemType problemType = ServiceUtils.findById(problemTypeId, ProblemType.class, problemTypeRepository);
+
+        if (!algorithm.getProblemTypes().contains(problemType)) {
+            throw new NoSuchElementException("ProblemType with ID \"" + problemTypeId
+                    + "\" is not linked to Algorithm with ID \"" + algorithmId +  "\"");
+        }
+    }
+
+    @Override
+    public void checkIfApplicationAreaIsLinkedToAlgorithm(UUID algorithmId, UUID applicationAreaId) {
+        Algorithm algorithm = findById(algorithmId);
+        ApplicationArea applicationArea = ServiceUtils.findById(applicationAreaId, ApplicationArea.class, applicationAreaRepository);
+
+        if (!algorithm.getApplicationAreas().contains(applicationArea)) {
+            throw new NoSuchElementException("ApplicationArea with ID \"" + applicationAreaId
+                    + "\" is not linked to Algorithm with ID \"" + algorithmId +  "\"");
+        }
     }
 
     private Page<AlgorithmRelation> getAlgorithmRelations(@NonNull UUID algorithmId, @NonNull Pageable pageable) {

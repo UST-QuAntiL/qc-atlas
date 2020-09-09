@@ -205,6 +205,8 @@ public class SoftwarePlatformController {
     public ResponseEntity<EntityModel<ImplementationDto>> getImplementationOfSoftwarePlatform(
             @PathVariable UUID softwarePlatformId,
             @PathVariable UUID implementationId) {
+        softwarePlatformService.checkIfImplementationIsLinkedToSoftwarePlatform(softwarePlatformId, implementationId);
+
         var implementation = implementationService.findById(implementationId);
         return ResponseEntity.ok(implementationAssembler.toModel(implementation));
     }

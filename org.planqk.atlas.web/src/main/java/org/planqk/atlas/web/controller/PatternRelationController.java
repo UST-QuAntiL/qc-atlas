@@ -122,7 +122,7 @@ public class PatternRelationController {
             @ApiResponse(responseCode = "204"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Pattern relation with given id doesn't exist")
-    }, description = "")
+    }, description = "Delete a pattern relation.")
     @DeleteMapping("/{patternRelationId}")
     public ResponseEntity<Void> deletePatternRelation(@PathVariable UUID patternRelationId) {
         patternRelationService.delete(patternRelationId);

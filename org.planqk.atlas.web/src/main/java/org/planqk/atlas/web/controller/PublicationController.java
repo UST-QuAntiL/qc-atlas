@@ -191,6 +191,8 @@ public class PublicationController {
     public ResponseEntity<EntityModel<AlgorithmDto>> getAlgorithmOfPublication(
             @PathVariable UUID publicationId,
             @PathVariable UUID algorithmId) {
+        publicationService.checkIfAlgorithmIsLinkedToPublication(publicationId, algorithmId);
+
         var algorithm = algorithmService.findById(algorithmId);
         return ResponseEntity.ok(algorithmAssembler.toModel(algorithm));
     }
@@ -199,7 +201,7 @@ public class PublicationController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404")
-    }, description = "")
+    }, description = "Retrieve all Implementations referencing a specific publication.")
     @ListParametersDoc
     @GetMapping("/{publicationId}/" + Constants.IMPLEMENTATIONS)
     public ResponseEntity<PagedModel<EntityModel<ImplementationDto>>> getImplementationsOfPublication(
@@ -215,9 +217,11 @@ public class PublicationController {
             @ApiResponse(responseCode = "404", description = "Implementation doesn't exist")
     }, description = "Retrieve a specific implementation of the algorithm.")
     @GetMapping("/{publicationId}/" + Constants.IMPLEMENTATIONS + "/{implementationId}")
-    public ResponseEntity<EntityModel<ImplementationDto>> getImplementation(
+    public ResponseEntity<EntityModel<ImplementationDto>> getImplementationOfPublication(
             @PathVariable UUID publicationId,
             @PathVariable UUID implementationId) {
+        publicationService.checkIfImplementationIsLinkedToPublication(publicationId, implementationId);
+
         var implementation = implementationService.findById(implementationId);
         return ResponseEntity.ok(implementationAssembler.toModel(implementation));
     }

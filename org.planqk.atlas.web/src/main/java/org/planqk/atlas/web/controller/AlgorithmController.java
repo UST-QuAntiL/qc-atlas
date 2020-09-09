@@ -47,7 +47,6 @@ import org.planqk.atlas.web.dtos.ProblemTypeDto;
 import org.planqk.atlas.web.dtos.PublicationDto;
 import org.planqk.atlas.web.dtos.TagDto;
 import org.planqk.atlas.web.linkassembler.AlgorithmAssembler;
-import org.planqk.atlas.web.linkassembler.AlgorithmRelationAssembler;
 import org.planqk.atlas.web.linkassembler.ApplicationAreaAssembler;
 import org.planqk.atlas.web.linkassembler.ComputeResourcePropertyAssembler;
 import org.planqk.atlas.web.linkassembler.ImplementationAssembler;
@@ -97,8 +96,6 @@ public class AlgorithmController {
 
     private final AlgorithmService algorithmService;
     private final AlgorithmAssembler algorithmAssembler;
-
-    private final AlgorithmRelationAssembler algorithmRelationAssembler;
 
     private final PatternRelationService patternRelationService;
     private final PatternRelationAssembler patternRelationAssembler;
@@ -193,7 +190,7 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Algorithm with given ID doesn't exist")
-    }, description = "Retrieve all tags associated with a specific algorithm")
+    }, description = "Retrieve all tags associated with a specific algorithm.")
     @GetMapping("/{algorithmId}/" + Constants.TAGS)
     public ResponseEntity<CollectionModel<EntityModel<TagDto>>> getTagsOfAlgorithm(
             @PathVariable UUID algorithmId) {
@@ -205,7 +202,7 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "204"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Algorithm with given ID doesn't exist")
-    }, description = "")
+    }, description = "Add a tag to an algorithm. The tag does not have to exist before adding it.")
     @PostMapping("/{algorithmId}/" + Constants.TAGS)
     public ResponseEntity<Void> addTagToAlgorithm(
             @PathVariable UUID algorithmId,
@@ -218,7 +215,7 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "204"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Algorithm with given ID doesn't exist")
-    }, description = "")
+    }, description = "Remove a tag from an algorithm.")
     @DeleteMapping("/{algorithmId}/" + Constants.TAGS)
     public ResponseEntity<Void> removeTagFromAlgorithm(
             @PathVariable UUID algorithmId,
@@ -282,6 +279,8 @@ public class AlgorithmController {
     public ResponseEntity<EntityModel<PublicationDto>> getPublicationOfAlgorithm(
             @PathVariable UUID algorithmId,
             @PathVariable UUID publicationId) {
+        algorithmService.checkIfPublicationIsLinkedToAlgorithm(algorithmId, publicationId);
+
         Publication publication = publicationService.findById(publicationId);
         return new ResponseEntity<>(publicationAssembler.toModel(publication), HttpStatus.OK);
     }
@@ -341,6 +340,8 @@ public class AlgorithmController {
     public ResponseEntity<EntityModel<ProblemTypeDto>> getProblemType(
             @PathVariable UUID algorithmId,
             @PathVariable UUID problemTypeId) {
+        algorithmService.checkIfProblemTypeIsLinkedToAlgorithm(algorithmId, problemTypeId);
+
         ProblemType problemType = problemTypeService.findById(problemTypeId);
         return ResponseEntity.ok(problemTypeAssembler.toModel(problemType));
     }
@@ -400,6 +401,8 @@ public class AlgorithmController {
     public ResponseEntity<EntityModel<ApplicationAreaDto>> getApplicationAreaOfAlgorithm(
             @PathVariable UUID algorithmId,
             @PathVariable UUID applicationAreaId) {
+        algorithmService.checkIfApplicationAreaIsLinkedToAlgorithm(algorithmId, applicationAreaId);
+
         ApplicationArea applicationArea = applicationAreaService.findById(applicationAreaId);
         return ResponseEntity.ok(applicationAreaAssembler.toModel(applicationArea));
     }

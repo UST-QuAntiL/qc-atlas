@@ -19,6 +19,7 @@
 
 package org.planqk.atlas.core.services;
 
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.CloudService;
@@ -127,5 +128,16 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
         ServiceUtils.throwIfNotExists(softwarePlatformId, SoftwarePlatform.class, softwarePlatformRepository);
 
         return computeResourceRepository.findComputeResourcesBySoftwarePlatformId(softwarePlatformId, pageable);
+    }
+
+    @Override
+    public void checkIfImplementationIsLinkedToSoftwarePlatform(UUID softwarePlatformId, UUID implementationId) {
+        SoftwarePlatform softwarePlatform = findById(softwarePlatformId);
+        Implementation implementation = ServiceUtils.findById(implementationId, Implementation.class, implementationRepository);
+
+        if (!implementation.getSoftwarePlatforms().contains(softwarePlatform)) {
+            throw new NoSuchElementException("Implementation with ID \"" + implementationId
+                    + "\" is not linked to SoftwarePlatform with ID \"" + softwarePlatformId +  "\"");
+        }
     }
 }

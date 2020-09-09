@@ -19,6 +19,7 @@
 
 package org.planqk.atlas.core.services;
 
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.UUID;
 
@@ -113,5 +114,27 @@ public class PublicationServiceImpl implements PublicationService {
         publicationIds.forEach(publicationId ->
                 ServiceUtils.throwIfNotExists(publicationId, Publication.class, publicationRepository));
         publicationRepository.deleteByIdIn(publicationIds);
+    }
+
+    @Override
+    public void checkIfAlgorithmIsLinkedToPublication(UUID publicationId, UUID algorithmId) {
+        Publication publication = findById(publicationId);
+        Algorithm algorithm = ServiceUtils.findById(algorithmId, Algorithm.class, algorithmRepository);
+
+        if (!algorithm.getPublications().contains(publication)) {
+            throw new NoSuchElementException("Algorithm with ID \"" + algorithmId
+                    + "\" is not linked to Publication with ID \"" + publicationId +  "\"");
+        }
+    }
+
+    @Override
+    public void checkIfImplementationIsLinkedToPublication(UUID publicationId, UUID implementationId) {
+        Publication publication = findById(publicationId);
+        Implementation implementation = ServiceUtils.findById(implementationId, Implementation.class, implementationRepository);
+
+        if (!implementation.getPublications().contains(publication)) {
+            throw new NoSuchElementException("Implementation with ID \"" + implementationId
+                    + "\" is not linked to Publication with ID \"" + publicationId +  "\"");
+        }
     }
 }

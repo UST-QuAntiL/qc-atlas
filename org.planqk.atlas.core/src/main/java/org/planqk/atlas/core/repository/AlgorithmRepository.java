@@ -22,6 +22,7 @@ package org.planqk.atlas.core.repository;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.Publication;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -38,8 +39,6 @@ import org.springframework.stereotype.Repository;
 @RepositoryRestResource(exported = false)
 public interface AlgorithmRepository extends JpaRepository<Algorithm, UUID> {
 
-    boolean existsAlgorithmById(UUID id);
-
     default Page<Algorithm> findAll(String search, Pageable pageable) {
         return findByNameContainingIgnoreCaseOrAcronymContainingIgnoreCaseOrProblemContainingIgnoreCase(search, search, search, pageable);
     }
@@ -51,4 +50,5 @@ public interface AlgorithmRepository extends JpaRepository<Algorithm, UUID> {
             "JOIN algo.publications pub " +
             "WHERE  pub.id = :pubId")
     Page<Algorithm> findAlgorithmsByPublicationId(@Param("pubId") UUID publicationId, Pageable pageable);
+
 }

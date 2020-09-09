@@ -56,4 +56,10 @@ public interface AlgorithmService {
     Page<ProblemType> findLinkedProblemTypes(UUID algorithmId, Pageable pageable);
 
     Page<ApplicationArea> findLinkedApplicationAreas(UUID algorithmId, Pageable pageable);
+
+    void checkIfPublicationIsLinkedToAlgorithm(UUID algorithmId, UUID publicationId);
+
+    void checkIfProblemTypeIsLinkedToAlgorithm(UUID algorithmId, UUID problemTypeId);
+
+    void checkIfApplicationAreaIsLinkedToAlgorithm(UUID algorithmId, UUID applicationAreaId);
 }
