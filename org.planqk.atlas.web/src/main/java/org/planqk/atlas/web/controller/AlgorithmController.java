@@ -160,7 +160,7 @@ public class AlgorithmController {
 
     @Operation(operationId = "addTagToAlgorithm",
             responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "404")})
-    @PutMapping("/{algoId}/" + Constants.TAGS)
+    @PostMapping("/{algoId}/" + Constants.TAGS)
     public HttpEntity<Void> addTag(@PathVariable UUID algoId,
                                    @Valid @RequestBody TagDto tagDto) {
         Algorithm algorithm = algorithmService.findById(algoId);

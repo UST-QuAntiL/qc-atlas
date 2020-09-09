@@ -144,7 +144,7 @@ public class ImplementationController {
 
     @Operation(operationId = "addTagToImplementation",
             responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "404")})
-    @PutMapping("/{implId}/" + Constants.TAGS)
+    @PostMapping("/{implId}/" + Constants.TAGS)
     public HttpEntity<Void> addTag(@PathVariable UUID implId,
                                    @Valid @RequestBody TagDto tagDto) {
         Implementation implementation = implementationService.findById(implId);
