@@ -19,7 +19,6 @@
 
 package org.planqk.atlas.web.linkassembler;
 
-import org.planqk.atlas.web.controller.ComputeResourcePropertyController;
 import org.planqk.atlas.web.controller.ComputeResourcePropertyTypeController;
 import org.planqk.atlas.web.dtos.ComputeResourcePropertyDto;
 
@@ -33,9 +32,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class ComputeResourcePropertyAssembler extends GenericLinkAssembler<ComputeResourcePropertyDto> {
     @Override
     public void addLinks(EntityModel<ComputeResourcePropertyDto> resource) {
-        resource.add(links.linkTo(methodOn(ComputeResourcePropertyController.class)
-                .getComputeResourceProperty(resource.getContent().getId()))
-                .withSelfRel());
         resource.add(links.linkTo(methodOn(ComputeResourcePropertyTypeController.class)
                 .getComputingResourcePropertyType(resource.getContent().getType().getId()))
                 .withRel("type"));

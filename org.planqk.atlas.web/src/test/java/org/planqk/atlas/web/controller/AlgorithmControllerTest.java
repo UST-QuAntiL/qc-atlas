@@ -762,6 +762,55 @@ public class AlgorithmControllerTest {
                 .andExpect(status().isCreated());
     }
 
+//    @Test
+//    void deleteResourceProperty_returnNoContent() throws Exception {
+//        doNothing().when(resourceService).delete(any());
+//        var url = fromMethodCall(uriBuilder, on(ComputeResourcePropertyController.class)
+//                .deleteComputeResourceProperty(UUID.randomUUID())).toUriString();
+//        mockMvc.perform(delete(url)).andExpect(status().isNoContent());
+//    }
+//
+//    @Test
+//    void deleteResourceProperty_returnNotFound() throws Exception {
+//        doThrow(new NoSuchElementException()).when(resourceService).delete(any());
+//        var url = fromMethodCall(uriBuilder, on(ComputeResourcePropertyController.class)
+//                .deleteComputeResourceProperty(UUID.randomUUID())).toUriString();
+//        mockMvc.perform(delete(url)).andExpect(status().isNotFound());
+//    }
+//
+//    @Test
+//    void getResource_returnNotFound() throws Exception {
+//        when(resourceService.findById(any())).thenThrow(new NoSuchElementException());
+//        var url = fromMethodCall(uriBuilder, on(ComputeResourcePropertyController.class)
+//                .getComputeResourceProperty(UUID.randomUUID())).toUriString();
+//        mockMvc.perform(get(url)).andExpect(status().isNotFound());
+//    }
+//
+//    @Test
+//    void getResource_returnOk() throws Exception {
+//        var sampleType = new ComputeResourcePropertyType();
+//        sampleType.setId(UUID.randomUUID());
+//        sampleType.setName("Hello World");
+//        sampleType.setDatatype(ComputeResourcePropertyDataType.FLOAT);
+//        sampleType.setDescription("Test");
+//        var sampleResource = new ComputeResourceProperty();
+//        sampleResource.setId(UUID.randomUUID());
+//        sampleResource.setComputeResourcePropertyType(sampleType);
+//
+//        when(resourceService.findById(any())).thenReturn(sampleResource);
+//        var url = fromMethodCall(uriBuilder, on(ComputeResourcePropertyController.class)
+//                .deleteComputeResourceProperty(UUID.randomUUID())).toUriString();
+//        var result = mockMvc.perform(get(url)).andExpect(status().isOk()).andReturn();
+//
+//        var dto = mapper.readValue(
+//                result.getResponse().getContentAsString(),
+//                new TypeReference<EntityModel<ComputeResourceProperty>>() {
+//                }
+//        ).getContent();
+//
+//        assertThat(dto.getId()).isEqualTo(sampleResource.getId());
+//    }
+
     private void mockComputeResourceTypeValidation(ComputeResourcePropertyDataType type) {
         var propertyType = new ComputeResourcePropertyType();
         propertyType.setDatatype(type);
