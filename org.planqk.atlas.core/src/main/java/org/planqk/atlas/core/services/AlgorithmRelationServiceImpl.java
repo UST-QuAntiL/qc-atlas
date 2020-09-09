@@ -71,7 +71,7 @@ public class AlgorithmRelationServiceImpl implements AlgorithmRelationService {
                 algorithmRelationTypeService.findById(algorithmRelation.getAlgorithmRelationType().getId()));
         persistedAlgorithmRelation.setDescription(algorithmRelation.getDescription());
 
-        return algorithmRelationRepository.save(algorithmRelation);
+        return algorithmRelationRepository.save(persistedAlgorithmRelation );
     }
 
     @Override

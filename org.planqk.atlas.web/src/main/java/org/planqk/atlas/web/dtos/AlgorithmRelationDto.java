@@ -28,6 +28,7 @@ import org.planqk.atlas.web.utils.Identifyable;
 import org.planqk.atlas.web.utils.RequiresID;
 import org.planqk.atlas.web.utils.ValidationGroups;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.hateoas.server.core.Relation;
@@ -52,11 +53,12 @@ public class AlgorithmRelationDto implements Identifyable {
             message = "Target Algorithm id must not be null!")
     private UUID targetAlgorithmId;
 
+    @JsonProperty("algoRelationType")
     @RequiresID(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
             message = "AlgorithmRelationType must have a type with an ID!")
     @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
             message = "AlgorithmRelationType must not be null!")
-    private AlgorithmRelationTypeDto algoRelationType;
+    private AlgorithmRelationTypeDto algorithmRelationType;
 
     private String description;
 }

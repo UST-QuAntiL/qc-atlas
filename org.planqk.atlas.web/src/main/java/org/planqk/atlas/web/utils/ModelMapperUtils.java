@@ -91,6 +91,10 @@ public class ModelMapperUtils {
         mapper.createTypeMap(AlgorithmRelationDto.class, AlgorithmRelation.class)
                 .addMapping(e -> newAlgorithmWithId(e.getSourceAlgorithmId()), AlgorithmRelation::setSourceAlgorithm)
                 .addMapping(e -> newAlgorithmWithId(e.getTargetAlgorithmId()), AlgorithmRelation::setTargetAlgorithm);
+//        mapper.createTypeMap(AlgorithmRelation.class, AlgorithmRelationDto.class)
+//                .addMapping(e -> convert(e.getAlgorithmRelationType(), AlgorithmRelationType.class), AlgorithmRelationDto::setAlgoRelationType);
+//        mapper.createTypeMap(AlgorithmRelationDto.class, AlgorithmRelation.class)
+//                .addMapping(e -> convert(e.getAlgoRelationType(), AlgorithmRelationType.class), AlgorithmRelation::setAlgorithmRelationType);
 
         // Implementations
         mapper.createTypeMap(Implementation.class, ImplementationDto.class)

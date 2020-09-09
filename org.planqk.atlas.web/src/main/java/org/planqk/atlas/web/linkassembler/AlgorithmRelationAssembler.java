@@ -53,6 +53,7 @@ public class AlgorithmRelationAssembler extends GenericLinkAssembler<AlgorithmRe
     }
 
     private UUID getAlgoRelationTypeId(EntityModel<AlgorithmRelationDto> resource) {
-        return resource.getContent().getAlgoRelationType().getId();
+        var type = resource.getContent().getAlgorithmRelationType();
+        return type.getId();
     }
 }
