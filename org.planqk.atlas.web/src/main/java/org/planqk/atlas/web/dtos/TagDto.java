@@ -34,6 +34,6 @@ public class TagDto {
 
     private String category;
 
-    @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class}, message = "Tag value must not be null!")
+    @NotNull(groups = {ValidationGroups.IDOnly.class, ValidationGroups.Create.class}, message = "Tag value must not be null!")
     private String value;
 }

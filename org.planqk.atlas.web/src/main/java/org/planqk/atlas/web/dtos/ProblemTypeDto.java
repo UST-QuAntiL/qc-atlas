@@ -35,7 +35,7 @@ import org.springframework.hateoas.server.core.Relation;
 @Data
 @Relation(itemRelation = "problemType", collectionRelation = "problemTypes")
 public class ProblemTypeDto implements Identifyable {
-    @NotNull(groups = {ValidationGroups.Update.class}, message = "An id is required to perform an update")
+    @NotNull(groups = {ValidationGroups.IDOnly.class}, message = "An id is required to perform an update")
     @Null(groups = {ValidationGroups.Create.class}, message = "The id must be null for creating a problem type")
     private UUID id;
 

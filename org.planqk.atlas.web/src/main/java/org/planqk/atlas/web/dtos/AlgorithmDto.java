@@ -47,7 +47,7 @@ import org.springframework.hateoas.server.core.Relation;
         @JsonSubTypes.Type(value = QuantumAlgorithmDto.class, name = "HYBRID")})
 @Relation(itemRelation = "algorithm", collectionRelation = "algorithms")
 public class AlgorithmDto implements Identifyable {
-    @NotNull(groups = {ValidationGroups.Update.class}, message = "An id is required to perform an update")
+    @NotNull(groups = {ValidationGroups.IDOnly.class}, message = "An id is required to perform an update")
     @Null(groups = {ValidationGroups.Create.class}, message = "The id must be null for creating an algorithm")
     private UUID id;
 

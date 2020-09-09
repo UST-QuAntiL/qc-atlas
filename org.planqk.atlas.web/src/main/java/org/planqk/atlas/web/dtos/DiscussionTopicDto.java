@@ -38,7 +38,7 @@ import org.springframework.hateoas.server.core.Relation;
 @Relation(itemRelation = "discussionTopic", collectionRelation = "discussionTopics")
 public class DiscussionTopicDto implements Identifyable {
 
-    @NotNull(groups = {ValidationGroups.Update.class}, message = "An id is required to perform an update")
+    @NotNull(groups = {ValidationGroups.IDOnly.class}, message = "An id is required to perform an update")
     @Null(groups = {ValidationGroups.Create.class}, message = "The id must be null for creating a discussion topic")
     private UUID id;
     @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},

@@ -38,7 +38,7 @@ import org.springframework.hateoas.server.core.Relation;
 @Relation(itemRelation = "patternRelationType", collectionRelation = "patternRelationTypes")
 public class PatternRelationTypeDto implements Identifyable {
 
-    @NotNull(groups = {ValidationGroups.Update.class}, message = "An id is required to perform an update")
+    @NotNull(groups = {ValidationGroups.IDOnly.class}, message = "An id is required to perform an update")
     @Null(groups = {ValidationGroups.Create.class}, message = "The id must be null for creating a pattern relation type")
     private UUID id;
 

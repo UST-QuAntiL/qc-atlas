@@ -39,7 +39,7 @@ import org.springframework.hateoas.server.core.Relation;
 @EqualsAndHashCode
 @Relation(itemRelation = "discussionComment", collectionRelation = "discussionComments")
 public class DiscussionCommentDto implements Identifyable {
-    @NotNull(groups = {ValidationGroups.Update.class}, message = "An id is required to perform an update")
+    @NotNull(groups = {ValidationGroups.IDOnly.class}, message = "An id is required to perform an update")
     @Null(groups = {ValidationGroups.Create.class}, message = "The id must be null for creating a discussion comment")
     private UUID id;
     @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},

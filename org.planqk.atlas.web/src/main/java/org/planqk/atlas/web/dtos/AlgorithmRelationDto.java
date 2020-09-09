@@ -40,7 +40,7 @@ import org.springframework.hateoas.server.core.Relation;
 @Relation(itemRelation = "algorithmRelation", collectionRelation = "algorithmRelations")
 public class AlgorithmRelationDto implements Identifyable {
 
-    @NotNull(groups = {ValidationGroups.Update.class}, message = "An id is required to perform an update")
+    @NotNull(groups = {ValidationGroups.IDOnly.class}, message = "An id is required to perform an update")
     @Null(groups = {ValidationGroups.Create.class}, message = "The id must be null for creating an algorithm relation")
     private UUID id;
 
