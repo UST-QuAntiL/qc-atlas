@@ -19,6 +19,7 @@
 
 package org.planqk.atlas.core.services;
 
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
@@ -169,6 +170,36 @@ public class ComputeResourcePropertyServiceImpl implements ComputeResourceProper
 
         persistedComputeResourceProperty.setComputeResource(computeResource);
         return this.computeResourcePropertyRepository.save(persistedComputeResourceProperty);
+    }
+
+    @Override
+    public void checkIfComputeResourcePropertyIsOfAlgorithm(UUID algorithmId, UUID computeResourcePropertyId) {
+        ComputeResourceProperty computeResourceProperty = findById(computeResourcePropertyId);
+
+        if (computeResourceProperty.getAlgorithm().getId() != algorithmId) {
+            throw new NoSuchElementException("ComputeResourceProperty with ID \"" + computeResourcePropertyId
+                    + "\" of Algorithm with ID \"" + algorithmId +  "\" does not exist");
+        }
+    }
+
+    @Override
+    public void checkIfComputeResourcePropertyIsOfImplementation(UUID implementationId, UUID computeResourcePropertyId) {
+        ComputeResourceProperty computeResourceProperty = findById(computeResourcePropertyId);
+
+        if (computeResourceProperty.getImplementation().getId() != implementationId) {
+            throw new NoSuchElementException("ComputeResourceProperty with ID \"" + computeResourcePropertyId
+                    + "\" of Implementation with ID \"" + implementationId +  "\" does not exist");
+        }
+    }
+
+    @Override
+    public void checkIfComputeResourcePropertyIsOfComputeResource(UUID computeResourceId, UUID computeResourcePropertyId) {
+        ComputeResourceProperty computeResourceProperty = findById(computeResourcePropertyId);
+
+        if (computeResourceProperty.getComputeResource().getId() != computeResourceId) {
+            throw new NoSuchElementException("ComputeResourceProperty with ID \"" + computeResourcePropertyId
+                    + "\" of ComputeResource with ID \"" + computeResourceId +  "\" does not exist");
+        }
     }
 
     private ComputeResourceProperty validateComputeResourceProperty(ComputeResourceProperty computeResourceProperty) {

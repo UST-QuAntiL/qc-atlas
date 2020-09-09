@@ -58,4 +58,11 @@ public interface ComputeResourcePropertyService {
     @Transactional
     ComputeResourceProperty addComputeResourcePropertyToComputeResource(
             UUID computeResourceId, ComputeResourceProperty computeResourceProperty);
+
+    void checkIfComputeResourcePropertyIsOfAlgorithm(UUID algorithmId, UUID computeResourcePropertyId);
+
+    void checkIfComputeResourcePropertyIsOfImplementation(UUID implementationId, UUID computeResourcePropertyId);
+
+    void checkIfComputeResourcePropertyIsOfComputeResource(UUID computeResourceId, UUID computeResourcePropertyId);
+
 }

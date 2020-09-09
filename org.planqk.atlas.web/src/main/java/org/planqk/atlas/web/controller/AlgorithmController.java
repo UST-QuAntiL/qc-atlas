@@ -462,6 +462,8 @@ public class AlgorithmController {
             @PathVariable UUID algorithmId,
             @PathVariable UUID computeResourcePropertyId,
             @Validated(ValidationGroups.Update.class) @RequestBody ComputeResourcePropertyDto computeResourcePropertyDto) {
+        computeResourcePropertyService.checkIfComputeResourcePropertyIsOfAlgorithm(algorithmId, computeResourcePropertyId);
+
         computeResourcePropertyDto.setId(computeResourcePropertyId);
         var resource = ModelMapperUtils.convert(computeResourcePropertyDto, ComputeResourceProperty.class);
         var updatedResource = computeResourcePropertyService.update(resource);
@@ -477,6 +479,8 @@ public class AlgorithmController {
     public HttpEntity<Void> deleteComputeResourceProperty(
             @PathVariable UUID algorithmId,
             @PathVariable UUID computeResourcePropertyId) {
+        computeResourcePropertyService.checkIfComputeResourcePropertyIsOfAlgorithm(algorithmId, computeResourcePropertyId);
+
         computeResourcePropertyService.delete(computeResourcePropertyId);
         return ResponseEntity.noContent().build();
     }
@@ -490,6 +494,8 @@ public class AlgorithmController {
     public HttpEntity<EntityModel<ComputeResourcePropertyDto>> getComputeResourceProperty(
             @PathVariable UUID algorithmId,
             @PathVariable UUID computeResourcePropertyId) {
+        computeResourcePropertyService.checkIfComputeResourcePropertyIsOfAlgorithm(algorithmId, computeResourcePropertyId);
+
         var resource = computeResourcePropertyService.findById(computeResourcePropertyId);
         return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(resource));
     }

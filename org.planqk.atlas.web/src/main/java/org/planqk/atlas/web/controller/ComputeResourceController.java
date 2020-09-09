@@ -228,6 +228,8 @@ public class ComputeResourceController {
             @PathVariable UUID computeResourceId,
             @PathVariable UUID computeResourcePropertyId,
             @Validated(ValidationGroups.Update.class) @RequestBody ComputeResourcePropertyDto computeResourcePropertyDto) {
+        computeResourcePropertyService.checkIfComputeResourcePropertyIsOfComputeResource(computeResourceId, computeResourcePropertyId);
+
         computeResourcePropertyDto.setId(computeResourcePropertyId);
         var resource = ModelMapperUtils.convert(computeResourcePropertyDto, ComputeResourceProperty.class);
         var updatedResource = computeResourcePropertyService.update(resource);
@@ -243,6 +245,8 @@ public class ComputeResourceController {
     public HttpEntity<Void> deleteComputeResourceProperty(
             @PathVariable UUID computeResourceId,
             @PathVariable UUID computeResourcePropertyId) {
+        computeResourcePropertyService.checkIfComputeResourcePropertyIsOfComputeResource(computeResourceId, computeResourcePropertyId);
+
         computeResourcePropertyService.delete(computeResourcePropertyId);
         return ResponseEntity.noContent().build();
     }
@@ -256,6 +260,8 @@ public class ComputeResourceController {
     public HttpEntity<EntityModel<ComputeResourcePropertyDto>> getComputeResourceProperty(
             @PathVariable UUID computeResourceId,
             @PathVariable UUID computeResourcePropertyId) {
+        computeResourcePropertyService.checkIfComputeResourcePropertyIsOfComputeResource(computeResourceId, computeResourcePropertyId);
+
         var resource = computeResourcePropertyService.findById(computeResourcePropertyId);
         return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(resource));
     }
