@@ -372,7 +372,7 @@ public class AlgorithmController {
     @PostMapping("/{algorithmId}/" + Constants.APPLICATION_AREAS)
     public ResponseEntity<Void> linkAlgorithmAndApplicationArea(
             @PathVariable UUID algorithmId,
-            @Validated({ValidationGroups.IDOnly.class}) ApplicationAreaDto applicationAreaDto) {
+            @Validated({ValidationGroups.IDOnly.class}) @RequestBody ApplicationAreaDto applicationAreaDto) {
         linkingService.linkAlgorithmAndApplicationArea(algorithmId, applicationAreaDto.getId());
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
