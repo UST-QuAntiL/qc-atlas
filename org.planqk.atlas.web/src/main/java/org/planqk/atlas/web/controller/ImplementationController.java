@@ -301,7 +301,7 @@ public class ImplementationController {
             "other software platform attributes will not change." +
             "If the software platform doesn't exist yet, a 404 error is thrown.")
     @PostMapping("/{implementationId}/" + Constants.SOFTWARE_PLATFORMS)
-    public ResponseEntity<CollectionModel<EntityModel<SoftwarePlatformDto>>> linkImplementationAndSoftwarePlatform(
+    public ResponseEntity<Void> linkImplementationAndSoftwarePlatform(
             @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId,
             @Validated({ValidationGroups.IDOnly.class}) @RequestBody SoftwarePlatformDto softwarePlatformDto) {
