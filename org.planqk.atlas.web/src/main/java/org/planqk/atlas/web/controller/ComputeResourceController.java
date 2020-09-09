@@ -190,7 +190,7 @@ public class ComputeResourceController {
     }, description = "Get referenced compute resource properties for a compute resource.")
     @ListParametersDoc
     @GetMapping("/{computeResourceId}/" + Constants.COMPUTE_RESOURCE_PROPERTIES)
-    public ResponseEntity<PagedModel<EntityModel<ComputeResourcePropertyDto>>> getComputingResourcePropertiesOfComputeResource(
+    public ResponseEntity<PagedModel<EntityModel<ComputeResourcePropertyDto>>> getComputeResourcePropertiesOfComputeResource(
             @PathVariable UUID computeResourceId,
             @Parameter(hidden = true) ListParameters listParameters) {
         var resources = computeResourcePropertyService.findComputeResourcePropertiesOfComputeResource(computeResourceId,
@@ -206,7 +206,7 @@ public class ComputeResourceController {
             "add a reference to the defined compute resource property. " +
             "Custom ID will be ignored. ")
     @PostMapping("/{computeResourceId}/" + Constants.COMPUTE_RESOURCE_PROPERTIES)
-    public ResponseEntity<EntityModel<ComputeResourceDto>> createComputingResourcePropertyForComputeResource(
+    public ResponseEntity<EntityModel<ComputeResourceDto>> createComputeResourcePropertyForComputeResource(
             @PathVariable UUID computeResourceId,
             @Validated(ValidationGroups.Create.class) @RequestBody ComputeResourcePropertyDto computeResourcePropertyDto) {
         var computeResourceProperty = ModelMapperUtils.convert(computeResourcePropertyDto, ComputeResourceProperty.class);
@@ -224,7 +224,7 @@ public class ComputeResourceController {
                     "For compute resource property type only ID is required, other compute resource property type " +
                     "attributes will not change.")
     @PutMapping("/{computeResourceId}/" + Constants.COMPUTE_RESOURCE_PROPERTIES + "/{computeResourcePropertyId}")
-    public ResponseEntity<EntityModel<ComputeResourcePropertyDto>> updateComputeResourcePropertyOfAlgorithm(
+    public ResponseEntity<EntityModel<ComputeResourcePropertyDto>> updateComputeResourcePropertyOfComputeResource(
             @PathVariable UUID computeResourceId,
             @PathVariable UUID computeResourcePropertyId,
             @Validated(ValidationGroups.Update.class) @RequestBody ComputeResourcePropertyDto computeResourcePropertyDto) {
@@ -242,7 +242,7 @@ public class ComputeResourceController {
             @ApiResponse(responseCode = "404", description = "Compute resource property with given id doesn't exist"),
     }, description = "Delete a Compute resource property of an compute resource")
     @DeleteMapping("/{computeResourceId}/" + Constants.COMPUTE_RESOURCE_PROPERTIES + "/{computeResourcePropertyId}")
-    public HttpEntity<Void> deleteComputeResourceProperty(
+    public HttpEntity<Void> deleteComputeResourcePropertyOfComputeResource(
             @PathVariable UUID computeResourceId,
             @PathVariable UUID computeResourcePropertyId) {
         computeResourcePropertyService.checkIfComputeResourcePropertyIsOfComputeResource(computeResourceId, computeResourcePropertyId);
@@ -257,7 +257,7 @@ public class ComputeResourceController {
             @ApiResponse(responseCode = "404"),
     }, description = "Retrieve a specific compute resource property of an compute resource")
     @GetMapping("/{computeResourceId}/" + Constants.COMPUTE_RESOURCE_PROPERTIES + "/{computeResourcePropertyId}")
-    public HttpEntity<EntityModel<ComputeResourcePropertyDto>> getComputeResourceProperty(
+    public HttpEntity<EntityModel<ComputeResourcePropertyDto>> getComputeResourcePropertyOfComputeResource(
             @PathVariable UUID computeResourceId,
             @PathVariable UUID computeResourcePropertyId) {
         computeResourcePropertyService.checkIfComputeResourcePropertyIsOfComputeResource(computeResourceId, computeResourcePropertyId);
