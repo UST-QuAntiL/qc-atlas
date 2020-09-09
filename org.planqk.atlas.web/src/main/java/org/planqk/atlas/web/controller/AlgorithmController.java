@@ -251,7 +251,7 @@ public class AlgorithmController {
     @PostMapping("/{algorithmId}/" + Constants.PUBLICATIONS)
     public ResponseEntity<Void> linkAlgorithmAndPublication(
             @PathVariable UUID algorithmId,
-            @Validated({ValidationGroups.Update.class}) @RequestBody PublicationDto publicationDto) {
+            @Validated({ValidationGroups.IDOnly.class}) @RequestBody PublicationDto publicationDto) {
         linkingService.linkAlgorithmAndPublication(algorithmId, publicationDto.getId());
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -312,7 +312,7 @@ public class AlgorithmController {
     @PostMapping("/{algorithmId}/" + Constants.PROBLEM_TYPES)
     public ResponseEntity<Void> linkAlgorithmAndProblemType(
             @PathVariable UUID algorithmId,
-            @Validated({ValidationGroups.Update.class}) @RequestBody ProblemTypeDto problemTypeDto) {
+            @Validated({ValidationGroups.IDOnly.class}) @RequestBody ProblemTypeDto problemTypeDto) {
         linkingService.linkAlgorithmAndProblemType(algorithmId, problemTypeDto.getId());
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -372,7 +372,7 @@ public class AlgorithmController {
     @PostMapping("/{algorithmId}/" + Constants.APPLICATION_AREAS)
     public ResponseEntity<Void> linkAlgorithmAndApplicationArea(
             @PathVariable UUID algorithmId,
-            @Validated({ValidationGroups.Update.class}) ApplicationAreaDto applicationAreaDto) {
+            @Validated({ValidationGroups.IDOnly.class}) ApplicationAreaDto applicationAreaDto) {
         linkingService.linkAlgorithmAndApplicationArea(algorithmId, applicationAreaDto.getId());
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -442,7 +442,7 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "404",
                     description = "Compute resource type or Algorithm with given ID doesn't exist")
     }, description = "Add a compute resource property (e.g. a certain number of qubits) that is required by an algorithm. " +
-            "For computr resource property type only ID is required, " +
+            "For compute resource property type only ID is required, " +
             "other compute resource property type attributes will not change.")
     @PostMapping("/{algorithmId}/" + Constants.COMPUTE_RESOURCE_PROPERTIES)
     public ResponseEntity<EntityModel<ComputeResourcePropertyDto>> createComputeResourcePropertyForAlgorithm(

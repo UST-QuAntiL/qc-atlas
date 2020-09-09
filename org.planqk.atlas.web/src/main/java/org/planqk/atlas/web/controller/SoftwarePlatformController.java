@@ -178,7 +178,7 @@ public class SoftwarePlatformController {
     @PostMapping("/{softwarePlatformId}/" + Constants.IMPLEMENTATIONS )
     public ResponseEntity<CollectionModel<EntityModel<SoftwarePlatformDto>>> linkSoftwarePlatformAndImplementation(
             @PathVariable UUID softwarePlatformId,
-            @Validated({ValidationGroups.Update.class}) ImplementationDto implementationDto) {
+            @Validated({ValidationGroups.IDOnly.class}) ImplementationDto implementationDto) {
         linkingService.linkImplementationAndSoftwarePlatform(implementationDto.getId(), softwarePlatformId);
         return ResponseEntity.noContent().build();
     }
@@ -236,7 +236,7 @@ public class SoftwarePlatformController {
     @PostMapping("/{softwarePlatformId}/" + Constants.CLOUD_SERVICES)
     public ResponseEntity<Void> linkSoftwarePlatformAndCloudService(
             @PathVariable UUID softwarePlatformId,
-            @Validated({ValidationGroups.Update.class}) @RequestBody CloudServiceDto cloudServiceDto) {
+            @Validated({ValidationGroups.IDOnly.class}) @RequestBody CloudServiceDto cloudServiceDto) {
         linkingService.linkSoftwarePlatformAndCloudService(softwarePlatformId, cloudServiceDto.getId());
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -279,7 +279,7 @@ public class SoftwarePlatformController {
     @PostMapping("/{softwarePlatformId}/" + Constants.COMPUTE_RESOURCES)
     public ResponseEntity<Void> linkSoftwarePlatformAndComputeResource(
             @PathVariable UUID softwarePlatformId,
-            @Validated({ValidationGroups.Update.class}) @RequestBody ComputeResourceDto computeResourceDto) {
+            @Validated({ValidationGroups.IDOnly.class}) @RequestBody ComputeResourceDto computeResourceDto) {
         linkingService.linkSoftwarePlatformAndComputeResource(softwarePlatformId, computeResourceDto.getId());
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

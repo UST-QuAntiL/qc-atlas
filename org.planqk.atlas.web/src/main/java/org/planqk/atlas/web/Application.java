@@ -39,7 +39,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
         version = "1.0",
         description = "Platform for Sharing Quantum Software",
         license = @License(name = "Apache 2.0", url = "http://www.apache.org/licenses/LICENSE-2.0.html"),
-        contact = @Contact(url = "https://github.com/PlanQK/qc-atlas", name = "GitHub Repository")))
+        contact = @Contact(url = "https://github.com/UST-QuAntiL/qc-atlas", name = "GitHub Repository")))
 public class Application extends SpringBootServletInitializer {
 
     /**
