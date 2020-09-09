@@ -54,6 +54,7 @@ import org.planqk.atlas.web.linkassembler.PatternRelationAssembler;
 import org.planqk.atlas.web.linkassembler.ProblemTypeAssembler;
 import org.planqk.atlas.web.linkassembler.PublicationAssembler;
 import org.planqk.atlas.web.linkassembler.TagAssembler;
+import org.planqk.atlas.web.utils.ControllerValidationUtils;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
@@ -479,7 +480,7 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "404", description = "Compute resource property with given id doesn't exist"),
     }, description = "Delete a Compute resource property of an algorithm")
     @DeleteMapping("/{algorithmId}/" + Constants.COMPUTE_RESOURCE_PROPERTIES + "/{computeResourcePropertyId}")
-    public HttpEntity<Void> deleteComputeResourceProperty(
+    public HttpEntity<Void> deleteComputeResourcePropertyOfAlgorithm(
             @PathVariable UUID algorithmId,
             @PathVariable UUID computeResourcePropertyId) {
         computeResourcePropertyService.checkIfComputeResourcePropertyIsOfAlgorithm(algorithmId, computeResourcePropertyId);
@@ -494,7 +495,7 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "404"),
     }, description = "Retrieve a specific compute resource property of an algorithm")
     @GetMapping("/{algorithmId}/" + Constants.COMPUTE_RESOURCE_PROPERTIES + "/{computeResourcePropertyId}")
-    public HttpEntity<EntityModel<ComputeResourcePropertyDto>> getComputeResourceProperty(
+    public HttpEntity<EntityModel<ComputeResourcePropertyDto>> getComputeResourcePropertyOfAlgorithm(
             @PathVariable UUID algorithmId,
             @PathVariable UUID computeResourcePropertyId) {
         computeResourcePropertyService.checkIfComputeResourcePropertyIsOfAlgorithm(algorithmId, computeResourcePropertyId);
@@ -526,9 +527,11 @@ public class AlgorithmController {
             "Custom ID will be ignored. For pattern relation type only ID is required," +
             "other pattern relation type attributes will not change.")
     @PostMapping("/{algorithmId}/" + Constants.PATTERN_RELATIONS)
-    public ResponseEntity<EntityModel<PatternRelationDto>> createPatternRelation(
+    public ResponseEntity<EntityModel<PatternRelationDto>> createPatternRelationForAlgorithm(
             @PathVariable UUID algorithmId,
             @Validated( {ValidationGroups.Create.class}) @RequestBody PatternRelationDto patternRelationDto) {
+        ControllerValidationUtils.checkIfAlgorithmIsInPatternRelationDTO(algorithmId, patternRelationDto);
+
         var savedPatternRelation = patternRelationService.create(
                 ModelMapperUtils.convert(patternRelationDto, PatternRelation.class));
         return new ResponseEntity<>(patternRelationAssembler.toModel(savedPatternRelation), HttpStatus.CREATED);
@@ -544,14 +547,32 @@ public class AlgorithmController {
             "Custom ID will be ignored. For pattern relation type only ID is required, " +
             "other pattern relation type attributes will not change.")
     @PutMapping("/{algorithmId}/" + Constants.PATTERN_RELATIONS + "/{patternRelationId}")
-    public ResponseEntity<EntityModel<PatternRelationDto>> updatePatternRelation(
+    public ResponseEntity<EntityModel<PatternRelationDto>> updatePatternRelationOfAlgorithm(
             @PathVariable UUID algorithmId,
             @PathVariable UUID patternRelationId,
             @Validated( {ValidationGroups.Update.class}) @RequestBody PatternRelationDto patternRelationDto) {
+        ControllerValidationUtils.checkIfAlgorithmIsInPatternRelationDTO(algorithmId, patternRelationDto);
+        patternRelationService.checkIfAlgorithmIsInPatternRelation(algorithmId, patternRelationId);
+
         patternRelationDto.setId(patternRelationId);
         var savedPatternRelation = patternRelationService.update(
                 ModelMapperUtils.convert(patternRelationDto, PatternRelation.class));
         return ResponseEntity.ok(patternRelationAssembler.toModel(savedPatternRelation));
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "204"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", description = "Pattern relation with given id doesn't exist")
+    }, description = "Delete a pattern relation of an specific algorithm")
+    @DeleteMapping("/{algorithmId}/" + Constants.PATTERN_RELATIONS + "/{patternRelationId}")
+    public ResponseEntity<Void> deletePatternRelationOfAlgorithm(
+            @PathVariable UUID algorithmId,
+            @PathVariable UUID patternRelationId) {
+        patternRelationService.checkIfAlgorithmIsInPatternRelation(algorithmId, patternRelationId);
+
+        patternRelationService.delete(patternRelationId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @Operation(responses = {
@@ -560,23 +581,12 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "404")
     }, description = "Retrieve a specific pattern relation")
     @GetMapping("/{algorithmId}/" + Constants.PATTERN_RELATIONS + "/{patternRelationId}")
-    public ResponseEntity<EntityModel<PatternRelationDto>> getPatternRelation(
+    public ResponseEntity<EntityModel<PatternRelationDto>> getPatternRelationOfAlgorithm(
             @PathVariable UUID algorithmId,
             @PathVariable UUID patternRelationId) {
+        patternRelationService.checkIfAlgorithmIsInPatternRelation(algorithmId, patternRelationId);
+
         var patternRelation = patternRelationService.findById(patternRelationId);
         return ResponseEntity.ok(patternRelationAssembler.toModel(patternRelation));
-    }
-
-    @Operation(responses = {
-            @ApiResponse(responseCode = "204"),
-            @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404", description = "Pattern relation with given id doesn't exist")
-    }, description = "")
-    @DeleteMapping("/{algorithmId}/" + Constants.PATTERN_RELATIONS + "/{patternRelationId}")
-    public ResponseEntity<Void> deletePatternRelation(
-            @PathVariable UUID algorithmId,
-            @PathVariable UUID patternRelationId) {
-        patternRelationService.delete(patternRelationId);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

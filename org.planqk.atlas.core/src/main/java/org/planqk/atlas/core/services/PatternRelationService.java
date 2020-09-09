@@ -42,4 +42,7 @@ public interface PatternRelationService {
 
     @Transactional
     void delete(UUID patternRelationId);
+
+    void checkIfAlgorithmIsInPatternRelation(UUID algorithmId, UUID patternRelationId);
+
 }

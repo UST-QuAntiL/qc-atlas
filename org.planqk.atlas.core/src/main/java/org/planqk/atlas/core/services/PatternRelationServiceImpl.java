@@ -19,6 +19,7 @@
 
 package org.planqk.atlas.core.services;
 
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import javax.transaction.Transactional;
@@ -85,5 +86,15 @@ public class PatternRelationServiceImpl implements PatternRelationService {
         ServiceUtils.throwIfNotExists(patternRelationId, PatternRelation.class, patternRelationRepository);
 
         patternRelationRepository.deleteById(patternRelationId);
+    }
+
+    @Override
+    public void checkIfAlgorithmIsInPatternRelation(@NonNull UUID algorithmId, @NonNull UUID patternRelationId) {
+        PatternRelation patternRelation = findById(patternRelationId);
+
+        if (patternRelation.getAlgorithm().getId() != algorithmId) {
+            throw new NoSuchElementException("Algorithm with ID \"" + algorithmId
+                    + "\" is not part of PatternRelation with ID \"" + patternRelationId +  "\"");
+        }
     }
 }

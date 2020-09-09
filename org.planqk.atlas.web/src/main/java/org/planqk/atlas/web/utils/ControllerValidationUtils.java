@@ -23,6 +23,7 @@ import java.util.UUID;
 
 import org.planqk.atlas.web.controller.exceptions.InvalidRequestException;
 import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
+import org.planqk.atlas.web.dtos.PatternRelationDto;
 
 public class ControllerValidationUtils {
 
@@ -32,6 +33,13 @@ public class ControllerValidationUtils {
                 && algorithmRelationDto.getTargetAlgorithmId() != algorithmId) {
             throw new InvalidRequestException("AlgorithmId \"" + algorithmId + "\" does not match any Ids of the " +
                     "AlgorithmRelation request body");
+        }
+    }
+
+    public static void checkIfAlgorithmIsInPatternRelationDTO(UUID algorithmId, PatternRelationDto patternRelationDto) {
+        if (patternRelationDto.getAlgorithmId() != algorithmId) {
+            throw new InvalidRequestException("AlgorithmId \"" + algorithmId + "\" does not match Id of the " +
+                    "PatternRelation request body");
         }
     }
 }
