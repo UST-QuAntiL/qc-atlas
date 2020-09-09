@@ -304,7 +304,7 @@ public class ImplementationController {
     public ResponseEntity<CollectionModel<EntityModel<SoftwarePlatformDto>>> linkImplementationAndSoftwarePlatform(
             @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId,
-            @Validated({ValidationGroups.IDOnly.class}) SoftwarePlatformDto softwarePlatformDto) {
+            @Validated({ValidationGroups.IDOnly.class}) @RequestBody SoftwarePlatformDto softwarePlatformDto) {
         implementationService.checkIfImplementationIsOfAlgorithm(implementationId, algorithmId);
 
         linkingService.linkImplementationAndSoftwarePlatform(implementationId, softwarePlatformDto.getId());

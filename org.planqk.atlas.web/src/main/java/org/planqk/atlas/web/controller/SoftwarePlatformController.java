@@ -178,7 +178,7 @@ public class SoftwarePlatformController {
     @PostMapping("/{softwarePlatformId}/" + Constants.IMPLEMENTATIONS )
     public ResponseEntity<CollectionModel<EntityModel<SoftwarePlatformDto>>> linkSoftwarePlatformAndImplementation(
             @PathVariable UUID softwarePlatformId,
-            @Validated({ValidationGroups.IDOnly.class}) ImplementationDto implementationDto) {
+            @Validated({ValidationGroups.IDOnly.class}) @RequestBody ImplementationDto implementationDto) {
         linkingService.linkImplementationAndSoftwarePlatform(implementationDto.getId(), softwarePlatformId);
         return ResponseEntity.noContent().build();
     }
