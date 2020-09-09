@@ -338,7 +338,7 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "404", description = "Problem type with given id doesn't exist")
     }, description = "Retrieve a specific problem type of an algorithm")
     @GetMapping("/{algorithmId}/" + Constants.PROBLEM_TYPES + "/{problemTypeId}")
-    public ResponseEntity<EntityModel<ProblemTypeDto>> getProblemType(
+    public ResponseEntity<EntityModel<ProblemTypeDto>> getProblemTypeOfAlgorithm(
             @PathVariable UUID algorithmId,
             @PathVariable UUID problemTypeId) {
         algorithmService.checkIfProblemTypeIsLinkedToAlgorithm(algorithmId, problemTypeId);
