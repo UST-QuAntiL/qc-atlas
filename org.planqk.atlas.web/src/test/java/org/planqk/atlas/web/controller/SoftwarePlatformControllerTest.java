@@ -1,3 +1,22 @@
+/*******************************************************************************
+ * Copyright (c) 2020 University of Stuttgart
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *******************************************************************************/
+
 package org.planqk.atlas.web.controller;
 
 import java.util.ArrayList;
@@ -5,12 +24,14 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
+import org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.CloudService;
 import org.planqk.atlas.core.model.ComputeResource;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.SoftwarePlatform;
-import org.planqk.atlas.core.model.exceptions.ConsistencyException;
+import org.planqk.atlas.core.services.ImplementationService;
+import org.planqk.atlas.core.services.LinkingService;
 import org.planqk.atlas.core.services.SoftwarePlatformService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
@@ -57,16 +78,21 @@ import static org.springframework.web.servlet.mvc.method.annotation.MvcUriCompon
 import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.on;
 
 @WebMvcTest(controllers = {SoftwarePlatformController.class})
-@ExtendWith({MockitoExtension.class})
+@ExtendWith( {MockitoExtension.class})
 @AutoConfigureMockMvc
 @EnableLinkAssemblers
 public class SoftwarePlatformControllerTest {
+
     private final int page = 0;
     private final int size = 10;
     private final Pageable pageable = PageRequest.of(page, size);
     private final String softwarePlatformDtoJSONName = "softwarePlatforms";
     @MockBean
     private SoftwarePlatformService softwarePlatformService;
+    @MockBean
+    private LinkingService linkingService;
+    @MockBean
+    private ImplementationService implementationService;
     @Autowired
     private MockMvc mockMvc;
     private final ObjectMapper mapper = ObjectMapperUtils.newTestMapper();
@@ -91,11 +117,10 @@ public class SoftwarePlatformControllerTest {
     @Test
     public void addSoftwarePlatform_returnCreate() throws Exception {
         SoftwarePlatform softwarePlatform = new SoftwarePlatform();
-        softwarePlatform.setId(UUID.randomUUID());
         softwarePlatform.setName("test platform");
         SoftwarePlatformDto softwarePlatformDto = ModelMapperUtils.convert(softwarePlatform, SoftwarePlatformDto.class);
 
-        when(softwarePlatformService.save(any(SoftwarePlatform.class))).thenReturn(softwarePlatform);
+        when(softwarePlatformService.create(any())).thenReturn(softwarePlatform);
 
         MvcResult result = mockMvc.perform(
                 post(
@@ -282,7 +307,7 @@ public class SoftwarePlatformControllerTest {
     }
 
     @Test
-    public void deleteSoftwarePlatform_returnOk() throws Exception {
+    public void deleteSoftwarePlatform_returnNoContent() throws Exception {
         SoftwarePlatform softwarePlatform = new SoftwarePlatform();
         softwarePlatform.setId(UUID.randomUUID());
         softwarePlatform.setName("test software platform");
@@ -294,7 +319,7 @@ public class SoftwarePlatformControllerTest {
                                 on(SoftwarePlatformController.class).deleteSoftwarePlatform(softwarePlatform.getId())
                         ).toUriString()
                 ).accept(MediaType.APPLICATION_JSON)
-        ).andExpect(status().isOk());
+        ).andExpect(status().isNoContent());
     }
 
     @Test
@@ -307,7 +332,7 @@ public class SoftwarePlatformControllerTest {
         returnValue.setId(sampleInput.getId());
         returnValue.setName(sampleInput.getName());
 
-        doReturn(returnValue).when(softwarePlatformService).update(any(), any());
+        doReturn(returnValue).when(softwarePlatformService).update(any());
         var mvcResult = mockMvc.perform(
                 put(
                         fromMethodCall(uriBuilder,
@@ -328,7 +353,7 @@ public class SoftwarePlatformControllerTest {
         var sampleInput = new SoftwarePlatformDto();
         sampleInput.setId(UUID.randomUUID());
         sampleInput.setName("Hello World");
-        doThrow(new NoSuchElementException()).when(softwarePlatformService).update(any(), any());
+        doThrow(new NoSuchElementException()).when(softwarePlatformService).update(any());
         mockMvc.perform(
                 put(
                         fromMethodCall(uriBuilder,
@@ -346,7 +371,7 @@ public class SoftwarePlatformControllerTest {
         var sampleInput = new SoftwarePlatformDto();
         sampleInput.setId(UUID.randomUUID());
         sampleInput.setName(null);
-        doThrow(new NoSuchElementException()).when(softwarePlatformService).update(any(), any());
+        doThrow(new NoSuchElementException()).when(softwarePlatformService).update(any());
         mockMvc.perform(
                 put(
                         fromMethodCall(uriBuilder,
@@ -362,13 +387,13 @@ public class SoftwarePlatformControllerTest {
     @Test
     @SuppressWarnings("ConstantConditions")
     void listImplementations_returnNotFound() throws Exception {
-        doThrow(new NoSuchElementException()).when(softwarePlatformService).findImplementations(any(), any());
+        doThrow(new NoSuchElementException()).when(softwarePlatformService).findLinkedImplementations(any(), any());
 
         mockMvc.perform(
                 get(
                         fromMethodCall(uriBuilder,
                                 on(SoftwarePlatformController.class)
-                                        .getImplementationsForSoftwarePlatform(UUID.randomUUID(), null)
+                                        .getImplementationsOfSoftwarePlatform(UUID.randomUUID(), null)
                         ).toUriString()
                 ).queryParam(Constants.PAGE, Integer.toString(page))
                         .queryParam(Constants.SIZE, Integer.toString(size))
@@ -379,13 +404,13 @@ public class SoftwarePlatformControllerTest {
     @Test
     @SuppressWarnings("ConstantConditions")
     void listCloudServices_returnNotFound() throws Exception {
-        doThrow(new NoSuchElementException()).when(softwarePlatformService).findCloudServices(any(), any());
+        doThrow(new NoSuchElementException()).when(softwarePlatformService).findLinkedCloudServices(any(), any());
 
         mockMvc.perform(
                 get(
                         fromMethodCall(uriBuilder,
                                 on(SoftwarePlatformController.class)
-                                        .getCloudServicesForSoftwarePlatform(UUID.randomUUID(), null)
+                                        .getCloudServicesOfSoftwarePlatform(UUID.randomUUID(), null)
                         ).toUriString()
                 ).queryParam(Constants.PAGE, Integer.toString(page))
                         .queryParam(Constants.SIZE, Integer.toString(size))
@@ -396,13 +421,13 @@ public class SoftwarePlatformControllerTest {
     @Test
     @SuppressWarnings("ConstantConditions")
     void listComputeResources_returnNotFound() throws Exception {
-        doThrow(new NoSuchElementException()).when(softwarePlatformService).findComputeResources(any(), any());
+        doThrow(new NoSuchElementException()).when(softwarePlatformService).findLinkedComputeResources(any(), any());
 
         mockMvc.perform(
                 get(
                         fromMethodCall(uriBuilder,
                                 on(SoftwarePlatformController.class)
-                                        .getComputeResourcesForSoftwarePlatform(UUID.randomUUID(), null)
+                                        .getComputeResourcesOfSoftwarePlatform(UUID.randomUUID(), null)
                         ).toUriString()
                 ).queryParam(Constants.PAGE, Integer.toString(page))
                         .queryParam(Constants.SIZE, Integer.toString(size))
@@ -413,13 +438,13 @@ public class SoftwarePlatformControllerTest {
     @Test
     @SuppressWarnings("ConstantConditions")
     void listImplementations_empty() throws Exception {
-        doReturn(Page.empty()).when(softwarePlatformService).findImplementations(any(), any());
+        doReturn(Page.empty()).when(softwarePlatformService).findLinkedImplementations(any(), any());
 
         var mvcResult = mockMvc.perform(
                 get(
                         fromMethodCall(uriBuilder,
                                 on(SoftwarePlatformController.class)
-                                        .getImplementationsForSoftwarePlatform(UUID.randomUUID(), null)
+                                        .getImplementationsOfSoftwarePlatform(UUID.randomUUID(), null)
                         ).toUriString()
                 ).queryParam(Constants.PAGE, Integer.toString(page))
                         .queryParam(Constants.SIZE, Integer.toString(size))
@@ -435,13 +460,13 @@ public class SoftwarePlatformControllerTest {
     @Test
     @SuppressWarnings("ConstantConditions")
     void listCloudServices_empty() throws Exception {
-        doReturn(Page.empty()).when(softwarePlatformService).findCloudServices(any(), any());
+        doReturn(Page.empty()).when(softwarePlatformService).findLinkedCloudServices(any(), any());
 
         var mvcResult = mockMvc.perform(
                 get(
                         fromMethodCall(uriBuilder,
                                 on(SoftwarePlatformController.class)
-                                        .getCloudServicesForSoftwarePlatform(UUID.randomUUID(), null)
+                                        .getCloudServicesOfSoftwarePlatform(UUID.randomUUID(), null)
                         ).toUriString()
                 ).queryParam(Constants.PAGE, Integer.toString(page))
                         .queryParam(Constants.SIZE, Integer.toString(size))
@@ -457,13 +482,13 @@ public class SoftwarePlatformControllerTest {
     @Test
     @SuppressWarnings("ConstantConditions")
     void listComputeResources_empty() throws Exception {
-        doReturn(Page.empty()).when(softwarePlatformService).findComputeResources(any(), any());
+        doReturn(Page.empty()).when(softwarePlatformService).findLinkedComputeResources(any(), any());
 
         var mvcResult = mockMvc.perform(
                 get(
                         fromMethodCall(uriBuilder,
                                 on(SoftwarePlatformController.class)
-                                        .getComputeResourcesForSoftwarePlatform(UUID.randomUUID(), null)
+                                        .getComputeResourcesOfSoftwarePlatform(UUID.randomUUID(), null)
                         ).toUriString()
                 ).queryParam(Constants.PAGE, Integer.toString(page))
                         .queryParam(Constants.SIZE, Integer.toString(size))
@@ -489,13 +514,13 @@ public class SoftwarePlatformControllerTest {
             element.setId(UUID.randomUUID());
             inputList.add(element);
         }
-        doReturn(new PageImpl<>(inputList)).when(softwarePlatformService).findImplementations(any(), any());
+        doReturn(new PageImpl<>(inputList)).when(softwarePlatformService).findLinkedImplementations(any(), any());
 
         var mvcResult = mockMvc.perform(
                 get(
                         fromMethodCall(uriBuilder,
                                 on(SoftwarePlatformController.class)
-                                        .getImplementationsForSoftwarePlatform(UUID.randomUUID(), null)
+                                        .getImplementationsOfSoftwarePlatform(UUID.randomUUID(), null)
                         ).toUriString()
                 ).queryParam(Constants.PAGE, Integer.toString(page))
                         .queryParam(Constants.SIZE, Integer.toString(size))
@@ -524,13 +549,13 @@ public class SoftwarePlatformControllerTest {
             element.setId(UUID.randomUUID());
             inputList.add(element);
         }
-        doReturn(new PageImpl<>(inputList)).when(softwarePlatformService).findCloudServices(any(), any());
+        doReturn(new PageImpl<>(inputList)).when(softwarePlatformService).findLinkedCloudServices(any(), any());
 
         var mvcResult = mockMvc.perform(
                 get(
                         fromMethodCall(uriBuilder,
                                 on(SoftwarePlatformController.class)
-                                        .getCloudServicesForSoftwarePlatform(UUID.randomUUID(), null)
+                                        .getCloudServicesOfSoftwarePlatform(UUID.randomUUID(), null)
                         ).toUriString()
                 ).queryParam(Constants.PAGE, Integer.toString(page))
                         .queryParam(Constants.SIZE, Integer.toString(size))
@@ -559,13 +584,13 @@ public class SoftwarePlatformControllerTest {
             element.setId(UUID.randomUUID());
             inputList.add(element);
         }
-        doReturn(new PageImpl<>(inputList)).when(softwarePlatformService).findComputeResources(any(), any());
+        doReturn(new PageImpl<>(inputList)).when(softwarePlatformService).findLinkedComputeResources(any(), any());
 
         var mvcResult = mockMvc.perform(
                 get(
                         fromMethodCall(uriBuilder,
                                 on(SoftwarePlatformController.class)
-                                        .getComputeResourcesForSoftwarePlatform(UUID.randomUUID(), null)
+                                        .getComputeResourcesOfSoftwarePlatform(UUID.randomUUID(), null)
                         ).toUriString()
                 ).queryParam(Constants.PAGE, Integer.toString(page))
                         .queryParam(Constants.SIZE, Integer.toString(size))
@@ -584,131 +609,145 @@ public class SoftwarePlatformControllerTest {
         });
     }
 
+//    @Test
+//    void createReferenceToImplementation_returnOk() throws Exception {
+//        doNothing().when(softwarePlatformService).addImplementationReference(any(), any());
+//        mockMvc.perform(
+//                post(
+//                        fromMethodCall(uriBuilder,
+//                                on(SoftwarePlatformController.class)
+//                                        .addImplementationReferenceToSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID())
+//                        ).toUriString()
+//                ).accept(MediaType.APPLICATION_JSON)
+//        ).andExpect(status().isOk());
+//    }
+//
+//    @Test
+//    void createReferenceToImplementation_returnNotFound() throws Exception {
+//        doThrow(new NoSuchElementException()).when(softwarePlatformService).addImplementationReference(any(), any());
+//        mockMvc.perform(
+//                post(
+//                        fromMethodCall(uriBuilder,
+//                                on(SoftwarePlatformController.class)
+//                                        .addImplementationReferenceToSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID())
+//                        ).toUriString()
+//                ).accept(MediaType.APPLICATION_JSON)
+//        ).andExpect(status().isNotFound());
+//    }
+//
+//    @Test
+//    void createReferenceToImplementation_returnBadRequest() throws Exception {
+//        doThrow(new ConsistencyException()).when(softwarePlatformService).addImplementationReference(any(), any());
+//        mockMvc.perform(
+//                post(
+//                        fromMethodCall(uriBuilder,
+//                                on(SoftwarePlatformController.class)
+//                                        .addImplementationReferenceToSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID())
+//                        ).toUriString()
+//                ).accept(MediaType.APPLICATION_JSON)
+//        ).andExpect(status().isBadRequest());
+//    }
+//
+//    @Test
+//    void deleteReferenceToImplementation_returnOk() throws Exception {
+//        doNothing().when(softwarePlatformService).deleteImplementationReference(any(), any());
+//        mockMvc.perform(
+//                delete(
+//                        fromMethodCall(uriBuilder,
+//                                on(SoftwarePlatformController.class)
+//                                        .deleteImplementationReferenceFromSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID())
+//                        ).toUriString()
+//                ).accept(MediaType.APPLICATION_JSON)
+//        ).andExpect(status().isOk());
+//    }
+//
+//    @Test
+//    void deleteReferenceToImplementation_returnNotFound() throws Exception {
+//        doThrow(new NoSuchElementException()).when(softwarePlatformService).deleteImplementationReference(any(), any());
+//        mockMvc.perform(
+//                delete(
+//                        fromMethodCall(uriBuilder,
+//                                on(SoftwarePlatformController.class)
+//                                        .deleteImplementationReferenceFromSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID())
+//                        ).toUriString()
+//                ).accept(MediaType.APPLICATION_JSON)
+//        ).andExpect(status().isNotFound());
+//    }
+//
+//    @Test
+//    void deleteReferenceToImplementation_returnBadRequest() throws Exception {
+//        doThrow(new ConsistencyException()).when(softwarePlatformService).deleteImplementationReference(any(), any());
+//        mockMvc.perform(
+//                delete(
+//                        fromMethodCall(uriBuilder,
+//                                on(SoftwarePlatformController.class)
+//                                        .deleteImplementationReferenceFromSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID())
+//                        ).toUriString()
+//                ).accept(MediaType.APPLICATION_JSON)
+//        ).andExpect(status().isBadRequest());
+//    }
+
     @Test
-    void createReferenceToImplementation_returnOk() throws Exception {
-        doNothing().when(softwarePlatformService).addImplementationReference(any(), any());
+    void createReferenceToComputeResource_returnNoContent() throws Exception {
+        CloudServiceDto cloudServiceDto = new CloudServiceDto();
+        cloudServiceDto.setId(UUID.randomUUID());
+        cloudServiceDto.setName("CloudService");
+
+        doNothing().when(linkingService).linkSoftwarePlatformAndComputeResource(any(), any());
+
         mockMvc.perform(
                 post(
                         fromMethodCall(uriBuilder,
                                 on(SoftwarePlatformController.class)
-                                        .addImplementationReferenceToSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID())
+                                        .linkSoftwarePlatformAndComputeResource(UUID.randomUUID(), new ComputeResourceDto())
                         ).toUriString()
-                ).accept(MediaType.APPLICATION_JSON)
-        ).andExpect(status().isOk());
+                ).content(mapper.writeValueAsString(cloudServiceDto))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isNoContent());
     }
 
     @Test
-    void createReferenceToImplementation_returnNotFound() throws Exception {
-        doThrow(new NoSuchElementException()).when(softwarePlatformService).addImplementationReference(any(), any());
-        mockMvc.perform(
-                post(
-                        fromMethodCall(uriBuilder,
-                                on(SoftwarePlatformController.class)
-                                        .addImplementationReferenceToSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID())
-                        ).toUriString()
-                ).accept(MediaType.APPLICATION_JSON)
-        ).andExpect(status().isNotFound());
-    }
-
-    @Test
-    void createReferenceToImplementation_returnBadRequest() throws Exception {
-        doThrow(new ConsistencyException()).when(softwarePlatformService).addImplementationReference(any(), any());
-        mockMvc.perform(
-                post(
-                        fromMethodCall(uriBuilder,
-                                on(SoftwarePlatformController.class)
-                                        .addImplementationReferenceToSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID())
-                        ).toUriString()
-                ).accept(MediaType.APPLICATION_JSON)
-        ).andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void deleteReferenceToImplementation_returnOk() throws Exception {
-        doNothing().when(softwarePlatformService).deleteImplementationReference(any(), any());
+    void deleteReferenceToComputeResource_returnNoContent() throws Exception {
+        doNothing().when(linkingService).unlinkSoftwarePlatformAndComputeResource(any(), any());
         mockMvc.perform(
                 delete(
                         fromMethodCall(uriBuilder,
                                 on(SoftwarePlatformController.class)
-                                        .deleteImplementationReferenceFromSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID())
+                                        .unlinkSoftwarePlatformAndComputeResource(UUID.randomUUID(), UUID.randomUUID())
                         ).toUriString()
                 ).accept(MediaType.APPLICATION_JSON)
-        ).andExpect(status().isOk());
-    }
-
-    @Test
-    void deleteReferenceToImplementation_returnNotFound() throws Exception {
-        doThrow(new NoSuchElementException()).when(softwarePlatformService).deleteImplementationReference(any(), any());
-        mockMvc.perform(
-                delete(
-                        fromMethodCall(uriBuilder,
-                                on(SoftwarePlatformController.class)
-                                        .deleteImplementationReferenceFromSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID())
-                        ).toUriString()
-                ).accept(MediaType.APPLICATION_JSON)
-        ).andExpect(status().isNotFound());
-    }
-
-    @Test
-    void deleteReferenceToImplementation_returnBadRequest() throws Exception {
-        doThrow(new ConsistencyException()).when(softwarePlatformService).deleteImplementationReference(any(), any());
-        mockMvc.perform(
-                delete(
-                        fromMethodCall(uriBuilder,
-                                on(SoftwarePlatformController.class)
-                                        .deleteImplementationReferenceFromSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID())
-                        ).toUriString()
-                ).accept(MediaType.APPLICATION_JSON)
-        ).andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void createReferenceToComputeResource_returnOk() throws Exception {
-        doNothing().when(softwarePlatformService).addComputeResourceReference(any(), any());
-        mockMvc.perform(
-                post(
-                        fromMethodCall(uriBuilder,
-                                on(SoftwarePlatformController.class)
-                                        .addComputeResourceReferenceToSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID())
-                        ).toUriString()
-                ).accept(MediaType.APPLICATION_JSON)
-        ).andExpect(status().isOk());
-    }
-
-    @Test
-    void deleteReferenceToComputeResource_returnOk() throws Exception {
-        doNothing().when(softwarePlatformService).deleteComputeResourceReference(any(), any());
-        mockMvc.perform(
-                delete(
-                        fromMethodCall(uriBuilder,
-                                on(SoftwarePlatformController.class)
-                                        .deleteComputeResourceReferenceFromSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID())
-                        ).toUriString()
-                ).accept(MediaType.APPLICATION_JSON)
-        ).andExpect(status().isOk());
+        ).andExpect(status().isNoContent());
     }
 
     @Test
     void createReferenceToComputeResource_returnNotFound() throws Exception {
-        doThrow(new NoSuchElementException()).when(softwarePlatformService).addComputeResourceReference(any(), any());
+        CloudServiceDto cloudServiceDto = new CloudServiceDto();
+        cloudServiceDto.setId(UUID.randomUUID());
+        cloudServiceDto.setName("CloudService");
+
+        doThrow(new NoSuchElementException()).when(linkingService).linkSoftwarePlatformAndComputeResource(any(), any());
+
         mockMvc.perform(
                 post(
                         fromMethodCall(uriBuilder,
                                 on(SoftwarePlatformController.class)
-                                        .addComputeResourceReferenceToSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID())
+                                        .linkSoftwarePlatformAndComputeResource(UUID.randomUUID(), new ComputeResourceDto())
                         ).toUriString()
-                ).accept(MediaType.APPLICATION_JSON)
+                ).content(mapper.writeValueAsString(cloudServiceDto))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isNotFound());
     }
 
     @Test
     void deleteReferenceToComputeResource_returnNotFound() throws Exception {
-        doThrow(new NoSuchElementException()).when(softwarePlatformService).deleteComputeResourceReference(any(), any());
+        doThrow(new NoSuchElementException()).when(linkingService).unlinkSoftwarePlatformAndComputeResource(any(), any());
         mockMvc.perform(
                 delete(
                         fromMethodCall(uriBuilder,
                                 on(SoftwarePlatformController.class)
-                                        .deleteComputeResourceReferenceFromSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID())
+                                        .unlinkSoftwarePlatformAndComputeResource(UUID.randomUUID(), UUID.randomUUID())
                         ).toUriString()
                 ).accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isNotFound());
@@ -716,12 +755,12 @@ public class SoftwarePlatformControllerTest {
 
     @Test
     void createReferenceToComputeResource_returnBadRequest() throws Exception {
-        doThrow(new ConsistencyException()).when(softwarePlatformService).addComputeResourceReference(any(), any());
+        doThrow(new EntityReferenceConstraintViolationException("")).when(linkingService).linkSoftwarePlatformAndComputeResource(any(), any());
         mockMvc.perform(
                 post(
                         fromMethodCall(uriBuilder,
                                 on(SoftwarePlatformController.class)
-                                        .addComputeResourceReferenceToSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID())
+                                        .linkSoftwarePlatformAndComputeResource(UUID.randomUUID(), new ComputeResourceDto())
                         ).toUriString()
                 ).accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isBadRequest());
@@ -729,64 +768,78 @@ public class SoftwarePlatformControllerTest {
 
     @Test
     void deleteReferenceToComputeResource_returnBadRequest() throws Exception {
-        doThrow(new ConsistencyException()).when(softwarePlatformService).deleteComputeResourceReference(any(), any());
+        doThrow(new EntityReferenceConstraintViolationException("")).when(linkingService).unlinkSoftwarePlatformAndComputeResource(any(), any());
         mockMvc.perform(
                 delete(
                         fromMethodCall(uriBuilder,
                                 on(SoftwarePlatformController.class)
-                                        .deleteComputeResourceReferenceFromSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID())
+                                        .unlinkSoftwarePlatformAndComputeResource(UUID.randomUUID(), UUID.randomUUID())
                         ).toUriString()
                 ).accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isBadRequest());
     }
 
     @Test
-    void createReferenceToCloudService_returnOk() throws Exception {
-        doNothing().when(softwarePlatformService).addCloudServiceReference(any(), any());
+    void createReferenceToCloudService_returnNoContent() throws Exception {
+        CloudServiceDto cloudServiceDto = new CloudServiceDto();
+        cloudServiceDto.setId(UUID.randomUUID());
+        cloudServiceDto.setName("CloudService");
+
+        doNothing().when(linkingService).linkSoftwarePlatformAndCloudService(any(), any());
+
         mockMvc.perform(
                 post(
                         fromMethodCall(uriBuilder,
                                 on(SoftwarePlatformController.class)
-                                        .addCloudServiceReferenceToSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID())
+                                        .linkSoftwarePlatformAndCloudService(UUID.randomUUID(), null)
                         ).toUriString()
-                ).accept(MediaType.APPLICATION_JSON)
-        ).andExpect(status().isOk());
+                ).content(mapper.writeValueAsString(cloudServiceDto))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isNoContent());
     }
 
     @Test
-    void deleteReferenceToCloudService_returnOk() throws Exception {
-        doNothing().when(softwarePlatformService).deleteCloudServiceReference(any(), any());
+    void deleteReferenceToCloudService_returnNoContent() throws Exception {
+        doNothing().when(linkingService).unlinkSoftwarePlatformAndCloudService(any(), any());
         mockMvc.perform(
                 delete(
                         fromMethodCall(uriBuilder,
                                 on(SoftwarePlatformController.class)
-                                        .deleteCloudServiceReferenceFromSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID())
+                                        .unlinkSoftwarePlatformAndCloudService(UUID.randomUUID(), UUID.randomUUID())
                         ).toUriString()
                 ).accept(MediaType.APPLICATION_JSON)
-        ).andExpect(status().isOk());
+        ).andExpect(status().isNoContent());
     }
 
     @Test
     void createReferenceToCloudService_returnNotFound() throws Exception {
-        doThrow(new NoSuchElementException()).when(softwarePlatformService).addCloudServiceReference(any(), any());
+        CloudServiceDto cloudServiceDto = new CloudServiceDto();
+        cloudServiceDto.setId(UUID.randomUUID());
+        cloudServiceDto.setName("CloudService");
+
+        doThrow(new NoSuchElementException()).when(linkingService).linkSoftwarePlatformAndCloudService(any(), any());
+
         mockMvc.perform(
                 post(
                         fromMethodCall(uriBuilder,
                                 on(SoftwarePlatformController.class)
-                                        .addCloudServiceReferenceToSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID())
+                                        .linkSoftwarePlatformAndCloudService(UUID.randomUUID(), new CloudServiceDto())
                         ).toUriString()
-                ).accept(MediaType.APPLICATION_JSON)
+                ).content(mapper.writeValueAsString(cloudServiceDto))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isNotFound());
     }
 
     @Test
     void deleteReferenceToCloudService_returnNotFound() throws Exception {
-        doThrow(new NoSuchElementException()).when(softwarePlatformService).deleteCloudServiceReference(any(), any());
+        doThrow(new NoSuchElementException()).when(linkingService).unlinkSoftwarePlatformAndCloudService(any(), any());
         mockMvc.perform(
                 delete(
                         fromMethodCall(uriBuilder,
                                 on(SoftwarePlatformController.class)
-                                        .deleteCloudServiceReferenceFromSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID())
+                                        .unlinkSoftwarePlatformAndCloudService(UUID.randomUUID(), UUID.randomUUID())
                         ).toUriString()
                 ).accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isNotFound());
@@ -794,12 +847,12 @@ public class SoftwarePlatformControllerTest {
 
     @Test
     void createReferenceToCloudService_returnBadRequest() throws Exception {
-        doThrow(new ConsistencyException()).when(softwarePlatformService).addCloudServiceReference(any(), any());
+        doThrow(new EntityReferenceConstraintViolationException("")).when(linkingService).linkSoftwarePlatformAndCloudService(any(), any());
         mockMvc.perform(
                 post(
                         fromMethodCall(uriBuilder,
                                 on(SoftwarePlatformController.class)
-                                        .addCloudServiceReferenceToSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID())
+                                        .linkSoftwarePlatformAndCloudService(UUID.randomUUID(), new CloudServiceDto())
                         ).toUriString()
                 ).accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isBadRequest());
@@ -807,12 +860,12 @@ public class SoftwarePlatformControllerTest {
 
     @Test
     void deleteReferenceToCloudService_returnBadRequest() throws Exception {
-        doThrow(new ConsistencyException()).when(softwarePlatformService).deleteCloudServiceReference(any(), any());
+        doThrow(new EntityReferenceConstraintViolationException("")).when(linkingService).unlinkSoftwarePlatformAndCloudService(any(), any());
         mockMvc.perform(
                 delete(
                         fromMethodCall(uriBuilder,
                                 on(SoftwarePlatformController.class)
-                                        .deleteCloudServiceReferenceFromSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID())
+                                        .unlinkSoftwarePlatformAndCloudService(UUID.randomUUID(), UUID.randomUUID())
                         ).toUriString()
                 ).accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isBadRequest());

@@ -19,71 +19,74 @@
 
 package org.planqk.atlas.core.services;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Set;
 import java.util.UUID;
 
+import org.planqk.atlas.core.model.CloudService;
 import org.planqk.atlas.core.model.ComputeResource;
 import org.planqk.atlas.core.model.ComputeResourceProperty;
 import org.planqk.atlas.core.model.ComputeResourcePropertyDataType;
 import org.planqk.atlas.core.model.ComputeResourcePropertyType;
 import org.planqk.atlas.core.model.QuantumComputationModel;
+import org.planqk.atlas.core.model.SoftwarePlatform;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
+import org.planqk.atlas.core.util.ServiceTestUtils;
 
-import org.junit.jupiter.api.Assertions;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@Slf4j
 public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
 
     @Autowired
     private ComputeResourceService computeResourceService;
     @Autowired
     private ComputeResourcePropertyService computeResourcePropertyService;
+    @Autowired
+    private ComputeResourcePropertyTypeService computeResourcePropertyTypeService;
+    @Autowired
+    private SoftwarePlatformService softwarePlatformService;
+    @Autowired
+    private CloudServiceService cloudServiceService;
+    @Autowired
+    private LinkingService linkingService;
 
     @Test
-    void createMinimalComputeResource() {
-        ComputeResource computeResource = new ComputeResource();
-        computeResource.setName("test compute resource");
+    void createComputeResource() {
+        ComputeResource computeResource = getFullComputeResource("computeResourceName");
 
-        ComputeResource storedComputeResource = computeResourceService.save(computeResource);
+        ComputeResource storedComputeResource = computeResourceService.create(computeResource);
 
-        assertComputeResourceEquality(storedComputeResource, computeResource);
-    }
-
-    @Test
-    void createMaximalComputeResource() {
-        ComputeResource computeResource = getGenericTestComputeResource("test compute resource");
-
-        ComputeResource storedComputeResource = computeResourceService.save(computeResource);
-
-        assertComputeResourceEquality(storedComputeResource, computeResource);
+        assertThat(storedComputeResource.getId()).isNotNull();
+        ServiceTestUtils.assertComputeResourceEquality(storedComputeResource, computeResource);
     }
 
     @Test
     void createComputeResource_WithComputingResourceProperty() {
-        ComputeResource computeResource = getGenericTestComputeResource("test compute resource");
-        ComputeResource storedComputeResource = computeResourceService.save(computeResource);
+        ComputeResource computeResource = getFullComputeResource("computeResourceName");
+        ComputeResource storedComputeResource = computeResourceService.create(computeResource);
 
-        Assertions.assertDoesNotThrow(() -> computeResourceService.findById(storedComputeResource.getId()));
+        assertDoesNotThrow(() -> computeResourceService.findById(storedComputeResource.getId()));
 
         // Add Computing Resource Property Reference
-        var computingResourceProperty = new ComputeResourceProperty();
-        var computingResourcePropertyType = new ComputeResourcePropertyType();
-        computingResourcePropertyType.setName("test name");
-        computingResourcePropertyType.setDatatype(ComputeResourcePropertyDataType.STRING);
-        computingResourcePropertyType.setDescription("test description");
-        var storedType = computeResourcePropertyService.saveComputeResourcePropertyType(computingResourcePropertyType);
-        computingResourceProperty.setComputeResourcePropertyType(storedType);
-        computingResourceProperty.setValue("test value");
+        var computeResourceProperty = new ComputeResourceProperty();
+        var computeResourcePropertyType = new ComputeResourcePropertyType();
+        computeResourcePropertyType.setName("computeResourcePropertyTypeName");
+        computeResourcePropertyType.setDatatype(ComputeResourcePropertyDataType.STRING);
+        computeResourcePropertyType.setDescription("description");
+        var storedType = computeResourcePropertyTypeService.create(computeResourcePropertyType);
+        computeResourceProperty.setComputeResourcePropertyType(storedType);
+        computeResourceProperty.setValue("value");
 
         var storedProperty = computeResourcePropertyService.addComputeResourcePropertyToComputeResource(
-                storedComputeResource, computingResourceProperty);
+                storedComputeResource.getId(), computeResourceProperty);
 
         var storedComputeResourceWithReference = computeResourceService.findById(storedComputeResource.getId());
 
@@ -91,55 +94,11 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void updateComputeResource_ElementNotFound() {
-        Assertions.assertThrows(NoSuchElementException.class, () ->
-                computeResourceService.update(UUID.randomUUID(), null));
-    }
-
-    @Test
-    void updateComputeResource_ElementFound() {
-        ComputeResource computeResource = getGenericTestComputeResource("test compute resource");
-        ComputeResource storedComputeResource = getGenericTestComputeResource("test compute resource");
-
-        ComputeResource storedEditedComputeResource = computeResourceService.save(computeResource);
-        storedComputeResource.setId(storedEditedComputeResource.getId());
-        String editName = "edited compute resource";
-        storedEditedComputeResource.setName(editName);
-        computeResourceService.save(storedEditedComputeResource);
-
-        assertThat(storedEditedComputeResource.getId()).isNotNull();
-        assertThat(storedEditedComputeResource.getId()).isEqualTo(storedComputeResource.getId());
-        assertThat(storedEditedComputeResource.getName()).isNotEqualTo(storedComputeResource.getName());
-        assertThat(storedEditedComputeResource.getQuantumComputationModel()).isEqualTo(storedComputeResource.getQuantumComputationModel());
-        assertThat(storedEditedComputeResource.getTechnology()).isEqualTo(storedComputeResource.getTechnology());
-        assertThat(storedEditedComputeResource.getVendor()).isEqualTo(storedComputeResource.getVendor());
-    }
-
-    @Test
-    void findComputeResourceById_ElementNotFound() {
-        Assertions.assertThrows(NoSuchElementException.class, () ->
-                computeResourceService.findById(UUID.randomUUID()));
-    }
-
-    @Test
-    void findComputeResourceById_ElementFound() {
-        ComputeResource computeResource = getGenericTestComputeResource("test compute resource");
-
-        ComputeResource storedComputeResource = computeResourceService.save(computeResource);
-
-        storedComputeResource = computeResourceService.findById(storedComputeResource.getId());
-
-        assertComputeResourceEquality(storedComputeResource, computeResource);
-    }
-
-    @Test
-    void findAll() {
-        Set<ComputeResource> computeResources = new HashSet<>();
-        ComputeResource computeResource1 = getGenericTestComputeResource("test compute resource1");
-        ComputeResource computeResource2 = getGenericTestComputeResource("test compute resource2");
-        computeResources.add(computeResource1);
-        computeResources.add(computeResource2);
-        computeResourceService.saveOrUpdateAll(computeResources);
+    void findAllComputeResources() {
+        ComputeResource computeResource1 = getFullComputeResource("computeResourceName1");
+        ComputeResource computeResource2 = getFullComputeResource("computeResourceName2");
+        computeResourceService.create(computeResource1);
+        computeResourceService.create(computeResource2);
 
         List<ComputeResource> storedComputeResources = computeResourceService.findAll(Pageable.unpaged()).getContent();
 
@@ -147,78 +106,162 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void searchAll() {
-        Set<ComputeResource> computeResources = new HashSet<>();
-        ComputeResource computeResource1 = getGenericTestComputeResource("test compute resource1");
-        ComputeResource computeResource2 = getGenericTestComputeResource("test compute resource2");
-        computeResources.add(computeResource1);
-        computeResources.add(computeResource2);
-        computeResourceService.saveOrUpdateAll(computeResources);
+    void searchAllComputeResourcesByName() {
+        ComputeResource computeResource1 = getFullComputeResource("computeResourceName1");
+        ComputeResource computeResource2 = getFullComputeResource("computeResourceName2");
+        computeResourceService.create(computeResource1);
+        computeResourceService.create(computeResource2);
 
-        List<ComputeResource> storedComputeResources = computeResourceService.searchAllByName("1", Pageable.unpaged()).getContent();
+        List<ComputeResource> storedComputeResources = computeResourceService
+                .searchAllByName("1", Pageable.unpaged()).getContent();
 
         assertThat(storedComputeResources.size()).isEqualTo(1);
     }
 
     @Test
+    void findComputeResourceById_ElementNotFound() {
+        assertThrows(NoSuchElementException.class, () ->
+                computeResourceService.findById(UUID.randomUUID()));
+    }
+
+    @Test
+    void findComputeResourceById_ElementFound() {
+        ComputeResource computeResource = getFullComputeResource("computeResourceName");
+
+        ComputeResource storedComputeResource = computeResourceService.create(computeResource);
+
+        storedComputeResource = computeResourceService.findById(storedComputeResource.getId());
+
+        assertThat(storedComputeResource.getId()).isNotNull();
+        ServiceTestUtils.assertComputeResourceEquality(storedComputeResource, computeResource);
+    }
+
+    @Test
+    void updateComputeResource_ElementNotFound() {
+        ComputeResource computeResource = getFullComputeResource("computeResourceName");
+        computeResource.setId(UUID.randomUUID());
+        assertThrows(NoSuchElementException.class, () ->
+                computeResourceService.update(computeResource));
+    }
+
+    @Test
+    void updateComputeResource_ElementFound() {
+        ComputeResource computeResource = getFullComputeResource("computeResourceName");
+        ComputeResource compareComputeResource = getFullComputeResource("computeResourceName");
+
+        var storedComputeResource = computeResourceService.create(computeResource);
+        compareComputeResource.setId(storedComputeResource.getId());
+        String editName = "editedComputeResourceName";
+        storedComputeResource.setName(editName);
+
+        var editedComputeResource = computeResourceService.update(storedComputeResource);
+
+        assertThat(editedComputeResource.getId()).isNotNull();
+        assertThat(editedComputeResource.getId()).isEqualTo(compareComputeResource.getId());
+        assertThat(editedComputeResource.getName()).isNotEqualTo(compareComputeResource.getName());
+        assertThat(editedComputeResource.getName()).isEqualTo(editName);
+        assertThat(editedComputeResource.getQuantumComputationModel()).isEqualTo(compareComputeResource.getQuantumComputationModel());
+        assertThat(editedComputeResource.getTechnology()).isEqualTo(compareComputeResource.getTechnology());
+        assertThat(editedComputeResource.getVendor()).isEqualTo(compareComputeResource.getVendor());
+    }
+
+    @Test
     void deleteComputeResource_NoReferences() {
-        ComputeResource computeResource = getGenericTestComputeResource("test compute resource");
+        ComputeResource computeResource = getFullComputeResource("computeResourceName");
 
-        ComputeResource storedComputeResource = computeResourceService.save(computeResource);
+        ComputeResource storedComputeResource = computeResourceService.create(computeResource);
 
-        Assertions.assertDoesNotThrow(() -> computeResourceService.findById(storedComputeResource.getId()));
+        assertDoesNotThrow(() -> computeResourceService.findById(storedComputeResource.getId()));
 
         computeResourceService.delete(storedComputeResource.getId());
 
-        Assertions.assertThrows(NoSuchElementException.class, () ->
+        assertThrows(NoSuchElementException.class, () ->
                 computeResourceService.findById(storedComputeResource.getId()));
     }
 
     @Test
-    void deleteComputeResource_HasReferences() {
-        ComputeResource computeResource = getGenericTestComputeResource("test compute resource");
-        ComputeResource storedComputeResource = computeResourceService.save(computeResource);
+    void deleteComputeResource_ElementNotFound() {
+        assertThrows(NoSuchElementException.class, () -> computeResourceService.delete(UUID.randomUUID()));
+    }
 
-        Assertions.assertDoesNotThrow(() -> computeResourceService.findById(storedComputeResource.getId()));
+    // TODO write one with link to cloud service and/or software platform
+    @Test
+    void deleteComputeResource_HasReferences() {
+        ComputeResource computeResource = getFullComputeResource("computeResourceName");
+        ComputeResource storedComputeResource = computeResourceService.create(computeResource);
+
+        assertDoesNotThrow(() -> computeResourceService.findById(storedComputeResource.getId()));
 
         // Add Computing Resource Property Reference
-        var computingResourceProperty = new ComputeResourceProperty();
-        var computingResourcePropertyType = new ComputeResourcePropertyType();
-        computingResourcePropertyType.setName("test name");
-        computingResourcePropertyType.setDatatype(ComputeResourcePropertyDataType.STRING);
-        computingResourcePropertyType.setDescription("test description");
-        var storedType = computeResourcePropertyService.saveComputeResourcePropertyType(computingResourcePropertyType);
-        computingResourceProperty.setComputeResourcePropertyType(storedType);
-        computingResourceProperty.setValue("test value");
+        var computeResourceProperty = new ComputeResourceProperty();
+        var computeResourcePropertyType = new ComputeResourcePropertyType();
+        computeResourcePropertyType.setName("computeResourcePropertyTypeName");
+        computeResourcePropertyType.setDatatype(ComputeResourcePropertyDataType.STRING);
+        computeResourcePropertyType.setDescription("description");
+        var storedType = computeResourcePropertyTypeService.create(computeResourcePropertyType);
+        computeResourceProperty.setComputeResourcePropertyType(storedType);
+        computeResourceProperty.setValue("value");
 
         var storedProperty = computeResourcePropertyService.addComputeResourcePropertyToComputeResource(
-                storedComputeResource, computingResourceProperty);
+                storedComputeResource.getId(), computeResourceProperty);
 
         // Delete
         computeResourceService.delete(storedComputeResource.getId());
 
-        Assertions.assertThrows(NoSuchElementException.class, () ->
+        assertThrows(NoSuchElementException.class, () ->
                 computeResourceService.findById(storedComputeResource.getId()));
 
         // Test if references are removed
-        Assertions.assertThrows(NoSuchElementException.class, () ->
-                computeResourcePropertyService.findComputeResourcePropertyById(storedProperty.getId()));
+        assertThrows(NoSuchElementException.class, () ->
+                computeResourcePropertyService.findById(storedProperty.getId()));
     }
 
-    private void assertComputeResourceEquality(ComputeResource dbComputeResource, ComputeResource compareComputeResource) {
-        assertThat(dbComputeResource.getId()).isNotNull();
-        assertThat(dbComputeResource.getName()).isEqualTo(compareComputeResource.getName());
-        assertThat(dbComputeResource.getQuantumComputationModel()).isEqualTo(compareComputeResource.getQuantumComputationModel());
-        assertThat(dbComputeResource.getTechnology()).isEqualTo(compareComputeResource.getTechnology());
-        assertThat(dbComputeResource.getVendor()).isEqualTo(compareComputeResource.getVendor());
+    @Test
+    void findLinkedSoftwarePlatforms() {
+        ComputeResource computeResource = getFullComputeResource("computeResourceName");
+        computeResource = computeResourceService.create(computeResource);
+
+        SoftwarePlatform softwarePlatform1 = new SoftwarePlatform();
+        softwarePlatform1.setName("softwarePlatformName1");
+        softwarePlatform1 = softwarePlatformService.create(softwarePlatform1);
+        linkingService.linkSoftwarePlatformAndComputeResource(softwarePlatform1.getId(), computeResource.getId());
+        SoftwarePlatform softwarePlatform2 = new SoftwarePlatform();
+        softwarePlatform2.setName("softwarePlatformName1");
+        softwarePlatform2 = softwarePlatformService.create(softwarePlatform2);
+        linkingService.linkSoftwarePlatformAndComputeResource(softwarePlatform2.getId(), computeResource.getId());
+
+        var softwarePlatforms = computeResourceService
+                .findLinkedSoftwarePlatforms(computeResource.getId(), Pageable.unpaged());
+
+        assertThat(softwarePlatforms.getTotalElements()).isEqualTo(2);
     }
 
-    private ComputeResource getGenericTestComputeResource(String name) {
+    @Test
+    void findLinkedCloudServices() {
+        ComputeResource computeResource = getFullComputeResource("computeResourceName");
+        computeResource = computeResourceService.create(computeResource);
+
+        CloudService cloudService1 = new CloudService();
+        cloudService1.setName("cloudServiceName1");
+        cloudService1 = cloudServiceService.create(cloudService1);
+        linkingService.linkCloudServiceAndComputeResource(cloudService1.getId(), computeResource.getId());
+        CloudService cloudService2 = new CloudService();
+        cloudService2.setName("cloudServiceName1");
+        cloudService2 = cloudServiceService.create(cloudService2);
+        linkingService.linkCloudServiceAndComputeResource(cloudService2.getId(), computeResource.getId());
+
+        var cloudServices = computeResourceService
+                .findLinkedCloudServices(computeResource.getId(), Pageable.unpaged());
+
+        assertThat(cloudServices.getTotalElements()).isEqualTo(2);
+    }
+
+    private ComputeResource getFullComputeResource(String name) {
         ComputeResource computeResource = new ComputeResource();
         computeResource.setName(name);
         computeResource.setQuantumComputationModel(QuantumComputationModel.QUANTUM_ANNEALING);
-        computeResource.setTechnology("test technology");
-        computeResource.setVendor("test vendor");
+        computeResource.setTechnology("technology");
+        computeResource.setVendor("vendor");
         return computeResource;
     }
 }

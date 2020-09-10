@@ -32,44 +32,26 @@ import org.springframework.transaction.annotation.Transactional;
 
 public interface SoftwarePlatformService {
 
-    Page<SoftwarePlatform> searchAllByName(String name, Pageable p);
+    Page<SoftwarePlatform> searchAllByName(String name, Pageable pageable);
 
     @Transactional
-    SoftwarePlatform save(SoftwarePlatform softwarePlatform);
+    SoftwarePlatform create(SoftwarePlatform softwarePlatform);
 
     Page<SoftwarePlatform> findAll(Pageable pageable);
 
-    SoftwarePlatform findById(UUID platformId);
+    SoftwarePlatform findById(UUID softwarePlatformId);
 
     @Transactional
-    SoftwarePlatform update(UUID id, SoftwarePlatform softwarePlatform);
+    SoftwarePlatform update(SoftwarePlatform softwarePlatform);
 
     @Transactional
-    void delete(UUID platformId);
+    void delete(UUID softwarePlatformId);
 
-    Page<Implementation> findImplementations(UUID platformId, Pageable pageable);
+    Page<Implementation> findLinkedImplementations(UUID softwarePlatformId, Pageable pageable);
 
-    @Transactional
-    void addImplementationReference(UUID platformId, UUID implId);
+    Page<CloudService> findLinkedCloudServices(UUID softwarePlatformId, Pageable pageable);
 
-    Implementation getImplementation(UUID platformId, UUID implId);
+    Page<ComputeResource> findLinkedComputeResources(UUID softwarePlatformId, Pageable pageable);
 
-    @Transactional
-    void deleteImplementationReference(UUID platformId, UUID implId);
-
-    Page<CloudService> findCloudServices(UUID platformId, Pageable pageable);
-
-    @Transactional
-    void addCloudServiceReference(UUID platformId, UUID cloudServiceId);
-
-    @Transactional
-    void deleteCloudServiceReference(UUID platformId, UUID cloudServiceId);
-
-    Page<ComputeResource> findComputeResources(UUID platformId, Pageable pageable);
-
-    @Transactional
-    void addComputeResourceReference(UUID platformId, UUID resourceId);
-
-    @Transactional
-    void deleteComputeResourceReference(UUID platformId, UUID resourceId);
+    void checkIfImplementationIsLinkedToSoftwarePlatform(UUID softwarePlatformId, UUID implementationId);
 }

@@ -1,4 +1,4 @@
-/********************************************************************************
+/*******************************************************************************
  * Copyright (c) 2020 University of Stuttgart
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -19,7 +19,6 @@
 
 package org.planqk.atlas.core.services;
 
-import java.util.Set;
 import java.util.UUID;
 
 import javax.transaction.Transactional;
@@ -32,17 +31,18 @@ import org.springframework.data.domain.Pageable;
 public interface PatternRelationService {
 
     @Transactional
-    PatternRelation save(PatternRelation relation);
+    PatternRelation create(PatternRelation patternRelation);
 
-    PatternRelation findById(UUID id);
+    PatternRelation findById(UUID patternRelationId);
 
     Page<PatternRelation> findAll(Pageable pageable);
 
-    Set<PatternRelation> findByAlgorithmId(UUID algoId);
+    @Transactional
+    PatternRelation update(PatternRelation patternRelation);
 
     @Transactional
-    PatternRelation update(UUID id, PatternRelation relation);
+    void delete(UUID patternRelationId);
 
-    @Transactional
-    void deleteById(UUID id);
+    void checkIfAlgorithmIsInPatternRelation(UUID algorithmId, UUID patternRelationId);
+
 }

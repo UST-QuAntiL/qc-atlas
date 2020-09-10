@@ -26,20 +26,22 @@ import org.planqk.atlas.core.model.KnowledgeArtifact;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface DiscussionTopicService {
 
-    DiscussionTopic save(DiscussionTopic discussionTopic);
+    @Transactional
+    DiscussionTopic create(DiscussionTopic discussionTopic);
 
     Page<DiscussionTopic> findAll(Pageable pageable);
 
-    Page<DiscussionTopic> findByKnowledgeArtifact(KnowledgeArtifact artifact, Pageable pageable);
+    Page<DiscussionTopic> findByKnowledgeArtifact(KnowledgeArtifact knowledgeArtifact, Pageable pageable);
 
-    DiscussionTopic findById(UUID id);
+    DiscussionTopic findById(UUID topicId);
 
-    void deleteById(UUID id);
+    @Transactional
+    DiscussionTopic update(DiscussionTopic topic);
 
-    DiscussionTopic update(UUID id, DiscussionTopic topic);
-
-    boolean existsDiscussionTopicById(UUID id);
+    @Transactional
+    void delete(UUID topicId);
 }

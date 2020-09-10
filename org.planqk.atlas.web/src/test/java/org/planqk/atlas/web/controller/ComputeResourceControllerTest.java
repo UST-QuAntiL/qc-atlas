@@ -1,18 +1,36 @@
+/*******************************************************************************
+ * Copyright (c) 2020 University of Stuttgart
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *******************************************************************************/
+
 package org.planqk.atlas.web.controller;
 
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
+import org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException;
 import org.planqk.atlas.core.model.ComputeResource;
 import org.planqk.atlas.core.model.ComputeResourceProperty;
 import org.planqk.atlas.core.model.ComputeResourcePropertyDataType;
 import org.planqk.atlas.core.model.ComputeResourcePropertyType;
-import org.planqk.atlas.core.model.exceptions.ConsistencyException;
 import org.planqk.atlas.core.services.ComputeResourcePropertyService;
 import org.planqk.atlas.core.services.ComputeResourceService;
 import org.planqk.atlas.web.Constants;
-import org.planqk.atlas.web.controller.mixin.ComputeResourcePropertyMixin;
 import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
 import org.planqk.atlas.web.dtos.ComputeResourceDto;
 import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
@@ -58,8 +76,7 @@ public class ComputeResourceControllerTest {
     private ComputeResourceService computeResourceService;
     @MockBean
     private ComputeResourcePropertyService computeResourcePropertyService;
-    @MockBean
-    private ComputeResourcePropertyMixin mixin;
+
     @Autowired
     private MockMvc mockMvc;
     private final ObjectMapper mapper = ObjectMapperUtils.newTestMapper();
@@ -88,14 +105,13 @@ public class ComputeResourceControllerTest {
     @Test
     public void addComputeResource_returnCreated() throws Exception {
         var resource = new ComputeResourceDto();
-        resource.setId(UUID.randomUUID());
         resource.setName("Hello World");
 
         var returnedResource = new ComputeResource();
         returnedResource.setName(resource.getName());
-        returnedResource.setId(resource.getId());
+        returnedResource.setId(UUID.randomUUID());
 
-        doReturn(returnedResource).when(computeResourceService).save(any());
+        doReturn(returnedResource).when(computeResourceService).create(any());
 
         mockMvc.perform(
                 post(
@@ -107,8 +123,8 @@ public class ComputeResourceControllerTest {
                         .accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id").value(resource.getId().toString()))
-                .andExpect(jsonPath("$.name").value(resource.getName()));
+                .andExpect(jsonPath("$.id").value(returnedResource.getId().toString()))
+                .andExpect(jsonPath("$.name").value(returnedResource.getName()));
     }
 
     @Test
@@ -117,12 +133,12 @@ public class ComputeResourceControllerTest {
         resource.setId(UUID.randomUUID());
         resource.setName("Hello World");
 
-        doThrow(new NoSuchElementException()).when(computeResourceService).update(any(), any());
+        doThrow(new NoSuchElementException()).when(computeResourceService).update(any());
 
         mockMvc.perform(
                 put(
                         fromMethodCall(uriBuilder,
-                                on(ComputeResourceController.class).updateComputeResource(resource.getId(), null)
+                                on(ComputeResourceController.class).updateComputeResource(UUID.randomUUID(), null)
                         ).toUriString()
                 ).content(mapper.writeValueAsString(resource))
                         .contentType(MediaType.APPLICATION_JSON)
@@ -138,7 +154,7 @@ public class ComputeResourceControllerTest {
         mockMvc.perform(
                 put(
                         fromMethodCall(uriBuilder,
-                                on(ComputeResourceController.class).updateComputeResource(resource.getId(), null)
+                                on(ComputeResourceController.class).updateComputeResource(UUID.randomUUID(), null)
                         ).toUriString()
                 ).content(mapper.writeValueAsString(resource))
                         .contentType(MediaType.APPLICATION_JSON)
@@ -156,12 +172,12 @@ public class ComputeResourceControllerTest {
         returnedResource.setName(resource.getName());
         returnedResource.setId(resource.getId());
 
-        doReturn(returnedResource).when(computeResourceService).update(any(), any());
+        doReturn(returnedResource).when(computeResourceService).update(any());
 
         mockMvc.perform(
                 put(
                         fromMethodCall(uriBuilder,
-                                on(ComputeResourceController.class).updateComputeResource(resource.getId(), null)
+                                on(ComputeResourceController.class).updateComputeResource(UUID.randomUUID(), null)
                         ).toUriString()
                 ).content(mapper.writeValueAsString(resource))
                         .contentType(MediaType.APPLICATION_JSON)
@@ -288,13 +304,13 @@ public class ComputeResourceControllerTest {
     @SuppressWarnings("ConstantConditions")
     void listComputationResourceProperties_empty() throws Exception {
         doReturn(Page.empty()).when(computeResourcePropertyService)
-                .findAllComputeResourcesPropertiesByComputeResourceId(any(), any());
+                .findComputeResourcePropertiesOfComputeResource(any(), any());
 
         var mvcResult = mockMvc.perform(
                 get(
                         fromMethodCall(uriBuilder,
                                 on(ComputeResourceController.class)
-                                        .getComputingResourcePropertiesForComputeResource(UUID.randomUUID(), null)
+                                        .getComputeResourcePropertiesOfComputeResource(UUID.randomUUID(), null)
                         ).toUriString()
                 ).queryParam(Constants.PAGE, Integer.toString(page))
                         .queryParam(Constants.SIZE, Integer.toString(size))
@@ -323,13 +339,13 @@ public class ComputeResourceControllerTest {
             inputList.add(element);
         }
         doReturn(new PageImpl<>(inputList)).when(computeResourcePropertyService)
-                .findAllComputeResourcesPropertiesByComputeResourceId(any(), any());
+                .findComputeResourcePropertiesOfComputeResource(any(), any());
 
         var mvcResult = mockMvc.perform(
                 get(
                         fromMethodCall(uriBuilder,
                                 on(ComputeResourceController.class)
-                                        .getComputingResourcePropertiesForComputeResource(UUID.randomUUID(), null)
+                                        .getComputeResourcePropertiesOfComputeResource(UUID.randomUUID(), null)
                         ).toUriString()
                 ).queryParam(Constants.PAGE, Integer.toString(page))
                         .queryParam(Constants.SIZE, Integer.toString(size))
@@ -361,7 +377,7 @@ public class ComputeResourceControllerTest {
     }
 
     @Test
-    void deleteCloudService_returnOk() throws Exception {
+    void deleteCloudService_returnNoContent() throws Exception {
         doNothing().when(computeResourceService).delete(any());
         mockMvc.perform(
                 delete(
@@ -369,12 +385,12 @@ public class ComputeResourceControllerTest {
                                 on(ComputeResourceController.class).deleteComputeResource(UUID.randomUUID())
                         ).toUriString()
                 ).accept(MediaType.APPLICATION_JSON)
-        ).andExpect(status().isOk());
+        ).andExpect(status().isNoContent());
     }
 
     @Test
     void deleteCloudService_returnBadRequest() throws Exception {
-        doThrow(new ConsistencyException()).when(computeResourceService).delete(any());
+        doThrow(new EntityReferenceConstraintViolationException("")).when(computeResourceService).delete(any());
         mockMvc.perform(
                 delete(
                         fromMethodCall(uriBuilder,

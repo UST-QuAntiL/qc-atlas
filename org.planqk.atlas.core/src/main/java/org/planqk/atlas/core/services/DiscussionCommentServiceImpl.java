@@ -19,64 +19,61 @@
 
 package org.planqk.atlas.core.services;
 
-import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.DiscussionComment;
 import org.planqk.atlas.core.repository.DiscussionCommentRepository;
+import org.planqk.atlas.core.util.ServiceUtils;
 
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-@AllArgsConstructor
+@Slf4j
 @Service
+@AllArgsConstructor
 public class DiscussionCommentServiceImpl implements DiscussionCommentService {
 
-    private DiscussionCommentRepository repository;
+    private final DiscussionCommentRepository discussionCommentRepository;
 
     @Override
-    public DiscussionComment save(DiscussionComment discussionComment) {
-        return repository.save(discussionComment);
+    @Transactional
+    public DiscussionComment create(@NonNull DiscussionComment discussionComment) {
+        return discussionCommentRepository.save(discussionComment);
     }
 
     @Override
-    public Page<DiscussionComment> findAll(Pageable pageable) {
-        return repository.findAll(pageable);
+    public Page<DiscussionComment> findAll(@NonNull Pageable pageable) {
+        return discussionCommentRepository.findAll(pageable);
     }
 
     @Override
-    public Page<DiscussionComment> findAllByTopic(UUID topicId, Pageable pageable) {
-        return repository.findByDiscussionTopic_Id(topicId, pageable);
+    public Page<DiscussionComment> findAllByTopic(@NonNull UUID topicId, @NonNull Pageable pageable) {
+        return discussionCommentRepository.findByDiscussionTopicId(topicId, pageable);
     }
 
     @Override
-    public DiscussionComment findById(UUID id) {
-
-        if (!this.existsDiscussionCommentById(id)) {
-            throw new NoSuchElementException();
-        }
-        return repository.findById(id).get();
+    public DiscussionComment findById(@NonNull UUID commentId) {
+        return ServiceUtils.findById(commentId, DiscussionComment.class, discussionCommentRepository);
     }
 
     @Override
-    public DiscussionComment update(UUID id, DiscussionComment comment) {
+    @Transactional
+    public DiscussionComment update(@NonNull DiscussionComment comment) {
+        ServiceUtils.throwIfNotExists(comment.getId(), DiscussionComment.class, discussionCommentRepository);
 
-        if (!this.existsDiscussionCommentById(id)) {
-            throw new NoSuchElementException();
-        }
-        return repository.save(comment);
+        return discussionCommentRepository.save(comment);
     }
 
     @Override
-    public void deleteById(UUID id) {
-        repository.deleteById(id);
-    }
+    @Transactional
+    public void delete(@NonNull UUID commentId) {
+        ServiceUtils.throwIfNotExists(commentId, DiscussionComment.class, discussionCommentRepository);
 
-    @Override
-    public boolean existsDiscussionCommentById(UUID id) {
-
-        return repository.existsById(id);
+        discussionCommentRepository.deleteById(commentId);
     }
 }

@@ -19,9 +19,6 @@
 
 package org.planqk.atlas.web.dtos;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -32,11 +29,5 @@ import org.springframework.hateoas.server.core.Relation;
 @Data
 @Relation(itemRelation = "implementation", collectionRelation = "implementations")
 public class QuantumImplementationDto extends ImplementationDto {
-
-    private QuantumAlgorithmDto algorithm;
-
-    private Set<ComputeResourcePropertyDto> requiredQuantumResources = new HashSet<>();
-
-    private SoftwarePlatformDto usedSoftwarePlatform;
 
 }

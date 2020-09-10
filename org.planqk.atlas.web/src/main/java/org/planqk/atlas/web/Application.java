@@ -19,40 +19,32 @@
 
 package org.planqk.atlas.web;
 
-import javax.annotation.PostConstruct;
-
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Contact;
 import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.info.License;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.scheduling.annotation.EnableAsync;
 
+@Slf4j
 @EnableAsync
 @SpringBootApplication(scanBasePackages = "org.planqk.atlas.*")
 @EntityScan("org.planqk.atlas.*")
-@OpenAPIDefinition(info = @Info(title = "atlas", version = "1.0", description = "Platform for Sharing Quantum Software", license = @License(name = "Apache 2.0", url = "http://www.apache.org/licenses/LICENSE-2.0.html"), contact = @Contact(url = "https://github.com/PlanQK/qc-atlas", name = "GitHub Repository")))
+@OpenAPIDefinition(info = @Info(
+        title = "atlas",
+        version = "1.0",
+        description = "Platform for Sharing Quantum Software",
+        license = @License(name = "Apache 2.0", url = "http://www.apache.org/licenses/LICENSE-2.0.html"),
+        contact = @Contact(url = "https://github.com/UST-QuAntiL/qc-atlas", name = "GitHub Repository")))
 public class Application extends SpringBootServletInitializer {
-
-    final private static Logger LOG = LoggerFactory.getLogger(Application.class);
-
-    @PostConstruct
-    private void logReadyMessage() {
-        if (LOG.isInfoEnabled()) {
-            final String readyMessage = "\n===================================================\n"
-                    + "ATLAS IS READY TO USE!\n" + "===================================================";
-            LOG.info(readyMessage);
-        }
-    }
 
     /**
      * Launch the embedded Tomcat server.
-     *
+     * <p>
      * See `application.properties` for its configuration.
      *
      * @param args

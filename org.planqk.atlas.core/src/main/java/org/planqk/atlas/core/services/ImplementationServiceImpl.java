@@ -20,87 +20,123 @@
 package org.planqk.atlas.core.services;
 
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Implementation;
+import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.model.SoftwarePlatform;
+import org.planqk.atlas.core.repository.AlgorithmRepository;
 import org.planqk.atlas.core.repository.ImplementationRepository;
+import org.planqk.atlas.core.repository.PublicationRepository;
 import org.planqk.atlas.core.repository.SoftwarePlatformRepository;
+import org.planqk.atlas.core.util.ServiceUtils;
 
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class ImplementationServiceImpl implements ImplementationService {
 
     private final ImplementationRepository implementationRepository;
     private final SoftwarePlatformRepository softwarePlatformRepository;
-    //    private final TagService tagService;
-    private final PublicationService publicationService;
-    private final AlgorithmService algorithmService;
 
+    private final PublicationRepository publicationRepository;
+    private final AlgorithmRepository algorithmRepository;
+
+    @Override
     @Transactional
-    @Override
-    public Implementation save(Implementation implementation) {
-//        tagService.createOrUpdateAll(implementation.getTags());
-
-        publicationService.createOrUpdateAll(implementation.getPublications());
-
-        if (implementation.getImplementedAlgorithm() != null && implementation.getImplementedAlgorithm().getId() == null) {
-            implementation.setImplementedAlgorithm(algorithmService.save(implementation.getImplementedAlgorithm()));
-        }
-
-        return implementationRepository.save(implementation);
+    public Implementation create(@NonNull Implementation implementation, @NonNull UUID implementedAlgorithmId) {
+        Algorithm implementedAlgorithm = ServiceUtils.findById(implementedAlgorithmId, Algorithm.class, algorithmRepository);
+        implementation.setImplementedAlgorithm(implementedAlgorithm);
+        Implementation savedImplementation = implementationRepository.save(implementation);
+        implementedAlgorithm.getImplementations().add(savedImplementation);
+        return savedImplementation;
     }
 
     @Override
-    public void delete(UUID id) {
-        implementationRepository.deleteById(id);
+    public Page<Implementation> findAll(@NonNull Pageable pageable) {
+        return this.implementationRepository.findAll(pageable);
     }
 
     @Override
-    public Page<Implementation> findByImplementedAlgorithm(UUID algoId, Pageable pageable) {
-        var algorithm = new Algorithm();
-        algorithm.setId(algoId);
-        return implementationRepository.findByImplementedAlgorithm(algorithm, pageable);
+    public Implementation findById(@NonNull UUID implementationId) {
+        return ServiceUtils.findById(implementationId, Implementation.class, implementationRepository);
     }
 
     @Override
-    public Algorithm getImplementedAlgorithm(UUID implId) {
-        return findById(implId).getImplementedAlgorithm();
-    }
-
-    @Override
-    public Page<SoftwarePlatform> findLinkedSoftwarePlatforms(UUID implId, Pageable p) {
-        return softwarePlatformRepository.findSoftwarePlatformsByImplementationId(implId, p);
-    }
-
-    @Override
-    public Implementation findById(UUID implId) {
-        return implementationRepository.findById(implId).orElseThrow(NoSuchElementException::new);
-    }
-
-    @Override
-    public Page<Implementation> findAll(Pageable p) {
-        return this.implementationRepository.findAll(p);
-    }
-
     @Transactional
+    public Implementation update(@NonNull Implementation implementation) {
+        Implementation persistedImplementation = findById(implementation.getId());
+
+        persistedImplementation.setName(implementation.getName());
+        persistedImplementation.setDescription(implementation.getDescription());
+        persistedImplementation.setContributors(implementation.getContributors());
+        persistedImplementation.setAssumptions(implementation.getAssumptions());
+        persistedImplementation.setInputFormat(implementation.getInputFormat());
+        persistedImplementation.setParameter(implementation.getParameter());
+        persistedImplementation.setOutputFormat(implementation.getOutputFormat());
+        persistedImplementation.setLink(implementation.getLink());
+        persistedImplementation.setDependencies(implementation.getDependencies());
+
+        return implementationRepository.save(persistedImplementation);
+    }
+
     @Override
-    public Implementation update(UUID id, Implementation implementation) {
-        Optional<Implementation> implementationOptional = implementationRepository.findById(id);
-        if (implementationOptional.isPresent()) {
-            Implementation oldImpl = implementationOptional.get();
-            implementation.setId(id);
-            implementation.setImplementedAlgorithm(oldImpl.getImplementedAlgorithm());
-            return save(implementation);
+    @Transactional
+    public void delete(@NonNull UUID implementationId) {
+        Implementation implementation = findById(implementationId);
+
+        removeReferences(implementation);
+
+        implementationRepository.deleteById(implementationId);
+    }
+
+    private void removeReferences(@NonNull Implementation implementation) {
+        implementation.setImplementedAlgorithm(null);
+
+        implementation.getPublications().forEach(publication ->
+                publication.removeImplementation(implementation));
+
+        implementation.getSoftwarePlatforms().forEach(softwarePlatform ->
+                softwarePlatform.removeImplementation(implementation));
+    }
+
+    @Override
+    public void checkIfImplementationIsOfAlgorithm(@NonNull UUID implementationId, @NonNull UUID algorithmId) {
+        Implementation implementation = findById(implementationId);
+
+        if (!implementation.getImplementedAlgorithm().getId().equals(algorithmId)) {
+            throw new NoSuchElementException("Implementation with ID \"" + implementationId
+                    + "\" of Algorithm with ID \"" + algorithmId +  "\" does not exist");
         }
-        throw new NoSuchElementException();
+    }
+
+    @Override
+    public Page<Implementation> findByImplementedAlgorithm(@NonNull UUID algorithmId, @NonNull Pageable pageable) {
+        ServiceUtils.throwIfNotExists(algorithmId, Algorithm.class, algorithmRepository);
+
+        return implementationRepository.findByImplementedAlgorithmId(algorithmId, pageable);
+    }
+
+    @Override
+    public Page<SoftwarePlatform> findLinkedSoftwarePlatforms(@NonNull UUID implementationId, @NonNull Pageable pageable) {
+        ServiceUtils.throwIfNotExists(implementationId, Implementation.class, implementationRepository);
+
+        return softwarePlatformRepository.findSoftwarePlatformsByImplementationId(implementationId, pageable);
+    }
+
+    @Override
+    public Page<Publication> findLinkedPublications(@NonNull UUID implementationId, @NonNull Pageable pageable) {
+        ServiceUtils.throwIfNotExists(implementationId, Implementation.class, implementationRepository);
+
+        return publicationRepository.findPublicationsByImplementationId(implementationId, pageable);
     }
 }

@@ -19,7 +19,6 @@
 
 package org.planqk.atlas.core.services;
 
-import java.util.Set;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.CloudService;
@@ -32,31 +31,22 @@ import org.springframework.transaction.annotation.Transactional;
 
 public interface CloudServiceService {
 
-    Page<CloudService> searchAllByName(String name, Pageable p);
+    Page<CloudService> searchAllByName(String name, Pageable pageable);
 
     @Transactional
-    CloudService save(CloudService cloudService);
-
-    @Transactional
-    Set<CloudService> createOrUpdateAll(Set<CloudService> cloudServices);
-
-    @Transactional
-    CloudService update(UUID id, CloudService cloudService);
+    CloudService create(CloudService cloudService);
 
     Page<CloudService> findAll(Pageable pageable);
 
     CloudService findById(UUID cloudServiceId);
 
     @Transactional
+    CloudService update(CloudService cloudService);
+
+    @Transactional
     void delete(UUID cloudServiceId);
 
-    Page<ComputeResource> findComputeResources(UUID serviceId, Pageable pageable);
+    Page<SoftwarePlatform> findLinkedSoftwarePlatforms(UUID cloudServiceId, Pageable pageable);
 
-    Page<SoftwarePlatform> findLinkedSoftwarePlatforms(UUID serviceId, Pageable pageable);
-
-    @Transactional
-    void addComputeResourceReference(UUID serviceId, UUID resourceId);
-
-    @Transactional
-    void deleteComputeResourceReference(UUID serviceId, UUID resourceId);
+    Page<ComputeResource> findLinkedComputeResources(UUID cloudServiceId, Pageable pageable);
 }
