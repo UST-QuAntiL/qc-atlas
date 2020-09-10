@@ -18,7 +18,5 @@ public interface SketchService {
 
     public Sketch findById(UUID id);
 
-    Sketch getSketchByAlgorithmAndSketch(final UUID algoId, final UUID sketchId);
-
-    byte[] getImageByAlgorithmAndSketch(final UUID algoId, final UUID sketchId);
+    byte[] getImageBySketch(final UUID sketchId);
 }

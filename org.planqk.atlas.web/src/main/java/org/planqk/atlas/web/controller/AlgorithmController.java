@@ -19,12 +19,12 @@
 
 package org.planqk.atlas.web.controller;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
-import javax.validation.Valid;
 
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
@@ -125,7 +125,6 @@ public class AlgorithmController {
 
     private final ApplicationAreaAssembler applicationAreaAssembler;
 
-    //    private final TagAssembler tagAssembler;
     private final AlgorithmAssembler algorithmAssembler;
 
     private final AlgorithmRelationAssembler algorithmRelationAssembler;
@@ -615,7 +614,6 @@ public class AlgorithmController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "404", description = "Algorithm with the given id doesn't exist")}, description = "Add a Sketch to the algorithm.")
@@ -652,7 +650,7 @@ public class AlgorithmController {
     public ResponseEntity<Sketch> getSketch(@PathVariable UUID algoId, @PathVariable UUID sketchId) {
         try {
             return ResponseEntity
-                    .ok(this.sketchService.getSketchByAlgorithmAndSketch(algoId, sketchId));
+                    .ok(this.sketchService.findById(sketchId));
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
         }
@@ -662,7 +660,7 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "200")}, description = "Update the properties of a sketch.")
     @PutMapping("/{algoId}/" + Constants.SKETCHES + "/{sketchId}")
     public ResponseEntity<Sketch> updateSketch(@PathVariable UUID algoId, @PathVariable UUID sketchId,
-                                                                 @Valid @RequestBody Sketch sketch) {
+                                               @Valid @RequestBody Sketch sketch) {
         log.debug("Put to update sketch with id: {}.", sketchId);
         return ResponseEntity.ok(this.sketchService.update(sketchId, sketch));
     }
@@ -674,7 +672,7 @@ public class AlgorithmController {
             return ResponseEntity
                     .ok()
                     .contentType(MediaType.IMAGE_JPEG)
-                    .body(this.sketchService.getImageByAlgorithmAndSketch(algoId, sketchId));
+                    .body(this.sketchService.getImageBySketch(sketchId));
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
         }
@@ -700,6 +698,5 @@ public class AlgorithmController {
 
         return patternRelationService.save(ModelMapperUtils.convert(relationDto, PatternRelation.class));
     }
-
 
 }

@@ -19,7 +19,6 @@
 
 package org.planqk.atlas.core.model;
 
-import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 
 import lombok.Data;
@@ -33,11 +32,5 @@ import lombok.NoArgsConstructor;
 public abstract class AlgorOrImpl extends KnowledgeArtifact {
 
     private String name;
-
-    @Column(columnDefinition = "text")
-    private String inputFormat;
-
-    @Column(columnDefinition = "text")
-    private String outputFormat;
 
 }

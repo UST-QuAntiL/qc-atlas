@@ -19,10 +19,6 @@
 
 package org.planqk.atlas.core.model;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -31,6 +27,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.springframework.lang.NonNull;
 
@@ -45,7 +45,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
-public class Algorithm extends AlgorOrImpl implements ModelWithPublications {
+public class Algorithm extends KnowledgeArtifact implements ModelWithPublications {
 
     private String name;
 
@@ -65,6 +65,12 @@ public class Algorithm extends AlgorOrImpl implements ModelWithPublications {
     @Column(columnDefinition = "text")
     private String problem;
 
+    @Column(columnDefinition = "text")
+    private String inputFormat;
+
+    @Column(columnDefinition = "text")
+    private String outputFormat;
+
     @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JoinColumn(name = "sourceAlgorithm", referencedColumnName = "id")
     @EqualsAndHashCode.Exclude
@@ -73,7 +79,6 @@ public class Algorithm extends AlgorOrImpl implements ModelWithPublications {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "algorithm", orphanRemoval = true)
     @EqualsAndHashCode.Exclude
     private Set<ComputingResourceProperty> requiredComputingResourceProperties = new HashSet<>();
-
 
     @Column(columnDefinition = "text")
     private String algoParameter;
@@ -197,7 +202,7 @@ public class Algorithm extends AlgorOrImpl implements ModelWithPublications {
     public void setSketches(List<Sketch> sketches) {
         this.sketches.clear();
         if (sketches != null) {
-           sketches.forEach(sketch -> this.addSketch(sketch));
+            sketches.forEach(sketch -> this.addSketch(sketch));
         }
     }
 
@@ -212,6 +217,5 @@ public class Algorithm extends AlgorOrImpl implements ModelWithPublications {
         sketch.setAlgorithm(null);
         return this;
     }
-
 
 }

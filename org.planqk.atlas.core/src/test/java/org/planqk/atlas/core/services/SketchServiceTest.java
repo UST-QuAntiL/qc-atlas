@@ -36,7 +36,6 @@ public class SketchServiceTest extends AtlasDatabaseTestBase {
     @Autowired
     private ImageRepository imageRepository;
 
-
     @Test
     void testFindByAlgorithm() {
 
@@ -114,7 +113,6 @@ public class SketchServiceTest extends AtlasDatabaseTestBase {
         assertThat(response).isNotNull();
     }
 
-
     @Test
     void testGetSketchByAlgorithmAndSketch() {
 
@@ -126,7 +124,7 @@ public class SketchServiceTest extends AtlasDatabaseTestBase {
         final Sketch persistedSketch = this.sketchRepository.save(sketch);
 
         // call
-        final Sketch response = this.sketchService.getSketchByAlgorithmAndSketch(algorithm.getId(), persistedSketch.getId());
+        final Sketch response = this.sketchService.findById(persistedSketch.getId());
 
         // test
         assertThat(response).isNotNull();
@@ -149,7 +147,7 @@ public class SketchServiceTest extends AtlasDatabaseTestBase {
         this.imageRepository.save(image);
 
         // call
-        final byte[] response = this.sketchService.getImageByAlgorithmAndSketch(algorithm.getId(), persistedSketch.getId());
+        final byte[] response = this.sketchService.getImageBySketch(persistedSketch.getId());
 
         // test
         assertTrue(Arrays.equals(response, testFile));
@@ -169,7 +167,6 @@ public class SketchServiceTest extends AtlasDatabaseTestBase {
         assertThat(persistedSketch.getImageURL()).isEqualTo(compareSketch.getImageURL());
         assertThat(persistedSketch.getDescription()).isEqualTo(compareSketch.getDescription());
     }
-
 
     private Algorithm getAlgorithm(String name) {
         Algorithm algorithm = new ClassicAlgorithm();

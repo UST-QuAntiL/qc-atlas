@@ -59,7 +59,6 @@ public class SketchServiceImpl implements SketchService {
             image.setSketch(persistedSketch2);
             this.imageRepository.save(image);
 
-
             return sketch;
         } catch (Exception e) {
             throw new RuntimeException("Could not store the Sketch. Error: " + e.getMessage());
@@ -81,31 +80,9 @@ public class SketchServiceImpl implements SketchService {
     }
 
     @Override
-    public byte[] getImageByAlgorithmAndSketch(UUID algoId, UUID sketchId) {
+    public byte[] getImageBySketch(UUID sketchId) {
         final Image image = this.imageRepository.findImageBySketchId(sketchId);
         return image.getImage();
-    }
-
-    @Override
-    public Sketch getSketchByAlgorithmAndSketch(UUID algoId, UUID sketchId) {
-        return this.getSketchByAlgoIdAndSketchId(algoId, sketchId);
-    }
-
-
-    private Sketch getSketchByAlgoIdAndSketchId(UUID algoId, UUID sketchId) {
-        final Optional<Algorithm> algorithmOptional = this.algorithmRepository.findById(algoId);
-        Algorithm persistedAlgorithm = null;
-        if (algorithmOptional.isPresent()) {
-            persistedAlgorithm = algorithmOptional.get();
-        }
-        Sketch sketch = new Sketch();
-
-        for (Sketch s : persistedAlgorithm.getSketches()) {
-            if (s.getId().compareTo(sketchId) == 0) {
-                sketch = s;
-            }
-        }
-        return sketch;
     }
 
 }

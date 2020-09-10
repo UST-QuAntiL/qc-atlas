@@ -121,7 +121,6 @@ public class AlgorithmControllerTest {
     @Autowired
     private WebApplicationContext webApplicationContext;
 
-
     @MockBean
     private ApplicationAreaService applicationAreaService;
 
@@ -760,7 +759,6 @@ public class AlgorithmControllerTest {
                 .andExpect(status().isOk());
     }
 
-
     @Test
     void testUploadSketch() throws Exception {
 
@@ -848,7 +846,7 @@ public class AlgorithmControllerTest {
 
         final Sketch sketch = new Sketch();
         sketch.setId(sketchId);
-        when(sketchService.getSketchByAlgorithmAndSketch(algorithmId, sketchId)).thenReturn(sketch);
+        when(sketchService.findById(sketchId)).thenReturn(sketch);
 
         final String path = "/" + Constants.API_VERSION + "/" + Constants.ALGORITHMS + "/" + "{algoId}" + "/" +
                 Constants.SKETCHES + "/{sketchId}";
@@ -859,7 +857,7 @@ public class AlgorithmControllerTest {
         final ResultActions resultActions = mockMvc.perform(get(path, algorithmId, sketchId)).andExpect(status().isOk());
 
         // test
-        Mockito.verify(sketchService, times(1)).getSketchByAlgorithmAndSketch(algorithmId, sketchId);
+        Mockito.verify(sketchService, times(1)).findById(sketchId);
 
         final String json = resultActions.andReturn().getResponse().getContentAsString();
         Sketch sketchResult = new ObjectMapper().readValue(json, Sketch.class);
@@ -876,7 +874,7 @@ public class AlgorithmControllerTest {
         final Sketch sketch = new Sketch();
         sketch.setId(sketchId);
         sketch.setImageURL("test/image/url");
-        when(sketchService.getImageByAlgorithmAndSketch(algorithmId, sketchId)).thenReturn(this.hexStringToByteArray(sketch.getImageURL()));
+        when(sketchService.getImageBySketch(sketchId)).thenReturn(this.hexStringToByteArray(sketch.getImageURL()));
 
         final String path = "/" + Constants.API_VERSION + "/" + Constants.ALGORITHMS + "/" + "{algoId}" + "/" +
                 Constants.SKETCHES + "/{sketchId}" + "/image";
@@ -887,10 +885,9 @@ public class AlgorithmControllerTest {
         final ResultActions resultActions = mockMvc.perform(get(path, algorithmId, sketchId)).andExpect(status().isOk());
 
         // test
-        Mockito.verify(sketchService, times(1)).getImageByAlgorithmAndSketch(algorithmId, sketchId);
+        Mockito.verify(sketchService, times(1)).getImageBySketch(sketchId);
 
         byte[] json = resultActions.andReturn().getResponse().getContentAsByteArray();
-//        Sketch sketchResult = new ObjectMapper().readValue(json, Sketch.class);
         assertTrue(Arrays.equals(this.hexStringToByteArray(sketch.getImageURL()), json));
     }
 
