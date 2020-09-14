@@ -19,11 +19,7 @@
 
 package org.planqk.atlas.web.controller;
 
-import javax.validation.Valid;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.Set;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
@@ -34,8 +30,6 @@ import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.model.Sketch;
-import org.planqk.atlas.core.services.AlgoRelationService;
-import org.planqk.atlas.core.services.AlgoRelationTypeService;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.core.services.ApplicationAreaService;
 import org.planqk.atlas.core.services.ComputeResourcePropertyService;
@@ -96,13 +90,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * Controller to access and manipulate classic, hybrid and quantum algorithms.
@@ -614,22 +601,26 @@ public class AlgorithmController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "404", description = "Algorithm with the given id doesn't exist")}, description = "Add a Sketch to the algorithm.")
-    @PostMapping("/{algoId}/" + Constants.SKETCHES)
-    public ResponseEntity<Sketch> uploadSketch(@PathVariable UUID algoId, @RequestParam("file") MultipartFile file,
-                                               @RequestParam("description") String description, @RequestParam("baseURL") String baseURL) {
+            @ApiResponse(responseCode = "404", description = "Algorithm with the given id doesn't exist")
+    }, description = "Add a Sketch to the algorithm.")
+    @PostMapping("/{algorithmId}/" + Constants.SKETCHES)
+    public ResponseEntity<Sketch> uploadSketch(
+            @PathVariable UUID algorithmId,
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("description") String description,
+            @RequestParam("baseURL") String baseURL) {
         try {
-            Sketch sketch = sketchService.addSketchToAlgorithm(algoId, file, description, baseURL);
+            Sketch sketch = sketchService.addSketchToAlgorithm(algorithmId, file, description, baseURL);
             return ResponseEntity.ok(sketch);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
         }
     }
 
-    @GetMapping("/{algoId}/" + Constants.SKETCHES)
-    public ResponseEntity<List<Sketch>> getSketches(@PathVariable UUID algoId) {
+    @GetMapping("/{algorithmId}/" + Constants.SKETCHES)
+    public ResponseEntity<List<Sketch>> getSketches(@PathVariable UUID algorithmId) {
         try {
-            return ResponseEntity.ok(sketchService.findByAlgorithm(algoId));
+            return ResponseEntity.ok(sketchService.findByAlgorithm(algorithmId));
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
         }
@@ -637,15 +628,16 @@ public class AlgorithmController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "404", description = "Algorithm or sketch with given id doesn't exist")}, description = "Delete a sketch of the algorithm.")
-    @DeleteMapping("/{algoId}/" + Constants.SKETCHES + "/{sketchId}")
-    public ResponseEntity<Void> deleteSketch(@PathVariable UUID algoId, @PathVariable UUID sketchId) {
+            @ApiResponse(responseCode = "404", description = "Algorithm or sketch with given id doesn't exist")
+    }, description = "Delete a sketch of the algorithm.")
+    @DeleteMapping("/{algorithmId}/" + Constants.SKETCHES + "/{sketchId}")
+    public ResponseEntity<Void> deleteSketch(@PathVariable UUID algorithmId, @PathVariable UUID sketchId) {
         sketchService.delete(sketchId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping("/{algoId}/" + Constants.SKETCHES + "/{sketchId}")
-    public ResponseEntity<Sketch> getSketch(@PathVariable UUID algoId, @PathVariable UUID sketchId) {
+    @GetMapping("/{algorithmId}/" + Constants.SKETCHES + "/{sketchId}")
+    public ResponseEntity<Sketch> getSketch(@PathVariable UUID algorithmId, @PathVariable UUID sketchId) {
         try {
             return ResponseEntity
                     .ok(this.sketchService.findById(sketchId));
@@ -656,16 +648,16 @@ public class AlgorithmController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200")}, description = "Update the properties of a sketch.")
-    @PutMapping("/{algoId}/" + Constants.SKETCHES + "/{sketchId}")
-    public ResponseEntity<Sketch> updateSketch(@PathVariable UUID algoId, @PathVariable UUID sketchId,
-                                               @Valid @RequestBody Sketch sketch) {
+    @PutMapping("/{algorithmId}/" + Constants.SKETCHES + "/{sketchId}")
+    public ResponseEntity<Sketch> updateSketch(@PathVariable UUID algorithmId, @PathVariable UUID sketchId,
+                                               @Validated @RequestBody Sketch sketch) {
         log.debug("Put to update sketch with id: {}.", sketchId);
         return ResponseEntity.ok(this.sketchService.update(sketchId, sketch));
     }
 
-    @RequestMapping(value = "/{algoId}/" + Constants.SKETCHES + "/{sketchId}" + "/image", method = RequestMethod.GET,
+    @RequestMapping(value = "/{algorithmId}/" + Constants.SKETCHES + "/{sketchId}" + "/image", method = RequestMethod.GET,
             produces = MediaType.IMAGE_JPEG_VALUE)
-    public ResponseEntity<byte[]> getSketchImage(@PathVariable UUID algoId, @PathVariable UUID sketchId) {
+    public ResponseEntity<byte[]> getSketchImage(@PathVariable UUID algorithmId, @PathVariable UUID sketchId) {
         try {
             return ResponseEntity
                     .ok()

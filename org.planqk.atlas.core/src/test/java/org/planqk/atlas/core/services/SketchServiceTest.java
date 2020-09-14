@@ -40,7 +40,7 @@ public class SketchServiceTest extends AtlasDatabaseTestBase {
     void testFindByAlgorithm() {
 
         // mock
-        final Algorithm algorithm = this.algorithmService.save(this.getAlgorithm("algo"));
+        final Algorithm algorithm = this.algorithmService.create(this.getAlgorithm("algo"));
 
         final Sketch sketch = this.getSketch(null, "image/url", "description");
         sketch.setAlgorithm(algorithm);
@@ -57,7 +57,7 @@ public class SketchServiceTest extends AtlasDatabaseTestBase {
     void testAddSketchToAlgorithm() {
 
         // mock
-        final Algorithm algorithm = this.algorithmService.save(this.getAlgorithm("algo"));
+        final Algorithm algorithm = this.algorithmService.create(this.getAlgorithm("algo"));
 
         byte[] testFile = hexStringToByteArray("e04fd020ea3a6910a2d808002b30309d");
         final MockMultipartFile file = new MockMultipartFile("file", testFile);
@@ -80,7 +80,7 @@ public class SketchServiceTest extends AtlasDatabaseTestBase {
     void testDelete() {
 
         // mock
-        final Algorithm algorithm = this.algorithmService.save(this.getAlgorithm("algo"));
+        final Algorithm algorithm = this.algorithmService.create(this.getAlgorithm("algo"));
 
         final Sketch sketch = this.getSketch(null, "image/url", "description");
         sketch.setAlgorithm(algorithm);
@@ -100,7 +100,7 @@ public class SketchServiceTest extends AtlasDatabaseTestBase {
     void testFindById() {
 
         // mock
-        final Algorithm algorithm = this.algorithmService.save(this.getAlgorithm("algo"));
+        final Algorithm algorithm = this.algorithmService.create(this.getAlgorithm("algo"));
 
         final Sketch sketch = this.getSketch(null, "image/url", "description");
         sketch.setAlgorithm(algorithm);
@@ -117,7 +117,7 @@ public class SketchServiceTest extends AtlasDatabaseTestBase {
     void testGetSketchByAlgorithmAndSketch() {
 
         // mock
-        final Algorithm algorithm = this.algorithmService.save(this.getAlgorithm("algo"));
+        final Algorithm algorithm = this.algorithmService.create(this.getAlgorithm("algo"));
 
         final Sketch sketch = this.getSketch(null, "image/url", "description");
         sketch.setAlgorithm(algorithm);
@@ -134,7 +134,7 @@ public class SketchServiceTest extends AtlasDatabaseTestBase {
     void testGetImageByAlgorithmAndSketch() {
 
         // mock
-        final Algorithm algorithm = this.algorithmService.save(this.getAlgorithm("algo"));
+        final Algorithm algorithm = this.algorithmService.create(this.getAlgorithm("algo"));
 
         final Sketch sketch = this.getSketch(null, "image/url", "description");
         sketch.setAlgorithm(algorithm);

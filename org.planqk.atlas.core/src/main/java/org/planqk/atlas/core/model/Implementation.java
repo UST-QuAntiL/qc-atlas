@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -52,6 +53,12 @@ public class Implementation extends AlgorithmOrImplementation {
     private String parameter;
     private URL link;
     private String dependencies;
+
+    @Column(columnDefinition = "text")
+    private String inputFormat;
+
+    @Column(columnDefinition = "text")
+    private String outputFormat;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "implementation_publication",

@@ -38,13 +38,12 @@ public class Constants {
     public static final String DISCUSSION_COMMENTS = "discussion-comments";
     public static final String DISCUSSION_TOPICS = "discussion-topics";
     public static final String IMPLEMENTATIONS = "implementations";
-    public static final String SKETCHES = "sketches";
-    public static final String BACKENDS = "backends";
     public static final String PATTERN_RELATIONS = "pattern-relations";
     public static final String PATTERN_RELATION_TYPES = "pattern-relation-types";
     public static final String PROBLEM_TYPES = "problem-types";
     public static final String PROBLEM_TYPE_PARENTS = "problem-type-parents";
     public static final String PUBLICATIONS = "publications";
+    public static final String SKETCHES = "sketches";
     public static final String SOFTWARE_PLATFORMS = "software-platforms";
     public static final String TAGS = "tags";
 
