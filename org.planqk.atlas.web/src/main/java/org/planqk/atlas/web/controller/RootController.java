@@ -40,7 +40,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
  * Root controller to access all entities within Quality, trigger the hardware selection, and execution of quantum
  * algorithms.
  */
-@io.swagger.v3.oas.annotations.tags.Tag(name = "root")
+@io.swagger.v3.oas.annotations.tags.Tag(name = Constants.TAG_ROOT)
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/" + Constants.API_VERSION + "/")
@@ -56,11 +56,18 @@ public class RootController {
 
         // add links to sub-controllers
         responseEntity.add(linkTo(methodOn(RootController.class).root()).withSelfRel());
-        responseEntity.add(linkTo(methodOn(AlgorithmController.class).getAlgorithms(ListParameters.getDefault())).withRel(Constants.ALGORITHMS));
+        responseEntity.add(linkTo(methodOn(AlgorithmController.class)
+                .getAlgorithms(ListParameters.getDefault())).withRel(Constants.ALGORITHMS));
+        responseEntity.add(linkTo(methodOn(SoftwarePlatformController.class)
+                .getSoftwarePlatforms(ListParameters.getDefault())).withRel(Constants.SOFTWARE_PLATFORMS));
+        responseEntity.add(linkTo(methodOn(CloudServiceController.class)
+                .getCloudServices(ListParameters.getDefault())).withRel(Constants.CLOUD_SERVICES));
+        responseEntity.add(linkTo(methodOn(ComputeResourceController.class)
+                .getComputeResources(ListParameters.getDefault())).withRel(Constants.COMPUTE_RESOURCES));
         // This controller will be used/tested and included in the future
-//        responseEntity.add(linkTo(
-//                methodOn(TagController.class).getTags(Constants.DEFAULT_PAGE_NUMBER, Constants.DEFAULT_PAGE_SIZE))
-//                .withRel(Constants.TAGS));
+        responseEntity.add(linkTo(
+                methodOn(TagController.class).getTags(ListParameters.getDefault()))
+                .withRel(Constants.TAGS));
         responseEntity.add(linkTo(
                 methodOn(PublicationController.class).getPublications(ListParameters.getDefault()))
                 .withRel(Constants.PUBLICATIONS));

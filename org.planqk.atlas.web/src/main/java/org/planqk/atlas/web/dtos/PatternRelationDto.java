@@ -1,9 +1,33 @@
+/*******************************************************************************
+ * Copyright (c) 2020 University of Stuttgart
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *******************************************************************************/
+
 package org.planqk.atlas.web.dtos;
 
 import java.net.URI;
 import java.util.UUID;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
+
+import org.planqk.atlas.web.utils.Identifyable;
+import org.planqk.atlas.web.utils.RequiresID;
+import org.planqk.atlas.web.utils.ValidationGroups;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -14,18 +38,25 @@ import org.springframework.hateoas.server.core.Relation;
 @EqualsAndHashCode
 @Data
 @Relation(itemRelation = "patternRelation", collectionRelation = "patternRelations")
-public class PatternRelationDto {
+public class PatternRelationDto implements Identifyable {
 
+    @NotNull(groups = {ValidationGroups.IDOnly.class}, message = "An id is required to perform an update")
+    @Null(groups = {ValidationGroups.Create.class}, message = "The id must be null for creating a pattern relation")
     private UUID id;
 
-    @NotNull(message = "Algorithm must not be null!")
+    @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
+            message = "Algorithm must not be null!")
     @EqualsAndHashCode.Exclude
-    private AlgorithmDto algorithm;
+    private UUID algorithmId;
 
-    @NotNull(message = "Pattern-Relations must have a URI!")
+    @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
+            message = "Pattern-Relations must have a URI!")
     private URI pattern;
 
-    @NotNull(message = "Pattern-Relations must have an type!")
+    @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
+            message = "Pattern-Relations must have a type!")
+    @RequiresID(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
+            message = "Pattern-Relations must have a type with an ID!")
     private PatternRelationTypeDto patternRelationType;
 
     private String description;

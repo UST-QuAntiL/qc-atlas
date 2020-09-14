@@ -1,4 +1,4 @@
-/********************************************************************************
+/*******************************************************************************
  * Copyright (c) 2020 University of Stuttgart
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -19,76 +19,67 @@
 
 package org.planqk.atlas.core.services;
 
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.UUID;
 
 import javax.transaction.Transactional;
 
+import org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException;
 import org.planqk.atlas.core.model.PatternRelationType;
-import org.planqk.atlas.core.model.exceptions.ConsistencyException;
 import org.planqk.atlas.core.repository.PatternRelationRepository;
 import org.planqk.atlas.core.repository.PatternRelationTypeRepository;
+import org.planqk.atlas.core.util.ServiceUtils;
 
+import lombok.AllArgsConstructor;
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import lombok.AllArgsConstructor;
-
-@AllArgsConstructor
+@Slf4j
 @Service
+@AllArgsConstructor
 public class PatternRelationTypeServiceImpl implements PatternRelationTypeService {
 
-    private final String NO_TYPE_ERROR = "PatternRelationType does not exist!";
-
-    private final PatternRelationTypeRepository repo;
-    private final PatternRelationRepository patternRelationRepo;
+    private final PatternRelationTypeRepository patternRelationTypeRepository;
+    private final PatternRelationRepository patternRelationRepository;
 
     @Override
     @Transactional
-    public PatternRelationType save(PatternRelationType type) {
-        return repo.save(type);
+    public PatternRelationType create(@NonNull PatternRelationType patternRelationType) {
+        return patternRelationTypeRepository.save(patternRelationType);
     }
 
     @Override
-    public PatternRelationType findById(UUID id) {
-        return repo.findById(id).orElseThrow(() -> new NoSuchElementException(NO_TYPE_ERROR));
+    public PatternRelationType findById(@NonNull UUID patternRelationTypeId) {
+        return ServiceUtils.findById(patternRelationTypeId, PatternRelationType.class, patternRelationTypeRepository);
     }
 
     @Override
-    public Page<PatternRelationType> findAll(Pageable pageable) {
-        return repo.findAll(pageable);
+    public Page<PatternRelationType> findAll(@NonNull Pageable pageable) {
+        return patternRelationTypeRepository.findAll(pageable);
     }
 
     @Override
     @Transactional
-    public PatternRelationType update(UUID id, PatternRelationType type) {
-        PatternRelationType persistedType = repo.findById(id)
-                .orElseThrow(() -> new NoSuchElementException(NO_TYPE_ERROR));
-        persistedType.setName(type.getName());
-        return repo.save(persistedType);
+    public PatternRelationType update(@NonNull PatternRelationType patternRelationType) {
+        PatternRelationType persistedPatternRelationType = findById(patternRelationType.getId());
+
+        persistedPatternRelationType.setName(patternRelationType.getName());
+
+        return patternRelationTypeRepository.save(persistedPatternRelationType);
     }
 
     @Override
     @Transactional
-    public void deleteById(UUID id) {
-        if (patternRelationRepo.countByPatternRelationTypeId(id) > 0)
-            throw new ConsistencyException("Can not delete a used PatternRelationType!");
-        repo.deleteById(id);
-    }
+    public void delete(@NonNull UUID patternRelationTypeId) {
+        ServiceUtils.throwIfNotExists(patternRelationTypeId, PatternRelationType.class, patternRelationTypeRepository);
 
-    @Override
-    @Transactional
-    public PatternRelationType createOrGet(PatternRelationType type) {
-        // Check database for type
-        Optional<PatternRelationType> typeOptional = Objects.isNull(type.getId()) ? Optional.empty()
-                : repo.findById(type.getId());
-        if (typeOptional.isPresent()) {
-            return typeOptional.get();
+        if (patternRelationRepository.countByPatternRelationTypeId(patternRelationTypeId) > 0) {
+            throw new EntityReferenceConstraintViolationException("PatternRelationType with ID \""
+                    + patternRelationTypeId + "\" cannot be deleted, because it is still in use");
         }
 
-        return save(type);
+        patternRelationTypeRepository.deleteById(patternRelationTypeId);
     }
 }

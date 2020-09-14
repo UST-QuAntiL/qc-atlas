@@ -19,7 +19,23 @@
 
 package org.planqk.atlas.core.repository;
 
-//@RepositoryRestResource(exported = false)
-//public interface TagRepository extends JpaRepository<Tag, UUID> {
-//    List<Tag> findByKey(String key);
-//}
+import org.planqk.atlas.core.model.Tag;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import org.springframework.stereotype.Repository;
+
+@Repository
+@RepositoryRestResource(exported = false)
+public interface TagRepository extends JpaRepository<Tag, String> {
+
+    Tag findByValue(String value);
+
+    Page<Tag> findByCategory(String category, Pageable pageable);
+
+    Page<Tag> findByValueContainingIgnoreCaseOrCategoryContainingIgnoreCase(String value, String key, Pageable pageable);
+
+    boolean existsTagByValue(String value);
+}

@@ -21,12 +21,16 @@ package org.planqk.atlas.core.repository;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.DiscussionTopic;
+import org.planqk.atlas.core.model.KnowledgeArtifact;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import org.springframework.stereotype.Repository;
 
+@Repository
 @RepositoryRestResource(exported = false)
 public interface DiscussionTopicRepository extends JpaRepository<DiscussionTopic, UUID> {
-
-    boolean existsById(UUID id);
+    Page<DiscussionTopic> findByKnowledgeArtifact(KnowledgeArtifact knowledgeArtifact, Pageable pageable);
 }

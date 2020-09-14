@@ -43,8 +43,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 
 /**
- * Custom HATEOAS {@link org.springframework.hateoas.server.LinkBuilder} that resolves path mappings
- * using the container's {@link RequestMappingInfoHandlerMapping} instance.
+ * Custom HATEOAS {@link org.springframework.hateoas.server.LinkBuilder} that resolves path mappings using the
+ * container's {@link RequestMappingInfoHandlerMapping} instance.
  */
 @Component
 @RequiredArgsConstructor
@@ -62,7 +62,7 @@ public class LinkBuilderService {
     /**
      * Special version of {@link WebMvcLinkBuilder#linkTo(Object)} that resolves paths via {@link
      * RequestMappingInfoHandlerMapping}.
-     *
+     * <p>
      * If that is impossible, the class- and method-annotations are considered.
      */
     public LinkBuilder linkTo(Object invocationValue) {

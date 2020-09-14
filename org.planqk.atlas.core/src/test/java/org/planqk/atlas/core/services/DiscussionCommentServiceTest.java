@@ -25,8 +25,10 @@ import java.util.UUID;
 
 import org.planqk.atlas.core.model.DiscussionComment;
 import org.planqk.atlas.core.model.DiscussionTopic;
+import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,13 +39,15 @@ import org.springframework.data.domain.Pageable;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@Slf4j
 public class DiscussionCommentServiceTest extends AtlasDatabaseTestBase {
 
     @Autowired
     private DiscussionTopicService topicService;
-
     @Autowired
     private DiscussionCommentService commentService;
+    @Autowired
+    private PublicationService publicationService;
 
     private DiscussionComment comment;
     private DiscussionComment comment2;
@@ -56,7 +60,13 @@ public class DiscussionCommentServiceTest extends AtlasDatabaseTestBase {
 
     @BeforeEach
     public void initialize() {
+        var pub = new Publication();
+        pub.setTitle("discussion");
+        pub = publicationService.create(pub);
+
         topic = new DiscussionTopic();
+        topic.setKnowledgeArtifact(pub);
+
         comment = new DiscussionComment();
         comment.setDate(OffsetDateTime.now());
         comment.setText("Test Text");
@@ -70,8 +80,8 @@ public class DiscussionCommentServiceTest extends AtlasDatabaseTestBase {
 
     @Test
     void createDiscussionComment() {
-        topicService.save(this.topic);
-        DiscussionComment comment = commentService.save(this.comment);
+        topicService.create(this.topic);
+        DiscussionComment comment = commentService.create(this.comment);
         assertThat(comment.getId()).isNotNull();
         assertThat(comment.getDate()).isEqualTo(this.comment.getDate());
         assertThat(comment.getText()).isEqualTo(this.comment.getText());
@@ -79,11 +89,31 @@ public class DiscussionCommentServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void updateDiscussionComment() {
-        topicService.save(this.topic);
-        DiscussionComment comment = commentService.save(this.comment);
+    void findAllDiscussionComments() {
+        topicService.create(this.topic);
+        commentService.create(this.comment);
+        commentService.create(this.comment2);
+
+        Page<DiscussionComment> discussionCommentPage = commentService.findAll(pageable);
+        assertThat(discussionCommentPage.getTotalElements()).isEqualTo(2);
+    }
+
+    // @Test
+    void findDiscussionCommentById_ElementFound() {
+        // TODO
+    }
+
+    @Test
+    void findDiscussionCommentById_ElementNotFound() {
+        assertThrows(NoSuchElementException.class, () -> commentService.findById(UUID.randomUUID()));
+    }
+
+    @Test
+    void updateDiscussionComment_ElementFound() {
+        topicService.create(this.topic);
+        DiscussionComment comment = commentService.create(this.comment);
         comment.setText("New Text");
-        DiscussionComment update = commentService.update(comment.getId(), comment);
+        DiscussionComment update = commentService.update(comment);
 
         assertThat(update.getDate()).isEqualTo(comment.getDate());
         assertThat(update.getText()).isEqualTo(comment.getText());
@@ -91,52 +121,23 @@ public class DiscussionCommentServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void updateDiscussionComment_notFound() {
-        assertThrows(NoSuchElementException.class, () -> {
-            commentService.update(UUID.randomUUID(), comment);
-        });
+    void updateDiscussionComment_ElementNotFound() {
+        comment.setId(UUID.randomUUID());
+        assertThrows(NoSuchElementException.class, () -> commentService.update(comment));
     }
 
     @Test
-    void findDiscussionCommentById_notFound() {
-        assertThrows(NoSuchElementException.class, () -> {
-            commentService.findById(UUID.randomUUID());
-        });
-    }
-
-    @Test
-    void findAllDiscussionComments() {
-        topicService.save(this.topic);
-        commentService.save(this.comment);
-        commentService.save(this.comment2);
-
-        Page<DiscussionComment> discussionCommentPage = commentService.findAll(pageable);
-        assertThat(discussionCommentPage.getTotalElements()).isEqualTo(2);
-    }
-
-    @Test
-    void deleteDiscussionComment() {
-        topicService.save(this.topic);
-        DiscussionComment comment = commentService.save(this.comment);
-        commentService.deleteById(comment.getId());
+    void deleteDiscussionComment_ElementFound() {
+        topicService.create(this.topic);
+        DiscussionComment comment = commentService.create(this.comment);
+        commentService.delete(comment.getId());
         assertThrows(NoSuchElementException.class, () -> {
             commentService.findById(comment.getId());
         });
     }
 
-    @Test
-    void existsDiscussionComment_exists(){
-        topicService.save(this.topic);
-        DiscussionComment comment = commentService.save(this.comment);
-        boolean exists = commentService.existsDiscussionCommentById(comment.getId());
-
-        assertThat(exists).isEqualTo(true);
-    }
-
-    @Test
-    void existsDiscussionComment_notExists(){
-
-        boolean exists = commentService.existsDiscussionCommentById(UUID.randomUUID());
-        assertThat(exists).isEqualTo(false);
+    // @Test
+    void deleteDiscussionComment_ElementNotFound() {
+        // TODO
     }
 }

@@ -1,4 +1,4 @@
-/********************************************************************************
+/*******************************************************************************
  * Copyright (c) 2020 University of Stuttgart
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -19,17 +19,6 @@
 
 package org.planqk.atlas.core.services;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
-import org.planqk.atlas.core.model.Backend;
-import org.planqk.atlas.core.model.CloudService;
-import org.planqk.atlas.core.model.SoftwarePlatform;
-import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
-
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashSet;
@@ -38,8 +27,25 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.UUID;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.CloudService;
+import org.planqk.atlas.core.model.ComputeResource;
+import org.planqk.atlas.core.model.Implementation;
+import org.planqk.atlas.core.model.QuantumComputationModel;
+import org.planqk.atlas.core.model.SoftwarePlatform;
+import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
+import org.planqk.atlas.core.util.ServiceTestUtils;
 
+import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+@Slf4j
 public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
 
     @Autowired
@@ -47,105 +53,30 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
     @Autowired
     private CloudServiceService cloudServiceService;
     @Autowired
-    private BackendService backendService;
+    private ComputeResourceService computeResourceService;
+    @Autowired
+    private ImplementationService implementationService;
+    @Autowired
+    private AlgorithmService algorithmService;
+    @Autowired
+    private LinkingService linkingService;
 
     @Test
-    void testAddSoftwarePlatform_WithoutRelations() throws MalformedURLException {
-        SoftwarePlatform softwarePlatform = getGenericTestSoftwarePlatformWithoutRelations("testSoftwarePlatform");
+    void createSoftwarePlatform() {
+        SoftwarePlatform softwarePlatform = getFullSoftwarePlatform("softwarePlatformName");
 
-        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.save(softwarePlatform);
-        assertSoftwarePlatformEquality(storedSoftwarePlatform, softwarePlatform);
+        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.create(softwarePlatform);
+
+        assertThat(storedSoftwarePlatform.getId()).isNotNull();
+        ServiceTestUtils.assertSoftwarePlatformEquality(storedSoftwarePlatform, softwarePlatform);
     }
 
     @Test
-    void testAddSoftwarePlatform_WithCloudServices() throws MalformedURLException {
-        SoftwarePlatform softwarePlatform = getGenericTestSoftwarePlatformWithoutRelations("testSoftwarePlatform");
-
-        Set<CloudService> cloudServices = new HashSet<>();
-        CloudService cloudService = new CloudService();
-        cloudService.setName("testCloudService");
-        cloudService.setProvider("testProvider");
-        cloudService.setUrl(new URL("http://example.com"));
-        cloudService.setCostModel("testCostModel");
-        cloudServices.add(cloudService);
-
-        softwarePlatform.setSupportedCloudServices(cloudServices);
-
-        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.save(softwarePlatform);
-        assertSoftwarePlatformEquality(storedSoftwarePlatform, softwarePlatform);
-        assertCloudServiceEquality(storedSoftwarePlatform, cloudService);
-    }
-
-    @Test
-    void testAddSoftwarePlatform_WithBackends() throws MalformedURLException {
-        SoftwarePlatform softwarePlatform = getGenericTestSoftwarePlatformWithoutRelations("testSoftwarePlatform");
-
-        Set<Backend> backends = new HashSet<>();
-        Backend backend = new Backend();
-        backend.setName("testBackend");
-        backends.add(backend);
-
-        softwarePlatform.setSupportedBackends(backends);
-
-        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.save(softwarePlatform);
-        assertSoftwarePlatformEquality(storedSoftwarePlatform, softwarePlatform);
-
-        storedSoftwarePlatform.getSupportedBackends().forEach(b -> {
-            assertThat(b.getId()).isNotNull();
-            assertThat(b.getName()).isEqualTo(backend.getName());
-            Assertions.assertDoesNotThrow(() -> backendService.findById(b.getId()));
-        });
-
-        assertThat(storedSoftwarePlatform.getSupportedBackends().size()).isEqualTo(1);
-    }
-
-    @Test
-    void testUpdateSoftwarePlatform_ElementNotFound() {
-        Assertions.assertThrows(NoSuchElementException.class, () ->
-                softwarePlatformService.update(UUID.randomUUID(), null));
-    }
-
-    @Test
-    void testUpdateSoftwarePlatform_ElementFound() throws MalformedURLException {
-        SoftwarePlatform softwarePlatform = getGenericTestSoftwarePlatformWithoutRelations("testSoftwarePlatform");
-        SoftwarePlatform storedSoftwarePlatform = getGenericTestSoftwarePlatformWithoutRelations("testSoftwarePlatform");
-
-        SoftwarePlatform storedEditedSoftwarePlatform = softwarePlatformService.save(softwarePlatform);
-        storedSoftwarePlatform.setId(storedEditedSoftwarePlatform.getId());
-        String editName = "editedSoftwarePlatform";
-        storedEditedSoftwarePlatform.setName(editName);
-        storedEditedSoftwarePlatform = softwarePlatformService.update(storedEditedSoftwarePlatform.getId(), storedEditedSoftwarePlatform);
-
-        assertThat(storedEditedSoftwarePlatform.getId()).isEqualTo(storedSoftwarePlatform.getId());
-        assertThat(storedEditedSoftwarePlatform.getName()).isNotEqualTo(storedSoftwarePlatform.getName());
-        assertThat(storedEditedSoftwarePlatform.getName()).isEqualTo(editName);
-        assertThat(storedEditedSoftwarePlatform.getLink()).isEqualTo(storedSoftwarePlatform.getLink());
-        assertThat(storedEditedSoftwarePlatform.getVersion()).isEqualTo(storedSoftwarePlatform.getVersion());
-    }
-
-    @Test
-    void testFindSoftwarePlatformById_ElementNotFound() {
-        Assertions.assertThrows(NoSuchElementException.class, () ->
-            softwarePlatformService.findById(UUID.randomUUID()));
-    }
-
-    @Test
-    void testFindSoftwarePlatformById_ElementFound() throws MalformedURLException {
-        SoftwarePlatform softwarePlatform = getGenericTestSoftwarePlatformWithoutRelations("testSoftwarePlatform");
-
-        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.save(softwarePlatform);
-
-        storedSoftwarePlatform = softwarePlatformService.findById(storedSoftwarePlatform.getId());
-
-        assertSoftwarePlatformEquality(storedSoftwarePlatform, softwarePlatform);
-    }
-
-    @Test
-    void testFindAll() throws MalformedURLException {
-        SoftwarePlatform softwarePlatform1 = getGenericTestSoftwarePlatformWithoutRelations("testCloudService1");
-        softwarePlatformService.save(softwarePlatform1);
-        SoftwarePlatform softwarePlatform2 = getGenericTestSoftwarePlatformWithoutRelations("testCloudService2");
-        softwarePlatformService.save(softwarePlatform2);
+    void findAllSoftwarePlatforms() {
+        SoftwarePlatform softwarePlatform1 = getFullSoftwarePlatform("softwarePlatformName1");
+        softwarePlatformService.create(softwarePlatform1);
+        SoftwarePlatform softwarePlatform2 = getFullSoftwarePlatform("softwarePlatformName2");
+        softwarePlatformService.create(softwarePlatform2);
 
         List<SoftwarePlatform> softwarePlatforms = softwarePlatformService.findAll(Pageable.unpaged()).getContent();
 
@@ -153,95 +84,197 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void testDeleteSoftwarePlatform_WithoutRelations() throws MalformedURLException {
-        SoftwarePlatform softwarePlatform = getGenericTestSoftwarePlatformWithoutRelations("testSoftwarePlatform");
+    void searchAllSoftwarePlatformsByName() {
+        SoftwarePlatform softwarePlatform1 = getFullSoftwarePlatform("softwarePlatformName1");
+        softwarePlatformService.create(softwarePlatform1);
+        SoftwarePlatform softwarePlatform2 = getFullSoftwarePlatform("softwarePlatformName2");
+        softwarePlatformService.create(softwarePlatform2);
 
-        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.save(softwarePlatform);
+        List<SoftwarePlatform> softwarePlatforms = softwarePlatformService
+                .searchAllByName("1", Pageable.unpaged()).getContent();
 
-        Assertions.assertDoesNotThrow(() -> softwarePlatformService.findById(storedSoftwarePlatform.getId()));
+        assertThat(softwarePlatforms.size()).isEqualTo(1);
+    }
+
+    @Test
+    void findSoftwarePlatformById_ElementNotFound() {
+        assertThrows(NoSuchElementException.class, () ->
+                softwarePlatformService.findById(UUID.randomUUID()));
+    }
+
+    @Test
+    void findSoftwarePlatformById_ElementFound() {
+        SoftwarePlatform softwarePlatform = getFullSoftwarePlatform("softwarePlatformName");
+        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.create(softwarePlatform);
+
+        storedSoftwarePlatform = softwarePlatformService.findById(storedSoftwarePlatform.getId());
+
+        assertThat(storedSoftwarePlatform.getId()).isNotNull();
+        ServiceTestUtils.assertSoftwarePlatformEquality(storedSoftwarePlatform, softwarePlatform);
+    }
+
+    @Test
+    void updateSoftwarePlatform_ElementNotFound() {
+        SoftwarePlatform softwarePlatform = getFullSoftwarePlatform("softwarePlatformName");
+        softwarePlatform.setId(UUID.randomUUID());
+        assertThrows(NoSuchElementException.class, () ->
+                softwarePlatformService.update(softwarePlatform));
+    }
+
+    @Test
+    void updateSoftwarePlatform_ElementFound() {
+        SoftwarePlatform softwarePlatform = getFullSoftwarePlatform("softwarePlatformName");
+        SoftwarePlatform storedSoftwarePlatform = getFullSoftwarePlatform("softwarePlatformName");
+
+        SoftwarePlatform storedEditedSoftwarePlatform = softwarePlatformService.create(softwarePlatform);
+        storedSoftwarePlatform.setId(storedEditedSoftwarePlatform.getId());
+        String editName = "editedSoftwarePlatformName";
+        storedEditedSoftwarePlatform.setName(editName);
+        storedEditedSoftwarePlatform = softwarePlatformService.update(storedEditedSoftwarePlatform);
+
+        assertThat(storedEditedSoftwarePlatform.getId()).isEqualTo(storedSoftwarePlatform.getId());
+        assertThat(storedEditedSoftwarePlatform.getName()).isNotEqualTo(storedSoftwarePlatform.getName());
+        assertThat(storedEditedSoftwarePlatform.getName()).isEqualTo(editName);
+        assertThat(storedEditedSoftwarePlatform.getLink()).isEqualTo(storedSoftwarePlatform.getLink());
+        assertThat(storedEditedSoftwarePlatform.getVersion()).isEqualTo(storedSoftwarePlatform.getVersion());
+        assertThat(storedEditedSoftwarePlatform.getLicence()).isEqualTo(storedSoftwarePlatform.getLicence());
+    }
+
+    @Test
+    void deleteSoftwarePlatform_NoReferences() {
+        SoftwarePlatform softwarePlatform = getFullSoftwarePlatform("softwarePlatformName");
+
+        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.create(softwarePlatform);
+
+        assertDoesNotThrow(() -> softwarePlatformService.findById(storedSoftwarePlatform.getId()));
 
         softwarePlatformService.delete(storedSoftwarePlatform.getId());
 
-        Assertions.assertThrows(NoSuchElementException.class, () ->
+        assertThrows(NoSuchElementException.class, () ->
                 softwarePlatformService.findById(storedSoftwarePlatform.getId()));
     }
 
     @Test
-    void testDeleteSoftwarePlatform_WithCloudServices() throws MalformedURLException {
-        SoftwarePlatform softwarePlatform = getGenericTestSoftwarePlatformWithoutRelations("testSoftwarePlatform");
+    void deleteSoftwarePlatform_HasReferences() {
+        SoftwarePlatform softwarePlatform = getFullSoftwarePlatform("softwarePlatformName");
+        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.create(softwarePlatform);
 
-        Set<CloudService> cloudServices = new HashSet<>();
+        assertDoesNotThrow(() -> softwarePlatformService.findById(storedSoftwarePlatform.getId()));
+
+        // Add Implementation Reference
+        Algorithm algorithm = new Algorithm();
+        algorithm = algorithmService.create(algorithm);
+
+        Implementation implementation = new Implementation();
+        implementation.setName("implementationName");
+        Implementation storedImplementation = implementationService.create(implementation, algorithm.getId());
+        linkingService.linkImplementationAndSoftwarePlatform(storedImplementation.getId(), storedSoftwarePlatform.getId());
+
+        // Add Cloud Service Reference
         CloudService cloudService = new CloudService();
-        cloudService.setName("testCloudService");
-        cloudService.setProvider("testProvider");
-        cloudService.setUrl(new URL("http://example.com"));
-        cloudService.setCostModel("testCostModel");
-        cloudServices.add(cloudService);
-        softwarePlatform.setSupportedCloudServices(cloudServices);
+        cloudService.setName("cloudServiceName");
+        CloudService storedCloudService = cloudServiceService.create(cloudService);
+        linkingService.linkSoftwarePlatformAndCloudService(storedSoftwarePlatform.getId(), storedCloudService.getId());
 
-        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.save(softwarePlatform);
+        // Add Compute Resource Reference
+        ComputeResource computeResource = new ComputeResource();
+        computeResource.setName("ComputeResourceName");
+        ComputeResource storedComputeResource = computeResourceService.create(computeResource);
+        linkingService.linkSoftwarePlatformAndComputeResource(storedSoftwarePlatform.getId(), storedComputeResource.getId());
 
-        Assertions.assertDoesNotThrow(() -> softwarePlatformService.findById(storedSoftwarePlatform.getId()));
-
+        // Delete
         softwarePlatformService.delete(storedSoftwarePlatform.getId());
 
-        Assertions.assertThrows(NoSuchElementException.class, () ->
+        assertThrows(NoSuchElementException.class, () ->
                 softwarePlatformService.findById(storedSoftwarePlatform.getId()));
 
-        storedSoftwarePlatform.getSupportedCloudServices().forEach(cs ->
-                cloudServiceService.findById(cs.getId()));
+        // Test if references are removed
+        assertThat(implementationService.findById(storedImplementation.getId()).getSoftwarePlatforms().size()).isEqualTo(0);
+        assertThat(cloudServiceService.findById(storedCloudService.getId()).getSoftwarePlatforms().size()).isEqualTo(0);
+        assertThat(computeResourceService.findById(storedComputeResource.getId()).getSoftwarePlatforms().size()).isEqualTo(0);
     }
 
     @Test
-    void testDeleteSoftwarePlatform_WithBackends() throws MalformedURLException {
-        SoftwarePlatform softwarePlatform = getGenericTestSoftwarePlatformWithoutRelations("testSoftwarePlatform");
+    void findLinkedImplementations() {
+        SoftwarePlatform softwarePlatform = getFullSoftwarePlatform("softwarePlatformName");
+        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.create(softwarePlatform);
 
-        Set<Backend> backends = new HashSet<>();
-        Backend backend = new Backend();
-        backend.setName("testBackend");
-        backends.add(backend);
+        Algorithm algorithm = new Algorithm();
+        algorithm = algorithmService.create(algorithm);
 
-        softwarePlatform.setSupportedBackends(backends);
+        Set<Implementation> storedImplementations = new HashSet<>();
+        for (int i = 0; i < 10; i++) {
+            Implementation implementation = new Implementation();
+            implementation.setName("implementationName" + i);
+            Implementation storedImplementation = implementationService.create(implementation, algorithm.getId());
+            storedImplementations.add(storedImplementation);
+            linkingService.linkImplementationAndSoftwarePlatform(storedImplementation.getId(), storedSoftwarePlatform.getId());
+        }
+        Set<Implementation> implementations = softwarePlatformService.findLinkedImplementations(
+                storedSoftwarePlatform.getId(), Pageable.unpaged()).toSet();
 
-        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.save(softwarePlatform);
-
-        Assertions.assertDoesNotThrow(() -> softwarePlatformService.findById(storedSoftwarePlatform.getId()));
-        storedSoftwarePlatform.getSupportedBackends().forEach(b -> {
-            Assertions.assertDoesNotThrow(() -> backendService.findById(b.getId()));
-        });
-
-        softwarePlatformService.delete(storedSoftwarePlatform.getId());
-
-        Assertions.assertThrows(NoSuchElementException.class, () ->
-                softwarePlatformService.findById(storedSoftwarePlatform.getId()));
-        storedSoftwarePlatform.getSupportedBackends().forEach(b -> {
-            Assertions.assertDoesNotThrow(() -> backendService.findById(b.getId()));
-        });
+        assertThat(implementations.size()).isEqualTo(10);
+        implementations.forEach(implementation -> assertThat(storedImplementations.contains(implementation)).isTrue());
     }
 
-    private void assertSoftwarePlatformEquality(SoftwarePlatform dbSoftwarePlatform, SoftwarePlatform compareSoftwarePlatform) {
-        assertThat(dbSoftwarePlatform.getId()).isNotNull();
-        assertThat(dbSoftwarePlatform.getName()).isEqualTo(compareSoftwarePlatform.getName());
-        assertThat(dbSoftwarePlatform.getLink()).isEqualTo(compareSoftwarePlatform.getLink());
-        assertThat(dbSoftwarePlatform.getVersion()).isEqualTo(compareSoftwarePlatform.getVersion());
+    @Test
+    void findLinkedCloudServices() {
+        SoftwarePlatform softwarePlatform = getFullSoftwarePlatform("softwarePlatformName");
+        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.create(softwarePlatform);
+
+        Set<CloudService> storedCloudServices = new HashSet<>();
+        for (int i = 0; i < 10; i++) {
+            CloudService cloudService = new CloudService();
+            cloudService.setName("cloudServiceName" + i);
+            cloudService.setProvider("provider");
+            try {
+                cloudService.setUrl(new URL("http://example.com"));
+            } catch (MalformedURLException ignored) {
+            }
+            cloudService.setCostModel("costModel");
+            CloudService storedCloudService = cloudServiceService.create(cloudService);
+            storedCloudServices.add(storedCloudService);
+            linkingService.linkSoftwarePlatformAndCloudService(storedSoftwarePlatform.getId(), storedCloudService.getId());
+        }
+        Set<CloudService> cloudServices = softwarePlatformService.findLinkedCloudServices(
+                storedSoftwarePlatform.getId(), Pageable.unpaged()).toSet();
+
+        assertThat(cloudServices.size()).isEqualTo(10);
+        cloudServices.forEach(cloudService -> assertThat(storedCloudServices.contains(cloudService)).isTrue());
     }
 
-    private void assertCloudServiceEquality(SoftwarePlatform dbSoftwarePlatform, CloudService compareCloudService) {
-        var storedCloudServices = dbSoftwarePlatform.getSupportedCloudServices();
-        storedCloudServices.forEach(cs -> {
-            assertThat(cs.getId()).isNotNull();
-            assertThat(cs.getName()).isEqualTo(compareCloudService.getName());
-            assertThat(cs.getProvider()).isEqualTo(compareCloudService.getProvider());
-            assertThat(cs.getUrl()).isEqualTo(compareCloudService.getUrl());
-            assertThat(cs.getCostModel()).isEqualTo(compareCloudService.getCostModel());
-        });
+    @Test
+    void findLinkedComputeResources() {
+        SoftwarePlatform softwarePlatform = getFullSoftwarePlatform("softwarePlatformName");
+        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.create(softwarePlatform);
+
+        Set<ComputeResource> storedComputeResources = new HashSet<>();
+        for (int i = 0; i < 10; i++) {
+            ComputeResource computeResource = new ComputeResource();
+            computeResource.setName("computeResource" + i);
+            computeResource.setVendor("vendor");
+            computeResource.setTechnology("technology");
+            computeResource.setQuantumComputationModel(QuantumComputationModel.QUANTUM_ANNEALING);
+            ComputeResource storedComputeResource = computeResourceService.create(computeResource);
+            storedComputeResources.add(storedComputeResource);
+            linkingService.linkSoftwarePlatformAndComputeResource(storedSoftwarePlatform.getId(), storedComputeResource.getId());
+        }
+        Set<ComputeResource> computeResources = softwarePlatformService.findLinkedComputeResources(
+                storedSoftwarePlatform.getId(), Pageable.unpaged()).toSet();
+
+        assertThat(computeResources.size()).isEqualTo(10);
+        computeResources.forEach(computeResource -> assertThat(storedComputeResources.contains(computeResource)).isTrue());
     }
 
-    private SoftwarePlatform getGenericTestSoftwarePlatformWithoutRelations(String name) throws MalformedURLException {
+    private SoftwarePlatform getFullSoftwarePlatform(String name) {
         SoftwarePlatform softwarePlatform = new SoftwarePlatform();
         softwarePlatform.setName(name);
-        softwarePlatform.setLink(new URL("http://example.com"));
-        softwarePlatform.setVersion("v1");
+        try {
+            softwarePlatform.setLink(new URL("http://example.com"));
+        } catch (MalformedURLException ignored) {
+        }
+        softwarePlatform.setVersion("version v1");
+        softwarePlatform.setLicence("licence");
         return softwarePlatform;
     }
 }

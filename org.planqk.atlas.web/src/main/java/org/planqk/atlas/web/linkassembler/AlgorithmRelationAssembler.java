@@ -1,9 +1,28 @@
+/*******************************************************************************
+ * Copyright (c) 2020 University of Stuttgart
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *******************************************************************************/
+
 package org.planqk.atlas.web.linkassembler;
 
 import java.util.UUID;
 
-import org.planqk.atlas.web.controller.AlgoRelationTypeController;
 import org.planqk.atlas.web.controller.AlgorithmController;
+import org.planqk.atlas.web.controller.AlgorithmRelationTypeController;
 import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
 
 import org.springframework.hateoas.EntityModel;
@@ -21,19 +40,20 @@ public class AlgorithmRelationAssembler extends GenericLinkAssembler<AlgorithmRe
         resource.add(links.linkTo(methodOn(AlgorithmController.class).getAlgorithm(getTargetAlgorithmId(resource)))
                 .withRel("targetAlgorithm"));
         resource.add(links.linkTo(
-                methodOn(AlgoRelationTypeController.class).getAlgoRelationTypeById(getAlgoRelationTypeId(resource)))
+                methodOn(AlgorithmRelationTypeController.class).getAlgorithmRelationType(getAlgoRelationTypeId(resource)))
                 .withRel("algoRelationType"));
     }
 
     private UUID getSourceAlgorithmId(EntityModel<AlgorithmRelationDto> resource) {
-        return resource.getContent().getSourceAlgorithm().getId();
+        return resource.getContent().getSourceAlgorithmId();
     }
 
     private UUID getTargetAlgorithmId(EntityModel<AlgorithmRelationDto> resource) {
-        return resource.getContent().getTargetAlgorithm().getId();
+        return resource.getContent().getTargetAlgorithmId();
     }
 
     private UUID getAlgoRelationTypeId(EntityModel<AlgorithmRelationDto> resource) {
-        return resource.getContent().getAlgoRelationType().getId();
+        var type = resource.getContent().getAlgorithmRelationType();
+        return type.getId();
     }
 }

@@ -24,12 +24,17 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
+@Testcontainers(disabledWithoutDocker = true)
 @ContextConfiguration(classes = { DatabaseTestEnvironmentConfiguration.class })
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
-@ExtendWith(DatabaseExtension.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public abstract class AtlasDatabaseTestBase {
+
+    @Container
+    public static DatabaseContainer postgreSQLContainer = DatabaseContainer.getInstance();
 
 }

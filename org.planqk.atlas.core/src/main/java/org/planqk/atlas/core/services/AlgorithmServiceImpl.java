@@ -23,35 +23,41 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
-import org.planqk.atlas.core.model.AlgoRelationType;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
+import org.planqk.atlas.core.model.ApplicationArea;
+import org.planqk.atlas.core.model.PatternRelation;
+import org.planqk.atlas.core.model.ProblemType;
+import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.model.Image;
 import org.planqk.atlas.core.model.QuantumAlgorithm;
 import org.planqk.atlas.core.model.Sketch;
 import org.planqk.atlas.core.repository.AlgorithmRelationRepository;
 import org.planqk.atlas.core.repository.AlgorithmRepository;
+import org.planqk.atlas.core.repository.ApplicationAreaRepository;
+import org.planqk.atlas.core.repository.ComputeResourcePropertyRepository;
+import org.planqk.atlas.core.repository.PatternRelationRepository;
+import org.planqk.atlas.core.repository.ProblemTypeRepository;
+import org.planqk.atlas.core.repository.PublicationRepository;
 import org.planqk.atlas.core.repository.ImageRepository;
 import org.planqk.atlas.core.repository.ImplementationRepository;
 import org.planqk.atlas.core.repository.SketchRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.planqk.atlas.core.util.ServiceUtils;
+
+import lombok.AllArgsConstructor;
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import lombok.AllArgsConstructor;
-
+@Slf4j
 @Service
 @AllArgsConstructor
 public class AlgorithmServiceImpl implements AlgorithmService {
-
-    private final static Logger LOG = LoggerFactory.getLogger(AlgorithmServiceImpl.class);
 
     private final AlgorithmRepository algorithmRepository;
 
@@ -59,117 +65,31 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 
     private final AlgorithmRelationRepository algorithmRelationRepository;
 
-    private final PatternRelationService patternRelationService;
+    private final ImplementationService implementationService;
 
-    private final AlgoRelationTypeService relationTypeService;
+    private final PublicationRepository publicationRepository;
+
+    private final ProblemTypeRepository problemTypeRepository;
+
+    private final ApplicationAreaRepository applicationAreaRepository;
+
+    private final ComputeResourcePropertyRepository computeResourcePropertyRepository;
+
+    private final PatternRelationService patternRelationService;
+    private final PatternRelationRepository patternRelationRepository;
 
     private final ImplementationRepository implementationRepository;
 
     private ImageRepository imageRepository;
 
-    @Transactional
     @Override
-    public Algorithm save(Algorithm algorithm) {
+    @Transactional
+    public Algorithm create(Algorithm algorithm) {
         return algorithmRepository.save(algorithm);
     }
 
-    private Set<AlgorithmRelation> getValidAlgorithmRelations(Algorithm algorithm, Set<AlgorithmRelation> inputRelations) {
-        // save relations to append after persisting algorithm
-
-        Set<AlgorithmRelation> validRelations = new HashSet<>();
-
-        for (AlgorithmRelation relation : inputRelations) {
-            // set correct source algorithm
-            relation.setSourceAlgorithm(algorithm);
-            if (algorithmRepository.existsAlgorithmById((relation.getTargetAlgorithm().getId()))) {
-                relation.setAlgoRelationType(getPersistedAlgoRelationType(relation));
-                validRelations.add(relation);
-            }
-        }
-
-        return validRelations;
-    }
-
-    private AlgoRelationType getPersistedAlgoRelationType(AlgorithmRelation relation) {
-        // TODO decide if missing AlgoRelationType causes exception or if it gets created
-        // AlgoRelationType gets created on the fly if it does not exist yet
-        return relationTypeService
-                .findOptionalById(relation.getAlgoRelationType().getId()).isPresent()
-                ? relation.getAlgoRelationType()
-                : relationTypeService.save(relation.getAlgoRelationType());
-    }
-
-    @Transactional
     @Override
-    public Algorithm update(UUID id, Algorithm algorithm) {
-        LOG.info("Trying to update algorithm");
-        Algorithm persistedAlg = algorithmRepository.findById(id).orElseThrow(NoSuchElementException::new);
-
-
-        persistedAlg.setSketches(algorithm.getSketches());
-        persistedAlg.setName(algorithm.getName());
-        persistedAlg.setAcronym(algorithm.getAcronym());
-        // persistedAlg.setPublications(algorithm.getPublications());
-        persistedAlg.setIntent(algorithm.getIntent());
-        persistedAlg.setProblem(algorithm.getProblem());
-        // persistedAlg.setAlgorithmRelations(algorithm.getAlgorithmRelations());
-        persistedAlg.setInputFormat(algorithm.getInputFormat());
-        persistedAlg.setAlgoParameter(algorithm.getAlgoParameter());
-        persistedAlg.setOutputFormat(algorithm.getOutputFormat());
-        persistedAlg.setSolution(algorithm.getSolution());
-        persistedAlg.setAssumptions(algorithm.getAssumptions());
-        persistedAlg.setComputationModel(algorithm.getComputationModel());
-        // persistedAlg.setRelatedPatterns(algorithm.getRelatedPatterns());
-        // persistedAlg.setProblemTypes(algorithm.getProblemTypes());
-        // persistedAlg.setApplicationAreas(algorithm.getApplicationAreas());
-        // persistedAlg.setTags(algorithm.getTags());
-        // persistedAlg.setRequiredComputingResourceProperties(persistedAlg.getRequiredComputingResourceProperties());
-
-        // If QuantumAlgorithm adjust Quantum fields
-        if (algorithm instanceof QuantumAlgorithm) {
-            QuantumAlgorithm quantumAlgorithm = (QuantumAlgorithm) algorithm;
-            QuantumAlgorithm persistedQuantumAlg = (QuantumAlgorithm) persistedAlg;
-
-            persistedQuantumAlg.setNisqReady(quantumAlgorithm.isNisqReady());
-            persistedQuantumAlg.setQuantumComputationModel(quantumAlgorithm.getQuantumComputationModel());
-            persistedQuantumAlg.setSpeedUp(quantumAlgorithm.getSpeedUp());
-
-            return algorithmRepository.save(persistedQuantumAlg);
-        } else {
-            // Else if ClassicAlgorithm no more fields to adjust
-            return algorithmRepository.save(persistedAlg);
-        }
-    }
-
-    @Override
-    @Transactional
-    public void delete(UUID id) {
-        Optional<Algorithm> algorithmOptional = algorithmRepository.findById(id);
-        if (algorithmOptional.isEmpty()) {
-            return;
-        }
-        Algorithm algorithm = algorithmOptional.get();
-
-        // delete related implementations
-        implementationRepository.findByImplementedAlgorithm(algorithm).forEach(implementationRepository::delete);
-
-        // delete ingoing and outgoing algorithm relations
-        Set<AlgorithmRelation> linkedAsTargetRelations = algorithmRelationRepository.findByTargetAlgorithmId(id);
-        linkedAsTargetRelations.addAll(algorithmRelationRepository.findBySourceAlgorithmId(id));
-        for (AlgorithmRelation relation : linkedAsTargetRelations) {
-            algorithmRelationRepository.delete(relation);
-        }
-
-        // delete related pattern relations
-        patternRelationService.findByAlgorithmId(id).forEach(patternRelation -> patternRelationService.deleteById(patternRelation.getId()));
-
-        //Remove all publications associations
-        algorithmRepository.deleteAssociationsOfAlgorithm(id);
-        algorithmRepository.deleteById(id);
-    }
-
-    @Override
-    public Page<Algorithm> findAll(Pageable pageable, String search) {
+    public Page<Algorithm> findAll(@NonNull Pageable pageable, String search) {
         if (!Objects.isNull(search) && !search.isEmpty()) {
             return algorithmRepository.findAll(search, pageable);
         }
@@ -177,83 +97,152 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     }
 
     @Override
-    public Algorithm findById(UUID algoId) {
-        return findOptionalById(algoId).orElseThrow(NoSuchElementException::new);
+    public Algorithm findById(@NonNull UUID algorithmId) {
+        return ServiceUtils.findById(algorithmId, Algorithm.class, algorithmRepository);
     }
 
     @Override
-    public Optional<Algorithm> findOptionalById(UUID algoId) {
-        return algorithmRepository.findById(algoId);
-    }
-
     @Transactional
-    @Override
-    public AlgorithmRelation addOrUpdateAlgorithmRelation(UUID sourceAlgorithmId, AlgorithmRelation relation) {
-        // Read involved Algorithms from database
-        Algorithm sourceAlgorithm = findById(sourceAlgorithmId);
-        Algorithm targetAlgorithm = findById(relation.getTargetAlgorithm().getId());
+    public Algorithm update(@NonNull Algorithm algorithm) {
+        Algorithm persistedAlgorithm = findById(algorithm.getId());
 
-        if (relation.getAlgoRelationType().getId() == null) {
-            relationTypeService.save(relation.getAlgoRelationType());
+        persistedAlgorithm.setSketches(algorithm.getSketches());
+
+        persistedAlgorithm.setName(algorithm.getName());
+        persistedAlgorithm.setAcronym(algorithm.getAcronym());
+        persistedAlgorithm.setIntent(algorithm.getIntent());
+        persistedAlgorithm.setProblem(algorithm.getProblem());
+        persistedAlgorithm.setInputFormat(algorithm.getInputFormat());
+        persistedAlgorithm.setAlgoParameter(algorithm.getAlgoParameter());
+        persistedAlgorithm.setOutputFormat(algorithm.getOutputFormat());
+        persistedAlgorithm.setSolution(algorithm.getSolution());
+        persistedAlgorithm.setAssumptions(algorithm.getAssumptions());
+        persistedAlgorithm.setComputationModel(algorithm.getComputationModel());
+
+        if (algorithm instanceof QuantumAlgorithm) {
+            QuantumAlgorithm quantumAlgorithm = (QuantumAlgorithm) algorithm;
+            QuantumAlgorithm persistedQuantumAlgorithm = (QuantumAlgorithm) persistedAlgorithm;
+
+            persistedQuantumAlgorithm.setNisqReady(quantumAlgorithm.isNisqReady());
+            persistedQuantumAlgorithm.setQuantumComputationModel(quantumAlgorithm.getQuantumComputationModel());
+            persistedQuantumAlgorithm.setSpeedUp(quantumAlgorithm.getSpeedUp());
+
+            return algorithmRepository.save(persistedQuantumAlgorithm);
+        } else {
+            return algorithmRepository.save(persistedAlgorithm);
         }
-        Optional<AlgoRelationType> relationTypeOpt = relationTypeService
-                .findOptionalById(relation.getAlgoRelationType().getId());
+    }
 
-        // Create relation type if not exists
-        AlgoRelationType relationType = relationTypeOpt.isPresent()
-                ? relationTypeOpt.get()
-                : relationTypeService.save(relation.getAlgoRelationType());
+    @Override
+    @Transactional
+    public void delete(@NonNull UUID algorithmId) {
+        Algorithm algorithm = findById(algorithmId);
 
-        // Check if relation with those two algorithms and the relation type already
-        // exists
-        Optional<AlgorithmRelation> persistedRelationOpt = algorithmRelationRepository
-                .findBySourceAlgorithmIdAndTargetAlgorithmIdAndAlgoRelationTypeId(sourceAlgorithm.getId(),
-                        targetAlgorithm.getId(), relationType.getId());
+        removeReferences(algorithm);
 
-        // If relation between the two algorithms already exists, update it
-        if (persistedRelationOpt.isPresent()) {
-            AlgorithmRelation persistedRelation = persistedRelationOpt.get();
-            persistedRelation.setDescription(relation.getDescription());
-            // Return updated relation
-            return algorithmRelationRepository.save(persistedRelation);
+        algorithmRepository.deleteById(algorithmId);
+    }
+
+    private void removeReferences(@NonNull Algorithm algorithm) {
+        // delete related implementations
+        algorithm.getImplementations().forEach(
+                implementation -> implementationService.delete(implementation.getId()));
+
+        // delete compute resource property
+        algorithm.getRequiredComputeResourceProperties().forEach(computeResourcePropertyRepository::delete);
+
+        // delete algorithm relations
+        algorithm.getAlgorithmRelations().forEach(algorithmRelationRepository::delete);
+
+        // delete related pattern relations
+        algorithm.getRelatedPatterns().forEach(
+                patternRelation -> patternRelationService.delete(patternRelation.getId()));
+
+        // remove links to publications
+        algorithm.getPublications().forEach(
+                publication -> publication.removeAlgorithm(algorithm));
+
+        // remove links to application areas
+        algorithm.getApplicationAreas().forEach(
+                applicationArea -> applicationArea.removeAlgorithm(algorithm));
+
+        // remove links to problem types
+        algorithm.getProblemTypes().forEach(
+                problemType -> problemType.removeAlgorithm(algorithm));
+
+        // remove link to tag
+        algorithm.getTags().forEach(tag -> tag.removeAlgorithm(algorithm));
+    }
+
+    @Override
+    public Page<AlgorithmRelation> findLinkedAlgorithmRelations(@NonNull UUID algorithmId, @NonNull Pageable pageable) {
+        ServiceUtils.throwIfNotExists(algorithmId, Algorithm.class, algorithmRepository);
+
+        return getAlgorithmRelations(algorithmId, pageable);
+    }
+
+    @Override
+    public Page<PatternRelation> findLinkedPatternRelations(@NonNull UUID algorithmId, @NonNull Pageable pageable) {
+        ServiceUtils.throwIfNotExists(algorithmId, Algorithm.class, algorithmRepository);
+
+        return patternRelationRepository.findByAlgorithmId(algorithmId, pageable);
+    }
+
+    @Override
+    public Page<Publication> findLinkedPublications(@NonNull UUID algorithmId, @NonNull Pageable pageable) {
+        ServiceUtils.throwIfNotExists(algorithmId, Algorithm.class, algorithmRepository);
+
+        return publicationRepository.findPublicationsByAlgorithmId(algorithmId, pageable);
+    }
+
+    @Override
+    public Page<ProblemType> findLinkedProblemTypes(@NonNull UUID algorithmId, @NonNull Pageable pageable) {
+        ServiceUtils.throwIfNotExists(algorithmId, Algorithm.class, algorithmRepository);
+
+        return problemTypeRepository.findProblemTypesByAlgorithmId(algorithmId, pageable);
+    }
+
+    @Override
+    public Page<ApplicationArea> findLinkedApplicationAreas(@NonNull UUID algorithmId, @NonNull Pageable pageable) {
+        ServiceUtils.throwIfNotExists(algorithmId, Algorithm.class, algorithmRepository);
+
+        return applicationAreaRepository.findApplicationAreasByAlgorithmId(algorithmId, pageable);
+    }
+
+    @Override
+    public void checkIfPublicationIsLinkedToAlgorithm(UUID algorithmId, UUID publicationId) {
+        Algorithm algorithm = findById(algorithmId);
+        Publication publication = ServiceUtils.findById(publicationId, Publication.class, publicationRepository);
+
+        if (!algorithm.getPublications().contains(publication)) {
+            throw new NoSuchElementException("Publication with ID \"" + publicationId
+                    + "\" is not linked to Algorithm with ID \"" + algorithmId +  "\"");
         }
-
-        // Set Relation Objects with referenced database objects
-        relation.setSourceAlgorithm(sourceAlgorithm);
-        relation.setTargetAlgorithm(targetAlgorithm);
-        relation.setAlgoRelationType(relationType);
-
-        sourceAlgorithm.addAlgorithmRelation(relation);
-
-        // Save updated Algorithm -> CASCADE will save Relation
-        this.algorithmRepository.save(sourceAlgorithm);
-        persistedRelationOpt = algorithmRelationRepository
-                .findBySourceAlgorithmIdAndTargetAlgorithmIdAndAlgoRelationTypeId(sourceAlgorithm.getId(),
-                        targetAlgorithm.getId(), relationType.getId());
-
-        return persistedRelationOpt.get();
     }
 
     @Override
-    public void deleteAlgorithmRelation(UUID algoId, UUID relationId) {
-        // Get involved Objects from database
-        Algorithm sourceAlgorithm = algorithmRepository.findById(algoId)
-                .orElseThrow(() -> new NoSuchElementException("Algorithm does not exist!"));
-        AlgorithmRelation relation = algorithmRelationRepository.findById(relationId)
-                .orElseThrow(() -> new NoSuchElementException("Relation does not exist!"));
+    public void checkIfProblemTypeIsLinkedToAlgorithm(UUID algorithmId, UUID problemTypeId) {
+        Algorithm algorithm = findById(algorithmId);
+        ProblemType problemType = ServiceUtils.findById(problemTypeId, ProblemType.class, problemTypeRepository);
 
-        Set<AlgorithmRelation> algorithmRelations = sourceAlgorithm.getAlgorithmRelations();
-        algorithmRelations.remove(relation);
-        algorithmRepository.save(sourceAlgorithm);
+        if (!algorithm.getProblemTypes().contains(problemType)) {
+            throw new NoSuchElementException("ProblemType with ID \"" + problemTypeId
+                    + "\" is not linked to Algorithm with ID \"" + algorithmId +  "\"");
+        }
     }
 
     @Override
-    public Set<AlgorithmRelation> getAlgorithmRelations(UUID sourceAlgorithmId) {
-        Set<AlgorithmRelation> relations = algorithmRelationRepository.findBySourceAlgorithmId(sourceAlgorithmId);
-        relations.addAll(algorithmRelationRepository.findByTargetAlgorithmId(sourceAlgorithmId));
-        return relations;
+    public void checkIfApplicationAreaIsLinkedToAlgorithm(UUID algorithmId, UUID applicationAreaId) {
+        Algorithm algorithm = findById(algorithmId);
+        ApplicationArea applicationArea = ServiceUtils.findById(applicationAreaId, ApplicationArea.class, applicationAreaRepository);
+
+        if (!algorithm.getApplicationAreas().contains(applicationArea)) {
+            throw new NoSuchElementException("ApplicationArea with ID \"" + applicationAreaId
+                    + "\" is not linked to Algorithm with ID \"" + algorithmId +  "\"");
+        }
     }
 
-
-
+    private Page<AlgorithmRelation> getAlgorithmRelations(@NonNull UUID algorithmId, @NonNull Pageable pageable) {
+        return algorithmRelationRepository.findBySourceAlgorithmIdOrTargetAlgorithmId(algorithmId, algorithmId, pageable);
+    }
 }

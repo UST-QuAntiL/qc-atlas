@@ -29,7 +29,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springdoc.data.rest.converters.PageableAsQueryParam;
 
-@Target({ ElementType.METHOD, ElementType.ANNOTATION_TYPE })
+@Target( {ElementType.METHOD, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @PageableAsQueryParam
 @Parameter(in = ParameterIn.QUERY, description = "Filter criteria for this query ", name = "search",

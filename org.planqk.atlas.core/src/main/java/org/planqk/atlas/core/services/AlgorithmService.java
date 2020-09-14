@@ -19,12 +19,14 @@
 
 package org.planqk.atlas.core.services;
 
-import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
+import org.planqk.atlas.core.model.ApplicationArea;
+import org.planqk.atlas.core.model.PatternRelation;
+import org.planqk.atlas.core.model.ProblemType;
+import org.planqk.atlas.core.model.Publication;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,26 +35,31 @@ import org.springframework.transaction.annotation.Transactional;
 public interface AlgorithmService {
 
     @Transactional
-    Algorithm save(Algorithm algorithm);
-
-    @Transactional
-    Algorithm update(UUID id, Algorithm algorithm);
-
-    @Transactional
-    void delete(UUID id);
-
-    @Transactional
-    void deleteAlgorithmRelation(UUID algoId, UUID relationId);
+    Algorithm create(Algorithm algorithm);
 
     Page<Algorithm> findAll(Pageable pageable, String search);
 
-    Algorithm findById(UUID algoId);
-
-    Optional<Algorithm> findOptionalById(UUID algoId);
+    Algorithm findById(UUID algorithmId);
 
     @Transactional
-    AlgorithmRelation addOrUpdateAlgorithmRelation(UUID sourceAlgorithm_id, AlgorithmRelation relation);
+    Algorithm update(Algorithm algorithm);
 
-    Set<AlgorithmRelation> getAlgorithmRelations(UUID sourceAlgorithm_id);
+    @Transactional
+    void delete(UUID algorithmId);
 
+    Page<AlgorithmRelation> findLinkedAlgorithmRelations(UUID algorithmId, Pageable pageable);
+
+    Page<PatternRelation> findLinkedPatternRelations(UUID algorithmId, Pageable pageable);
+
+    Page<Publication> findLinkedPublications(UUID algorithmId, Pageable pageable);
+
+    Page<ProblemType> findLinkedProblemTypes(UUID algorithmId, Pageable pageable);
+
+    Page<ApplicationArea> findLinkedApplicationAreas(UUID algorithmId, Pageable pageable);
+
+    void checkIfPublicationIsLinkedToAlgorithm(UUID algorithmId, UUID publicationId);
+
+    void checkIfProblemTypeIsLinkedToAlgorithm(UUID algorithmId, UUID problemTypeId);
+
+    void checkIfApplicationAreaIsLinkedToAlgorithm(UUID algorithmId, UUID applicationAreaId);
 }

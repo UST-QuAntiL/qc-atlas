@@ -29,6 +29,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NonNull;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -43,11 +44,7 @@ public class ApplicationArea extends HasId {
     @EqualsAndHashCode.Exclude
     private Set<Algorithm> algorithms = new HashSet<>();
 
-    public Set<Algorithm> getAlgorithms() {
-        return new HashSet<Algorithm>(algorithms);
-    }
-
-    public void addAlgorithm(Algorithm algorithm) {
+    public void addAlgorithm(@NonNull Algorithm algorithm) {
         if (algorithms.contains(algorithm)) {
             return;
         }
@@ -55,7 +52,7 @@ public class ApplicationArea extends HasId {
         algorithm.addApplicationArea(this);
     }
 
-    public void removeAlgorithm(Algorithm algorithm) {
+    public void removeAlgorithm(@NonNull Algorithm algorithm) {
         if (!algorithms.contains(algorithm)) {
             return;
         }

@@ -18,8 +18,7 @@
  *******************************************************************************/
 package org.planqk.atlas.core.model;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import java.time.OffsetDateTime;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -27,7 +26,8 @@ import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
-import java.time.OffsetDateTime;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
@@ -40,6 +40,7 @@ public class DiscussionComment extends HasId {
     @OneToOne
     private DiscussionComment replyTo;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.REFRESH, CascadeType.MERGE})
+    @ManyToOne(fetch = FetchType.LAZY,
+            cascade = {CascadeType.REFRESH, CascadeType.MERGE})
     private DiscussionTopic discussionTopic;
 }

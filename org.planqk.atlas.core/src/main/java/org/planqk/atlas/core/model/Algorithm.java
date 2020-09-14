@@ -19,6 +19,11 @@
 
 package org.planqk.atlas.core.model;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -37,6 +42,8 @@ import org.springframework.lang.NonNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.ToString;
 
 /**
  * Entity representing a quantum algorithm, e.g., Shors factorization algorithm.
@@ -45,7 +52,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
-public class Algorithm extends KnowledgeArtifact implements ModelWithPublications {
+public class Algorithm extends KnowledgeArtifact {
 
     private String name;
 
@@ -71,14 +78,26 @@ public class Algorithm extends KnowledgeArtifact implements ModelWithPublication
     @Column(columnDefinition = "text")
     private String outputFormat;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, orphanRemoval = true)
-    @JoinColumn(name = "sourceAlgorithm", referencedColumnName = "id")
+    @OneToMany(fetch = FetchType.LAZY,
+            cascade = {CascadeType.ALL},
+            mappedBy = "sourceAlgorithm",
+            orphanRemoval = true)
     @EqualsAndHashCode.Exclude
-    private Set<AlgorithmRelation> algorithmRelations = new HashSet<>();
+    private Set<AlgorithmRelation> sourceAlgorithmRelations = new HashSet<>();
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "algorithm", orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY,
+            cascade = {CascadeType.ALL},
+            mappedBy = "targetAlgorithm",
+            orphanRemoval = true)
     @EqualsAndHashCode.Exclude
-    private Set<ComputingResourceProperty> requiredComputingResourceProperties = new HashSet<>();
+    private Set<AlgorithmRelation> targetAlgorithmRelations = new HashSet<>();
+
+    @OneToMany(fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL,
+            mappedBy = "algorithm",
+            orphanRemoval = true)
+    @EqualsAndHashCode.Exclude
+    private Set<ComputeResourceProperty> requiredComputeResourceProperties = new HashSet<>();
 
     @Column(columnDefinition = "text")
     private String algoParameter;
@@ -93,7 +112,10 @@ public class Algorithm extends KnowledgeArtifact implements ModelWithPublication
 
     private ComputationModel computationModel;
 
-    @OneToMany(mappedBy = "algorithm", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL,
+            mappedBy = "algorithm",
+            orphanRemoval = true)
     @EqualsAndHashCode.Exclude
     private Set<PatternRelation> relatedPatterns = new HashSet<>();
 
@@ -111,39 +133,72 @@ public class Algorithm extends KnowledgeArtifact implements ModelWithPublication
     @EqualsAndHashCode.Exclude
     private Set<ApplicationArea> applicationAreas = new HashSet<>();
 
-    @ManyToMany(cascade = {CascadeType.MERGE})
-    @JoinTable(name = "algorithm_tag", joinColumns = @JoinColumn(name = "algorithm_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "algorithm_tag",
+            joinColumns = @JoinColumn(name = "algorithm_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_value"))
     @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private Set<Tag> tags = new HashSet<>();
 
-    @NonNull
-    public boolean addAlgorithmRelation(AlgorithmRelation relation) {
-        return algorithmRelations.add(relation);
+    @OneToMany(mappedBy = "implementedAlgorithm",
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private Set<Implementation> implementations = new HashSet<>();
+
+    public void addTag(@NonNull Tag tag) {
+        if (tags.contains(tag)) {
+            return;
+        }
+        this.tags.add(tag);
+        tag.addAlgorithm(this);
     }
 
-    public void setAlgorithmRelations(Set<AlgorithmRelation> algorithmRelations) {
-        this.algorithmRelations.clear();
-        if (algorithmRelations != null) {
-            this.algorithmRelations.addAll(algorithmRelations);
+    public void removeTag(@NonNull Tag tag) {
+        if (!tags.contains(tag)) {
+            return;
+        }
+        this.tags.remove(tag);
+        tag.removeAlgorithm(this);
+    }
+
+    public void addAlgorithmRelation(@NonNull AlgorithmRelation algorithmRelation) {
+        if (algorithmRelation.getSourceAlgorithm().getId() == this.getId()) {
+            sourceAlgorithmRelations.add(algorithmRelation);
+            algorithmRelation.setSourceAlgorithm(this);
+        } else if (algorithmRelation.getTargetAlgorithm().getId() == this.getId()) {
+            targetAlgorithmRelations.add(algorithmRelation);
+            algorithmRelation.setTargetAlgorithm(this);
         }
     }
 
-    public void setRelatedPatterns(Set<PatternRelation> relatedPatterns) {
+    public void removeAlgorithmRelation(@NonNull AlgorithmRelation algorithmRelation) {
+        if (algorithmRelation.getSourceAlgorithm().getId() == this.getId()) {
+            sourceAlgorithmRelations.remove(algorithmRelation);
+            algorithmRelation.setSourceAlgorithm(null);
+        } else if (algorithmRelation.getTargetAlgorithm().getId() == this.getId()) {
+            targetAlgorithmRelations.remove(algorithmRelation);
+            algorithmRelation.setTargetAlgorithm(null);
+        }
+    }
+
+    public Set<AlgorithmRelation> getAlgorithmRelations() {
+        Set<AlgorithmRelation> algorithmRelations = new HashSet<>(sourceAlgorithmRelations);
+        algorithmRelations.addAll(targetAlgorithmRelations);
+        return algorithmRelations;
+    }
+
+    public void setRelatedPatterns(@NonNull Set<PatternRelation> relatedPatterns) {
         this.relatedPatterns.clear();
         if (relatedPatterns != null) {
             this.relatedPatterns.addAll(relatedPatterns);
         }
     }
 
-    public void addComputingResource(@lombok.NonNull ComputingResourceProperty resource) {
-        this.requiredComputingResourceProperties.add(resource);
-    }
-
-    public Set<Publication> getPublications() {
-        return new HashSet<>(publications);
-    }
-
-    public void addPublication(Publication publication) {
+    public void addPublication(@NonNull Publication publication) {
         if (publications.contains(publication)) {
             return;
         }
@@ -151,7 +206,7 @@ public class Algorithm extends KnowledgeArtifact implements ModelWithPublication
         publication.addAlgorithm(this);
     }
 
-    public void removePublication(Publication publication) {
+    public void removePublication(@NonNull Publication publication) {
         if (!publications.contains(publication)) {
             return;
         }
@@ -159,11 +214,7 @@ public class Algorithm extends KnowledgeArtifact implements ModelWithPublication
         publication.removeAlgorithm(this);
     }
 
-    public Set<ApplicationArea> getApplicationAreas() {
-        return new HashSet<ApplicationArea>(applicationAreas);
-    }
-
-    public void addApplicationArea(ApplicationArea applicationArea) {
+    public void addApplicationArea(@NonNull ApplicationArea applicationArea) {
         if (applicationAreas.contains(applicationArea)) {
             return;
         }
@@ -171,7 +222,7 @@ public class Algorithm extends KnowledgeArtifact implements ModelWithPublication
         applicationArea.addAlgorithm(this);
     }
 
-    public void removeApplicationArea(ApplicationArea applicationArea) {
+    public void removeApplicationArea(@NonNull ApplicationArea applicationArea) {
         if (!applicationAreas.contains(applicationArea)) {
             return;
         }
@@ -179,11 +230,7 @@ public class Algorithm extends KnowledgeArtifact implements ModelWithPublication
         applicationArea.removeAlgorithm(this);
     }
 
-    public Set<ProblemType> getProblemTypes() {
-        return new HashSet<ProblemType>(problemTypes);
-    }
-
-    public void addProblemType(ProblemType problemType) {
+    public void addProblemType(@NonNull ProblemType problemType) {
         if (problemTypes.contains(problemType)) {
             return;
         }
@@ -191,7 +238,7 @@ public class Algorithm extends KnowledgeArtifact implements ModelWithPublication
         problemType.addAlgorithm(this);
     }
 
-    public void removeProblemType(ProblemType problemType) {
+    public void removeProblemType(@NonNull ProblemType problemType) {
         if (!problemTypes.contains(problemType)) {
             return;
         }

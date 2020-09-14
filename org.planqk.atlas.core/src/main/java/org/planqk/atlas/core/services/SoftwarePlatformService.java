@@ -19,26 +19,39 @@
 
 package org.planqk.atlas.core.services;
 
+import java.util.UUID;
+
+import org.planqk.atlas.core.model.CloudService;
+import org.planqk.atlas.core.model.ComputeResource;
+import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.SoftwarePlatform;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.UUID;
-
 public interface SoftwarePlatformService {
 
+    Page<SoftwarePlatform> searchAllByName(String name, Pageable pageable);
+
     @Transactional
-    SoftwarePlatform save(SoftwarePlatform softwarePlatform);
+    SoftwarePlatform create(SoftwarePlatform softwarePlatform);
 
     Page<SoftwarePlatform> findAll(Pageable pageable);
 
-    SoftwarePlatform findById(UUID platformId);
+    SoftwarePlatform findById(UUID softwarePlatformId);
 
     @Transactional
-    SoftwarePlatform update(UUID id, SoftwarePlatform softwarePlatform);
+    SoftwarePlatform update(SoftwarePlatform softwarePlatform);
 
     @Transactional
-    void delete(UUID platformId);
+    void delete(UUID softwarePlatformId);
+
+    Page<Implementation> findLinkedImplementations(UUID softwarePlatformId, Pageable pageable);
+
+    Page<CloudService> findLinkedCloudServices(UUID softwarePlatformId, Pageable pageable);
+
+    Page<ComputeResource> findLinkedComputeResources(UUID softwarePlatformId, Pageable pageable);
+
+    void checkIfImplementationIsLinkedToSoftwarePlatform(UUID softwarePlatformId, UUID implementationId);
 }

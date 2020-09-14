@@ -1,214 +1,392 @@
-//package org.planqk.atlas.web.controller;
-//
-//import com.fasterxml.jackson.core.type.TypeReference;
-//import com.fasterxml.jackson.databind.DeserializationFeature;
-//import com.fasterxml.jackson.databind.ObjectMapper;
-//import org.json.JSONObject;
-//import org.junit.jupiter.api.BeforeEach;
-//import org.junit.jupiter.api.Test;
-//import org.junit.jupiter.api.extension.ExtendWith;
-//import org.mockito.junit.jupiter.MockitoExtension;
-//import org.planqk.atlas.core.model.CloudService;
-//import org.planqk.atlas.core.services.CloudServiceService;
-//import org.planqk.atlas.web.Constants;
-//import org.planqk.atlas.web.dtos.CloudServiceDto;
-//import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
-//import org.planqk.atlas.web.utils.ModelMapperUtils;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-//import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-//import org.springframework.boot.test.mock.mockito.MockBean;
-//import org.springframework.data.domain.Page;
-//import org.springframework.data.domain.PageImpl;
-//import org.springframework.data.domain.PageRequest;
-//import org.springframework.data.domain.Pageable;
-//import org.springframework.hateoas.EntityModel;
-//import org.springframework.hateoas.PagedModel;
-//import org.springframework.http.MediaType;
-//import org.springframework.test.web.servlet.MockMvc;
-//import org.springframework.test.web.servlet.MvcResult;
-//
-//import java.util.ArrayList;
-//import java.util.List;
-//import java.util.NoSuchElementException;
-//import java.util.UUID;
-//
-//import static org.junit.Assert.assertEquals;
-//import static org.mockito.ArgumentMatchers.any;
-//import static org.mockito.Mockito.*;
-//import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-//import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-//
-//@WebMvcTest(controllers = { CloudServiceController.class })
-//@ExtendWith({ MockitoExtension.class })
-//@AutoConfigureMockMvc
-//@EnableLinkAssemblers
-//public class CloudServiceControllerTest {
-//    @MockBean
-//    private CloudServiceService cloudServiceService;
-//
-//    @Autowired
-//    private MockMvc mockMvc;
-//
-//    private ObjectMapper mapper;
-//
-//    private final int page = 0;
-//    private final int size = 10;
-//    private final Pageable pageable = PageRequest.of(page, size);
-//
-//    private final String cloudServiceDtoJSONName = "cloudServiceDtoes";
-//
-//    @BeforeEach
-//    public void init() {
-//        mapper = new ObjectMapper();
-//        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-//    }
-//
-//    @Test
-//    public void addCloudService_returnBadRequest() throws Exception {
-//        CloudServiceDto cloudServiceDto = new CloudServiceDto();
-//        cloudServiceDto.setId(UUID.randomUUID());
-//
-//        mockMvc.perform(post("/" + Constants.CLOUD_SERVICES + "/").content(mapper.writeValueAsString(cloudServiceDto))
-//                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isBadRequest());
-//    }
-//
-//    @Test
-//    public void addCloudService_returnCreate() throws Exception {
-//        CloudService cloudService = new CloudService();
-//        cloudService.setId(UUID.randomUUID());
-//        cloudService.setName("test cloud service");
-//        CloudServiceDto cloudServiceDto = ModelMapperUtils.convert(cloudService, CloudServiceDto.class);
-//
-//        when(cloudServiceService.save(any(CloudService.class))).thenReturn(cloudService);
-//
-//        MvcResult result = mockMvc
-//                .perform(post("/" + Constants.CLOUD_SERVICES + "/").content(mapper.writeValueAsString(cloudServiceDto))
-//                        .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isCreated()).andReturn();
-//
-//        EntityModel<CloudServiceDto> resultDtoEntity = mapper.readValue(result.getResponse().getContentAsString(),
-//                new TypeReference<>() {
-//                });
-//
-//        assertEquals(cloudServiceDto.getId(), resultDtoEntity.getContent().getId());
-//        assertEquals(cloudServiceDto.getName(), resultDtoEntity.getContent().getName());
-//    }
-//
-//    @Test
-//    public void getCloudServices_withEmptySet() throws Exception {
-//        when(cloudServiceService.findAll(pageable)).thenReturn(Page.empty());
-//
-//        MvcResult result = mockMvc
-//                .perform(get("/" + Constants.CLOUD_SERVICES + "/").queryParam(Constants.PAGE, Integer.toString(page))
-//                        .queryParam(Constants.SIZE, Integer.toString(size)).accept(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk()).andReturn();
-//
-//        PagedModel<EntityModel<CloudServiceDto>> pagedDtoEntities = mapper
-//                .readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
-//                });
-//
-//        assertEquals(0, pagedDtoEntities.getContent().size());
-//    }
-//
-//    @Test
-//    public void getCloudServices_withOneElement() throws Exception {
-//        List<CloudService> cloudServices = new ArrayList<>();
-//        CloudService cloudService = new CloudService();
-//        cloudService.setId(UUID.randomUUID());
-//        cloudService.setName("test software platform");
-//        cloudServices.add(cloudService);
-//
-//        Page<CloudService> cloudServicePage = new PageImpl<>(cloudServices);
-//
-//        when(cloudServiceService.findAll(pageable)).thenReturn(cloudServicePage);
-//
-//        MvcResult result = mockMvc
-//                .perform(get("/" + Constants.CLOUD_SERVICES + "/").queryParam(Constants.PAGE, Integer.toString(page))
-//                        .queryParam(Constants.SIZE, Integer.toString(size)).accept(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk()).andReturn();
-//
-//        JSONObject rootObject = new JSONObject(result.getResponse().getContentAsString());
-//        var embeddedResources = rootObject.getJSONObject("_embedded").getJSONArray(cloudServiceDtoJSONName);
-//
-//        var responseDto = mapper.readValue(embeddedResources.getJSONObject(0).toString(), CloudServiceDto.class);
-//
-//        assertEquals(1, embeddedResources.length());
-//        assertEquals(responseDto.getId(), cloudService.getId());
-//        assertEquals(responseDto.getName(), cloudService.getName());
-//    }
-//
-//    @Test
-//    public void getCloudServices_withMultipleElements() throws Exception {
-//        List<CloudService> cloudServices = new ArrayList<>();
-//        CloudService cloudService;
-//        for (int i = 0; i < size; i++) {
-//            cloudService = new CloudService();
-//            cloudService.setId(UUID.randomUUID());
-//            cloudService.setName("test cloud service " + i);
-//            cloudServices.add(cloudService);
-//        }
-//
-//        Page<CloudService> cloudServicePage = new PageImpl<>(cloudServices);
-//
-//        when(cloudServiceService.findAll(pageable)).thenReturn(cloudServicePage);
-//
-//        MvcResult result = mockMvc
-//                .perform(get("/" + Constants.CLOUD_SERVICES + "/").queryParam(Constants.PAGE, Integer.toString(page))
-//                        .queryParam(Constants.SIZE, Integer.toString(size)).accept(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk()).andReturn();
-//
-//        JSONObject rootObject = new JSONObject(result.getResponse().getContentAsString());
-//        var embeddedResources = rootObject.getJSONObject("_embedded").getJSONArray(cloudServiceDtoJSONName);
-//
-//        assertEquals(embeddedResources.length(), size);
-//    }
-//
-//    @Test
-//    public void getCloudService_returnNotFound() throws Exception {
-//        UUID testId = UUID.randomUUID();
-//        when(cloudServiceService.findById(testId)).thenThrow(NoSuchElementException.class);
-//
-//        mockMvc.perform(
-//                get("/" + Constants.CLOUD_SERVICES + "/" + testId.toString()).accept(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isNotFound());
-//    }
-//
-//    @Test
-//    public void getCloudService_returnElement() throws Exception {
-//        CloudService cloudService = new CloudService();
-//        cloudService.setId(UUID.randomUUID());
-//        cloudService.setName("test software platform");
-//        when(cloudServiceService.findById(cloudService.getId())).thenReturn(cloudService);
-//
-//        MvcResult result = mockMvc.perform(
-//                get("/" + Constants.CLOUD_SERVICES + "/" + cloudService.getId()).accept(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk()).andReturn();
-//
-//        EntityModel<CloudServiceDto> cloudServiceDtoEntity = mapper.readValue(result.getResponse().getContentAsString(),
-//                new TypeReference<>() {
-//                });
-//
-//        assertEquals(cloudServiceDtoEntity.getContent().getId(), cloudService.getId());
-//        assertEquals(cloudServiceDtoEntity.getContent().getName(), cloudService.getName());
-//    }
-//
-//    @Test
-//    public void deleteCloudService_returnNotFound() throws Exception {
-//        UUID testId = UUID.randomUUID();
-//        doThrow(new NoSuchElementException()).when(cloudServiceService).delete(testId);
-//
-//        mockMvc.perform(delete("/" + Constants.CLOUD_SERVICES + "/" + testId).accept(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isNotFound());
-//    }
-//
-//    @Test
-//    public void deleteCloudService_returnOk() throws Exception {
-//        UUID testId = UUID.randomUUID();
-//        doNothing().when(cloudServiceService).delete(testId);
-//
-//        mockMvc.perform(delete("/" + Constants.CLOUD_SERVICES + "/" + testId).accept(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk());
-//    }
-//}
+/*******************************************************************************
+ * Copyright (c) 2020 University of Stuttgart
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *******************************************************************************/
+
+package org.planqk.atlas.web.controller;
+
+import java.util.ArrayList;
+import java.util.NoSuchElementException;
+import java.util.UUID;
+
+import org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException;
+import org.planqk.atlas.core.model.CloudService;
+import org.planqk.atlas.core.model.ComputeResource;
+import org.planqk.atlas.core.services.CloudServiceService;
+import org.planqk.atlas.core.services.LinkingService;
+import org.planqk.atlas.web.Constants;
+import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
+import org.planqk.atlas.web.dtos.CloudServiceDto;
+import org.planqk.atlas.web.dtos.ComputeResourceDto;
+import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.fromMethodCall;
+import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.on;
+
+@WebMvcTest(controllers = {CloudServiceController.class})
+@ExtendWith( {MockitoExtension.class})
+@AutoConfigureMockMvc
+@EnableLinkAssemblers
+public class CloudServiceControllerTest {
+
+    @MockBean
+    private CloudServiceService cloudServiceService;
+    @MockBean
+    private LinkingService linkingService;
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    private final ObjectMapper mapper = ObjectMapperUtils.newTestMapper();
+    private final UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromPath("/");
+
+    private final int page = 0;
+    private final int size = 2;
+    private final Pageable pageable = PageRequest.of(page, size);
+
+    @Test
+    public void addCloudService_returnBadRequest() throws Exception {
+        var resource = new CloudServiceDto();
+        resource.setId(UUID.randomUUID());
+
+        var url = fromMethodCall(uriBuilder, on(CloudServiceController.class)
+                .createCloudService(null)).toUriString();
+
+        mockMvc.perform(post(url).content(mapper.writeValueAsString(resource))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void addCloudService_returnCreated() throws Exception {
+        var service = new CloudServiceDto();
+        service.setName("Hello World");
+
+        var returnedService = new CloudService();
+        returnedService.setName(service.getName());
+        returnedService.setId(UUID.randomUUID());
+
+        doReturn(returnedService).when(cloudServiceService).create(any());
+
+        var url = fromMethodCall(uriBuilder, on(CloudServiceController.class)
+                .createCloudService(null)).toUriString();
+
+        mockMvc.perform(post(url).content(mapper.writeValueAsString(service))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(returnedService.getId().toString()))
+                .andExpect(jsonPath("$.name").value(returnedService.getName()));
+    }
+
+    @Test
+    public void updateCloudService_returnNotFound() throws Exception {
+        var resource = new CloudServiceDto();
+        resource.setId(UUID.randomUUID());
+        resource.setName("Hello World");
+
+        doThrow(new NoSuchElementException()).when(cloudServiceService).update(any());
+
+        var url = fromMethodCall(uriBuilder, on(CloudServiceController.class)
+                .updateCloudService(UUID.randomUUID(), null)).toUriString();
+
+        mockMvc.perform(put(url).content(mapper.writeValueAsString(resource))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void updateCloudService_returnBadRequest() throws Exception {
+        var resource = new CloudServiceDto();
+        resource.setId(UUID.randomUUID());
+
+        var url = fromMethodCall(uriBuilder, on(CloudServiceController.class)
+                .updateCloudService(UUID.randomUUID(), null)).toUriString();
+
+        mockMvc.perform(put(url).content(mapper.writeValueAsString(resource))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void updateCloudService_returnOk() throws Exception {
+        var resource = new CloudServiceDto();
+        resource.setId(UUID.randomUUID());
+        resource.setName("Hello World");
+
+        var returnedResource = new CloudService();
+        returnedResource.setName(resource.getName());
+        returnedResource.setId(resource.getId());
+
+        doReturn(returnedResource).when(cloudServiceService).update(any());
+
+        var url = fromMethodCall(uriBuilder, on(CloudServiceController.class)
+                .updateCloudService(UUID.randomUUID(), null)).toUriString();
+
+        mockMvc.perform(put(url).content(mapper.writeValueAsString(resource))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(resource.getId().toString()))
+                .andExpect(jsonPath("$.name").value(resource.getName()));
+    }
+
+    @Test
+    void getCloudService_returnOk() throws Exception {
+        var resource = new CloudService();
+        resource.setId(UUID.randomUUID());
+        resource.setName("Test");
+
+        doReturn(resource).when(cloudServiceService).findById(any());
+
+        var url = fromMethodCall(uriBuilder, on(CloudServiceController.class)
+                .getCloudService(resource.getId())).toUriString();
+
+        mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(resource.getId().toString()))
+                .andExpect(jsonPath("$.name").value(resource.getName()));
+    }
+
+    @Test
+    @SuppressWarnings("ConstantConditions")
+    void listCloudServices_empty() throws Exception {
+        doReturn(Page.empty()).when(cloudServiceService).findAll(any());
+
+        var url = fromMethodCall(uriBuilder, on(CloudServiceController.class)
+                .getCloudServices(null)).toUriString();
+
+        var mvcResult = mockMvc.perform(get(url).queryParam(Constants.PAGE, Integer.toString(page))
+                .queryParam(Constants.SIZE, Integer.toString(size))
+                .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isOk()).andReturn();
+
+        var page = ObjectMapperUtils.getPageInfo(mvcResult.getResponse().getContentAsString());
+
+        assertThat(page.getSize()).isEqualTo(0);
+        assertThat(page.getNumber()).isEqualTo(0);
+    }
+
+    @Test
+    @SuppressWarnings("ConstantConditions")
+    void searchCloudServices_empty() throws Exception {
+        doReturn(Page.empty()).when(cloudServiceService).searchAllByName(any(), any());
+
+        var url = fromMethodCall(uriBuilder, on(CloudServiceController.class)
+                .getCloudServices(null)).toUriString();
+
+        var mvcResult = mockMvc.perform(get(url).queryParam(Constants.PAGE, Integer.toString(page))
+                .queryParam(Constants.SIZE, Integer.toString(size))
+                .queryParam(Constants.SEARCH, "hello")
+                .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isOk()).andReturn();
+
+        var page = ObjectMapperUtils.getPageInfo(mvcResult.getResponse().getContentAsString());
+
+        assertThat(page.getSize()).isEqualTo(0);
+        assertThat(page.getNumber()).isEqualTo(0);
+    }
+
+    @Test
+    @SuppressWarnings("ConstantConditions")
+    void listCloudService_notEmpty() throws Exception {
+        var inputList = new ArrayList<CloudService>();
+        for (int i = 0; i < 50; i++) {
+            var element = new CloudService();
+            element.setName("Test Element " + i);
+            element.setId(UUID.randomUUID());
+            inputList.add(element);
+        }
+        doReturn(new PageImpl<>(inputList)).when(cloudServiceService).findAll(any());
+
+        var url = fromMethodCall(uriBuilder, on(CloudServiceController.class)
+                .getCloudServices(null)).toUriString();
+
+        var mvcResult = mockMvc.perform(get(url).queryParam(Constants.PAGE, Integer.toString(page))
+                .queryParam(Constants.SIZE, Integer.toString(size))
+                .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isOk()).andReturn();
+
+        var dtoElements = ObjectMapperUtils.mapResponseToList(
+                mvcResult.getResponse().getContentAsString(),
+                "cloudServices",
+                CloudServiceDto.class
+        );
+        assertThat(dtoElements.size()).isEqualTo(inputList.size());
+        // Ensure every element in the input array also exists in the output array.
+        inputList.forEach(e -> {
+            assertThat(dtoElements.stream().filter(dtoElem -> e.getId().equals(dtoElem.getId())).count()).isEqualTo(1);
+        });
+    }
+
+    @Test
+    void deleteCloudService_returnNotFound() throws Exception {
+        doThrow(new NoSuchElementException()).when(cloudServiceService).delete(any());
+        var url = fromMethodCall(uriBuilder, on(CloudServiceController.class)
+                .deleteCloudService(UUID.randomUUID())).toUriString();
+        mockMvc.perform(delete(url).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void deleteCloudService_returnNoContent() throws Exception {
+        doNothing().when(cloudServiceService).delete(any());
+        var url = fromMethodCall(uriBuilder, on(CloudServiceController.class)
+                .deleteCloudService(UUID.randomUUID())).toUriString();
+        mockMvc.perform(delete(url).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @SuppressWarnings("ConstantConditions")
+    void listComputeResourcesOfCloudService_empty() throws Exception {
+        doReturn(Page.empty()).when(cloudServiceService).findLinkedComputeResources(any(), any());
+
+        var url = fromMethodCall(uriBuilder, on(CloudServiceController.class)
+                .getComputeResourcesOfCloudService(UUID.randomUUID(), null)).toUriString();
+        var mvcResult = mockMvc.perform(get(url).queryParam(Constants.PAGE, Integer.toString(page))
+                .queryParam(Constants.SIZE, Integer.toString(size))
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
+
+        var page = ObjectMapperUtils.getPageInfo(mvcResult.getResponse().getContentAsString());
+
+        assertThat(page.getSize()).isEqualTo(0);
+        assertThat(page.getNumber()).isEqualTo(0);
+    }
+
+    @Test
+    @SuppressWarnings("ConstantConditions")
+    void listComputeResourcesOfCloudService_notEmpty() throws Exception {
+        var inputList = new ArrayList<ComputeResource>();
+        for (int i = 0; i < 50; i++) {
+            var element = new ComputeResource();
+            element.setName("Test Element " + i);
+            element.setId(UUID.randomUUID());
+            inputList.add(element);
+        }
+        doReturn(new PageImpl<>(inputList)).when(cloudServiceService).findLinkedComputeResources(any(), any());
+
+        var url = fromMethodCall(uriBuilder, on(CloudServiceController.class)
+                .getComputeResourcesOfCloudService(UUID.randomUUID(), null)).toUriString();
+
+        var mvcResult = mockMvc.perform(get(url).queryParam(Constants.PAGE, Integer.toString(page))
+                .queryParam(Constants.SIZE, Integer.toString(size))
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
+
+        var dtoElements = ObjectMapperUtils.mapResponseToList(
+                mvcResult.getResponse().getContentAsString(),
+                "computeResources",
+                ComputeResourceDto.class
+        );
+        assertThat(dtoElements.size()).isEqualTo(inputList.size());
+        // Ensure every element in the input array also exists in the output array.
+        inputList.forEach(e -> {
+            assertThat(dtoElements.stream().filter(dtoElem -> e.getId().equals(dtoElem.getId())).count()).isEqualTo(1);
+        });
+    }
+
+    @Test
+    void linkCloudServiceToComputeResource_returnNoContent() throws Exception {
+        ComputeResourceDto computeResourceDto = new ComputeResourceDto();
+        computeResourceDto.setId(UUID.randomUUID());
+        computeResourceDto.setName("computeResource");
+
+        doNothing().when(linkingService).linkCloudServiceAndComputeResource(any(), any());
+
+        var url = fromMethodCall(uriBuilder, on(CloudServiceController.class)
+                .linkCloudServiceAndComputeResource(UUID.randomUUID(), null)).toUriString();
+        mockMvc.perform(post(url)
+                .content(mapper.writeValueAsString(computeResourceDto))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isNoContent());
+    }
+
+    @Test
+    void linkCloudServiceToComputeResource_returnNotFound() throws Exception {
+        ComputeResourceDto computeResourceDto = new ComputeResourceDto();
+        computeResourceDto.setId(UUID.randomUUID());
+        computeResourceDto.setName("computeResource");
+
+        doThrow(new NoSuchElementException()).when(linkingService).linkCloudServiceAndComputeResource(any(), any());
+
+        var url = fromMethodCall(uriBuilder, on(CloudServiceController.class)
+                .linkCloudServiceAndComputeResource(UUID.randomUUID(), null)).toUriString();
+        mockMvc.perform(post(url)
+                .content(mapper.writeValueAsString(computeResourceDto))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
+    }
+
+    @Test
+    void unlinkCloudServiceAndComputeResource_returnNoContent() throws Exception {
+        doNothing().when(linkingService).unlinkCloudServiceAndComputeResource(any(), any());
+        var url = fromMethodCall(uriBuilder, on(CloudServiceController.class)
+                .unlinkCloudServiceAndComputeResource(UUID.randomUUID(), UUID.randomUUID())).toUriString();
+        mockMvc.perform(delete(url).accept(MediaType.APPLICATION_JSON)).andExpect(status().isNoContent());
+    }
+
+    @Test
+    void unlinkCloudServiceToComputeResource_returnNotFound() throws Exception {
+        doThrow(new NoSuchElementException()).when(linkingService).unlinkCloudServiceAndComputeResource(any(), any());
+        var url = fromMethodCall(uriBuilder, on(CloudServiceController.class)
+                .unlinkCloudServiceAndComputeResource(UUID.randomUUID(), UUID.randomUUID())).toUriString();
+        mockMvc.perform(delete(url).accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
+    }
+
+    @Test
+    void unlinkCloudServiceToComputeResource_returnBadRequest() throws Exception {
+        doThrow(new EntityReferenceConstraintViolationException("")).when(linkingService).unlinkCloudServiceAndComputeResource(any(), any());
+        var url = fromMethodCall(uriBuilder, on(CloudServiceController.class)
+                .unlinkCloudServiceAndComputeResource(UUID.randomUUID(), UUID.randomUUID())).toUriString();
+        mockMvc.perform(delete(url).accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
+    }
+}
