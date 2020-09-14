@@ -31,6 +31,7 @@ import javax.persistence.ManyToMany;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 /**
  * Entity which represents the publication.
@@ -48,19 +49,17 @@ public class Publication extends KnowledgeArtifact {
     @ElementCollection
     private List<String> authors = new ArrayList<>();
 
-    @ManyToMany(mappedBy = "publications", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany(mappedBy = "publications",
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @EqualsAndHashCode.Exclude
     private Set<Algorithm> algorithms = new HashSet<>();
 
-    @ManyToMany(mappedBy = "publications", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany(mappedBy = "publications",
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @EqualsAndHashCode.Exclude
     private Set<Implementation> implementations = new HashSet<>();
 
-    public Set<Algorithm> getAlgorithms() {
-        return new HashSet<Algorithm>(algorithms);
-    }
-
-    public void addAlgorithm(Algorithm algorithm) {
+    public void addAlgorithm(@NonNull Algorithm algorithm) {
         if (algorithms.contains(algorithm)) {
             return;
         }
@@ -68,7 +67,7 @@ public class Publication extends KnowledgeArtifact {
         algorithm.addPublication(this);
     }
 
-    public void removeAlgorithm(Algorithm algorithm) {
+    public void removeAlgorithm(@NonNull Algorithm algorithm) {
         if (!algorithms.contains(algorithm)) {
             return;
         }
@@ -76,11 +75,7 @@ public class Publication extends KnowledgeArtifact {
         algorithm.removePublication(this);
     }
 
-    public Set<Implementation> getImplementations() {
-        return new HashSet<Implementation>(implementations);
-    }
-
-    public void addImplementation(Implementation implementation) {
+    public void addImplementation(@NonNull Implementation implementation) {
         if (implementations.contains(implementation)) {
             return;
         }
@@ -88,7 +83,7 @@ public class Publication extends KnowledgeArtifact {
         implementation.addPublication(this);
     }
 
-    public void removeImplementation(Implementation implementation) {
+    public void removeImplementation(@NonNull Implementation implementation) {
         if (!implementations.contains(implementation)) {
             return;
         }

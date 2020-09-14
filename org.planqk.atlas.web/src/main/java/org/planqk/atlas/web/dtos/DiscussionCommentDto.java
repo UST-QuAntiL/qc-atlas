@@ -23,6 +23,10 @@ import java.time.OffsetDateTime;
 import java.util.UUID;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
+
+import org.planqk.atlas.web.utils.Identifyable;
+import org.planqk.atlas.web.utils.ValidationGroups;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
@@ -34,11 +38,15 @@ import org.springframework.hateoas.server.core.Relation;
 @NoArgsConstructor
 @EqualsAndHashCode
 @Relation(itemRelation = "discussionComment", collectionRelation = "discussionComments")
-public class DiscussionCommentDto {
+public class DiscussionCommentDto implements Identifyable {
+    @NotNull(groups = {ValidationGroups.IDOnly.class}, message = "An id is required to perform an update")
+    @Null(groups = {ValidationGroups.Create.class}, message = "The id must be null for creating a discussion comment")
     private UUID id;
-    @NotNull(message = "Text must not be null!")
+    @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
+            message = "Text must not be null!")
     private String text;
-    @NotNull(message = "Date must not be null!")
+    @NotNull(
+            groups = {ValidationGroups.Update.class, ValidationGroups.Create.class}, message = "Date must not be null!")
     private OffsetDateTime date;
 
     private DiscussionCommentDto replyTo;

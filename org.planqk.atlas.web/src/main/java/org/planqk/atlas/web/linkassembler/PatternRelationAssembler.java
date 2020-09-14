@@ -1,3 +1,22 @@
+/*******************************************************************************
+ * Copyright (c) 2020 University of Stuttgart
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *******************************************************************************/
+
 package org.planqk.atlas.web.linkassembler;
 
 import java.util.UUID;
@@ -21,7 +40,7 @@ public class PatternRelationAssembler extends GenericLinkAssembler<PatternRelati
         resource.add(
                 links.linkTo(methodOn(PatternRelationController.class).getPatternRelation(getId(resource))).withSelfRel());
         resource.add(links.linkTo(methodOn(AlgorithmController.class).getAlgorithm(getAlgorithmId(resource)))
-                .withRel(Constants.ALGORITHM));
+                .withRel(Constants.ALGORITHMS));
         resource.add(links.linkTo(methodOn(PatternRelationTypeController.class).getPatternRelationType(getTypeId(resource)))
                 .withRel(Constants.PATTERN_RELATION_TYPES));
     }
@@ -31,7 +50,7 @@ public class PatternRelationAssembler extends GenericLinkAssembler<PatternRelati
     }
 
     private UUID getAlgorithmId(EntityModel<PatternRelationDto> resource) {
-        return resource.getContent().getAlgorithm().getId();
+        return resource.getContent().getAlgorithmId();
     }
 
     private UUID getTypeId(EntityModel<PatternRelationDto> resource) {

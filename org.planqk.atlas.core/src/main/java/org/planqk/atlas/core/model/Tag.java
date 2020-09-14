@@ -20,22 +20,17 @@
 package org.planqk.atlas.core.model;
 
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.hibernate.annotations.GenericGenerator;
+import lombok.NonNull;
 
 @EqualsAndHashCode
 @NoArgsConstructor
@@ -43,34 +38,48 @@ import org.hibernate.annotations.GenericGenerator;
 @Data
 public class Tag {
 
-    @Getter
-    @Setter
     String category;
 
     @Id
-    @Getter
-    @Setter
     String value;
 
-    @ManyToMany(mappedBy = "tags", cascade = { CascadeType.MERGE, CascadeType.PERSIST })
+    @ManyToMany(mappedBy = "tags", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @EqualsAndHashCode.Exclude
-    private Set<Algorithm> algorithms;
+    private Set<Algorithm> algorithms = new HashSet<>();
 
-    @ManyToMany(mappedBy = "tags", cascade = { CascadeType.MERGE, CascadeType.PERSIST })
+    @ManyToMany(mappedBy = "tags", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @EqualsAndHashCode.Exclude
-    private Set<Implementation> implementations;
+    private Set<Implementation> implementations = new HashSet<>();
 
-    public Set<Algorithm> getAlgorithms() {
-        if (Objects.isNull(algorithms)) {
-            return new HashSet<>();
+    public void addAlgorithm(@NonNull Algorithm algorithm) {
+        if (algorithms.contains(algorithm)) {
+            return;
         }
-        return algorithms;
+        algorithms.add(algorithm);
+        algorithm.addTag(this);
     }
 
-    public Set<Implementation> getImplementations() {
-        if (Objects.isNull(implementations)) {
-            return new HashSet<>();
+    public void removeAlgorithm(@NonNull Algorithm algorithm) {
+        if (!algorithms.contains(algorithm)) {
+            return;
         }
-        return implementations;
+        algorithms.remove(algorithm);
+        algorithm.removeTag(this);
+    }
+
+    public void addImplementation(@NonNull Implementation implementation) {
+        if (implementations.contains(implementation)) {
+            return;
+        }
+        implementations.add(implementation);
+        implementation.addTag(this);
+    }
+
+    public void removeImplementation(@NonNull Implementation implementation) {
+        if (!implementations.contains(implementation)) {
+            return;
+        }
+        implementations.remove(implementation);
+        implementation.removeTag(this);
     }
 }

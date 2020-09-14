@@ -25,9 +25,11 @@ import java.util.UUID;
 
 import org.planqk.atlas.core.model.DiscussionTopic;
 import org.planqk.atlas.core.model.KnowledgeArtifact;
+import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.model.Status;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +40,7 @@ import org.springframework.data.domain.Pageable;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@Slf4j
 public class DiscussionTopicServiceTest extends AtlasDatabaseTestBase {
 
     @Autowired
@@ -55,7 +58,7 @@ public class DiscussionTopicServiceTest extends AtlasDatabaseTestBase {
     private final Pageable pageable = PageRequest.of(page, size);
 
     @BeforeEach
-    public void initialize() throws Exception {
+    public void initialize() {
         topic = new DiscussionTopic();
         topic.setDate(OffsetDateTime.now());
         topic.setTitle("Title");
@@ -67,8 +70,9 @@ public class DiscussionTopicServiceTest extends AtlasDatabaseTestBase {
         topic2.setDescription("Description");
         topic2.setStatus(Status.CLOSED);
 
-        var pub = PublicationServiceTest.getGenericTestPublication("discussion");
-        pub = publicationService.save(pub);
+        var pub = new Publication();
+        pub.setTitle("discussion");
+        pub = publicationService.create(pub);
 
         topic.setKnowledgeArtifact(pub);
         topic2.setKnowledgeArtifact(pub);
@@ -77,7 +81,7 @@ public class DiscussionTopicServiceTest extends AtlasDatabaseTestBase {
 
     @Test
     void createDiscussionTopic() {
-        DiscussionTopic topic = topicService.save(this.topic);
+        DiscussionTopic topic = topicService.create(this.topic);
         assertThat(topic.getId()).isNotNull();
         assertThat(topic.getDate()).isEqualTo(this.topic.getDate());
         assertThat(topic.getTitle()).isEqualTo(this.topic.getTitle());
@@ -86,10 +90,31 @@ public class DiscussionTopicServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void updateDiscussionTopic() {
-        DiscussionTopic topic = topicService.save(this.topic);
+    void findAllDiscussionTopics() {
+        topicService.create(this.topic);
+        topicService.create(this.topic2);
+
+        Page<DiscussionTopic> discussionTopicPage = topicService.findAll(pageable);
+        assertThat(discussionTopicPage.getTotalElements()).isEqualTo(2);
+    }
+
+    // @Test
+    void findDiscussionTopicById_ElementFound() {
+        // TODO
+    }
+
+    @Test
+    void findDiscussionTopicById_ElementNotFound() {
+        assertThrows(NoSuchElementException.class, () -> {
+            topicService.findById(UUID.randomUUID());
+        });
+    }
+
+    @Test
+    void updateDiscussionTopic_ElementFound() {
+        DiscussionTopic topic = topicService.create(this.topic);
         topic.setTitle("New Title");
-        DiscussionTopic update = topicService.update(topic.getId(), topic);
+        DiscussionTopic update = topicService.update(topic);
 
         assertThat(update.getDate()).isEqualTo(topic.getDate());
         assertThat(update.getTitle()).isEqualTo(topic.getTitle());
@@ -97,56 +122,31 @@ public class DiscussionTopicServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void updateDiscussionTopic_notFound() {
+    void updateDiscussionTopic_ElementNotFound() {
+        topic.setId(UUID.randomUUID());
         assertThrows(NoSuchElementException.class, () -> {
-            topicService.update(UUID.randomUUID(), this.topic);
+            topicService.update(this.topic);
         });
     }
 
     @Test
-    void findDiscussionTopicById_notFound() {
-        assertThrows(NoSuchElementException.class, () -> {
-            topicService.findById(UUID.randomUUID());
-        });
-    }
-
-    @Test
-    void findAllDiscussionTopic() {
-        topicService.save(this.topic);
-        topicService.save(this.topic2);
-
-        Page<DiscussionTopic> discussionTopicPage = topicService.findAll(pageable);
-        assertThat(discussionTopicPage.getTotalElements()).isEqualTo(2);
-    }
-
-    @Test
-    void deleteDiscussionTopic() {
-        DiscussionTopic topic = topicService.save(this.topic);
-        topicService.deleteById(topic.getId());
+    void deleteDiscussionTopic_ElementFound() {
+        DiscussionTopic topic = topicService.create(this.topic);
+        topicService.delete(topic.getId());
         assertThrows(NoSuchElementException.class, () -> {
             topicService.findById(topic.getId());
         });
     }
 
-    @Test
-    void existsDiscussionTopic_exists() {
-        DiscussionTopic topic = topicService.save(this.topic);
-        boolean exists = topicService.existsDiscussionTopicById(topic.getId());
-
-        assertThat(exists).isEqualTo(true);
-    }
-
-    @Test
-    void existsDiscussionTopic_notExists() {
-
-        boolean exists = topicService.existsDiscussionTopicById(UUID.randomUUID());
-        assertThat(exists).isEqualTo(false);
+    // @Test
+    void deleteDiscussionTopic_ElementNotFound() {
+        // TODO
     }
 
     @Test
     void findByKnowledgeArtifact() {
-        topicService.save(topic);
-        topicService.save(topic2);
+        topicService.create(topic);
+        topicService.create(topic2);
 
         var page = topicService.findByKnowledgeArtifact(knowledgeArtifact, Pageable.unpaged());
         assertThat(page.getTotalElements()).isEqualTo(2);

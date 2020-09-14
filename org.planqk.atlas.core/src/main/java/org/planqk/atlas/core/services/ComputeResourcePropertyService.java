@@ -19,16 +19,11 @@
 
 package org.planqk.atlas.core.services;
 
-import java.util.Set;
 import java.util.UUID;
 
 import javax.transaction.Transactional;
 
-import org.planqk.atlas.core.model.Algorithm;
-import org.planqk.atlas.core.model.ComputeResource;
 import org.planqk.atlas.core.model.ComputeResourceProperty;
-import org.planqk.atlas.core.model.ComputeResourcePropertyType;
-import org.planqk.atlas.core.model.Implementation;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -36,50 +31,38 @@ import org.springframework.data.domain.Pageable;
 public interface ComputeResourcePropertyService {
 
     @Transactional
-    void deleteComputeResourcePropertyType(UUID typeId);
+    ComputeResourceProperty create(ComputeResourceProperty computeResourceProperty);
+
+    ComputeResourceProperty findById(UUID computeResourcePropertyId);
 
     @Transactional
-    void deleteComputeResourceProperty(UUID resourceId);
-
-    ComputeResourcePropertyType findComputeResourcePropertyTypeById(UUID resourceTypeId);
-
-    Page<ComputeResourcePropertyType> findAllComputeResourcePropertyTypes(Pageable pageable);
-
-    Set<ComputeResourceProperty> findAllComputeResourcesPropertyByAlgorithmId(UUID algoid);
-
-    Page<ComputeResourceProperty> findAllComputeResourcesPropertyByAlgorithmId(UUID algoid, Pageable pageable);
-
-    Set<ComputeResourceProperty> findAllComputeResourcesPropertiesByImplementationId(UUID implId);
-
-    Page<ComputeResourceProperty> findAllComputeResourcesPropertiesByImplementationId(UUID implId, Pageable pageable);
-
-    Set<ComputeResourceProperty> findAllComputeResourcesPropertiesByComputeResourceId(UUID backendId);
-
-    Page<ComputeResourceProperty> findAllComputeResourcesPropertiesByComputeResourceId(UUID backendId, Pageable pageable);
+    ComputeResourceProperty update(ComputeResourceProperty computeResourceProperty);
 
     @Transactional
-    ComputeResourcePropertyType saveComputeResourcePropertyType(ComputeResourcePropertyType resourceType);
+    void delete(UUID computeResourcePropertyId);
+
+    Page<ComputeResourceProperty> findComputeResourcePropertiesOfAlgorithm(UUID algorithmId, Pageable pageable);
+
+    Page<ComputeResourceProperty> findComputeResourcePropertiesOfImplementation(UUID implementationId, Pageable pageable);
+
+    Page<ComputeResourceProperty> findComputeResourcePropertiesOfComputeResource(UUID computeResourceId, Pageable pageable);
 
     @Transactional
-    ComputeResourceProperty saveComputeResourceProperty(ComputeResourceProperty resource);
+    ComputeResourceProperty addComputeResourcePropertyToAlgorithm(
+            UUID algorithmId, ComputeResourceProperty computeResourceProperty);
 
     @Transactional
-    ComputeResourceProperty addComputeResourcePropertyToAlgorithm(Algorithm algo, ComputeResourceProperty resource);
+    ComputeResourceProperty addComputeResourcePropertyToImplementation(
+            UUID implementationId, ComputeResourceProperty computeResourceProperty);
 
     @Transactional
-    ComputeResourceProperty addComputeResourcePropertyToAlgorithm(UUID algoId, UUID resourceId);
+    ComputeResourceProperty addComputeResourcePropertyToComputeResource(
+            UUID computeResourceId, ComputeResourceProperty computeResourceProperty);
 
-    @Transactional
-    ComputeResourceProperty addComputeResourcePropertyToImplementation(Implementation implId, ComputeResourceProperty resource);
+    void checkIfComputeResourcePropertyIsOfAlgorithm(UUID algorithmId, UUID computeResourcePropertyId);
 
-    @Transactional
-    ComputeResourceProperty addComputeResourcePropertyToImplementation(UUID implId, UUID resourceId);
+    void checkIfComputeResourcePropertyIsOfImplementation(UUID implementationId, UUID computeResourcePropertyId);
 
-    @Transactional
-    ComputeResourceProperty addComputeResourcePropertyToComputeResource(ComputeResource computeResource, ComputeResourceProperty resource);
+    void checkIfComputeResourcePropertyIsOfComputeResource(UUID computeResourceId, UUID computeResourcePropertyId);
 
-    @Transactional
-    ComputeResourceProperty addComputeResourcePropertyToComputeResource(UUID backend, UUID resourceId);
-
-    ComputeResourceProperty findComputeResourcePropertyById(UUID id);
 }

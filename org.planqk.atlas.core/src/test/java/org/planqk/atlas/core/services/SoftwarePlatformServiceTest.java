@@ -1,4 +1,4 @@
-/********************************************************************************
+/*******************************************************************************
  * Copyright (c) 2020 University of Stuttgart
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -27,20 +27,25 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.UUID;
 
+import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.CloudService;
 import org.planqk.atlas.core.model.ComputeResource;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.QuantumComputationModel;
 import org.planqk.atlas.core.model.SoftwarePlatform;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
+import org.planqk.atlas.core.util.ServiceTestUtils;
 
-import org.junit.jupiter.api.Assertions;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@Slf4j
 public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
 
     @Autowired
@@ -51,104 +56,81 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
     private ComputeResourceService computeResourceService;
     @Autowired
     private ImplementationService implementationService;
+    @Autowired
+    private AlgorithmService algorithmService;
+    @Autowired
+    private LinkingService linkingService;
 
     @Test
-    void createMinimalSoftwarePlatform() {
-        SoftwarePlatform softwarePlatform = new SoftwarePlatform();
-        softwarePlatform.setName("test software platform");
+    void createSoftwarePlatform() {
+        SoftwarePlatform softwarePlatform = getFullSoftwarePlatform("softwarePlatformName");
 
-        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.save(softwarePlatform);
-        assertSoftwarePlatformEquality(storedSoftwarePlatform, softwarePlatform);
+        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.create(softwarePlatform);
+
+        assertThat(storedSoftwarePlatform.getId()).isNotNull();
+        ServiceTestUtils.assertSoftwarePlatformEquality(storedSoftwarePlatform, softwarePlatform);
     }
 
     @Test
-    void createMaximalSoftwarePlatform() {
-        SoftwarePlatform softwarePlatform = getTestSoftwarePlatform("test software platform");
+    void findAllSoftwarePlatforms() {
+        SoftwarePlatform softwarePlatform1 = getFullSoftwarePlatform("softwarePlatformName1");
+        softwarePlatformService.create(softwarePlatform1);
+        SoftwarePlatform softwarePlatform2 = getFullSoftwarePlatform("softwarePlatformName2");
+        softwarePlatformService.create(softwarePlatform2);
 
-        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.save(softwarePlatform);
-        assertSoftwarePlatformEquality(storedSoftwarePlatform, softwarePlatform);
+        List<SoftwarePlatform> softwarePlatforms = softwarePlatformService.findAll(Pageable.unpaged()).getContent();
+
+        assertThat(softwarePlatforms.size()).isEqualTo(2);
     }
 
     @Test
-    void addImplementationReference() {
-        SoftwarePlatform softwarePlatform = getTestSoftwarePlatform("test software platform");
-        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.save(softwarePlatform);
+    void searchAllSoftwarePlatformsByName() {
+        SoftwarePlatform softwarePlatform1 = getFullSoftwarePlatform("softwarePlatformName1");
+        softwarePlatformService.create(softwarePlatform1);
+        SoftwarePlatform softwarePlatform2 = getFullSoftwarePlatform("softwarePlatformName2");
+        softwarePlatformService.create(softwarePlatform2);
 
-        Implementation implementation = new Implementation();
-        implementation.setName("test implementation");
-        Implementation storedImplementation = implementationService.save(implementation);
+        List<SoftwarePlatform> softwarePlatforms = softwarePlatformService
+                .searchAllByName("1", Pageable.unpaged()).getContent();
 
-        softwarePlatformService.addImplementationReference(storedSoftwarePlatform.getId(), storedImplementation.getId());
-
-        Set<Implementation> implementations = softwarePlatformService.findImplementations(
-                storedSoftwarePlatform.getId(), Pageable.unpaged()).toSet();
-
-        assertThat(implementations.size()).isEqualTo(1);
-        assertThat(implementations.contains(storedImplementation)).isTrue();
+        assertThat(softwarePlatforms.size()).isEqualTo(1);
     }
 
     @Test
-    void addCloudServiceReference() {
-        SoftwarePlatform softwarePlatform = getTestSoftwarePlatform("test software platform");
-        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.save(softwarePlatform);
-
-        CloudService cloudService = new CloudService();
-        cloudService.setName("testCloudService");
-        cloudService.setProvider("testProvider");
-        try {
-            cloudService.setUrl(new URL("http://example.com"));
-        } catch (MalformedURLException ignored) {
-        }
-        cloudService.setCostModel("testCostModel");
-        CloudService storedCloudService = cloudServiceService.save(cloudService);
-
-        softwarePlatformService.addCloudServiceReference(storedSoftwarePlatform.getId(), storedCloudService.getId());
-
-        Set<CloudService> cloudServices = softwarePlatformService.findCloudServices(
-                storedSoftwarePlatform.getId(), Pageable.unpaged()).toSet();
-
-        assertThat(cloudServices.size()).isEqualTo(1);
-        assertThat(cloudServices.contains(storedCloudService)).isTrue();
+    void findSoftwarePlatformById_ElementNotFound() {
+        assertThrows(NoSuchElementException.class, () ->
+                softwarePlatformService.findById(UUID.randomUUID()));
     }
 
     @Test
-    void addComputeResourceReference() {
-        SoftwarePlatform softwarePlatform = getTestSoftwarePlatform("test software platform");
-        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.save(softwarePlatform);
+    void findSoftwarePlatformById_ElementFound() {
+        SoftwarePlatform softwarePlatform = getFullSoftwarePlatform("softwarePlatformName");
+        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.create(softwarePlatform);
 
-        ComputeResource computeResource = new ComputeResource();
-        computeResource.setName("test compute resource");
-        computeResource.setVendor("test vendor");
-        computeResource.setTechnology("test technology");
-        computeResource.setQuantumComputationModel(QuantumComputationModel.QUANTUM_ANNEALING);
-        ComputeResource storedComputeResource = computeResourceService.save(computeResource);
+        storedSoftwarePlatform = softwarePlatformService.findById(storedSoftwarePlatform.getId());
 
-        softwarePlatformService.addComputeResourceReference(
-                storedSoftwarePlatform.getId(), storedComputeResource.getId());
-
-        Set<ComputeResource> computeResources = softwarePlatformService.findComputeResources(
-                storedSoftwarePlatform.getId(), Pageable.unpaged()).toSet();
-
-        assertThat(computeResources.size()).isEqualTo(1);
-        assertThat(computeResources.contains(storedComputeResource)).isTrue();
+        assertThat(storedSoftwarePlatform.getId()).isNotNull();
+        ServiceTestUtils.assertSoftwarePlatformEquality(storedSoftwarePlatform, softwarePlatform);
     }
 
     @Test
     void updateSoftwarePlatform_ElementNotFound() {
-        Assertions.assertThrows(NoSuchElementException.class, () ->
-                softwarePlatformService.update(UUID.randomUUID(), null));
+        SoftwarePlatform softwarePlatform = getFullSoftwarePlatform("softwarePlatformName");
+        softwarePlatform.setId(UUID.randomUUID());
+        assertThrows(NoSuchElementException.class, () ->
+                softwarePlatformService.update(softwarePlatform));
     }
 
     @Test
     void updateSoftwarePlatform_ElementFound() {
-        SoftwarePlatform softwarePlatform = getTestSoftwarePlatform("test software platform");
-        SoftwarePlatform storedSoftwarePlatform = getTestSoftwarePlatform("test software platform");
+        SoftwarePlatform softwarePlatform = getFullSoftwarePlatform("softwarePlatformName");
+        SoftwarePlatform storedSoftwarePlatform = getFullSoftwarePlatform("softwarePlatformName");
 
-        SoftwarePlatform storedEditedSoftwarePlatform = softwarePlatformService.save(softwarePlatform);
+        SoftwarePlatform storedEditedSoftwarePlatform = softwarePlatformService.create(softwarePlatform);
         storedSoftwarePlatform.setId(storedEditedSoftwarePlatform.getId());
-        String editName = "edited software platform";
+        String editName = "editedSoftwarePlatformName";
         storedEditedSoftwarePlatform.setName(editName);
-        storedEditedSoftwarePlatform = softwarePlatformService.update(storedEditedSoftwarePlatform.getId(), storedEditedSoftwarePlatform);
+        storedEditedSoftwarePlatform = softwarePlatformService.update(storedEditedSoftwarePlatform);
 
         assertThat(storedEditedSoftwarePlatform.getId()).isEqualTo(storedSoftwarePlatform.getId());
         assertThat(storedEditedSoftwarePlatform.getName()).isNotEqualTo(storedSoftwarePlatform.getName());
@@ -159,157 +141,51 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void findSoftwarePlatformById_ElementNotFound() {
-        Assertions.assertThrows(NoSuchElementException.class, () ->
-                softwarePlatformService.findById(UUID.randomUUID()));
-    }
-
-    @Test
-    void findSoftwarePlatformById_ElementFound() {
-        SoftwarePlatform softwarePlatform = getTestSoftwarePlatform("test software platform");
-        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.save(softwarePlatform);
-
-        storedSoftwarePlatform = softwarePlatformService.findById(storedSoftwarePlatform.getId());
-
-        assertSoftwarePlatformEquality(storedSoftwarePlatform, softwarePlatform);
-    }
-
-    @Test
-    void findAll() {
-        SoftwarePlatform softwarePlatform1 = getTestSoftwarePlatform("test software platform1");
-        softwarePlatformService.save(softwarePlatform1);
-        SoftwarePlatform softwarePlatform2 = getTestSoftwarePlatform("test software platform2");
-        softwarePlatformService.save(softwarePlatform2);
-
-        List<SoftwarePlatform> softwarePlatforms = softwarePlatformService.findAll(Pageable.unpaged()).getContent();
-
-        assertThat(softwarePlatforms.size()).isEqualTo(2);
-    }
-
-    @Test
-    void searchAll() {
-        SoftwarePlatform softwarePlatform1 = getTestSoftwarePlatform("test software platform1");
-        softwarePlatformService.save(softwarePlatform1);
-        SoftwarePlatform softwarePlatform2 = getTestSoftwarePlatform("test software platform2");
-        softwarePlatformService.save(softwarePlatform2);
-
-        List<SoftwarePlatform> softwarePlatforms = softwarePlatformService.searchAllByName("1", Pageable.unpaged()).getContent();
-
-        assertThat(softwarePlatforms.size()).isEqualTo(1);
-    }
-
-    @Test
-    void findImplementations() {
-        SoftwarePlatform softwarePlatform = getTestSoftwarePlatform("test software platform");
-        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.save(softwarePlatform);
-
-        Set<Implementation> storedImplementations = new HashSet<>();
-        for (int i = 0; i < 10; i++) {
-            Implementation implementation = new Implementation();
-            implementation.setName("test implementation" + i);
-            Implementation storedImplementation = implementationService.save(implementation);
-            storedImplementations.add(storedImplementation);
-            softwarePlatformService.addImplementationReference(storedSoftwarePlatform.getId(), storedImplementation.getId());
-        }
-        Set<Implementation> implementations = softwarePlatformService.findImplementations(
-                storedSoftwarePlatform.getId(), Pageable.unpaged()).toSet();
-
-        assertThat(implementations.size()).isEqualTo(10);
-        implementations.forEach(implementation -> assertThat(storedImplementations.contains(implementation)).isTrue());
-    }
-
-    @Test
-    void findCloudServices() {
-        SoftwarePlatform softwarePlatform = getTestSoftwarePlatform("test software platform");
-        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.save(softwarePlatform);
-
-        Set<CloudService> storedCloudServices = new HashSet<>();
-        for (int i = 0; i < 10; i++) {
-            CloudService cloudService = new CloudService();
-            cloudService.setName("testCloudService" + i);
-            cloudService.setProvider("testProvider");
-            try {
-                cloudService.setUrl(new URL("http://example.com"));
-            } catch (MalformedURLException ignored) {
-            }
-            cloudService.setCostModel("testCostModel");
-            CloudService storedCloudService = cloudServiceService.save(cloudService);
-            storedCloudServices.add(storedCloudService);
-            softwarePlatformService.addCloudServiceReference(storedSoftwarePlatform.getId(), storedCloudService.getId());
-        }
-        Set<CloudService> cloudServices = softwarePlatformService.findCloudServices(
-                storedSoftwarePlatform.getId(), Pageable.unpaged()).toSet();
-
-        assertThat(cloudServices.size()).isEqualTo(10);
-        cloudServices.forEach(cloudService -> assertThat(storedCloudServices.contains(cloudService)).isTrue());
-    }
-
-    @Test
-    void findComputeResources() {
-        SoftwarePlatform softwarePlatform = getTestSoftwarePlatform("test software platform");
-        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.save(softwarePlatform);
-
-        Set<ComputeResource> storedComputeResources = new HashSet<>();
-        for (int i = 0; i < 10; i++) {
-            ComputeResource computeResource = new ComputeResource();
-            computeResource.setName("test compute resource");
-            computeResource.setVendor("test vendor");
-            computeResource.setTechnology("test technology");
-            computeResource.setQuantumComputationModel(QuantumComputationModel.QUANTUM_ANNEALING);
-            ComputeResource storedComputeResource = computeResourceService.save(computeResource);
-            storedComputeResources.add(storedComputeResource);
-            softwarePlatformService.addComputeResourceReference(storedSoftwarePlatform.getId(), storedComputeResource.getId());
-        }
-        Set<ComputeResource> computeResources = softwarePlatformService.findComputeResources(
-                storedSoftwarePlatform.getId(), Pageable.unpaged()).toSet();
-
-        assertThat(computeResources.size()).isEqualTo(10);
-        computeResources.forEach(computeResource -> assertThat(storedComputeResources.contains(computeResource)).isTrue());
-    }
-
-    @Test
     void deleteSoftwarePlatform_NoReferences() {
-        SoftwarePlatform softwarePlatform = getTestSoftwarePlatform("testSoftwarePlatform");
+        SoftwarePlatform softwarePlatform = getFullSoftwarePlatform("softwarePlatformName");
 
-        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.save(softwarePlatform);
+        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.create(softwarePlatform);
 
-        Assertions.assertDoesNotThrow(() -> softwarePlatformService.findById(storedSoftwarePlatform.getId()));
+        assertDoesNotThrow(() -> softwarePlatformService.findById(storedSoftwarePlatform.getId()));
 
         softwarePlatformService.delete(storedSoftwarePlatform.getId());
 
-        Assertions.assertThrows(NoSuchElementException.class, () ->
+        assertThrows(NoSuchElementException.class, () ->
                 softwarePlatformService.findById(storedSoftwarePlatform.getId()));
     }
 
     @Test
     void deleteSoftwarePlatform_HasReferences() {
-        SoftwarePlatform softwarePlatform = getTestSoftwarePlatform("testSoftwarePlatform");
-        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.save(softwarePlatform);
+        SoftwarePlatform softwarePlatform = getFullSoftwarePlatform("softwarePlatformName");
+        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.create(softwarePlatform);
 
-        Assertions.assertDoesNotThrow(() -> softwarePlatformService.findById(storedSoftwarePlatform.getId()));
+        assertDoesNotThrow(() -> softwarePlatformService.findById(storedSoftwarePlatform.getId()));
 
         // Add Implementation Reference
+        Algorithm algorithm = new Algorithm();
+        algorithm = algorithmService.create(algorithm);
+
         Implementation implementation = new Implementation();
-        implementation.setName("test implementation");
-        Implementation storedImplementation = implementationService.save(implementation);
-        softwarePlatformService.addImplementationReference(storedSoftwarePlatform.getId(), storedImplementation.getId());
+        implementation.setName("implementationName");
+        Implementation storedImplementation = implementationService.create(implementation, algorithm.getId());
+        linkingService.linkImplementationAndSoftwarePlatform(storedImplementation.getId(), storedSoftwarePlatform.getId());
 
         // Add Cloud Service Reference
         CloudService cloudService = new CloudService();
-        cloudService.setName("testCloudService");
-        CloudService storedCloudService = cloudServiceService.save(cloudService);
-        softwarePlatformService.addCloudServiceReference(storedSoftwarePlatform.getId(), storedCloudService.getId());
+        cloudService.setName("cloudServiceName");
+        CloudService storedCloudService = cloudServiceService.create(cloudService);
+        linkingService.linkSoftwarePlatformAndCloudService(storedSoftwarePlatform.getId(), storedCloudService.getId());
 
         // Add Compute Resource Reference
         ComputeResource computeResource = new ComputeResource();
-        computeResource.setName("test compute resource");
-        ComputeResource storedComputeResource = computeResourceService.save(computeResource);
-        softwarePlatformService.addComputeResourceReference(storedSoftwarePlatform.getId(), storedComputeResource.getId());
+        computeResource.setName("ComputeResourceName");
+        ComputeResource storedComputeResource = computeResourceService.create(computeResource);
+        linkingService.linkSoftwarePlatformAndComputeResource(storedSoftwarePlatform.getId(), storedComputeResource.getId());
 
         // Delete
         softwarePlatformService.delete(storedSoftwarePlatform.getId());
 
-        Assertions.assertThrows(NoSuchElementException.class, () ->
+        assertThrows(NoSuchElementException.class, () ->
                 softwarePlatformService.findById(storedSoftwarePlatform.getId()));
 
         // Test if references are removed
@@ -319,99 +195,86 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void deleteImplementationReference() {
-        SoftwarePlatform softwarePlatform = getTestSoftwarePlatform("test software platform");
-        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.save(softwarePlatform);
+    void findLinkedImplementations() {
+        SoftwarePlatform softwarePlatform = getFullSoftwarePlatform("softwarePlatformName");
+        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.create(softwarePlatform);
 
-        Implementation implementation = new Implementation();
-        implementation.setName("test implementation");
-        Implementation storedImplementation = implementationService.save(implementation);
+        Algorithm algorithm = new Algorithm();
+        algorithm = algorithmService.create(algorithm);
 
-        softwarePlatformService.addImplementationReference(storedSoftwarePlatform.getId(), storedImplementation.getId());
-
-        Set<Implementation> implementations = softwarePlatformService.findImplementations(
-                storedSoftwarePlatform.getId(), Pageable.unpaged()).toSet();
-        assertThat(implementations.size()).isEqualTo(1);
-
-        softwarePlatformService.deleteImplementationReference(storedSoftwarePlatform.getId(), storedImplementation.getId());
-
-        implementations = softwarePlatformService.findImplementations(
-                storedSoftwarePlatform.getId(), Pageable.unpaged()).toSet();
-        assertThat(implementations.size()).isEqualTo(0);
-    }
-
-    @Test
-    void deleteCloudServiceReference() {
-        SoftwarePlatform softwarePlatform = getTestSoftwarePlatform("test software platform");
-        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.save(softwarePlatform);
-
-        CloudService cloudService = new CloudService();
-        cloudService.setName("testCloudService");
-        cloudService.setProvider("testProvider");
-        try {
-            cloudService.setUrl(new URL("http://example.com"));
-        } catch (MalformedURLException ignored) {
+        Set<Implementation> storedImplementations = new HashSet<>();
+        for (int i = 0; i < 10; i++) {
+            Implementation implementation = new Implementation();
+            implementation.setName("implementationName" + i);
+            Implementation storedImplementation = implementationService.create(implementation, algorithm.getId());
+            storedImplementations.add(storedImplementation);
+            linkingService.linkImplementationAndSoftwarePlatform(storedImplementation.getId(), storedSoftwarePlatform.getId());
         }
-        cloudService.setCostModel("testCostModel");
-        CloudService storedCloudService = cloudServiceService.save(cloudService);
-
-        softwarePlatformService.addCloudServiceReference(storedSoftwarePlatform.getId(), storedCloudService.getId());
-
-        Set<CloudService> cloudServices = softwarePlatformService.findCloudServices(
+        Set<Implementation> implementations = softwarePlatformService.findLinkedImplementations(
                 storedSoftwarePlatform.getId(), Pageable.unpaged()).toSet();
-        assertThat(cloudServices.size()).isEqualTo(1);
 
-        softwarePlatformService.deleteCloudServiceReference(storedSoftwarePlatform.getId(), storedCloudService.getId());
-
-        cloudServices = softwarePlatformService.findCloudServices(
-                storedSoftwarePlatform.getId(), Pageable.unpaged()).toSet();
-        assertThat(cloudServices.size()).isEqualTo(0);
+        assertThat(implementations.size()).isEqualTo(10);
+        implementations.forEach(implementation -> assertThat(storedImplementations.contains(implementation)).isTrue());
     }
 
     @Test
-    void deleteComputeResourceReference() {
-        SoftwarePlatform softwarePlatform = getTestSoftwarePlatform("test software platform");
-        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.save(softwarePlatform);
+    void findLinkedCloudServices() {
+        SoftwarePlatform softwarePlatform = getFullSoftwarePlatform("softwarePlatformName");
+        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.create(softwarePlatform);
 
-        ComputeResource computeResource = new ComputeResource();
-        computeResource.setName("test compute resource");
-        computeResource.setVendor("test vendor");
-        computeResource.setTechnology("test technology");
-        computeResource.setQuantumComputationModel(QuantumComputationModel.QUANTUM_ANNEALING);
-        ComputeResource storedComputeResource = computeResourceService.save(computeResource);
-
-        softwarePlatformService.addComputeResourceReference(
-                storedSoftwarePlatform.getId(), storedComputeResource.getId());
-
-        Set<ComputeResource> computeResources = softwarePlatformService.findComputeResources(
+        Set<CloudService> storedCloudServices = new HashSet<>();
+        for (int i = 0; i < 10; i++) {
+            CloudService cloudService = new CloudService();
+            cloudService.setName("cloudServiceName" + i);
+            cloudService.setProvider("provider");
+            try {
+                cloudService.setUrl(new URL("http://example.com"));
+            } catch (MalformedURLException ignored) {
+            }
+            cloudService.setCostModel("costModel");
+            CloudService storedCloudService = cloudServiceService.create(cloudService);
+            storedCloudServices.add(storedCloudService);
+            linkingService.linkSoftwarePlatformAndCloudService(storedSoftwarePlatform.getId(), storedCloudService.getId());
+        }
+        Set<CloudService> cloudServices = softwarePlatformService.findLinkedCloudServices(
                 storedSoftwarePlatform.getId(), Pageable.unpaged()).toSet();
-        assertThat(computeResources.size()).isEqualTo(1);
 
-        softwarePlatformService.deleteComputeResourceReference(
-                storedSoftwarePlatform.getId(), storedComputeResource.getId());
-
-        computeResources = softwarePlatformService.findComputeResources(
-                storedSoftwarePlatform.getId(), Pageable.unpaged()).toSet();
-        assertThat(computeResources.size()).isEqualTo(0);
+        assertThat(cloudServices.size()).isEqualTo(10);
+        cloudServices.forEach(cloudService -> assertThat(storedCloudServices.contains(cloudService)).isTrue());
     }
 
-    private void assertSoftwarePlatformEquality(SoftwarePlatform dbSoftwarePlatform, SoftwarePlatform compareSoftwarePlatform) {
-        assertThat(dbSoftwarePlatform.getId()).isNotNull();
-        assertThat(dbSoftwarePlatform.getName()).isEqualTo(compareSoftwarePlatform.getName());
-        assertThat(dbSoftwarePlatform.getLink()).isEqualTo(compareSoftwarePlatform.getLink());
-        assertThat(dbSoftwarePlatform.getVersion()).isEqualTo(compareSoftwarePlatform.getVersion());
-        assertThat(dbSoftwarePlatform.getLicence()).isEqualTo(compareSoftwarePlatform.getLicence());
+    @Test
+    void findLinkedComputeResources() {
+        SoftwarePlatform softwarePlatform = getFullSoftwarePlatform("softwarePlatformName");
+        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.create(softwarePlatform);
+
+        Set<ComputeResource> storedComputeResources = new HashSet<>();
+        for (int i = 0; i < 10; i++) {
+            ComputeResource computeResource = new ComputeResource();
+            computeResource.setName("computeResource" + i);
+            computeResource.setVendor("vendor");
+            computeResource.setTechnology("technology");
+            computeResource.setQuantumComputationModel(QuantumComputationModel.QUANTUM_ANNEALING);
+            ComputeResource storedComputeResource = computeResourceService.create(computeResource);
+            storedComputeResources.add(storedComputeResource);
+            linkingService.linkSoftwarePlatformAndComputeResource(storedSoftwarePlatform.getId(), storedComputeResource.getId());
+        }
+        Set<ComputeResource> computeResources = softwarePlatformService.findLinkedComputeResources(
+                storedSoftwarePlatform.getId(), Pageable.unpaged()).toSet();
+
+        assertThat(computeResources.size()).isEqualTo(10);
+        computeResources.forEach(computeResource -> assertThat(storedComputeResources.contains(computeResource)).isTrue());
     }
 
-    private SoftwarePlatform getTestSoftwarePlatform(String name) {
+    private SoftwarePlatform getFullSoftwarePlatform(String name) {
         SoftwarePlatform softwarePlatform = new SoftwarePlatform();
         softwarePlatform.setName(name);
         try {
             softwarePlatform.setLink(new URL("http://example.com"));
         } catch (MalformedURLException ignored) {
         }
-        softwarePlatform.setVersion("v1");
-        softwarePlatform.setLicence("test licence");
+        softwarePlatform.setVersion("version v1");
+        softwarePlatform.setLicence("licence");
         return softwarePlatform;
     }
 }

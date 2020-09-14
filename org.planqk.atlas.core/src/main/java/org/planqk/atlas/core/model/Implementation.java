@@ -33,23 +33,23 @@ import javax.persistence.OneToMany;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import lombok.ToString;
 
 /**
  * Entity representing an implementation of a certain quantum {@link Algorithm}.
  */
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
-public class Implementation extends AlgorOrImpl implements ModelWithPublications {
+public class Implementation extends AlgorithmOrImplementation {
 
-    private String name;
     private String description;
     private String contributors;
     private String assumptions;
-    private String inputFormat;
     private String parameter;
-    private String outputFormat;
     private URL link;
     private String dependencies;
 
@@ -67,51 +67,46 @@ public class Implementation extends AlgorOrImpl implements ModelWithPublications
     @ToString.Exclude
     private Algorithm implementedAlgorithm;
 
-    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "implementation_tag",
+            joinColumns = @JoinColumn(name = "implementation_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_value"))
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    @JoinTable(name = "implementation_tag", joinColumns = @JoinColumn(name = "implementation_id"), inverseJoinColumns = @JoinColumn(name = "tag_value"))
-    private Set<Tag> tags;
+    private Set<Tag> tags = new HashSet<>();
 
     @EqualsAndHashCode.Exclude
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "implementation", orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL,
+            mappedBy = "implementation",
+            orphanRemoval = true)
     private Set<ComputeResourceProperty> requiredComputeResourceProperties = new HashSet<>();
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "implementation_software_platforms",
+            joinColumns = @JoinColumn(name = "implementation_id"),
+            inverseJoinColumns = @JoinColumn(name = "software_platform_id")
+    )
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Set<SoftwarePlatform> softwarePlatforms = new HashSet<>();
 
-    public Implementation() {
-        super();
-    }
-
-    public Set<Tag> getTags() {
-        return tags;
-    }
-
-    public void addTag(Tag tag) {
-        if (tag != null) {
-            this.tags.add(tag);
+    public void addTag(@NonNull Tag tag) {
+        if (tags.contains(tag)) {
+            return;
         }
+        this.tags.add(tag);
+        tag.addImplementation(this);
     }
 
-    public void setTags(Set<Tag> tags) {
-        this.tags.clear();
-        if (tags != null) {
-            this.tags.addAll(tags);
+    public void removeTag(@NonNull Tag tag) {
+        if (!tags.contains(tag)) {
+            return;
         }
-    }
-
-    public void removeTag(Tag tag) {
         this.tags.remove(tag);
+        tag.removeImplementation(this);
     }
 
-    public Set<Publication> getPublications() {
-        return new HashSet<Publication>(publications);
-    }
-
-    public void addPublication(Publication publication) {
+    public void addPublication(@NonNull Publication publication) {
         if (publications.contains(publication)) {
             return;
         }
@@ -119,7 +114,7 @@ public class Implementation extends AlgorOrImpl implements ModelWithPublications
         publication.addImplementation(this);
     }
 
-    public void removePublication(Publication publication) {
+    public void removePublication(@NonNull Publication publication) {
         if (!publications.contains(publication)) {
             return;
         }
@@ -127,11 +122,7 @@ public class Implementation extends AlgorOrImpl implements ModelWithPublications
         publication.removeImplementation(this);
     }
 
-    public Set<SoftwarePlatform> getSoftwarePlatforms() {
-        return new HashSet<SoftwarePlatform>(softwarePlatforms);
-    }
-
-    public void addSoftwarePlatform(SoftwarePlatform softwarePlatform) {
+    public void addSoftwarePlatform(@NonNull SoftwarePlatform softwarePlatform) {
         if (softwarePlatforms.contains(softwarePlatform)) {
             return;
         }
@@ -139,7 +130,7 @@ public class Implementation extends AlgorOrImpl implements ModelWithPublications
         softwarePlatform.addImplementation(this);
     }
 
-    public void removeSoftwarePlatform(SoftwarePlatform softwarePlatform) {
+    public void removeSoftwarePlatform(@NonNull SoftwarePlatform softwarePlatform) {
         if (!softwarePlatforms.contains(softwarePlatform)) {
             return;
         }

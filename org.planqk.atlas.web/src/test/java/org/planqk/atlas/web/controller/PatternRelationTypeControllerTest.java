@@ -1,8 +1,28 @@
+/*******************************************************************************
+ * Copyright (c) 2020 University of Stuttgart
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *******************************************************************************/
+
 package org.planqk.atlas.web.controller;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.PatternRelationType;
@@ -23,7 +43,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -32,6 +51,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -50,37 +70,35 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @EnableLinkAssemblers
 public class PatternRelationTypeControllerTest {
+
     @MockBean
     private PatternRelationTypeService patternRelationTypeService;
 
     @Autowired
     private MockMvc mockMvc;
 
-    private ObjectMapper mapper;
+    private final ObjectMapper mapper = ObjectMapperUtils.newTestMapper();
+    private final UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromPath("/");
 
     private final int page = 0;
     private final int size = 2;
     private final Pageable pageable = PageRequest.of(page, size);
 
-    PatternRelationType type1;
-    PatternRelationType type2;
-    PatternRelationType type1Updated;
+    private PatternRelationType type1;
+    private PatternRelationType type2;
+    private PatternRelationType type1Updated;
 
-    PatternRelationTypeDto type1Dto;
-    PatternRelationTypeDto type2Dto;
-    PatternRelationTypeDto noReqParamDto;
-    PatternRelationTypeDto type1DtoUpdated;
+    private PatternRelationTypeDto type1Dto;
+    private PatternRelationTypeDto type2Dto;
+    private PatternRelationTypeDto noReqParamDto;
+    private PatternRelationTypeDto type1DtoUpdated;
 
-    List<PatternRelationType> typeList;
-    Page<PatternRelationType> typePage;
-
-    Page<PatternRelationTypeDto> typePageDto;
+    private List<PatternRelationType> typeList;
+    private Page<PatternRelationType> typePage;
+    private Page<PatternRelationTypeDto> typePageDto;
 
     @BeforeEach
     public void initialize() {
-        // Init Object-Mapper
-        mapper = ObjectMapperUtils.newTestMapper();
-
         // Generate UUIDs
         UUID id1 = UUID.randomUUID();
         UUID id2 = UUID.randomUUID();
@@ -116,7 +134,8 @@ public class PatternRelationTypeControllerTest {
 
     @Test
     public void createType_returnType() throws Exception {
-        when(patternRelationTypeService.save(type1)).thenReturn(type1);
+        when(patternRelationTypeService.create(any())).thenReturn(type1);
+        type1Dto.setId(null);
 
         MvcResult result = mockMvc
                 .perform(post("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATION_TYPES + "/").content(mapper.writeValueAsString(type1Dto))
@@ -127,12 +146,12 @@ public class PatternRelationTypeControllerTest {
                 new TypeReference<EntityModel<PatternRelationTypeDto>>() {
                 });
 
-        assertEquals(response.getContent().getName(), type1Dto.getName());
+        assertEquals(Objects.requireNonNull(response.getContent()).getName(), type1Dto.getName());
     }
 
     @Test
     public void createType_returnBadRequest() throws Exception {
-        when(patternRelationTypeService.save(type1)).thenReturn(type1);
+        when(patternRelationTypeService.create(type1)).thenReturn(type1);
 
         mockMvc.perform(
                 post("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATION_TYPES + "/").content(mapper.writeValueAsString(noReqParamDto))
@@ -184,9 +203,10 @@ public class PatternRelationTypeControllerTest {
 
     @Test
     public void updateType_returnType() throws Exception {
-        when(patternRelationTypeService.update(type1.getId(), type1)).thenReturn(type1Updated);
+        when(patternRelationTypeService.update(type1)).thenReturn(type1Updated);
 
-        MvcResult result = mockMvc.perform(put("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATION_TYPES + "/{id}", type1.getId())
+        MvcResult result = mockMvc.perform(put("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATION_TYPES
+                + "/" +  type1Dto.getId())
                 .content(mapper.writeValueAsString(type1Dto)).contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
 
@@ -199,33 +219,35 @@ public class PatternRelationTypeControllerTest {
 
     @Test
     public void updateType_returnBadRequest() throws Exception {
-        when(patternRelationTypeService.update(type1.getId(), type1)).thenReturn(type1Updated);
+        when(patternRelationTypeService.update(type1)).thenReturn(type1Updated);
 
-        mockMvc.perform(put("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATION_TYPES + "/{id}", type1.getId())
+        mockMvc.perform(put("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATION_TYPES + "/"
+                +  type1Dto.getId())
                 .content(mapper.writeValueAsString(noReqParamDto)).contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
     }
 
     @Test
     public void updateType_returnNotFound() throws Exception {
-        when(patternRelationTypeService.update(any(), any())).thenThrow(NoSuchElementException.class);
+        when(patternRelationTypeService.update(any())).thenThrow(NoSuchElementException.class);
 
-        mockMvc.perform(put("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATION_TYPES + "/{id}", UUID.randomUUID())
+        mockMvc.perform(put("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATION_TYPES + "/"
+                +  type1Dto.getId())
                 .content(mapper.writeValueAsString(type1Dto)).contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
     }
 
     @Test
     public void deleteType_returnOk() throws Exception {
-        doNothing().when(patternRelationTypeService).deleteById(type1.getId());
+        doNothing().when(patternRelationTypeService).delete(type1.getId());
 
         mockMvc.perform(delete("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATION_TYPES + "/{id}", type1.getId())
-                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
+                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isNoContent());
     }
 
     @Test
     public void deleteType_returnNotFound() throws Exception {
-        doThrow(EmptyResultDataAccessException.class).when(patternRelationTypeService).deleteById(any());
+        doThrow(NoSuchElementException.class).when(patternRelationTypeService).delete(any());
 
         mockMvc.perform(delete("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATION_TYPES + "/{id}", UUID.randomUUID())
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());

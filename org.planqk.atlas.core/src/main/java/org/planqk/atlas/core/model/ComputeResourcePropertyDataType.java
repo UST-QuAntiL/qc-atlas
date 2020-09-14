@@ -47,7 +47,7 @@ public enum ComputeResourcePropertyDataType {
     }
 
     public boolean isValid(String input) {
-        if(input == null) {
+        if (input == null) {
             return false;
         }
         return validator.test(input);

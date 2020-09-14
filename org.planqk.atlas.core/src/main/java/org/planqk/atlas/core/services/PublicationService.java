@@ -1,4 +1,4 @@
-/********************************************************************************
+/*******************************************************************************
  * Copyright (c) 2020 University of Stuttgart
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -19,36 +19,40 @@
 
 package org.planqk.atlas.core.services;
 
+import java.util.Set;
+import java.util.UUID;
+
+import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Publication;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-
 public interface PublicationService {
 
     @Transactional
-    Publication save(Publication publication);
-
-    @Transactional
-    Publication update(UUID pubId, Publication publication);
-
-    @Transactional
-    void deleteById(UUID pubId);
+    Publication create(Publication publication);
 
     Page<Publication> findAll(Pageable pageable, String search);
 
-    Publication findById(UUID pubId);
-
-    Optional<Publication> findOptionalById(UUID pubId);
+    Publication findById(UUID publicationId);
 
     @Transactional
-    Set<Publication> createOrUpdateAll(Set<Publication> publications);
+    Publication update(Publication publication);
 
     @Transactional
-    void deletePublicationsByIds(Set<UUID> publicationIds);
+    void delete(UUID publicationId);
+
+    Page<Algorithm> findLinkedAlgorithms(UUID publicationId, Pageable pageable);
+
+    Page<Implementation> findLinkedImplementations(UUID publicationId, Pageable pageable);
+
+    @Transactional
+    void deletePublications(Set<UUID> publicationIds);
+
+    void checkIfAlgorithmIsLinkedToPublication(UUID publicationId, UUID algorithmId);
+
+    void checkIfImplementationIsLinkedToPublication(UUID publicationId, UUID implementationId);
 }

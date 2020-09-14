@@ -25,20 +25,22 @@ import org.planqk.atlas.core.model.DiscussionComment;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface DiscussionCommentService {
 
-    DiscussionComment save(DiscussionComment discussionComment);
+    @Transactional
+    DiscussionComment create(DiscussionComment discussionComment);
 
     Page<DiscussionComment> findAll(Pageable pageable);
 
     Page<DiscussionComment> findAllByTopic(UUID topicId, Pageable pageable);
 
-    DiscussionComment findById(UUID id);
+    DiscussionComment findById(UUID commentId);
 
-    DiscussionComment update(UUID id, DiscussionComment comment);
+    @Transactional
+    DiscussionComment update(DiscussionComment comment);
 
-    void deleteById(UUID id);
-
-    boolean existsDiscussionCommentById(UUID id);
+    @Transactional
+    void delete(UUID commentId);
 }

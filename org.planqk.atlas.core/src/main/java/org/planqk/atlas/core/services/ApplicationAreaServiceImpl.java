@@ -19,75 +19,75 @@
 
 package org.planqk.atlas.core.services;
 
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.UUID;
 
 import javax.transaction.Transactional;
 
+import org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException;
 import org.planqk.atlas.core.model.ApplicationArea;
-import org.planqk.atlas.core.model.exceptions.ConsistencyException;
-import org.planqk.atlas.core.repository.AlgorithmRepository;
 import org.planqk.atlas.core.repository.ApplicationAreaRepository;
+import org.planqk.atlas.core.util.ServiceUtils;
 
 import lombok.AllArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class ApplicationAreaServiceImpl implements ApplicationAreaService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ApplicationAreaServiceImpl.class);
-
-    private final ApplicationAreaRepository repo;
-    private final AlgorithmRepository algRepo;
+    private final ApplicationAreaRepository applicationAreaRepository;
 
     @Override
     @Transactional
-    public ApplicationArea save(ApplicationArea applicationArea) {
-        return repo.save(applicationArea);
+    public ApplicationArea create(@NonNull ApplicationArea applicationArea) {
+        return applicationAreaRepository.save(applicationArea);
     }
 
     @Override
-    @Transactional
-    public ApplicationArea update(UUID id, ApplicationArea problemType) {
-        // Get existing ApplicationArea if it exists
-        ApplicationArea persistedType = findById(id);
-        // Update fields
-        persistedType.setName(problemType.getName());
-        return save(persistedType);
-    }
-
-    @Override
-    @Transactional
-    public void delete(ApplicationArea applicationArea) {
-        if (algRepo.findAllByApplicationAreas(applicationArea).size() > 0) {
-            LOG.info("Trying to delete applicationArea that is used by at least 1 algorithm");
-            throw new ConsistencyException("Cannot delete applicationArea, since it is used by existing algorithms!");
-        }
-
-        repo.delete(applicationArea);
-    }
-
-    @Override
-    public ApplicationArea findById(UUID id) {
-        return repo.findById(id).orElseThrow(NoSuchElementException::new);
-    }
-
-    @Override
-    public ApplicationArea findByName(String name) {
-        return repo.findByName(name).orElseThrow(NoSuchElementException::new);
-    }
-
-    @Override
-    public Page<ApplicationArea> findAll(Pageable pageable, String search) {
+    public Page<ApplicationArea> findAll(@NonNull Pageable pageable, String search) {
         if (!Objects.isNull(search) && !search.isEmpty()) {
-            return repo.findAll(search, pageable);
+            return applicationAreaRepository.findAll(search, pageable);
         }
-        return repo.findAll(pageable);
+        return applicationAreaRepository.findAll(pageable);
+    }
+
+    @Override
+    public ApplicationArea findById(@NonNull UUID applicationAreaId) {
+        return ServiceUtils.findById(applicationAreaId, ApplicationArea.class, applicationAreaRepository);
+    }
+
+    @Override
+    @Transactional
+    public ApplicationArea update(@NonNull ApplicationArea applicationArea) {
+        ApplicationArea persistedApplicationArea = findById(applicationArea.getId());
+
+        persistedApplicationArea.setName(applicationArea.getName());
+
+        return applicationAreaRepository.save(persistedApplicationArea);
+    }
+
+    @Override
+    @Transactional
+    public void delete(@NonNull UUID applicationAreaId) {
+        ApplicationArea applicationArea = findById(applicationAreaId);
+
+        if (applicationArea.getAlgorithms().size() > 0) {
+            throw new EntityReferenceConstraintViolationException("ApplicationArea with ID \""
+                    + applicationAreaId + "\" cannot be deleted, because it is still in use");
+        }
+
+        removeReferences(applicationArea);
+
+        applicationAreaRepository.deleteById(applicationAreaId);
+    }
+
+    private void removeReferences(ApplicationArea applicationArea) {
+        applicationArea.getAlgorithms().forEach(algorithm -> algorithm.removeApplicationArea(applicationArea));
     }
 }

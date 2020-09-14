@@ -30,28 +30,31 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.TypeDef;
 
-import static lombok.EqualsAndHashCode.Exclude;
-
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
 @TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
 public class ComputeResourceProperty extends HasId {
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @ManyToOne(fetch = FetchType.LAZY,
+            cascade = CascadeType.MERGE)
     private ComputeResourcePropertyType computeResourcePropertyType;
+
+    private String value;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "algorithm_id")
+    @EqualsAndHashCode.Exclude
     private Algorithm algorithm;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "implementation_id")
+    @EqualsAndHashCode.Exclude
     private Implementation implementation;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @Exclude
+    @JoinColumn(name = "compute_resource_id")
+    @EqualsAndHashCode.Exclude
     private ComputeResource computeResource;
-
-    private String value;
+    
 }

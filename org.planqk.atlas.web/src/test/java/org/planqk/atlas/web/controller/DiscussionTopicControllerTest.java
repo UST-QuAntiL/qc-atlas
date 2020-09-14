@@ -54,6 +54,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -70,6 +71,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @EnableLinkAssemblers
 public class DiscussionTopicControllerTest {
+
     @MockBean
     private DiscussionTopicService discussionTopicService;
     @MockBean
@@ -78,7 +80,8 @@ public class DiscussionTopicControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    private ObjectMapper mapper;
+    private final ObjectMapper mapper = ObjectMapperUtils.newTestMapper();
+    private final UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromPath("/");
 
     private final int page = 0;
     private final int size = 1;
@@ -93,7 +96,6 @@ public class DiscussionTopicControllerTest {
 
     @BeforeEach
     public void init() {
-        mapper = ObjectMapperUtils.newTestMapper();
         discussionTopic = new DiscussionTopic();
         discussionTopic.setDescription("Description");
         discussionTopic.setTitle("Topic");
@@ -109,10 +111,12 @@ public class DiscussionTopicControllerTest {
 
     @Test
     public void createDiscussionTopic_returnDiscussionTopic() throws Exception {
-        when(discussionTopicService.save(any())).thenReturn(discussionTopic);
+        when(discussionTopicService.create(any())).thenReturn(discussionTopic);
+        discussionTopicDto.setId(null);
 
         MvcResult result = mockMvc
-                .perform(post("/" + Constants.API_VERSION + "/" + Constants.DISCUSSION_TOPICS + "/").content(mapper.writeValueAsString(discussionTopicDto))
+                .perform(post("/" + Constants.API_VERSION + "/" + Constants.DISCUSSION_TOPICS + "/")
+                        .content(mapper.writeValueAsString(discussionTopicDto))
                         .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated()).andReturn();
 
@@ -122,7 +126,6 @@ public class DiscussionTopicControllerTest {
 
         assertEquals(response.getContent().getDate(), discussionTopicDto.getDate());
         assertEquals(response.getContent().getTitle(), discussionTopicDto.getTitle());
-        assertEquals(response.getContent().getId(), discussionTopicDto.getId());
         assertEquals(response.getContent().getStatus(), discussionTopicDto.getStatus());
     }
 
@@ -157,7 +160,7 @@ public class DiscussionTopicControllerTest {
     @Test
     public void deleteDiscussionTopic_returnNotFound() throws Exception {
         UUID id = UUID.randomUUID();
-        doThrow(new NoSuchElementException()).when(discussionTopicService).deleteById(id);
+        doThrow(new NoSuchElementException()).when(discussionTopicService).delete(id);
         mockMvc.perform(delete("/" + Constants.API_VERSION + "/" + Constants.DISCUSSION_TOPICS + "/" + id).accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
     }
 
@@ -195,7 +198,7 @@ public class DiscussionTopicControllerTest {
 
     @Test
     public void updateDiscussionTopic_returnDiscussionTopic() throws Exception {
-        when(discussionTopicService.update(discussionTopic.getId(), discussionTopic)).thenReturn(discussionTopic);
+        when(discussionTopicService.update(discussionTopic)).thenReturn(discussionTopic);
         MvcResult result = mockMvc.perform(put("/" + Constants.API_VERSION + "/" + Constants.DISCUSSION_TOPICS + "/" + discussionTopic.getId())
                 .content(mapper.writeValueAsString(discussionTopicDto)).contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
@@ -215,7 +218,7 @@ public class DiscussionTopicControllerTest {
 
         // Missing required attribute
         discussionTopic.setDate(null);
-        when(discussionTopicService.update(discussionTopic.getId(), discussionTopic)).thenReturn(discussionTopic);
+        when(discussionTopicService.update(discussionTopic)).thenReturn(discussionTopic);
 
         mockMvc.perform(put("/" + Constants.API_VERSION + "/" + Constants.DISCUSSION_TOPICS + "/" + discussionTopic.getId())
                 .content(mapper.writeValueAsString(discussionTopic)).contentType(MediaType.APPLICATION_JSON)

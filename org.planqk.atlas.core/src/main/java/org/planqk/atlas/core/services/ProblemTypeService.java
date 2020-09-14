@@ -1,4 +1,4 @@
-/********************************************************************************
+/*******************************************************************************
  * Copyright (c) 2020 University of Stuttgart
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -31,20 +31,19 @@ import org.springframework.transaction.annotation.Transactional;
 public interface ProblemTypeService {
 
     @Transactional
-    ProblemType save(ProblemType problemType);
+    ProblemType create(ProblemType problemType);
+
+    Page<ProblemType> findAll(Pageable pageable);
+
+    ProblemType findById(UUID problemTypeId);
 
     @Transactional
-    ProblemType update(UUID id, ProblemType problemType);
-
-    @Transactional
-    void delete(ProblemType problemType);
-
-    ProblemType findById(UUID id);
-
-    ProblemType findByName(String name);
-
+    ProblemType update(ProblemType problemType);
+    
     Page<ProblemType> findAll(Pageable pageable, String search);
 
-    List<ProblemType> getParentList(UUID id);
+    @Transactional
+    void delete(UUID problemTypeId);
 
+    List<ProblemType> getParentList(UUID problemTypeId);
 }

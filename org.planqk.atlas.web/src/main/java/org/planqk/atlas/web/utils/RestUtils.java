@@ -23,7 +23,6 @@ import org.planqk.atlas.web.Constants;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 
 /**
  * Utility class for the REST API functionality

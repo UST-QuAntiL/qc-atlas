@@ -1,4 +1,4 @@
-/********************************************************************************
+/*******************************************************************************
  * Copyright (c) 2020 University of Stuttgart
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -25,20 +25,23 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.UUID;
 
+import org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
 import org.planqk.atlas.core.model.ComputationModel;
 import org.planqk.atlas.core.model.ProblemType;
-import org.planqk.atlas.core.model.exceptions.ConsistencyException;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 
-import org.junit.jupiter.api.Assertions;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@Slf4j
 public class ProblemTypeServiceTest extends AtlasDatabaseTestBase {
 
     @Autowired
@@ -47,10 +50,10 @@ public class ProblemTypeServiceTest extends AtlasDatabaseTestBase {
     private AlgorithmService algorithmService;
 
     @Test
-    void testAddProblemType() {
-        ProblemType problemType = getGenericProblemType("testProblemType");
+    void createProblemType() {
+        ProblemType problemType = getFullProblemType("problemTypeName");
 
-        ProblemType storedProblemType = problemTypeService.save(problemType);
+        ProblemType storedProblemType = problemTypeService.create(problemType);
 
         assertThat(storedProblemType.getId()).isNotNull();
         assertThat(storedProblemType.getName()).isEqualTo(problemType.getName());
@@ -58,40 +61,27 @@ public class ProblemTypeServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void testUpdateProblemType_ElementNotFound() {
-        ProblemType problemType = getGenericProblemType("testProblemType");
+    void findAllProblemTypes() {
+        ProblemType problemType1 = getFullProblemType("problemTypeName1");
+        problemTypeService.create(problemType1);
+        ProblemType problemType2 = getFullProblemType("problemTypeName2");
+        problemTypeService.create(problemType2);
 
-        Assertions.assertThrows(NoSuchElementException.class, () -> {
-            problemTypeService.update(UUID.randomUUID(), problemType);
-        });
+        List<ProblemType> problemTypes = problemTypeService.findAll(Pageable.unpaged()).getContent();
+
+        assertThat(problemTypes.size()).isEqualTo(2);
     }
 
     @Test
-    void testUpdateProblemType_ElementFound() {
-        ProblemType problemType = getGenericProblemType("testProblemType");
-        ProblemType compareProblemType = getGenericProblemType("testProblemType");
-
-        ProblemType storedProblemType = problemTypeService.save(problemType);
-        compareProblemType.setId(storedProblemType.getId());
-        storedProblemType.setName("editedProblemType");
-        ProblemType editedProblemType = problemTypeService.update(storedProblemType.getId(), storedProblemType);
-
-        assertThat(editedProblemType.getId()).isNotNull();
-        assertThat(editedProblemType.getId()).isEqualTo(compareProblemType.getId());
-        assertThat(editedProblemType.getName()).isNotEqualTo(compareProblemType.getName());
-        assertThat(storedProblemType.getParentProblemType()).isEqualTo(problemType.getParentProblemType());
+    void findProblemTypeById_ElementNotFound() {
+        assertThrows(NoSuchElementException.class, () -> problemTypeService.findById(UUID.randomUUID()));
     }
 
     @Test
-    void testFindProblemTypeById_ElementNotFound() {
-        Assertions.assertThrows(NoSuchElementException.class, () -> problemTypeService.findById(UUID.randomUUID()));
-    }
+    void findProblemTypeById_ElementFound() {
+        ProblemType problemType = getFullProblemType("problemTypeName");
 
-    @Test
-    void testFindProblemTypeById_ElementFound() {
-        ProblemType problemType = getGenericProblemType("testProblemType");
-
-        ProblemType storedProblemType = problemTypeService.save(problemType);
+        ProblemType storedProblemType = problemTypeService.create(problemType);
         storedProblemType = problemTypeService.findById(storedProblemType.getId());
 
         assertThat(storedProblemType.getId()).isNotNull();
@@ -100,20 +90,33 @@ public class ProblemTypeServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void testFindAll() {
-        ProblemType problemType1 = getGenericProblemType("testProblemType1");
-        problemTypeService.save(problemType1);
-        ProblemType problemType2 = getGenericProblemType("testProblemType2");
-        problemTypeService.save(problemType2);
-
-        List<ProblemType> problemTypes = problemTypeService.findAll(Pageable.unpaged(), "").getContent();
-
-        assertThat(problemTypes.size()).isEqualTo(2);
+    void updateProblemType_ElementNotFound() {
+        ProblemType problemType = getFullProblemType("problemTypeName");
+        problemType.setId(UUID.randomUUID());
+        assertThrows(NoSuchElementException.class, () -> {
+            problemTypeService.update(problemType);
+        });
     }
 
     @Test
-    void testDeleteProblemType_HasReferences() {
-        ProblemType problemType = getGenericProblemType("referencedProblemType");
+    void updateProblemType_ElementFound() {
+        ProblemType problemType = getFullProblemType("problemTypeName");
+        ProblemType compareProblemType = getFullProblemType("problemTypeName");
+
+        ProblemType storedProblemType = problemTypeService.create(problemType);
+        compareProblemType.setId(storedProblemType.getId());
+        storedProblemType.setName("editedProblemTypeName");
+        ProblemType editedProblemType = problemTypeService.update(storedProblemType);
+
+        assertThat(editedProblemType.getId()).isNotNull();
+        assertThat(editedProblemType.getId()).isEqualTo(compareProblemType.getId());
+        assertThat(editedProblemType.getName()).isNotEqualTo(compareProblemType.getName());
+        assertThat(storedProblemType.getParentProblemType()).isEqualTo(problemType.getParentProblemType());
+    }
+
+    @Test
+    void deleteProblemType_WithLinks() {
+        ProblemType problemType = getFullProblemType("problemTypeName");
         Set<ProblemType> problemTypes = new HashSet<>();
         problemTypes.add(problemType);
 
@@ -122,32 +125,32 @@ public class ProblemTypeServiceTest extends AtlasDatabaseTestBase {
         algorithm.setComputationModel(ComputationModel.CLASSIC);
         algorithm.setProblemTypes(problemTypes);
 
-        Algorithm storedAlgorithm = this.algorithmService.save(algorithm);
+        Algorithm storedAlgorithm = this.algorithmService.create(algorithm);
 
         Set<ProblemType> storedProblemTypes = storedAlgorithm.getProblemTypes();
         storedProblemTypes.forEach(pt -> {
-            Assertions.assertDoesNotThrow(() -> problemTypeService.findById(pt.getId()));
-            Assertions.assertThrows(ConsistencyException.class, () -> problemTypeService.delete(pt));
-            Assertions.assertDoesNotThrow(() -> problemTypeService.findById(pt.getId()));
+            assertDoesNotThrow(() -> problemTypeService.findById(pt.getId()));
+            assertThrows(EntityReferenceConstraintViolationException.class, () -> problemTypeService.delete(pt.getId()));
+            assertDoesNotThrow(() -> problemTypeService.findById(pt.getId()));
         });
     }
 
     @Test
-    void testDeleteProblemType_NoReferences() {
-        ProblemType problemType = getGenericProblemType("referencedProblemType");
-        ProblemType storedProblemType = problemTypeService.save(problemType);
+    void deleteProblemType_NoLinks() {
+        ProblemType problemType = getFullProblemType("problemTypeName");
+        ProblemType storedProblemType = problemTypeService.create(problemType);
 
-        Assertions.assertDoesNotThrow(() -> problemTypeService.findById(storedProblemType.getId()));
+        assertDoesNotThrow(() -> problemTypeService.findById(storedProblemType.getId()));
 
-        problemTypeService.delete(storedProblemType);
+        problemTypeService.delete(storedProblemType.getId());
 
-        Assertions.assertThrows(NoSuchElementException.class, () -> problemTypeService.findById(storedProblemType.getId()));
+        assertThrows(NoSuchElementException.class, () -> problemTypeService.findById(storedProblemType.getId()));
     }
 
     @Test
-    void testGetParentTreeList_NoParent() {
-        ProblemType problemType = getGenericProblemType("referencedProblemType");
-        ProblemType persistedProblemType = problemTypeService.save(problemType);
+    void getParentTreeList_NoParent() {
+        ProblemType problemType = getFullProblemType("problemTypeName");
+        ProblemType persistedProblemType = problemTypeService.create(problemType);
 
         List<ProblemType> problemTypeList = problemTypeService.getParentList(persistedProblemType.getId());
 
@@ -155,23 +158,25 @@ public class ProblemTypeServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void testGetParentTreeList_ReturnTwoParents() {
-        ProblemType problemType = getGenericProblemType("referencedProblemType");
-        ProblemType parentProblemType = getGenericProblemType("referencedParentProblemType");
-        ProblemType parentParentProblemType = getGenericProblemType("referencedParentParentProblemType");
-        parentProblemType.setParentProblemType(problemTypeService.save(parentParentProblemType).getId());
-        problemType.setParentProblemType(problemTypeService.save(parentProblemType).getId());
-        ProblemType persistedProblemType = problemTypeService.save(problemType);
+    void getParentTreeList_ReturnTwoParents() {
+        ProblemType problemType = getFullProblemType("problemTypeName");
+        ProblemType parentProblemType = getFullProblemType("parentProblemTypeName");
+        ProblemType parentParentProblemType = getFullProblemType("parentParentProblemTypeName");
+        parentProblemType.setParentProblemType(problemTypeService.create(parentParentProblemType).getId());
+        problemType.setParentProblemType(problemTypeService.create(parentProblemType).getId());
+        ProblemType persistedProblemType = problemTypeService.create(problemType);
 
         List<ProblemType> problemTypeList = problemTypeService.getParentList(persistedProblemType.getId());
 
         assertThat(problemTypeList.size()).isEqualTo(3);
     }
 
-    private ProblemType getGenericProblemType(String name) {
+    private ProblemType getFullProblemType(String name) {
         ProblemType problemType = new ProblemType();
+
         problemType.setName(name);
         problemType.setParentProblemType(UUID.randomUUID());
+
         return problemType;
     }
 }

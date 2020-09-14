@@ -20,38 +20,30 @@ package org.planqk.atlas.web.linkassembler;
 
 import java.util.UUID;
 
-import org.planqk.atlas.web.Constants;
-import org.planqk.atlas.web.controller.PublicationController;
-import org.planqk.atlas.web.dtos.AlgorithmDto;
-import org.planqk.atlas.web.dtos.ImplementationDto;
 import org.planqk.atlas.web.dtos.PublicationDto;
 
-import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Component;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Component
 public class PublicationAssembler extends GenericLinkAssembler<PublicationDto> {
 
     @Override
     public void addLinks(EntityModel<PublicationDto> resource) {
-        resource.add(links.linkTo(methodOn(PublicationController.class).getPublication(this.getId(resource))).withSelfRel());
-        resource.add(links.linkTo(methodOn(PublicationController.class).getPublicationAlgorithms(this.getId(resource))).withRel(Constants.ALGORITHMS));
-        resource.add(links.linkTo(methodOn(PublicationController.class).getPublicationImplementations(this.getId(resource))).withRel(Constants.IMPLEMENTATIONS));
+//        resource.add(links.linkTo(methodOn(PublicationController.class).getPublication(this.getId(resource))).withSelfRel());
+//        resource.add(links.linkTo(methodOn(PublicationController.class).getPublicationAlgorithms(this.getId(resource))).withRel(Constants.ALGORITHMS));
+//        resource.add(links.linkTo(methodOn(PublicationController.class).getPublicationImplementations(this.getId(resource))).withRel(Constants.IMPLEMENTATIONS));
     }
 
     private UUID getId(EntityModel<PublicationDto> resource) {
         return resource.getContent().getId();
     }
 
-    public void addAlgorithmLink(CollectionModel<EntityModel<AlgorithmDto>> resources, UUID id) {
-        resources.add(links.linkTo(methodOn(PublicationController.class).getPublicationAlgorithms(id)).withSelfRel());
-    }
-
-    public void addImplementationLink(CollectionModel<EntityModel<ImplementationDto>> resources, UUID id) {
-        resources.add(links.linkTo(methodOn(PublicationController.class).getPublicationImplementations(id)).withSelfRel());
-    }
-
+//    public void addAlgorithmLink(CollectionModel<EntityModel<AlgorithmDto>> resources, UUID id) {
+//        resources.add(links.linkTo(methodOn(PublicationController.class).getPublicationAlgorithms(id)).withSelfRel());
+//    }
+//
+//    public void addImplementationLink(CollectionModel<EntityModel<ImplementationDto>> resources, UUID id) {
+//        resources.add(links.linkTo(methodOn(PublicationController.class).getPublicationImplementations(id)).withSelfRel());
+//    }
 }

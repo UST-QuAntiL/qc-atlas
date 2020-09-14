@@ -1,3 +1,22 @@
+/*******************************************************************************
+ * Copyright (c) 2020 University of Stuttgart
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *******************************************************************************/
+
 package org.planqk.atlas.core.model;
 
 import java.net.URL;
@@ -13,6 +32,7 @@ import javax.persistence.ManyToMany;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NonNull;
 import lombok.ToString;
 
 /**
@@ -50,15 +70,12 @@ public class SoftwarePlatform extends HasId {
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    @ManyToMany(mappedBy = "softwarePlatforms",
-            cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @ManyToMany(fetch = FetchType.LAZY,
+            cascade = {CascadeType.MERGE, CascadeType.PERSIST},
+            mappedBy = "softwarePlatforms")
     private Set<Implementation> implementations = new HashSet<>();
 
-    public Set<Implementation> getImplementations() {
-        return new HashSet<>(implementations);
-    }
-
-    public void addImplementation(Implementation implementation) {
+    public void addImplementation(@NonNull Implementation implementation) {
         if (implementations.contains(implementation)) {
             return;
         }
@@ -66,7 +83,7 @@ public class SoftwarePlatform extends HasId {
         implementation.addSoftwarePlatform(this);
     }
 
-    public void removeImplementation(Implementation implementation) {
+    public void removeImplementation(@NonNull Implementation implementation) {
         if (!implementations.contains(implementation)) {
             return;
         }
@@ -74,11 +91,7 @@ public class SoftwarePlatform extends HasId {
         implementation.removeSoftwarePlatform(this);
     }
 
-    public Set<CloudService> getSupportedCloudServices() {
-        return new HashSet<>(supportedCloudServices);
-    }
-
-    public void addCloudService(CloudService cloudService) {
+    public void addCloudService(@NonNull CloudService cloudService) {
         if (supportedCloudServices.contains(cloudService)) {
             return;
         }
@@ -86,7 +99,7 @@ public class SoftwarePlatform extends HasId {
         cloudService.addSoftwarePlatform(this);
     }
 
-    public void removeCloudService(CloudService cloudService) {
+    public void removeCloudService(@NonNull CloudService cloudService) {
         if (!supportedCloudServices.contains(cloudService)) {
             return;
         }
@@ -94,11 +107,7 @@ public class SoftwarePlatform extends HasId {
         cloudService.removeSoftwarePlatform(this);
     }
 
-    public Set<ComputeResource> getSupportedComputeResources() {
-        return new HashSet<>(supportedComputeResources);
-    }
-
-    public void addComputeResource(ComputeResource computeResource) {
+    public void addComputeResource(@NonNull ComputeResource computeResource) {
         if (supportedComputeResources.contains(computeResource)) {
             return;
         }
@@ -106,7 +115,7 @@ public class SoftwarePlatform extends HasId {
         computeResource.addSoftwarePlatform(this);
     }
 
-    public void removeComputeResource(ComputeResource computeResource) {
+    public void removeComputeResource(@NonNull ComputeResource computeResource) {
         if (!supportedComputeResources.contains(computeResource)) {
             return;
         }
