@@ -21,7 +21,6 @@ package org.planqk.atlas.core.repository;
 
 import java.util.UUID;
 
-import org.planqk.atlas.core.model.ApplicationArea;
 import org.planqk.atlas.core.model.ProblemType;
 
 import org.springframework.data.domain.Page;
@@ -38,8 +37,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 @RepositoryRestResource(exported = false)
 public interface ProblemTypeRepository extends JpaRepository<ProblemType, UUID> {
-
-    Optional<ProblemType> findByName(String name);
 
     default Page<ProblemType> findAll(String search, Pageable pageable) {
         return findByNameContainingIgnoreCase(search, pageable);

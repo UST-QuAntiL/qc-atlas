@@ -91,12 +91,11 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
     @Override
     public Page<ProblemType> findAll(Pageable pageable, String search) {
         if (!Objects.isNull(search) && !search.isEmpty()) {
-            return repo.findAll(search, pageable);
+            return problemTypeRepository.findAll(search, pageable);
         }
-        return repo.findAll(pageable);
+        return findAll(pageable);
     }
 
-    @Override
     private void removeReferences(@NonNull ProblemType problemType) {
         problemType.getAlgorithms().forEach(algorithm -> algorithm.removeProblemType(problemType));
     }
