@@ -22,6 +22,7 @@ package org.planqk.atlas.core.services;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.UUID;
 
 import javax.transaction.Transactional;
@@ -85,6 +86,14 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
         removeReferences(problemType);
 
         problemTypeRepository.deleteById(problemTypeId);
+    }
+
+    @Override
+    public Page<ProblemType> findAll(Pageable pageable, String search) {
+        if (!Objects.isNull(search) && !search.isEmpty()) {
+            return problemTypeRepository.findAll(search, pageable);
+        }
+        return findAll(pageable);
     }
 
     private void removeReferences(@NonNull ProblemType problemType) {

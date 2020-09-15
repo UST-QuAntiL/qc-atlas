@@ -70,8 +70,7 @@ public class ProblemTypeController {
     @GetMapping
     public ResponseEntity<PagedModel<EntityModel<ProblemTypeDto>>> getProblemTypes(
             @Parameter(hidden = true) ListParameters listParameters) {
-        return ResponseEntity.ok(problemTypeAssembler
-                .toModel(problemTypeService.findAll(listParameters.getPageable())));
+        return ResponseEntity.ok(problemTypeAssembler.toModel(problemTypeService.findAll(listParameters.getPageable(), listParameters.getSearch())));
     }
 
     @Operation(responses = {

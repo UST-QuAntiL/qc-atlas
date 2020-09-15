@@ -39,6 +39,8 @@ public interface ProblemTypeService {
 
     @Transactional
     ProblemType update(ProblemType problemType);
+    
+    Page<ProblemType> findAll(Pageable pageable, String search);
 
     @Transactional
     void delete(UUID problemTypeId);

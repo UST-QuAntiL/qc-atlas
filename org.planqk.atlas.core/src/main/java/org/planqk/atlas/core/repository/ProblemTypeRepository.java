@@ -38,6 +38,11 @@ import org.springframework.stereotype.Repository;
 @RepositoryRestResource(exported = false)
 public interface ProblemTypeRepository extends JpaRepository<ProblemType, UUID> {
 
+    default Page<ProblemType> findAll(String search, Pageable pageable) {
+        return findByNameContainingIgnoreCase(search, pageable);
+    }
+
+    Page<ProblemType> findByNameContainingIgnoreCase(String name, Pageable pageable);
     @Query("SELECT pt " +
             "FROM ProblemType pt " +
             "JOIN pt.algorithms algos " +
