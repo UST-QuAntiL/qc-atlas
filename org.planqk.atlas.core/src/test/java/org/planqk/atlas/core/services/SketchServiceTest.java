@@ -92,8 +92,12 @@ public class SketchServiceTest extends AtlasDatabaseTestBase {
         this.sketchService.delete(response.getId());
 
         // test
-        final Sketch deletedSketch = this.sketchService.findById(response.getId());
-        assertThat(deletedSketch).isNull();
+        try {
+            this.sketchService.findById(response.getId());
+        } catch (Exception e) {
+            assertThat(e.getMessage()).contains("Sketch with ID \"" + sketch.getId() + "\" does not exist");
+        }
+
     }
 
     @Test

@@ -73,7 +73,7 @@ public class AlgorithmDto implements Identifyable {
 
     private String outputFormat;
 
-    private List<Sketch> sketches;
+    private List<SketchDto> sketches;
 
     private String solution;
 

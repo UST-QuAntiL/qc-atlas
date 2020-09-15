@@ -80,7 +80,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 
     private final ImplementationRepository implementationRepository;
 
-    private ImageRepository imageRepository;
+    private final ImageRepository imageRepository;
 
     @Override
     @Transactional

@@ -19,6 +19,7 @@
 
 package org.planqk.atlas.web.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -28,8 +29,8 @@ import org.planqk.atlas.core.model.ComputeResourceProperty;
 import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.model.Publication;
-import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.model.Sketch;
+import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.core.services.ApplicationAreaService;
 import org.planqk.atlas.core.services.ComputeResourcePropertyService;
@@ -38,8 +39,8 @@ import org.planqk.atlas.core.services.LinkingService;
 import org.planqk.atlas.core.services.PatternRelationService;
 import org.planqk.atlas.core.services.ProblemTypeService;
 import org.planqk.atlas.core.services.PublicationService;
-import org.planqk.atlas.core.services.TagService;
 import org.planqk.atlas.core.services.SketchService;
+import org.planqk.atlas.core.services.TagService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.ApplicationAreaDto;
@@ -48,6 +49,7 @@ import org.planqk.atlas.web.dtos.ImplementationDto;
 import org.planqk.atlas.web.dtos.PatternRelationDto;
 import org.planqk.atlas.web.dtos.ProblemTypeDto;
 import org.planqk.atlas.web.dtos.PublicationDto;
+import org.planqk.atlas.web.dtos.SketchDto;
 import org.planqk.atlas.web.dtos.TagDto;
 import org.planqk.atlas.web.linkassembler.AlgorithmAssembler;
 import org.planqk.atlas.web.linkassembler.ApplicationAreaAssembler;
@@ -56,6 +58,7 @@ import org.planqk.atlas.web.linkassembler.ImplementationAssembler;
 import org.planqk.atlas.web.linkassembler.PatternRelationAssembler;
 import org.planqk.atlas.web.linkassembler.ProblemTypeAssembler;
 import org.planqk.atlas.web.linkassembler.PublicationAssembler;
+import org.planqk.atlas.web.linkassembler.SketchAssembler;
 import org.planqk.atlas.web.linkassembler.TagAssembler;
 import org.planqk.atlas.web.utils.ControllerValidationUtils;
 import org.planqk.atlas.web.utils.ListParameters;
@@ -63,12 +66,6 @@ import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.RestUtils;
 import org.planqk.atlas.web.utils.ValidationGroups;
-
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -86,10 +83,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Controller to access and manipulate classic, hybrid and quantum algorithms.
@@ -103,29 +105,39 @@ import org.springframework.web.multipart.MultipartFile;
 public class AlgorithmController {
 
     private final AlgorithmService algorithmService;
+
     private final AlgorithmAssembler algorithmAssembler;
+
+    private final SketchAssembler sketchAssembler;
 
     private final SketchService sketchService;
 
     private final PatternRelationService patternRelationService;
+
     private final PatternRelationAssembler patternRelationAssembler;
 
     private final ImplementationService implementationService;
+
     private final ImplementationAssembler implementationAssembler;
 
     private final ProblemTypeService problemTypeService;
+
     private final ProblemTypeAssembler problemTypeAssembler;
 
     private final ApplicationAreaService applicationAreaService;
+
     private final ApplicationAreaAssembler applicationAreaAssembler;
 
     private final TagService tagService;
+
     private final TagAssembler tagAssembler;
 
     private final PublicationService publicationService;
+
     private final PublicationAssembler publicationAssembler;
 
     private final ComputeResourcePropertyService computeResourcePropertyService;
+
     private final ComputeResourcePropertyAssembler computeResourcePropertyAssembler;
 
     private final LinkingService linkingService;
@@ -269,7 +281,7 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "204"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Algorithm or publication with given IDs don't exist or " +
-                            "no relation between them exists")
+                    "no relation between them exists")
     }, description = "Delete a reference to a publication of an algorithm. The reference has to be previously created " +
             "via a POST on /" + Constants.ALGORITHMS + "/{algorithmId}/" + Constants.PUBLICATIONS + "/{publicationId}).")
     @DeleteMapping("/{algorithmId}/" + Constants.PUBLICATIONS + "/{publicationId}")
@@ -538,7 +550,7 @@ public class AlgorithmController {
     @PostMapping("/{algorithmId}/" + Constants.PATTERN_RELATIONS)
     public ResponseEntity<EntityModel<PatternRelationDto>> createPatternRelationForAlgorithm(
             @PathVariable UUID algorithmId,
-            @Validated( {ValidationGroups.Create.class}) @RequestBody PatternRelationDto patternRelationDto) {
+            @Validated({ValidationGroups.Create.class}) @RequestBody PatternRelationDto patternRelationDto) {
         ControllerValidationUtils.checkIfAlgorithmIsInPatternRelationDTO(algorithmId, patternRelationDto);
 
         var savedPatternRelation = patternRelationService.create(
@@ -559,7 +571,7 @@ public class AlgorithmController {
     public ResponseEntity<EntityModel<PatternRelationDto>> updatePatternRelationOfAlgorithm(
             @PathVariable UUID algorithmId,
             @PathVariable UUID patternRelationId,
-            @Validated( {ValidationGroups.Update.class}) @RequestBody PatternRelationDto patternRelationDto) {
+            @Validated({ValidationGroups.Update.class}) @RequestBody PatternRelationDto patternRelationDto) {
         ControllerValidationUtils.checkIfAlgorithmIsInPatternRelationDTO(algorithmId, patternRelationDto);
         patternRelationService.checkIfAlgorithmIsInPatternRelation(algorithmId, patternRelationId);
 
@@ -601,26 +613,63 @@ public class AlgorithmController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400", description = "Given Id is not a valid UUID"),
+            @ApiResponse(responseCode = "417"),
             @ApiResponse(responseCode = "404", description = "Algorithm with the given id doesn't exist")
     }, description = "Add a Sketch to the algorithm.")
     @PostMapping("/{algorithmId}/" + Constants.SKETCHES)
-    public ResponseEntity<Sketch> uploadSketch(
+    public ResponseEntity<EntityModel<SketchDto>> uploadSketch(
             @PathVariable UUID algorithmId,
             @RequestParam("file") MultipartFile file,
             @RequestParam("description") String description,
             @RequestParam("baseURL") String baseURL) {
         try {
             Sketch sketch = sketchService.addSketchToAlgorithm(algorithmId, file, description, baseURL);
-            return ResponseEntity.ok(sketch);
+            return ResponseEntity.ok(this.sketchAssembler.toModel(sketch));
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
         }
     }
 
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200")
+    }, description = "Retrieve all sketches for a specific algorithm.")
     @GetMapping("/{algorithmId}/" + Constants.SKETCHES)
-    public ResponseEntity<List<Sketch>> getSketches(@PathVariable UUID algorithmId) {
+    public ResponseEntity<List<EntityModel<SketchDto>>> getSketches(@PathVariable UUID algorithmId) {
         try {
-            return ResponseEntity.ok(sketchService.findByAlgorithm(algorithmId));
+            List<Sketch> sketches = sketchService.findByAlgorithm(algorithmId);
+            List<EntityModel<SketchDto>> sketchDtoList = new ArrayList<>();
+            sketches.forEach(s -> {
+                sketchDtoList.add(this.sketchAssembler.toModel(s));
+            });
+
+            return ResponseEntity.ok(sketchDtoList);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+        }
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "204"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", description = "Algorithm or sketch with given id doesn't exist")
+    }, description = "Delete a sketch of the algorithm.")
+    @DeleteMapping("/{algorithmId}/" + Constants.SKETCHES + "/{sketchId}")
+    public ResponseEntity<Void> deleteSketch(@PathVariable UUID algorithmId, @PathVariable UUID sketchId) {
+        sketchService.delete(sketchId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", description = "Sketch with given ID doesn't exist")
+    }, description = "Retrieve a specific Sketch and its basic properties.")
+    @GetMapping("/{algorithmId}/" + Constants.SKETCHES + "/{sketchId}")
+    public ResponseEntity<EntityModel<SketchDto>> getSketch(@PathVariable UUID algorithmId, @PathVariable UUID sketchId) {
+        try {
+            return ResponseEntity
+                    .ok(this.sketchAssembler.toModel(this.sketchService.findById(sketchId)));
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
         }
@@ -628,34 +677,27 @@ public class AlgorithmController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "404", description = "Algorithm or sketch with given id doesn't exist")
-    }, description = "Delete a sketch of the algorithm.")
-    @DeleteMapping("/{algorithmId}/" + Constants.SKETCHES + "/{sketchId}")
-    public ResponseEntity<Void> deleteSketch(@PathVariable UUID algorithmId, @PathVariable UUID sketchId) {
-        sketchService.delete(sketchId);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", description = "Sketch with given ID doesn't exist")
+    }, description = "Update the properties of a sketch.")
+    @PutMapping("/{algorithmId}/" + Constants.SKETCHES + "/{sketchId}")
+    public ResponseEntity<EntityModel<SketchDto>> updateSketch(@PathVariable UUID algorithmId, @PathVariable UUID sketchId,
+                                                               @Validated @RequestBody SketchDto sketchDto) {
+        log.debug("Put to update sketch with id: {}.", sketchId);
+        sketchDto.setId(sketchId);
 
-    @GetMapping("/{algorithmId}/" + Constants.SKETCHES + "/{sketchId}")
-    public ResponseEntity<Sketch> getSketch(@PathVariable UUID algorithmId, @PathVariable UUID sketchId) {
-        try {
-            return ResponseEntity
-                    .ok(this.sketchService.findById(sketchId));
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
-        }
+        final Sketch updatedSketch = sketchService.update(
+                ModelMapperUtils.convert(sketchDto, Sketch.class));
+
+        return ResponseEntity.ok(this.sketchAssembler.toModel(updatedSketch));
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "200")}, description = "Update the properties of a sketch.")
-    @PutMapping("/{algorithmId}/" + Constants.SKETCHES + "/{sketchId}")
-    public ResponseEntity<Sketch> updateSketch(@PathVariable UUID algorithmId, @PathVariable UUID sketchId,
-                                               @Validated @RequestBody Sketch sketch) {
-        log.debug("Put to update sketch with id: {}.", sketchId);
-        return ResponseEntity.ok(this.sketchService.update(sketchId, sketch));
-    }
-
-    @RequestMapping(value = "/{algorithmId}/" + Constants.SKETCHES + "/{sketchId}" + "/image", method = RequestMethod.GET,
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", description = "Sketch with given ID doesn't exist")
+    }, description = "Retrieve aa image from a specific Sketch.")
+    @GetMapping(value = "/{algorithmId}/" + Constants.SKETCHES + "/{sketchId}" + "/image",
             produces = MediaType.IMAGE_JPEG_VALUE)
     public ResponseEntity<byte[]> getSketchImage(@PathVariable UUID algorithmId, @PathVariable UUID sketchId) {
         try {

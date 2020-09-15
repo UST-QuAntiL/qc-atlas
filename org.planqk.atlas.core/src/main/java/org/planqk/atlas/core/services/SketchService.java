@@ -8,15 +8,15 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface SketchService {
 
-    public Sketch update(UUID id, Sketch sketch);
+    Sketch update(Sketch sketch);
 
-    public List<Sketch> findByAlgorithm(UUID algorithmId);
+    List<Sketch> findByAlgorithm(UUID algorithmId);
 
-    public Sketch addSketchToAlgorithm(UUID algorithmId, MultipartFile file, String description, String baseURL);
+    Sketch addSketchToAlgorithm(UUID algorithmId, MultipartFile file, String description, String baseURL);
 
-    public void delete(UUID sketchId);
+    void delete(UUID sketchId);
 
-    public Sketch findById(UUID id);
+    Sketch findById(UUID sketchId);
 
     byte[] getImageBySketch(final UUID sketchId);
 }

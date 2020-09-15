@@ -19,8 +19,6 @@
 
 package org.planqk.atlas.core.model;
 
-import static lombok.EqualsAndHashCode.Exclude;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -31,9 +29,8 @@ import javax.persistence.OneToOne;
 
 import org.hibernate.annotations.Type;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -56,13 +53,11 @@ public class Sketch extends KnowledgeArtifact {
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
-    @Exclude
-    @JsonIgnore
+    @EqualsAndHashCode.Exclude
     private Algorithm algorithm;
 
     @OneToOne(mappedBy = "sketch", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
-    @Exclude
-    @JsonIgnore
+    @EqualsAndHashCode.Exclude
     private Image image;
 
 }

@@ -41,9 +41,9 @@ import lombok.NoArgsConstructor;
 @Data
 public class KnowledgeArtifact extends HasId {
 
-    public Date creationDate;
+    private Date creationDate;
 
-    public Date lastModifiedAt;
+    private Date lastModifiedAt;
 
     @OneToMany(cascade = CascadeType.ALL,
             mappedBy = "knowledgeArtifact",
