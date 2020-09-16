@@ -19,14 +19,21 @@
 
 package org.planqk.atlas.core.model;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+
+import org.hibernate.annotations.Type;
 
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.Type;
 
 /**
  * Entity representing a sketch with an image and a description.
@@ -40,7 +47,17 @@ public class Sketch extends KnowledgeArtifact {
 
     @Lob
     @Type(type = "org.hibernate.type.TextType")
-    private String image;
+    private String imageURL;
 
+    @Column(columnDefinition = "text")
     private String description;
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @EqualsAndHashCode.Exclude
+    private Algorithm algorithm;
+
+    @OneToOne(mappedBy = "sketch", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
+    @EqualsAndHashCode.Exclude
+    private Image image;
+
 }

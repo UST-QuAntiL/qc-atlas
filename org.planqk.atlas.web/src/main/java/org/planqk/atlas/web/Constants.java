@@ -16,6 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
+
 package org.planqk.atlas.web;
 
 /**
@@ -42,6 +43,7 @@ public class Constants {
     public static final String PROBLEM_TYPES = "problem-types";
     public static final String PROBLEM_TYPE_PARENTS = "problem-type-parents";
     public static final String PUBLICATIONS = "publications";
+    public static final String SKETCHES = "sketches";
     public static final String SOFTWARE_PLATFORMS = "software-platforms";
     public static final String TAGS = "tags";
 

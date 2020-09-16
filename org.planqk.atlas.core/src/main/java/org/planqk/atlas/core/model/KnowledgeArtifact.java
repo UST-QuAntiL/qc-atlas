@@ -28,6 +28,9 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.OneToMany;
 
+import java.util.Date;
+
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
@@ -35,7 +38,13 @@ import lombok.NoArgsConstructor;
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @NoArgsConstructor
+@Data
 public class KnowledgeArtifact extends HasId {
+
+    private Date creationDate;
+
+    private Date lastModifiedAt;
+
     @OneToMany(cascade = CascadeType.ALL,
             mappedBy = "knowledgeArtifact",
             orphanRemoval = true)

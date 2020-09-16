@@ -19,10 +19,10 @@
 
 package org.planqk.atlas.core.repository;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Sketch;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.stereotype.Repository;
@@ -34,4 +34,5 @@ import org.springframework.stereotype.Repository;
 @RepositoryRestResource(exported = false)
 public interface SketchRepository extends JpaRepository<Sketch, UUID> {
 
+    List<Sketch> findSketchesByAlgorithmId(UUID algorithmId);
 }

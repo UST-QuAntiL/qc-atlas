@@ -19,6 +19,8 @@
 
 package org.planqk.atlas.core.services;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.UUID;
@@ -29,6 +31,7 @@ import org.planqk.atlas.core.model.ApplicationArea;
 import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.model.Publication;
+import org.planqk.atlas.core.model.Image;
 import org.planqk.atlas.core.model.QuantumAlgorithm;
 import org.planqk.atlas.core.model.Sketch;
 import org.planqk.atlas.core.repository.AlgorithmRelationRepository;
@@ -38,6 +41,8 @@ import org.planqk.atlas.core.repository.ComputeResourcePropertyRepository;
 import org.planqk.atlas.core.repository.PatternRelationRepository;
 import org.planqk.atlas.core.repository.ProblemTypeRepository;
 import org.planqk.atlas.core.repository.PublicationRepository;
+import org.planqk.atlas.core.repository.ImageRepository;
+import org.planqk.atlas.core.repository.ImplementationRepository;
 import org.planqk.atlas.core.repository.SketchRepository;
 import org.planqk.atlas.core.util.ServiceUtils;
 
@@ -73,6 +78,10 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     private final PatternRelationService patternRelationService;
     private final PatternRelationRepository patternRelationRepository;
 
+    private final ImplementationRepository implementationRepository;
+
+    private final ImageRepository imageRepository;
+
     @Override
     @Transactional
     public Algorithm create(Algorithm algorithm) {
@@ -97,17 +106,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     public Algorithm update(@NonNull Algorithm algorithm) {
         Algorithm persistedAlgorithm = findById(algorithm.getId());
 
-        // remove all attached sketches
-        persistedAlgorithm.removeSketches(persistedAlgorithm.getSketches());
-        if (algorithm.getSketches() != null) {
-            algorithm.getSketches().forEach(sketch -> {
-                if (sketch.getId() == null) {
-                    // add sketches one by one
-                    final Sketch savedSketch = sketchRepository.save(sketch);
-                    persistedAlgorithm.addSketch(savedSketch);
-                }
-            });
-        }
+        persistedAlgorithm.setSketches(algorithm.getSketches());
 
         persistedAlgorithm.setName(algorithm.getName());
         persistedAlgorithm.setAcronym(algorithm.getAcronym());

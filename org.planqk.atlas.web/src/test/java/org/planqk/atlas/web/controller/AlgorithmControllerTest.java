@@ -1,4 +1,4 @@
-/*******************************************************************************
+/********************************************************************************
  * Copyright (c) 2020 University of Stuttgart
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -19,13 +19,37 @@
 
 package org.planqk.atlas.web.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.fromMethodCall;
+import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.on;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.UUID;
 
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.planqk.atlas.core.exceptions.InvalidResourceTypeValueException;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
@@ -39,6 +63,7 @@ import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.model.PatternRelationType;
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.model.QuantumAlgorithm;
+import org.planqk.atlas.core.model.Sketch;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.core.services.ApplicationAreaService;
 import org.planqk.atlas.core.services.ComputeResourcePropertyService;
@@ -48,6 +73,7 @@ import org.planqk.atlas.core.services.LinkingService;
 import org.planqk.atlas.core.services.PatternRelationService;
 import org.planqk.atlas.core.services.ProblemTypeService;
 import org.planqk.atlas.core.services.PublicationService;
+import org.planqk.atlas.core.services.SketchService;
 import org.planqk.atlas.core.services.TagService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
@@ -56,15 +82,10 @@ import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
 import org.planqk.atlas.web.dtos.ComputeResourcePropertyDto;
 import org.planqk.atlas.web.dtos.ComputeResourcePropertyTypeDto;
 import org.planqk.atlas.web.dtos.PatternRelationDto;
+import org.planqk.atlas.web.dtos.SketchDto;
 import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -75,25 +96,16 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.fromMethodCall;
-import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.on;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @WebMvcTest(value = AlgorithmController.class)
 @ExtendWith(MockitoExtension.class)
@@ -102,43 +114,68 @@ import static org.springframework.web.servlet.mvc.method.annotation.MvcUriCompon
 public class AlgorithmControllerTest {
 
     private final int page = 0;
+
     private final int size = 2;
+
     private final Pageable pageable = PageRequest.of(page, size);
+
+    private final ObjectMapper mapper = ObjectMapperUtils.newTestMapper();
+
+    private final UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromPath("/");
+
+    @Autowired
+    private WebApplicationContext webApplicationContext;
 
     @MockBean
     private AlgorithmService algorithmService;
+
     @MockBean
     private ComputeResourcePropertyService computeResourcePropertyService;
+
     @MockBean
     private ComputeResourcePropertyTypeService computeResourcePropertyTypeService;
+
     @MockBean
     private ImplementationService implementationService;
+
     @MockBean
     private TagService tagService;
+
     @MockBean
     private LinkingService linkingService;
+
     @MockBean
     private PatternRelationService patternRelationService;
+
     @MockBean
     private ProblemTypeService problemTypeService;
+
     @MockBean
     private ApplicationAreaService applicationAreaService;
+
+    @MockBean
+    private SketchService sketchService;
+
     @MockBean
     private PublicationService publicationService;
 
     @Autowired
     private MockMvc mockMvc;
 
-    private final ObjectMapper mapper = ObjectMapperUtils.newTestMapper();
-    private final UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromPath("/");
-
     private Algorithm algorithm1;
+
     private Algorithm algorithm2;
+
     private AlgorithmRelation algorithmRelation1;
+
     private AlgorithmRelationDto algorithmRelation1Dto;
+
     private AlgorithmDto algorithm1Dto;
+
     private AlgorithmDto algorithm2Dto;
+
     private Set<AlgorithmRelation> algorithmRelations;
+
     private Set<PatternRelation> patternRelations;
 
     private void initializeAlgorithms() {
@@ -818,5 +855,146 @@ public class AlgorithmControllerTest {
         propertyType.setId(UUID.randomUUID());
 
         when(computeResourcePropertyTypeService.findById(any())).thenReturn(propertyType);
+    }
+
+    @Test
+    void testUploadSketch() throws Exception {
+
+        // mock
+        final UUID algorithmId = UUID.randomUUID();
+        final UUID resultId = UUID.randomUUID();
+        final String description = "test description";
+        final String baseURL = "baseURL";
+        byte[] testFile = hexStringToByteArray("e04fd020ea3a6910a2d808002b30309d");
+        final MockMultipartFile file = new MockMultipartFile("file", testFile);
+        final Sketch sketch = new Sketch();
+        sketch.setId(resultId);
+
+        when(sketchService.addSketchToAlgorithm(algorithmId, file, description, baseURL)).thenReturn(sketch);
+
+        final String path = "/" + Constants.API_VERSION + "/" + Constants.ALGORITHMS + "/" + "{algoId}" + "/" +
+                Constants.SKETCHES;
+
+        // call
+        final MockMvc mockMvc
+                = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+        ResultActions resultActions =
+                mockMvc.perform(multipart(path, algorithmId).file(file).queryParam("description", description).queryParam("baseURL", baseURL))
+                        .andExpect(status().isOk());
+
+        // test
+        Mockito.verify(sketchService, times(1)).addSketchToAlgorithm(algorithmId, file, description, baseURL);
+
+        final String json = resultActions.andReturn().getResponse().getContentAsString();
+        assertThat(json).contains(sketch.getId().toString());
+    }
+
+    @Test
+    void testGetSketches() throws Exception {
+
+        // mock
+        final UUID algorithmId = UUID.randomUUID();
+
+        final List<Sketch> sketches = new ArrayList<>();
+        when(sketchService.findByAlgorithm(algorithmId)).thenReturn(sketches);
+
+        final String path = "/" + Constants.API_VERSION + "/" + Constants.ALGORITHMS + "/" + "{algoId}" + "/" +
+                Constants.SKETCHES;
+
+        // call
+        final MockMvc mockMvc
+                = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+        final ResultActions resultActions = mockMvc.perform(get(path, algorithmId)).andExpect(status().isOk());
+
+        // test
+        Mockito.verify(sketchService, times(1)).findByAlgorithm(algorithmId);
+
+        final String json = resultActions.andReturn().getResponse().getContentAsString();
+        final List<Sketch> sketchResult = new ObjectMapper().readValue(json, List.class);
+        assertEquals(0, sketchResult.size());
+    }
+
+    @Test
+    void testDeleteSketch() throws Exception {
+
+        // mock
+        final UUID algorithmId = UUID.randomUUID();
+        final UUID sketchId = UUID.randomUUID();
+
+        final String path = "/" + Constants.API_VERSION + "/" + Constants.ALGORITHMS + "/" + "{algoId}" + "/" +
+                Constants.SKETCHES + "/{sketchId}";
+
+        // call
+        final MockMvc mockMvc
+                = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+        mockMvc.perform(delete(path, algorithmId, sketchId)).andExpect(status().isNoContent());
+
+        // test
+        Mockito.verify(sketchService, times(1)).delete(sketchId);
+
+    }
+
+    @Test
+    void testGetSketch() throws Exception {
+
+        // mock
+        final UUID algorithmId = UUID.randomUUID();
+        final UUID sketchId = UUID.randomUUID();
+
+        final Sketch sketch = new Sketch();
+        sketch.setId(sketchId);
+        when(sketchService.findById(sketchId)).thenReturn(sketch);
+
+        var url = fromMethodCall(uriBuilder, on(AlgorithmController.class)
+                .getSketch(algorithmId, sketchId)).toUriString();
+
+        // call
+        MvcResult result = mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
+
+        // test
+        Mockito.verify(sketchService, times(1)).findById(sketchId);
+
+        EntityModel<SketchDto> response = mapper.readValue(result.getResponse().getContentAsString(),
+                new TypeReference<>() {
+                });
+        assertEquals(response.getContent().getId(), sketch.getId());
+    }
+
+    @Test
+    void testGetSketchImage() throws Exception {
+
+        // mock
+        final UUID algorithmId = UUID.randomUUID();
+        final UUID sketchId = UUID.randomUUID();
+
+        final Sketch sketch = new Sketch();
+        sketch.setId(sketchId);
+        sketch.setImageURL("test/image/url");
+        when(sketchService.getImageBySketch(sketchId)).thenReturn(this.hexStringToByteArray(sketch.getImageURL()));
+
+        final String path = "/" + Constants.API_VERSION + "/" + Constants.ALGORITHMS + "/" + "{algoId}" + "/" +
+                Constants.SKETCHES + "/{sketchId}" + "/image";
+
+        // call
+        final MockMvc mockMvc
+                = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+        final ResultActions resultActions = mockMvc.perform(get(path, algorithmId, sketchId)).andExpect(status().isOk());
+
+        // test
+        Mockito.verify(sketchService, times(1)).getImageBySketch(sketchId);
+
+        byte[] json = resultActions.andReturn().getResponse().getContentAsByteArray();
+        assertTrue(Arrays.equals(this.hexStringToByteArray(sketch.getImageURL()), json));
+    }
+
+    private byte[] hexStringToByteArray(String s) {
+        int len = s.length();
+        byte[] data = new byte[len / 2];
+        for (int i = 0; i < len; i += 2) {
+            data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
+                    + Character.digit(s.charAt(i + 1), 16));
+        }
+        return data;
     }
 }

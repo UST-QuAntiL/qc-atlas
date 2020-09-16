@@ -46,7 +46,7 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
-public class Algorithm extends AlgorithmOrImplementation {
+public class Algorithm extends KnowledgeArtifact {
 
     private String name;
 
@@ -65,6 +65,12 @@ public class Algorithm extends AlgorithmOrImplementation {
 
     @Column(columnDefinition = "text")
     private String problem;
+
+    @Column(columnDefinition = "text")
+    private String inputFormat;
+
+    @Column(columnDefinition = "text")
+    private String outputFormat;
 
     @OneToMany(fetch = FetchType.LAZY,
             cascade = {CascadeType.ALL},
@@ -88,15 +94,9 @@ public class Algorithm extends AlgorithmOrImplementation {
     private Set<ComputeResourceProperty> requiredComputeResourceProperties = new HashSet<>();
 
     @Column(columnDefinition = "text")
-    private String inputFormat;
-
-    @Column(columnDefinition = "text")
     private String algoParameter;
 
-    @Column(columnDefinition = "text")
-    private String outputFormat;
-
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "algorithm", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Sketch> sketches = new ArrayList<>();
 
     @Column(columnDefinition = "text")
@@ -240,11 +240,23 @@ public class Algorithm extends AlgorithmOrImplementation {
         problemType.removeAlgorithm(this);
     }
 
-    public void addSketch(@NonNull Sketch sketch) {
-        sketches.add(sketch);
+    public void setSketches(List<Sketch> sketches) {
+        this.sketches.clear();
+        if (sketches != null) {
+            sketches.forEach(sketch -> this.addSketch(sketch));
+        }
     }
 
-    public void removeSketches(@NonNull List<Sketch> sketches) {
-        sketches.removeAll(sketches);
+    public Algorithm addSketch(Sketch sketch) {
+        sketches.add(sketch);
+        sketch.setAlgorithm(this);
+        return this;
     }
+
+    public Algorithm removeSketch(Sketch sketch) {
+        sketches.remove(sketch);
+        sketch.setAlgorithm(null);
+        return this;
+    }
+
 }

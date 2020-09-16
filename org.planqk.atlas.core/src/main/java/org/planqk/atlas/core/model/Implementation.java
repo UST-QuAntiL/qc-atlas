@@ -19,17 +19,17 @@
 
 package org.planqk.atlas.core.model;
 
-import java.net.URL;
-import java.util.HashSet;
-import java.util.Set;
-
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import java.net.URL;
+import java.util.HashSet;
+import java.util.Set;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -44,14 +44,27 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
-public class Implementation extends AlgorithmOrImplementation {
+public class Implementation extends KnowledgeArtifact {
+
+    private String name;
 
     private String description;
+
     private String contributors;
+
     private String assumptions;
+
     private String parameter;
+
     private URL link;
+
     private String dependencies;
+
+    @Column(columnDefinition = "text")
+    private String inputFormat;
+
+    @Column(columnDefinition = "text")
+    private String outputFormat;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "implementation_publication",
