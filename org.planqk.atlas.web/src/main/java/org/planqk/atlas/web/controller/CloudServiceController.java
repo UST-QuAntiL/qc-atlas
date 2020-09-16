@@ -25,6 +25,7 @@ import org.planqk.atlas.core.model.CloudService;
 import org.planqk.atlas.core.services.CloudServiceService;
 import org.planqk.atlas.core.services.LinkingService;
 import org.planqk.atlas.web.Constants;
+import org.planqk.atlas.web.annotation.ApiVersion;
 import org.planqk.atlas.web.dtos.CloudServiceDto;
 import org.planqk.atlas.web.dtos.ComputeResourceDto;
 import org.planqk.atlas.web.dtos.SoftwarePlatformDto;
@@ -61,7 +62,8 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = Constants.TAG_EXECUTION_ENVIRONMENTS)
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
-@RequestMapping("/" + Constants.API_VERSION + "/" + Constants.CLOUD_SERVICES)
+@RequestMapping("/" + Constants.CLOUD_SERVICES)
+@ApiVersion("v1")
 @AllArgsConstructor
 @Slf4j
 public class CloudServiceController {

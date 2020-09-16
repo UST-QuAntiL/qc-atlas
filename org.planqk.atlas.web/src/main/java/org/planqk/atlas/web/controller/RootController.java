@@ -43,7 +43,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @io.swagger.v3.oas.annotations.tags.Tag(name = Constants.TAG_ROOT)
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
-@RequestMapping("/" + Constants.API_VERSION + "/")
+@RequestMapping("/")
 @Slf4j
 public class RootController {
 
