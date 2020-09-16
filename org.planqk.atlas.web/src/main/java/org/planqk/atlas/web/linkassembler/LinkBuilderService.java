@@ -21,7 +21,8 @@ package org.planqk.atlas.web.linkassembler;
 import java.util.HashMap;
 import java.util.Map;
 
-import lombok.RequiredArgsConstructor;
+import org.planqk.atlas.web.utils.ListParametersMethodArgumentResolver;
+
 import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ParameterNameDiscoverer;
@@ -40,6 +41,7 @@ import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMappi
 import org.springframework.web.servlet.mvc.method.annotation.PathVariableMethodArgumentResolver;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 /**
@@ -47,25 +49,20 @@ import org.springframework.web.util.UriComponentsBuilder;
  * container's {@link RequestMappingInfoHandlerMapping} instance.
  */
 @Component
-@RequiredArgsConstructor
 public class LinkBuilderService {
-    private static final CompositeUriComponentsContributor contributor;
     private static final ParameterNameDiscoverer parameterNameDiscoverer = new DefaultParameterNameDiscoverer();
 
+    private final CompositeUriComponentsContributor contributor;
     private final RequestMappingHandlerMapping mappings;
 
-    static {
+    public LinkBuilderService(ListParametersMethodArgumentResolver listResolver, RequestMappingHandlerMapping mappings) {
         contributor = new CompositeUriComponentsContributor(
-                new PathVariableMethodArgumentResolver(), new RequestParamMethodArgumentResolver(false));
+                new PathVariableMethodArgumentResolver(), new RequestParamMethodArgumentResolver(false),
+                listResolver);
+        this.mappings = mappings;
     }
 
-    /**
-     * Special version of {@link WebMvcLinkBuilder#linkTo(Object)} that resolves paths via {@link
-     * RequestMappingInfoHandlerMapping}.
-     * <p>
-     * If that is impossible, the class- and method-annotations are considered.
-     */
-    public LinkBuilder linkTo(Object invocationValue) {
+    public UriComponents urlTo(Object invocationValue) {
         Assert.isInstanceOf(LastInvocationAware.class, invocationValue);
 
         final var invocations = DummyInvocationUtils.getLastInvocationAware(invocationValue);
@@ -79,7 +76,7 @@ public class LinkBuilderService {
         final var mappingInfo = resolveInvocation(invocation);
         if (mappingInfo == null) {
             // In case there's no mapping, using just the annotations is our only option!
-            return new LinkBuilder(WebMvcLinkBuilder.linkTo(invocationValue).toUriComponentsBuilder().build());
+            return WebMvcLinkBuilder.linkTo(invocationValue).toUriComponentsBuilder().build();
         }
 
         final UriComponentsBuilder builder;
@@ -91,7 +88,21 @@ public class LinkBuilderService {
             builder = ServletUriComponentsBuilder.fromCurrentServletMapping();
         else
             builder = UriComponentsBuilder.newInstance();
-        return new LinkBuilder(appendMappingParameters(appendMappingPath(builder, mappingInfo), invocation).build());
+        return appendMappingParameters(appendMappingPath(builder, mappingInfo), invocation).build();
+    }
+
+    /**
+     * Special version of {@link WebMvcLinkBuilder#linkTo(Object)} that resolves paths via {@link
+     * RequestMappingInfoHandlerMapping}.
+     * <p>
+     * If that is impossible, the class- and method-annotations are considered.
+     */
+    public LinkBuilder linkTo(Object invocationValue) {
+        return new LinkBuilder(urlTo(invocationValue));
+    }
+
+    public String urlStringTo(Object invocationValue) {
+        return urlTo(invocationValue).toUriString();
     }
 
     private RequestMappingInfo resolveInvocation(MethodInvocation invocation) {

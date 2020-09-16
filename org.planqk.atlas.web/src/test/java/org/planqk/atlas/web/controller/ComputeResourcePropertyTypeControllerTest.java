@@ -31,6 +31,8 @@ import org.planqk.atlas.core.services.ComputeResourcePropertyTypeService;
 import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
 import org.planqk.atlas.web.dtos.ComputeResourcePropertyTypeDto;
 import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
+import org.planqk.atlas.web.linkassembler.LinkBuilderService;
+import org.planqk.atlas.web.utils.ListParameters;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -44,18 +46,16 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.fromMethodCall;
-import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.on;
 
 @WebMvcTest(ComputeResourcePropertyTypeController.class)
 @ExtendWith(MockitoExtension.class)
@@ -70,39 +70,40 @@ public class ComputeResourcePropertyTypeControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+    @Autowired
+    private LinkBuilderService linkBuilderService;
 
     private final ObjectMapper mapper = ObjectMapperUtils.newTestMapper();
-    private final UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromPath("/");
 
     @Test
     void deleteType_returnNoContent() throws Exception {
         doNothing().when(computeResourcePropertyTypeService).delete(any());
-        var url = fromMethodCall(uriBuilder, on(ComputeResourcePropertyTypeController.class)
-                .deleteComputingResourcePropertyType(UUID.randomUUID())).toUriString();
+        var url = linkBuilderService.urlStringTo(methodOn(ComputeResourcePropertyTypeController.class)
+                .deleteComputingResourcePropertyType(UUID.randomUUID()));
         mockMvc.perform(delete(url)).andExpect(status().isNoContent());
     }
 
     @Test
     void deleteType_returnBadRequest() throws Exception {
         doThrow(new EntityReferenceConstraintViolationException("")).when(computeResourcePropertyTypeService).delete(any());
-        var url = fromMethodCall(uriBuilder, on(ComputeResourcePropertyTypeController.class)
-                .deleteComputingResourcePropertyType(UUID.randomUUID())).toUriString();
+        var url = linkBuilderService.urlStringTo(methodOn(ComputeResourcePropertyTypeController.class)
+                .deleteComputingResourcePropertyType(UUID.randomUUID()));
         mockMvc.perform(delete(url)).andExpect(status().isBadRequest());
     }
 
     @Test
     void deleteType_returnNotFound() throws Exception {
         doThrow(new NoSuchElementException()).when(computeResourcePropertyTypeService).delete(any());
-        var url = fromMethodCall(uriBuilder, on(ComputeResourcePropertyTypeController.class)
-                .deleteComputingResourcePropertyType(UUID.randomUUID())).toUriString();
+        var url = linkBuilderService.urlStringTo(methodOn(ComputeResourcePropertyTypeController.class)
+                .deleteComputingResourcePropertyType(UUID.randomUUID()));
         mockMvc.perform(delete(url)).andExpect(status().isNotFound());
     }
 
     @Test
     void getType_returnNotFound() throws Exception {
         when(computeResourcePropertyTypeService.findById(any())).thenThrow(new NoSuchElementException());
-        var url = fromMethodCall(uriBuilder, on(ComputeResourcePropertyTypeController.class)
-                .getComputingResourcePropertyType(UUID.randomUUID())).toUriString();
+        var url = linkBuilderService.urlStringTo(methodOn(ComputeResourcePropertyTypeController.class)
+                .getComputingResourcePropertyType(UUID.randomUUID()));
         mockMvc.perform(get(url)).andExpect(status().isNotFound());
     }
 
@@ -115,8 +116,8 @@ public class ComputeResourcePropertyTypeControllerTest {
         sampleType.setDescription("Test");
 
         when(computeResourcePropertyTypeService.findById(any())).thenReturn(sampleType);
-        var url = fromMethodCall(uriBuilder, on(ComputeResourcePropertyTypeController.class)
-                .getComputingResourcePropertyType(UUID.randomUUID())).toUriString();
+        var url = linkBuilderService.urlStringTo(methodOn(ComputeResourcePropertyTypeController.class)
+                .getComputingResourcePropertyType(UUID.randomUUID()));
         var result = mockMvc.perform(get(url)).andExpect(status().isOk()).andReturn();
 
         var dto = mapper.readValue(
@@ -144,8 +145,8 @@ public class ComputeResourcePropertyTypeControllerTest {
         }
 
         when(computeResourcePropertyTypeService.findAll(any())).thenReturn(new PageImpl<>(types));
-        var url = fromMethodCall(uriBuilder, on(ComputeResourcePropertyTypeController.class)
-                .getResourcePropertyTypes(null)).toUriString();
+        var url = linkBuilderService.urlStringTo(methodOn(ComputeResourcePropertyTypeController.class)
+                .getResourcePropertyTypes(ListParameters.getDefault()));
         var result = mockMvc.perform(get(url)).andExpect(status().isOk()).andReturn();
 
         var resultList = ObjectMapperUtils.mapResponseToList(

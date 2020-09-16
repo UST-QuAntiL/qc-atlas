@@ -28,11 +28,11 @@ import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.core.services.LinkingService;
 import org.planqk.atlas.core.services.PublicationService;
-import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
 import org.planqk.atlas.web.dtos.PublicationDto;
 import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
-import org.planqk.atlas.web.utils.ModelMapperUtils;
+import org.planqk.atlas.web.linkassembler.LinkBuilderService;
+import org.planqk.atlas.web.utils.ListParameters;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -50,10 +50,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -75,18 +75,18 @@ public class PublicationControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+    @Autowired
+    private LinkBuilderService linkBuilderService;
 
     private final ObjectMapper mapper = ObjectMapperUtils.newTestMapper();
-    private final UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromPath("/");
 
     private final int page = 0;
     private final int size = 1;
     private final Pageable pageable = PageRequest.of(page, size);
-    private PublicationDto publicationDto;
     private Publication publication;
 
     @BeforeEach
-    public void init() throws Exception {
+    public void init() {
         publication = new Publication();
         publication.setId(UUID.randomUUID());
         publication.setAuthors(new ArrayList<>(Arrays.asList("author1", "author2")));
@@ -94,7 +94,6 @@ public class PublicationControllerTest {
         publication.setTitle("TestPublication");
         publication.setDoi("");
 
-        publicationDto = ModelMapperUtils.convert(publication, PublicationDto.class);
         when(publicationService.findById(publication.getId())).thenReturn(publication);
     }
 
@@ -103,13 +102,13 @@ public class PublicationControllerTest {
         List<Publication> publications = new ArrayList<>();
         publications.add(publication);
         Page<Publication> pagePublication = new PageImpl<>(publications);
-        Page<PublicationDto> pagePublicationDto = ModelMapperUtils.convertPage(pagePublication, PublicationDto.class);
 
         when(publicationService.findAll(pageable, null)).thenReturn(pagePublication);
 
+        var url = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
+                .getPublications(new ListParameters(pageable, null)));
         MvcResult result = mockMvc
-                .perform(get("/" + Constants.API_VERSION + "/" + Constants.PUBLICATIONS + "/").queryParam(Constants.PAGE, Integer.toString(page))
-                        .queryParam(Constants.SIZE, Integer.toString(size)).accept(MediaType.APPLICATION_JSON))
+                .perform(get(url).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON)).andReturn();
 
         var resultList = ObjectMapperUtils.mapResponseToList(
@@ -124,8 +123,9 @@ public class PublicationControllerTest {
     public void getPublications_emptyPublicationList() throws Exception {
         when(publicationService.findAll(pageable, null)).thenReturn(Page.empty());
 
-        MvcResult mvcResult = mockMvc.perform(get("/" + Constants.API_VERSION + "/" + Constants.PUBLICATIONS + "/").queryParam(Constants.PAGE, Integer.toString(page))
-                .queryParam(Constants.SIZE, Integer.toString(size)).accept(MediaType.APPLICATION_JSON))
+        var url = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
+                .getPublications(new ListParameters(pageable, null)));
+        MvcResult mvcResult = mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
         var resultList = ObjectMapperUtils.mapResponseToList(
