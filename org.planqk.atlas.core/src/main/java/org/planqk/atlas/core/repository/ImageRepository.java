@@ -13,5 +13,5 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 @RepositoryRestResource(exported = false)
 public interface ImageRepository extends JpaRepository<Image, UUID> {
 
-    Image findImageBySketchId(@Param("sketchId") UUID sketchId);
+    Image findImageBySketchId(UUID sketchId);
 }
