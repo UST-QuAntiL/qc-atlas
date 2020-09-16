@@ -65,7 +65,7 @@ public class SketchServiceImpl implements SketchService {
 
             return sketch;
         } catch (IOException e) {
-            throw new RuntimeException("Could not store the Sketch. Error: " + e.getMessage());
+            throw new IllegalArgumentException("Cannot read contents of multipart file");
         }
     }
 
