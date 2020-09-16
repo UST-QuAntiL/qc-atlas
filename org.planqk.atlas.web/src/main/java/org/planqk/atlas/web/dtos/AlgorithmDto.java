@@ -19,23 +19,22 @@
 
 package org.planqk.atlas.web.dtos;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Null;
-
 import org.planqk.atlas.core.model.ComputationModel;
-import org.planqk.atlas.core.model.Sketch;
 import org.planqk.atlas.web.utils.Identifyable;
 import org.planqk.atlas.web.utils.ValidationGroups;
+import org.springframework.hateoas.server.core.Relation;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.hateoas.server.core.Relation;
 
 /**
  * Data transfer object for Algorithms ({@link org.planqk.atlas.core.model.Algorithm}).
@@ -43,7 +42,7 @@ import org.springframework.hateoas.server.core.Relation;
 @Data
 @NoArgsConstructor
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "computationModel", visible = true)
-@JsonSubTypes( {@JsonSubTypes.Type(value = QuantumAlgorithmDto.class, name = "QUANTUM"),
+@JsonSubTypes({@JsonSubTypes.Type(value = QuantumAlgorithmDto.class, name = "QUANTUM"),
         @JsonSubTypes.Type(value = ClassicAlgorithmDto.class, name = "CLASSIC"),
         @JsonSubTypes.Type(value = QuantumAlgorithmDto.class, name = "HYBRID")})
 @Relation(itemRelation = "algorithm", collectionRelation = "algorithms")
@@ -52,9 +51,9 @@ public class AlgorithmDto implements Identifyable {
     @Null(groups = {ValidationGroups.Create.class}, message = "The id must be null for creating an algorithm")
     private UUID id;
 
-    public Date creationDate;
+    private Date creationDate;
 
-    public Date lastModifiedAt;
+    private Date lastModifiedAt;
 
     @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
             message = "Algorithm-Name must not be null!")
