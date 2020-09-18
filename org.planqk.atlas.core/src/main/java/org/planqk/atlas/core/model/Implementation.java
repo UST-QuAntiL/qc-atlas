@@ -60,6 +60,12 @@ public class Implementation extends KnowledgeArtifact {
 
     private String dependencies;
 
+    private String version;
+
+    private String license;
+
+    private String problemStatement;
+
     @Column(columnDefinition = "text")
     private String inputFormat;
 

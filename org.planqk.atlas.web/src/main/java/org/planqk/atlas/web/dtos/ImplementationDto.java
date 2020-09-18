@@ -19,20 +19,19 @@
 
 package org.planqk.atlas.web.dtos;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 import java.net.URL;
 import java.util.UUID;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Null;
-
 import org.planqk.atlas.web.utils.Identifyable;
 import org.planqk.atlas.web.utils.ValidationGroups;
+import org.springframework.hateoas.server.core.Relation;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.springframework.hateoas.server.core.Relation;
 
 /**
  * Data transfer object for the model class Implementation ({@link org.planqk.atlas.core.model.Implementation}).
@@ -50,16 +49,30 @@ public class ImplementationDto implements Identifyable {
     private UUID implementedAlgorithmId;
 
     @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
-            message = "Implementation-Name must not be null!")
+            message = "Implem" +
+                    "entation-Name must not be null!")
     private String name;
+
     @Schema(description = "URL of implementation", example = "http://www.github.com/planqk", required = false)
     private URL link;
 
     private String inputFormat;
+
     private String outputFormat;
+
     private String description;
+
     private String contributors;
+
     private String assumptions;
+
     private String parameter;
+
     private String dependencies;
+
+    private String version;
+
+    private String license;
+
+    private String problemStatement;
 }
