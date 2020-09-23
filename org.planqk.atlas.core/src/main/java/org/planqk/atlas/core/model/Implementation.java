@@ -64,6 +64,7 @@ public class Implementation extends KnowledgeArtifact {
 
     private String license;
 
+    @Column(columnDefinition = "text")
     private String problemStatement;
 
     @Column(columnDefinition = "text")

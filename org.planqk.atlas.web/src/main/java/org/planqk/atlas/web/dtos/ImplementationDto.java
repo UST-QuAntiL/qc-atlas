@@ -19,10 +19,10 @@
 
 package org.planqk.atlas.web.dtos;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Null;
 import java.net.URL;
 import java.util.UUID;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 
 import org.planqk.atlas.web.utils.Identifyable;
 import org.planqk.atlas.web.utils.ValidationGroups;
@@ -49,8 +49,7 @@ public class ImplementationDto implements Identifyable {
     private UUID implementedAlgorithmId;
 
     @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
-            message = "Implem" +
-                    "entation-Name must not be null!")
+            message = "Implementation-Name must not be null!")
     private String name;
 
     @Schema(description = "URL of implementation", example = "http://www.github.com/planqk", required = false)
