@@ -85,6 +85,9 @@ public class ImplementationServiceImpl implements ImplementationService {
         persistedImplementation.setOutputFormat(implementation.getOutputFormat());
         persistedImplementation.setLink(implementation.getLink());
         persistedImplementation.setDependencies(implementation.getDependencies());
+        persistedImplementation.setVersion(implementation.getVersion());
+        persistedImplementation.setLicense(implementation.getLicense());
+        persistedImplementation.setProblemStatement(implementation.getProblemStatement());
 
         return implementationRepository.save(persistedImplementation);
     }
