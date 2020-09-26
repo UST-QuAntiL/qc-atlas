@@ -97,7 +97,16 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
     }
 
     private void removeReferences(@NonNull ProblemType problemType) {
+        removeAsParentFromProblemTypes(problemType);
         problemType.getAlgorithms().forEach(algorithm -> algorithm.removeProblemType(problemType));
+    }
+
+    private void removeAsParentFromProblemTypes(@NonNull ProblemType problemType) {
+        List<ProblemType> persistedProblemTypes = problemTypeRepository.findProblemTypesByParentProblemType(problemType.getId());
+        for (ProblemType persistedProblemType: persistedProblemTypes) {
+            persistedProblemType.setParentProblemType(null);
+            create(persistedProblemType);
+        }
     }
 
     @Override
