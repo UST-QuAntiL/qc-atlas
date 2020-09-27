@@ -18,24 +18,29 @@
  *******************************************************************************/
 package org.planqk.atlas.web.utils;
 
+import java.util.Map;
+
 import org.planqk.atlas.web.Constants;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.web.HateoasSortHandlerMethodArgumentResolver;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolverSupport;
-import org.springframework.data.web.SortHandlerMethodArgumentResolver;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
+import org.springframework.web.method.support.UriComponentsContributor;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @Slf4j
-public class ListParametersMethodArgumentResolver extends PageableHandlerMethodArgumentResolverSupport implements HandlerMethodArgumentResolver {
-    private final SortHandlerMethodArgumentResolver sortResolver = new SortHandlerMethodArgumentResolver();
+public class ListParametersMethodArgumentResolver extends PageableHandlerMethodArgumentResolverSupport implements HandlerMethodArgumentResolver, UriComponentsContributor {
+    private final HateoasSortHandlerMethodArgumentResolver sortResolver = new HateoasSortHandlerMethodArgumentResolver();
 
     @Override
     public Object resolveArgument(MethodParameter methodParameter, @Nullable ModelAndViewContainer mavContainer,
@@ -60,5 +65,31 @@ public class ListParametersMethodArgumentResolver extends PageableHandlerMethodA
     @Override
     public boolean supportsParameter(MethodParameter methodParameter) {
         return methodParameter.getParameterType().equals(ListParameters.class);
+    }
+
+    @Override
+    public void contributeMethodArgument(MethodParameter parameter, Object value, UriComponentsBuilder builder, Map<String, Object> uriVariables, ConversionService conversionService) {
+        final var listParams = (ListParameters) value;
+        final var pageable = listParams.getPageable();
+
+        final var pagePropertyName = getParameterNameToUse(Constants.PAGE, parameter);
+        final var sizePropertyName = getParameterNameToUse(Constants.SIZE, parameter);
+        if (!pageable.isUnpaged()) {
+            final var pageNumber = pageable.getPageNumber();
+            builder.replaceQueryParam(pagePropertyName, isOneIndexedParameters() ? pageNumber + 1 : pageNumber);
+            builder.replaceQueryParam(sizePropertyName,
+                    pageable.getPageSize() <= getMaxPageSize() ? pageable.getPageSize() : getMaxPageSize());
+        } else {
+            builder.replaceQueryParam(pagePropertyName, "-1");
+            builder.replaceQueryParam(sizePropertyName, "-1");
+        }
+
+        if (pageable.getSort().isSorted()) {
+            sortResolver.enhance(builder, parameter, pageable.getSort());
+        }
+
+        if (listParams.getSearch() != null && !listParams.getSearch().isEmpty()) {
+            builder.replaceQueryParam(getParameterNameToUse(Constants.SEARCH, parameter), listParams.getSearch());
+        }
     }
 }

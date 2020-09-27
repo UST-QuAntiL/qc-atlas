@@ -24,6 +24,7 @@ import java.util.UUID;
 import org.planqk.atlas.core.model.ApplicationArea;
 import org.planqk.atlas.core.services.ApplicationAreaService;
 import org.planqk.atlas.web.Constants;
+import org.planqk.atlas.web.annotation.ApiVersion;
 import org.planqk.atlas.web.dtos.ApplicationAreaDto;
 import org.planqk.atlas.web.linkassembler.ApplicationAreaAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
@@ -55,7 +56,8 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = Constants.TAG_APPLICATION_AREAS)
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
-@RequestMapping("/" + Constants.API_VERSION + "/" + Constants.APPLICATION_AREAS)
+@RequestMapping("/" + Constants.APPLICATION_AREAS)
+@ApiVersion("v1")
 @AllArgsConstructor
 @Slf4j
 public class ApplicationAreaController {

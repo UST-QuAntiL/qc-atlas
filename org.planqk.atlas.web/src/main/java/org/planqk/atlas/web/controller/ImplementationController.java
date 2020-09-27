@@ -32,6 +32,7 @@ import org.planqk.atlas.core.services.PublicationService;
 import org.planqk.atlas.core.services.SoftwarePlatformService;
 import org.planqk.atlas.core.services.TagService;
 import org.planqk.atlas.web.Constants;
+import org.planqk.atlas.web.annotation.ApiVersion;
 import org.planqk.atlas.web.dtos.ComputeResourcePropertyDto;
 import org.planqk.atlas.web.dtos.ImplementationDto;
 import org.planqk.atlas.web.dtos.PublicationDto;
@@ -75,7 +76,8 @@ import org.springframework.web.bind.annotation.RestController;
 @io.swagger.v3.oas.annotations.tags.Tag(name = Constants.TAG_ALGORITHM)
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
-@RequestMapping("/" + Constants.API_VERSION + "/" + Constants.ALGORITHMS + "/{algorithmId}/" + Constants.IMPLEMENTATIONS)
+@RequestMapping("/" + Constants.ALGORITHMS + "/{algorithmId}/" + Constants.IMPLEMENTATIONS)
+@ApiVersion("v1")
 @AllArgsConstructor
 @Slf4j
 public class ImplementationController {

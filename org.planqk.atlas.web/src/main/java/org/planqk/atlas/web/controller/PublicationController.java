@@ -26,6 +26,7 @@ import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.core.services.LinkingService;
 import org.planqk.atlas.core.services.PublicationService;
 import org.planqk.atlas.web.Constants;
+import org.planqk.atlas.web.annotation.ApiVersion;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.ImplementationDto;
 import org.planqk.atlas.web.dtos.PublicationDto;
@@ -65,7 +66,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @AllArgsConstructor
-@RequestMapping("/" + Constants.API_VERSION + "/" + Constants.PUBLICATIONS)
+@RequestMapping("/" + Constants.PUBLICATIONS)
+@ApiVersion("v1")
 public class PublicationController {
 
     private final PublicationService publicationService;

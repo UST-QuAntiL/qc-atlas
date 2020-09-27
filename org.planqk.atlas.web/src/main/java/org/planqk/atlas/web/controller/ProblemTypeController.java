@@ -23,6 +23,7 @@ import java.util.UUID;
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.services.ProblemTypeService;
 import org.planqk.atlas.web.Constants;
+import org.planqk.atlas.web.annotation.ApiVersion;
 import org.planqk.atlas.web.dtos.ProblemTypeDto;
 import org.planqk.atlas.web.linkassembler.ProblemTypeAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
@@ -55,7 +56,8 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = Constants.TAG_PROBLEM_TYPE)
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
-@RequestMapping("/" + Constants.API_VERSION + "/" + Constants.PROBLEM_TYPES)
+@RequestMapping("/" + Constants.PROBLEM_TYPES)
+@ApiVersion("v1")
 @AllArgsConstructor
 @Slf4j
 public class ProblemTypeController {

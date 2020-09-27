@@ -25,6 +25,7 @@ import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.services.AlgorithmRelationService;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.web.Constants;
+import org.planqk.atlas.web.annotation.ApiVersion;
 import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
 import org.planqk.atlas.web.linkassembler.AlgorithmRelationAssembler;
 import org.planqk.atlas.web.utils.ControllerValidationUtils;
@@ -58,7 +59,8 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = Constants.TAG_ALGORITHM)
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
-@RequestMapping("/" + Constants.API_VERSION + "/" + Constants.ALGORITHMS + "/{algorithmId}/" + Constants.ALGORITHM_RELATIONS)
+@RequestMapping("/" + Constants.ALGORITHMS + "/{algorithmId}/" + Constants.ALGORITHM_RELATIONS)
+@ApiVersion("v1")
 @AllArgsConstructor
 @Slf4j
 public class AlgorithmRelationController {

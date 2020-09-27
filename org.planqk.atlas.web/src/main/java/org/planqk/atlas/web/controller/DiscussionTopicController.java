@@ -27,6 +27,7 @@ import org.planqk.atlas.core.model.DiscussionTopic;
 import org.planqk.atlas.core.services.DiscussionCommentService;
 import org.planqk.atlas.core.services.DiscussionTopicService;
 import org.planqk.atlas.web.Constants;
+import org.planqk.atlas.web.annotation.ApiVersion;
 import org.planqk.atlas.web.dtos.DiscussionCommentDto;
 import org.planqk.atlas.web.dtos.DiscussionTopicDto;
 import org.planqk.atlas.web.linkassembler.DiscussionTopicAssembler;
@@ -60,7 +61,8 @@ import org.springframework.web.bind.annotation.RestController;
 @Hidden
 @io.swagger.v3.oas.annotations.tags.Tag(name = Constants.TAG_DISCUSSION_TOPIC)
 @CrossOrigin(allowedHeaders = "*", origins = "*")
-@RequestMapping("/" + Constants.API_VERSION + "/" + Constants.DISCUSSION_TOPICS)
+@RequestMapping("/" + Constants.DISCUSSION_TOPICS)
+@ApiVersion("v1")
 @Slf4j
 @AllArgsConstructor
 @RestController

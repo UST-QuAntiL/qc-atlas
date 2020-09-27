@@ -42,6 +42,7 @@ import org.planqk.atlas.core.services.PublicationService;
 import org.planqk.atlas.core.services.SketchService;
 import org.planqk.atlas.core.services.TagService;
 import org.planqk.atlas.web.Constants;
+import org.planqk.atlas.web.annotation.ApiVersion;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.ApplicationAreaDto;
 import org.planqk.atlas.web.dtos.ComputeResourcePropertyDto;
@@ -99,7 +100,8 @@ import lombok.extern.slf4j.Slf4j;
 @io.swagger.v3.oas.annotations.tags.Tag(name = Constants.TAG_ALGORITHM)
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
-@RequestMapping("/" + Constants.API_VERSION + "/" + Constants.ALGORITHMS)
+@RequestMapping("/" + Constants.ALGORITHMS)
+@ApiVersion("v1")
 @AllArgsConstructor
 @Slf4j
 public class AlgorithmController {

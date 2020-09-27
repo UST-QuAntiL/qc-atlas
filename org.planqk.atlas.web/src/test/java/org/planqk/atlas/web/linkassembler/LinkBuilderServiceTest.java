@@ -18,19 +18,27 @@
  *******************************************************************************/
 package org.planqk.atlas.web.linkassembler;
 
+import org.planqk.atlas.web.annotation.VersionedRequestHandlerMapping;
+import org.planqk.atlas.web.utils.ListParametersMethodArgumentResolver;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.http.HttpEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 public class LinkBuilderServiceTest {
-    private final Controller c = new Controller();
-    private RequestMappingHandlerMapping mappings = new RequestMappingHandlerMapping();
-    private LinkBuilderService service = new LinkBuilderService(mappings);
+    private VersionedRequestHandlerMapping mappings = new VersionedRequestHandlerMapping();
+    private ListParametersMethodArgumentResolver listParamResolver = new ListParametersMethodArgumentResolver();
+    private LinkBuilderService service = new LinkBuilderService(listParamResolver, mappings);
+
+    @BeforeEach
+    public void setupMappings() {
+        mappings.populateFromHandler(new Controller());
+    }
 
     @Test
     public void invalid() {
