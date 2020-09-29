@@ -23,6 +23,7 @@ import java.util.UUID;
 import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.services.PatternRelationService;
 import org.planqk.atlas.web.Constants;
+import org.planqk.atlas.web.annotation.ApiVersion;
 import org.planqk.atlas.web.dtos.PatternRelationDto;
 import org.planqk.atlas.web.linkassembler.PatternRelationAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
@@ -54,7 +55,8 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = Constants.TAG_PATTERN_RELATION)
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
-@RequestMapping("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATIONS)
+@RequestMapping("/" + Constants.PATTERN_RELATIONS)
+@ApiVersion("v1")
 @AllArgsConstructor
 @Slf4j
 public class PatternRelationController {

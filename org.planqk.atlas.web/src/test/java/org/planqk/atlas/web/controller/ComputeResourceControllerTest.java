@@ -30,10 +30,11 @@ import org.planqk.atlas.core.model.ComputeResourcePropertyDataType;
 import org.planqk.atlas.core.model.ComputeResourcePropertyType;
 import org.planqk.atlas.core.services.ComputeResourcePropertyService;
 import org.planqk.atlas.core.services.ComputeResourceService;
-import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
 import org.planqk.atlas.web.dtos.ComputeResourceDto;
 import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
+import org.planqk.atlas.web.linkassembler.LinkBuilderService;
+import org.planqk.atlas.web.utils.ListParameters;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -49,13 +50,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -63,8 +64,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.fromMethodCall;
-import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.on;
 
 @WebMvcTest(ComputeResourceController.class)
 @ExtendWith(MockitoExtension.class)
@@ -79,8 +78,10 @@ public class ComputeResourceControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+    @Autowired
+    private LinkBuilderService linkBuilderService;
+
     private final ObjectMapper mapper = ObjectMapperUtils.newTestMapper();
-    private final UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromPath("/");
 
     private final int page = 0;
     private final int size = 2;
@@ -93,9 +94,9 @@ public class ComputeResourceControllerTest {
 
         mockMvc.perform(
                 post(
-                        fromMethodCall(uriBuilder,
-                                on(ComputeResourceController.class).createComputeResource(null)
-                        ).toUriString()
+                        linkBuilderService.urlStringTo(
+                                methodOn(ComputeResourceController.class).createComputeResource(null)
+                        )
                 ).content(mapper.writeValueAsString(resource))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
@@ -115,9 +116,9 @@ public class ComputeResourceControllerTest {
 
         mockMvc.perform(
                 post(
-                        fromMethodCall(uriBuilder,
-                                on(ComputeResourceController.class).createComputeResource(null)
-                        ).toUriString()
+                        linkBuilderService.urlStringTo(
+                                methodOn(ComputeResourceController.class).createComputeResource(null)
+                        )
                 ).content(mapper.writeValueAsString(resource))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
@@ -137,9 +138,9 @@ public class ComputeResourceControllerTest {
 
         mockMvc.perform(
                 put(
-                        fromMethodCall(uriBuilder,
-                                on(ComputeResourceController.class).updateComputeResource(UUID.randomUUID(), null)
-                        ).toUriString()
+                        linkBuilderService.urlStringTo(
+                                methodOn(ComputeResourceController.class).updateComputeResource(UUID.randomUUID(), null)
+                        )
                 ).content(mapper.writeValueAsString(resource))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
@@ -153,9 +154,9 @@ public class ComputeResourceControllerTest {
 
         mockMvc.perform(
                 put(
-                        fromMethodCall(uriBuilder,
-                                on(ComputeResourceController.class).updateComputeResource(UUID.randomUUID(), null)
-                        ).toUriString()
+                        linkBuilderService.urlStringTo(
+                                methodOn(ComputeResourceController.class).updateComputeResource(UUID.randomUUID(), null)
+                        )
                 ).content(mapper.writeValueAsString(resource))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
@@ -176,9 +177,9 @@ public class ComputeResourceControllerTest {
 
         mockMvc.perform(
                 put(
-                        fromMethodCall(uriBuilder,
-                                on(ComputeResourceController.class).updateComputeResource(UUID.randomUUID(), null)
-                        ).toUriString()
+                        linkBuilderService.urlStringTo(
+                                methodOn(ComputeResourceController.class).updateComputeResource(UUID.randomUUID(), null)
+                        )
                 ).content(mapper.writeValueAsString(resource))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
@@ -198,9 +199,9 @@ public class ComputeResourceControllerTest {
 
         mockMvc.perform(
                 get(
-                        fromMethodCall(uriBuilder,
-                                on(ComputeResourceController.class).getComputeResource(resource.getId())
-                        ).toUriString()
+                        linkBuilderService.urlStringTo(
+                                methodOn(ComputeResourceController.class).getComputeResource(resource.getId())
+                        )
                 ).accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(resource.getId().toString()))
@@ -213,27 +214,25 @@ public class ComputeResourceControllerTest {
 
         mockMvc.perform(
                 get(
-                        fromMethodCall(uriBuilder,
-                                on(ComputeResourceController.class).getComputeResource(UUID.randomUUID())
-                        ).toUriString()
+                        linkBuilderService.urlStringTo(
+                                methodOn(ComputeResourceController.class).getComputeResource(UUID.randomUUID())
+                        )
                 ).accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isNotFound());
     }
 
     @Test
-    @SuppressWarnings("ConstantConditions")
     void listComputeResources_empty() throws Exception {
         doReturn(Page.empty()).when(computeResourceService).findAll(any());
 
         var mvcResult = mockMvc.perform(
                 get(
-                        fromMethodCall(uriBuilder,
-                                on(ComputeResourceController.class)
-                                        .getComputeResources(null)
-                        ).toUriString()
-                ).queryParam(Constants.PAGE, Integer.toString(page))
-                        .queryParam(Constants.SIZE, Integer.toString(size))
-                        .accept(MediaType.APPLICATION_JSON)
+                        linkBuilderService.urlStringTo(
+                                methodOn(ComputeResourceController.class)
+                                        .getComputeResources(
+                                                new ListParameters(pageable, null))
+                        )
+                ).accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk()).andReturn();
 
         var page = ObjectMapperUtils.getPageInfo(mvcResult.getResponse().getContentAsString());
@@ -243,20 +242,17 @@ public class ComputeResourceControllerTest {
     }
 
     @Test
-    @SuppressWarnings("ConstantConditions")
     void searchComputeResources_empty() throws Exception {
         doReturn(Page.empty()).when(computeResourceService).searchAllByName(any(), any());
 
         var mvcResult = mockMvc.perform(
                 get(
-                        fromMethodCall(uriBuilder,
-                                on(ComputeResourceController.class)
-                                        .getComputeResources(null)
-                        ).toUriString()
-                ).queryParam(Constants.PAGE, Integer.toString(page))
-                        .queryParam(Constants.SIZE, Integer.toString(size))
-                        .queryParam(Constants.SEARCH, "hello")
-                        .accept(MediaType.APPLICATION_JSON)
+                        linkBuilderService.urlStringTo(
+                                methodOn(ComputeResourceController.class)
+                                        .getComputeResources(
+                                                new ListParameters(pageable, "hello"))
+                        )
+                ).accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk()).andReturn();
 
         var page = ObjectMapperUtils.getPageInfo(mvcResult.getResponse().getContentAsString());
@@ -266,7 +262,6 @@ public class ComputeResourceControllerTest {
     }
 
     @Test
-    @SuppressWarnings("ConstantConditions")
     void listComputeResources_notEmpty() throws Exception {
         var inputList = new ArrayList<ComputeResource>();
         for (int i = 0; i < 50; i++) {
@@ -279,13 +274,12 @@ public class ComputeResourceControllerTest {
 
         var mvcResult = mockMvc.perform(
                 get(
-                        fromMethodCall(uriBuilder,
-                                on(ComputeResourceController.class)
-                                        .getComputeResources(null)
-                        ).toUriString()
-                ).queryParam(Constants.PAGE, Integer.toString(page))
-                        .queryParam(Constants.SIZE, Integer.toString(size))
-                        .accept(MediaType.APPLICATION_JSON)
+                        linkBuilderService.urlStringTo(
+                                methodOn(ComputeResourceController.class)
+                                        .getComputeResources(
+                                                new ListParameters(pageable, null))
+                        )
+                ).accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk()).andReturn();
 
         var dtoElements = ObjectMapperUtils.mapResponseToList(
@@ -301,20 +295,18 @@ public class ComputeResourceControllerTest {
     }
 
     @Test
-    @SuppressWarnings("ConstantConditions")
     void listComputationResourceProperties_empty() throws Exception {
         doReturn(Page.empty()).when(computeResourcePropertyService)
                 .findComputeResourcePropertiesOfComputeResource(any(), any());
 
         var mvcResult = mockMvc.perform(
                 get(
-                        fromMethodCall(uriBuilder,
-                                on(ComputeResourceController.class)
-                                        .getComputeResourcePropertiesOfComputeResource(UUID.randomUUID(), null)
-                        ).toUriString()
-                ).queryParam(Constants.PAGE, Integer.toString(page))
-                        .queryParam(Constants.SIZE, Integer.toString(size))
-                        .accept(MediaType.APPLICATION_JSON)
+                        linkBuilderService.urlStringTo(
+                                methodOn(ComputeResourceController.class)
+                                        .getComputeResourcePropertiesOfComputeResource(UUID.randomUUID(),
+                                                new ListParameters(pageable, null))
+                        )
+                ).accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk()).andReturn();
 
         var page = ObjectMapperUtils.getPageInfo(mvcResult.getResponse().getContentAsString());
@@ -324,7 +316,6 @@ public class ComputeResourceControllerTest {
     }
 
     @Test
-    @SuppressWarnings("ConstantConditions")
     void listComputationResourceProperties_notEmpty() throws Exception {
         var inputList = new ArrayList<ComputeResourceProperty>();
         var type = new ComputeResourcePropertyType();
@@ -343,13 +334,12 @@ public class ComputeResourceControllerTest {
 
         var mvcResult = mockMvc.perform(
                 get(
-                        fromMethodCall(uriBuilder,
-                                on(ComputeResourceController.class)
-                                        .getComputeResourcePropertiesOfComputeResource(UUID.randomUUID(), null)
-                        ).toUriString()
-                ).queryParam(Constants.PAGE, Integer.toString(page))
-                        .queryParam(Constants.SIZE, Integer.toString(size))
-                        .accept(MediaType.APPLICATION_JSON)
+                        linkBuilderService.urlStringTo(
+                                methodOn(ComputeResourceController.class)
+                                        .getComputeResourcePropertiesOfComputeResource(UUID.randomUUID(),
+                                                new ListParameters(pageable, null))
+                        )
+                ).accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk()).andReturn();
 
         var dtoElements = ObjectMapperUtils.mapResponseToList(
@@ -369,9 +359,9 @@ public class ComputeResourceControllerTest {
         doThrow(new NoSuchElementException()).when(computeResourceService).delete(any());
         mockMvc.perform(
                 delete(
-                        fromMethodCall(uriBuilder,
-                                on(ComputeResourceController.class).deleteComputeResource(UUID.randomUUID())
-                        ).toUriString()
+                        linkBuilderService.urlStringTo(
+                                methodOn(ComputeResourceController.class).deleteComputeResource(UUID.randomUUID())
+                        )
                 ).accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isNotFound());
     }
@@ -381,9 +371,9 @@ public class ComputeResourceControllerTest {
         doNothing().when(computeResourceService).delete(any());
         mockMvc.perform(
                 delete(
-                        fromMethodCall(uriBuilder,
-                                on(ComputeResourceController.class).deleteComputeResource(UUID.randomUUID())
-                        ).toUriString()
+                        linkBuilderService.urlStringTo(
+                                methodOn(ComputeResourceController.class).deleteComputeResource(UUID.randomUUID())
+                        )
                 ).accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isNoContent());
     }
@@ -393,9 +383,9 @@ public class ComputeResourceControllerTest {
         doThrow(new EntityReferenceConstraintViolationException("")).when(computeResourceService).delete(any());
         mockMvc.perform(
                 delete(
-                        fromMethodCall(uriBuilder,
-                                on(ComputeResourceController.class).deleteComputeResource(UUID.randomUUID())
-                        ).toUriString()
+                        linkBuilderService.urlStringTo(
+                                methodOn(ComputeResourceController.class).deleteComputeResource(UUID.randomUUID())
+                        )
                 ).accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isBadRequest());
     }

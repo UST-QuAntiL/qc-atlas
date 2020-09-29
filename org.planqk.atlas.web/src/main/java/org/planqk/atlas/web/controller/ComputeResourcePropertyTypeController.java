@@ -24,6 +24,7 @@ import java.util.UUID;
 import org.planqk.atlas.core.model.ComputeResourcePropertyType;
 import org.planqk.atlas.core.services.ComputeResourcePropertyTypeService;
 import org.planqk.atlas.web.Constants;
+import org.planqk.atlas.web.annotation.ApiVersion;
 import org.planqk.atlas.web.dtos.ComputeResourcePropertyTypeDto;
 import org.planqk.atlas.web.linkassembler.ComputeResourcePropertyTypeAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
@@ -55,7 +56,8 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = Constants.TAG_COMPUTE_RESOURCE_PROPERTY_TYPES)
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
-@RequestMapping("/" + Constants.API_VERSION + "/" + Constants.COMPUTE_RESOURCE_PROPERTY_TYPES)
+@RequestMapping("/" + Constants.COMPUTE_RESOURCE_PROPERTY_TYPES)
+@ApiVersion("v1")
 @AllArgsConstructor
 @Slf4j
 public class ComputeResourcePropertyTypeController {

@@ -22,6 +22,7 @@ package org.planqk.atlas.web.controller;
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.services.TagService;
 import org.planqk.atlas.web.Constants;
+import org.planqk.atlas.web.annotation.ApiVersion;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.ImplementationDto;
 import org.planqk.atlas.web.dtos.TagDto;
@@ -54,7 +55,8 @@ import org.springframework.web.bind.annotation.RestController;
 @io.swagger.v3.oas.annotations.tags.Tag(name = Constants.TAG_TAG)
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
-@RequestMapping("/" + Constants.API_VERSION + "/" + Constants.TAGS)
+@RequestMapping("/" + Constants.TAGS)
+@ApiVersion("v1")
 @AllArgsConstructor
 @Slf4j
 public class TagController {

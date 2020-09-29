@@ -21,6 +21,7 @@ package org.planqk.atlas.web.controller;
 
 import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.web.Constants;
+import org.planqk.atlas.web.annotation.ApiVersion;
 import org.planqk.atlas.web.dtos.ImplementationDto;
 import org.planqk.atlas.web.linkassembler.ImplementationAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
@@ -46,7 +47,8 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = Constants.TAG_IMPLEMENTATIONS)
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
-@RequestMapping("/" + Constants.API_VERSION + "/" + Constants.IMPLEMENTATIONS)
+@RequestMapping("/" + Constants.IMPLEMENTATIONS)
+@ApiVersion("v1")
 @AllArgsConstructor
 @Slf4j
 public class ImplementationGlobalController {

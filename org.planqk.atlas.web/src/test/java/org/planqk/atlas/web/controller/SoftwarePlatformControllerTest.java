@@ -40,6 +40,8 @@ import org.planqk.atlas.web.dtos.ComputeResourceDto;
 import org.planqk.atlas.web.dtos.ImplementationDto;
 import org.planqk.atlas.web.dtos.SoftwarePlatformDto;
 import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
+import org.planqk.atlas.web.linkassembler.LinkBuilderService;
+import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -60,7 +62,6 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
@@ -69,13 +70,12 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.fromMethodCall;
-import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.on;
 
 @WebMvcTest(controllers = {SoftwarePlatformController.class})
 @ExtendWith( {MockitoExtension.class})
@@ -87,16 +87,20 @@ public class SoftwarePlatformControllerTest {
     private final int size = 10;
     private final Pageable pageable = PageRequest.of(page, size);
     private final String softwarePlatformDtoJSONName = "softwarePlatforms";
+
     @MockBean
     private SoftwarePlatformService softwarePlatformService;
     @MockBean
     private LinkingService linkingService;
     @MockBean
     private ImplementationService implementationService;
+
     @Autowired
     private MockMvc mockMvc;
+    @Autowired
+    private LinkBuilderService linkBuilderService;
+
     private final ObjectMapper mapper = ObjectMapperUtils.newTestMapper();
-    private final UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromPath("/");
 
     @Test
     public void addSoftwarePlatform_returnBadRequest() throws Exception {
@@ -105,9 +109,9 @@ public class SoftwarePlatformControllerTest {
 
         mockMvc.perform(
                 post(
-                        fromMethodCall(uriBuilder,
-                                on(SoftwarePlatformController.class).createSoftwarePlatform(null)
-                        ).toUriString()
+                        linkBuilderService.urlStringTo(
+                                methodOn(SoftwarePlatformController.class).createSoftwarePlatform(null)
+                        )
                 ).content(mapper.writeValueAsString(softwarePlatform))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
@@ -124,9 +128,9 @@ public class SoftwarePlatformControllerTest {
 
         MvcResult result = mockMvc.perform(
                 post(
-                        fromMethodCall(uriBuilder,
-                                on(SoftwarePlatformController.class).createSoftwarePlatform(null)
-                        ).toUriString()
+                        linkBuilderService.urlStringTo(
+                                methodOn(SoftwarePlatformController.class).createSoftwarePlatform(null)
+                        )
                 ).content(mapper.writeValueAsString(softwarePlatformDto))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
@@ -148,12 +152,10 @@ public class SoftwarePlatformControllerTest {
         MvcResult result = mockMvc
                 .perform(
                         get(
-                                fromMethodCall(uriBuilder,
-                                        on(SoftwarePlatformController.class).getSoftwarePlatforms(null)
-                                ).toUriString()
-                        ).queryParam(Constants.PAGE, Integer.toString(page))
-                                .queryParam(Constants.SIZE, Integer.toString(size))
-                                .accept(MediaType.APPLICATION_JSON))
+                                linkBuilderService.urlStringTo(
+                                        methodOn(SoftwarePlatformController.class).getSoftwarePlatforms(new ListParameters(pageable, null))
+                                )
+                        ).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
         var page = ObjectMapperUtils.getPageInfo(result.getResponse().getContentAsString());
@@ -170,13 +172,10 @@ public class SoftwarePlatformControllerTest {
         MvcResult result = mockMvc
                 .perform(
                         get(
-                                fromMethodCall(uriBuilder,
-                                        on(SoftwarePlatformController.class).getSoftwarePlatforms(null)
-                                ).toUriString()
-                        ).queryParam(Constants.PAGE, Integer.toString(page))
-                                .queryParam(Constants.SIZE, Integer.toString(size))
-                                .queryParam(Constants.SEARCH, "hellp")
-                                .accept(MediaType.APPLICATION_JSON))
+                                linkBuilderService.urlStringTo(
+                                        methodOn(SoftwarePlatformController.class).getSoftwarePlatforms(new ListParameters(pageable, "hellp"))
+                                )
+                        ).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
         var page = ObjectMapperUtils.getPageInfo(result.getResponse().getContentAsString());
@@ -201,12 +200,10 @@ public class SoftwarePlatformControllerTest {
         MvcResult result = mockMvc
                 .perform(
                         get(
-                                fromMethodCall(uriBuilder,
-                                        on(SoftwarePlatformController.class).getSoftwarePlatforms(null)
-                                ).toUriString()
-                        ).queryParam(Constants.PAGE, Integer.toString(page))
-                                .queryParam(Constants.SIZE, Integer.toString(size))
-                                .accept(MediaType.APPLICATION_JSON))
+                                linkBuilderService.urlStringTo(
+                                        methodOn(SoftwarePlatformController.class).getSoftwarePlatforms(new ListParameters(pageable, null))
+                                )
+                        ).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
         JSONObject rootObject = new JSONObject(result.getResponse().getContentAsString());
@@ -238,12 +235,10 @@ public class SoftwarePlatformControllerTest {
         MvcResult result = mockMvc
                 .perform(
                         get(
-                                fromMethodCall(uriBuilder,
-                                        on(SoftwarePlatformController.class).getSoftwarePlatforms(null)
-                                ).toUriString()
-                        ).queryParam(Constants.PAGE, Integer.toString(page))
-                                .queryParam(Constants.SIZE, Integer.toString(size))
-                                .accept(MediaType.APPLICATION_JSON))
+                                linkBuilderService.urlStringTo(
+                                        methodOn(SoftwarePlatformController.class).getSoftwarePlatforms(new ListParameters(pageable, null))
+                                )
+                        ).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
         JSONObject rootObject = new JSONObject(result.getResponse().getContentAsString());
@@ -263,9 +258,9 @@ public class SoftwarePlatformControllerTest {
 
         mockMvc.perform(
                 get(
-                        fromMethodCall(uriBuilder,
-                                on(SoftwarePlatformController.class).getSoftwarePlatform(testId)
-                        ).toUriString()
+                        linkBuilderService.urlStringTo(
+                                methodOn(SoftwarePlatformController.class).getSoftwarePlatform(testId)
+                        )
                 ).accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isNotFound());
     }
@@ -279,9 +274,9 @@ public class SoftwarePlatformControllerTest {
 
         MvcResult result = mockMvc.perform(
                 get(
-                        fromMethodCall(uriBuilder,
-                                on(SoftwarePlatformController.class).getSoftwarePlatform(softwarePlatform.getId())
-                        ).toUriString()
+                        linkBuilderService.urlStringTo(
+                                methodOn(SoftwarePlatformController.class).getSoftwarePlatform(softwarePlatform.getId())
+                        )
                 ).accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk()).andReturn();
 
@@ -299,9 +294,9 @@ public class SoftwarePlatformControllerTest {
 
         mockMvc.perform(
                 delete(
-                        fromMethodCall(uriBuilder,
-                                on(SoftwarePlatformController.class).deleteSoftwarePlatform(UUID.randomUUID())
-                        ).toUriString()
+                        linkBuilderService.urlStringTo(
+                                methodOn(SoftwarePlatformController.class).deleteSoftwarePlatform(UUID.randomUUID())
+                        )
                 ).accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isNotFound());
     }
@@ -315,9 +310,9 @@ public class SoftwarePlatformControllerTest {
 
         mockMvc.perform(
                 delete(
-                        fromMethodCall(uriBuilder,
-                                on(SoftwarePlatformController.class).deleteSoftwarePlatform(softwarePlatform.getId())
-                        ).toUriString()
+                        linkBuilderService.urlStringTo(
+                                methodOn(SoftwarePlatformController.class).deleteSoftwarePlatform(softwarePlatform.getId())
+                        )
                 ).accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isNoContent());
     }
@@ -335,10 +330,10 @@ public class SoftwarePlatformControllerTest {
         doReturn(returnValue).when(softwarePlatformService).update(any());
         var mvcResult = mockMvc.perform(
                 put(
-                        fromMethodCall(uriBuilder,
-                                on(SoftwarePlatformController.class)
+                        linkBuilderService.urlStringTo(
+                                methodOn(SoftwarePlatformController.class)
                                         .updateSoftwarePlatform(UUID.randomUUID(), null)
-                        ).toUriString()
+                        )
                 ).content(mapper.writeValueAsBytes(sampleInput))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
@@ -356,10 +351,10 @@ public class SoftwarePlatformControllerTest {
         doThrow(new NoSuchElementException()).when(softwarePlatformService).update(any());
         mockMvc.perform(
                 put(
-                        fromMethodCall(uriBuilder,
-                                on(SoftwarePlatformController.class)
+                        linkBuilderService.urlStringTo(
+                                methodOn(SoftwarePlatformController.class)
                                         .updateSoftwarePlatform(UUID.randomUUID(), null)
-                        ).toUriString()
+                        )
                 ).content(mapper.writeValueAsBytes(sampleInput))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
@@ -374,10 +369,10 @@ public class SoftwarePlatformControllerTest {
         doThrow(new NoSuchElementException()).when(softwarePlatformService).update(any());
         mockMvc.perform(
                 put(
-                        fromMethodCall(uriBuilder,
-                                on(SoftwarePlatformController.class)
+                        linkBuilderService.urlStringTo(
+                                methodOn(SoftwarePlatformController.class)
                                         .updateSoftwarePlatform(UUID.randomUUID(), null)
-                        ).toUriString()
+                        )
                 ).content(mapper.writeValueAsBytes(sampleInput))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
@@ -385,16 +380,16 @@ public class SoftwarePlatformControllerTest {
     }
 
     @Test
-    @SuppressWarnings("ConstantConditions")
     void listImplementations_returnNotFound() throws Exception {
         doThrow(new NoSuchElementException()).when(softwarePlatformService).findLinkedImplementations(any(), any());
 
         mockMvc.perform(
                 get(
-                        fromMethodCall(uriBuilder,
-                                on(SoftwarePlatformController.class)
-                                        .getImplementationsOfSoftwarePlatform(UUID.randomUUID(), null)
-                        ).toUriString()
+                        linkBuilderService.urlStringTo(
+                                methodOn(SoftwarePlatformController.class)
+                                        .getImplementationsOfSoftwarePlatform(UUID.randomUUID(),
+                                                new ListParameters(pageable, null))
+                        )
                 ).queryParam(Constants.PAGE, Integer.toString(page))
                         .queryParam(Constants.SIZE, Integer.toString(size))
                         .accept(MediaType.APPLICATION_JSON)
@@ -402,53 +397,47 @@ public class SoftwarePlatformControllerTest {
     }
 
     @Test
-    @SuppressWarnings("ConstantConditions")
     void listCloudServices_returnNotFound() throws Exception {
         doThrow(new NoSuchElementException()).when(softwarePlatformService).findLinkedCloudServices(any(), any());
 
         mockMvc.perform(
                 get(
-                        fromMethodCall(uriBuilder,
-                                on(SoftwarePlatformController.class)
-                                        .getCloudServicesOfSoftwarePlatform(UUID.randomUUID(), null)
-                        ).toUriString()
-                ).queryParam(Constants.PAGE, Integer.toString(page))
-                        .queryParam(Constants.SIZE, Integer.toString(size))
-                        .accept(MediaType.APPLICATION_JSON)
+                        linkBuilderService.urlStringTo(
+                                methodOn(SoftwarePlatformController.class)
+                                        .getCloudServicesOfSoftwarePlatform(UUID.randomUUID(),
+                                                new ListParameters(pageable, null))
+                        )
+                ).accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isNotFound());
     }
 
     @Test
-    @SuppressWarnings("ConstantConditions")
     void listComputeResources_returnNotFound() throws Exception {
         doThrow(new NoSuchElementException()).when(softwarePlatformService).findLinkedComputeResources(any(), any());
 
         mockMvc.perform(
                 get(
-                        fromMethodCall(uriBuilder,
-                                on(SoftwarePlatformController.class)
-                                        .getComputeResourcesOfSoftwarePlatform(UUID.randomUUID(), null)
-                        ).toUriString()
-                ).queryParam(Constants.PAGE, Integer.toString(page))
-                        .queryParam(Constants.SIZE, Integer.toString(size))
-                        .accept(MediaType.APPLICATION_JSON)
+                        linkBuilderService.urlStringTo(
+                                methodOn(SoftwarePlatformController.class)
+                                        .getComputeResourcesOfSoftwarePlatform(UUID.randomUUID(),
+                                                new ListParameters(pageable, null))
+                        )
+                ).accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isNotFound());
     }
 
     @Test
-    @SuppressWarnings("ConstantConditions")
     void listImplementations_empty() throws Exception {
         doReturn(Page.empty()).when(softwarePlatformService).findLinkedImplementations(any(), any());
 
         var mvcResult = mockMvc.perform(
                 get(
-                        fromMethodCall(uriBuilder,
-                                on(SoftwarePlatformController.class)
-                                        .getImplementationsOfSoftwarePlatform(UUID.randomUUID(), null)
-                        ).toUriString()
-                ).queryParam(Constants.PAGE, Integer.toString(page))
-                        .queryParam(Constants.SIZE, Integer.toString(size))
-                        .accept(MediaType.APPLICATION_JSON)
+                        linkBuilderService.urlStringTo(
+                                methodOn(SoftwarePlatformController.class)
+                                        .getImplementationsOfSoftwarePlatform(UUID.randomUUID(),
+                                                new ListParameters(pageable, null))
+                        )
+                ).accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk()).andReturn();
 
         var page = ObjectMapperUtils.getPageInfo(mvcResult.getResponse().getContentAsString());
@@ -458,19 +447,17 @@ public class SoftwarePlatformControllerTest {
     }
 
     @Test
-    @SuppressWarnings("ConstantConditions")
     void listCloudServices_empty() throws Exception {
         doReturn(Page.empty()).when(softwarePlatformService).findLinkedCloudServices(any(), any());
 
         var mvcResult = mockMvc.perform(
                 get(
-                        fromMethodCall(uriBuilder,
-                                on(SoftwarePlatformController.class)
-                                        .getCloudServicesOfSoftwarePlatform(UUID.randomUUID(), null)
-                        ).toUriString()
-                ).queryParam(Constants.PAGE, Integer.toString(page))
-                        .queryParam(Constants.SIZE, Integer.toString(size))
-                        .accept(MediaType.APPLICATION_JSON)
+                        linkBuilderService.urlStringTo(
+                                methodOn(SoftwarePlatformController.class)
+                                        .getCloudServicesOfSoftwarePlatform(UUID.randomUUID(),
+                                                new ListParameters(pageable, null))
+                        )
+                ).accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk()).andReturn();
 
         var page = ObjectMapperUtils.getPageInfo(mvcResult.getResponse().getContentAsString());
@@ -480,19 +467,17 @@ public class SoftwarePlatformControllerTest {
     }
 
     @Test
-    @SuppressWarnings("ConstantConditions")
     void listComputeResources_empty() throws Exception {
         doReturn(Page.empty()).when(softwarePlatformService).findLinkedComputeResources(any(), any());
 
         var mvcResult = mockMvc.perform(
                 get(
-                        fromMethodCall(uriBuilder,
-                                on(SoftwarePlatformController.class)
-                                        .getComputeResourcesOfSoftwarePlatform(UUID.randomUUID(), null)
-                        ).toUriString()
-                ).queryParam(Constants.PAGE, Integer.toString(page))
-                        .queryParam(Constants.SIZE, Integer.toString(size))
-                        .accept(MediaType.APPLICATION_JSON)
+                        linkBuilderService.urlStringTo(
+                                methodOn(SoftwarePlatformController.class)
+                                        .getComputeResourcesOfSoftwarePlatform(UUID.randomUUID(),
+                                                new ListParameters(pageable, null))
+                        )
+                ).accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk()).andReturn();
 
         var page = ObjectMapperUtils.getPageInfo(mvcResult.getResponse().getContentAsString());
@@ -502,7 +487,6 @@ public class SoftwarePlatformControllerTest {
     }
 
     @Test
-    @SuppressWarnings("ConstantConditions")
     void listImplementations_notEmpty() throws Exception {
         var inputList = new ArrayList<Implementation>();
         var algo = new Algorithm();
@@ -518,13 +502,12 @@ public class SoftwarePlatformControllerTest {
 
         var mvcResult = mockMvc.perform(
                 get(
-                        fromMethodCall(uriBuilder,
-                                on(SoftwarePlatformController.class)
-                                        .getImplementationsOfSoftwarePlatform(UUID.randomUUID(), null)
-                        ).toUriString()
-                ).queryParam(Constants.PAGE, Integer.toString(page))
-                        .queryParam(Constants.SIZE, Integer.toString(size))
-                        .accept(MediaType.APPLICATION_JSON)
+                        linkBuilderService.urlStringTo(
+                                methodOn(SoftwarePlatformController.class)
+                                        .getImplementationsOfSoftwarePlatform(UUID.randomUUID(),
+                                                new ListParameters(pageable, null))
+                        )
+                ).accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk()).andReturn();
 
         var dtoElements = ObjectMapperUtils.mapResponseToList(
@@ -540,7 +523,6 @@ public class SoftwarePlatformControllerTest {
     }
 
     @Test
-    @SuppressWarnings("ConstantConditions")
     void listCloudServices_notEmpty() throws Exception {
         var inputList = new ArrayList<CloudService>();
         for (int i = 0; i < 50; i++) {
@@ -553,13 +535,12 @@ public class SoftwarePlatformControllerTest {
 
         var mvcResult = mockMvc.perform(
                 get(
-                        fromMethodCall(uriBuilder,
-                                on(SoftwarePlatformController.class)
-                                        .getCloudServicesOfSoftwarePlatform(UUID.randomUUID(), null)
-                        ).toUriString()
-                ).queryParam(Constants.PAGE, Integer.toString(page))
-                        .queryParam(Constants.SIZE, Integer.toString(size))
-                        .accept(MediaType.APPLICATION_JSON)
+                        linkBuilderService.urlStringTo(
+                                methodOn(SoftwarePlatformController.class)
+                                        .getCloudServicesOfSoftwarePlatform(UUID.randomUUID(),
+                                                new ListParameters(pageable, null))
+                        )
+                ).accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk()).andReturn();
 
         var dtoElements = ObjectMapperUtils.mapResponseToList(
@@ -575,7 +556,6 @@ public class SoftwarePlatformControllerTest {
     }
 
     @Test
-    @SuppressWarnings("ConstantConditions")
     void listComputeResources_notEmpty() throws Exception {
         var inputList = new ArrayList<ComputeResource>();
         for (int i = 0; i < 50; i++) {
@@ -588,10 +568,11 @@ public class SoftwarePlatformControllerTest {
 
         var mvcResult = mockMvc.perform(
                 get(
-                        fromMethodCall(uriBuilder,
-                                on(SoftwarePlatformController.class)
-                                        .getComputeResourcesOfSoftwarePlatform(UUID.randomUUID(), null)
-                        ).toUriString()
+                        linkBuilderService.urlStringTo(
+                                methodOn(SoftwarePlatformController.class)
+                                        .getComputeResourcesOfSoftwarePlatform(UUID.randomUUID(),
+                                                new ListParameters(pageable, null))
+                        )
                 ).queryParam(Constants.PAGE, Integer.toString(page))
                         .queryParam(Constants.SIZE, Integer.toString(size))
                         .accept(MediaType.APPLICATION_JSON)
@@ -617,7 +598,7 @@ public class SoftwarePlatformControllerTest {
 //                        fromMethodCall(uriBuilder,
 //                                on(SoftwarePlatformController.class)
 //                                        .addImplementationReferenceToSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID())
-//                        ).toUriString()
+//                        )
 //                ).accept(MediaType.APPLICATION_JSON)
 //        ).andExpect(status().isOk());
 //    }
@@ -630,7 +611,7 @@ public class SoftwarePlatformControllerTest {
 //                        fromMethodCall(uriBuilder,
 //                                on(SoftwarePlatformController.class)
 //                                        .addImplementationReferenceToSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID())
-//                        ).toUriString()
+//                        )
 //                ).accept(MediaType.APPLICATION_JSON)
 //        ).andExpect(status().isNotFound());
 //    }
@@ -643,7 +624,7 @@ public class SoftwarePlatformControllerTest {
 //                        fromMethodCall(uriBuilder,
 //                                on(SoftwarePlatformController.class)
 //                                        .addImplementationReferenceToSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID())
-//                        ).toUriString()
+//                        )
 //                ).accept(MediaType.APPLICATION_JSON)
 //        ).andExpect(status().isBadRequest());
 //    }
@@ -656,7 +637,7 @@ public class SoftwarePlatformControllerTest {
 //                        fromMethodCall(uriBuilder,
 //                                on(SoftwarePlatformController.class)
 //                                        .deleteImplementationReferenceFromSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID())
-//                        ).toUriString()
+//                        )
 //                ).accept(MediaType.APPLICATION_JSON)
 //        ).andExpect(status().isOk());
 //    }
@@ -669,7 +650,7 @@ public class SoftwarePlatformControllerTest {
 //                        fromMethodCall(uriBuilder,
 //                                on(SoftwarePlatformController.class)
 //                                        .deleteImplementationReferenceFromSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID())
-//                        ).toUriString()
+//                        )
 //                ).accept(MediaType.APPLICATION_JSON)
 //        ).andExpect(status().isNotFound());
 //    }
@@ -682,7 +663,7 @@ public class SoftwarePlatformControllerTest {
 //                        fromMethodCall(uriBuilder,
 //                                on(SoftwarePlatformController.class)
 //                                        .deleteImplementationReferenceFromSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID())
-//                        ).toUriString()
+//                        )
 //                ).accept(MediaType.APPLICATION_JSON)
 //        ).andExpect(status().isBadRequest());
 //    }
@@ -697,10 +678,10 @@ public class SoftwarePlatformControllerTest {
 
         mockMvc.perform(
                 post(
-                        fromMethodCall(uriBuilder,
-                                on(SoftwarePlatformController.class)
+                        linkBuilderService.urlStringTo(
+                                methodOn(SoftwarePlatformController.class)
                                         .linkSoftwarePlatformAndComputeResource(UUID.randomUUID(), new ComputeResourceDto())
-                        ).toUriString()
+                        )
                 ).content(mapper.writeValueAsString(cloudServiceDto))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
@@ -712,10 +693,10 @@ public class SoftwarePlatformControllerTest {
         doNothing().when(linkingService).unlinkSoftwarePlatformAndComputeResource(any(), any());
         mockMvc.perform(
                 delete(
-                        fromMethodCall(uriBuilder,
-                                on(SoftwarePlatformController.class)
+                        linkBuilderService.urlStringTo(
+                                methodOn(SoftwarePlatformController.class)
                                         .unlinkSoftwarePlatformAndComputeResource(UUID.randomUUID(), UUID.randomUUID())
-                        ).toUriString()
+                        )
                 ).accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isNoContent());
     }
@@ -730,10 +711,10 @@ public class SoftwarePlatformControllerTest {
 
         mockMvc.perform(
                 post(
-                        fromMethodCall(uriBuilder,
-                                on(SoftwarePlatformController.class)
+                        linkBuilderService.urlStringTo(
+                                methodOn(SoftwarePlatformController.class)
                                         .linkSoftwarePlatformAndComputeResource(UUID.randomUUID(), new ComputeResourceDto())
-                        ).toUriString()
+                        )
                 ).content(mapper.writeValueAsString(cloudServiceDto))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
@@ -745,10 +726,10 @@ public class SoftwarePlatformControllerTest {
         doThrow(new NoSuchElementException()).when(linkingService).unlinkSoftwarePlatformAndComputeResource(any(), any());
         mockMvc.perform(
                 delete(
-                        fromMethodCall(uriBuilder,
-                                on(SoftwarePlatformController.class)
+                        linkBuilderService.urlStringTo(
+                                methodOn(SoftwarePlatformController.class)
                                         .unlinkSoftwarePlatformAndComputeResource(UUID.randomUUID(), UUID.randomUUID())
-                        ).toUriString()
+                        )
                 ).accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isNotFound());
     }
@@ -758,10 +739,10 @@ public class SoftwarePlatformControllerTest {
         doThrow(new EntityReferenceConstraintViolationException("")).when(linkingService).linkSoftwarePlatformAndComputeResource(any(), any());
         mockMvc.perform(
                 post(
-                        fromMethodCall(uriBuilder,
-                                on(SoftwarePlatformController.class)
+                        linkBuilderService.urlStringTo(
+                                methodOn(SoftwarePlatformController.class)
                                         .linkSoftwarePlatformAndComputeResource(UUID.randomUUID(), new ComputeResourceDto())
-                        ).toUriString()
+                        )
                 ).accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isBadRequest());
     }
@@ -771,10 +752,10 @@ public class SoftwarePlatformControllerTest {
         doThrow(new EntityReferenceConstraintViolationException("")).when(linkingService).unlinkSoftwarePlatformAndComputeResource(any(), any());
         mockMvc.perform(
                 delete(
-                        fromMethodCall(uriBuilder,
-                                on(SoftwarePlatformController.class)
+                        linkBuilderService.urlStringTo(
+                                methodOn(SoftwarePlatformController.class)
                                         .unlinkSoftwarePlatformAndComputeResource(UUID.randomUUID(), UUID.randomUUID())
-                        ).toUriString()
+                        )
                 ).accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isBadRequest());
     }
@@ -789,10 +770,10 @@ public class SoftwarePlatformControllerTest {
 
         mockMvc.perform(
                 post(
-                        fromMethodCall(uriBuilder,
-                                on(SoftwarePlatformController.class)
+                        linkBuilderService.urlStringTo(
+                                methodOn(SoftwarePlatformController.class)
                                         .linkSoftwarePlatformAndCloudService(UUID.randomUUID(), null)
-                        ).toUriString()
+                        )
                 ).content(mapper.writeValueAsString(cloudServiceDto))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
@@ -804,10 +785,10 @@ public class SoftwarePlatformControllerTest {
         doNothing().when(linkingService).unlinkSoftwarePlatformAndCloudService(any(), any());
         mockMvc.perform(
                 delete(
-                        fromMethodCall(uriBuilder,
-                                on(SoftwarePlatformController.class)
+                        linkBuilderService.urlStringTo(
+                                methodOn(SoftwarePlatformController.class)
                                         .unlinkSoftwarePlatformAndCloudService(UUID.randomUUID(), UUID.randomUUID())
-                        ).toUriString()
+                        )
                 ).accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isNoContent());
     }
@@ -822,10 +803,10 @@ public class SoftwarePlatformControllerTest {
 
         mockMvc.perform(
                 post(
-                        fromMethodCall(uriBuilder,
-                                on(SoftwarePlatformController.class)
+                        linkBuilderService.urlStringTo(
+                                methodOn(SoftwarePlatformController.class)
                                         .linkSoftwarePlatformAndCloudService(UUID.randomUUID(), new CloudServiceDto())
-                        ).toUriString()
+                        )
                 ).content(mapper.writeValueAsString(cloudServiceDto))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
@@ -837,10 +818,10 @@ public class SoftwarePlatformControllerTest {
         doThrow(new NoSuchElementException()).when(linkingService).unlinkSoftwarePlatformAndCloudService(any(), any());
         mockMvc.perform(
                 delete(
-                        fromMethodCall(uriBuilder,
-                                on(SoftwarePlatformController.class)
+                        linkBuilderService.urlStringTo(
+                                methodOn(SoftwarePlatformController.class)
                                         .unlinkSoftwarePlatformAndCloudService(UUID.randomUUID(), UUID.randomUUID())
-                        ).toUriString()
+                        )
                 ).accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isNotFound());
     }
@@ -850,10 +831,10 @@ public class SoftwarePlatformControllerTest {
         doThrow(new EntityReferenceConstraintViolationException("")).when(linkingService).linkSoftwarePlatformAndCloudService(any(), any());
         mockMvc.perform(
                 post(
-                        fromMethodCall(uriBuilder,
-                                on(SoftwarePlatformController.class)
+                        linkBuilderService.urlStringTo(
+                                methodOn(SoftwarePlatformController.class)
                                         .linkSoftwarePlatformAndCloudService(UUID.randomUUID(), new CloudServiceDto())
-                        ).toUriString()
+                        )
                 ).accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isBadRequest());
     }
@@ -863,10 +844,10 @@ public class SoftwarePlatformControllerTest {
         doThrow(new EntityReferenceConstraintViolationException("")).when(linkingService).unlinkSoftwarePlatformAndCloudService(any(), any());
         mockMvc.perform(
                 delete(
-                        fromMethodCall(uriBuilder,
-                                on(SoftwarePlatformController.class)
+                        linkBuilderService.urlStringTo(
+                                methodOn(SoftwarePlatformController.class)
                                         .unlinkSoftwarePlatformAndCloudService(UUID.randomUUID(), UUID.randomUUID())
-                        ).toUriString()
+                        )
                 ).accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isBadRequest());
     }

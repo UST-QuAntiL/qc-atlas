@@ -24,6 +24,7 @@ import java.util.UUID;
 import org.planqk.atlas.core.model.AlgorithmRelationType;
 import org.planqk.atlas.core.services.AlgorithmRelationTypeService;
 import org.planqk.atlas.web.Constants;
+import org.planqk.atlas.web.annotation.ApiVersion;
 import org.planqk.atlas.web.dtos.AlgorithmRelationTypeDto;
 import org.planqk.atlas.web.linkassembler.AlgorithmRelationTypeAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
@@ -55,7 +56,8 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = Constants.TAG_ALGORITHM_RELATION_TYPE)
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
-@RequestMapping("/" + Constants.API_VERSION + "/" + Constants.ALGORITHM_RELATION_TYPES)
+@RequestMapping("/" + Constants.ALGORITHM_RELATION_TYPES)
+@ApiVersion("v1")
 @AllArgsConstructor
 @Slf4j
 public class AlgorithmRelationTypeController {

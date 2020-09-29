@@ -27,15 +27,15 @@ import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.core.services.TagService;
-import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
 import org.planqk.atlas.web.dtos.TagDto;
 import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
+import org.planqk.atlas.web.linkassembler.LinkBuilderService;
+import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -54,6 +54,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -74,17 +75,14 @@ public class TagControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+    @Autowired
+    private LinkBuilderService linkBuilderService;
 
-    private ObjectMapper mapper;
+    private final ObjectMapper mapper = ObjectMapperUtils.newTestMapper();
 
     private final int page = 0;
     private final int size = 2;
     private final Pageable pageable = PageRequest.of(page, size);
-
-    @BeforeEach
-    public void before() {
-        this.mapper = ObjectMapperUtils.newTestMapper();
-    }
 
     private Tag getTestTag() {
         Tag tag1 = new Tag();
@@ -105,9 +103,10 @@ public class TagControllerTest {
 
         when(tagService.findAllByContent(null, pageable)).thenReturn(p);
 
+        var url = linkBuilderService.urlStringTo(methodOn(TagController.class)
+                .getTags(new ListParameters(pageable, null)));
         MvcResult result = mockMvc
-                .perform(get("/" + Constants.API_VERSION + "/" + Constants.TAGS + "/").queryParam(Constants.PAGE, Integer.toString(this.page))
-                        .queryParam(Constants.SIZE, Integer.toString(this.size)).accept(MediaType.APPLICATION_JSON))
+                .perform(get(url).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON)).andReturn();
         var resultList = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(), "tags",
                 TagDto.class);
@@ -119,9 +118,10 @@ public class TagControllerTest {
         Pageable pageable = PageRequest.of(0, 2);
         when(tagService.findAllByContent(null, pageable)).thenReturn(Page.empty());
 
+        var url = linkBuilderService.urlStringTo(methodOn(TagController.class)
+                .getTags(new ListParameters(pageable, null)));
         MvcResult result = mockMvc
-                .perform(get("/" + Constants.API_VERSION + "/" + Constants.TAGS + "/").queryParam(Constants.PAGE, Integer.toString(this.page))
-                        .queryParam(Constants.SIZE, Integer.toString(this.size)).accept(MediaType.APPLICATION_JSON))
+                .perform(get(url).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON)).andReturn();
 
         var resultList = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(), "tags",
@@ -134,8 +134,10 @@ public class TagControllerTest {
         Tag tag1 = getTestTag();
         when(tagService.findByValue(tag1.getValue())).thenReturn(tag1);
 
+        var url = linkBuilderService.urlStringTo(methodOn(TagController.class)
+                .getTag(tag1.getValue()));
         MvcResult mvcResult = mockMvc
-                .perform(get("/" + Constants.API_VERSION + "/" + Constants.TAGS + "/" + tag1.getValue()).accept(MediaType.APPLICATION_JSON))
+                .perform(get(url).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
         EntityModel<TagDto> response = mapper.readValue(mvcResult.getResponse().getContentAsString(),
@@ -151,13 +153,15 @@ public class TagControllerTest {
         TagDto tagDto = ModelMapperUtils.convert(tag1, TagDto.class);
         when(tagService.create(tag1)).thenReturn(tag1);
 
+        var url = linkBuilderService.urlStringTo(methodOn(TagController.class)
+                .createTag(tagDto));
         MvcResult result = mockMvc
-                .perform(post("/" + Constants.API_VERSION + "/" + Constants.TAGS + "/").content(mapper.writeValueAsString(tagDto))
+                .perform(post(url).content(mapper.writeValueAsString(tagDto))
                         .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated()).andReturn();
 
         EntityModel<TagDto> createdTag = mapper.readValue(result.getResponse().getContentAsString(),
-                new TypeReference<EntityModel<TagDto>>() {
+                new TypeReference<>() {
                 });
         assertEquals(createdTag.getContent().getCategory(), tag1.getCategory());
         assertEquals(createdTag.getContent().getValue(), tag1.getValue());
