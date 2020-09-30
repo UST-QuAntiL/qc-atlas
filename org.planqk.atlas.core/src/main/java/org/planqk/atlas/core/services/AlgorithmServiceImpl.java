@@ -106,8 +106,6 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     public Algorithm update(@NonNull Algorithm algorithm) {
         Algorithm persistedAlgorithm = findById(algorithm.getId());
 
-        persistedAlgorithm.setSketches(algorithm.getSketches());
-
         persistedAlgorithm.setName(algorithm.getName());
         persistedAlgorithm.setAcronym(algorithm.getAcronym());
         persistedAlgorithm.setIntent(algorithm.getIntent());
