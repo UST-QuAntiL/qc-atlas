@@ -1,6 +1,6 @@
 # QC-Atlas
 
-[![Build Status](https://api.travis-ci.org/UST-QuAntil/qc-atlas.svg?branch=develop)](https://travis-ci.org/UST-QuAntil/qc-atlas)
+[![Build Status](https://api.travis-ci.org/UST-QuAntiL/qc-atlas.svg?branch=develop)](https://travis-ci.org/UST-QuAntiL/qc-atlas)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 ## Git Workflow
