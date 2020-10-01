@@ -105,7 +105,7 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
         List<ProblemType> persistedProblemTypes = problemTypeRepository.findProblemTypesByParentProblemType(problemType.getId());
         for (ProblemType persistedProblemType: persistedProblemTypes) {
             persistedProblemType.setParentProblemType(null);
-            create(persistedProblemType);
+            problemTypeRepository.save(persistedProblemType);
         }
     }
 
