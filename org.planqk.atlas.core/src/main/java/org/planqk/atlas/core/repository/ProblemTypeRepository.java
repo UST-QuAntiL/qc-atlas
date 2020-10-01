@@ -19,6 +19,7 @@
 
 package org.planqk.atlas.core.repository;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.ProblemType;
@@ -48,4 +49,6 @@ public interface ProblemTypeRepository extends JpaRepository<ProblemType, UUID> 
             "JOIN pt.algorithms algos " +
             "WHERE algos.id = :algoid")
     Page<ProblemType> findProblemTypesByAlgorithmId(@Param("algoid") UUID algorithmId, Pageable pageable);
+
+    List<ProblemType> findProblemTypesByParentProblemType(@Param("parentProblemTypeId") UUID parentProblemType);
 }
