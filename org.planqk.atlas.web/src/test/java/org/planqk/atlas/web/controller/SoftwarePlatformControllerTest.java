@@ -75,10 +75,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = {SoftwarePlatformController.class})
-@ExtendWith( {MockitoExtension.class})
+@ExtendWith({MockitoExtension.class})
 @AutoConfigureMockMvc
 @EnableLinkAssemblers
 public class SoftwarePlatformControllerTest {
@@ -590,84 +591,6 @@ public class SoftwarePlatformControllerTest {
         });
     }
 
-//    @Test
-//    void createReferenceToImplementation_returnOk() throws Exception {
-//        doNothing().when(softwarePlatformService).addImplementationReference(any(), any());
-//        mockMvc.perform(
-//                post(
-//                        fromMethodCall(uriBuilder,
-//                                on(SoftwarePlatformController.class)
-//                                        .addImplementationReferenceToSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID())
-//                        )
-//                ).accept(MediaType.APPLICATION_JSON)
-//        ).andExpect(status().isOk());
-//    }
-//
-//    @Test
-//    void createReferenceToImplementation_returnNotFound() throws Exception {
-//        doThrow(new NoSuchElementException()).when(softwarePlatformService).addImplementationReference(any(), any());
-//        mockMvc.perform(
-//                post(
-//                        fromMethodCall(uriBuilder,
-//                                on(SoftwarePlatformController.class)
-//                                        .addImplementationReferenceToSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID())
-//                        )
-//                ).accept(MediaType.APPLICATION_JSON)
-//        ).andExpect(status().isNotFound());
-//    }
-//
-//    @Test
-//    void createReferenceToImplementation_returnBadRequest() throws Exception {
-//        doThrow(new ConsistencyException()).when(softwarePlatformService).addImplementationReference(any(), any());
-//        mockMvc.perform(
-//                post(
-//                        fromMethodCall(uriBuilder,
-//                                on(SoftwarePlatformController.class)
-//                                        .addImplementationReferenceToSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID())
-//                        )
-//                ).accept(MediaType.APPLICATION_JSON)
-//        ).andExpect(status().isBadRequest());
-//    }
-//
-//    @Test
-//    void deleteReferenceToImplementation_returnOk() throws Exception {
-//        doNothing().when(softwarePlatformService).deleteImplementationReference(any(), any());
-//        mockMvc.perform(
-//                delete(
-//                        fromMethodCall(uriBuilder,
-//                                on(SoftwarePlatformController.class)
-//                                        .deleteImplementationReferenceFromSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID())
-//                        )
-//                ).accept(MediaType.APPLICATION_JSON)
-//        ).andExpect(status().isOk());
-//    }
-//
-//    @Test
-//    void deleteReferenceToImplementation_returnNotFound() throws Exception {
-//        doThrow(new NoSuchElementException()).when(softwarePlatformService).deleteImplementationReference(any(), any());
-//        mockMvc.perform(
-//                delete(
-//                        fromMethodCall(uriBuilder,
-//                                on(SoftwarePlatformController.class)
-//                                        .deleteImplementationReferenceFromSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID())
-//                        )
-//                ).accept(MediaType.APPLICATION_JSON)
-//        ).andExpect(status().isNotFound());
-//    }
-//
-//    @Test
-//    void deleteReferenceToImplementation_returnBadRequest() throws Exception {
-//        doThrow(new ConsistencyException()).when(softwarePlatformService).deleteImplementationReference(any(), any());
-//        mockMvc.perform(
-//                delete(
-//                        fromMethodCall(uriBuilder,
-//                                on(SoftwarePlatformController.class)
-//                                        .deleteImplementationReferenceFromSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID())
-//                        )
-//                ).accept(MediaType.APPLICATION_JSON)
-//        ).andExpect(status().isBadRequest());
-//    }
-
     @Test
     void createReferenceToComputeResource_returnNoContent() throws Exception {
         CloudServiceDto cloudServiceDto = new CloudServiceDto();
@@ -686,6 +609,26 @@ public class SoftwarePlatformControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isNoContent());
+    }
+
+    @Test
+    void createReferenceToComputeResource_InvalidInput_returnBadRequest() throws Exception {
+        CloudServiceDto cloudServiceDto = new CloudServiceDto();
+        cloudServiceDto.setId(null);
+        cloudServiceDto.setName("CloudService");
+
+        doNothing().when(linkingService).linkSoftwarePlatformAndComputeResource(any(), any());
+
+        mockMvc.perform(
+                post(
+                        linkBuilderService.urlStringTo(
+                                methodOn(SoftwarePlatformController.class)
+                                        .linkSoftwarePlatformAndComputeResource(UUID.randomUUID(), new ComputeResourceDto())
+                        )
+                ).content(mapper.writeValueAsString(cloudServiceDto))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isBadRequest());
     }
 
     @Test
@@ -781,6 +724,26 @@ public class SoftwarePlatformControllerTest {
     }
 
     @Test
+    void createReferenceToCloudService_InvalidInput_returnBadRequest() throws Exception {
+        CloudServiceDto cloudServiceDto = new CloudServiceDto();
+        cloudServiceDto.setId(null);
+        cloudServiceDto.setName("CloudService");
+
+        doNothing().when(linkingService).linkSoftwarePlatformAndCloudService(any(), any());
+
+        mockMvc.perform(
+                post(
+                        linkBuilderService.urlStringTo(
+                                methodOn(SoftwarePlatformController.class)
+                                        .linkSoftwarePlatformAndCloudService(UUID.randomUUID(), null)
+                        )
+                ).content(mapper.writeValueAsString(cloudServiceDto))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isBadRequest());
+    }
+
+    @Test
     void deleteReferenceToCloudService_returnNoContent() throws Exception {
         doNothing().when(linkingService).unlinkSoftwarePlatformAndCloudService(any(), any());
         mockMvc.perform(
@@ -850,5 +813,167 @@ public class SoftwarePlatformControllerTest {
                         )
                 ).accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isBadRequest());
+    }
+
+    // Link Implementation
+    @Test
+    void createReferenceToImplementation_returnNoContent() throws Exception {
+        doNothing()
+                .when(linkingService)
+                .linkImplementationAndSoftwarePlatform(any(), any());
+
+        var implDto = new ImplementationDto();
+        implDto.setId(UUID.randomUUID());
+
+        mockMvc.perform(
+                post(
+                        linkBuilderService.urlStringTo(
+                                methodOn(SoftwarePlatformController.class)
+                                        .linkSoftwarePlatformAndImplementation(UUID.randomUUID(), null)
+                        )
+                ).accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsString(implDto))
+        ).andExpect(status().isNoContent());
+    }
+
+    @Test
+    void createReferenceToImplementation_returnNotFound() throws Exception {
+        doThrow(new NoSuchElementException())
+                .when(linkingService)
+                .linkImplementationAndSoftwarePlatform(any(), any());
+
+        var implDto = new ImplementationDto();
+        implDto.setId(UUID.randomUUID());
+
+        mockMvc.perform(
+                post(
+                        linkBuilderService.urlStringTo(
+                                methodOn(SoftwarePlatformController.class)
+                                        .linkSoftwarePlatformAndImplementation(UUID.randomUUID(), null)
+                        )
+                ).accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsString(implDto))
+        ).andExpect(status().isNotFound());
+    }
+
+    @Test
+    void createReferenceToImplementation_returnBadRequest() throws Exception {
+        doThrow(new EntityReferenceConstraintViolationException(""))
+                .when(linkingService)
+                .linkImplementationAndSoftwarePlatform(any(), any());
+
+        var implDto = new ImplementationDto();
+        implDto.setId(UUID.randomUUID());
+
+        mockMvc.perform(
+                post(
+                        linkBuilderService.urlStringTo(
+                                methodOn(SoftwarePlatformController.class)
+                                        .linkSoftwarePlatformAndImplementation(UUID.randomUUID(), null)
+                        )
+                ).accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsString(implDto))
+        ).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void createReferenceToImplementation_invalidInput_returnBadRequest() throws Exception {
+        doThrow(new EntityReferenceConstraintViolationException(""))
+                .when(linkingService)
+                .linkImplementationAndSoftwarePlatform(any(), any());
+
+        var implDto = new ImplementationDto();
+        implDto.setId(null);
+
+        mockMvc.perform(
+                post(
+                        linkBuilderService.urlStringTo(
+                                methodOn(SoftwarePlatformController.class)
+                                        .linkSoftwarePlatformAndImplementation(UUID.randomUUID(), null)
+                        )
+                ).accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsString(implDto))
+        ).andExpect(status().isBadRequest());
+    }
+
+    // Unlink Implementation
+    @Test
+    void deleteReferenceToImplementation_returnNoContent() throws Exception {
+        doNothing().when(linkingService)
+                .unlinkImplementationAndSoftwarePlatform(any(), any());
+        mockMvc.perform(
+                delete(
+                        linkBuilderService.urlStringTo(
+                                methodOn(SoftwarePlatformController.class)
+                                        .unlinkSoftwarePlatformAndImplementation(UUID.randomUUID(), UUID.randomUUID())
+                        )
+                ).accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isNoContent());
+    }
+
+    @Test
+    void deleteReferenceToImplementation_returnNotFound() throws Exception {
+        doThrow(new NoSuchElementException())
+                .when(linkingService)
+                .unlinkImplementationAndSoftwarePlatform(any(), any());
+        mockMvc.perform(
+                delete(
+                        linkBuilderService.urlStringTo(
+                                methodOn(SoftwarePlatformController.class)
+                                        .unlinkSoftwarePlatformAndImplementation(UUID.randomUUID(), UUID.randomUUID())
+                        )
+                ).accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isNotFound());
+    }
+
+    @Test
+    void deleteReferenceToImplementation_returnBadRequest() throws Exception {
+        doThrow(new EntityReferenceConstraintViolationException(""))
+                .when(linkingService)
+                .unlinkImplementationAndSoftwarePlatform(any(), any());
+        mockMvc.perform(
+                delete(
+                        linkBuilderService.urlStringTo(
+                                methodOn(SoftwarePlatformController.class)
+                                        .unlinkSoftwarePlatformAndImplementation(UUID.randomUUID(), UUID.randomUUID())
+                        )
+                ).accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isBadRequest());
+    }
+    // getImplementationOfSoftwarePlatform
+
+    @Test
+    void getImplementationOfSoftwarePlatform_returnOk() throws Exception {
+        doNothing()
+                .when(softwarePlatformService)
+                .checkIfImplementationIsLinkedToSoftwarePlatform(any(), any());
+        var impl = new Implementation();
+        impl.setId(UUID.randomUUID());
+        doReturn(impl).when(implementationService).findById(any());
+
+        mockMvc.perform(
+                get(
+                        linkBuilderService.urlStringTo(
+                                methodOn(SoftwarePlatformController.class)
+                                        .getImplementationOfSoftwarePlatform(UUID.randomUUID(), impl.getId())
+                        )
+                ).accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(impl.getId().toString()));
+    }
+
+    @Test
+    void getImplementationOfSoftwarePlatform_returnNotFound() throws Exception {
+        doThrow(new NoSuchElementException())
+                .when(softwarePlatformService)
+                .checkIfImplementationIsLinkedToSoftwarePlatform(any(), any());
+        mockMvc.perform(
+                get(
+                        linkBuilderService.urlStringTo(
+                                methodOn(SoftwarePlatformController.class)
+                                        .getImplementationOfSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID())
+                        )
+                ).accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isNotFound());
     }
 }
