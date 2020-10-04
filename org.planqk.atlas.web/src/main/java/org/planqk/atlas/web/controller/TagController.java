@@ -104,7 +104,7 @@ public class TagController {
     @GetMapping("/{value}/" + Constants.ALGORITHMS)
     public ResponseEntity<CollectionModel<EntityModel<AlgorithmDto>>> getAlgorithmsOfTag(@PathVariable String value) {
         Tag tag = this.tagService.findByValue(value);
-        CollectionModel<EntityModel<AlgorithmDto>> algorithms = algorithmAssembler.toModel(tag.getImplementations());
+        CollectionModel<EntityModel<AlgorithmDto>> algorithms = algorithmAssembler.toModel(tag.getAlgorithms());
         algorithmAssembler.addLinks(algorithms.getContent());
         tagAssembler.addAlgorithmLink(algorithms, tag.getValue());
         return new ResponseEntity<>(algorithms, HttpStatus.OK);
