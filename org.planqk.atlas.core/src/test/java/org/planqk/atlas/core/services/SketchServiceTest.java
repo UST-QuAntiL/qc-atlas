@@ -3,6 +3,8 @@ package org.planqk.atlas.core.services;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -70,7 +72,7 @@ public class SketchServiceTest extends AtlasDatabaseTestBase {
         // test
         assertThat(persistedSketch.getId()).isNotNull();
         assertThat(persistedSketch.getDescription()).isEqualTo(description);
-        assertThat(persistedSketch.getImageURL()).startsWith(baseURL);
+        assertThat(persistedSketch.getImageURL().getPath()).startsWith(baseURL);
 
         List<Image> images = this.imageRepository.findAll();
         assertThat(images.size()).isEqualTo(1);
@@ -157,9 +159,15 @@ public class SketchServiceTest extends AtlasDatabaseTestBase {
         assertTrue(Arrays.equals(response, testFile));
     }
 
-    private Sketch getSketch(final Image image, final String imageURL, final String description) {
+    private Sketch getSketch(final Image image, final String imageURLAsString, final String description) {
         final Sketch sketch = new Sketch();
         sketch.setImage(image);
+        URL imageURL = null;
+        try {
+            imageURL = new URL(imageURLAsString);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
         sketch.setImageURL(imageURL);
         sketch.setDescription(description);
         return sketch;

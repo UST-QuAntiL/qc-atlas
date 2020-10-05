@@ -19,6 +19,7 @@
 
 package org.planqk.atlas.web.controller;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -954,8 +955,8 @@ public class AlgorithmControllerTest {
 
         final Sketch sketch = new Sketch();
         sketch.setId(sketchId);
-        sketch.setImageURL("test/image/url");
-        when(sketchService.getImageBySketch(sketchId).getImage()).thenReturn(this.hexStringToByteArray(sketch.getImageURL()));
+        sketch.setImageURL(new URL("test/image/url"));
+        when(sketchService.getImageBySketch(sketchId).getImage()).thenReturn(this.hexStringToByteArray(sketch.getImageURL().toString()));
 
         final String path = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
                 .getSketchImage(algorithmId, sketchId));
@@ -967,7 +968,7 @@ public class AlgorithmControllerTest {
         Mockito.verify(sketchService, times(1)).getImageBySketch(sketchId);
 
         byte[] json = resultActions.andReturn().getResponse().getContentAsByteArray();
-        assertTrue(Arrays.equals(this.hexStringToByteArray(sketch.getImageURL()), json));
+        assertTrue(Arrays.equals(this.hexStringToByteArray(sketch.getImageURL().toString()), json));
     }
 
     private byte[] hexStringToByteArray(String s) {
