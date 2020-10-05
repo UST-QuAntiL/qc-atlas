@@ -11,10 +11,13 @@ import org.planqk.atlas.core.repository.AlgorithmRepository;
 import org.planqk.atlas.core.repository.ImageRepository;
 import org.planqk.atlas.core.repository.SketchRepository;
 import org.planqk.atlas.core.util.ServiceUtils;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.MimeType;
 import org.springframework.web.multipart.MultipartFile;
 
+import jdk.jfr.ContentType;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 
@@ -47,7 +50,6 @@ public class SketchServiceImpl implements SketchService {
     @Transactional
     public Sketch addSketchToAlgorithm(UUID algorithmId, MultipartFile file, String description, String baseURL) {
         try {
-            byte[] fileContent = file.getBytes();
             // Sketch
             Sketch sketch = new Sketch();
             sketch.setDescription(description);
@@ -59,10 +61,10 @@ public class SketchServiceImpl implements SketchService {
             // image
             final Image image = new Image();
             image.setId(sketch.getId());
-            image.setImage(fileContent);
+            image.setImage(file.getBytes());
+            image.setMimeType(file.getContentType());
             image.setSketch(persistedSketch2);
             this.imageRepository.save(image);
-
             return sketch;
         } catch (IOException e) {
             throw new IllegalArgumentException("Cannot read contents of multipart file");
@@ -81,9 +83,8 @@ public class SketchServiceImpl implements SketchService {
     }
 
     @Override
-    public byte[] getImageBySketch(UUID sketchId) {
-        final Image image = this.imageRepository.findImageBySketchId(sketchId);
-        return image.getImage();
+    public Image getImageBySketch(UUID sketchId) {
+        return this.imageRepository.findImageBySketchId(sketchId);
     }
 
 }

@@ -955,7 +955,7 @@ public class AlgorithmControllerTest {
         final Sketch sketch = new Sketch();
         sketch.setId(sketchId);
         sketch.setImageURL("test/image/url");
-        when(sketchService.getImageBySketch(sketchId)).thenReturn(this.hexStringToByteArray(sketch.getImageURL()));
+        when(sketchService.getImageBySketch(sketchId).getImage()).thenReturn(this.hexStringToByteArray(sketch.getImageURL()));
 
         final String path = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
                 .getSketchImage(algorithmId, sketchId));

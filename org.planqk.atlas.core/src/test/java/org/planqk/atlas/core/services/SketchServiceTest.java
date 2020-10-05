@@ -151,7 +151,7 @@ public class SketchServiceTest extends AtlasDatabaseTestBase {
         this.imageRepository.save(image);
 
         // call
-        final byte[] response = this.sketchService.getImageBySketch(persistedSketch.getId());
+        final byte[] response = this.sketchService.getImageBySketch(persistedSketch.getId()).getImage();
 
         // test
         assertTrue(Arrays.equals(response, testFile));
