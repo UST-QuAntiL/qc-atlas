@@ -185,7 +185,7 @@ public class ImplementationController {
     public ResponseEntity<Void> addTagToImplementation(
             @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId,
-            @Validated @RequestBody TagDto tagDto) {
+            @Validated(ValidationGroups.Create.class) @RequestBody TagDto tagDto) {
         implementationService.checkIfImplementationIsOfAlgorithm(implementationId, algorithmId);
 
         tagService.addTagToImplementation(implementationId, ModelMapperUtils.convert(tagDto, Tag.class));
@@ -201,7 +201,7 @@ public class ImplementationController {
     public ResponseEntity<Void> removeTagFromImplementation(
             @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId,
-            @Validated @RequestBody TagDto tagDto) {
+            @Validated(ValidationGroups.IDOnly.class) @RequestBody TagDto tagDto) {
         implementationService.checkIfImplementationIsOfAlgorithm(implementationId, algorithmId);
 
         tagService.removeTagFromImplementation(implementationId, ModelMapperUtils.convert(tagDto, Tag.class));
