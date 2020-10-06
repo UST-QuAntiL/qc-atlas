@@ -55,6 +55,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -266,6 +267,36 @@ public class ProblemTypeControllerTest {
         doThrow(new NoSuchElementException()).when(problemTypeService).findById(any());
         var url = linkBuilderService.urlStringTo(methodOn(ProblemTypeController.class)
                 .getProblemType(UUID.randomUUID()));
+        mockMvc.perform(
+                get(url)
+                        .accept(APPLICATION_JSON)
+        ).andExpect(status().isNotFound());
+    }
+
+    @Test
+    @SneakyThrows
+    void getProblemTypeParentList_returnOk() {
+        var probType = new ProblemType();
+        probType.setId(UUID.randomUUID());
+        probType.setName("test");
+
+        doReturn(List.of(probType)).when(problemTypeService).getParentList(any());
+        var url = linkBuilderService.urlStringTo(methodOn(ProblemTypeController.class)
+                .getProblemTypeParentList(UUID.randomUUID()));
+        mockMvc.perform(
+                get(url)
+                        .accept(APPLICATION_JSON)
+        ).andExpect(status().isOk())
+                .andExpect(jsonPath("$._embedded.problemTypes[0].id").value(probType.getId().toString()))
+                .andDo(print());
+    }
+
+    @Test
+    @SneakyThrows
+    void getProblemTypeParentList_returnNotFound() {
+        doThrow(new NoSuchElementException()).when(problemTypeService).getParentList(any());
+        var url = linkBuilderService.urlStringTo(methodOn(ProblemTypeController.class)
+                .getProblemTypeParentList(UUID.randomUUID()));
         mockMvc.perform(
                 get(url)
                         .accept(APPLICATION_JSON)
