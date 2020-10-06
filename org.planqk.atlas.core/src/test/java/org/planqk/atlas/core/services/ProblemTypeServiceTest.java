@@ -67,7 +67,7 @@ public class ProblemTypeServiceTest extends AtlasDatabaseTestBase {
         ProblemType problemType2 = getFullProblemType("problemTypeName2");
         problemTypeService.create(problemType2);
 
-        List<ProblemType> problemTypes = problemTypeService.findAll(Pageable.unpaged()).getContent();
+        List<ProblemType> problemTypes = problemTypeService.findAll(Pageable.unpaged(), "").getContent();
 
         assertThat(problemTypes.size()).isEqualTo(2);
     }
@@ -133,6 +133,25 @@ public class ProblemTypeServiceTest extends AtlasDatabaseTestBase {
             assertThrows(EntityReferenceConstraintViolationException.class, () -> problemTypeService.delete(pt.getId()));
             assertDoesNotThrow(() -> problemTypeService.findById(pt.getId()));
         });
+    }
+
+    @Test
+    void deleteProblemType_RemoveFromParents() {
+        ProblemType problemTypeParent = getFullProblemType("parentProblemTypeName");
+        ProblemType persistedProblemTypeParent = problemTypeService.create(problemTypeParent);
+        ProblemType problemType = getFullProblemType("problemTypeName");
+        problemType.setParentProblemType(persistedProblemTypeParent.getId());
+        problemType = problemTypeService.create(problemType);
+
+        assertThat(problemTypeService.findById(problemType.getId()).getParentProblemType()).isNotNull();
+        assertThat(problemTypeService.findById(problemType.getId()).getParentProblemType())
+                .isEqualTo(persistedProblemTypeParent.getId());
+
+        problemTypeService.delete(problemTypeParent.getId());
+
+        assertThrows(NoSuchElementException.class, () -> problemTypeService.findById(persistedProblemTypeParent.getId()));
+
+        assertThat(problemTypeService.findById(problemType.getId()).getParentProblemType()).isNull();
     }
 
     @Test
