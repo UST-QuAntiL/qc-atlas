@@ -23,7 +23,10 @@ import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
+import org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException;
+import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.ApplicationArea;
+import org.planqk.atlas.core.model.ComputationModel;
 import org.planqk.atlas.core.repository.ApplicationAreaRepository;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 
@@ -41,6 +44,12 @@ public class ApplicationAreaServiceTest extends AtlasDatabaseTestBase {
 
     @Autowired
     private ApplicationAreaRepository applicationAreaRepository;
+
+    @Autowired
+    private AlgorithmService algorithmService;
+
+    @Autowired
+    private LinkingService linkingService;
 
     @Test
     void getFullApplicationArea() {
@@ -113,6 +122,21 @@ public class ApplicationAreaServiceTest extends AtlasDatabaseTestBase {
     @Test
     void deleteApplicationArea_IdNull() {
         assertThrows(NullPointerException.class, () -> applicationAreaService.delete(null));
+    }
+
+    @Test
+    void deleteApplicationArea_LinkedToOtherEntity() {
+        var area = getFullApplicationArea("TEST");
+
+        var algorithm = new Algorithm();
+        algorithm.setName("algorithmName");
+        algorithm.setComputationModel(ComputationModel.CLASSIC);
+        algorithm = algorithmService.create(algorithm);
+
+        linkingService.linkAlgorithmAndApplicationArea(algorithm.getId(), area.getId());
+
+        assertThrows(EntityReferenceConstraintViolationException.class, () ->
+                applicationAreaService.delete(area.getId()));
     }
 
     @Test

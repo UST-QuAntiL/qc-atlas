@@ -136,6 +136,25 @@ public class ProblemTypeServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
+    void deleteProblemType_RemoveFromParents() {
+        ProblemType problemTypeParent = getFullProblemType("parentProblemTypeName");
+        ProblemType persistedProblemTypeParent = problemTypeService.create(problemTypeParent);
+        ProblemType problemType = getFullProblemType("problemTypeName");
+        problemType.setParentProblemType(persistedProblemTypeParent.getId());
+        problemType = problemTypeService.create(problemType);
+
+        assertThat(problemTypeService.findById(problemType.getId()).getParentProblemType()).isNotNull();
+        assertThat(problemTypeService.findById(problemType.getId()).getParentProblemType())
+                .isEqualTo(persistedProblemTypeParent.getId());
+
+        problemTypeService.delete(problemTypeParent.getId());
+
+        assertThrows(NoSuchElementException.class, () -> problemTypeService.findById(persistedProblemTypeParent.getId()));
+
+        assertThat(problemTypeService.findById(problemType.getId()).getParentProblemType()).isNull();
+    }
+
+    @Test
     void deleteProblemType_NoLinks() {
         ProblemType problemType = getFullProblemType("problemTypeName");
         ProblemType storedProblemType = problemTypeService.create(problemType);

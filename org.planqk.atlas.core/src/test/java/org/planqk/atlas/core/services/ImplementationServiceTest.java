@@ -21,6 +21,7 @@ package org.planqk.atlas.core.services;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
@@ -190,6 +191,54 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
         implementationService.delete(storedImplementation.getId());
 
         assertThrows(NoSuchElementException.class, () -> implementationService.findById(storedImplementation.getId()));
+    }
+
+    @Test
+    void deleteImplementation_WithReferences() {
+        Algorithm algorithm = new ClassicAlgorithm();
+        algorithm.setName("algorithmName");
+        algorithm = algorithmService.create(algorithm);
+
+        var implementation = new Implementation();
+        implementation.setName("implementationName");
+        implementation.setImplementedAlgorithm(algorithm);
+
+        implementation = implementationService.create(implementation, algorithm.getId());
+
+        // add publication
+        Publication publication = new Publication();
+        publication.setTitle("publicationTitle");
+        publication.setUrl("http://example.com");
+        publication.setDoi("doi");
+        List<String> publicationAuthors = new ArrayList<>();
+        publicationAuthors.add("publicationAuthor1");
+        publication.setAuthors(publicationAuthors);
+        publication = publicationService.create(publication);
+        linkingService.linkImplementationAndPublication(implementation.getId(), publication.getId());
+
+        // add software platform
+        SoftwarePlatform softwarePlatform = new SoftwarePlatform();
+        softwarePlatform.setName("softwarePlatformName");
+        softwarePlatform = softwarePlatformService.create(softwarePlatform);
+        linkingService.linkImplementationAndSoftwarePlatform(implementation.getId(), softwarePlatform.getId());
+
+        Implementation finalImplementation = implementationService.findById(implementation.getId());
+
+        finalImplementation.getPublications().forEach(pub ->
+                assertDoesNotThrow(() -> publicationService.findById(pub.getId())));
+        finalImplementation.getSoftwarePlatforms().forEach(sp ->
+                assertDoesNotThrow(() -> softwarePlatformService.findById(sp.getId())));
+
+        implementationService.delete(finalImplementation.getId());
+
+        assertThrows(NoSuchElementException.class, () ->
+                implementationService.findById(finalImplementation.getId()));
+
+        // check if implementation links are removed
+        finalImplementation.getPublications().forEach(pub ->
+                assertThat(publicationService.findById(pub.getId()).getImplementations().size()).isEqualTo(0));
+        finalImplementation.getSoftwarePlatforms().forEach(sp ->
+                assertThat(softwarePlatformService.findById(sp.getId()).getImplementations().size()).isEqualTo(0));
     }
 
     @Test
