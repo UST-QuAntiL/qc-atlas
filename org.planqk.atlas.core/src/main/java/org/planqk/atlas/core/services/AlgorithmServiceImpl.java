@@ -19,8 +19,6 @@
 
 package org.planqk.atlas.core.services;
 
-import java.util.HashSet;
-import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.UUID;
@@ -31,18 +29,16 @@ import org.planqk.atlas.core.model.ApplicationArea;
 import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.model.Publication;
-import org.planqk.atlas.core.model.Image;
 import org.planqk.atlas.core.model.QuantumAlgorithm;
-import org.planqk.atlas.core.model.Sketch;
 import org.planqk.atlas.core.repository.AlgorithmRelationRepository;
 import org.planqk.atlas.core.repository.AlgorithmRepository;
 import org.planqk.atlas.core.repository.ApplicationAreaRepository;
 import org.planqk.atlas.core.repository.ComputeResourcePropertyRepository;
+import org.planqk.atlas.core.repository.ImageRepository;
+import org.planqk.atlas.core.repository.ImplementationRepository;
 import org.planqk.atlas.core.repository.PatternRelationRepository;
 import org.planqk.atlas.core.repository.ProblemTypeRepository;
 import org.planqk.atlas.core.repository.PublicationRepository;
-import org.planqk.atlas.core.repository.ImageRepository;
-import org.planqk.atlas.core.repository.ImplementationRepository;
 import org.planqk.atlas.core.repository.SketchRepository;
 import org.planqk.atlas.core.util.ServiceUtils;
 
@@ -61,8 +57,6 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 
     private final AlgorithmRepository algorithmRepository;
 
-    private final SketchRepository sketchRepository;
-
     private final AlgorithmRelationRepository algorithmRelationRepository;
 
     private final ImplementationService implementationService;
@@ -78,9 +72,6 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     private final PatternRelationService patternRelationService;
     private final PatternRelationRepository patternRelationRepository;
 
-    private final ImplementationRepository implementationRepository;
-
-    private final ImageRepository imageRepository;
 
     @Override
     @Transactional
@@ -209,10 +200,10 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 
     @Override
     public void checkIfPublicationIsLinkedToAlgorithm(UUID algorithmId, UUID publicationId) {
+        ServiceUtils.throwIfNotExists(publicationId, Publication.class, publicationRepository);
         Algorithm algorithm = findById(algorithmId);
-        Publication publication = ServiceUtils.findById(publicationId, Publication.class, publicationRepository);
 
-        if (!algorithm.getPublications().contains(publication)) {
+        if (!ServiceUtils.containsElementWithId(algorithm.getPublications(), publicationId)) {
             throw new NoSuchElementException("Publication with ID \"" + publicationId
                     + "\" is not linked to Algorithm with ID \"" + algorithmId +  "\"");
         }
@@ -220,10 +211,10 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 
     @Override
     public void checkIfProblemTypeIsLinkedToAlgorithm(UUID algorithmId, UUID problemTypeId) {
+        ServiceUtils.throwIfNotExists(problemTypeId, ProblemType.class, problemTypeRepository);
         Algorithm algorithm = findById(algorithmId);
-        ProblemType problemType = ServiceUtils.findById(problemTypeId, ProblemType.class, problemTypeRepository);
 
-        if (!algorithm.getProblemTypes().contains(problemType)) {
+        if (!ServiceUtils.containsElementWithId(algorithm.getProblemTypes(), problemTypeId)) {
             throw new NoSuchElementException("ProblemType with ID \"" + problemTypeId
                     + "\" is not linked to Algorithm with ID \"" + algorithmId +  "\"");
         }
@@ -231,10 +222,10 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 
     @Override
     public void checkIfApplicationAreaIsLinkedToAlgorithm(UUID algorithmId, UUID applicationAreaId) {
+        ServiceUtils.throwIfNotExists(applicationAreaId, ApplicationArea.class, applicationAreaRepository);
         Algorithm algorithm = findById(algorithmId);
-        ApplicationArea applicationArea = ServiceUtils.findById(applicationAreaId, ApplicationArea.class, applicationAreaRepository);
 
-        if (!algorithm.getApplicationAreas().contains(applicationArea)) {
+        if (!ServiceUtils.containsElementWithId(algorithm.getApplicationAreas(), applicationAreaId)) {
             throw new NoSuchElementException("ApplicationArea with ID \"" + applicationAreaId
                     + "\" is not linked to Algorithm with ID \"" + algorithmId +  "\"");
         }

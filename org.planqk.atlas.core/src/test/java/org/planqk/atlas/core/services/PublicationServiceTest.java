@@ -236,6 +236,70 @@ public class PublicationServiceTest extends AtlasDatabaseTestBase {
         });
     }
 
+    @Test
+    void checkIfAlgorithmIsLinkedToPublication_IsLinked() {
+        Algorithm algorithm = new ClassicAlgorithm();
+        algorithm.setName("algorithmName");
+        Algorithm persistedAlgorithm = algorithmService.create(algorithm);
+
+        Publication publication = getFullPublication("publicationTitle");
+        Publication persistedPublication = publicationService.create(publication);
+
+        linkingService.linkAlgorithmAndPublication(persistedAlgorithm.getId(), persistedPublication.getId());
+
+        assertDoesNotThrow(() -> publicationService
+                .checkIfAlgorithmIsLinkedToPublication(persistedPublication.getId(), persistedAlgorithm.getId()));
+    }
+
+    @Test
+    void checkIfAlgorithmIsLinkedToPublication_IsNotLinked() {
+        Algorithm algorithm = new ClassicAlgorithm();
+        algorithm.setName("algorithmName");
+        Algorithm persistedAlgorithm = algorithmService.create(algorithm);
+
+        Publication publication = getFullPublication("publicationTitle");
+        Publication persistedPublication = publicationService.create(publication);
+
+        assertThrows(NoSuchElementException.class, () -> publicationService
+                .checkIfAlgorithmIsLinkedToPublication(persistedPublication.getId(), persistedAlgorithm.getId()));
+    }
+
+    @Test
+    void checkIfImplementationIsLinkedToPublication_IsLinked() {
+        Algorithm algorithm = new ClassicAlgorithm();
+        algorithm.setName("algorithmName");
+        algorithm = algorithmService.create(algorithm);
+
+        Implementation implementation = new ClassicImplementation();
+        implementation.setName("implementationName");
+        Implementation persistedImplementation = implementationService.create(implementation, algorithm.getId());
+
+        Publication publication = getFullPublication("publicationTitle");
+        Publication persistedPublication = publicationService.create(publication);
+
+        linkingService.linkImplementationAndPublication(persistedImplementation.getId(), persistedPublication.getId());
+
+        assertDoesNotThrow(() -> publicationService
+                .checkIfImplementationIsLinkedToPublication(persistedPublication.getId(), persistedImplementation.getId()));
+    }
+
+    @Test
+    void checkIfImplementationIsLinkedToPublication_IsNotLinked() {
+        Algorithm algorithm = new ClassicAlgorithm();
+        algorithm.setName("algorithmName");
+        algorithm = algorithmService.create(algorithm);
+
+        Implementation implementation = new ClassicImplementation();
+        implementation.setName("implementationName");
+        Implementation persistedImplementation = implementationService.create(implementation, algorithm.getId());
+
+        Publication publication = getFullPublication("publicationTitle");
+        Publication persistedPublication = publicationService.create(publication);
+
+        assertThrows(NoSuchElementException.class, () -> publicationService
+                .checkIfImplementationIsLinkedToPublication(persistedPublication.getId(), persistedImplementation.getId()));
+    }
+
     private Publication getFullPublication(String title) {
         Publication publication = new Publication();
         publication.setTitle(title);

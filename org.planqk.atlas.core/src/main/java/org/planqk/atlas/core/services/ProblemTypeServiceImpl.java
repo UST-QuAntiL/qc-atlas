@@ -53,10 +53,12 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
     }
 
     @Override
-    public Page<ProblemType> findAll(@NonNull Pageable pageable) {
+    public Page<ProblemType> findAll(@NonNull Pageable pageable, String search) {
+        if (!Objects.isNull(search) && !search.isEmpty()) {
+            return problemTypeRepository.findAll(search, pageable);
+        }
         return problemTypeRepository.findAll(pageable);
     }
-
     @Override
     public ProblemType findById(@NonNull UUID problemTypeId) {
         return ServiceUtils.findById(problemTypeId, ProblemType.class, problemTypeRepository);
@@ -86,14 +88,6 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
         removeReferences(problemType);
 
         problemTypeRepository.deleteById(problemTypeId);
-    }
-
-    @Override
-    public Page<ProblemType> findAll(Pageable pageable, String search) {
-        if (!Objects.isNull(search) && !search.isEmpty()) {
-            return problemTypeRepository.findAll(search, pageable);
-        }
-        return findAll(pageable);
     }
 
     private void removeReferences(@NonNull ProblemType problemType) {

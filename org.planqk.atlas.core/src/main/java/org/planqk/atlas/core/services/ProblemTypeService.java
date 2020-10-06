@@ -33,14 +33,12 @@ public interface ProblemTypeService {
     @Transactional
     ProblemType create(ProblemType problemType);
 
-    Page<ProblemType> findAll(Pageable pageable);
+    Page<ProblemType> findAll(Pageable pageable, String search);
 
     ProblemType findById(UUID problemTypeId);
 
     @Transactional
     ProblemType update(ProblemType problemType);
-    
-    Page<ProblemType> findAll(Pageable pageable, String search);
 
     @Transactional
     void delete(UUID problemTypeId);

@@ -1,6 +1,8 @@
 package org.planqk.atlas.core.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -10,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
@@ -39,13 +42,42 @@ public class SketchServiceTest extends AtlasDatabaseTestBase {
     @Autowired
     private ImageRepository imageRepository;
 
+
     @Test
-    void testFindByAlgorithm() {
+    void updateSketch() {
+        final Algorithm algorithm = this.algorithmService.create(this.getAlgorithm("algo"));
+
+        byte[] testFile = hexStringToByteArray("e04fd020ea3a6910a2d808002b30309d");
+        final MockMultipartFile file = new MockMultipartFile("image", testFile);
+
+        final String description = "description";
+        final String baseURL = "http://localhost:8080/atlas/v1";
+        // call
+        final Sketch persistedSketch = sketchService.addSketchToAlgorithm(algorithm.getId(), file, description, baseURL);
+
+        final String updateDescription = "updatedDescription";
+        Sketch updateSketch = new Sketch();
+        updateSketch.setId(persistedSketch.getId());
+        updateSketch.setDescription(updateDescription);
+
+        sketchService.update(updateSketch);
+
+        Sketch persistedUpdatedSketch = sketchService.findById(persistedSketch.getId());
+
+        assertThat(persistedUpdatedSketch.getId()).isEqualTo(persistedSketch.getId());
+        assertThat(persistedUpdatedSketch.getImageURL()).isEqualTo(persistedSketch.getImageURL());
+        assertThat(persistedUpdatedSketch.getImage()).isNotNull();
+        assertThat(persistedUpdatedSketch.getAlgorithm().getId()).isEqualTo(persistedSketch.getAlgorithm().getId());
+        assertThat(persistedUpdatedSketch.getDescription()).isEqualTo(updateDescription);
+    }
+
+    @Test
+    void findSketchByAlgorithm() {
 
         // mock
         final Algorithm algorithm = this.algorithmService.create(this.getAlgorithm("algo"));
 
-        final Sketch sketch = this.getSketch(null, "image/url", "description");
+        final Sketch sketch = this.getSketch(null, "http://image/url", "description");
         sketch.setAlgorithm(algorithm);
         final Sketch persistedSketch = this.sketchRepository.save(sketch);
 
@@ -57,8 +89,7 @@ public class SketchServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void testAddSketchToAlgorithm() {
-
+    void addSketchToAlgorithm() {
         // mock
         final Algorithm algorithm = this.algorithmService.create(this.getAlgorithm("algo"));
 
@@ -83,36 +114,30 @@ public class SketchServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void testDelete() {
-
+    void deleteSketch() {
         // mock
         final Algorithm algorithm = this.algorithmService.create(this.getAlgorithm("algo"));
 
-        final Sketch sketch = this.getSketch(null, "image/url", "description");
+        final Sketch sketch = this.getSketch(null, "http://image/url", "description");
         sketch.setAlgorithm(algorithm);
-        final Sketch response = this.sketchRepository.save(sketch);
+        Sketch persistedSketch = this.sketchRepository.save(sketch);
 
-        final Sketch persistedSketch = this.sketchService.findById(response.getId());
-        assertThat(persistedSketch).isNotNull();
+        assertDoesNotThrow(() -> this.sketchService.findById(persistedSketch.getId()));
+
         // call
-        this.sketchService.delete(response.getId());
+        this.sketchService.delete(persistedSketch.getId());
 
         // test
-        try {
-            this.sketchService.findById(response.getId());
-        } catch (Exception e) {
-            assertThat(e.getMessage()).contains("Sketch with ID \"" + sketch.getId() + "\" does not exist");
-        }
-
+        assertThrows(NoSuchElementException.class, () -> sketchService.findById(persistedSketch.getId()));
     }
 
     @Test
-    void testFindById() {
+    void findSketchById_ElementFound() {
 
         // mock
         final Algorithm algorithm = this.algorithmService.create(this.getAlgorithm("algo"));
 
-        final Sketch sketch = this.getSketch(null, "image/url", "description");
+        final Sketch sketch = this.getSketch(null, "http://image/url", "description");
         sketch.setAlgorithm(algorithm);
         final Sketch persistedSketch = this.sketchRepository.save(sketch);
 
@@ -124,30 +149,14 @@ public class SketchServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void testGetSketchByAlgorithmAndSketch() {
+    void getImageBySketch() {
 
         // mock
         final Algorithm algorithm = this.algorithmService.create(this.getAlgorithm("algo"));
 
-        final Sketch sketch = this.getSketch(null, "image/url", "description");
+        final Sketch sketch = this.getSketch(null, "http://image/url", "description");
         sketch.setAlgorithm(algorithm);
-        final Sketch persistedSketch = this.sketchRepository.save(sketch);
-
-        // call
-        final Sketch response = this.sketchService.findById(persistedSketch.getId());
-
-        // test
-        assertThat(response).isNotNull();
-    }
-
-    @Test
-    void testGetImageByAlgorithmAndSketch() {
-
-        // mock
-        final Algorithm algorithm = this.algorithmService.create(this.getAlgorithm("algo"));
-
-        final Sketch sketch = this.getSketch(null, "http://localhost:8080/url", "description");
-        sketch.setAlgorithm(algorithm);
+        
         final Sketch persistedSketch = this.sketchRepository.save(sketch);
 
         byte[] testFile = new byte[20];
