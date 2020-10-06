@@ -491,7 +491,7 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void checkIfComputeResourcePropertyIsOfAlgorithm_True() {
+    void checkIfComputeResourcePropertyIsOfAlgorithm_IsOfElement() {
         var resourceType = getCreatedComputeResourcePropertyType();
         QuantumAlgorithm algorithm = getCreatedQuantumAlgorithm("quantumAlgorithmName");
 
@@ -507,9 +507,134 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
                 .checkIfComputeResourcePropertyIsOfAlgorithm(resultAlgorithm.getId(), storedResource.getId()));
     }
 
-    //@Test
-    void checkIfComputeResourcePropertyIsOfAlgorithm_False() {
+    @Test
+    void checkIfComputeResourcePropertyIsOfAlgorithm_IsOfDifferentElement() {
+        var resourceType = getCreatedComputeResourcePropertyType();
+        QuantumAlgorithm algorithm = getCreatedQuantumAlgorithm("quantumAlgorithmName");
+        QuantumImplementation implementation = getCreatedQuantumImplementation("quantumImplementationName");
 
+        var resource = getFullComputeResourceProperty("0.1");
+        resource.setComputeResourcePropertyType(resourceType);
+
+        var storedResource = computeResourcePropertyService
+                .addComputeResourcePropertyToImplementation(implementation.getId(), resource);
+
+        assertThrows(NoSuchElementException.class, () -> computeResourcePropertyService
+                .checkIfComputeResourcePropertyIsOfAlgorithm(algorithm.getId(), storedResource.getId()));
+    }
+
+    @Test
+    void checkIfComputeResourcePropertyIsOfAlgorithm_IsNotOfElement() {
+        var resourceType = getCreatedComputeResourcePropertyType();
+        QuantumAlgorithm algorithm = getCreatedQuantumAlgorithm("quantumAlgorithmName");
+        QuantumAlgorithm resourceAlgorithm = getCreatedQuantumAlgorithm("quantumResourceAlgorithmName");
+
+        var resource = getFullComputeResourceProperty("0.1");
+        resource.setComputeResourcePropertyType(resourceType);
+
+        var storedResource = computeResourcePropertyService
+                .addComputeResourcePropertyToAlgorithm(resourceAlgorithm.getId(), resource);
+
+        assertThrows(NoSuchElementException.class, () -> computeResourcePropertyService
+                .checkIfComputeResourcePropertyIsOfAlgorithm(algorithm.getId(), storedResource.getId()));
+    }
+
+    @Test
+    void checkIfComputeResourcePropertyIsOfImplementation_IsOfElement() {
+        var resourceType = getCreatedComputeResourcePropertyType();
+        QuantumImplementation implementation = getCreatedQuantumImplementation("quantumImplementationName");
+
+        var resource = getFullComputeResourceProperty("0.1");
+        resource.setComputeResourcePropertyType(resourceType);
+
+        var storedResource = computeResourcePropertyService
+                .addComputeResourcePropertyToImplementation(implementation.getId(), resource);
+
+        var resultImplementation = (QuantumImplementation) implementationService.findById(implementation.getId());
+
+        assertDoesNotThrow(() -> computeResourcePropertyService
+                .checkIfComputeResourcePropertyIsOfImplementation(resultImplementation.getId(), storedResource.getId()));
+    }
+
+    @Test
+    void checkIfComputeResourcePropertyIsOfImplementation_IsOfDifferentElement() {
+        var resourceType = getCreatedComputeResourcePropertyType();
+        QuantumImplementation implementation = getCreatedQuantumImplementation("quantumImplementationName");
+        QuantumAlgorithm algorithm = getCreatedQuantumAlgorithm("quantumAlgorithmName");
+
+        var resource = getFullComputeResourceProperty("0.1");
+        resource.setComputeResourcePropertyType(resourceType);
+
+        var storedResource = computeResourcePropertyService
+                .addComputeResourcePropertyToAlgorithm(algorithm.getId(), resource);
+
+        assertThrows(NoSuchElementException.class, () -> computeResourcePropertyService
+                .checkIfComputeResourcePropertyIsOfImplementation(implementation.getId(), storedResource.getId()));
+    }
+
+    @Test
+    void checkIfComputeResourcePropertyIsOfImplementation_IsNotOfElement() {
+        var resourceType = getCreatedComputeResourcePropertyType();
+        QuantumImplementation implementation = getCreatedQuantumImplementation("quantumImplementationName");
+        QuantumImplementation resourceImplementation = getCreatedQuantumImplementation("quantumResourceImplementationName");
+
+        var resource = getFullComputeResourceProperty("0.1");
+        resource.setComputeResourcePropertyType(resourceType);
+
+        var storedResource = computeResourcePropertyService
+                .addComputeResourcePropertyToImplementation(resourceImplementation.getId(), resource);
+
+        assertThrows(NoSuchElementException.class, () -> computeResourcePropertyService
+                .checkIfComputeResourcePropertyIsOfImplementation(implementation.getId(), storedResource.getId()));
+    }
+
+    @Test
+    void checkIfComputeResourcePropertyIsOfComputeResource_IsOfElement() {
+        var resourceType = getCreatedComputeResourcePropertyType();
+        ComputeResource computeResource = getCreatedComputeResource("computeResourceName");
+
+        var resource = getFullComputeResourceProperty("0.1");
+        resource.setComputeResourcePropertyType(resourceType);
+
+        var storedResource = computeResourcePropertyService
+                .addComputeResourcePropertyToComputeResource(computeResource.getId(), resource);
+
+        var resultComputeResource = computeResourceService.findById(computeResource.getId());
+
+        assertDoesNotThrow(() -> computeResourcePropertyService
+                .checkIfComputeResourcePropertyIsOfComputeResource(resultComputeResource.getId(), storedResource.getId()));
+    }
+
+    @Test
+    void checkIfComputeResourcePropertyIsOfComputeResource_IsOfDifferentElement() {
+        var resourceType = getCreatedComputeResourcePropertyType();
+        ComputeResource computeResource = getCreatedComputeResource("computeResourceName");
+        QuantumAlgorithm algorithm = getCreatedQuantumAlgorithm("quantumAlgorithmName");
+
+        var resource = getFullComputeResourceProperty("0.1");
+        resource.setComputeResourcePropertyType(resourceType);
+
+        var storedResource = computeResourcePropertyService
+                .addComputeResourcePropertyToAlgorithm(algorithm.getId(), resource);
+
+        assertThrows(NoSuchElementException.class, () -> computeResourcePropertyService
+                .checkIfComputeResourcePropertyIsOfComputeResource(computeResource.getId(), storedResource.getId()));
+    }
+
+    @Test
+    void checkIfComputeResourcePropertyIsOfComputeResource_IsNotOfElement() {
+        var resourceType = getCreatedComputeResourcePropertyType();
+        ComputeResource computeResource = getCreatedComputeResource("computeResourceName");
+        ComputeResource resourceComputeResource = getCreatedComputeResource("resourceComputeResourceName");
+
+        var resource = getFullComputeResourceProperty("0.1");
+        resource.setComputeResourcePropertyType(resourceType);
+
+        var storedResource = computeResourcePropertyService
+                .addComputeResourcePropertyToComputeResource(resourceComputeResource.getId(), resource);
+
+        assertThrows(NoSuchElementException.class, () -> computeResourcePropertyService
+                .checkIfComputeResourcePropertyIsOfComputeResource(computeResource.getId(), storedResource.getId()));
     }
 
     private ComputeResourceProperty getFullComputeResourceProperty(String value) {
