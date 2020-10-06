@@ -22,12 +22,16 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
+import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.ComputationModel;
+import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.core.services.LinkingService;
 import org.planqk.atlas.core.services.PublicationService;
 import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
+import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.PublicationDto;
 import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
 import org.planqk.atlas.web.linkassembler.LinkBuilderService;
@@ -267,6 +271,217 @@ public class PublicationControllerTest {
                 .deletePublication(UUID.randomUUID()));
 
         mockMvc.perform(delete(url).accept(APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @SneakyThrows
+    void getAlgorithmsOfPublication_SingleElement_returnOk() {
+        var algo = new Algorithm();
+        algo.setName("algo");
+        algo.setId(UUID.randomUUID());
+
+        doReturn(new PageImpl<>(List.of(algo))).when(publicationService).findLinkedAlgorithms(any(), any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
+                .getAlgorithmsOfPublication(UUID.randomUUID(), ListParameters.getDefault()));
+
+        mockMvc.perform(get(url).accept(APPLICATION_JSON))
+                .andExpect(jsonPath("$._embedded.algorithms[0].id").value(algo.getId().toString()))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @SneakyThrows
+    void getAlgorithmsOfPublication_EmptyList_returnOk() {
+        doReturn(new PageImpl<>(List.of())).when(publicationService).findLinkedAlgorithms(any(), any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
+                .getAlgorithmsOfPublication(UUID.randomUUID(), ListParameters.getDefault()));
+
+        mockMvc.perform(get(url).accept(APPLICATION_JSON))
+                .andExpect(jsonPath("$._embedded.algorithms").doesNotExist())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @SneakyThrows
+    void getAlgorithmsOfPublication_returnNotFound() {
+        doThrow(new NoSuchElementException()).when(publicationService).checkIfAlgorithmIsLinkedToPublication(any(), any());
+        doThrow(new NoSuchElementException()).when(publicationService).findLinkedAlgorithms(any(), any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
+                .getAlgorithmsOfPublication(UUID.randomUUID(), ListParameters.getDefault()));
+
+        mockMvc.perform(get(url).accept(APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @SneakyThrows
+    void getAlgorithmOfPublication_returnOk() {
+        var algo = new Algorithm();
+        algo.setName("algo");
+        algo.setId(UUID.randomUUID());
+
+        doNothing().when(publicationService).checkIfAlgorithmIsLinkedToPublication(any(), any());
+        doReturn(algo).when(algorithmService).findById(any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
+                .getAlgorithmOfPublication(UUID.randomUUID(), UUID.randomUUID()));
+
+        mockMvc.perform(get(url).accept(APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(algo.getId().toString()))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @SneakyThrows
+    void getAlgorithmOfPublication_returnNotFound() {
+        doThrow(new NoSuchElementException()).when(publicationService).checkIfAlgorithmIsLinkedToPublication(any(), any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
+                .getAlgorithmOfPublication(UUID.randomUUID(), UUID.randomUUID()));
+
+        mockMvc.perform(get(url).accept(APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @SneakyThrows
+    void linkPublicationAndAlgorithm_returnNoContent() {
+        doNothing().when(linkingService).linkAlgorithmAndPublication(any(), any());
+        ;
+        var algoDto = new AlgorithmDto();
+        algoDto.setId(UUID.randomUUID());
+        algoDto.setComputationModel(ComputationModel.QUANTUM);
+
+        var url = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
+                .linkPublicationAndAlgorithm(UUID.randomUUID(), null));
+
+        mockMvc.perform(
+                post(url)
+                        .accept(APPLICATION_JSON)
+                        .contentType(APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(algoDto))
+        ).andExpect(status().isNoContent());
+    }
+
+    @Test
+    @SneakyThrows
+    void linkPublicationAndAlgorithm_returnBadRequest() {
+        var algoDto = new AlgorithmDto();
+        algoDto.setId(null);
+        algoDto.setComputationModel(ComputationModel.QUANTUM);
+
+        var url = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
+                .linkPublicationAndAlgorithm(UUID.randomUUID(), null));
+
+        mockMvc.perform(
+                post(url)
+                        .accept(APPLICATION_JSON)
+                        .contentType(APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(algoDto))
+        ).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @SneakyThrows
+    void linkPublicationAndAlgorithm_returnNotFound() {
+        doThrow(new NoSuchElementException()).when(linkingService).linkAlgorithmAndPublication(any(), any());
+        var algoDto = new AlgorithmDto();
+        algoDto.setId(UUID.randomUUID());
+        algoDto.setComputationModel(ComputationModel.QUANTUM);
+
+        var url = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
+                .linkPublicationAndAlgorithm(UUID.randomUUID(), null));
+
+        mockMvc.perform(
+                post(url)
+                        .accept(APPLICATION_JSON)
+                        .contentType(APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(algoDto))
+        ).andExpect(status().isNotFound());
+    }
+
+    @Test
+    @SneakyThrows
+    void unlinkPublicationAndAlgorithm_returnNoContent() {
+        doNothing().when(linkingService).unlinkImplementationAndPublication(any(), any());
+        ;
+
+        var url = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
+                .unlinkPublicationAndAlgorithm(UUID.randomUUID(), UUID.randomUUID()));
+
+        mockMvc.perform(delete(url).accept(APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @SneakyThrows
+    void unlinkPublicationAndAlgorithm_returnNotFound() {
+        doThrow(new NoSuchElementException()).when(linkingService).unlinkAlgorithmAndPublication(any(), any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
+                .unlinkPublicationAndAlgorithm(UUID.randomUUID(), UUID.randomUUID()));
+
+        mockMvc.perform(delete(url).accept(APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @SneakyThrows
+    void getImplementationsOfPublication_EmptyList_returnOk() {
+        doReturn(new PageImpl<>(List.of())).when(publicationService).findLinkedImplementations(any(), any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
+                .getImplementationsOfPublication(UUID.randomUUID(), ListParameters.getDefault()));
+
+        mockMvc.perform(get(url).accept(APPLICATION_JSON))
+                .andExpect(jsonPath("$._embedded.implementations").doesNotExist())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @SneakyThrows
+    void getImplementationsOfPublication_returnNotFound() {
+        doThrow(new NoSuchElementException()).when(publicationService).checkIfImplementationIsLinkedToPublication(any(), any());
+        doThrow(new NoSuchElementException()).when(publicationService).findLinkedImplementations(any(), any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
+                .getImplementationsOfPublication(UUID.randomUUID(), ListParameters.getDefault()));
+
+        mockMvc.perform(get(url).accept(APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @SneakyThrows
+    void getImplementationOfPublication_returnOk() {
+        var algo = new Implementation();
+        algo.setName("algo");
+        algo.setId(UUID.randomUUID());
+
+        doNothing().when(publicationService).checkIfImplementationIsLinkedToPublication(any(), any());
+        doReturn(algo).when(implementationService).findById(any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
+                .getImplementationOfPublication(UUID.randomUUID(), UUID.randomUUID()));
+
+        mockMvc.perform(get(url).accept(APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(algo.getId().toString()))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @SneakyThrows
+    void getImplementationOfPublication_returnNotFound() {
+        doThrow(new NoSuchElementException()).when(publicationService).checkIfImplementationIsLinkedToPublication(any(), any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
+                .getImplementationOfPublication(UUID.randomUUID(), UUID.randomUUID()));
+
+        mockMvc.perform(get(url).accept(APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
 }

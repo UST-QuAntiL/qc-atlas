@@ -639,19 +639,19 @@ public class ImplementationControllerTest {
     @Test
     @SneakyThrows
     void getSoftwarePlatformsOfImplementation_SingleElement_returnOk() {
-        var pub = new SoftwarePlatform();
-        pub.setName("test");
-        pub.setId(UUID.randomUUID());
+        var softwarePlatform = new SoftwarePlatform();
+        softwarePlatform.setName("test");
+        softwarePlatform.setId(UUID.randomUUID());
 
         doNothing().when(implementationService).checkIfImplementationIsOfAlgorithm(any(), any());
-        doReturn(new PageImpl<>(List.of(pub))).when(implementationService).findLinkedSoftwarePlatforms(any(), any());
+        doReturn(new PageImpl<>(List.of(softwarePlatform))).when(implementationService).findLinkedSoftwarePlatforms(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
                 .getSoftwarePlatformsOfImplementation(UUID.randomUUID(), UUID.randomUUID(), ListParameters.getDefault()));
         mockMvc.perform(get(url).accept(APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$._embedded.softwarePlatforms").isArray())
-                .andExpect(jsonPath("$._embedded.softwarePlatforms[0].id").value(pub.getId().toString()))
+                .andExpect(jsonPath("$._embedded.softwarePlatforms[0].id").value(softwarePlatform.getId().toString()))
                 .andDo(print());
     }
 
@@ -669,19 +669,19 @@ public class ImplementationControllerTest {
     @Test
     @SneakyThrows
     void getSoftwarePlatformOfImplementation_returnOk() {
-        var pub = new SoftwarePlatform();
-        pub.setName("test");
-        pub.setId(UUID.randomUUID());
+        var softwarePlatform = new SoftwarePlatform();
+        softwarePlatform.setName("test");
+        softwarePlatform.setId(UUID.randomUUID());
 
         doNothing().when(implementationService).checkIfImplementationIsOfAlgorithm(any(), any());
-        doReturn(pub).when(softwarePlatformService).findById(any());
+        doReturn(softwarePlatform).when(softwarePlatformService).findById(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
-                .getSoftwarePlatformOfImplementation(UUID.randomUUID(), UUID.randomUUID(), pub.getId()));
+                .getSoftwarePlatformOfImplementation(UUID.randomUUID(), UUID.randomUUID(), softwarePlatform.getId()));
         mockMvc.perform(get(url).accept(APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value(pub.getName()))
-                .andExpect(jsonPath("$.id").value(pub.getId().toString()))
+                .andExpect(jsonPath("$.name").value(softwarePlatform.getName()))
+                .andExpect(jsonPath("$.id").value(softwarePlatform.getId().toString()))
                 .andDo(print());
     }
 
@@ -702,26 +702,26 @@ public class ImplementationControllerTest {
         doNothing().when(implementationService).checkIfImplementationIsOfAlgorithm(any(), any());
         doNothing().when(linkingService).linkImplementationAndSoftwarePlatform(any(), any());
 
-        var pubDto = new SoftwarePlatformDto();
-        pubDto.setId(UUID.randomUUID());
+        var softwarePlatformDto = new SoftwarePlatformDto();
+        softwarePlatformDto.setId(UUID.randomUUID());
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
                 .linkImplementationAndSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID(), null));
         mockMvc.perform(post(url).accept(APPLICATION_JSON)
-                .content(mapper.writeValueAsString(pubDto)).contentType(APPLICATION_JSON))
+                .content(mapper.writeValueAsString(softwarePlatformDto)).contentType(APPLICATION_JSON))
                 .andExpect(status().isNoContent()).andDo(print());
     }
 
     @Test
     @SneakyThrows
     void linkImplementationAndSoftwarePlatform_returnBadRequest() {
-        var pubDto = new SoftwarePlatformDto();
-        pubDto.setId(null);
+        var softwarePlatformDto = new SoftwarePlatformDto();
+        softwarePlatformDto.setId(null);
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
                 .linkImplementationAndSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID(), null));
         mockMvc.perform(post(url).accept(APPLICATION_JSON)
-                .content(mapper.writeValueAsString(pubDto)).contentType(APPLICATION_JSON))
+                .content(mapper.writeValueAsString(softwarePlatformDto)).contentType(APPLICATION_JSON))
                 .andExpect(status().isBadRequest()).andDo(print());
     }
 
@@ -730,13 +730,13 @@ public class ImplementationControllerTest {
     void linkImplementationAndSoftwarePlatform_UnknownAlgorithm_returnNotFound() {
         doThrow(new NoSuchElementException()).when(implementationService).checkIfImplementationIsOfAlgorithm(any(), any());
 
-        var pubDto = new SoftwarePlatformDto();
-        pubDto.setId(UUID.randomUUID());
+        var softwarePlatformDto = new SoftwarePlatformDto();
+        softwarePlatformDto.setId(UUID.randomUUID());
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
                 .linkImplementationAndSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID(), null));
         mockMvc.perform(post(url).accept(APPLICATION_JSON)
-                .content(mapper.writeValueAsString(pubDto)).contentType(APPLICATION_JSON))
+                .content(mapper.writeValueAsString(softwarePlatformDto)).contentType(APPLICATION_JSON))
                 .andExpect(status().isNotFound()).andDo(print());
     }
 
@@ -746,13 +746,13 @@ public class ImplementationControllerTest {
         doNothing().when(implementationService).checkIfImplementationIsOfAlgorithm(any(), any());
         doThrow(new NoSuchElementException()).when(linkingService).linkImplementationAndSoftwarePlatform(any(), any());
 
-        var pubDto = new SoftwarePlatformDto();
-        pubDto.setId(UUID.randomUUID());
+        var softwarePlatformDto = new SoftwarePlatformDto();
+        softwarePlatformDto.setId(UUID.randomUUID());
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
                 .linkImplementationAndSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID(), null));
         mockMvc.perform(post(url).accept(APPLICATION_JSON)
-                .content(mapper.writeValueAsString(pubDto)).contentType(APPLICATION_JSON))
+                .content(mapper.writeValueAsString(softwarePlatformDto)).contentType(APPLICATION_JSON))
                 .andExpect(status().isNotFound()).andDo(print());
     }
 
