@@ -19,12 +19,15 @@
 
 package org.planqk.atlas.web.controller;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Implementation;
+import org.planqk.atlas.core.model.Publication;
+import org.planqk.atlas.core.model.SoftwarePlatform;
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.core.services.ComputeResourcePropertyService;
@@ -35,9 +38,12 @@ import org.planqk.atlas.core.services.SoftwarePlatformService;
 import org.planqk.atlas.core.services.TagService;
 import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
 import org.planqk.atlas.web.dtos.ImplementationDto;
+import org.planqk.atlas.web.dtos.PublicationDto;
+import org.planqk.atlas.web.dtos.SoftwarePlatformDto;
 import org.planqk.atlas.web.dtos.TagDto;
 import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
 import org.planqk.atlas.web.linkassembler.LinkBuilderService;
+import org.planqk.atlas.web.utils.ListParameters;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
@@ -48,6 +54,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -340,7 +347,7 @@ public class ImplementationControllerTest {
 
     @Test
     @SneakyThrows
-    void removeTagFromImplementation_returnOk() {
+    void removeTagFromImplementation_returnNoContent() {
         doNothing().when(implementationService).checkIfImplementationIsOfAlgorithm(any(), any());
         doNothing().when(tagService).removeTagFromImplementation(any(), any());
 
@@ -353,7 +360,7 @@ public class ImplementationControllerTest {
         mockMvc.perform(delete(url).accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(tagDto)))
-                .andExpect(status().isOk()).andDo(print());
+                .andExpect(status().isNoContent()).andDo(print());
     }
 
     @Test
@@ -437,6 +444,348 @@ public class ImplementationControllerTest {
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
                 .getImplementation(UUID.randomUUID(), UUID.randomUUID()));
         mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound()).andDo(print());
+    }
+
+    @Test
+    @SneakyThrows
+    void getPublicationsOfImplementation_EmptyList_returnOk() {
+        doNothing().when(implementationService).checkIfImplementationIsOfAlgorithm(any(), any());
+        doReturn(new PageImpl<>(List.of())).when(implementationService).findLinkedPublications(any(), any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
+                .getPublicationsOfImplementation(UUID.randomUUID(), UUID.randomUUID(), ListParameters.getDefault()));
+        mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$._embedded.publications").doesNotExist())
+                .andDo(print());
+    }
+
+    @Test
+    @SneakyThrows
+    void getPublicationsOfImplementation_SingleElement_returnOk() {
+        var pub = new Publication();
+        pub.setTitle("test");
+        pub.setAuthors(List.of("test"));
+        pub.setId(UUID.randomUUID());
+
+        doNothing().when(implementationService).checkIfImplementationIsOfAlgorithm(any(), any());
+        doReturn(new PageImpl<>(List.of(pub))).when(implementationService).findLinkedPublications(any(), any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
+                .getPublicationsOfImplementation(UUID.randomUUID(), UUID.randomUUID(), ListParameters.getDefault()));
+        mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$._embedded.publications").isArray())
+                .andExpect(jsonPath("$._embedded.publications[0].id").value(pub.getId().toString()))
+                .andDo(print());
+    }
+
+    @Test
+    @SneakyThrows
+    void getPublicationsOfImplementation_returnNotFound() {
+        doThrow(new NoSuchElementException()).when(implementationService).checkIfImplementationIsOfAlgorithm(any(), any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
+                .getPublicationsOfImplementation(UUID.randomUUID(), UUID.randomUUID(), ListParameters.getDefault()));
+        mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound()).andDo(print());
+    }
+
+    @Test
+    @SneakyThrows
+    void getPublicationOfImplementation_returnOk() {
+        var pub = new Publication();
+        pub.setTitle("test");
+        pub.setAuthors(List.of("test"));
+        pub.setId(UUID.randomUUID());
+
+        doNothing().when(implementationService).checkIfImplementationIsOfAlgorithm(any(), any());
+        doReturn(pub).when(publicationService).findById(any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
+                .getPublicationOfImplementation(UUID.randomUUID(), UUID.randomUUID(), pub.getId()));
+        mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value(pub.getTitle()))
+                .andExpect(jsonPath("$.id").value(pub.getId().toString()))
+                .andExpect(jsonPath("$.authors").isArray())
+                .andExpect(jsonPath("$.authors[0]").value(pub.getAuthors().get(0)))
+                .andDo(print());
+    }
+
+    @Test
+    @SneakyThrows
+    void getPublicationOfImplementation_returnNotFound() {
+        doThrow(new NoSuchElementException()).when(implementationService).checkIfImplementationIsOfAlgorithm(any(), any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
+                .getPublicationOfImplementation(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()));
+        mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound()).andDo(print());
+    }
+
+    @Test
+    @SneakyThrows
+    void linkImplementationAndPublication_returnNoContent() {
+        doNothing().when(implementationService).checkIfImplementationIsOfAlgorithm(any(), any());
+        doNothing().when(linkingService).linkImplementationAndPublication(any(), any());
+
+        var pubDto = new PublicationDto();
+        pubDto.setId(UUID.randomUUID());
+
+        var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
+                .linkImplementationAndPublication(UUID.randomUUID(), UUID.randomUUID(), null));
+        mockMvc.perform(post(url).accept(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(pubDto)).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent()).andDo(print());
+    }
+
+    @Test
+    @SneakyThrows
+    void linkImplementationAndPublication_returnBadRequest() {
+        var pubDto = new PublicationDto();
+        pubDto.setId(null);
+
+        var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
+                .linkImplementationAndPublication(UUID.randomUUID(), UUID.randomUUID(), null));
+        mockMvc.perform(post(url).accept(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(pubDto)).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest()).andDo(print());
+    }
+
+    @Test
+    @SneakyThrows
+    void linkImplementationAndPublication_UnknownAlgorithm_returnNotFound() {
+        doThrow(new NoSuchElementException()).when(implementationService).checkIfImplementationIsOfAlgorithm(any(), any());
+
+        var pubDto = new PublicationDto();
+        pubDto.setId(UUID.randomUUID());
+
+        var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
+                .linkImplementationAndPublication(UUID.randomUUID(), UUID.randomUUID(), null));
+        mockMvc.perform(post(url).accept(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(pubDto)).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound()).andDo(print());
+    }
+
+    @Test
+    @SneakyThrows
+    void linkImplementationAndPublication_UnknownPublication_returnNotFound() {
+        doNothing().when(implementationService).checkIfImplementationIsOfAlgorithm(any(), any());
+        doThrow(new NoSuchElementException()).when(linkingService).linkImplementationAndPublication(any(), any());
+
+        var pubDto = new PublicationDto();
+        pubDto.setId(UUID.randomUUID());
+
+        var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
+                .linkImplementationAndPublication(UUID.randomUUID(), UUID.randomUUID(), null));
+        mockMvc.perform(post(url).accept(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(pubDto)).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound()).andDo(print());
+    }
+
+    @Test
+    @SneakyThrows
+    void unlinkImplementationAndPublication_returnNoContent() {
+        doNothing().when(implementationService).checkIfImplementationIsOfAlgorithm(any(), any());
+        doNothing().when(linkingService).unlinkImplementationAndPublication(any(), any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
+                .unlinkImplementationAndPublication(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()));
+        mockMvc.perform(delete(url).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent()).andDo(print());
+    }
+
+    @Test
+    @SneakyThrows
+    void unlinkImplementationAndPublication_UnknownAlgorithm_returnNotFound() {
+        doThrow(new NoSuchElementException()).when(implementationService).checkIfImplementationIsOfAlgorithm(any(), any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
+                .unlinkImplementationAndPublication(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()));
+        mockMvc.perform(delete(url).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound()).andDo(print());
+    }
+
+    @Test
+    @SneakyThrows
+    void unlinkImplementationAndPublication_UnknownPublication_returnNotFound() {
+        doNothing().when(implementationService).checkIfImplementationIsOfAlgorithm(any(), any());
+        doThrow(new NoSuchElementException()).when(linkingService).unlinkImplementationAndPublication(any(), any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
+                .unlinkImplementationAndPublication(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()));
+        mockMvc.perform(delete(url).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound()).andDo(print());
+    }
+    
+    @Test
+    @SneakyThrows
+    void getSoftwarePlatformsOfImplementation_EmptyList_returnOk() {
+        doNothing().when(implementationService).checkIfImplementationIsOfAlgorithm(any(), any());
+        doReturn(new PageImpl<>(List.of())).when(implementationService).findLinkedSoftwarePlatforms(any(), any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
+                .getSoftwarePlatformsOfImplementation(UUID.randomUUID(), UUID.randomUUID(), ListParameters.getDefault()));
+        mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$._embedded.SoftwarePlatforms").doesNotExist())
+                .andDo(print());
+    }
+
+    @Test
+    @SneakyThrows
+    void getSoftwarePlatformsOfImplementation_SingleElement_returnOk() {
+        var pub = new SoftwarePlatform();
+        pub.setName("test");
+        pub.setId(UUID.randomUUID());
+
+        doNothing().when(implementationService).checkIfImplementationIsOfAlgorithm(any(), any());
+        doReturn(new PageImpl<>(List.of(pub))).when(implementationService).findLinkedSoftwarePlatforms(any(), any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
+                .getSoftwarePlatformsOfImplementation(UUID.randomUUID(), UUID.randomUUID(), ListParameters.getDefault()));
+        mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$._embedded.softwarePlatforms").isArray())
+                .andExpect(jsonPath("$._embedded.softwarePlatforms[0].id").value(pub.getId().toString()))
+                .andDo(print());
+    }
+
+    @Test
+    @SneakyThrows
+    void getSoftwarePlatformsOfImplementation_returnNotFound() {
+        doThrow(new NoSuchElementException()).when(implementationService).checkIfImplementationIsOfAlgorithm(any(), any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
+                .getSoftwarePlatformsOfImplementation(UUID.randomUUID(), UUID.randomUUID(), ListParameters.getDefault()));
+        mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound()).andDo(print());
+    }
+
+    @Test
+    @SneakyThrows
+    void getSoftwarePlatformOfImplementation_returnOk() {
+        var pub = new SoftwarePlatform();
+        pub.setName("test");
+        pub.setId(UUID.randomUUID());
+
+        doNothing().when(implementationService).checkIfImplementationIsOfAlgorithm(any(), any());
+        doReturn(pub).when(softwarePlatformService).findById(any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
+                .getSoftwarePlatformOfImplementation(UUID.randomUUID(), UUID.randomUUID(), pub.getId()));
+        mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value(pub.getName()))
+                .andExpect(jsonPath("$.id").value(pub.getId().toString()))
+                .andDo(print());
+    }
+
+    @Test
+    @SneakyThrows
+    void getSoftwarePlatformOfImplementation_returnNotFound() {
+        doThrow(new NoSuchElementException()).when(implementationService).checkIfImplementationIsOfAlgorithm(any(), any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
+                .getSoftwarePlatformOfImplementation(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()));
+        mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound()).andDo(print());
+    }
+
+    @Test
+    @SneakyThrows
+    void linkImplementationAndSoftwarePlatform_returnNoContent() {
+        doNothing().when(implementationService).checkIfImplementationIsOfAlgorithm(any(), any());
+        doNothing().when(linkingService).linkImplementationAndSoftwarePlatform(any(), any());
+
+        var pubDto = new SoftwarePlatformDto();
+        pubDto.setId(UUID.randomUUID());
+
+        var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
+                .linkImplementationAndSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID(), null));
+        mockMvc.perform(post(url).accept(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(pubDto)).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent()).andDo(print());
+    }
+
+    @Test
+    @SneakyThrows
+    void linkImplementationAndSoftwarePlatform_returnBadRequest() {
+        var pubDto = new SoftwarePlatformDto();
+        pubDto.setId(null);
+
+        var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
+                .linkImplementationAndSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID(), null));
+        mockMvc.perform(post(url).accept(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(pubDto)).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest()).andDo(print());
+    }
+
+    @Test
+    @SneakyThrows
+    void linkImplementationAndSoftwarePlatform_UnknownAlgorithm_returnNotFound() {
+        doThrow(new NoSuchElementException()).when(implementationService).checkIfImplementationIsOfAlgorithm(any(), any());
+
+        var pubDto = new SoftwarePlatformDto();
+        pubDto.setId(UUID.randomUUID());
+
+        var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
+                .linkImplementationAndSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID(), null));
+        mockMvc.perform(post(url).accept(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(pubDto)).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound()).andDo(print());
+    }
+
+    @Test
+    @SneakyThrows
+    void linkImplementationAndSoftwarePlatform_UnknownSoftwarePlatform_returnNotFound() {
+        doNothing().when(implementationService).checkIfImplementationIsOfAlgorithm(any(), any());
+        doThrow(new NoSuchElementException()).when(linkingService).linkImplementationAndSoftwarePlatform(any(), any());
+
+        var pubDto = new SoftwarePlatformDto();
+        pubDto.setId(UUID.randomUUID());
+
+        var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
+                .linkImplementationAndSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID(), null));
+        mockMvc.perform(post(url).accept(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(pubDto)).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound()).andDo(print());
+    }
+
+    @Test
+    @SneakyThrows
+    void unlinkImplementationAndSoftwarePlatform_returnNoContent() {
+        doNothing().when(implementationService).checkIfImplementationIsOfAlgorithm(any(), any());
+        doNothing().when(linkingService).unlinkImplementationAndSoftwarePlatform(any(), any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
+                .unlinkImplementationAndSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()));
+        mockMvc.perform(delete(url).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent()).andDo(print());
+    }
+
+    @Test
+    @SneakyThrows
+    void unlinkImplementationAndSoftwarePlatform_UnknownAlgorithm_returnNotFound() {
+        doThrow(new NoSuchElementException()).when(implementationService).checkIfImplementationIsOfAlgorithm(any(), any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
+                .unlinkImplementationAndSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()));
+        mockMvc.perform(delete(url).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound()).andDo(print());
+    }
+
+    @Test
+    @SneakyThrows
+    void unlinkImplementationAndSoftwarePlatform_UnknownSoftwarePlatform_returnNotFound() {
+        doNothing().when(implementationService).checkIfImplementationIsOfAlgorithm(any(), any());
+        doThrow(new NoSuchElementException()).when(linkingService).unlinkImplementationAndSoftwarePlatform(any(), any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
+                .unlinkImplementationAndSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()));
+        mockMvc.perform(delete(url).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound()).andDo(print());
     }
 }
