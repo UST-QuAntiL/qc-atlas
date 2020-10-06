@@ -62,7 +62,7 @@ public class SketchServiceTest extends AtlasDatabaseTestBase {
         // mock
         final Algorithm algorithm = this.algorithmService.create(this.getAlgorithm("algo"));
 
-        byte[] testFile = hexStringToByteArray("e04fd020ea3a6910a2d808002b30309d");
+        byte[] testFile = new byte[20];
         final MockMultipartFile file = new MockMultipartFile("image", testFile);
 
         final String description = "description";
@@ -146,11 +146,11 @@ public class SketchServiceTest extends AtlasDatabaseTestBase {
         // mock
         final Algorithm algorithm = this.algorithmService.create(this.getAlgorithm("algo"));
 
-        final Sketch sketch = this.getSketch(null, "image/url", "description");
+        final Sketch sketch = this.getSketch(null, "http://localhost:8080/url", "description");
         sketch.setAlgorithm(algorithm);
         final Sketch persistedSketch = this.sketchRepository.save(sketch);
 
-        byte[] testFile = hexStringToByteArray("e04fd020ea3a6910a2d808002b30309d");
+        byte[] testFile = new byte[20];
         final Image image = new Image();
         image.setImage(testFile);
         image.setSketch(persistedSketch);
@@ -205,18 +205,4 @@ public class SketchServiceTest extends AtlasDatabaseTestBase {
         return algorithm;
     }
 
-    private byte[] hexStringToByteArray(String s) {
-        int len = s.length();
-        byte[] data = new byte[len / 2];
-        for (int i = 0; i < len; i += 2) {
-            data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
-                    + Character.digit(s.charAt(i + 1), 16));
-        }
-        return data;
-    }
-
 }
-
-
-
-

@@ -861,7 +861,7 @@ public class AlgorithmControllerTest {
         final UUID resultId = UUID.randomUUID();
         final String description = "test description";
         final String baseURL = "baseURL";
-        byte[] testFile = hexStringToByteArray("e04fd020ea3a6910a2d808002b30309d");
+        byte[] testFile = new byte[20];
         final MockMultipartFile file = new MockMultipartFile("file", testFile);
         final Sketch sketch = new Sketch();
         sketch.setId(resultId);
@@ -961,7 +961,7 @@ public class AlgorithmControllerTest {
 
         final Image image = new Image();
         image.setMimeType("image/png");
-        image.setImage(this.hexStringToByteArray(sketch.getImageURL().toString()));
+        image.setImage(new byte[20]);
 
         when(sketchService.getImageBySketch(sketchId)).thenReturn(image);
 
@@ -975,16 +975,7 @@ public class AlgorithmControllerTest {
         Mockito.verify(sketchService, times(1)).getImageBySketch(sketchId);
 
         byte[] json = resultActions.andReturn().getResponse().getContentAsByteArray();
-        assertTrue(Arrays.equals(this.hexStringToByteArray(sketch.getImageURL().toString()), json));
+        assertTrue(Arrays.equals(image.getImage(), json));
     }
 
-    private byte[] hexStringToByteArray(String s) {
-        int len = s.length();
-        byte[] data = new byte[len / 2];
-        for (int i = 0; i < len; i += 2) {
-            data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
-                    + Character.digit(s.charAt(i + 1), 16));
-        }
-        return data;
-    }
 }
