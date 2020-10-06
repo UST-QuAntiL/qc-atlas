@@ -25,11 +25,13 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.ComputeResourceProperty;
+import org.planqk.atlas.core.model.ComputeResourcePropertyDataType;
+import org.planqk.atlas.core.model.ComputeResourcePropertyType;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.model.SoftwarePlatform;
 import org.planqk.atlas.core.model.Tag;
-import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.core.services.ComputeResourcePropertyService;
 import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.core.services.LinkingService;
@@ -37,6 +39,8 @@ import org.planqk.atlas.core.services.PublicationService;
 import org.planqk.atlas.core.services.SoftwarePlatformService;
 import org.planqk.atlas.core.services.TagService;
 import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
+import org.planqk.atlas.web.dtos.ComputeResourcePropertyDto;
+import org.planqk.atlas.web.dtos.ComputeResourcePropertyTypeDto;
 import org.planqk.atlas.web.dtos.ImplementationDto;
 import org.planqk.atlas.web.dtos.PublicationDto;
 import org.planqk.atlas.web.dtos.SoftwarePlatformDto;
@@ -55,7 +59,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -63,6 +66,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -77,8 +81,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @EnableLinkAssemblers
 public class ImplementationControllerTest {
 
-    @MockBean
-    private AlgorithmService algorithmService;
     @MockBean
     private ImplementationService implementationService;
     @MockBean
@@ -118,8 +120,8 @@ public class ImplementationControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
                 .createImplementation(algo.getId(), null));
-        mockMvc.perform(post(url).accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON)
+        mockMvc.perform(post(url).accept(APPLICATION_JSON)
+                .contentType(APPLICATION_JSON)
                 .content(mapper.writeValueAsString(implDto))
         ).andExpect(jsonPath("$.id").value(impl.getId().toString()))
                 .andExpect(jsonPath("$.name").value(impl.getName()))
@@ -135,8 +137,8 @@ public class ImplementationControllerTest {
         implDto.setId(UUID.randomUUID());
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
                 .createImplementation(UUID.randomUUID(), null));
-        mockMvc.perform(post(url).accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON)
+        mockMvc.perform(post(url).accept(APPLICATION_JSON)
+                .contentType(APPLICATION_JSON)
                 .content(mapper.writeValueAsString(implDto))
         ).andExpect(status().isBadRequest()).andDo(print());
     }
@@ -151,8 +153,8 @@ public class ImplementationControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
                 .createImplementation(UUID.randomUUID(), null));
-        mockMvc.perform(post(url).accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON)
+        mockMvc.perform(post(url).accept(APPLICATION_JSON)
+                .contentType(APPLICATION_JSON)
                 .content(mapper.writeValueAsString(implDto))
         ).andExpect(status().isNotFound()).andDo(print());
     }
@@ -176,8 +178,8 @@ public class ImplementationControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
                 .updateImplementation(algo.getId(), UUID.randomUUID(), null));
-        mockMvc.perform(put(url).accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON)
+        mockMvc.perform(put(url).accept(APPLICATION_JSON)
+                .contentType(APPLICATION_JSON)
                 .content(mapper.writeValueAsString(implDto))
         ).andExpect(jsonPath("$.id").value(impl.getId().toString()))
                 .andExpect(jsonPath("$.name").value(impl.getName()))
@@ -193,8 +195,8 @@ public class ImplementationControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
                 .updateImplementation(UUID.randomUUID(), UUID.randomUUID(), null));
-        mockMvc.perform(put(url).accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON)
+        mockMvc.perform(put(url).accept(APPLICATION_JSON)
+                .contentType(APPLICATION_JSON)
                 .content(mapper.writeValueAsString(implDto))
         ).andExpect(status().isBadRequest()).andDo(print());
     }
@@ -209,8 +211,8 @@ public class ImplementationControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
                 .updateImplementation(UUID.randomUUID(), UUID.randomUUID(), null));
-        mockMvc.perform(put(url).accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON)
+        mockMvc.perform(put(url).accept(APPLICATION_JSON)
+                .contentType(APPLICATION_JSON)
                 .content(mapper.writeValueAsString(implDto))
         ).andExpect(status().isNotFound()).andDo(print());
     }
@@ -222,7 +224,7 @@ public class ImplementationControllerTest {
         doNothing().when(implementationService).delete(UUID.randomUUID());
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
                 .deleteImplementation(UUID.randomUUID(), UUID.randomUUID()));
-        mockMvc.perform(delete(url).accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(delete(url).accept(APPLICATION_JSON))
                 .andExpect(status().isNoContent()).andDo(print());
     }
 
@@ -232,7 +234,7 @@ public class ImplementationControllerTest {
         doThrow(new NoSuchElementException()).when(implementationService).checkIfImplementationIsOfAlgorithm(any(), any());
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
                 .deleteImplementation(UUID.randomUUID(), UUID.randomUUID()));
-        mockMvc.perform(delete(url).accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(delete(url).accept(APPLICATION_JSON))
                 .andExpect(status().isNotFound()).andDo(print());
     }
 
@@ -253,7 +255,7 @@ public class ImplementationControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
                 .getTagsOfImplementation(UUID.randomUUID(), UUID.randomUUID()));
-        mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get(url).accept(APPLICATION_JSON))
                 .andExpect(jsonPath("$").isEmpty())
                 .andExpect(status().isOk()).andDo(print());
     }
@@ -278,7 +280,7 @@ public class ImplementationControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
                 .getTagsOfImplementation(UUID.randomUUID(), UUID.randomUUID()));
-        mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get(url).accept(APPLICATION_JSON))
                 .andExpect(jsonPath("$._embedded.tags").isArray())
                 .andExpect(jsonPath("$._embedded.tags[0].value").value(tag.getValue()))
                 .andExpect(jsonPath("$._embedded.tags[0].category").value(tag.getCategory()))
@@ -291,7 +293,7 @@ public class ImplementationControllerTest {
         doThrow(new NoSuchElementException()).when(implementationService).checkIfImplementationIsOfAlgorithm(any(), any());
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
                 .getTagsOfImplementation(UUID.randomUUID(), UUID.randomUUID()));
-        mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get(url).accept(APPLICATION_JSON))
                 .andExpect(status().isNotFound()).andDo(print());
     }
 
@@ -307,8 +309,8 @@ public class ImplementationControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
                 .addTagToImplementation(UUID.randomUUID(), UUID.randomUUID(), null));
-        mockMvc.perform(post(url).accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON)
+        mockMvc.perform(post(url).accept(APPLICATION_JSON)
+                .contentType(APPLICATION_JSON)
                 .content(mapper.writeValueAsString(tagDto)))
                 .andExpect(status().isCreated()).andDo(print());
     }
@@ -322,8 +324,8 @@ public class ImplementationControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
                 .addTagToImplementation(UUID.randomUUID(), UUID.randomUUID(), null));
-        mockMvc.perform(post(url).accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON)
+        mockMvc.perform(post(url).accept(APPLICATION_JSON)
+                .contentType(APPLICATION_JSON)
                 .content(mapper.writeValueAsString(tagDto)))
                 .andExpect(status().isBadRequest()).andDo(print());
     }
@@ -339,8 +341,8 @@ public class ImplementationControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
                 .addTagToImplementation(UUID.randomUUID(), UUID.randomUUID(), null));
-        mockMvc.perform(post(url).accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON)
+        mockMvc.perform(post(url).accept(APPLICATION_JSON)
+                .contentType(APPLICATION_JSON)
                 .content(mapper.writeValueAsString(tagDto)))
                 .andExpect(status().isNotFound()).andDo(print());
     }
@@ -357,8 +359,8 @@ public class ImplementationControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
                 .removeTagFromImplementation(UUID.randomUUID(), UUID.randomUUID(), null));
-        mockMvc.perform(delete(url).accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON)
+        mockMvc.perform(delete(url).accept(APPLICATION_JSON)
+                .contentType(APPLICATION_JSON)
                 .content(mapper.writeValueAsString(tagDto)))
                 .andExpect(status().isNoContent()).andDo(print());
     }
@@ -372,8 +374,8 @@ public class ImplementationControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
                 .removeTagFromImplementation(UUID.randomUUID(), UUID.randomUUID(), null));
-        mockMvc.perform(delete(url).accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON)
+        mockMvc.perform(delete(url).accept(APPLICATION_JSON)
+                .contentType(APPLICATION_JSON)
                 .content(mapper.writeValueAsString(tagDto)))
                 .andExpect(status().isBadRequest()).andDo(print());
     }
@@ -389,8 +391,8 @@ public class ImplementationControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
                 .removeTagFromImplementation(UUID.randomUUID(), UUID.randomUUID(), null));
-        mockMvc.perform(delete(url).accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON)
+        mockMvc.perform(delete(url).accept(APPLICATION_JSON)
+                .contentType(APPLICATION_JSON)
                 .content(mapper.writeValueAsString(tagDto)))
                 .andExpect(status().isNotFound()).andDo(print());
     }
@@ -407,8 +409,8 @@ public class ImplementationControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
                 .removeTagFromImplementation(UUID.randomUUID(), UUID.randomUUID(), null));
-        mockMvc.perform(delete(url).accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON)
+        mockMvc.perform(delete(url).accept(APPLICATION_JSON)
+                .contentType(APPLICATION_JSON)
                 .content(mapper.writeValueAsString(tagDto)))
                 .andExpect(status().isNotFound()).andDo(print());
     }
@@ -429,7 +431,7 @@ public class ImplementationControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
                 .getImplementation(algo.getId(), impl.getId()));
-        mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get(url).accept(APPLICATION_JSON))
                 .andExpect(jsonPath("$.id").value(impl.getId().toString()))
                 .andExpect(jsonPath("$.name").value(impl.getName()))
                 .andExpect(jsonPath("$.implementedAlgorithmId").value(algo.getId().toString()))
@@ -443,7 +445,7 @@ public class ImplementationControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
                 .getImplementation(UUID.randomUUID(), UUID.randomUUID()));
-        mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get(url).accept(APPLICATION_JSON))
                 .andExpect(status().isNotFound()).andDo(print());
     }
 
@@ -455,7 +457,7 @@ public class ImplementationControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
                 .getPublicationsOfImplementation(UUID.randomUUID(), UUID.randomUUID(), ListParameters.getDefault()));
-        mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get(url).accept(APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$._embedded.publications").doesNotExist())
                 .andDo(print());
@@ -474,7 +476,7 @@ public class ImplementationControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
                 .getPublicationsOfImplementation(UUID.randomUUID(), UUID.randomUUID(), ListParameters.getDefault()));
-        mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get(url).accept(APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$._embedded.publications").isArray())
                 .andExpect(jsonPath("$._embedded.publications[0].id").value(pub.getId().toString()))
@@ -488,7 +490,7 @@ public class ImplementationControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
                 .getPublicationsOfImplementation(UUID.randomUUID(), UUID.randomUUID(), ListParameters.getDefault()));
-        mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get(url).accept(APPLICATION_JSON))
                 .andExpect(status().isNotFound()).andDo(print());
     }
 
@@ -505,7 +507,7 @@ public class ImplementationControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
                 .getPublicationOfImplementation(UUID.randomUUID(), UUID.randomUUID(), pub.getId()));
-        mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get(url).accept(APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value(pub.getTitle()))
                 .andExpect(jsonPath("$.id").value(pub.getId().toString()))
@@ -521,7 +523,7 @@ public class ImplementationControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
                 .getPublicationOfImplementation(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()));
-        mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get(url).accept(APPLICATION_JSON))
                 .andExpect(status().isNotFound()).andDo(print());
     }
 
@@ -536,8 +538,8 @@ public class ImplementationControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
                 .linkImplementationAndPublication(UUID.randomUUID(), UUID.randomUUID(), null));
-        mockMvc.perform(post(url).accept(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(pubDto)).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post(url).accept(APPLICATION_JSON)
+                .content(mapper.writeValueAsString(pubDto)).contentType(APPLICATION_JSON))
                 .andExpect(status().isNoContent()).andDo(print());
     }
 
@@ -549,8 +551,8 @@ public class ImplementationControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
                 .linkImplementationAndPublication(UUID.randomUUID(), UUID.randomUUID(), null));
-        mockMvc.perform(post(url).accept(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(pubDto)).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post(url).accept(APPLICATION_JSON)
+                .content(mapper.writeValueAsString(pubDto)).contentType(APPLICATION_JSON))
                 .andExpect(status().isBadRequest()).andDo(print());
     }
 
@@ -564,8 +566,8 @@ public class ImplementationControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
                 .linkImplementationAndPublication(UUID.randomUUID(), UUID.randomUUID(), null));
-        mockMvc.perform(post(url).accept(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(pubDto)).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post(url).accept(APPLICATION_JSON)
+                .content(mapper.writeValueAsString(pubDto)).contentType(APPLICATION_JSON))
                 .andExpect(status().isNotFound()).andDo(print());
     }
 
@@ -580,8 +582,8 @@ public class ImplementationControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
                 .linkImplementationAndPublication(UUID.randomUUID(), UUID.randomUUID(), null));
-        mockMvc.perform(post(url).accept(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(pubDto)).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post(url).accept(APPLICATION_JSON)
+                .content(mapper.writeValueAsString(pubDto)).contentType(APPLICATION_JSON))
                 .andExpect(status().isNotFound()).andDo(print());
     }
 
@@ -593,7 +595,7 @@ public class ImplementationControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
                 .unlinkImplementationAndPublication(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()));
-        mockMvc.perform(delete(url).accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(delete(url).accept(APPLICATION_JSON))
                 .andExpect(status().isNoContent()).andDo(print());
     }
 
@@ -604,7 +606,7 @@ public class ImplementationControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
                 .unlinkImplementationAndPublication(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()));
-        mockMvc.perform(delete(url).accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(delete(url).accept(APPLICATION_JSON))
                 .andExpect(status().isNotFound()).andDo(print());
     }
 
@@ -616,10 +618,10 @@ public class ImplementationControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
                 .unlinkImplementationAndPublication(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()));
-        mockMvc.perform(delete(url).accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(delete(url).accept(APPLICATION_JSON))
                 .andExpect(status().isNotFound()).andDo(print());
     }
-    
+
     @Test
     @SneakyThrows
     void getSoftwarePlatformsOfImplementation_EmptyList_returnOk() {
@@ -628,7 +630,7 @@ public class ImplementationControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
                 .getSoftwarePlatformsOfImplementation(UUID.randomUUID(), UUID.randomUUID(), ListParameters.getDefault()));
-        mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get(url).accept(APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$._embedded.SoftwarePlatforms").doesNotExist())
                 .andDo(print());
@@ -646,7 +648,7 @@ public class ImplementationControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
                 .getSoftwarePlatformsOfImplementation(UUID.randomUUID(), UUID.randomUUID(), ListParameters.getDefault()));
-        mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get(url).accept(APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$._embedded.softwarePlatforms").isArray())
                 .andExpect(jsonPath("$._embedded.softwarePlatforms[0].id").value(pub.getId().toString()))
@@ -660,7 +662,7 @@ public class ImplementationControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
                 .getSoftwarePlatformsOfImplementation(UUID.randomUUID(), UUID.randomUUID(), ListParameters.getDefault()));
-        mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get(url).accept(APPLICATION_JSON))
                 .andExpect(status().isNotFound()).andDo(print());
     }
 
@@ -676,7 +678,7 @@ public class ImplementationControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
                 .getSoftwarePlatformOfImplementation(UUID.randomUUID(), UUID.randomUUID(), pub.getId()));
-        mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get(url).accept(APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value(pub.getName()))
                 .andExpect(jsonPath("$.id").value(pub.getId().toString()))
@@ -690,7 +692,7 @@ public class ImplementationControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
                 .getSoftwarePlatformOfImplementation(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()));
-        mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get(url).accept(APPLICATION_JSON))
                 .andExpect(status().isNotFound()).andDo(print());
     }
 
@@ -705,8 +707,8 @@ public class ImplementationControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
                 .linkImplementationAndSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID(), null));
-        mockMvc.perform(post(url).accept(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(pubDto)).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post(url).accept(APPLICATION_JSON)
+                .content(mapper.writeValueAsString(pubDto)).contentType(APPLICATION_JSON))
                 .andExpect(status().isNoContent()).andDo(print());
     }
 
@@ -718,8 +720,8 @@ public class ImplementationControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
                 .linkImplementationAndSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID(), null));
-        mockMvc.perform(post(url).accept(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(pubDto)).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post(url).accept(APPLICATION_JSON)
+                .content(mapper.writeValueAsString(pubDto)).contentType(APPLICATION_JSON))
                 .andExpect(status().isBadRequest()).andDo(print());
     }
 
@@ -733,8 +735,8 @@ public class ImplementationControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
                 .linkImplementationAndSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID(), null));
-        mockMvc.perform(post(url).accept(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(pubDto)).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post(url).accept(APPLICATION_JSON)
+                .content(mapper.writeValueAsString(pubDto)).contentType(APPLICATION_JSON))
                 .andExpect(status().isNotFound()).andDo(print());
     }
 
@@ -749,8 +751,8 @@ public class ImplementationControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
                 .linkImplementationAndSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID(), null));
-        mockMvc.perform(post(url).accept(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(pubDto)).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post(url).accept(APPLICATION_JSON)
+                .content(mapper.writeValueAsString(pubDto)).contentType(APPLICATION_JSON))
                 .andExpect(status().isNotFound()).andDo(print());
     }
 
@@ -762,7 +764,7 @@ public class ImplementationControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
                 .unlinkImplementationAndSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()));
-        mockMvc.perform(delete(url).accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(delete(url).accept(APPLICATION_JSON))
                 .andExpect(status().isNoContent()).andDo(print());
     }
 
@@ -773,7 +775,7 @@ public class ImplementationControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
                 .unlinkImplementationAndSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()));
-        mockMvc.perform(delete(url).accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(delete(url).accept(APPLICATION_JSON))
                 .andExpect(status().isNotFound()).andDo(print());
     }
 
@@ -785,7 +787,310 @@ public class ImplementationControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
                 .unlinkImplementationAndSoftwarePlatform(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()));
-        mockMvc.perform(delete(url).accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(delete(url).accept(APPLICATION_JSON))
                 .andExpect(status().isNotFound()).andDo(print());
+    }
+
+    @Test
+    @SneakyThrows
+    void getComputeResourcePropertiesOfImplementation_EmptyList_returnOk() {
+        doNothing().when(implementationService).checkIfImplementationIsOfAlgorithm(any(), any());
+        doReturn(new PageImpl<>(List.of())).when(computeResourcePropertyService)
+                .findComputeResourcePropertiesOfImplementation(any(), any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
+                .getComputeResourcePropertiesOfImplementation(UUID.randomUUID(), UUID.randomUUID(), ListParameters.getDefault()));
+        mockMvc.perform(get(url).accept(APPLICATION_JSON))
+                .andExpect(jsonPath("$._embedded.computeResourceProperties").doesNotExist())
+                .andExpect(status().isOk()).andDo(print());
+    }
+
+    @Test
+    @SneakyThrows
+    void getComputeResourcePropertiesOfImplementation_SingleElement_returnOk() {
+        doNothing().when(implementationService).checkIfImplementationIsOfAlgorithm(any(), any());
+
+        var type = new ComputeResourcePropertyType();
+        type.setName("test");
+        type.setId(UUID.randomUUID());
+        type.setDatatype(ComputeResourcePropertyDataType.FLOAT);
+        var res = new ComputeResourceProperty();
+        res.setComputeResourcePropertyType(type);
+        res.setValue("1.3");
+        res.setId(UUID.randomUUID());
+
+        doReturn(new PageImpl<>(List.of(res))).when(computeResourcePropertyService)
+                .findComputeResourcePropertiesOfImplementation(any(), any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
+                .getComputeResourcePropertiesOfImplementation(UUID.randomUUID(), UUID.randomUUID(), ListParameters.getDefault()));
+        mockMvc.perform(get(url).accept(APPLICATION_JSON))
+                .andExpect(jsonPath("$._embedded.computeResourceProperties[0].id").value(res.getId().toString()))
+                .andExpect(jsonPath("$._embedded.computeResourceProperties[0].type.id").value(type.getId().toString()))
+                .andExpect(status().isOk()).andDo(print());
+    }
+
+    @Test
+    @SneakyThrows
+    void getComputeResourcePropertiesOfImplementation_returnNotFound() {
+        doThrow(new NoSuchElementException()).when(implementationService).checkIfImplementationIsOfAlgorithm(any(), any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
+                .getComputeResourcePropertiesOfImplementation(UUID.randomUUID(), UUID.randomUUID(), ListParameters.getDefault()));
+        mockMvc.perform(get(url).accept(APPLICATION_JSON))
+                .andExpect(status().isNotFound()).andDo(print());
+    }
+
+    @Test
+    @SneakyThrows
+    void getComputeResourcePropertyOfImplementation_SingleElement_returnOk() {
+        doNothing().when(implementationService).checkIfImplementationIsOfAlgorithm(any(), any());
+
+        var type = new ComputeResourcePropertyType();
+        type.setName("test");
+        type.setId(UUID.randomUUID());
+        type.setDatatype(ComputeResourcePropertyDataType.FLOAT);
+        var res = new ComputeResourceProperty();
+        res.setComputeResourcePropertyType(type);
+        res.setValue("1.3");
+        res.setId(UUID.randomUUID());
+
+        doReturn(res).when(computeResourcePropertyService).findById(any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
+                .getComputeResourcePropertyOfImplementation(UUID.randomUUID(), UUID.randomUUID(), res.getId()));
+        mockMvc.perform(get(url).accept(APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(res.getId().toString()))
+                .andExpect(jsonPath("$.type.id").value(type.getId().toString()))
+                .andExpect(status().isOk()).andDo(print());
+    }
+
+    @Test
+    @SneakyThrows
+    void getComputeResourcePropertyOfImplementation_UnknownAlgorithm_returnNotFound() {
+        doThrow(new NoSuchElementException()).when(implementationService).checkIfImplementationIsOfAlgorithm(any(), any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
+                .getComputeResourcePropertyOfImplementation(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()));
+        mockMvc.perform(get(url).accept(APPLICATION_JSON))
+                .andExpect(status().isNotFound()).andDo(print());
+    }
+
+    @Test
+    @SneakyThrows
+    void getComputeResourcePropertyOfImplementation_UnknownProperty_returnNotFound() {
+        doNothing().when(implementationService).checkIfImplementationIsOfAlgorithm(any(), any());
+        doThrow(new NoSuchElementException()).when(computeResourcePropertyService).findById(any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
+                .getComputeResourcePropertyOfImplementation(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()));
+        mockMvc.perform(get(url).accept(APPLICATION_JSON))
+                .andExpect(status().isNotFound()).andDo(print());
+    }
+
+    @Test
+    @SneakyThrows
+    void deleteComputeResourcePropertyOfImplementation_returnNoContent() {
+        doNothing().when(implementationService).checkIfImplementationIsOfAlgorithm(any(), any());
+        doNothing().when(computeResourcePropertyService).delete(any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
+                .deleteComputeResourcePropertyOfImplementation(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()));
+        mockMvc.perform(delete(url).accept(APPLICATION_JSON))
+                .andExpect(status().isNoContent()).andDo(print());
+    }
+
+    @Test
+    @SneakyThrows
+    void deleteComputeResourcePropertyOfImplementation_UnknownAlgorithm_returnNotFound() {
+        doThrow(new NoSuchElementException()).when(implementationService).checkIfImplementationIsOfAlgorithm(any(), any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
+                .deleteComputeResourcePropertyOfImplementation(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()));
+        mockMvc.perform(delete(url).accept(APPLICATION_JSON))
+                .andExpect(status().isNotFound()).andDo(print());
+    }
+
+    @Test
+    @SneakyThrows
+    void deleteComputeResourcePropertyOfImplementation_UnknownProperty_returnNotFound() {
+        doNothing().when(implementationService).checkIfImplementationIsOfAlgorithm(any(), any());
+        doThrow(new NoSuchElementException()).when(computeResourcePropertyService).delete(any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
+                .deleteComputeResourcePropertyOfImplementation(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()));
+        mockMvc.perform(delete(url).accept(APPLICATION_JSON))
+                .andExpect(status().isNotFound()).andDo(print());
+    }
+
+    @Test
+    @SneakyThrows
+    void createComputeResourcePropertyForImplementation_returnCreated() {
+        doNothing().when(implementationService).checkIfImplementationIsOfAlgorithm(any(), any());
+
+        var type = new ComputeResourcePropertyType();
+        type.setName("test");
+        type.setId(UUID.randomUUID());
+        type.setDatatype(ComputeResourcePropertyDataType.FLOAT);
+        var res = new ComputeResourceProperty();
+        res.setComputeResourcePropertyType(type);
+        res.setValue("1.3");
+        res.setId(UUID.randomUUID());
+
+        var typeDto = new ComputeResourcePropertyTypeDto();
+        typeDto.setId(type.getId());
+        var resDto = new ComputeResourcePropertyDto();
+        resDto.setValue(res.getValue());
+        resDto.setType(typeDto);
+
+        doReturn(res).when(computeResourcePropertyService).addComputeResourcePropertyToImplementation(any(), any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
+                .createComputeResourcePropertyForImplementation(UUID.randomUUID(), UUID.randomUUID(), null));
+        mockMvc.perform(
+                post(url)
+                        .accept(APPLICATION_JSON)
+                        .contentType(APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(resDto))
+        ).andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(res.getId().toString()))
+                .andExpect(jsonPath("$.type.id").value(type.getId().toString()))
+                .andDo(print());
+    }
+
+    @Test
+    @SneakyThrows
+    void createComputeResourcePropertyForImplementation_returnBadRequest() {
+        var resDto = new ComputeResourcePropertyDto();
+        resDto.setValue("test");
+        var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
+                .createComputeResourcePropertyForImplementation(UUID.randomUUID(), UUID.randomUUID(), null));
+        mockMvc.perform(
+                post(url)
+                        .accept(APPLICATION_JSON)
+                        .contentType(APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(resDto))
+        ).andExpect(status().isBadRequest())
+                .andDo(print());
+    }
+
+    @Test
+    @SneakyThrows
+    void createComputeResourcePropertyForImplementation_returnNotFound() {
+        doThrow(new NoSuchElementException()).when(implementationService).checkIfImplementationIsOfAlgorithm(any(), any());
+
+        var typeDto = new ComputeResourcePropertyTypeDto();
+        typeDto.setId(UUID.randomUUID());
+        var resDto = new ComputeResourcePropertyDto();
+        resDto.setValue("123");
+        resDto.setType(typeDto);
+
+        var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
+                .createComputeResourcePropertyForImplementation(UUID.randomUUID(), UUID.randomUUID(), null));
+        mockMvc.perform(
+                post(url)
+                        .accept(APPLICATION_JSON)
+                        .contentType(APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(resDto))
+        ).andExpect(status().isNotFound())
+                .andDo(print());
+    }
+
+    @Test
+    @SneakyThrows
+    void updateComputeResourcePropertyOfImplementation_returnOk() {
+        doNothing().when(implementationService).checkIfImplementationIsOfAlgorithm(any(), any());
+
+        var type = new ComputeResourcePropertyType();
+        type.setName("test");
+        type.setId(UUID.randomUUID());
+        type.setDatatype(ComputeResourcePropertyDataType.FLOAT);
+        var res = new ComputeResourceProperty();
+        res.setId(UUID.randomUUID());
+        res.setComputeResourcePropertyType(type);
+        res.setValue("1.3");
+        res.setId(UUID.randomUUID());
+
+        var typeDto = new ComputeResourcePropertyTypeDto();
+        typeDto.setId(type.getId());
+        var resDto = new ComputeResourcePropertyDto();
+        resDto.setValue(res.getValue());
+        resDto.setType(typeDto);
+
+        doReturn(res).when(computeResourcePropertyService).update(any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
+                .updateComputeResourcePropertyOfImplementation(UUID.randomUUID(), UUID.randomUUID(), res.getId(), null));
+        mockMvc.perform(
+                put(url)
+                        .accept(APPLICATION_JSON)
+                        .contentType(APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(resDto))
+        ).andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(res.getId().toString()))
+                .andExpect(jsonPath("$.type.id").value(type.getId().toString()))
+                .andDo(print());
+    }
+
+    @Test
+    @SneakyThrows
+    void updateComputeResourcePropertyOfImplementation_returnBadRequest() {
+        var resDto = new ComputeResourcePropertyDto();
+        resDto.setValue("123");
+
+        var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
+                .updateComputeResourcePropertyOfImplementation(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), null));
+        mockMvc.perform(
+                put(url)
+                        .accept(APPLICATION_JSON)
+                        .contentType(APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(resDto))
+        ).andExpect(status().isBadRequest())
+                .andDo(print());
+    }
+
+    @Test
+    @SneakyThrows
+    void updateComputeResourcePropertyOfImplementation_UnknownAlgorithm_returnNotFound() {
+        doThrow(new NoSuchElementException()).when(implementationService).checkIfImplementationIsOfAlgorithm(any(), any());
+
+        var typeDto = new ComputeResourcePropertyTypeDto();
+        typeDto.setId(UUID.randomUUID());
+        var resDto = new ComputeResourcePropertyDto();
+        resDto.setValue("123");
+        resDto.setType(typeDto);
+
+        var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
+                .updateComputeResourcePropertyOfImplementation(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), null));
+        mockMvc.perform(
+                put(url)
+                        .accept(APPLICATION_JSON)
+                        .contentType(APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(resDto))
+        ).andExpect(status().isNotFound())
+                .andDo(print());
+    }
+
+    @Test
+    @SneakyThrows
+    void updateComputeResourcePropertyOfImplementation_UnknownProperty_returnNotFound() {
+        doNothing().when(implementationService).checkIfImplementationIsOfAlgorithm(any(), any());
+        doThrow(new NoSuchElementException()).when(computeResourcePropertyService).update(any());
+
+        var typeDto = new ComputeResourcePropertyTypeDto();
+        typeDto.setId(UUID.randomUUID());
+        var resDto = new ComputeResourcePropertyDto();
+        resDto.setValue("123");
+        resDto.setType(typeDto);
+
+        var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
+                .updateComputeResourcePropertyOfImplementation(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), null));
+        mockMvc.perform(
+                put(url)
+                        .accept(APPLICATION_JSON)
+                        .contentType(APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(resDto))
+        ).andExpect(status().isNotFound())
+                .andDo(print());
     }
 }

@@ -382,7 +382,7 @@ public class ImplementationController {
 
         var createdComputeResourceProperty = computeResourcePropertyService
                 .addComputeResourcePropertyToImplementation(implementationId, computeResourceProperty);
-        return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(createdComputeResourceProperty));
+        return ResponseEntity.status(HttpStatus.CREATED).body(computeResourcePropertyAssembler.toModel(createdComputeResourceProperty));
     }
 
     @Operation(responses = {
