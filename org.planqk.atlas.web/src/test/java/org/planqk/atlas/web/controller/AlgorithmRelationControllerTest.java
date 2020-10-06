@@ -25,15 +25,15 @@ import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
 import org.planqk.atlas.web.linkassembler.LinkBuilderService;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -64,6 +64,77 @@ public class AlgorithmRelationControllerTest {
     private LinkBuilderService linkBuilderService;
 
     private final ObjectMapper mapper = ObjectMapperUtils.newTestMapper();
-    
 
+
+    @Test
+    @SneakyThrows
+    void getAlgorithmRelationsOfAlgorithm_returnOk() {
+
+    }
+
+    @Test
+    @SneakyThrows
+    void getAlgorithmRelationsOfAlgorithm_returnNotFound() {
+
+    }
+
+    @Test
+    @SneakyThrows
+    void createAlgorithmRelation_returnCreated() {
+
+    }
+
+    @Test
+    @SneakyThrows
+    void createAlgorithmRelation_returnBadRequest() {
+
+    }
+
+    @Test
+    @SneakyThrows
+    void createAlgorithmRelation_returnNotFound() {
+
+    }
+
+    @Test
+    @SneakyThrows
+    void updateAlgorithmRelation_returnOk() {
+
+    }
+
+    @Test
+    @SneakyThrows
+    void updateAlgorithmRelation_returnBadRequest() {
+
+    }
+
+    @Test
+    @SneakyThrows
+    void updateAlgorithmRelation_returnNotFound() {
+
+    }
+
+    @Test
+    @SneakyThrows
+    void deleteAlgorithmRelation_returnNoContent() {
+
+    }
+
+    @Test
+    @SneakyThrows
+    void deleteAlgorithmRelation_returnNotFound() {
+
+    }
+
+    @Test
+    @SneakyThrows
+    void getAlgorithmRelation_returnOk() {
+
+    }
+
+    @Test
+    @SneakyThrows
+    void getAlgorithmRelation_returnNotFound() {
+
+    }
 }
