@@ -83,7 +83,7 @@ public class SketchServiceImpl implements SketchService {
     }
 
     @Override
-    public Image getImageBySketch(UUID sketchId) {
+    public Image getImageBySketch(@NonNull UUID sketchId) {
         return this.imageRepository.findImageBySketchId(sketchId);
     }
 
