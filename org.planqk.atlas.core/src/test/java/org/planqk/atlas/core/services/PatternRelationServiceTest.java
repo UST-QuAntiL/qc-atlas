@@ -222,6 +222,39 @@ public class PatternRelationServiceTest extends AtlasDatabaseTestBase {
         assertThrows(NoSuchElementException.class, () -> patternRelationService.findById(savedRelation.getId()));
     }
 
+    @Test
+    void checkIfAlgorithmIsInPatternRelation_IsInRelation() {
+        savedAlgorithm = algorithmService.create(algorithm);
+        relation1.setAlgorithm(savedAlgorithm);
+
+        savedType = patternRelationTypeService.create(type);
+        relation1.setPatternRelationType(savedType);
+
+        PatternRelation savedRelation = patternRelationService.create(relation1);
+
+        assertDoesNotThrow(() -> patternRelationService
+                .checkIfAlgorithmIsInPatternRelation(savedAlgorithm.getId(), savedRelation.getId()));
+    }
+
+    @Test
+    void checkIfAlgorithmIsInPatternRelation_IsNotInRelation() {
+        Algorithm relationAlgorithm = new ClassicAlgorithm();
+        relationAlgorithm.setName("relationAlgorithm");
+        relationAlgorithm.setComputationModel(ComputationModel.CLASSIC);
+        Algorithm persistedRelationAlgorithm = algorithmService.create(relationAlgorithm);
+
+        savedAlgorithm = algorithmService.create(algorithm);
+        relation1.setAlgorithm(savedAlgorithm);
+
+        savedType = patternRelationTypeService.create(type);
+        relation1.setPatternRelationType(savedType);
+
+        PatternRelation savedRelation = patternRelationService.create(relation1);
+
+        assertThrows(NoSuchElementException.class, () -> patternRelationService
+                .checkIfAlgorithmIsInPatternRelation(persistedRelationAlgorithm.getId(), relation1.getId()));
+    }
+
     private PatternRelation getFullPatternRelation(String description) {
         var patternRelation = new PatternRelation();
 
