@@ -2,7 +2,6 @@ spring.datasource.driverClassName=org.postgresql.Driver
 spring.datasource.url=jdbc:postgresql://{{.Env.POSTGRES_HOSTNAME}}:{{.Env.POSTGRES_PORT}}/{{.Env.POSTGRES_DB}}
 spring.datasource.username={{.Env.POSTGRES_USER}}
 spring.datasource.password={{.Env.POSTGRES_PASSWORD}}
-spring.datasource.initialization-mode=always
 spring.datasource.sql-script-encoding=UTF-8
 spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
 spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation=true
