@@ -421,52 +421,86 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
                 .containsAll(linkedAlgorithmRelationsTarget2.getContent())).isTrue();
     }
 
-    // @Test
-    void algorithmRelationModelBehaviour() {
-        Algorithm sourceAlgorithm = getFullAlgorithm("sourceAlgorithmName");
-        sourceAlgorithm = algorithmService.create(sourceAlgorithm);
-        Algorithm targetAlgorithm1 = getFullAlgorithm("targetAlgorithmName");
-        targetAlgorithm1 = algorithmService.create(targetAlgorithm1);
-        Algorithm targetAlgorithm2 = getFullAlgorithm("targetAlgorithmName");
-        targetAlgorithm2 = algorithmService.create(targetAlgorithm2);
+    @Test
+    void checkIfPublicationIsLinkedToAlgorithm_IsLinked() {
+        Algorithm algorithm = getFullAlgorithm("algorithmName");
+        Algorithm persistedAlgorithm = algorithmService.create(algorithm);
 
-        var algorithmRelationType = new AlgorithmRelationType();
-        algorithmRelationType.setName("relationName");
-        algorithmRelationType = algorithmRelationTypeService.create(algorithmRelationType);
 
-        var algorithmRelation1 = new AlgorithmRelation();
-        algorithmRelation1.setDescription("algorithmRelationDescription1");
-        algorithmRelation1.setSourceAlgorithm(sourceAlgorithm);
-        algorithmRelation1.setTargetAlgorithm(targetAlgorithm1);
-        algorithmRelation1.setAlgorithmRelationType(algorithmRelationType);
-        algorithmRelation1 = algorithmRelationService.create(algorithmRelation1);
+        Publication publication = new Publication();
+        publication.setTitle("publicationTitle");
+        Publication persistedPublication = publicationService.create(publication);
+        linkingService.linkAlgorithmAndPublication(persistedAlgorithm.getId(), persistedPublication.getId());
 
-        var algorithmRelation2 = new AlgorithmRelation();
-        algorithmRelation2.setDescription("algorithmRelationDescription2");
-        algorithmRelation2.setSourceAlgorithm(sourceAlgorithm);
-        algorithmRelation2.setTargetAlgorithm(targetAlgorithm2);
-        algorithmRelation2.setAlgorithmRelationType(algorithmRelationType);
-        algorithmRelation2 = algorithmRelationService.create(algorithmRelation2);
+        assertDoesNotThrow(() -> algorithmService
+                .checkIfPublicationIsLinkedToAlgorithm(persistedAlgorithm.getId(), persistedPublication.getId()));
+    }
 
-        var persistedSourceAlgorithm1 = algorithmService.findById(algorithmRelation1.getSourceAlgorithm().getId());
-        System.out.println(persistedSourceAlgorithm1.getAlgorithmRelations());
+    @Test
+    void checkIfPublicationIsLinkedToAlgorithm_IsNotLinked() {
+        Algorithm algorithm = getFullAlgorithm("algorithmName");
+        Algorithm persistedAlgorithm = algorithmService.create(algorithm);
 
-        var persistedSourceAlgorithm2 = algorithmService.findById(algorithmRelation2.getSourceAlgorithm().getId());
-        System.out.println(persistedSourceAlgorithm2.getAlgorithmRelations());
+        Publication publication = new Publication();
+        publication.setTitle("publicationTitle");
+        Publication persistedPublication = publicationService.create(publication);
 
-        assertThat(persistedSourceAlgorithm1.getId()).isEqualTo(persistedSourceAlgorithm2.getId());
+        assertThrows(NoSuchElementException.class, () -> algorithmService
+                .checkIfPublicationIsLinkedToAlgorithm(persistedAlgorithm.getId(), persistedPublication.getId()));
+    }
 
-        var persistedTargetAlgorithm1 = algorithmService.findById(algorithmRelation1.getTargetAlgorithm().getId());
-        System.out.println(persistedTargetAlgorithm1.getAlgorithmRelations());
+    @Test
+    void checkIfProblemTypeIsLinkedToAlgorithm_IsLinked() {
+        Algorithm algorithm = getFullAlgorithm("algorithmName");
+        Algorithm persistedAlgorithm = algorithmService.create(algorithm);
 
-        var persistedTargetAlgorithm2 = algorithmService.findById(algorithmRelation2.getTargetAlgorithm().getId());
-        System.out.println(persistedTargetAlgorithm2.getAlgorithmRelations());
+        ProblemType problemType = new ProblemType();
+        problemType.setName("problemTypeName");
+        ProblemType persistedProblemType = problemTypeService.create(problemType);
+        linkingService.linkAlgorithmAndProblemType(persistedAlgorithm.getId(), persistedProblemType.getId());
 
-        assertThat(persistedTargetAlgorithm1).isNotEqualTo(persistedTargetAlgorithm2);
+        assertDoesNotThrow(() -> algorithmService
+                .checkIfProblemTypeIsLinkedToAlgorithm(persistedAlgorithm.getId(), persistedProblemType.getId()));
+    }
 
-        assertThat(persistedSourceAlgorithm1.getAlgorithmRelations().size()).isEqualTo(2);
-        assertThat(persistedTargetAlgorithm1.getAlgorithmRelations().size()).isEqualTo(1);
-        assertThat(persistedTargetAlgorithm2.getAlgorithmRelations().size()).isEqualTo(1);
+    @Test
+    void checkIfProblemTypeIsLinkedToAlgorithm_IsNotLinked() {
+        Algorithm algorithm = getFullAlgorithm("algorithmName");
+        Algorithm persistedAlgorithm = algorithmService.create(algorithm);
+
+        ProblemType problemType = new ProblemType();
+        problemType.setName("problemTypeName");
+        ProblemType persistedProblemType = problemTypeService.create(problemType);
+
+        assertThrows(NoSuchElementException.class, () -> algorithmService
+                .checkIfProblemTypeIsLinkedToAlgorithm(persistedAlgorithm.getId(), persistedProblemType.getId()));
+    }
+
+    @Test
+    void checkIfApplicationAreaIsLinkedToAlgorithm_IsLinked() {
+        Algorithm algorithm = getFullAlgorithm("algorithmName");
+        Algorithm persistedAlgorithm = algorithmService.create(algorithm);
+
+        ApplicationArea applicationArea = new ApplicationArea();
+        applicationArea.setName("applicationAreaName");
+        ApplicationArea persistedApplicationArea = applicationAreaService.create(applicationArea);
+        linkingService.linkAlgorithmAndApplicationArea(persistedAlgorithm.getId(), persistedApplicationArea.getId());
+
+        assertDoesNotThrow(() -> algorithmService
+                .checkIfApplicationAreaIsLinkedToAlgorithm(persistedAlgorithm.getId(), persistedApplicationArea.getId()));
+    }
+
+    @Test
+    void checkIfApplicationAreaIsLinkedToAlgorithm_IsNotLinked() {
+        Algorithm algorithm = getFullAlgorithm("algorithmName");
+        Algorithm persistedAlgorithm = algorithmService.create(algorithm);
+
+        ApplicationArea applicationArea = new ApplicationArea();
+        applicationArea.setName("applicationAreaName");
+        ApplicationArea persistedApplicationArea = applicationAreaService.create(applicationArea);
+
+        assertThrows(NoSuchElementException.class, () -> algorithmService
+                .checkIfApplicationAreaIsLinkedToAlgorithm(persistedAlgorithm.getId(), persistedApplicationArea.getId()));
     }
 
     private Algorithm getFullAlgorithm(String name) {

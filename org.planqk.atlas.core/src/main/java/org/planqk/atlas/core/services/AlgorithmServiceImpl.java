@@ -212,7 +212,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         Algorithm algorithm = findById(algorithmId);
         Publication publication = ServiceUtils.findById(publicationId, Publication.class, publicationRepository);
 
-        if (!algorithm.getPublications().contains(publication)) {
+        if (algorithm.getPublications().stream().noneMatch(p -> p.getId().equals(publication.getId()))) {
             throw new NoSuchElementException("Publication with ID \"" + publicationId
                     + "\" is not linked to Algorithm with ID \"" + algorithmId +  "\"");
         }
@@ -223,7 +223,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         Algorithm algorithm = findById(algorithmId);
         ProblemType problemType = ServiceUtils.findById(problemTypeId, ProblemType.class, problemTypeRepository);
 
-        if (!algorithm.getProblemTypes().contains(problemType)) {
+        if (algorithm.getProblemTypes().stream().noneMatch(p -> p.getId().equals(problemType.getId()))) {
             throw new NoSuchElementException("ProblemType with ID \"" + problemTypeId
                     + "\" is not linked to Algorithm with ID \"" + algorithmId +  "\"");
         }
@@ -234,7 +234,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         Algorithm algorithm = findById(algorithmId);
         ApplicationArea applicationArea = ServiceUtils.findById(applicationAreaId, ApplicationArea.class, applicationAreaRepository);
 
-        if (!algorithm.getApplicationAreas().contains(applicationArea)) {
+        if (algorithm.getApplicationAreas().stream().noneMatch(p -> p.getId().equals(applicationArea.getId()))) {
             throw new NoSuchElementException("ApplicationArea with ID \"" + applicationAreaId
                     + "\" is not linked to Algorithm with ID \"" + algorithmId +  "\"");
         }
