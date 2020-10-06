@@ -26,6 +26,7 @@ import java.util.UUID;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.ApplicationArea;
 import org.planqk.atlas.core.model.ComputeResourceProperty;
+import org.planqk.atlas.core.model.Image;
 import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.model.Publication;
@@ -72,6 +73,7 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -699,17 +701,17 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Sketch with given ID doesn't exist")
     }, description = "Retrieve aa image from a specific Sketch.")
-    @GetMapping(value = "/{algorithmId}/" + Constants.SKETCHES + "/{sketchId}" + "/image",
-            produces = MediaType.IMAGE_JPEG_VALUE)
+    @GetMapping(value = "/{algorithmId}/" + Constants.SKETCHES + "/{sketchId}" + "/image")
     public ResponseEntity<byte[]> getSketchImage(@PathVariable UUID algorithmId, @PathVariable UUID sketchId) {
         try {
+            Image image = this.sketchService.getImageBySketch(sketchId);
             return ResponseEntity
                     .ok()
-                    .contentType(MediaType.IMAGE_JPEG)
-                    .body(this.sketchService.getImageBySketch(sketchId));
+                    .contentType(MediaType.parseMediaType(image.getMimeType()))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline")
+                    .body(image.getImage());
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
         }
     }
-
 }
