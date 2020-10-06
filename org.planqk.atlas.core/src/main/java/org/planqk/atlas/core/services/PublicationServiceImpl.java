@@ -118,10 +118,10 @@ public class PublicationServiceImpl implements PublicationService {
 
     @Override
     public void checkIfAlgorithmIsLinkedToPublication(UUID publicationId, UUID algorithmId) {
-        Publication publication = findById(publicationId);
+        ServiceUtils.throwIfNotExists(publicationId, Publication.class, publicationRepository);
         Algorithm algorithm = ServiceUtils.findById(algorithmId, Algorithm.class, algorithmRepository);
 
-        if (!algorithm.getPublications().contains(publication)) {
+        if (!ServiceUtils.containsElementWithId(algorithm.getPublications(), publicationId)) {
             throw new NoSuchElementException("Algorithm with ID \"" + algorithmId
                     + "\" is not linked to Publication with ID \"" + publicationId +  "\"");
         }
@@ -129,10 +129,10 @@ public class PublicationServiceImpl implements PublicationService {
 
     @Override
     public void checkIfImplementationIsLinkedToPublication(UUID publicationId, UUID implementationId) {
-        Publication publication = findById(publicationId);
+        ServiceUtils.throwIfNotExists(publicationId, Publication.class, publicationRepository);
         Implementation implementation = ServiceUtils.findById(implementationId, Implementation.class, implementationRepository);
 
-        if (!implementation.getPublications().contains(publication)) {
+        if (!ServiceUtils.containsElementWithId(implementation.getPublications(), publicationId)) {
             throw new NoSuchElementException("Implementation with ID \"" + implementationId
                     + "\" is not linked to Publication with ID \"" + publicationId +  "\"");
         }

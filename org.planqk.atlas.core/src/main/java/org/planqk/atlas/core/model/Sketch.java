@@ -19,6 +19,7 @@
 
 package org.planqk.atlas.core.model;
 
+import java.net.URL;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -46,8 +47,8 @@ import lombok.Setter;
 public class Sketch extends KnowledgeArtifact {
 
     @Lob
-    @Type(type = "org.hibernate.type.TextType")
-    private String imageURL;
+    @Type(type = "org.hibernate.type.UrlType")
+    private URL imageURL;
 
     @Column(columnDefinition = "text")
     private String description;

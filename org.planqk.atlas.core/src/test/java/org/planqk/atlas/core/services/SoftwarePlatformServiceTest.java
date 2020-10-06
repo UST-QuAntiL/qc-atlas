@@ -266,6 +266,40 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
         computeResources.forEach(computeResource -> assertThat(storedComputeResources.contains(computeResource)).isTrue());
     }
 
+    @Test
+    void checkIfImplementationIsLinkedToSoftwarePlatform_IsLinked() {
+        SoftwarePlatform softwarePlatform = getFullSoftwarePlatform("softwarePlatformName");
+        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.create(softwarePlatform);
+
+        Algorithm algorithm = new Algorithm();
+        algorithm = algorithmService.create(algorithm);
+
+        Implementation implementation = new Implementation();
+        implementation.setName("implementationName");
+        Implementation storedImplementation = implementationService.create(implementation, algorithm.getId());
+
+        linkingService.linkImplementationAndSoftwarePlatform(storedImplementation.getId(), storedSoftwarePlatform.getId());
+
+        assertDoesNotThrow(() -> softwarePlatformService
+                .checkIfImplementationIsLinkedToSoftwarePlatform(softwarePlatform.getId(), implementation.getId()));
+    }
+
+    @Test
+    void checkIfImplementationIsLinkedToSoftwarePlatform_IsNotLinked() {
+        SoftwarePlatform softwarePlatform = getFullSoftwarePlatform("softwarePlatformName");
+        SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.create(softwarePlatform);
+
+        Algorithm algorithm = new Algorithm();
+        algorithm = algorithmService.create(algorithm);
+
+        Implementation implementation = new Implementation();
+        implementation.setName("implementationName");
+        Implementation storedImplementation = implementationService.create(implementation, algorithm.getId());
+
+        assertThrows(NoSuchElementException.class, () -> softwarePlatformService
+                .checkIfImplementationIsLinkedToSoftwarePlatform(softwarePlatform.getId(), implementation.getId()));
+    }
+
     private SoftwarePlatform getFullSoftwarePlatform(String name) {
         SoftwarePlatform softwarePlatform = new SoftwarePlatform();
         softwarePlatform.setName(name);

@@ -19,6 +19,7 @@
 
 package org.planqk.atlas.core.services;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
@@ -26,11 +27,13 @@ import org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationExcept
 import org.planqk.atlas.core.model.ComputeResourceProperty;
 import org.planqk.atlas.core.model.ComputeResourcePropertyDataType;
 import org.planqk.atlas.core.model.ComputeResourcePropertyType;
+import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -51,6 +54,18 @@ public class ComputeResourcePropertyTypeServiceTest extends AtlasDatabaseTestBas
         var storedType = computeResourcePropertyTypeService.create(propertyType);
 
         assertPropertyTypeEquality(storedType, propertyType);
+    }
+
+    @Test
+    void findAllComputeResourcePropertyTypes() {
+        var propertyType1 = getFullComputeResourcePropertyType("computeResourcePropertyTypeName1");
+        computeResourcePropertyTypeService.create(propertyType1);
+        var propertyType2 = getFullComputeResourcePropertyType("computeResourcePropertyTypeName2");
+        computeResourcePropertyTypeService.create(propertyType2);
+
+        List<ComputeResourcePropertyType> types = computeResourcePropertyTypeService.findAll(Pageable.unpaged()).getContent();
+
+        assertThat(types.size()).isEqualTo(2);
     }
 
     @Test

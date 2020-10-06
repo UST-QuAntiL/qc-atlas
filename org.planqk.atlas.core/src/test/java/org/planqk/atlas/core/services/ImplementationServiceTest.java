@@ -21,9 +21,12 @@ package org.planqk.atlas.core.services;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
+
+import javax.persistence.Column;
 
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
@@ -191,6 +194,54 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
+    void deleteImplementation_WithReferences() {
+        Algorithm algorithm = new ClassicAlgorithm();
+        algorithm.setName("algorithmName");
+        algorithm = algorithmService.create(algorithm);
+
+        var implementation = new Implementation();
+        implementation.setName("implementationName");
+        implementation.setImplementedAlgorithm(algorithm);
+
+        implementation = implementationService.create(implementation, algorithm.getId());
+
+        // add publication
+        Publication publication = new Publication();
+        publication.setTitle("publicationTitle");
+        publication.setUrl("http://example.com");
+        publication.setDoi("doi");
+        List<String> publicationAuthors = new ArrayList<>();
+        publicationAuthors.add("publicationAuthor1");
+        publication.setAuthors(publicationAuthors);
+        publication = publicationService.create(publication);
+        linkingService.linkImplementationAndPublication(implementation.getId(), publication.getId());
+
+        // add software platform
+        SoftwarePlatform softwarePlatform = new SoftwarePlatform();
+        softwarePlatform.setName("softwarePlatformName");
+        softwarePlatform = softwarePlatformService.create(softwarePlatform);
+        linkingService.linkImplementationAndSoftwarePlatform(implementation.getId(), softwarePlatform.getId());
+
+        Implementation finalImplementation = implementationService.findById(implementation.getId());
+
+        finalImplementation.getPublications().forEach(pub ->
+                assertDoesNotThrow(() -> publicationService.findById(pub.getId())));
+        finalImplementation.getSoftwarePlatforms().forEach(sp ->
+                assertDoesNotThrow(() -> softwarePlatformService.findById(sp.getId())));
+
+        implementationService.delete(finalImplementation.getId());
+
+        assertThrows(NoSuchElementException.class, () ->
+                implementationService.findById(finalImplementation.getId()));
+
+        // check if implementation links are removed
+        finalImplementation.getPublications().forEach(pub ->
+                assertThat(publicationService.findById(pub.getId()).getImplementations().size()).isEqualTo(0));
+        finalImplementation.getSoftwarePlatforms().forEach(sp ->
+                assertThat(softwarePlatformService.findById(sp.getId()).getImplementations().size()).isEqualTo(0));
+    }
+
+    @Test
     void deleteImplementation_ElementNotFound() {
         Algorithm algorithm = new ClassicAlgorithm();
         algorithm.setName("algorithmName");
@@ -202,6 +253,39 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
         implementation.setId(UUID.randomUUID());
 
         assertThrows(NoSuchElementException.class, () -> implementationService.delete(implementation.getId()));
+    }
+
+    @Test
+    void checkIfImplementationIsOfAlgorithm_IsOfElement() {
+        Algorithm algorithm = new Algorithm();
+        algorithm.setName("algorithmName");
+        Algorithm persistedAlgorithm = algorithmService.create(algorithm);
+
+        Implementation implementation = new Implementation();
+        implementation.setName("implementationName");
+        implementation.setImplementedAlgorithm(persistedAlgorithm);
+        implementationService.create(implementation, algorithm.getId());
+
+        assertDoesNotThrow(() -> implementationService
+                .checkIfImplementationIsOfAlgorithm(implementation.getId(), persistedAlgorithm.getId()));
+    }
+
+    @Test
+    void checkIfImplementationIsOfAlgorithm_IsNotOfElement() {
+        Algorithm algorithm1 = new Algorithm();
+        algorithm1.setName("algorithmName1");
+        Algorithm persistedAlgorithm1 = algorithmService.create(algorithm1);
+        Algorithm algorithm2 = new Algorithm();
+        algorithm1.setName("algorithmName2");
+        Algorithm persistedAlgorithm2 = algorithmService.create(algorithm2);
+
+        Implementation implementation = new Implementation();
+        implementation.setName("implementationName");
+        implementation.setImplementedAlgorithm(persistedAlgorithm1);
+        implementationService.create(implementation, algorithm1.getId());
+
+        assertThrows(NoSuchElementException.class, () -> implementationService
+                .checkIfImplementationIsOfAlgorithm(implementation.getId(), persistedAlgorithm2.getId()));
     }
 
     @Test
@@ -289,6 +373,11 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
         implementation.setAssumptions("assumptions");
         implementation.setParameter("parameter");
         implementation.setDependencies("dependencies");
+        implementation.setVersion("version");
+        implementation.setLicense("license");
+        implementation.setProblemStatement("problemStatement");
+        implementation.setInputFormat("inputFormat");
+        implementation.setOutputFormat("outputFormat");
         try {
             implementation.setLink(new URL("http://www.example.com"));
         } catch (MalformedURLException ignored) {

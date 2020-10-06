@@ -175,10 +175,9 @@ public class ComputeResourcePropertyServiceImpl implements ComputeResourceProper
     @Override
     public void checkIfComputeResourcePropertyIsOfAlgorithm(UUID algorithmId, UUID computeResourcePropertyId) {
         ComputeResourceProperty computeResourceProperty = findById(computeResourcePropertyId);
-        System.out.println(computeResourceProperty.getAlgorithm().getId());
-        System.out.println(algorithmId);
 
-        if (!computeResourceProperty.getAlgorithm().getId().equals(algorithmId)) {
+        if (computeResourceProperty.getAlgorithm() == null
+                || !computeResourceProperty.getAlgorithm().getId().equals(algorithmId)) {
             throw new NoSuchElementException("ComputeResourceProperty with ID \"" + computeResourcePropertyId
                     + "\" of Algorithm with ID \"" + algorithmId +  "\" does not exist");
         }
@@ -188,7 +187,8 @@ public class ComputeResourcePropertyServiceImpl implements ComputeResourceProper
     public void checkIfComputeResourcePropertyIsOfImplementation(UUID implementationId, UUID computeResourcePropertyId) {
         ComputeResourceProperty computeResourceProperty = findById(computeResourcePropertyId);
 
-        if (!computeResourceProperty.getImplementation().getId().equals(implementationId)) {
+        if (computeResourceProperty.getImplementation() == null
+                || !computeResourceProperty.getImplementation().getId().equals(implementationId)) {
             throw new NoSuchElementException("ComputeResourceProperty with ID \"" + computeResourcePropertyId
                     + "\" of Implementation with ID \"" + implementationId +  "\" does not exist");
         }
@@ -198,7 +198,8 @@ public class ComputeResourcePropertyServiceImpl implements ComputeResourceProper
     public void checkIfComputeResourcePropertyIsOfComputeResource(UUID computeResourceId, UUID computeResourcePropertyId) {
         ComputeResourceProperty computeResourceProperty = findById(computeResourcePropertyId);
 
-        if (!computeResourceProperty.getComputeResource().getId() .equals(computeResourceId)) {
+        if (computeResourceProperty.getComputeResource() == null ||
+                !computeResourceProperty.getComputeResource().getId() .equals(computeResourceId)) {
             throw new NoSuchElementException("ComputeResourceProperty with ID \"" + computeResourcePropertyId
                     + "\" of ComputeResource with ID \"" + computeResourceId +  "\" does not exist");
         }

@@ -177,6 +177,41 @@ public class AlgorithmRelationServiceTest extends AtlasDatabaseTestBase {
                 algorithmRelationService.delete(UUID.randomUUID()));
     }
 
+    @Test
+    void checkIfAlgorithmIsInAlgorithmRelation_IsInRelation() {
+        Algorithm sourceAlgorithm = getCreatedAlgorithm("sourceAlgorithmName");
+        Algorithm targetAlgorithm = getCreatedAlgorithm("targetAlgorithmName");
+
+        var algorithmRelationType = getCreatedAlgorithmRelationType("algorithmRelationTypeName");
+
+        AlgorithmRelation algorithmRelation = buildAlgorithmRelation(
+                sourceAlgorithm, targetAlgorithm, algorithmRelationType, "description");
+
+        var persistedAlgorithmRelation = algorithmRelationService.create(algorithmRelation);
+
+        assertDoesNotThrow(() -> algorithmRelationService
+                .checkIfAlgorithmIsInAlgorithmRelation(sourceAlgorithm.getId(), algorithmRelation.getId()));
+        assertDoesNotThrow(() -> algorithmRelationService
+                .checkIfAlgorithmIsInAlgorithmRelation(targetAlgorithm.getId(), algorithmRelation.getId()));
+    }
+
+    @Test
+    void checkIfAlgorithmIsInAlgorithmRelation_IsNotInRelation() {
+        Algorithm sourceAlgorithm = getCreatedAlgorithm("sourceAlgorithmName");
+        Algorithm targetAlgorithm = getCreatedAlgorithm("targetAlgorithmName");
+        Algorithm checkAlgorithm = getCreatedAlgorithm("checkAlgorithmName");
+
+        var algorithmRelationType = getCreatedAlgorithmRelationType("algorithmRelationTypeName");
+
+        AlgorithmRelation algorithmRelation = buildAlgorithmRelation(
+                sourceAlgorithm, targetAlgorithm, algorithmRelationType, "description");
+
+        var persistedAlgorithmRelation = algorithmRelationService.create(algorithmRelation);
+
+        assertThrows(NoSuchElementException.class, () -> algorithmRelationService
+                .checkIfAlgorithmIsInAlgorithmRelation(checkAlgorithm.getId(), algorithmRelation.getId()));
+    }
+
     private AlgorithmRelation buildAlgorithmRelation(
             Algorithm source, Algorithm target, AlgorithmRelationType type, String description) {
         AlgorithmRelation algorithmRelation = new AlgorithmRelation();
