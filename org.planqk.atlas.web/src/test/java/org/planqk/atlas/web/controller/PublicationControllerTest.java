@@ -49,7 +49,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
@@ -93,11 +92,10 @@ public class PublicationControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
                 .getPublications(ListParameters.getDefault()));
-        MvcResult mvcResult = mockMvc
+         mockMvc
                 .perform(get(url).accept(APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$._embedded.publications").doesNotExist())
-                .andReturn();
+                .andExpect(jsonPath("$._embedded.publications").doesNotExist());
     }
 
     @Test
