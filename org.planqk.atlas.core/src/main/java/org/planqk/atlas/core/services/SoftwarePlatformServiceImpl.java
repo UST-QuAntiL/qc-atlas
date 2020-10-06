@@ -132,10 +132,10 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
 
     @Override
     public void checkIfImplementationIsLinkedToSoftwarePlatform(UUID softwarePlatformId, UUID implementationId) {
-        SoftwarePlatform softwarePlatform = findById(softwarePlatformId);
+        ServiceUtils.throwIfNotExists(softwarePlatformId, SoftwarePlatform.class, softwarePlatformRepository);
         Implementation implementation = ServiceUtils.findById(implementationId, Implementation.class, implementationRepository);
 
-        if (!implementation.getSoftwarePlatforms().contains(softwarePlatform)) {
+        if (!ServiceUtils.containsElementWithId(implementation.getSoftwarePlatforms(), softwarePlatformId)) {
             throw new NoSuchElementException("Implementation with ID \"" + implementationId
                     + "\" is not linked to SoftwarePlatform with ID \"" + softwarePlatformId +  "\"");
         }
