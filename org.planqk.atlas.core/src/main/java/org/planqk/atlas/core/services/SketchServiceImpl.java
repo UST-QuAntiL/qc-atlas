@@ -12,15 +12,12 @@ import org.planqk.atlas.core.repository.AlgorithmRepository;
 import org.planqk.atlas.core.repository.ImageRepository;
 import org.planqk.atlas.core.repository.SketchRepository;
 import org.planqk.atlas.core.util.ServiceUtils;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.MimeType;
-import org.springframework.web.multipart.MultipartFile;
 
-import jdk.jfr.ContentType;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @AllArgsConstructor
@@ -68,7 +65,7 @@ public class SketchServiceImpl implements SketchService {
             image.setSketch(persistedSketch2);
             this.imageRepository.save(image);
 
-            return sketch;
+            return persistedSketch2;
         } catch (IOException e) {
             throw new IllegalArgumentException("Cannot read contents of multipart file");
         }
