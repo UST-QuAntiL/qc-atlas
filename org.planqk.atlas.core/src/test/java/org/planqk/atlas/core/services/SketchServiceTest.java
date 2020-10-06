@@ -1,6 +1,7 @@
 package org.planqk.atlas.core.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.net.MalformedURLException;
@@ -62,17 +63,20 @@ public class SketchServiceTest extends AtlasDatabaseTestBase {
         final Algorithm algorithm = this.algorithmService.create(this.getAlgorithm("algo"));
 
         byte[] testFile = hexStringToByteArray("e04fd020ea3a6910a2d808002b30309d");
-        final MockMultipartFile file = new MockMultipartFile("file", testFile);
+        final MockMultipartFile file = new MockMultipartFile("image", testFile);
 
         final String description = "description";
-        final String baseURL = "base/URL";
+        final String baseURL = "http://localhost:8080/atlas/v1";
         // call
         final Sketch persistedSketch = sketchService.addSketchToAlgorithm(algorithm.getId(), file, description, baseURL);
 
         // test
         assertThat(persistedSketch.getId()).isNotNull();
         assertThat(persistedSketch.getDescription()).isEqualTo(description);
-        assertThat(persistedSketch.getImageURL().getPath()).startsWith(baseURL);
+        assertThat(persistedSketch.getImageURL().toString())
+                .startsWith(baseURL);
+        assertEquals(persistedSketch.getImageURL().getPath(),
+                "/atlas/v1/algorithms/" + algorithm.getId() + "/sketches/" + persistedSketch.getId());
 
         List<Image> images = this.imageRepository.findAll();
         assertThat(images.size()).isEqualTo(1);
