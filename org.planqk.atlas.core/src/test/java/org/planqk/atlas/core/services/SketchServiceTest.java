@@ -77,7 +77,7 @@ public class SketchServiceTest extends AtlasDatabaseTestBase {
         // mock
         final Algorithm algorithm = this.algorithmService.create(this.getAlgorithm("algo"));
 
-        final Sketch sketch = this.getSketch(null, "image/url", "description");
+        final Sketch sketch = this.getSketch(null, "http://image/url", "description");
         sketch.setAlgorithm(algorithm);
         final Sketch persistedSketch = this.sketchRepository.save(sketch);
 
@@ -118,7 +118,7 @@ public class SketchServiceTest extends AtlasDatabaseTestBase {
         // mock
         final Algorithm algorithm = this.algorithmService.create(this.getAlgorithm("algo"));
 
-        final Sketch sketch = this.getSketch(null, "image/url", "description");
+        final Sketch sketch = this.getSketch(null, "http://image/url", "description");
         sketch.setAlgorithm(algorithm);
         Sketch persistedSketch = this.sketchRepository.save(sketch);
 
@@ -137,7 +137,7 @@ public class SketchServiceTest extends AtlasDatabaseTestBase {
         // mock
         final Algorithm algorithm = this.algorithmService.create(this.getAlgorithm("algo"));
 
-        final Sketch sketch = this.getSketch(null, "image/url", "description");
+        final Sketch sketch = this.getSketch(null, "http://image/url", "description");
         sketch.setAlgorithm(algorithm);
         final Sketch persistedSketch = this.sketchRepository.save(sketch);
 
@@ -154,7 +154,7 @@ public class SketchServiceTest extends AtlasDatabaseTestBase {
         // mock
         final Algorithm algorithm = this.algorithmService.create(this.getAlgorithm("algo"));
 
-        final Sketch sketch = this.getSketch(null, "image/url", "description");
+        final Sketch sketch = this.getSketch(null, "http://image/url", "description");
         sketch.setAlgorithm(algorithm);
         final Sketch persistedSketch = this.sketchRepository.save(sketch);
 
