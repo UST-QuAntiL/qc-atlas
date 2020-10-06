@@ -101,7 +101,7 @@ public class TagControllerTest {
     }
 
     @Test
-    public void getAllTags_withItems() throws Exception {
+    public void getAllTags_SingleElement_returnOk() throws Exception {
         List<Tag> tags = new ArrayList<>();
         Tag tag1 = getTestTag();
         tags.add(tag1);
@@ -123,7 +123,7 @@ public class TagControllerTest {
     }
 
     @Test
-    public void getTags_withEmptyList() throws Exception {
+    public void getTags_EmptyList_returnOk() throws Exception {
         Pageable pageable = PageRequest.of(0, 2);
         when(tagService.findAllByContent(null, pageable)).thenReturn(Page.empty());
 
@@ -139,7 +139,7 @@ public class TagControllerTest {
     }
 
     @Test
-    public void getTagByName_TagFound() throws Exception {
+    public void getTagByName_returnOk() throws Exception {
         Tag tag1 = getTestTag();
         when(tagService.findByValue(tag1.getValue())).thenReturn(tag1);
 
@@ -157,7 +157,7 @@ public class TagControllerTest {
     }
 
     @Test
-    public void getTagByName_TagNotFound() throws Exception {
+    public void getTagByName_returnNotFound() throws Exception {
         doThrow(new NoSuchElementException()).when(tagService).findByValue(any());
         var url = linkBuilderService.urlStringTo(methodOn(TagController.class)
                 .getTag("test"));
@@ -167,7 +167,7 @@ public class TagControllerTest {
     }
 
     @Test
-    public void createTag_ValidRequest() throws Exception {
+    public void createTag_returnCreated() throws Exception {
         Tag tag1 = getTestTag();
         TagDto tagDto = ModelMapperUtils.convert(tag1, TagDto.class);
         when(tagService.create(tag1)).thenReturn(tag1);
@@ -187,7 +187,7 @@ public class TagControllerTest {
     }
 
     @Test
-    public void createTag_InvalidRequest() throws Exception {
+    public void createTag_returnBadRequest() throws Exception {
         Tag tag = getTestTag();
         tag.setValue(null);
         TagDto tagDto = ModelMapperUtils.convert(tag, TagDto.class);
@@ -201,7 +201,7 @@ public class TagControllerTest {
     }
 
     @Test
-    public void getImplementations_EmptyList() throws Exception {
+    public void getImplementations_EmptyList_returnOk() throws Exception {
         var tag = getTestTag();
 
         doReturn(tag).when(tagService).findByValue(any());
@@ -214,7 +214,7 @@ public class TagControllerTest {
     }
 
     @Test
-    public void getImplementations_SingleElementList() throws Exception {
+    public void getImplementations_SingleElement_returnOk() throws Exception {
         var tag = getTestTag();
         var impl = new Implementation();
         impl.setId(UUID.randomUUID());
@@ -232,7 +232,7 @@ public class TagControllerTest {
     }
 
     @Test
-    public void getImplementations_TagNotFound() throws Exception {
+    public void getImplementations_returnNotFound() throws Exception {
         doThrow(new NoSuchElementException()).when(tagService).findByValue(any());
         var url = linkBuilderService.urlStringTo(methodOn(TagController.class)
                 .getImplementationsOfTag("test"));
@@ -242,7 +242,7 @@ public class TagControllerTest {
     }
 
     @Test
-    public void getAlgorithms_SingleElementList() throws Exception {
+    public void getAlgorithms_SingleElement_returnOk() throws Exception {
         var tag = getTestTag();
         var algo = new Algorithm();
         algo.setId(UUID.randomUUID());
@@ -261,7 +261,7 @@ public class TagControllerTest {
     }
 
     @Test
-    public void getAlgorithms_EmptyList() throws Exception {
+    public void getAlgorithms_EmptyList_returnOk() throws Exception {
         var tag = getTestTag();
 
         doReturn(tag).when(tagService).findByValue(any());
@@ -275,7 +275,7 @@ public class TagControllerTest {
     }
 
     @Test
-    public void getAlgorithms_TagNotFound() throws Exception {
+    public void getAlgorithms_returnNotFound() throws Exception {
         doThrow(new NoSuchElementException()).when(tagService).findByValue(any());
         var url = linkBuilderService.urlStringTo(methodOn(TagController.class)
                 .getAlgorithmsOfTag("test"));
