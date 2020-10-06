@@ -39,13 +39,13 @@ public class SketchServiceImpl implements SketchService {
     }
 
     @Override
-    public List<Sketch> findByAlgorithm(UUID algorithmId) {
+    public List<Sketch> findByAlgorithm(@NonNull UUID algorithmId) {
         return this.sketchRepository.findSketchesByAlgorithmId(algorithmId);
     }
 
     @Override
     @Transactional
-    public Sketch addSketchToAlgorithm(UUID algorithmId, MultipartFile file, String description, String baseURL) {
+    public Sketch addSketchToAlgorithm(@NonNull UUID algorithmId, MultipartFile file, String description, String baseURL) {
         try {
             byte[] fileContent = file.getBytes();
             // Sketch
@@ -63,7 +63,7 @@ public class SketchServiceImpl implements SketchService {
             image.setSketch(persistedSketch2);
             this.imageRepository.save(image);
 
-            return sketch;
+            return persistedSketch2;
         } catch (IOException e) {
             throw new IllegalArgumentException("Cannot read contents of multipart file");
         }
@@ -71,17 +71,17 @@ public class SketchServiceImpl implements SketchService {
 
     @Override
     @Transactional
-    public void delete(UUID sketchId) {
+    public void delete(@NonNull UUID sketchId) {
         sketchRepository.deleteById(sketchId);
     }
 
     @Override
-    public Sketch findById(UUID sketchId) {
+    public Sketch findById(@NonNull UUID sketchId) {
         return ServiceUtils.findById(sketchId, Sketch.class, sketchRepository);
     }
 
     @Override
-    public byte[] getImageBySketch(UUID sketchId) {
+    public byte[] getImageBySketch(@NonNull UUID sketchId) {
         final Image image = this.imageRepository.findImageBySketchId(sketchId);
         return image.getImage();
     }
