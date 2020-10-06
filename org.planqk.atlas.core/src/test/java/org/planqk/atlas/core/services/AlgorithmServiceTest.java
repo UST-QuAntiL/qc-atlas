@@ -426,7 +426,6 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
         Algorithm algorithm = getFullAlgorithm("algorithmName");
         Algorithm persistedAlgorithm = algorithmService.create(algorithm);
 
-
         Publication publication = new Publication();
         publication.setTitle("publicationTitle");
         Publication persistedPublication = publicationService.create(publication);

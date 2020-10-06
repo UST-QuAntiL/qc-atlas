@@ -19,7 +19,10 @@
 
 package org.planqk.atlas.core.util;
 
+import java.util.Collection;
 import java.util.NoSuchElementException;
+
+import org.planqk.atlas.core.model.HasId;
 
 import org.springframework.data.repository.CrudRepository;
 
@@ -34,5 +37,9 @@ public class ServiceUtils {
     public static <T, ID> T findById(ID id, Class<? extends T> resourceClass, CrudRepository<T, ID> repository) {
         return repository.findById(id).orElseThrow(() -> new NoSuchElementException(resourceClass.getName() +
                 " with ID \"" + id.toString() + "\" does not exist"));
+    }
+
+    public static <T extends HasId, ID> boolean containsElementWithId(Collection<T> collection, ID id) {
+        return collection.stream().anyMatch(p -> p.getId().equals(id));
     }
 }
