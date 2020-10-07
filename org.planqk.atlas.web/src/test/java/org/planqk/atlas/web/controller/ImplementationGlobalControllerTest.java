@@ -45,7 +45,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -72,7 +71,7 @@ public class ImplementationGlobalControllerTest {
                 .getImplementations(ListParameters.getDefault()));
         mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON)
         ).andExpect(jsonPath("$._embedded.implementations").doesNotExist())
-                .andExpect(status().isOk()).;
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -93,6 +92,6 @@ public class ImplementationGlobalControllerTest {
         ).andExpect(jsonPath("$._embedded.implementations[0].name").value(impl.getName()))
                 .andExpect(jsonPath("$._embedded.implementations[0].implementedAlgorithmId").value(algo.getId().toString()))
                 .andExpect(jsonPath("$._embedded.implementations[0].id").value(impl.getId().toString()))
-                .andExpect(status().isOk()).;
+                .andExpect(status().isOk());
     }
 }

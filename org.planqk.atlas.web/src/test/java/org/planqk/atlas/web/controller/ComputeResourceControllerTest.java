@@ -68,7 +68,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -474,7 +473,7 @@ public class ComputeResourceControllerTest {
                 .getComputeResourcePropertiesOfComputeResource( UUID.randomUUID(), ListParameters.getDefault()));
         mockMvc.perform(get(url).accept(APPLICATION_JSON))
                 .andExpect(jsonPath("$._embedded.computeResourceProperties").doesNotExist())
-                .andExpect(status().isOk()).;
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -497,7 +496,7 @@ public class ComputeResourceControllerTest {
         mockMvc.perform(get(url).accept(APPLICATION_JSON))
                 .andExpect(jsonPath("$._embedded.computeResourceProperties[0].id").value(res.getId().toString()))
                 .andExpect(jsonPath("$._embedded.computeResourceProperties[0].type.id").value(type.getId().toString()))
-                .andExpect(status().isOk()).;
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -509,7 +508,7 @@ public class ComputeResourceControllerTest {
         var url = linkBuilderService.urlStringTo(methodOn(ComputeResourceController.class)
                 .getComputeResourcePropertiesOfComputeResource( UUID.randomUUID(), ListParameters.getDefault()));
         mockMvc.perform(get(url).accept(APPLICATION_JSON))
-                .andExpect(status().isNotFound()).;
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -531,7 +530,7 @@ public class ComputeResourceControllerTest {
         mockMvc.perform(get(url).accept(APPLICATION_JSON))
                 .andExpect(jsonPath("$.id").value(res.getId().toString()))
                 .andExpect(jsonPath("$.type.id").value(type.getId().toString()))
-                .andExpect(status().isOk()).;
+                .andExpect(status().isOk());
     }
 
 
@@ -544,7 +543,7 @@ public class ComputeResourceControllerTest {
         var url = linkBuilderService.urlStringTo(methodOn(ComputeResourceController.class)
                 .getComputeResourcePropertyOfComputeResource( UUID.randomUUID(), UUID.randomUUID()));
         mockMvc.perform(get(url).accept(APPLICATION_JSON))
-                .andExpect(status().isNotFound()).;
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -555,7 +554,7 @@ public class ComputeResourceControllerTest {
         var url = linkBuilderService.urlStringTo(methodOn(ComputeResourceController.class)
                 .deleteComputeResourcePropertyOfComputeResource( UUID.randomUUID(), UUID.randomUUID()));
         mockMvc.perform(delete(url).accept(APPLICATION_JSON))
-                .andExpect(status().isNoContent()).;
+                .andExpect(status().isNoContent());
     }
 
 
@@ -567,7 +566,7 @@ public class ComputeResourceControllerTest {
         var url = linkBuilderService.urlStringTo(methodOn(ComputeResourceController.class)
                 .deleteComputeResourcePropertyOfComputeResource( UUID.randomUUID(), UUID.randomUUID()));
         mockMvc.perform(delete(url).accept(APPLICATION_JSON))
-                .andExpect(status().isNotFound()).;
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -600,7 +599,7 @@ public class ComputeResourceControllerTest {
         ).andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(res.getId().toString()))
                 .andExpect(jsonPath("$.type.id").value(type.getId().toString()))
-                .;
+                ;
     }
 
     @Test
@@ -616,7 +615,7 @@ public class ComputeResourceControllerTest {
                         .contentType(APPLICATION_JSON)
                         .content(mapper.writeValueAsString(resDto))
         ).andExpect(status().isBadRequest())
-                .;
+                ;
     }
 
     @Test
@@ -639,7 +638,7 @@ public class ComputeResourceControllerTest {
                         .contentType(APPLICATION_JSON)
                         .content(mapper.writeValueAsString(resDto))
         ).andExpect(status().isNotFound())
-                .;
+                ;
     }
 
     @Test
@@ -673,7 +672,7 @@ public class ComputeResourceControllerTest {
         ).andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(res.getId().toString()))
                 .andExpect(jsonPath("$.type.id").value(type.getId().toString()))
-                .;
+                ;
     }
 
     @Test
@@ -690,7 +689,7 @@ public class ComputeResourceControllerTest {
                         .contentType(APPLICATION_JSON)
                         .content(mapper.writeValueAsString(resDto))
         ).andExpect(status().isBadRequest())
-                .;
+                ;
     }
 
 
@@ -714,6 +713,6 @@ public class ComputeResourceControllerTest {
                         .contentType(APPLICATION_JSON)
                         .content(mapper.writeValueAsString(resDto))
         ).andExpect(status().isNotFound())
-                .;
+                ;
     }
 }

@@ -60,7 +60,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -184,7 +183,7 @@ public class AlgorithmRelationControllerTest {
                 .andExpect(jsonPath("$.sourceAlgorithmId").value(sourceAlgorithm.getId().toString()))
                 .andExpect(jsonPath("$.targetAlgorithmId").value(targetAlgorithm.getId().toString()))
                 .andExpect(jsonPath("$.algoRelationType.id").value(type.getId().toString()))
-                .andExpect(status().isCreated()).;
+                .andExpect(status().isCreated());
     }
 
     @Test
@@ -199,7 +198,7 @@ public class AlgorithmRelationControllerTest {
         mockMvc.perform(post(url).accept(APPLICATION_JSON)
                 .contentType(APPLICATION_JSON)
                 .content(mapper.writeValueAsString(relationDto))
-        ).andExpect(status().isBadRequest()).;
+        ).andExpect(status().isBadRequest());
     }
 
     @Test
@@ -223,7 +222,7 @@ public class AlgorithmRelationControllerTest {
         mockMvc.perform(post(url).accept(APPLICATION_JSON)
                 .contentType(APPLICATION_JSON)
                 .content(mapper.writeValueAsString(relationDto))
-        ).andExpect(status().isNotFound()).;
+        ).andExpect(status().isNotFound());
     }
 
     @Test
@@ -262,7 +261,7 @@ public class AlgorithmRelationControllerTest {
                 .andExpect(jsonPath("$.sourceAlgorithmId").value(sourceAlgorithm.getId().toString()))
                 .andExpect(jsonPath("$.targetAlgorithmId").value(targetAlgorithm.getId().toString()))
                 .andExpect(jsonPath("$.algoRelationType.id").value(type.getId().toString()))
-                .andExpect(status().isOk()).;
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -277,7 +276,7 @@ public class AlgorithmRelationControllerTest {
         mockMvc.perform(put(url).accept(APPLICATION_JSON)
                 .contentType(APPLICATION_JSON)
                 .content(mapper.writeValueAsString(relationDto))
-        ).andExpect(status().isBadRequest()).;
+        ).andExpect(status().isBadRequest());
     }
 
     @Test
@@ -302,7 +301,7 @@ public class AlgorithmRelationControllerTest {
         mockMvc.perform(put(url).accept(APPLICATION_JSON)
                 .contentType(APPLICATION_JSON)
                 .content(mapper.writeValueAsString(relationDto))
-        ).andExpect(status().isNotFound()).;
+        ).andExpect(status().isNotFound());
     }
 
     @Test
@@ -315,7 +314,7 @@ public class AlgorithmRelationControllerTest {
                 .deleteAlgorithmRelation(UUID.randomUUID(), UUID.randomUUID()));
 
         mockMvc.perform(delete(url).accept(APPLICATION_JSON))
-                .andExpect(status().isNoContent()).;
+                .andExpect(status().isNoContent());
     }
 
     @Test
@@ -327,7 +326,7 @@ public class AlgorithmRelationControllerTest {
                 .deleteAlgorithmRelation(UUID.randomUUID(), UUID.randomUUID()));
 
         mockMvc.perform(delete(url).accept(APPLICATION_JSON))
-                .andExpect(status().isNotFound()).;
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -364,7 +363,7 @@ public class AlgorithmRelationControllerTest {
                 .andExpect(jsonPath("$.sourceAlgorithmId").value(sourceAlgorithm.getId().toString()))
                 .andExpect(jsonPath("$.targetAlgorithmId").value(targetAlgorithm.getId().toString()))
                 .andExpect(jsonPath("$.algoRelationType.id").value(type.getId().toString()))
-                .andExpect(status().isOk()).;
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -376,6 +375,6 @@ public class AlgorithmRelationControllerTest {
                 .getAlgorithmRelation(UUID.randomUUID(), UUID.randomUUID()));
 
         mockMvc.perform(get(url).accept(APPLICATION_JSON))
-                .andExpect(status().isNotFound()).;
+                .andExpect(status().isNotFound());
     }
 }
