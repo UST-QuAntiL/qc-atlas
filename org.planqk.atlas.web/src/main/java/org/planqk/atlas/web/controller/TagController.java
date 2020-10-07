@@ -32,6 +32,7 @@ import org.planqk.atlas.web.linkassembler.TagAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
+import org.planqk.atlas.web.utils.ValidationGroups;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -82,7 +83,7 @@ public class TagController {
     }, description = "Create a new tag")
     @PostMapping
     public ResponseEntity<EntityModel<TagDto>> createTag(
-            @Validated @RequestBody TagDto tagDto) {
+            @Validated(ValidationGroups.Create.class) @RequestBody TagDto tagDto) {
         Tag savedTag = this.tagService.create(ModelMapperUtils.convert(tagDto, Tag.class));
         return new ResponseEntity<>(tagAssembler.toModel(savedTag), HttpStatus.CREATED);
     }
