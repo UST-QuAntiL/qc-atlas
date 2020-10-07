@@ -232,7 +232,7 @@ public class AlgorithmController {
     @PostMapping("/{algorithmId}/" + Constants.TAGS)
     public ResponseEntity<Void> addTagToAlgorithm(
             @PathVariable UUID algorithmId,
-            @Validated @RequestBody TagDto tagDto) {
+            @Validated(ValidationGroups.Create.class) @RequestBody TagDto tagDto) {
         tagService.addTagToAlgorithm(algorithmId, ModelMapperUtils.convert(tagDto, Tag.class));
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -245,7 +245,7 @@ public class AlgorithmController {
     @DeleteMapping("/{algorithmId}/" + Constants.TAGS)
     public ResponseEntity<Void> removeTagFromAlgorithm(
             @PathVariable UUID algorithmId,
-            @Validated @RequestBody TagDto tagDto) {
+            @Validated(ValidationGroups.IDOnly.class) @RequestBody TagDto tagDto) {
         tagService.removeTagFromAlgorithm(algorithmId, ModelMapperUtils.convert(tagDto, Tag.class));
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
