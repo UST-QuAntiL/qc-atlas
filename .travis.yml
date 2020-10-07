@@ -10,6 +10,6 @@ script:
     # Filter Stacktraces to reduce log length significantly
     # Log messages and exceptions are still shown, but without
     # the attached Stacktrace
-    - mvn package --fail-at-end | grep -v -E 'at .*\(.*\.java:[0-9]*\)|o\.h\.e\.jdbc\.spi\.SqlExceptionHelper'
+    - mvn package --fail-at-end | grep -v -E 'at .*\((.*\.java:[0-9]*|Native Method)\)|o\.h\.e\.jdbc\.spi\.SqlExceptionHelper'
 after_success:
     - bash <(curl -s https://codecov.io/bash)

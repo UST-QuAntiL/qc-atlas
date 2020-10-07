@@ -98,6 +98,51 @@ public class DiscussionCommentServiceTest extends AtlasDatabaseTestBase {
         assertThat(discussionCommentPage.getTotalElements()).isEqualTo(2);
     }
 
+    @Test
+    void checkIfDiscussionCommentIsInDiscussionTopic_Linked() {
+        var pub = new Publication();
+        pub.setTitle("test");
+        pub = publicationService.create(pub);
+
+        var topic = new DiscussionTopic();
+        topic.setKnowledgeArtifact(pub);
+        topic.setTitle("test");
+        var savedTopic = topicService.create(topic);
+
+        var comment = new DiscussionComment();
+        comment.setDiscussionTopic(savedTopic);
+        comment.setText("test");
+        var savedComment = commentService.create(comment);
+
+        commentService.checkIfDiscussionCommentIsInDiscussionTopic(savedComment.getId(), savedTopic.getId());
+    }
+
+    @Test
+    void checkIfDiscussionCommentIsInDiscussionTopic_Unlinked() {
+        var pub = new Publication();
+        pub.setTitle("test");
+        pub = publicationService.create(pub);
+
+        var topic = new DiscussionTopic();
+        topic.setTitle("test");
+        topic.setKnowledgeArtifact(pub);
+        var savedTopic = topicService.create(topic);
+
+        var secondTopic = new DiscussionTopic();
+        secondTopic.setTitle("test2");
+        secondTopic.setKnowledgeArtifact(pub);
+        var savedSecondTopic = topicService.create(secondTopic);
+
+        var comment = new DiscussionComment();
+        comment.setDiscussionTopic(savedTopic);
+        comment.setText("test");
+        var savedComment = commentService.create(comment);
+
+        assertThrows(NoSuchElementException.class, () -> {
+            commentService.checkIfDiscussionCommentIsInDiscussionTopic(savedComment.getId(), savedSecondTopic.getId());
+        });
+    }
+
     // @Test
     void findDiscussionCommentById_ElementFound() {
         // TODO
