@@ -19,6 +19,7 @@
 
 package org.planqk.atlas.web.controller;
 
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -59,6 +60,7 @@ import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
 import org.planqk.atlas.web.dtos.ComputeResourcePropertyDto;
 import org.planqk.atlas.web.dtos.ComputeResourcePropertyTypeDto;
 import org.planqk.atlas.web.dtos.PatternRelationDto;
+import org.planqk.atlas.web.dtos.PatternRelationTypeDto;
 import org.planqk.atlas.web.dtos.SketchDto;
 import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
 import org.planqk.atlas.web.linkassembler.LinkBuilderService;
@@ -67,6 +69,7 @@ import org.planqk.atlas.web.utils.ModelMapperUtils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -97,12 +100,15 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(value = AlgorithmController.class)
@@ -250,7 +256,8 @@ public class AlgorithmControllerTest {
     }
 
     @Test
-    public void equality() throws Exception {
+    @SneakyThrows
+    void equality() {
         initializeAlgorithms();
         assertEquals(algorithm1, algorithm1);
         assertEquals(algorithm1, ModelMapperUtils.convert(mapper.readValue(
@@ -258,12 +265,15 @@ public class AlgorithmControllerTest {
     }
 
     @Test
-    public void getAlgorithms_withEmptyAlgorithmList() throws Exception {
+    @SneakyThrows
+    void getAlgorithms_EmptyList_returnOk() {
         initializeAlgorithms();
-        when(algorithmService.findAll(pageable, null)).thenReturn(Page.empty());
+
+        doReturn(Page.empty()).when(algorithmService).findAll(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
                 .getAlgorithms(new ListParameters(pageable, null)));
+
         MvcResult result = mockMvc.perform(get(url)
                 .accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk()).andReturn();
@@ -274,7 +284,8 @@ public class AlgorithmControllerTest {
     }
 
     @Test
-    public void getAlgorithms_withTwoAlgorithmList() throws Exception {
+    @SneakyThrows
+    void getAlgorithms_TwoElements_returnOk() {
         initializeAlgorithms();
         List<Algorithm> algorithmList = new ArrayList<>();
         algorithmList.add(algorithm1);
@@ -283,10 +294,11 @@ public class AlgorithmControllerTest {
         Page<Algorithm> pageAlg = new PageImpl<>(algorithmList);
         Page<AlgorithmDto> pageAlgDto = ModelMapperUtils.convertPage(pageAlg, AlgorithmDto.class);
 
-        when(algorithmService.findAll(pageable, null)).thenReturn(pageAlg);
+        doReturn(pageAlg).when(algorithmService).findAll(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
                 .getAlgorithms(new ListParameters(pageable, null)));
+
         MvcResult result = mockMvc.perform(get(url)
                 .accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk())
@@ -299,35 +311,8 @@ public class AlgorithmControllerTest {
     }
 
     @Test
-    public void getAlgorithm_returnNotFound() throws Exception {
-        initializeAlgorithms();
-        when(algorithmService.findById(any())).thenThrow(new NoSuchElementException());
-
-        var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .getAlgorithm(UUID.randomUUID()));
-
-        mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
-    }
-
-    @Test
-    public void getAlgorithm_returnAlgorithm() throws Exception {
-        initializeAlgorithms();
-        when(algorithmService.findById(any())).thenReturn(algorithm1);
-
-        var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .getAlgorithm(UUID.randomUUID()));
-        MvcResult result = mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk()).andReturn();
-
-        EntityModel<AlgorithmDto> response = mapper.readValue(result.getResponse().getContentAsString(),
-                new TypeReference<>() {
-                });
-        assertEquals(response.getContent().getId(), algorithm1Dto.getId());
-    }
-
-    @Test
-    public void createAlgorithm_returnBadRequest() throws Exception {
+    @SneakyThrows
+    void createAlgorithm_returnBadRequest() {
         AlgorithmDto algoDto = new AlgorithmDto();
         algoDto.setId(UUID.randomUUID());
 
@@ -349,10 +334,12 @@ public class AlgorithmControllerTest {
     }
 
     @Test
-    public void createAlgorithm_returnAlgorithm() throws Exception {
+    @SneakyThrows
+    void createAlgorithm_returnCreated() {
         initializeAlgorithms();
         algorithm1Dto.setId(null);
-        when(algorithmService.create(any())).thenReturn(algorithm1);
+
+        doReturn(algorithm1).when(algorithmService).create(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
                 .createAlgorithm(null));
@@ -370,7 +357,8 @@ public class AlgorithmControllerTest {
     }
 
     @Test
-    public void updateAlgorithm_returnBadRequest() throws Exception {
+    @SneakyThrows
+    void updateAlgorithm_returnBadRequest() {
         initializeAlgorithms();
         AlgorithmDto algoDto = new AlgorithmDto();
         algoDto.setId(UUID.randomUUID());
@@ -384,7 +372,8 @@ public class AlgorithmControllerTest {
     }
 
     @Test
-    public void updateAlgorithm_returnAlgorithm() throws Exception {
+    @SneakyThrows
+    void updateAlgorithm_returnOk() {
         initializeAlgorithms();
 
         doReturn(algorithm1).when(algorithmService).update(any());
@@ -403,7 +392,8 @@ public class AlgorithmControllerTest {
     }
 
     @Test
-    public void deleteAlgorithm_notFound() throws Exception {
+    @SneakyThrows
+    void deleteAlgorithm_returnNotFound() {
         doThrow(new NoSuchElementException()).when(algorithmService).delete(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
@@ -414,7 +404,8 @@ public class AlgorithmControllerTest {
     }
 
     @Test
-    public void deleteAlgorithm_returnOk() throws Exception {
+    @SneakyThrows
+    void deleteAlgorithm_returnNoContent() {
         doNothing().when(algorithmService).delete(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
@@ -423,121 +414,47 @@ public class AlgorithmControllerTest {
                 .andExpect(status().isNoContent()).andReturn();
     }
 
-//    @Test
-//    public void getAlgorithmRelations_returnNotFound() throws Exception {
-//        doThrow(new NoSuchElementException()).when(algorithmService).getAlgorithmRelations(any());
-//
-//        var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-//                .getAlgorithmRelationsForAlgorithm(UUID.randomUUID()));
-//        mockMvc.perform(get(url))
-//                .andExpect(status().isNotFound());
-//    }
-//
-//    @Test
-//    public void getAlgorithmRelations_withEmptyAlgorithmRelationList() throws Exception {
-//        initializeAlgorithms();
-//        when(algorithmService.getAlgorithmRelations(any())).thenReturn(new HashSet<>());
-//
-//        var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-//                .getAlgorithmRelationsForAlgorithm(UUID.randomUUID()));
-//
-//        MvcResult result = mockMvc
-//                .perform(get(url))
-//                .andExpect(status().isOk()).andReturn();
-//
-//        var resultList = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(),
-//                "algorithmRelationDtoes", AlgorithmRelationDto.class);
-//        assertEquals(0, resultList.size());
-//    }
+    @Test
+    @SneakyThrows
+    void getAlgorithm_returnNotFound() {
+        initializeAlgorithms();
 
-//    @Test
-//    public void getAlgorithmRelations_withTwoAlgorithmRelationList() throws Exception {
-//        initializeAlgorithms();
-//        when(algorithmService.getAlgorithmRelations(any())).thenReturn(algorithm1.getAlgorithmRelations());
-//
-//        var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-//                .getAlgorithmRelationsForAlgorithm(UUID.randomUUID()));
-//
-//        MvcResult result = mockMvc
-//                .perform(get(url).accept(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON)).andReturn();
-//
-//        var resultList = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(),
-//                "algorithmRelations", AlgorithmRelationDto.class);
-//        assertEquals(2, resultList.size());
-//    }
-//
-//    @Test
-//    public void updateAlgorithmRelation_returnNotFound() throws Exception {
-//        initializeAlgorithms();
-//        when(algoRelationService.findById(any())).thenThrow(new NoSuchElementException());
-//
-//        var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-//                .updateAlgorithmRelation(UUID.randomUUID(), UUID.randomUUID(), null));
-//
-//        mockMvc.perform(put(url).content(mapper.writeValueAsString(algorithmRelation1Dto))
-//                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isNotFound());
-//    }
-//
-//    @Test
-//    public void addAlgorithmRelation_returnBadRequest() throws Exception {
-//        initializeAlgorithms();
-//
-//        var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-//                .addAlgorithmRelationReferenceToAlgorithm(UUID.randomUUID(), null));
-//
-//        mockMvc.perform(post(url).content(mapper.writeValueAsString(algorithmRelation1Dto))
-//                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isBadRequest());
-//    }
-//
-//    @Test
-//    public void updateAlgorithmRelation_returnAlgorithmRelation() throws Exception {
-//        initializeAlgorithms();
-//        when(algoRelationService.findById(any(UUID.class))).thenReturn(algorithmRelation1);
-//        when(algoRelationService.save(any(AlgorithmRelation.class))).thenReturn(algorithmRelation1);
-//
-//        var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-//                .updateAlgorithmRelation(algorithmRelation1.getSourceAlgorithm().getId(), algorithmRelation1.getId(), null));
-//
-//        MvcResult result = mockMvc
-//                .perform(put(url).content(mapper.writeValueAsString(algorithmRelation1Dto))
-//                        .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk()).andReturn();
-//
-//        EntityModel<AlgorithmRelationDto> response = mapper.readValue(result.getResponse().getContentAsString(),
-//                new TypeReference<EntityModel<AlgorithmRelationDto>>() {
-//                });
-//        assertEquals(algorithmRelation1.getSourceAlgorithm().getId(), response.getContent().getSourceAlgorithm().getId());
-//    }
+        doThrow(NoSuchElementException.class).when(algorithmService).findById(any());
 
-//    @Test
-//    public void deleteAlgorithmRelation_notModified() throws Exception {
-//
-//    	when(algorithmService.deleteAlgorithmRelation(any(UUID.class),any(UUID.class))).thenReturn(false);
-//
-//    	mockMvc.perform(delete("/" + Constants.ALGORITHMS + "/{sourceAlgorithm_id}/" + Constants.ALGORITHM_RELATIONS +
-//    			"/{algorithmRelation_id}", UUID.randomUUID(), this.algorithmRelation1.getId()))
-//    			.andExpect(status().isNotModified());
-//    }
-//
-//    @Test
-//    public void deleteAlgorithmRelation_returnOk() throws Exception {
-//        initializeAlgorithms();
-//        doNothing().when(algorithmService).deleteAlgorithmRelation(algorithm1.getId(), algorithmRelation1.getId());
-//
-//        var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-//                .deleteAlgorithmRelationReferenceFromAlgorithm(UUID.randomUUID(), UUID.randomUUID()));
-//
-//        mockMvc.perform(delete(url)).andExpect(status().isOk());
-//    }
+        var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
+                .getAlgorithm(UUID.randomUUID()));
+
+        mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
 
     @Test
-    public void getPatternRelations_returnTwo() throws Exception {
+    @SneakyThrows
+    void getAlgorithm_returnOk() {
         initializeAlgorithms();
-        when(algorithmService.findLinkedPatternRelations(any(), any()))
-                .thenReturn(new PageImpl<>(new ArrayList<>(algorithm1.getRelatedPatterns())));
+
+        doReturn(algorithm1).when(algorithmService).findById(any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
+                .getAlgorithm(UUID.randomUUID()));
+        MvcResult result = mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
+
+        EntityModel<AlgorithmDto> response = mapper.readValue(result.getResponse().getContentAsString(),
+                new TypeReference<>() {
+                });
+        assertEquals(response.getContent().getId(), algorithm1Dto.getId());
+    }
+
+
+
+    @Test
+    @SneakyThrows
+    void getPatternRelationsOfAlgorithm_returnTwo() {
+        initializeAlgorithms();
+
+        doReturn(new PageImpl<>(new ArrayList<>(algorithm1.getRelatedPatterns())))
+                .when(algorithmService).findLinkedPatternRelations(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
                 .getPatternRelationsOfAlgorithm(UUID.randomUUID(), ListParameters.getDefault()));
@@ -552,10 +469,11 @@ public class AlgorithmControllerTest {
     }
 
     @Test
-    public void getPatternRelations_returnNotFound() throws Exception {
+    @SneakyThrows
+    void getPatternRelationsOfAlgorithm_returnNotFound() {
         initializeAlgorithms();
-        when(algorithmService.findLinkedPatternRelations(any(), any()))
-                .thenThrow(NoSuchElementException.class);
+
+        doThrow(NoSuchElementException.class).when(algorithmService).findLinkedPatternRelations(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
                 .getPatternRelationsOfAlgorithm(UUID.randomUUID(), ListParameters.getDefault()));
@@ -564,6 +482,231 @@ public class AlgorithmControllerTest {
                 get(url).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
+
+    @Test
+    @SneakyThrows
+    void createPatternRelationForAlgorithm_returnCreated() {
+        Algorithm algorithm = new Algorithm();
+        algorithm.setId(UUID.randomUUID());
+        algorithm.setName("Algorithm");
+        algorithm.setComputationModel(ComputationModel.CLASSIC);
+
+        PatternRelationType type = new PatternRelationType();
+        type.setName("PatternRelationType");
+        type.setId(UUID.randomUUID());
+
+        PatternRelation patternRelation = new PatternRelation();
+        patternRelation.setPatternRelationType(type);
+        patternRelation.setAlgorithm(algorithm);
+        patternRelation.setPattern(new URI("http://www.example.com"));
+        patternRelation.setDescription("description");
+
+        PatternRelationDto patternRelationDto = ModelMapperUtils.convert(patternRelation, PatternRelationDto.class);
+
+        doReturn(patternRelation).when(patternRelationService).create(any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
+                .createPatternRelationForAlgorithm(algorithm.getId(), null));
+
+        mockMvc.perform(post(url).accept(APPLICATION_JSON)
+                .contentType(APPLICATION_JSON)
+                .content(mapper.writeValueAsString(patternRelationDto))
+        ).andExpect(jsonPath("$.id").isEmpty())
+                .andExpect(jsonPath("$.algorithmId").value(algorithm.getId().toString()))
+                .andExpect(jsonPath("$.patternRelationType.id").value(type.getId().toString()))
+                .andExpect(jsonPath("$.description").value(patternRelation.getDescription()))
+                .andExpect(jsonPath("$.pattern").value(patternRelation.getPattern().toString()))
+                .andExpect(status().isCreated()).andDo(print());
+    }
+
+    @Test
+    @SneakyThrows
+    void createPatternRelationForAlgorithm_returnBadRequest() {
+        Algorithm algorithm = new Algorithm();
+        algorithm.setId(UUID.randomUUID());
+        algorithm.setName("Algorithm");
+        algorithm.setComputationModel(ComputationModel.CLASSIC);
+
+        PatternRelationType type = new PatternRelationType();
+        type.setName("PatternRelationType");
+        type.setId(UUID.randomUUID());
+
+        PatternRelation patternRelation = new PatternRelation();
+        patternRelation.setPatternRelationType(type);
+        patternRelation.setAlgorithm(algorithm);
+        patternRelation.setPattern(new URI("http://www.example.com"));
+        patternRelation.setDescription("description");
+
+        PatternRelationDto patternRelationDto = ModelMapperUtils.convert(patternRelation, PatternRelationDto.class);
+
+        var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
+                .createPatternRelationForAlgorithm(UUID.randomUUID(), null));
+
+        mockMvc.perform(post(url).accept(APPLICATION_JSON)
+                .contentType(APPLICATION_JSON)
+                .content(mapper.writeValueAsString(patternRelationDto))
+        ).andExpect(status().isBadRequest()).andDo(print());
+    }
+
+    @Test
+    @SneakyThrows
+    void createPatternRelationForAlgorithm_returnNotFound() {
+        UUID algorithmId = UUID.randomUUID();
+
+        PatternRelationTypeDto type = new PatternRelationTypeDto();
+        type.setName("PatternRelationType");
+        type.setId(UUID.randomUUID());
+
+        PatternRelationDto patternRelationDto = new PatternRelationDto();
+        patternRelationDto.setPatternRelationType(type);
+        patternRelationDto.setAlgorithmId(algorithmId);
+        patternRelationDto.setPattern(new URI("http://www.example.com"));
+        patternRelationDto.setDescription("description");
+
+        doThrow(NoSuchElementException.class).when(patternRelationService).create(any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
+                .createPatternRelationForAlgorithm(algorithmId, null));
+
+        mockMvc.perform(post(url).accept(APPLICATION_JSON)
+                .contentType(APPLICATION_JSON)
+                .content(mapper.writeValueAsString(patternRelationDto))
+        ).andExpect(status().isNotFound()).andDo(print());
+    }
+
+    @Test
+    @SneakyThrows
+    void updatePatternRelationOfAlgorithm_returnOk() {
+        Algorithm algorithm = new Algorithm();
+        algorithm.setId(UUID.randomUUID());
+        algorithm.setName("Algorithm");
+        algorithm.setComputationModel(ComputationModel.CLASSIC);
+
+        PatternRelationType type = new PatternRelationType();
+        type.setName("PatternRelationType");
+        type.setId(UUID.randomUUID());
+
+        PatternRelation patternRelation = new PatternRelation();
+        patternRelation.setId(UUID.randomUUID());
+        patternRelation.setPatternRelationType(type);
+        patternRelation.setAlgorithm(algorithm);
+        patternRelation.setPattern(new URI("http://www.example.com"));
+        patternRelation.setDescription("description");
+
+        PatternRelationDto patternRelationDto = ModelMapperUtils.convert(patternRelation, PatternRelationDto.class);
+
+        doReturn(patternRelation).when(patternRelationService).update(any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
+                .updatePatternRelationOfAlgorithm(algorithm.getId(), patternRelation.getId(), null));
+
+        mockMvc.perform(put(url).accept(APPLICATION_JSON)
+                .contentType(APPLICATION_JSON)
+                .content(mapper.writeValueAsString(patternRelationDto))
+        ).andExpect(jsonPath("$.id").value(patternRelation.getId().toString()))
+                .andExpect(jsonPath("$.algorithmId").value(algorithm.getId().toString()))
+                .andExpect(jsonPath("$.patternRelationType.id").value(type.getId().toString()))
+                .andExpect(jsonPath("$.description").value(patternRelation.getDescription()))
+                .andExpect(jsonPath("$.pattern").value(patternRelation.getPattern().toString()))
+                .andExpect(status().isOk()).andDo(print());
+    }
+
+    @Test
+    @SneakyThrows
+    void updatePatternRelationOfAlgorithm_returnBadRequest() {
+        Algorithm algorithm = new Algorithm();
+        algorithm.setId(UUID.randomUUID());
+        algorithm.setName("Algorithm");
+        algorithm.setComputationModel(ComputationModel.CLASSIC);
+
+        PatternRelationType type = new PatternRelationType();
+        type.setName("PatternRelationType");
+        type.setId(UUID.randomUUID());
+
+        PatternRelation patternRelation = new PatternRelation();
+        patternRelation.setId(UUID.randomUUID());
+        patternRelation.setPatternRelationType(type);
+        patternRelation.setAlgorithm(algorithm);
+        patternRelation.setPattern(new URI("http://www.example.com"));
+        patternRelation.setDescription("description");
+
+        PatternRelationDto patternRelationDto = ModelMapperUtils.convert(patternRelation, PatternRelationDto.class);
+
+        var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
+                .updatePatternRelationOfAlgorithm(UUID.randomUUID(), patternRelation.getId(), null));
+
+        mockMvc.perform(put(url).accept(APPLICATION_JSON)
+                .contentType(APPLICATION_JSON)
+                .content(mapper.writeValueAsString(patternRelationDto))
+        ).andExpect(status().isBadRequest()).andDo(print());
+    }
+
+    @Test
+    @SneakyThrows
+    void updatePatternRelationOfAlgorithm_returnNotFound() {
+        UUID algorithmId = UUID.randomUUID();
+
+        PatternRelationTypeDto type = new PatternRelationTypeDto();
+        type.setName("PatternRelationType");
+        type.setId(UUID.randomUUID());
+
+        PatternRelationDto patternRelationDto = new PatternRelationDto();
+        patternRelationDto.setId(UUID.randomUUID());
+        patternRelationDto.setPatternRelationType(type);
+        patternRelationDto.setAlgorithmId(algorithmId);
+        patternRelationDto.setPattern(new URI("http://www.example.com"));
+        patternRelationDto.setDescription("description");
+
+        doThrow(NoSuchElementException.class).when(patternRelationService).update(any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
+                .updatePatternRelationOfAlgorithm(algorithmId, patternRelationDto.getId(), null));
+
+        mockMvc.perform(put(url).accept(APPLICATION_JSON)
+                .contentType(APPLICATION_JSON)
+                .content(mapper.writeValueAsString(patternRelationDto))
+        ).andExpect(status().isNotFound()).andDo(print());
+    }
+
+    @Test
+    @SneakyThrows
+    void deletePatternRelationOfAlgorithm_returnNoContent() {
+        doNothing().when(patternRelationService).checkIfAlgorithmIsInPatternRelation(any(), any());
+        doNothing().when(patternRelationService).delete(UUID.randomUUID());
+
+        var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
+                .deletePatternRelationOfAlgorithm(UUID.randomUUID(), UUID.randomUUID()));
+
+        mockMvc.perform(delete(url).accept(APPLICATION_JSON))
+                .andExpect(status().isNoContent()).andDo(print());
+    }
+
+    @Test
+    @SneakyThrows
+    void deletePatternRelationOfAlgorithm_returnNotFound() {
+        doThrow(NoSuchElementException.class).when(patternRelationService).checkIfAlgorithmIsInPatternRelation(any(), any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
+                .deletePatternRelationOfAlgorithm(UUID.randomUUID(), UUID.randomUUID()));
+
+        mockMvc.perform(delete(url).accept(APPLICATION_JSON))
+                .andExpect(status().isNotFound()).andDo(print());
+    }
+
+    @Test
+    @SneakyThrows
+    void getPatternRelationOfAlgorithm_EmptyList_returnOk() {
+
+    }
+
+    @Test
+    @SneakyThrows
+    void getPatternRelationOfAlgorithm_TwoElements_returnOk() {
+
+    }
+
+
+    //////////////////////////////////// Fixed up to this point /////////////////////////////////////////////////////
 
     @Test
     void testListComputingResources_ClassicAlgorithm() throws Exception {
