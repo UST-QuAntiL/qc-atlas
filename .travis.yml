@@ -7,6 +7,6 @@ services:
   - docker
 
 script:
-  - mvn package --fail-at-end
+  - mvn package --fail-at-end | grep -v 'at org'
 after_success:
   - bash <(curl -s https://codecov.io/bash)
