@@ -1126,7 +1126,252 @@ public class AlgorithmControllerTest {
         });
     }
 
-    
+    @Test
+    @SneakyThrows
+    void getComputeResourcePropertiesOfAlgorithm_EmptyList_returnOk() {
+        doReturn(new PageImpl<>(List.of())).when(computeResourcePropertyService)
+                .findComputeResourcePropertiesOfAlgorithm(any(), any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
+                .getComputeResourcePropertiesOfAlgorithm( UUID.randomUUID(), ListParameters.getDefault()));
+        mockMvc.perform(get(url).accept(APPLICATION_JSON))
+                .andExpect(jsonPath("$._embedded.computeResourceProperties").doesNotExist())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @SneakyThrows
+    void getComputeResourcePropertiesOfAlgorithm_SingleElement_returnOk() {
+        var type = new ComputeResourcePropertyType();
+        type.setName("test");
+        type.setId(UUID.randomUUID());
+        type.setDatatype(ComputeResourcePropertyDataType.FLOAT);
+        var res = new ComputeResourceProperty();
+        res.setComputeResourcePropertyType(type);
+        res.setValue("1.3");
+        res.setId(UUID.randomUUID());
+
+        doReturn(new PageImpl<>(List.of(res))).when(computeResourcePropertyService)
+                .findComputeResourcePropertiesOfAlgorithm(any(), any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
+                .getComputeResourcePropertiesOfAlgorithm( UUID.randomUUID(), ListParameters.getDefault()));
+        mockMvc.perform(get(url).accept(APPLICATION_JSON))
+                .andExpect(jsonPath("$._embedded.computeResourceProperties[0].id").value(res.getId().toString()))
+                .andExpect(jsonPath("$._embedded.computeResourceProperties[0].type.id").value(type.getId().toString()))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @SneakyThrows
+    void getComputeResourcePropertiesOfAlgorithm_returnNotFound() {
+        doThrow(new NoSuchElementException()).when(computeResourcePropertyService)
+                .findComputeResourcePropertiesOfAlgorithm(any(), any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
+                .getComputeResourcePropertiesOfAlgorithm( UUID.randomUUID(), ListParameters.getDefault()));
+        mockMvc.perform(get(url).accept(APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @SneakyThrows
+    void getComputeResourcePropertyOfAlgorithm_SingleElement_returnOk() {
+        var type = new ComputeResourcePropertyType();
+        type.setName("test");
+        type.setId(UUID.randomUUID());
+        type.setDatatype(ComputeResourcePropertyDataType.FLOAT);
+        var res = new ComputeResourceProperty();
+        res.setComputeResourcePropertyType(type);
+        res.setValue("1.3");
+        res.setId(UUID.randomUUID());
+
+        doReturn(res).when(computeResourcePropertyService).findById(any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
+                .getComputeResourcePropertyOfAlgorithm( UUID.randomUUID(), res.getId()));
+        mockMvc.perform(get(url).accept(APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(res.getId().toString()))
+                .andExpect(jsonPath("$.type.id").value(type.getId().toString()))
+                .andExpect(status().isOk());
+    }
+
+
+
+    @Test
+    @SneakyThrows
+    void getComputeResourcePropertyOfAlgorithm_UnknownProperty_returnNotFound() {
+        doThrow(new NoSuchElementException()).when(computeResourcePropertyService).findById(any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
+                .getComputeResourcePropertyOfAlgorithm( UUID.randomUUID(), UUID.randomUUID()));
+        mockMvc.perform(get(url).accept(APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @SneakyThrows
+    void deleteComputeResourcePropertyOfAlgorithm_returnNoContent() {
+        doNothing().when(computeResourcePropertyService).delete(any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
+                .deleteComputeResourcePropertyOfAlgorithm( UUID.randomUUID(), UUID.randomUUID()));
+        mockMvc.perform(delete(url).accept(APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+    }
+
+
+    @Test
+    @SneakyThrows
+    void deleteComputeResourcePropertyOfAlgorithm_returnNotFound() {
+        doThrow(new NoSuchElementException()).when(computeResourcePropertyService).delete(any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
+                .deleteComputeResourcePropertyOfAlgorithm( UUID.randomUUID(), UUID.randomUUID()));
+        mockMvc.perform(delete(url).accept(APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @SneakyThrows
+    void createComputeResourcePropertyForAlgorithm_returnCreated() {
+        var type = new ComputeResourcePropertyType();
+        type.setName("test");
+        type.setId(UUID.randomUUID());
+        type.setDatatype(ComputeResourcePropertyDataType.FLOAT);
+        var res = new ComputeResourceProperty();
+        res.setComputeResourcePropertyType(type);
+        res.setValue("1.3");
+        res.setId(UUID.randomUUID());
+
+        var typeDto = new ComputeResourcePropertyTypeDto();
+        typeDto.setId(type.getId());
+        var resDto = new ComputeResourcePropertyDto();
+        resDto.setValue(res.getValue());
+        resDto.setType(typeDto);
+
+        doReturn(res).when(computeResourcePropertyService).addComputeResourcePropertyToAlgorithm(any(), any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
+                .createComputeResourcePropertyForAlgorithm( UUID.randomUUID(), null));
+        mockMvc.perform(
+                post(url)
+                        .accept(APPLICATION_JSON)
+                        .contentType(APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(resDto))
+        ).andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(res.getId().toString()))
+                .andExpect(jsonPath("$.type.id").value(type.getId().toString()));
+    }
+
+    @Test
+    @SneakyThrows
+    void createComputeResourcePropertyForAlgorithm_returnBadRequest() {
+        var resDto = new ComputeResourcePropertyDto();
+        resDto.setValue("test");
+        var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
+                .createComputeResourcePropertyForAlgorithm( UUID.randomUUID(), null));
+        mockMvc.perform(
+                post(url)
+                        .accept(APPLICATION_JSON)
+                        .contentType(APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(resDto))
+        ).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @SneakyThrows
+    void createComputeResourcePropertyForAlgorithm_returnNotFound() {
+        doThrow(new NoSuchElementException()).when(computeResourcePropertyService)
+                .addComputeResourcePropertyToAlgorithm(any(), any());
+
+        var typeDto = new ComputeResourcePropertyTypeDto();
+        typeDto.setId(UUID.randomUUID());
+        var resDto = new ComputeResourcePropertyDto();
+        resDto.setValue("123");
+        resDto.setType(typeDto);
+
+        var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
+                .createComputeResourcePropertyForAlgorithm( UUID.randomUUID(), null));
+        mockMvc.perform(
+                post(url)
+                        .accept(APPLICATION_JSON)
+                        .contentType(APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(resDto))
+        ).andExpect(status().isNotFound());
+    }
+
+    @Test
+    @SneakyThrows
+    void updateComputeResourcePropertyOfAlgorithm_returnOk() {
+        var type = new ComputeResourcePropertyType();
+        type.setName("test");
+        type.setId(UUID.randomUUID());
+        type.setDatatype(ComputeResourcePropertyDataType.FLOAT);
+        var res = new ComputeResourceProperty();
+        res.setId(UUID.randomUUID());
+        res.setComputeResourcePropertyType(type);
+        res.setValue("1.3");
+        res.setId(UUID.randomUUID());
+
+        var typeDto = new ComputeResourcePropertyTypeDto();
+        typeDto.setId(type.getId());
+        var resDto = new ComputeResourcePropertyDto();
+        resDto.setValue(res.getValue());
+        resDto.setType(typeDto);
+
+        doReturn(res).when(computeResourcePropertyService).update(any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
+                .updateComputeResourcePropertyOfAlgorithm( UUID.randomUUID(), res.getId(), null));
+        mockMvc.perform(
+                put(url)
+                        .accept(APPLICATION_JSON)
+                        .contentType(APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(resDto))
+        ).andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(res.getId().toString()))
+                .andExpect(jsonPath("$.type.id").value(type.getId().toString()));
+    }
+
+    @Test
+    @SneakyThrows
+    void updateComputeResourcePropertyOfAlgorithm_returnBadRequest() {
+        var resDto = new ComputeResourcePropertyDto();
+        resDto.setValue("123");
+
+        var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
+                .updateComputeResourcePropertyOfAlgorithm( UUID.randomUUID(), UUID.randomUUID(), null));
+        mockMvc.perform(
+                put(url)
+                        .accept(APPLICATION_JSON)
+                        .contentType(APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(resDto))
+        ).andExpect(status().isBadRequest());
+    }
+
+
+
+    @Test
+    @SneakyThrows
+    void updateComputeResourcePropertyOfAlgorithm_UnknownProperty_returnNotFound() {
+        doThrow(new NoSuchElementException()).when(computeResourcePropertyService).update(any());
+
+        var typeDto = new ComputeResourcePropertyTypeDto();
+        typeDto.setId(UUID.randomUUID());
+        var resDto = new ComputeResourcePropertyDto();
+        resDto.setValue("123");
+        resDto.setType(typeDto);
+
+        var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
+                .updateComputeResourcePropertyOfAlgorithm(UUID.randomUUID(), UUID.randomUUID(), null));
+        mockMvc.perform(
+                put(url)
+                        .accept(APPLICATION_JSON)
+                        .contentType(APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(resDto))
+        ).andExpect(status().isNotFound());
+    }
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
