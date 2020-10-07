@@ -19,6 +19,7 @@
 
 package org.planqk.atlas.core.services;
 
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.DiscussionComment;
@@ -59,6 +60,14 @@ public class DiscussionCommentServiceImpl implements DiscussionCommentService {
     @Override
     public DiscussionComment findById(@NonNull UUID commentId) {
         return ServiceUtils.findById(commentId, DiscussionComment.class, discussionCommentRepository);
+    }
+
+    @Override
+    public void checkIfDiscussionCommentIsInDiscussionTopic(@NonNull UUID commentId, @NonNull UUID topicId) {
+        if (!discussionCommentRepository.existsByIdAndDiscussionTopic_Id(commentId, topicId)) {
+            throw new NoSuchElementException(String.format("A DiscussionComment with the ID \"%s\" does not " +
+                    "exist in the DiscussionTopic with ID \"%s\"", commentId.toString(), topicId.toString()));
+        }
     }
 
     @Override

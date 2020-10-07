@@ -19,10 +19,8 @@
 
 package org.planqk.atlas.web.controller;
 
-import java.util.NoSuchElementException;
 import java.util.UUID;
 
-import org.planqk.atlas.core.model.DiscussionComment;
 import org.planqk.atlas.core.model.DiscussionTopic;
 import org.planqk.atlas.core.services.DiscussionCommentService;
 import org.planqk.atlas.core.services.DiscussionTopicService;
@@ -141,11 +139,7 @@ public class DiscussionTopicController {
     public HttpEntity<EntityModel<DiscussionCommentDto>> getDiscussionComment(
             @PathVariable UUID topicId,
             @PathVariable UUID commentId) {
-        DiscussionComment discussionComment = discussionCommentService.findById(commentId);
-        if (!(discussionComment.getDiscussionTopic().getId().equals(topicId))) {
-            log.debug("Not the matching topic id: {}", topicId);
-            throw new NoSuchElementException();
-        }
+        discussionCommentService.checkIfDiscussionCommentIsInDiscussionTopic(commentId, topicId);
         return discussionCommentController.getDiscussionComment(commentId);
     }
 
@@ -156,11 +150,7 @@ public class DiscussionTopicController {
     }, description = "")
     @DeleteMapping("/{topicId}/" + Constants.DISCUSSION_COMMENTS + "/{commentId}")
     public HttpEntity<Void> deleteDiscussionComment(@PathVariable UUID topicId, @PathVariable UUID commentId) {
-        DiscussionComment discussionComment = discussionCommentService.findById(commentId);
-        if (!(discussionComment.getDiscussionTopic().getId().equals(topicId))) {
-            log.debug("Not the matching topic id: {}", topicId);
-            throw new NoSuchElementException();
-        }
+        discussionCommentService.checkIfDiscussionCommentIsInDiscussionTopic(commentId, topicId);
         return discussionCommentController.deleteDiscussionComment(commentId);
     }
 
@@ -174,11 +164,7 @@ public class DiscussionTopicController {
             @PathVariable UUID topicId,
             @PathVariable UUID commentId,
             @Validated(ValidationGroups.Update.class) @RequestBody DiscussionCommentDto discussionCommentDto) {
-        DiscussionComment discussionComment = discussionCommentService.findById(commentId);
-        if (!(discussionComment.getDiscussionTopic().getId().equals(topicId))) {
-            log.debug("Not the matching topic id: {}", topicId);
-            throw new NoSuchElementException();
-        }
+        discussionCommentService.checkIfDiscussionCommentIsInDiscussionTopic(commentId, topicId);
         discussionCommentDto.setId(commentId);
         return discussionCommentController.updateDiscussionComment(commentId, discussionCommentDto);
     }

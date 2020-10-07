@@ -67,7 +67,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest( {DiscussionCommentController.class, DiscussionTopicController.class})
+@WebMvcTest({DiscussionCommentController.class, DiscussionTopicController.class})
 @ExtendWith(MockitoExtension.class)
 @AutoConfigureMockMvc
 @EnableLinkAssemblers
@@ -224,10 +224,10 @@ public class DiscussionTopicControllerTest {
                 new TypeReference<>() {
                 });
 
-        assertEquals(response.getContent().getId(), discussionTopicDto.getId());
-        assertEquals(response.getContent().getTitle(), discussionTopicDto.getTitle());
-        assertEquals(response.getContent().getDate(), discussionTopicDto.getDate());
-        assertEquals(response.getContent().getStatus(), discussionTopicDto.getStatus());
+        assertEquals(discussionTopicDto.getId(), response.getContent().getId());
+        assertEquals(discussionTopicDto.getTitle(), response.getContent().getTitle());
+        assertEquals(discussionTopicDto.getDate(), response.getContent().getDate());
+        assertEquals(discussionTopicDto.getStatus(), response.getContent().getStatus());
     }
 
     @Test

@@ -38,6 +38,8 @@ public interface DiscussionCommentService {
 
     DiscussionComment findById(UUID commentId);
 
+    void checkIfDiscussionCommentIsInDiscussionTopic(UUID commentId, UUID topicId);
+
     @Transactional
     DiscussionComment update(DiscussionComment comment);
 
