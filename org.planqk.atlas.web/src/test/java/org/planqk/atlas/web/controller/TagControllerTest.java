@@ -210,7 +210,7 @@ public class TagControllerTest {
         MvcResult mvcResult = mockMvc
                 .perform(get(url).accept(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$._embedded.implementations").doesNotExist())
-                .andExpect(status().isOk()).andDo(print()).andReturn();
+                .andExpect(status().isOk())..andReturn();
     }
 
     @Test
@@ -228,7 +228,7 @@ public class TagControllerTest {
                 .perform(get(url).accept(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$._embedded.implementations").isArray())
                 .andExpect(jsonPath("$._embedded.implementations[0].id").value(impl.getId().toString()))
-                .andExpect(status().isOk()).andDo(print()).andReturn();
+                .andExpect(status().isOk())..andReturn();
     }
 
     @Test
@@ -257,7 +257,7 @@ public class TagControllerTest {
                 .perform(get(url).accept(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$._embedded.algorithms").isArray())
                 .andExpect(jsonPath("$._embedded.algorithms[0].id").value(algo.getId().toString()))
-                .andExpect(status().isOk()).andDo(print()).andReturn();
+                .andExpect(status().isOk())..andReturn();
     }
 
     @Test
@@ -271,7 +271,7 @@ public class TagControllerTest {
                 .perform(get(url).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$._embedded.algorithms").doesNotExist())
-                .andDo(print()).andReturn();
+                ..andReturn();
     }
 
     @Test

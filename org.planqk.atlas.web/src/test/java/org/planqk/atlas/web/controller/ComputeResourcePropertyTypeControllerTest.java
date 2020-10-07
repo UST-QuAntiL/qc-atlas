@@ -136,7 +136,7 @@ public class ComputeResourcePropertyTypeControllerTest {
                 .andExpect(jsonPath("$.datatype").value(type.getDatatype().toString()))
                 .andExpect(jsonPath("$.name").value(type.getName()))
                 .andExpect(jsonPath("$.description").value(type.getDescription()))
-                .andExpect(status().isCreated()).andDo(print());
+                .andExpect(status().isCreated()).;
     }
 
     @Test
@@ -151,7 +151,7 @@ public class ComputeResourcePropertyTypeControllerTest {
         mockMvc.perform(post(url).accept(APPLICATION_JSON)
                 .contentType(APPLICATION_JSON)
                 .content(mapper.writeValueAsString(typeDto))
-        ).andExpect(status().isBadRequest()).andDo(print());
+        ).andExpect(status().isBadRequest()).;
     }
 
     @Test
@@ -170,7 +170,7 @@ public class ComputeResourcePropertyTypeControllerTest {
         mockMvc.perform(post(url).accept(APPLICATION_JSON)
                 .contentType(APPLICATION_JSON)
                 .content(mapper.writeValueAsString(typeDto))
-        ).andExpect(status().isNotFound()).andDo(print());
+        ).andExpect(status().isNotFound()).;
     }
 
     @Test
@@ -201,7 +201,7 @@ public class ComputeResourcePropertyTypeControllerTest {
                 .andExpect(jsonPath("$.datatype").value(type.getDatatype().toString()))
                 .andExpect(jsonPath("$.name").value(type.getName()))
                 .andExpect(jsonPath("$.description").value(type.getDescription()))
-                .andExpect(status().isOk()).andDo(print());
+                .andExpect(status().isOk()).;
     }
 
     @Test
@@ -216,7 +216,7 @@ public class ComputeResourcePropertyTypeControllerTest {
         mockMvc.perform(put(url).accept(APPLICATION_JSON)
                 .contentType(APPLICATION_JSON)
                 .content(mapper.writeValueAsString(typeDto))
-        ).andExpect(status().isBadRequest()).andDo(print());
+        ).andExpect(status().isBadRequest()).;
     }
 
     @Test
@@ -235,7 +235,7 @@ public class ComputeResourcePropertyTypeControllerTest {
         mockMvc.perform(put(url).accept(APPLICATION_JSON)
                 .contentType(APPLICATION_JSON)
                 .content(mapper.writeValueAsString(typeDto))
-        ).andExpect(status().isNotFound()).andDo(print());
+        ).andExpect(status().isNotFound()).;
     }
 
     @Test
