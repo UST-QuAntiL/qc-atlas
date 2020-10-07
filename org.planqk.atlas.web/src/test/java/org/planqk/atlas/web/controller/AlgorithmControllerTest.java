@@ -40,6 +40,7 @@ import org.planqk.atlas.core.model.ComputationModel;
 import org.planqk.atlas.core.model.ComputeResourceProperty;
 import org.planqk.atlas.core.model.ComputeResourcePropertyDataType;
 import org.planqk.atlas.core.model.ComputeResourcePropertyType;
+import org.planqk.atlas.core.model.Image;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.model.PatternRelationType;
@@ -1682,14 +1683,15 @@ public class AlgorithmControllerTest {
     //////////////////////////////////// Fixed up to this point /////////////////////////////////////////////////////
 
     @Test
-    void testUploadSketch() throws Exception {
+    @SneakyThrows
+    void uploadSketch() {
 
         // mock
         final UUID algorithmId = UUID.randomUUID();
         final UUID resultId = UUID.randomUUID();
         final String description = "test description";
         final String baseURL = "baseURL";
-        byte[] testFile = hexStringToByteArray("e04fd020ea3a6910a2d808002b30309d");
+        byte[] testFile = new byte[20];
         final MockMultipartFile file = new MockMultipartFile("file", testFile);
         final Sketch sketch = new Sketch();
         sketch.setId(resultId);
@@ -1710,7 +1712,8 @@ public class AlgorithmControllerTest {
     }
 
     @Test
-    void testGetSketches() throws Exception {
+    @SneakyThrows
+    void getSketches() {
 
         // mock
         final UUID algorithmId = UUID.randomUUID();
@@ -1733,7 +1736,8 @@ public class AlgorithmControllerTest {
     }
 
     @Test
-    void testDeleteSketch() throws Exception {
+    @SneakyThrows
+    void deleteSketch() {
 
         // mock
         final UUID algorithmId = UUID.randomUUID();
@@ -1750,7 +1754,8 @@ public class AlgorithmControllerTest {
     }
 
     @Test
-    void testGetSketch() throws Exception {
+    @SneakyThrows
+    void getSketch() {
 
         // mock
         final UUID algorithmId = UUID.randomUUID();
@@ -1776,8 +1781,32 @@ public class AlgorithmControllerTest {
         assertEquals(response.getContent().getId(), sketch.getId());
     }
 
-    //@Test
-    void testGetSketchImage() throws Exception {
+    @Test
+    @SneakyThrows
+    void updateSketch() {
+        final UUID algorithmId = UUID.randomUUID();
+        final UUID sketchId = UUID.randomUUID();
+
+        final Sketch sketch = new Sketch();
+        sketch.setId(sketchId);
+        SketchDto sketchDto = ModelMapperUtils.convert(sketch, SketchDto.class);
+
+        doReturn(sketch).when(sketchService).update(any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
+                .updateSketch(algorithmId, sketchId, null));
+
+        mockMvc.perform(put(url)
+                        .accept(APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(sketchDto))
+                        .contentType(APPLICATION_JSON)
+        ).andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(sketch.getId().toString()));
+    }
+
+    @Test
+    @SneakyThrows
+    void getSketchImage() {
 
         // mock
         final UUID algorithmId = UUID.randomUUID();
@@ -1785,29 +1814,22 @@ public class AlgorithmControllerTest {
 
         final Sketch sketch = new Sketch();
         sketch.setId(sketchId);
-        sketch.setImageURL(new URL("test/image/url"));
-        when(sketchService.getImageBySketch(sketchId).getImage()).thenReturn(this.hexStringToByteArray(sketch.getImageURL().toString()));
+        sketch.setImageURL(new URL("http://test/image/url"));
 
-        final String path = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
+        Image image = new Image();
+        image.setImage(new byte[20]);
+        image.setMimeType("img/png");
+
+        doReturn(image).when(sketchService).getImageBySketch(sketchId);
+
+        var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
                 .getSketchImage(algorithmId, sketchId));
 
         // call
-        final ResultActions resultActions = mockMvc.perform(get(path)).andExpect(status().isOk());
+        var resultActions = mockMvc.perform(get(url)).andExpect(status().isOk()).andReturn();
 
-        // test
-        Mockito.verify(sketchService, times(1)).getImageBySketch(sketchId);
+        byte[] responseImage = resultActions.getResponse().getContentAsByteArray();
 
-        byte[] json = resultActions.andReturn().getResponse().getContentAsByteArray();
-        assertTrue(Arrays.equals(this.hexStringToByteArray(sketch.getImageURL().toString()), json));
-    }
-
-    private byte[] hexStringToByteArray(String s) {
-        int len = s.length();
-        byte[] data = new byte[len / 2];
-        for (int i = 0; i < len; i += 2) {
-            data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
-                    + Character.digit(s.charAt(i + 1), 16));
-        }
-        return data;
+        assertThat(image.getImage()).isEqualTo(responseImage);
     }
 }

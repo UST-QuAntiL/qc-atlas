@@ -685,9 +685,10 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "404", description = "Sketch with given ID doesn't exist")
     }, description = "Update the properties of a sketch.")
     @PutMapping("/{algorithmId}/" + Constants.SKETCHES + "/{sketchId}")
-    public ResponseEntity<EntityModel<SketchDto>> updateSketch(@PathVariable UUID algorithmId, @PathVariable UUID sketchId,
-                                                               @Validated @RequestBody SketchDto sketchDto) {
-        log.debug("Put to update sketch with id: {}.", sketchId);
+    public ResponseEntity<EntityModel<SketchDto>> updateSketch(
+            @PathVariable UUID algorithmId,
+            @PathVariable UUID sketchId,
+            @Validated @RequestBody SketchDto sketchDto) {
         sketchDto.setId(sketchId);
 
         final Sketch updatedSketch = sketchService.update(
