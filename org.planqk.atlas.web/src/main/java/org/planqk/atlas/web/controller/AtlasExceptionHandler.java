@@ -63,13 +63,13 @@ public class AtlasExceptionHandler {
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<DataIntegrityViolationException> handleIntegrityViolationException(DataIntegrityViolationException e) {
+    public ResponseEntity<DataIntegrityViolationException> handleDataIntegrityViolationException(DataIntegrityViolationException e) {
         log.warn(e.getMessage(), e);
         return ResponseEntity.badRequest().body(e);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<IllegalArgumentException> handleIntegrityViolationException(IllegalArgumentException e) {
+    public ResponseEntity<IllegalArgumentException> handleIllegalArgumentException(IllegalArgumentException e) {
         log.warn(e.getMessage(), e);
         return ResponseEntity.badRequest().body(e);
     }
