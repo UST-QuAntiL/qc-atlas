@@ -288,7 +288,7 @@ public class ProblemTypeControllerTest {
                         .accept(APPLICATION_JSON)
         ).andExpect(status().isOk())
                 .andExpect(jsonPath("$._embedded.problemTypes[0].id").value(probType.getId().toString()))
-                .andDo(print());
+                .;
     }
 
     @Test

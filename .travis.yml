@@ -2,11 +2,14 @@ dist: bionic
 sudo: required
 language: java
 jdk:
-  - openjdk11
+    - openjdk11
 services:
-  - docker
+    - docker
 
 script:
-  - mvn package --fail-at-end
+    # Filter Stacktraces to reduce log length significantly
+    # Log messages and exceptions are still shown, but without
+    # the attached Stacktrace
+    - mvn package --fail-at-end | grep -v -E '(\tat.*\r)+)))'
 after_success:
-  - bash <(curl -s https://codecov.io/bash)
+    - bash <(curl -s https://codecov.io/bash)

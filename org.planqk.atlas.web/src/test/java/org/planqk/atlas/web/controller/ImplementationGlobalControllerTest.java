@@ -72,7 +72,7 @@ public class ImplementationGlobalControllerTest {
                 .getImplementations(ListParameters.getDefault()));
         mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON)
         ).andExpect(jsonPath("$._embedded.implementations").doesNotExist())
-                .andExpect(status().isOk()).andDo(print());
+                .andExpect(status().isOk()).;
     }
 
     @Test
@@ -93,6 +93,6 @@ public class ImplementationGlobalControllerTest {
         ).andExpect(jsonPath("$._embedded.implementations[0].name").value(impl.getName()))
                 .andExpect(jsonPath("$._embedded.implementations[0].implementedAlgorithmId").value(algo.getId().toString()))
                 .andExpect(jsonPath("$._embedded.implementations[0].id").value(impl.getId().toString()))
-                .andExpect(status().isOk()).andDo(print());
+                .andExpect(status().isOk()).;
     }
 }
