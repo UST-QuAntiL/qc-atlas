@@ -64,7 +64,6 @@ import static org.mockito.Mockito.when;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -207,10 +206,10 @@ public class TagControllerTest {
         doReturn(tag).when(tagService).findByValue(any());
         var url = linkBuilderService.urlStringTo(methodOn(TagController.class)
                 .getImplementationsOfTag("test"));
-        MvcResult mvcResult = mockMvc
+        mockMvc
                 .perform(get(url).accept(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$._embedded.implementations").doesNotExist())
-                .andExpect(status().isOk())..andReturn();
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -228,7 +227,7 @@ public class TagControllerTest {
                 .perform(get(url).accept(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$._embedded.implementations").isArray())
                 .andExpect(jsonPath("$._embedded.implementations[0].id").value(impl.getId().toString()))
-                .andExpect(status().isOk())..andReturn();
+                .andExpect(status().isOk()).andReturn();
     }
 
     @Test
@@ -257,7 +256,7 @@ public class TagControllerTest {
                 .perform(get(url).accept(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$._embedded.algorithms").isArray())
                 .andExpect(jsonPath("$._embedded.algorithms[0].id").value(algo.getId().toString()))
-                .andExpect(status().isOk())..andReturn();
+                .andExpect(status().isOk()).andReturn();
     }
 
     @Test
@@ -271,7 +270,7 @@ public class TagControllerTest {
                 .perform(get(url).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$._embedded.algorithms").doesNotExist())
-                ..andReturn();
+                .andReturn();
     }
 
     @Test

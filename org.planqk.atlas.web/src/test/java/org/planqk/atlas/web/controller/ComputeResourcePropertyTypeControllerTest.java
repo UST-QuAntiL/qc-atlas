@@ -35,7 +35,6 @@ import org.planqk.atlas.web.linkassembler.LinkBuilderService;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
@@ -46,7 +45,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.hateoas.EntityModel;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -61,7 +59,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -136,7 +133,7 @@ public class ComputeResourcePropertyTypeControllerTest {
                 .andExpect(jsonPath("$.datatype").value(type.getDatatype().toString()))
                 .andExpect(jsonPath("$.name").value(type.getName()))
                 .andExpect(jsonPath("$.description").value(type.getDescription()))
-                .andExpect(status().isCreated()).;
+                .andExpect(status().isCreated());
     }
 
     @Test
@@ -151,7 +148,7 @@ public class ComputeResourcePropertyTypeControllerTest {
         mockMvc.perform(post(url).accept(APPLICATION_JSON)
                 .contentType(APPLICATION_JSON)
                 .content(mapper.writeValueAsString(typeDto))
-        ).andExpect(status().isBadRequest()).;
+        ).andExpect(status().isBadRequest());
     }
 
     @Test
@@ -170,7 +167,7 @@ public class ComputeResourcePropertyTypeControllerTest {
         mockMvc.perform(post(url).accept(APPLICATION_JSON)
                 .contentType(APPLICATION_JSON)
                 .content(mapper.writeValueAsString(typeDto))
-        ).andExpect(status().isNotFound()).;
+        ).andExpect(status().isNotFound());
     }
 
     @Test
@@ -201,7 +198,7 @@ public class ComputeResourcePropertyTypeControllerTest {
                 .andExpect(jsonPath("$.datatype").value(type.getDatatype().toString()))
                 .andExpect(jsonPath("$.name").value(type.getName()))
                 .andExpect(jsonPath("$.description").value(type.getDescription()))
-                .andExpect(status().isOk()).;
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -216,7 +213,7 @@ public class ComputeResourcePropertyTypeControllerTest {
         mockMvc.perform(put(url).accept(APPLICATION_JSON)
                 .contentType(APPLICATION_JSON)
                 .content(mapper.writeValueAsString(typeDto))
-        ).andExpect(status().isBadRequest()).;
+        ).andExpect(status().isBadRequest());
     }
 
     @Test
@@ -235,7 +232,7 @@ public class ComputeResourcePropertyTypeControllerTest {
         mockMvc.perform(put(url).accept(APPLICATION_JSON)
                 .contentType(APPLICATION_JSON)
                 .content(mapper.writeValueAsString(typeDto))
-        ).andExpect(status().isNotFound()).;
+        ).andExpect(status().isNotFound());
     }
 
     @Test
