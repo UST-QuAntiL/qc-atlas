@@ -26,6 +26,7 @@ import java.util.UUID;
 import org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException;
 import org.planqk.atlas.core.model.CloudService;
 import org.planqk.atlas.core.model.ComputeResource;
+import org.planqk.atlas.core.model.SoftwarePlatform;
 import org.planqk.atlas.core.services.CloudServiceService;
 import org.planqk.atlas.core.services.LinkingService;
 import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
@@ -36,6 +37,7 @@ import org.planqk.atlas.web.linkassembler.LinkBuilderService;
 import org.planqk.atlas.web.utils.ListParameters;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -87,7 +89,8 @@ public class CloudServiceControllerTest {
     private final Pageable pageable = PageRequest.of(page, size);
 
     @Test
-    public void addCloudService_returnBadRequest() throws Exception {
+    @SneakyThrows
+    public void addCloudService_returnBadRequest() {
         var resource = new CloudServiceDto();
         resource.setId(UUID.randomUUID());
 
@@ -101,7 +104,8 @@ public class CloudServiceControllerTest {
     }
 
     @Test
-    public void addCloudService_returnCreated() throws Exception {
+    @SneakyThrows
+    public void addCloudService_returnCreated() {
         var service = new CloudServiceDto();
         service.setName("Hello World");
 
@@ -124,7 +128,8 @@ public class CloudServiceControllerTest {
     }
 
     @Test
-    public void updateCloudService_returnNotFound() throws Exception {
+    @SneakyThrows
+    public void updateCloudService_returnNotFound() {
         var resource = new CloudServiceDto();
         resource.setId(UUID.randomUUID());
         resource.setName("Hello World");
@@ -141,7 +146,8 @@ public class CloudServiceControllerTest {
     }
 
     @Test
-    public void updateCloudService_returnBadRequest() throws Exception {
+    @SneakyThrows
+    public void updateCloudService_returnBadRequest() {
         var resource = new CloudServiceDto();
         resource.setId(UUID.randomUUID());
 
@@ -155,7 +161,8 @@ public class CloudServiceControllerTest {
     }
 
     @Test
-    public void updateCloudService_returnOk() throws Exception {
+    @SneakyThrows
+    public void updateCloudService_returnOk() {
         var resource = new CloudServiceDto();
         resource.setId(UUID.randomUUID());
         resource.setName("Hello World");
@@ -179,7 +186,8 @@ public class CloudServiceControllerTest {
     }
 
     @Test
-    void getCloudService_returnOk() throws Exception {
+    @SneakyThrows
+    void getCloudService_returnOk() {
         var resource = new CloudService();
         resource.setId(UUID.randomUUID());
         resource.setName("Test");
@@ -196,7 +204,8 @@ public class CloudServiceControllerTest {
     }
 
     @Test
-    void listCloudServices_empty() throws Exception {
+    @SneakyThrows
+    void listCloudServices_empty() {
         doReturn(Page.empty()).when(cloudServiceService).findAll(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(CloudServiceController.class)
@@ -213,7 +222,8 @@ public class CloudServiceControllerTest {
     }
 
     @Test
-    void searchCloudServices_empty() throws Exception {
+    @SneakyThrows
+    void searchCloudServices_empty() {
         doReturn(Page.empty()).when(cloudServiceService).searchAllByName(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(CloudServiceController.class)
@@ -230,7 +240,8 @@ public class CloudServiceControllerTest {
     }
 
     @Test
-    void listCloudService_notEmpty() throws Exception {
+    @SneakyThrows
+    void listCloudService_notEmpty() {
         var inputList = new ArrayList<CloudService>();
         for (int i = 0; i < 50; i++) {
             var element = new CloudService();
@@ -260,7 +271,8 @@ public class CloudServiceControllerTest {
     }
 
     @Test
-    void deleteCloudService_returnNotFound() throws Exception {
+    @SneakyThrows
+    void deleteCloudService_returnNotFound() {
         doThrow(new NoSuchElementException()).when(cloudServiceService).delete(any());
         var url = linkBuilderService.urlStringTo(methodOn(CloudServiceController.class)
                 .deleteCloudService(UUID.randomUUID()));
@@ -269,7 +281,8 @@ public class CloudServiceControllerTest {
     }
 
     @Test
-    void deleteCloudService_returnNoContent() throws Exception {
+    @SneakyThrows
+    void deleteCloudService_returnNoContent() {
         doNothing().when(cloudServiceService).delete(any());
         var url = linkBuilderService.urlStringTo(methodOn(CloudServiceController.class)
                 .deleteCloudService(UUID.randomUUID()));
@@ -278,7 +291,57 @@ public class CloudServiceControllerTest {
     }
 
     @Test
-    void listComputeResourcesOfCloudService_empty() throws Exception {
+    @SneakyThrows
+    void getSoftwarePlatformsOfCloudService_empty() {
+        doReturn(Page.empty()).when(cloudServiceService).findLinkedSoftwarePlatforms(any(), any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(CloudServiceController.class)
+                .getSoftwarePlatformsOfCloudService(UUID.randomUUID(), new ListParameters(pageable, null)));
+
+        var mvcResult = mockMvc.perform(get(url)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
+
+        var page = ObjectMapperUtils.getPageInfo(mvcResult.getResponse().getContentAsString());
+
+        assertThat(page.getSize()).isEqualTo(0);
+        assertThat(page.getNumber()).isEqualTo(0);
+    }
+
+    @Test
+    @SneakyThrows
+    void getSoftwarePlatformsOfCloudService_notEmpty() {
+        var inputList = new ArrayList<SoftwarePlatform>();
+        for (int i = 0; i < 50; i++) {
+            var element = new SoftwarePlatform();
+            element.setName("Test Element " + i);
+            element.setId(UUID.randomUUID());
+            inputList.add(element);
+        }
+        doReturn(new PageImpl<>(inputList)).when(cloudServiceService).findLinkedSoftwarePlatforms(any(), any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(CloudServiceController.class)
+                .getSoftwarePlatformsOfCloudService(UUID.randomUUID(), new ListParameters(pageable, null)));
+
+        var mvcResult = mockMvc.perform(get(url)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
+
+        var dtoElements = ObjectMapperUtils.mapResponseToList(
+                mvcResult.getResponse().getContentAsString(),
+                "softwarePlatforms",
+                ComputeResourceDto.class
+        );
+        assertThat(dtoElements.size()).isEqualTo(inputList.size());
+        // Ensure every element in the input array also exists in the output array.
+        inputList.forEach(e -> {
+            assertThat(dtoElements.stream().filter(dtoElem -> e.getId().equals(dtoElem.getId())).count()).isEqualTo(1);
+        });
+    }
+
+    @Test
+    @SneakyThrows
+    void getComputeResourcesOfCloudService_empty() {
         doReturn(Page.empty()).when(cloudServiceService).findLinkedComputeResources(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(CloudServiceController.class)
@@ -294,7 +357,8 @@ public class CloudServiceControllerTest {
     }
 
     @Test
-    void listComputeResourcesOfCloudService_notEmpty() throws Exception {
+    @SneakyThrows
+    void getComputeResourcesOfCloudService_notEmpty() {
         var inputList = new ArrayList<ComputeResource>();
         for (int i = 0; i < 50; i++) {
             var element = new ComputeResource();
@@ -324,7 +388,8 @@ public class CloudServiceControllerTest {
     }
 
     @Test
-    void linkCloudServiceToComputeResource_returnNoContent() throws Exception {
+    @SneakyThrows
+    void linkCloudServiceToComputeResource_returnNoContent() {
         ComputeResourceDto computeResourceDto = new ComputeResourceDto();
         computeResourceDto.setId(UUID.randomUUID());
         computeResourceDto.setName("computeResource");
@@ -340,7 +405,8 @@ public class CloudServiceControllerTest {
     }
 
     @Test
-    void linkCloudServiceToComputeResource_returnNotFound() throws Exception {
+    @SneakyThrows
+    void linkCloudServiceToComputeResource_returnNotFound() {
         ComputeResourceDto computeResourceDto = new ComputeResourceDto();
         computeResourceDto.setId(UUID.randomUUID());
         computeResourceDto.setName("computeResource");
@@ -356,7 +422,8 @@ public class CloudServiceControllerTest {
     }
 
     @Test
-    void unlinkCloudServiceAndComputeResource_returnNoContent() throws Exception {
+    @SneakyThrows
+    void unlinkCloudServiceAndComputeResource_returnNoContent() {
         doNothing().when(linkingService).unlinkCloudServiceAndComputeResource(any(), any());
         var url = linkBuilderService.urlStringTo(methodOn(CloudServiceController.class)
                 .unlinkCloudServiceAndComputeResource(UUID.randomUUID(), UUID.randomUUID()));
@@ -364,7 +431,8 @@ public class CloudServiceControllerTest {
     }
 
     @Test
-    void unlinkCloudServiceToComputeResource_returnNotFound() throws Exception {
+    @SneakyThrows
+    void unlinkCloudServiceToComputeResource_returnNotFound() {
         doThrow(new NoSuchElementException()).when(linkingService).unlinkCloudServiceAndComputeResource(any(), any());
         var url = linkBuilderService.urlStringTo(methodOn(CloudServiceController.class)
                 .unlinkCloudServiceAndComputeResource(UUID.randomUUID(), UUID.randomUUID()));
@@ -372,7 +440,8 @@ public class CloudServiceControllerTest {
     }
 
     @Test
-    void unlinkCloudServiceToComputeResource_returnBadRequest() throws Exception {
+    @SneakyThrows
+    void unlinkCloudServiceToComputeResource_returnBadRequest() {
         doThrow(new EntityReferenceConstraintViolationException("")).when(linkingService).unlinkCloudServiceAndComputeResource(any(), any());
         var url = linkBuilderService.urlStringTo(methodOn(CloudServiceController.class)
                 .unlinkCloudServiceAndComputeResource(UUID.randomUUID(), UUID.randomUUID()));
