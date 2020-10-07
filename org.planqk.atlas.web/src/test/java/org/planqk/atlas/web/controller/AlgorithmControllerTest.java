@@ -450,7 +450,7 @@ public class AlgorithmControllerTest {
 
     @Test
     @SneakyThrows
-    void getPatternRelationsOfAlgorithm_returnTwo() {
+    void getPatternRelationsOfAlgorithm_TwoElements_returnOk() {
         initializeAlgorithms();
 
         doReturn(new PageImpl<>(new ArrayList<>(algorithm1.getRelatedPatterns())))
@@ -695,16 +695,65 @@ public class AlgorithmControllerTest {
 
     @Test
     @SneakyThrows
-    void getPatternRelationOfAlgorithm_EmptyList_returnOk() {
+    void getPatternRelationOfAlgorithm_returnOk() {
+        Algorithm algorithm = new Algorithm();
+        algorithm.setId(UUID.randomUUID());
+        algorithm.setName("Algorithm");
+        algorithm.setComputationModel(ComputationModel.CLASSIC);
 
+        PatternRelationType type = new PatternRelationType();
+        type.setName("PatternRelationType");
+        type.setId(UUID.randomUUID());
+
+        PatternRelation patternRelation = new PatternRelation();
+        patternRelation.setId(UUID.randomUUID());
+        patternRelation.setPatternRelationType(type);
+        patternRelation.setAlgorithm(algorithm);
+        patternRelation.setPattern(new URI("http://www.example.com"));
+        patternRelation.setDescription("description");
+
+        doNothing().when(patternRelationService).checkIfAlgorithmIsInPatternRelation(any(), any());
+        doReturn(patternRelation).when(patternRelationService).findById(any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
+                .getPatternRelationOfAlgorithm(algorithm.getId(), patternRelation.getId()));
+
+        mockMvc.perform(get(url).accept(APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(patternRelation.getId().toString()))
+                .andExpect(jsonPath("$.algorithmId").value(algorithm.getId().toString()))
+                .andExpect(jsonPath("$.patternRelationType.id").value(type.getId().toString()))
+                .andExpect(jsonPath("$.description").value(patternRelation.getDescription()))
+                .andExpect(jsonPath("$.pattern").value(patternRelation.getPattern().toString()))
+                .andExpect(status().isOk()).andDo(print());
     }
 
     @Test
     @SneakyThrows
-    void getPatternRelationOfAlgorithm_TwoElements_returnOk() {
+    void getPatternRelationOfAlgorithm_returnNotFound() {
+        Algorithm algorithm = new Algorithm();
+        algorithm.setId(UUID.randomUUID());
+        algorithm.setName("Algorithm");
+        algorithm.setComputationModel(ComputationModel.CLASSIC);
 
+        PatternRelationType type = new PatternRelationType();
+        type.setName("PatternRelationType");
+        type.setId(UUID.randomUUID());
+
+        PatternRelation patternRelation = new PatternRelation();
+        patternRelation.setId(UUID.randomUUID());
+        patternRelation.setPatternRelationType(type);
+        patternRelation.setAlgorithm(algorithm);
+        patternRelation.setPattern(new URI("http://www.example.com"));
+        patternRelation.setDescription("description");
+
+        doNothing().when(patternRelationService).checkIfAlgorithmIsInPatternRelation(any(), any());
+        doThrow(NoSuchElementException.class).when(patternRelationService).findById(any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
+                .getPatternRelationOfAlgorithm(algorithm.getId(), patternRelation.getId()));
+
+        mockMvc.perform(get(url).accept(APPLICATION_JSON)).andExpect(status().isNotFound()).andDo(print());
     }
-
 
     //////////////////////////////////// Fixed up to this point /////////////////////////////////////////////////////
 
