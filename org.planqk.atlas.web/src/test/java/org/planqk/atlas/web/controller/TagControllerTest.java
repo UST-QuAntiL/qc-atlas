@@ -160,9 +160,9 @@ public class TagControllerTest {
         doThrow(new NoSuchElementException()).when(tagService).findByValue(any());
         var url = linkBuilderService.urlStringTo(methodOn(TagController.class)
                 .getTag("test"));
-        MvcResult mvcResult = mockMvc
+        mockMvc
                 .perform(get(url).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound()).andReturn();
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -193,10 +193,10 @@ public class TagControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(TagController.class)
                 .createTag(tagDto));
-        MvcResult result = mockMvc
+        mockMvc
                 .perform(post(url).content(mapper.writeValueAsString(tagDto))
                         .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest()).andReturn();
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -206,8 +206,7 @@ public class TagControllerTest {
         doReturn(tag).when(tagService).findByValue(any());
         var url = linkBuilderService.urlStringTo(methodOn(TagController.class)
                 .getImplementationsOfTag("test"));
-        mockMvc
-                .perform(get(url).accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$._embedded.implementations").doesNotExist())
                 .andExpect(status().isOk());
     }
@@ -223,11 +222,10 @@ public class TagControllerTest {
         doReturn(tag).when(tagService).findByValue(any());
         var url = linkBuilderService.urlStringTo(methodOn(TagController.class)
                 .getImplementationsOfTag("test"));
-        MvcResult mvcResult = mockMvc
-                .perform(get(url).accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$._embedded.implementations").isArray())
                 .andExpect(jsonPath("$._embedded.implementations[0].id").value(impl.getId().toString()))
-                .andExpect(status().isOk()).andReturn();
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -235,9 +233,8 @@ public class TagControllerTest {
         doThrow(new NoSuchElementException()).when(tagService).findByValue(any());
         var url = linkBuilderService.urlStringTo(methodOn(TagController.class)
                 .getImplementationsOfTag("test"));
-        MvcResult mvcResult = mockMvc
-                .perform(get(url).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound()).andReturn();
+        mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -252,11 +249,10 @@ public class TagControllerTest {
         doReturn(tag).when(tagService).findByValue(any());
         var url = linkBuilderService.urlStringTo(methodOn(TagController.class)
                 .getAlgorithmsOfTag("test"));
-        MvcResult mvcResult = mockMvc
-                .perform(get(url).accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$._embedded.algorithms").isArray())
                 .andExpect(jsonPath("$._embedded.algorithms[0].id").value(algo.getId().toString()))
-                .andExpect(status().isOk()).andReturn();
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -266,11 +262,9 @@ public class TagControllerTest {
         doReturn(tag).when(tagService).findByValue(any());
         var url = linkBuilderService.urlStringTo(methodOn(TagController.class)
                 .getAlgorithmsOfTag("test"));
-        MvcResult mvcResult = mockMvc
-                .perform(get(url).accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$._embedded.algorithms").doesNotExist())
-                .andReturn();
+                .andExpect(jsonPath("$._embedded.algorithms").doesNotExist());
     }
 
     @Test
@@ -278,8 +272,7 @@ public class TagControllerTest {
         doThrow(new NoSuchElementException()).when(tagService).findByValue(any());
         var url = linkBuilderService.urlStringTo(methodOn(TagController.class)
                 .getAlgorithmsOfTag("test"));
-        MvcResult mvcResult = mockMvc
-                .perform(get(url).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound()).andReturn();
+        mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
     }
 }
