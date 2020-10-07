@@ -100,7 +100,7 @@ public class ComputeResourcePropertyTypeController {
             @Validated(ValidationGroups.Update.class) @RequestBody
                     ComputeResourcePropertyTypeDto computeResourcePropertyTypeDto) {
         computeResourcePropertyTypeDto.setId(computeResourcePropertyTypeId);
-        var savedComputeResourcePropertyType = computeResourcePropertyTypeService.create(
+        var savedComputeResourcePropertyType = computeResourcePropertyTypeService.update(
                 ModelMapperUtils.convert(computeResourcePropertyTypeDto, ComputeResourcePropertyType.class));
         return ResponseEntity.ok(computeResourcePropertyTypeAssembler.toModel(savedComputeResourcePropertyType));
     }
