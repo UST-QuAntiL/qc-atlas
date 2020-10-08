@@ -1,13 +1,11 @@
 package org.planqk.atlas.web.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.net.MalformedURLException;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
@@ -15,7 +13,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Implementation;
-import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
 import org.planqk.atlas.web.dtos.ImplementationDto;
@@ -40,9 +37,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class ImplementationGlobalControllerTest {
 
     private final ObjectMapper mapper = ObjectMapperUtils.newTestMapper();
-
-    @MockBean
-    private AlgorithmService algorithmService;
 
     @MockBean
     private ImplementationService implementationService;
@@ -73,15 +67,13 @@ public class ImplementationGlobalControllerTest {
         assertEquals(response.getContent().getId(), implementation1.getId());
     }
 
-    private Implementation mockValidMinimalImpl(UUID implId) throws MalformedURLException {
+    private Implementation mockValidMinimalImpl(UUID implId) {
         Algorithm algo = new Algorithm();
         algo.setName("dummy");
-        algorithmService.create(algo);
-
         Implementation implementation = new Implementation();
         implementation.setName("implementation for Shor");
         implementation.setId(implId);
-        when(implementationService.create(any(Implementation.class), any())).thenReturn(implementation);
+        implementation.setImplementedAlgorithm(algo);
         return implementation;
     }
 
