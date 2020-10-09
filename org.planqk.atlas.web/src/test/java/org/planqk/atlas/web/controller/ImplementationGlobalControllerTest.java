@@ -25,35 +25,16 @@ import java.util.UUID;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.services.ImplementationService;
+import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
 import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
 import org.planqk.atlas.web.linkassembler.LinkBuilderService;
 import org.planqk.atlas.web.utils.ListParameters;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-=======
-package org.planqk.atlas.web.controller;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.util.UUID;
-
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.planqk.atlas.core.model.Algorithm;
-import org.planqk.atlas.core.model.Implementation;
-import org.planqk.atlas.core.services.ImplementationService;
-import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
-import org.planqk.atlas.web.dtos.ImplementationDto;
-import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
-import org.planqk.atlas.web.linkassembler.LinkBuilderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -76,17 +57,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @EnableLinkAssemblers
 public class ImplementationGlobalControllerTest {
 
-    private final ObjectMapper mapper = ObjectMapperUtils.newTestMapper();
-
-
     @MockBean
     private ImplementationService implementationService;
 
     @Autowired
     private MockMvc mockMvc;
-  
+
     @Autowired
     private LinkBuilderService linkBuilderService;
+
+    private ObjectMapper mapper = ObjectMapperUtils.newTestMapper();
 
     @Test
     @SneakyThrows
@@ -122,30 +102,23 @@ public class ImplementationGlobalControllerTest {
     }
 
     @Test
-    public void getImplementation() throws Exception {
-        var implementation1 = mockValidMinimalImpl(UUID.randomUUID());
+    @SneakyThrows
+    public void getImplementation_returnOk() {
+        var algo = new Algorithm();
+        algo.setId(UUID.randomUUID());
+        algo.setName("dummy");
+        var impl = new Implementation();
+        impl.setName("implementation for Shor");
+        impl.setId(UUID.randomUUID());
+        impl.setImplementedAlgorithm(algo);
 
-        when(implementationService.findById(this.implementation1.getId())).thenReturn(this.implementation1);
+        doReturn(impl).when(implementationService).findById(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationGlobalController.class)
-                .getImplementation(implementation1.getId()));
-
-        MvcResult result = mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk()).andReturn();
-
-        EntityModel<ImplementationDto> response = mapper.readValue(result.getResponse().getContentAsString(),
-                new TypeReference<>() {
-                });
-        assertEquals(response.getContent().getId(), implementation1.getId());
-    }
-
-    private Implementation mockValidMinimalImpl(UUID implId) {
-        Algorithm algo = new Algorithm();
-        algo.setName("dummy");
-        Implementation implementation = new Implementation();
-        implementation.setName("implementation for Shor");
-        implementation.setId(implId);
-        implementation.setImplementedAlgorithm(algo);
-        return implementation;
+                .getImplementation(impl.getId()));
+        mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(impl.getId().toString()))
+                .andExpect(jsonPath("$.implementedAlgorithmId").value(algo.getId().toString()));
     }
 }
