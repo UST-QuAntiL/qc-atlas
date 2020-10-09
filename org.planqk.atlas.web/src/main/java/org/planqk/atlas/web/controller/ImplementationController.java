@@ -185,7 +185,7 @@ public class ImplementationController {
     public ResponseEntity<Void> addTagToImplementation(
             @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId,
-            @Validated @RequestBody TagDto tagDto) {
+            @Validated(ValidationGroups.Create.class) @RequestBody TagDto tagDto) {
         implementationService.checkIfImplementationIsOfAlgorithm(implementationId, algorithmId);
 
         tagService.addTagToImplementation(implementationId, ModelMapperUtils.convert(tagDto, Tag.class));
@@ -201,11 +201,11 @@ public class ImplementationController {
     public ResponseEntity<Void> removeTagFromImplementation(
             @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId,
-            @Validated @RequestBody TagDto tagDto) {
+            @Validated(ValidationGroups.IDOnly.class) @RequestBody TagDto tagDto) {
         implementationService.checkIfImplementationIsOfAlgorithm(implementationId, algorithmId);
 
         tagService.removeTagFromImplementation(implementationId, ModelMapperUtils.convert(tagDto, Tag.class));
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @Operation(responses = {
@@ -257,7 +257,7 @@ public class ImplementationController {
         implementationService.checkIfImplementationIsOfAlgorithm(implementationId, algorithmId);
 
         linkingService.unlinkImplementationAndPublication(implementationId, publicationId);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @Operation(responses = {
@@ -382,7 +382,7 @@ public class ImplementationController {
 
         var createdComputeResourceProperty = computeResourcePropertyService
                 .addComputeResourcePropertyToImplementation(implementationId, computeResourceProperty);
-        return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(createdComputeResourceProperty));
+        return ResponseEntity.status(HttpStatus.CREATED).body(computeResourcePropertyAssembler.toModel(createdComputeResourceProperty));
     }
 
     @Operation(responses = {

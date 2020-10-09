@@ -35,4 +35,6 @@ public interface DiscussionCommentRepository extends JpaRepository<DiscussionCom
     boolean existsById(UUID id);
 
     Page<DiscussionComment> findByDiscussionTopicId(UUID discussionTopicId, Pageable pageable);
+
+    boolean existsByIdAndDiscussionTopic_Id(UUID commentId, UUID topicId);
 }

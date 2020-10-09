@@ -36,6 +36,7 @@ import org.planqk.atlas.web.utils.ModelMapperUtils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -57,6 +58,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -83,10 +85,6 @@ public class AlgorithmRelationTypeControllerTest {
 
     private final ObjectMapper mapper = ObjectMapperUtils.newTestMapper();
 
-    private final int page = 0;
-    private final int size = 2;
-    private final Pageable pageable = PageRequest.of(page, size);
-
     private AlgorithmRelationType algorithmRelationType1;
     private AlgorithmRelationType algorithmRelationType2;
     private AlgorithmRelationTypeDto algoRelationType1Dto;
@@ -104,12 +102,14 @@ public class AlgorithmRelationTypeControllerTest {
     }
 
     @Test
-    public void createAlgoRelationType_returnBadRequest() throws Exception {
+    @SneakyThrows
+    public void createAlgorithmRelationType_returnBadRequest() {
         AlgorithmRelationTypeDto algorithmRelationTypeDto = new AlgorithmRelationTypeDto();
         algorithmRelationTypeDto.setId(UUID.randomUUID());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmRelationTypeController.class)
                 .createAlgorithmRelationType(null));
+
         mockMvc.perform(post(url)
                 .content(mapper.writeValueAsString(algorithmRelationTypeDto))
                 .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
@@ -117,13 +117,16 @@ public class AlgorithmRelationTypeControllerTest {
     }
 
     @Test
-    public void createAlgoRelationType_returnCreate() throws Exception {
-        when(algorithmRelationTypeService.create(any())).thenReturn(algorithmRelationType1);
+    @SneakyThrows
+    public void createAlgorithmRelationType_returnCreated() {
         var id = algoRelationType1Dto.getId();
         algoRelationType1Dto.setId(null);
 
+        doReturn(algorithmRelationType1).when(algorithmRelationTypeService).create(any());
+
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmRelationTypeController.class)
                 .createAlgorithmRelationType(null));
+
         MvcResult result = mockMvc.perform(post(url)
                 .content(mapper.writeValueAsString(algoRelationType1Dto))
                 .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
@@ -136,23 +139,27 @@ public class AlgorithmRelationTypeControllerTest {
     }
 
     @Test
-    public void updateAlgoRelationType_returnBadRequest() throws Exception {
+    @SneakyThrows
+    public void updateAlgorithmRelationType_returnBadRequest() {
         AlgorithmRelationTypeDto algorithmRelationTypeDto = new AlgorithmRelationTypeDto();
         algorithmRelationTypeDto.setId(UUID.randomUUID());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmRelationTypeController.class)
                 .updateAlgorithmRelationType(UUID.randomUUID(), null));
+
         mockMvc.perform(put(url)
                 .content(mapper.writeValueAsString(algorithmRelationTypeDto)).contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
     }
 
     @Test
-    public void updateAlgoRelationType_returnOk() throws Exception {
-        when(algorithmRelationTypeService.update(any())).thenReturn(algorithmRelationType1);
+    @SneakyThrows
+    public void updateAlgorithmRelationType_returnOk() {
+        doReturn(algorithmRelationType1).when(algorithmRelationTypeService).update(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmRelationTypeController.class)
                 .updateAlgorithmRelationType(UUID.randomUUID(), null));
+
         MvcResult result = mockMvc
                 .perform(put(url)
                         .content(mapper.writeValueAsString(algoRelationType1Dto))
@@ -166,11 +173,13 @@ public class AlgorithmRelationTypeControllerTest {
     }
 
     @Test
-    public void getAlgoRelationTypes_withEmptyAlgoRelationTypeList() throws Exception {
-        when(algorithmRelationTypeService.findAll(any())).thenReturn(Page.empty());
+    @SneakyThrows
+    public void getAlgorithmRelationTypes_withEmptyAlgoRelationTypeList() {
+        doReturn(Page.empty()).when(algorithmRelationTypeService).findAll(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmRelationTypeController.class)
                 .getAlgorithmRelationTypes(ListParameters.getDefault()));
+
         MvcResult result = mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
@@ -180,7 +189,8 @@ public class AlgorithmRelationTypeControllerTest {
     }
 
     @Test
-    public void getAlgoRelationTypes_withTwoAlgoRelationTypeList() throws Exception {
+    @SneakyThrows
+    public void getAlgorithmRelationTypes_withTwoAlgoRelationTypeList() {
         List<AlgorithmRelationType> algoRelationList = new ArrayList<>();
         algoRelationList.add(algorithmRelationType1);
         algoRelationList.add(algorithmRelationType2);
@@ -189,7 +199,7 @@ public class AlgorithmRelationTypeControllerTest {
         Page<AlgorithmRelationTypeDto> algoRelationDtoPage = ModelMapperUtils.convertPage(algoRelationPage,
                 AlgorithmRelationTypeDto.class);
 
-        when(algorithmRelationTypeService.findAll(any())).thenReturn(algoRelationPage);
+        doReturn(algoRelationPage).when(algorithmRelationTypeService).findAll(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmRelationTypeController.class)
                 .getAlgorithmRelationTypes(ListParameters.getDefault()));
@@ -203,7 +213,8 @@ public class AlgorithmRelationTypeControllerTest {
     }
 
     @Test
-    public void getAlgoRelationTypeById_returnNotFound() throws Exception {
+    @SneakyThrows
+    public void getAlgorithmRelationTypeById_returnNotFound() {
         doThrow(new NoSuchElementException()).when(algorithmRelationTypeService).findById(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmRelationTypeController.class)
@@ -213,8 +224,9 @@ public class AlgorithmRelationTypeControllerTest {
     }
 
     @Test
-    public void getAlgoRelationTypeById_returnAlgoRelationType() throws Exception {
-        when(algorithmRelationTypeService.findById(any())).thenReturn(algorithmRelationType1);
+    @SneakyThrows
+    public void getAlgorithmRelationTypeById_returnAlgoRelationType() {
+        doReturn(algorithmRelationType1).when(algorithmRelationTypeService).findById(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmRelationTypeController.class)
                 .getAlgorithmRelationType(algorithmRelationType1.getId()));
@@ -222,7 +234,6 @@ public class AlgorithmRelationTypeControllerTest {
         MvcResult result = mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
-        log.info(result.getResponse().getContentAsString());
         EntityModel<AlgorithmRelationDto> algoRelationTypeDto = mapper.readValue(result.getResponse().getContentAsString(),
                 new TypeReference<>() {
                 });
@@ -230,7 +241,8 @@ public class AlgorithmRelationTypeControllerTest {
     }
 
     @Test
-    public void deleteAlgoRelationType_returnNotFound() throws Exception {
+    @SneakyThrows
+    public void deleteAlgorithmRelationType_returnNotFound() {
         doThrow(NoSuchElementException.class).when(algorithmRelationTypeService).delete(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmRelationTypeController.class)
@@ -241,7 +253,8 @@ public class AlgorithmRelationTypeControllerTest {
     }
 
     @Test
-    public void deleteAlgoRelationType_returnOk() throws Exception {
+    @SneakyThrows
+    public void deleteAlgorithmRelationType_returnOk() {
         doNothing().when(algorithmRelationTypeService).delete(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmRelationTypeController.class)

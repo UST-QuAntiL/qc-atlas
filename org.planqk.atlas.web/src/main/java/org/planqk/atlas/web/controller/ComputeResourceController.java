@@ -208,14 +208,14 @@ public class ComputeResourceController {
             "add a reference to the defined compute resource property. " +
             "Custom ID will be ignored. ")
     @PostMapping("/{computeResourceId}/" + Constants.COMPUTE_RESOURCE_PROPERTIES)
-    public ResponseEntity<EntityModel<ComputeResourceDto>> createComputeResourcePropertyForComputeResource(
+    public ResponseEntity<EntityModel<ComputeResourcePropertyDto>> createComputeResourcePropertyForComputeResource(
             @PathVariable UUID computeResourceId,
             @Validated(ValidationGroups.Create.class) @RequestBody ComputeResourcePropertyDto computeResourcePropertyDto) {
         var computeResourceProperty = ModelMapperUtils.convert(computeResourcePropertyDto, ComputeResourceProperty.class);
 
         var createdComputeResourceProperty = computeResourcePropertyService
                 .addComputeResourcePropertyToComputeResource(computeResourceId, computeResourceProperty);
-        return ResponseEntity.ok(computeResourceAssembler.toModel(createdComputeResourceProperty));
+        return ResponseEntity.status(HttpStatus.CREATED).body(computeResourcePropertyAssembler.toModel(createdComputeResourceProperty));
     }
 
     @Operation(responses = {

@@ -33,9 +33,10 @@ import org.planqk.atlas.web.dtos.ComputeResourcePropertyTypeDto;
 import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
 import org.planqk.atlas.web.linkassembler.LinkBuilderService;
 import org.planqk.atlas.web.utils.ListParameters;
+import org.planqk.atlas.web.utils.ModelMapperUtils;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -44,17 +45,21 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.hateoas.EntityModel;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(ComputeResourcePropertyTypeController.class)
@@ -75,78 +80,25 @@ public class ComputeResourcePropertyTypeControllerTest {
 
     private final ObjectMapper mapper = ObjectMapperUtils.newTestMapper();
 
-    @Test
-    void deleteType_returnNoContent() throws Exception {
-        doNothing().when(computeResourcePropertyTypeService).delete(any());
-        var url = linkBuilderService.urlStringTo(methodOn(ComputeResourcePropertyTypeController.class)
-                .deleteComputingResourcePropertyType(UUID.randomUUID()));
-        mockMvc.perform(delete(url)).andExpect(status().isNoContent());
-    }
 
     @Test
-    void deleteType_returnBadRequest() throws Exception {
-        doThrow(new EntityReferenceConstraintViolationException("")).when(computeResourcePropertyTypeService).delete(any());
-        var url = linkBuilderService.urlStringTo(methodOn(ComputeResourcePropertyTypeController.class)
-                .deleteComputingResourcePropertyType(UUID.randomUUID()));
-        mockMvc.perform(delete(url)).andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void deleteType_returnNotFound() throws Exception {
-        doThrow(new NoSuchElementException()).when(computeResourcePropertyTypeService).delete(any());
-        var url = linkBuilderService.urlStringTo(methodOn(ComputeResourcePropertyTypeController.class)
-                .deleteComputingResourcePropertyType(UUID.randomUUID()));
-        mockMvc.perform(delete(url)).andExpect(status().isNotFound());
-    }
-
-    @Test
-    void getType_returnNotFound() throws Exception {
-        when(computeResourcePropertyTypeService.findById(any())).thenThrow(new NoSuchElementException());
-        var url = linkBuilderService.urlStringTo(methodOn(ComputeResourcePropertyTypeController.class)
-                .getComputingResourcePropertyType(UUID.randomUUID()));
-        mockMvc.perform(get(url)).andExpect(status().isNotFound());
-    }
-
-    @Test
-    void getType_returnOk() throws Exception {
-        var sampleType = new ComputeResourcePropertyType();
-        sampleType.setId(UUID.randomUUID());
-        sampleType.setName("Hello World");
-        sampleType.setDatatype(ComputeResourcePropertyDataType.FLOAT);
-        sampleType.setDescription("Test");
-
-        when(computeResourcePropertyTypeService.findById(any())).thenReturn(sampleType);
-        var url = linkBuilderService.urlStringTo(methodOn(ComputeResourcePropertyTypeController.class)
-                .getComputingResourcePropertyType(UUID.randomUUID()));
-        var result = mockMvc.perform(get(url)).andExpect(status().isOk()).andReturn();
-
-        var dto = mapper.readValue(
-                result.getResponse().getContentAsString(),
-                new TypeReference<EntityModel<ComputeResourcePropertyTypeDto>>() {
-                }
-        ).getContent();
-
-        assertThat(dto.getId()).isEqualTo(sampleType.getId());
-        assertThat(dto.getDatatype()).isEqualTo(sampleType.getDatatype());
-        assertThat(dto.getName()).isEqualTo(sampleType.getName());
-        assertThat(dto.getDescription()).isEqualTo(sampleType.getDescription());
-    }
-
-    @Test
-    void getTypes_returnList() throws Exception {
+    @SneakyThrows
+    void getResourcePropertyTypes_returnList() {
         var types = new ArrayList<ComputeResourcePropertyType>();
         for (int i = 0; i < 10; i++) {
             var sampleType = new ComputeResourcePropertyType();
             sampleType.setId(UUID.randomUUID());
-            sampleType.setName("Hello World");
+            sampleType.setName("TypeName" + i);
             sampleType.setDatatype(ComputeResourcePropertyDataType.FLOAT);
-            sampleType.setDescription("Test");
+            sampleType.setDescription("description");
             types.add(sampleType);
         }
 
-        when(computeResourcePropertyTypeService.findAll(any())).thenReturn(new PageImpl<>(types));
+        doReturn(new PageImpl<>(types)).when(computeResourcePropertyTypeService).findAll(any());
+
         var url = linkBuilderService.urlStringTo(methodOn(ComputeResourcePropertyTypeController.class)
                 .getResourcePropertyTypes(ListParameters.getDefault()));
+
         var result = mockMvc.perform(get(url)).andExpect(status().isOk()).andReturn();
 
         var resultList = ObjectMapperUtils.mapResponseToList(
@@ -158,5 +110,192 @@ public class ComputeResourcePropertyTypeControllerTest {
 
         var presentCount = resultList.stream().filter(e -> types.stream().anyMatch(b -> b.getId().equals(e.getId()))).count();
         assertThat(presentCount).isEqualTo(10);
+    }
+
+    @Test
+    @SneakyThrows
+    void createComputingResourcePropertyType_returnCreated() {
+        var type = new ComputeResourcePropertyType();
+        type.setName("TypeName");
+        type.setDatatype(ComputeResourcePropertyDataType.FLOAT);
+        type.setDescription("description");
+        ComputeResourcePropertyTypeDto typeDto = ModelMapperUtils.convert(type, ComputeResourcePropertyTypeDto.class);
+
+        doReturn(type).when(computeResourcePropertyTypeService).create(any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(ComputeResourcePropertyTypeController.class)
+                .createComputingResourcePropertyType(null));
+
+        mockMvc.perform(post(url).accept(APPLICATION_JSON)
+                .contentType(APPLICATION_JSON)
+                .content(mapper.writeValueAsString(typeDto))
+        ).andExpect(jsonPath("$.id").isEmpty())
+                .andExpect(jsonPath("$.datatype").value(type.getDatatype().toString()))
+                .andExpect(jsonPath("$.name").value(type.getName()))
+                .andExpect(jsonPath("$.description").value(type.getDescription()))
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    @SneakyThrows
+    void createComputingResourcePropertyType_returnBadRequest() {
+        var typeDto = new ComputeResourcePropertyTypeDto();
+        typeDto.setId(UUID.randomUUID());
+
+        var url = linkBuilderService.urlStringTo(methodOn(ComputeResourcePropertyTypeController.class)
+                .createComputingResourcePropertyType(null));
+
+        mockMvc.perform(post(url).accept(APPLICATION_JSON)
+                .contentType(APPLICATION_JSON)
+                .content(mapper.writeValueAsString(typeDto))
+        ).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @SneakyThrows
+    void createComputingResourcePropertyType_returnNotFound() {
+        var typeDto = new ComputeResourcePropertyTypeDto();
+        typeDto.setName("TypeName");
+        typeDto.setDatatype(ComputeResourcePropertyDataType.FLOAT);
+        typeDto.setDescription("description");
+
+        doThrow(NoSuchElementException.class).when(computeResourcePropertyTypeService).create(any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(ComputeResourcePropertyTypeController.class)
+                .createComputingResourcePropertyType(null));
+
+        mockMvc.perform(post(url).accept(APPLICATION_JSON)
+                .contentType(APPLICATION_JSON)
+                .content(mapper.writeValueAsString(typeDto))
+        ).andExpect(status().isNotFound());
+    }
+
+    @Test
+    @SneakyThrows
+    void updateComputingResourcePropertyType_returnOk() {
+        var type = new ComputeResourcePropertyType();
+        var typeId = UUID.randomUUID();
+        type.setId(typeId);
+        type.setName("TypeName");
+        type.setDatatype(ComputeResourcePropertyDataType.FLOAT);
+        type.setDescription("description");
+
+        var typeDto = new ComputeResourcePropertyTypeDto();
+        typeDto.setId(typeId);
+        typeDto.setName("TypeName");
+        typeDto.setDatatype(ComputeResourcePropertyDataType.FLOAT);
+        typeDto.setDescription("description");
+
+        doReturn(type).when(computeResourcePropertyTypeService).update(any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(ComputeResourcePropertyTypeController.class)
+                .updateComputingResourcePropertyType(typeId, null));
+
+        mockMvc.perform(put(url).accept(APPLICATION_JSON)
+                .contentType(APPLICATION_JSON)
+                .content(mapper.writeValueAsString(typeDto))
+        ).andExpect(jsonPath("$.id").value(type.getId().toString()))
+                .andExpect(jsonPath("$.datatype").value(type.getDatatype().toString()))
+                .andExpect(jsonPath("$.name").value(type.getName()))
+                .andExpect(jsonPath("$.description").value(type.getDescription()))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @SneakyThrows
+    void updateComputingResourcePropertyType_returnBadRequest() {
+        var typeDto = new ComputeResourcePropertyTypeDto();
+        UUID typeId = UUID.randomUUID();
+
+        var url = linkBuilderService.urlStringTo(methodOn(ComputeResourcePropertyTypeController.class)
+                .updateComputingResourcePropertyType(typeId, null));
+
+        mockMvc.perform(put(url).accept(APPLICATION_JSON)
+                .contentType(APPLICATION_JSON)
+                .content(mapper.writeValueAsString(typeDto))
+        ).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @SneakyThrows
+    void updateComputingResourcePropertyType_returnNotFound() {
+        var typeDto = new ComputeResourcePropertyTypeDto();
+        typeDto.setName("TypeName");
+        typeDto.setDatatype(ComputeResourcePropertyDataType.FLOAT);
+        typeDto.setDescription("description");
+
+        doThrow(NoSuchElementException.class).when(computeResourcePropertyTypeService).update(any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(ComputeResourcePropertyTypeController.class)
+                .updateComputingResourcePropertyType(UUID.randomUUID(), null));
+
+        mockMvc.perform(put(url).accept(APPLICATION_JSON)
+                .contentType(APPLICATION_JSON)
+                .content(mapper.writeValueAsString(typeDto))
+        ).andExpect(status().isNotFound());
+    }
+
+    @Test
+    @SneakyThrows
+    void deleteComputingResourcePropertyType_returnNoContent() {
+        doNothing().when(computeResourcePropertyTypeService).delete(any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(ComputeResourcePropertyTypeController.class)
+                .deleteComputingResourcePropertyType(UUID.randomUUID()));
+
+        mockMvc.perform(delete(url)).andExpect(status().isNoContent());
+    }
+
+    @Test
+    @SneakyThrows
+    void deleteComputingResourcePropertyType_returnBadRequest() {
+        doThrow(new EntityReferenceConstraintViolationException("")).when(computeResourcePropertyTypeService).delete(any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(ComputeResourcePropertyTypeController.class)
+                .deleteComputingResourcePropertyType(UUID.randomUUID()));
+
+        mockMvc.perform(delete(url)).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @SneakyThrows
+    void deleteComputingResourcePropertyType_returnNotFound() {
+        doThrow(new NoSuchElementException()).when(computeResourcePropertyTypeService).delete(any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(ComputeResourcePropertyTypeController.class)
+                .deleteComputingResourcePropertyType(UUID.randomUUID()));
+
+        mockMvc.perform(delete(url)).andExpect(status().isNotFound());
+    }
+
+    @Test
+    @SneakyThrows
+    void getComputingResourcePropertyType_returnOk() {
+        var sampleType = new ComputeResourcePropertyType();
+        sampleType.setId(UUID.randomUUID());
+        sampleType.setName("TypeName");
+        sampleType.setDatatype(ComputeResourcePropertyDataType.FLOAT);
+        sampleType.setDescription("description");
+
+        doReturn(sampleType).when(computeResourcePropertyTypeService).findById(any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(ComputeResourcePropertyTypeController.class)
+                .getComputingResourcePropertyType(UUID.randomUUID()));
+
+        mockMvc.perform(get(url))
+                .andExpect(jsonPath("$.id").value(sampleType.getId().toString()))
+                .andExpect(jsonPath("$.datatype").value(sampleType.getDatatype().toString()))
+                .andExpect(jsonPath("$.name").value(sampleType.getName()))
+                .andExpect(jsonPath("$.description").value(sampleType.getDescription()))
+                .andExpect(status().isOk()).andReturn();
+    }
+
+    @Test
+    @SneakyThrows
+    void getComputingResourcePropertyType_returnNotFound() {
+        when(computeResourcePropertyTypeService.findById(any())).thenThrow(new NoSuchElementException());
+        var url = linkBuilderService.urlStringTo(methodOn(ComputeResourcePropertyTypeController.class)
+                .getComputingResourcePropertyType(UUID.randomUUID()));
+        mockMvc.perform(get(url)).andExpect(status().isNotFound());
     }
 }
