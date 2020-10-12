@@ -74,7 +74,8 @@ public class ImplementationGlobalController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404", description = "Implementation with given ID doesn't exist")
+            @ApiResponse(responseCode = "404",
+                    description = "Implementation with given ID doesn't exist")
     }, description = "Retrieve a specific implementation and its basic properties.")
     @GetMapping("/{implementationId}")
     public ResponseEntity<EntityModel<ImplementationDto>> getImplementation(

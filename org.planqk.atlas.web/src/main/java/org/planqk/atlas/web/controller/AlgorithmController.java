@@ -241,7 +241,7 @@ public class AlgorithmController {
     @Operation(responses = {
             @ApiResponse(responseCode = "204"),
             @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404", description = "Not Found. Algorithm with given ID doesn't exist.")
+            @ApiResponse(responseCode = "404", description = "Not Found. Algorithm with given ID or Tag doesn't exist.")
     }, description = "Remove a tag from an algorithm.")
     @DeleteMapping("/{algorithmId}/" + Constants.TAGS)
     public ResponseEntity<Void> removeTagFromAlgorithm(
