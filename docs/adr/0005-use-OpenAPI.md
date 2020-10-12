@@ -36,13 +36,13 @@ Chosen option: Use OpenAPI, because the API is described in a standardized forma
 
 The OpenAPI specification is a standardized API description format, [see](https://swagger.io/docs/specification/about/). 
 
-* Good, because the API is described in a standardized format
-* Good, because clients may automatically generate services
-* Bad, because annoations have to be maintained
+* `+` The API is described in a standardized format
+* `+` Clients may automatically generate services
+* `-` Annoations have to be maintained
 
 ### Spring Restdocs
 
 Combines hand written and automatically generated documentatio, [see](https://spring.io/projects/spring-restdocs).
 
-* Good, because some documentation is generated automatically
-* Bad, because it's not machine readable
+* `+` some documentation is generated automatically
+* `-` it's not machine readable
