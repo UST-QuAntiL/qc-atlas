@@ -23,7 +23,6 @@ import java.util.UUID;
 
 import javax.transaction.Transactional;
 
-import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.PatternRelation;
 
 import org.springframework.data.domain.Page;

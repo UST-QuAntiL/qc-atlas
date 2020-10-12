@@ -66,7 +66,7 @@ public class ServiceUtils {
      *
      * @param collection we want to search for element with ID in
      * @param id of element we want to check
-     * @return boolean base on if the element is in the given collection or not
+     * @return boolean based on if the element is in the given collection or not
      */
     public static <T extends HasId, ID> boolean containsElementWithId(Collection<T> collection, ID id) {
         return collection.stream().anyMatch(p -> p.getId().equals(id));

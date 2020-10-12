@@ -3,7 +3,6 @@ package org.planqk.atlas.core.services;
 import java.util.List;
 import java.util.UUID;
 
-import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Image;
 import org.planqk.atlas.core.model.Sketch;
 
