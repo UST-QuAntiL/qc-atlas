@@ -34,12 +34,9 @@ import org.planqk.atlas.core.repository.AlgorithmRelationRepository;
 import org.planqk.atlas.core.repository.AlgorithmRepository;
 import org.planqk.atlas.core.repository.ApplicationAreaRepository;
 import org.planqk.atlas.core.repository.ComputeResourcePropertyRepository;
-import org.planqk.atlas.core.repository.ImageRepository;
-import org.planqk.atlas.core.repository.ImplementationRepository;
 import org.planqk.atlas.core.repository.PatternRelationRepository;
 import org.planqk.atlas.core.repository.ProblemTypeRepository;
 import org.planqk.atlas.core.repository.PublicationRepository;
-import org.planqk.atlas.core.repository.SketchRepository;
 import org.planqk.atlas.core.util.ServiceUtils;
 
 import lombok.AllArgsConstructor;

@@ -19,7 +19,6 @@
 
 package org.planqk.atlas.core.services;
 
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;

@@ -19,6 +19,7 @@
 
 package org.planqk.atlas.core.model;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -27,8 +28,6 @@ import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.OneToMany;
-
-import java.util.Date;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;

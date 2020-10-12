@@ -27,7 +27,6 @@ import org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationExcept
 import org.planqk.atlas.core.model.ComputeResourceProperty;
 import org.planqk.atlas.core.model.ComputeResourcePropertyDataType;
 import org.planqk.atlas.core.model.ComputeResourcePropertyType;
-import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 
 import lombok.extern.slf4j.Slf4j;
