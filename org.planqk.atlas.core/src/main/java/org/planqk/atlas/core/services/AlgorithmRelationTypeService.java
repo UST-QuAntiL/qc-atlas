@@ -21,12 +21,16 @@ package org.planqk.atlas.core.services;
 
 import java.util.UUID;
 
+import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.model.AlgorithmRelationType;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Service class for operations related to interacting and modifying {@link AlgorithmRelationTypeService}s in the database.
+ */
 public interface AlgorithmRelationTypeService {
 
     @Transactional

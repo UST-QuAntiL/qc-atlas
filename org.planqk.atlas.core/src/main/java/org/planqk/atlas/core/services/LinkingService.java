@@ -23,6 +23,9 @@ import java.util.UUID;
 
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Service class for operations related to linking existing objects in the database.
+ */
 public interface LinkingService {
 
     @Transactional

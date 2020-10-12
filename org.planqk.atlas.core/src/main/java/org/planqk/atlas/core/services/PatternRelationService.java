@@ -23,11 +23,15 @@ import java.util.UUID;
 
 import javax.transaction.Transactional;
 
+import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.PatternRelation;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+/**
+ * Service class for operations related to interacting and modifying {@link PatternRelation}s in the database.
+ */
 public interface PatternRelationService {
 
     @Transactional

@@ -21,6 +21,7 @@ package org.planqk.atlas.core.services;
 
 import java.util.UUID;
 
+import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.CloudService;
 import org.planqk.atlas.core.model.ComputeResource;
 import org.planqk.atlas.core.model.Implementation;
@@ -30,6 +31,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Service class for operations related to interacting and modifying {@link SoftwarePlatform}s in the database.
+ */
 public interface SoftwarePlatformService {
 
     Page<SoftwarePlatform> searchAllByName(String name, Pageable pageable);

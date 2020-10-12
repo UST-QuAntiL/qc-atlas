@@ -29,6 +29,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Service class for operations related to interacting and modifying {@link CloudService}s in the database.
+ */
 public interface CloudServiceService {
 
     Page<CloudService> searchAllByName(String name, Pageable pageable);

@@ -25,6 +25,9 @@ import org.planqk.atlas.core.model.AlgorithmRelation;
 
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Service class for operations related to interacting and modifying {@link AlgorithmRelation}s in the database.
+ */
 public interface AlgorithmRelationService {
 
     @Transactional
