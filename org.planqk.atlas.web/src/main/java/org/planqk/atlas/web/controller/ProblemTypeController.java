@@ -89,7 +89,7 @@ public class ProblemTypeController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404", description = "Problem type with given ID doesn't exist.")
+            @ApiResponse(responseCode = "404", description = "Not Found. Problem type with given ID doesn't exist.")
     }, description = "Update the basic properties of an problem type (e.g. name).")
     @PutMapping("/{problemTypeId}")
     public ResponseEntity<EntityModel<ProblemTypeDto>> updateProblemType(
@@ -104,7 +104,7 @@ public class ProblemTypeController {
     @Operation(responses = {
             @ApiResponse(responseCode = "204"),
             @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404", description = "Problem type with given ID doesn't exist.")
+            @ApiResponse(responseCode = "404", description = "Not Found. Problem type with given ID doesn't exist.")
     }, description = "Delete an problem type. " +
             "This also removes all references to other entities (e.g. algorithm).")
     @DeleteMapping("/{problemTypeId}")
@@ -116,7 +116,7 @@ public class ProblemTypeController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404", description = "Problem type with given ID doesn't exist.")
+            @ApiResponse(responseCode = "404", description = "Not Found. Problem type with given ID doesn't exist.")
     }, description = "Retrieve a specific problem type and its basic properties.")
     @GetMapping("/{problemTypeId}")
     public ResponseEntity<EntityModel<ProblemTypeDto>> getProblemType(@PathVariable UUID problemTypeId) {
@@ -127,7 +127,7 @@ public class ProblemTypeController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404", description = "Problem type with given ID doesn't exist.")
+            @ApiResponse(responseCode = "404", description = "Not Found. Problem type with given ID doesn't exist.")
     }, description = "Retrieved all parent problem types of a specific problem type. " +
             "If a problem type has not parent an empty list is returned")
     @ListParametersDoc

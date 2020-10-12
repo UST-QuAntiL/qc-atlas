@@ -241,7 +241,8 @@ public class ImplementationController {
             @ApiResponse(responseCode = "204"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm, implementation or publication with given IDs don't exist.")
+                    description = "Not Found. Algorithm, implementation or publication with given IDs don't exist or " +
+                            "reference was already added.")
     }, description = "Add a reference to an existing publication " +
             "(that was previously created via a POST on e.g. /" + Constants.PUBLICATIONS + "). " +
             "Only the ID is required in the request body, other attributes will be ignored and not changed.")
@@ -260,7 +261,8 @@ public class ImplementationController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm, implementation or publication with given IDs don't exist."),
+                    description = "Not Found. Algorithm, implementation or publication with given IDs don't exist or " +
+                            "no reference exists."),
     }, description = "Delete a reference to a publication of an implementation. " +
             "The reference has to be previously created via a POST on /" + Constants.ALGORITHMS + "/{algorithmId}/" +
             Constants.IMPLEMENTATIONS + "/{implementationId}/" + Constants.PUBLICATIONS + ").")
@@ -314,7 +316,8 @@ public class ImplementationController {
             @ApiResponse(responseCode = "204"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm, implementation or software platform with given IDs don't exist.")
+                    description = "Not Found. Algorithm, implementation or software platform with given IDs don't exist or " +
+                            "reference was already added.")
     }, description = "Add a reference to an existing software platform " +
             "(that was previously created via a POST on e.g. /" + Constants.SOFTWARE_PLATFORMS + "). " +
             "Only the ID is required in the request body, other attributes will be ignored and not changed.")
@@ -333,7 +336,8 @@ public class ImplementationController {
             @ApiResponse(responseCode = "204"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm, implementation or software platform with given IDs don't exist.")
+                    description = "Not Found. Algorithm, implementation or software platform with given IDs don't exist or " +
+                            "no reference exists.")
     }, description = "Delete a reference to a software platform of an implementation. " +
             "The reference has to be previously created via a POST on /" + Constants.ALGORITHMS + "/{algorithmId}/" +
             Constants.IMPLEMENTATIONS + "/{implementationId}/" + Constants.SOFTWARE_PLATFORMS + ").")
