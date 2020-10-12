@@ -67,7 +67,7 @@ public class AlgorithmRelationTypeController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200")
-    }, description = "")
+    }, description = "Retrieve all algorithm relation types.")
     @ListParametersDoc
     @GetMapping
     public ResponseEntity<PagedModel<EntityModel<AlgorithmRelationTypeDto>>> getAlgorithmRelationTypes(
@@ -79,7 +79,7 @@ public class AlgorithmRelationTypeController {
     @Operation(responses = {
             @ApiResponse(responseCode = "201"),
             @ApiResponse(responseCode = "400"),
-    }, description = "Custom ID will be ignored.")
+    }, description = "Define the basic properties of an algorithm relation type.")
     @PostMapping
     public ResponseEntity<EntityModel<AlgorithmRelationTypeDto>> createAlgorithmRelationType(
             @Validated(ValidationGroups.Create.class) @RequestBody AlgorithmRelationTypeDto AlgorithmRelationTypeDto) {
@@ -91,8 +91,9 @@ public class AlgorithmRelationTypeController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404", description = "Algorithm relation with given id doesn't exist")
-    }, description = "Custom ID will be ignored.")
+            @ApiResponse(responseCode = "404",
+                    description = "Not Found. Algorithm relation type with given ID doesn't exist")
+    }, description = "Update the basic properties of an algorithm relation type (e.g. name).")
     @PutMapping("/{algorithmRelationTypeId}")
     public ResponseEntity<EntityModel<AlgorithmRelationTypeDto>> updateAlgorithmRelationType(
             @PathVariable UUID algorithmRelationTypeId,
@@ -105,9 +106,11 @@ public class AlgorithmRelationTypeController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "204"),
-            @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404", description = "Algorithm relation with given id doesn't exist")
-    }, description = "")
+            @ApiResponse(responseCode = "400",
+                    description = "Bad Request. Algorithm relation type is still in use by at least one algorithm relation"),
+            @ApiResponse(responseCode = "404",
+                    description = "Not Found. Algorithm relation type with given ID doesn't exist")
+    }, description = "Delete an algorithm relation type.")
     @DeleteMapping("/{algorithmRelationTypeId}")
     public ResponseEntity<Void> deleteAlgorithmRelationType(@PathVariable UUID algorithmRelationTypeId) {
         algorithmRelationTypeService.delete(algorithmRelationTypeId);
@@ -117,8 +120,9 @@ public class AlgorithmRelationTypeController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404", description = "Algorithm relation with given id doesn't exist")
-    }, description = "")
+            @ApiResponse(responseCode = "404",
+                    description = "Not Found. Algorithm relation type with given ID doesn't exist")
+    }, description = "Retrieve a specific algorithm relation type and its basic properties.")
     @GetMapping("/{algorithmRelationTypeId}")
     public ResponseEntity<EntityModel<AlgorithmRelationTypeDto>> getAlgorithmRelationType(
             @PathVariable UUID algorithmRelationTypeId) {
