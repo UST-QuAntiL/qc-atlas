@@ -1,4 +1,4 @@
-# [short title of solved problem and solution]
+# Use of JUnit5 for testing
 
 * Status: accepted
 * Deciders: [Q-tal EnPro Team]
