@@ -12,6 +12,7 @@ Due to the use of two different object types for transfering and storing data, t
 
 * Manually written conversion methods
 * [Model Mapper](http://www.modelmapper.org)
+* [MapStruct](https://mapstruct.org/)
 
 ## Decision Outcome
 
@@ -20,3 +21,28 @@ Chosen option: "[Model Mapper](http://www.modelmapper.org)", because it fulfils 
 ### Positive Consequences <!-- optional -->
 
 * Less boilerplate code
+
+## Pros and Cons of the Alternatives 
+
+### Manually written conversion methods
+
+- `+` Requires no extensions
+- `+` No performace overhead
+- `-` Hard to maintain
+- `-` Prone to errors and bugs
+
+### Model Mapper
+
+- `+` Easy to use
+- `+` Very powerful
+- `+` Does not require any extensions
+- `+` Works without errors, if configured properly
+- `-` Since it's based on reflection, it may be slower than the other two options considered
+
+### MapStruct
+
+- `+` Very Fast
+- `+` Easy to use
+- `+` Works without errors, if configured properly
+- `-` The approach is based on code generaion, like Lombok.
+- `-` Needs a seperate plugin for the IDE and Maven to work properly
