@@ -67,7 +67,7 @@ public class ProblemTypeController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200")
-    }, description = "")
+    }, description = "Retrieve all problem types.")
     @ListParametersDoc
     @GetMapping
     public ResponseEntity<PagedModel<EntityModel<ProblemTypeDto>>> getProblemTypes(
@@ -78,7 +78,7 @@ public class ProblemTypeController {
     @Operation(responses = {
             @ApiResponse(responseCode = "201"),
             @ApiResponse(responseCode = "400"),
-    }, description = "Custom ID will be ignored.")
+    }, description = "Define the basic properties of an problem type.")
     @PostMapping
     public ResponseEntity<EntityModel<ProblemTypeDto>> createProblemType(
             @Validated(ValidationGroups.Create.class) @RequestBody ProblemTypeDto problemTypeDto) {
@@ -89,8 +89,8 @@ public class ProblemTypeController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404", description = "Problem type with given id doesn't exist")
-    }, description = "Custom ID will be ignored.")
+            @ApiResponse(responseCode = "404", description = "Problem type with given ID doesn't exist.")
+    }, description = "Update the basic properties of an problem type (e.g. name).")
     @PutMapping("/{problemTypeId}")
     public ResponseEntity<EntityModel<ProblemTypeDto>> updateProblemType(
             @PathVariable UUID problemTypeId,
@@ -104,8 +104,9 @@ public class ProblemTypeController {
     @Operation(responses = {
             @ApiResponse(responseCode = "204"),
             @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404", description = "Problem type with given id doesn't exist")
-    }, description = "")
+            @ApiResponse(responseCode = "404", description = "Problem type with given ID doesn't exist.")
+    }, description = "Delete an problem type. " +
+            "This also removes all references to other entities (e.g. algorithm).")
     @DeleteMapping("/{problemTypeId}")
     public ResponseEntity<Void> deleteProblemType(@PathVariable UUID problemTypeId) {
         problemTypeService.delete(problemTypeId);
@@ -115,8 +116,8 @@ public class ProblemTypeController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404", description = "Problem type with given id doesn't exist")
-    }, description = "Retrieve a specific problem type")
+            @ApiResponse(responseCode = "404", description = "Problem type with given ID doesn't exist.")
+    }, description = "Retrieve a specific problem type and its basic properties.")
     @GetMapping("/{problemTypeId}")
     public ResponseEntity<EntityModel<ProblemTypeDto>> getProblemType(@PathVariable UUID problemTypeId) {
         ProblemType problemType = problemTypeService.findById(problemTypeId);
@@ -126,8 +127,9 @@ public class ProblemTypeController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404", description = "Problem type with given id doesn't exist")
-    }, description = "")
+            @ApiResponse(responseCode = "404", description = "Problem type with given ID doesn't exist.")
+    }, description = "Retrieved all parent problem types of a specific problem type. " +
+            "If a problem type has not parent an empty list is returned")
     @ListParametersDoc
     @GetMapping("/{problemTypeId}/" + Constants.PROBLEM_TYPE_PARENTS)
     public ResponseEntity<CollectionModel<EntityModel<ProblemTypeDto>>> getProblemTypeParentList(
