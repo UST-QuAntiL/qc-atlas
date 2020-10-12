@@ -34,7 +34,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.hateoas.server.core.Relation;
 
 /**
- * Data transfer object for Algorithms ({@link org.planqk.atlas.core.model.Algorithm}).
+ * Data transfer object for AlgorithmRelation ({@link org.planqk.atlas.core.model.AlgorithmRelation}).
  */
 @NoArgsConstructor
 @Data

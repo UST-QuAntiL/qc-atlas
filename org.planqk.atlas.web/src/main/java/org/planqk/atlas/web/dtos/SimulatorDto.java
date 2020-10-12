@@ -24,6 +24,9 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.springframework.hateoas.server.core.Relation;
 
+/**
+ * Data transfer object for Simulator ({@link org.planqk.atlas.core.model.Simulator}).
+ */
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @Data

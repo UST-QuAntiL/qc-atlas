@@ -31,6 +31,9 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.springframework.hateoas.server.core.Relation;
 
+/**
+ * Data transfer object for QuantumAlgorithm ({@link org.planqk.atlas.core.model.QuantumAlgorithm}).
+ */
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @Data

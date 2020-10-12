@@ -33,6 +33,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.hateoas.server.core.Relation;
 
+/**
+ * Data transfer object for DiscussionTopic ({@link org.planqk.atlas.core.model.DiscussionTopic}).
+ */
 @Data
 @NoArgsConstructor
 @Relation(itemRelation = "discussionTopic", collectionRelation = "discussionTopics")

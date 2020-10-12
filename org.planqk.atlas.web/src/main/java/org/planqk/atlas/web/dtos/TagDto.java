@@ -27,6 +27,9 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.hateoas.server.core.Relation;
 
+/**
+ * Data transfer object for Tag ({@link org.planqk.atlas.core.model.Tag}).
+ */
 @EqualsAndHashCode
 @Data
 @Relation(itemRelation = "tag", collectionRelation = "tags")

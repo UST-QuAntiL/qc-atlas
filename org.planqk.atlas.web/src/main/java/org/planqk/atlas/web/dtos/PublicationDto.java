@@ -36,6 +36,9 @@ import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.URL;
 import org.springframework.hateoas.server.core.Relation;
 
+/**
+ * Data transfer object for Publication ({@link org.planqk.atlas.core.model.Publication}).
+ */
 @EqualsAndHashCode
 @Data
 @NoArgsConstructor

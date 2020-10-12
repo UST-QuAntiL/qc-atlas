@@ -28,6 +28,9 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.springframework.hateoas.server.core.Relation;
 
+/**
+ * Data transfer object for ClassicAlgorithm ({@link org.planqk.atlas.core.model.ClassicAlgorithm}).
+ */
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @Data

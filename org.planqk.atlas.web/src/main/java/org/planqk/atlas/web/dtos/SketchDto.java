@@ -4,6 +4,9 @@ import java.util.UUID;
 
 import lombok.Data;
 
+/**
+ * Data transfer object for Sketch ({@link org.planqk.atlas.core.model.Sketch}).
+ */
 @Data
 public class SketchDto {
 
