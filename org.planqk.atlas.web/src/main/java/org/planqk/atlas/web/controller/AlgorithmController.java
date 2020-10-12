@@ -470,7 +470,7 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "400",
                     description = "Id of the passed computing resource type is null"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or compute resource type with given IDs don't exist.")
+                    description = "Not Found. Algorithm or compute resource property type with given IDs don't exist.")
     }, description = "Add a compute resource property (e.g. a certain number of qubits) that is required by an algorithm. " +
             "The compute resource property type has to be already created (e.g. via POST on /" + Constants.COMPUTE_RESOURCE_PROPERTY_TYPES + "). " +
             "As a result only the ID is required for the compute resource property type, other attributes will be ignored not changed.")

@@ -85,7 +85,7 @@ public class ComputeResourceController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200")
-    }, description = "Retrieve all compute resources")
+    }, description = "Retrieve all compute resources.")
     @ListParametersDoc
     @GetMapping
     public ResponseEntity<PagedModel<EntityModel<ComputeResourceDto>>> getComputeResources(
@@ -103,9 +103,8 @@ public class ComputeResourceController {
             @ApiResponse(responseCode = "201"),
             @ApiResponse(responseCode = "400")
     }, description = "Define the basic properties of a compute resource. " +
-            "References to sub-objects (e.g. a compute resource property) " +
-            "can be added via sub-routes (e.g. /compute-resources/{id}/compute-resource-properties). " +
-            "Custom ID will be ignored.")
+            "References to sub-objects (e.g. a compute resource property) can be added via sub-routes " +
+            "(e.g. POST on /" + Constants.COMPUTE_RESOURCES + "/{computeResourceId}/" + Constants.COMPUTE_RESOURCE_PROPERTIES + ").")
     @PostMapping
     public ResponseEntity<EntityModel<ComputeResourceDto>> createComputeResource(
             @Validated(ValidationGroups.Create.class) @RequestBody ComputeResourceDto computeResourceDto) {
@@ -117,11 +116,11 @@ public class ComputeResourceController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404", description = "Compute Resource with given id does not exist")
+            @ApiResponse(responseCode = "404", description = "Not Found. Compute Resource with given ID doesn't exist.")
     }, description = "Update the basic properties of a compute resource (e.g. name). " +
             "References to sub-objects (e.g. a compute resource property) are not updated via this operation - " +
-            "use the corresponding sub-route for updating them (e.g. /compute-resources/{id}/compute-resource-properties). " +
-            "Custom ID will be ignored.")
+            "use the corresponding sub-route for updating them (e.g. PUT on /" +
+            Constants.COMPUTE_RESOURCES + "/{computeResourceId}/" + Constants.COMPUTE_RESOURCE_PROPERTIES + "/{computeResourcePropertyId}).")
     @PutMapping("/{computeResourceId}")
     public ResponseEntity<EntityModel<ComputeResourceDto>> updateComputeResource(
             @PathVariable UUID computeResourceId,
@@ -135,9 +134,9 @@ public class ComputeResourceController {
     @Operation(responses = {
             @ApiResponse(responseCode = "204"),
             @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404", description = "Compute Resource with given id does not exist")
+            @ApiResponse(responseCode = "404", description = "Not Found. Compute Resource with given ID doesn't exist.")
     }, description = "Delete a compute resource. " +
-            "This also removes all references to other entities (e.g. software platform)")
+            "This also removes all references to other entities (e.g. software platform).")
     @DeleteMapping("/{computeResourceId}")
     public ResponseEntity<Void> deleteComputeResource(
             @PathVariable UUID computeResourceId) {
@@ -148,7 +147,7 @@ public class ComputeResourceController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404", description = "Compute Resource with given id does not exist")
+            @ApiResponse(responseCode = "404", description = "Not Found. Compute Resource with given ID doesn't exist.")
     }, description = "Retrieve a specific compute resource and its basic properties.")
     @GetMapping("/{computeResourceId}")
     public ResponseEntity<EntityModel<ComputeResourceDto>> getComputeResource(
@@ -160,8 +159,8 @@ public class ComputeResourceController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404", description = "Resource doesn't exist")
-    }, description = "Get referenced software platform for a compute resource")
+            @ApiResponse(responseCode = "404", description = "Not Found. Compute Resource with given ID doesn't exist.")
+    }, description = "Retrieve referenced software platform of a compute resource. If none are found an empty list is returned.")
     @ListParametersDoc
     @GetMapping("/{computeResourceId}/" + Constants.SOFTWARE_PLATFORMS)
     public ResponseEntity<CollectionModel<EntityModel<SoftwarePlatformDto>>> getSoftwarePlatformsOfComputeResource(
@@ -174,8 +173,8 @@ public class ComputeResourceController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404", description = "Resource doesn't exist")
-    }, description = "Get referenced cloud services for a compute resource")
+            @ApiResponse(responseCode = "404", description = "Not Found. Compute Resource with given ID doesn't exist.")
+    }, description = "Retrieve referenced cloud services of a compute resource. If none are found an empty list is returned.")
     @ListParametersDoc
     @GetMapping("/{computeResourceId}/" + Constants.CLOUD_SERVICES)
     public ResponseEntity<CollectionModel<EntityModel<CloudServiceDto>>> getCloudServicesOfComputeResource(
@@ -188,8 +187,8 @@ public class ComputeResourceController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404", description = "Compute Resource with given id does not exist")
-    }, description = "Get referenced compute resource properties for a compute resource.")
+            @ApiResponse(responseCode = "404", description = "Not Found. Compute Resource with given ID doesn't exist.")
+    }, description = "Retrieve referenced compute resource properties of a compute resource. If none are found an empty list is returned.")
     @ListParametersDoc
     @GetMapping("/{computeResourceId}/" + Constants.COMPUTE_RESOURCE_PROPERTIES)
     public ResponseEntity<PagedModel<EntityModel<ComputeResourcePropertyDto>>> getComputeResourcePropertiesOfComputeResource(
@@ -203,10 +202,11 @@ public class ComputeResourceController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404", description = "Compute Resource with given id does not exist")
-    }, description = "Define the basic properties of a compute resource property and " +
-            "add a reference to the defined compute resource property. " +
-            "Custom ID will be ignored. ")
+            @ApiResponse(responseCode = "404",
+                    description = "Not Found. Compute resource or compute resource property type with given IDs don't exist.")
+    }, description = "Add a compute resource property (e.g. a certain number of qubits) that is provided by an compute resource. " +
+        "The compute resource property type has to be already created (e.g. via POST on /" + Constants.COMPUTE_RESOURCE_PROPERTY_TYPES + "). " +
+        "As a result only the ID is required for the compute resource property type, other attributes will be ignored not changed.")
     @PostMapping("/{computeResourceId}/" + Constants.COMPUTE_RESOURCE_PROPERTIES)
     public ResponseEntity<EntityModel<ComputeResourcePropertyDto>> createComputeResourcePropertyForComputeResource(
             @PathVariable UUID computeResourceId,
@@ -221,10 +221,11 @@ public class ComputeResourceController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404", description = "Algorithm with the given id doesn't exist")},
-            description = "Update a Compute resource property of an compute resource. " +
-                    "For compute resource property type only ID is required, other compute resource property type " +
-                    "attributes will not change.")
+            @ApiResponse(responseCode = "404",
+                    description = "Not Found. Compute resource, compute resource property or compute resource type with given IDs don't exist.")
+    }, description = "Update a Compute resource property of an compute resource. " +
+            "For the compute resource property type only the ID is required, " +
+            "other compute resource property type attributes will be ignored and not changed.")
     @PutMapping("/{computeResourceId}/" + Constants.COMPUTE_RESOURCE_PROPERTIES + "/{computeResourcePropertyId}")
     public ResponseEntity<EntityModel<ComputeResourcePropertyDto>> updateComputeResourcePropertyOfComputeResource(
             @PathVariable UUID computeResourceId,
@@ -241,8 +242,10 @@ public class ComputeResourceController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404", description = "Compute resource property with given id doesn't exist"),
-    }, description = "Delete a Compute resource property of an compute resource")
+            @ApiResponse(responseCode = "404",
+                    description = "Not Found. Compute resource or compute resource property with given IDs don't exist."),
+    }, description = "Delete a Compute resource property of an compute resource. " +
+            "The compute resource property type is not affected by this.")
     @DeleteMapping("/{computeResourceId}/" + Constants.COMPUTE_RESOURCE_PROPERTIES + "/{computeResourcePropertyId}")
     public HttpEntity<Void> deleteComputeResourcePropertyOfComputeResource(
             @PathVariable UUID computeResourceId,
@@ -256,8 +259,9 @@ public class ComputeResourceController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404"),
-    }, description = "Retrieve a specific compute resource property of an compute resource")
+            @ApiResponse(responseCode = "404",
+                    description = "Not Found. Compute resource or compute resource property with given IDs don't exist."),
+    }, description = "Retrieve a specific compute resource property of an compute resource.")
     @GetMapping("/{computeResourceId}/" + Constants.COMPUTE_RESOURCE_PROPERTIES + "/{computeResourcePropertyId}")
     public HttpEntity<EntityModel<ComputeResourcePropertyDto>> getComputeResourcePropertyOfComputeResource(
             @PathVariable UUID computeResourceId,
