@@ -159,7 +159,7 @@ public class AlgorithmController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "201"),
-            @ApiResponse(responseCode = "400", description = "Bad Request. Request body has invalid fields."),
+            @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
     }, description = "Define the basic properties of an algorithm. " +
             "References to sub-objects (e.g. a ProblemType) can be added via " +
             "sub-routes (e.g. POST on /" + Constants.ALGORITHMS + "/{algorithmId}/" + Constants.PROBLEM_TYPES + ").")
@@ -172,7 +172,7 @@ public class AlgorithmController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
             @ApiResponse(responseCode = "404", description = "Not Found. Algorithm with given ID doesn't exist.")
     }, description = "Update the basic properties of an algorithm (e.g. name). " +
             "References to sub-objects (e.g. a ProblemType) are not updated via this operation " +
@@ -227,7 +227,7 @@ public class AlgorithmController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "204"),
-            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
             @ApiResponse(responseCode = "404", description = "Not Found. Algorithm with given ID doesn't exist.")
     }, description = "Add a tag to an algorithm. The tag does not have to exist before adding it.")
     @PostMapping("/{algorithmId}/" + Constants.TAGS)
@@ -240,7 +240,7 @@ public class AlgorithmController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "204"),
-            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
             @ApiResponse(responseCode = "404", description = "Not Found. Algorithm with given ID or Tag doesn't exist.")
     }, description = "Remove a tag from an algorithm.")
     @DeleteMapping("/{algorithmId}/" + Constants.TAGS)
@@ -267,7 +267,7 @@ public class AlgorithmController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "204"),
-            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
             @ApiResponse(responseCode = "404", description = "Not Found. Algorithm or publication with given IDs don't exist or " +
                     "reference was already added.")
     }, description = "Add a reference to an existing publication " +
@@ -283,7 +283,7 @@ public class AlgorithmController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "204"),
-            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
             @ApiResponse(responseCode = "404", description = "Not Found. Algorithm or publication with given IDs don't exist or " +
                     "no reference exists.")
     }, description = "Delete a reference to a publication of an algorithm. The reference has to be previously created " +
@@ -327,9 +327,11 @@ public class AlgorithmController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "204"),
-            @ApiResponse(responseCode = "400", description = "The ID of the algorithm or problem type is not a valid UUID"),
-            @ApiResponse(responseCode = "404", description = "Not Found. Algorithm or problem type with given IDs don't exist or " +
-                    "reference was already added.")
+            @ApiResponse(responseCode = "400",
+                    description = "Bad Request. Invalid request body."),
+            @ApiResponse(responseCode = "404",
+                    description = "Not Found. Algorithm or problem type with given IDs don't exist or " +
+                            "reference was already added.")
     }, description = "Add a reference to an existing ProblemType " +
             "(that was previously created via a POST on /" + Constants.PROBLEM_TYPES + "). " +
             "Only the ID is required in the request body, other attributes will be ignored and not changed.")
@@ -343,7 +345,8 @@ public class AlgorithmController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "204"),
-            @ApiResponse(responseCode = "400", description = "The ID of the algorithm or problem type is not a valid UUID"),
+            @ApiResponse(responseCode = "400",
+                    description = "Bad Request. Invalid request body."),
             @ApiResponse(responseCode = "404",
                     description = "Not Found. Algorithm or problem type with given IDs don't exist or " +
                     "no reference exists.")
@@ -375,7 +378,7 @@ public class AlgorithmController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400", description = "The ID of the algorithm or application area is not a valid UUID"),
+            @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
                     description = "Not Found. Algorithm or application area with given IDs don't exist.")
     }, description = "Retrieve application areas of an algorithm. If none are found an empty list is returned.")
@@ -390,7 +393,7 @@ public class AlgorithmController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "204"),
-            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
             @ApiResponse(responseCode = "404",
                     description = "Not Found. Algorithm or application area with given IDs don't exist or " +
                     "reference was already added.")
@@ -407,7 +410,7 @@ public class AlgorithmController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "204"),
-            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
             @ApiResponse(responseCode = "404",
                     description = "Not Found. Algorithm or application area with given IDs don't exist or " +
                     "no reference exists.")
@@ -468,7 +471,7 @@ public class AlgorithmController {
     @Operation(responses = {
             @ApiResponse(responseCode = "201"),
             @ApiResponse(responseCode = "400",
-                    description = "Id of the passed computing resource type is null"),
+                    description = "Bad Request. Invalid request body."),
             @ApiResponse(responseCode = "404",
                     description = "Not Found. Algorithm or compute resource property type with given IDs don't exist.")
     }, description = "Add a compute resource property (e.g. a certain number of qubits) that is required by an algorithm. " +
@@ -486,7 +489,8 @@ public class AlgorithmController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "400",
+                    description = "Bad Request. Invalid request body."),
             @ApiResponse(responseCode = "404",
                     description = "Not Found. Algorithm, compute resource property or compute resource type with given IDs don't exist.")
     }, description = "Update a Compute resource property of an algorithm. " +
@@ -575,7 +579,7 @@ public class AlgorithmController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400",
-                    description = "PatternRelation doesn't belong to this algorithm"),
+                    description = "Bad Request. Invalid request body or Pattern relation doesn't belong to this algorithm"),
             @ApiResponse(responseCode = "404",
                     description = "Not Found. Algorithm, pattern relation or pattern relation type with given IDs don't exist.")
     }, description = "Update a relation between a pattern and an algorithm. " +
@@ -630,7 +634,7 @@ public class AlgorithmController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400", description = "Given Id is not a valid UUID"),
+            @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "417"),
             @ApiResponse(responseCode = "404", description = "Not Found. Algorithm with the given ID doesn't exist")
     }, description = "Add a Sketch to the algorithm.")

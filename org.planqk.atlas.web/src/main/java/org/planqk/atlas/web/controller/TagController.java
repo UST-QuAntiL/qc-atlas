@@ -79,7 +79,8 @@ public class TagController {
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "201")
+            @ApiResponse(responseCode = "201"),
+            @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body.")
     }, description = "Create a new tag with its value and category.")
     @PostMapping
     public ResponseEntity<EntityModel<TagDto>> createTag(

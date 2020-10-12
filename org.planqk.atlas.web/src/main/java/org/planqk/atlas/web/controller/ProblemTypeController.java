@@ -77,7 +77,7 @@ public class ProblemTypeController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "201"),
-            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
     }, description = "Define the basic properties of an problem type.")
     @PostMapping
     public ResponseEntity<EntityModel<ProblemTypeDto>> createProblemType(
@@ -88,7 +88,7 @@ public class ProblemTypeController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
             @ApiResponse(responseCode = "404", description = "Not Found. Problem type with given ID doesn't exist.")
     }, description = "Update the basic properties of an problem type (e.g. name).")
     @PutMapping("/{problemTypeId}")

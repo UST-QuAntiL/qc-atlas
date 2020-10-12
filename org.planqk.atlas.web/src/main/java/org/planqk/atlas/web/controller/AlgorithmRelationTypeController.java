@@ -78,7 +78,7 @@ public class AlgorithmRelationTypeController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "201"),
-            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
     }, description = "Define the basic properties of an algorithm relation type.")
     @PostMapping
     public ResponseEntity<EntityModel<AlgorithmRelationTypeDto>> createAlgorithmRelationType(
@@ -90,7 +90,7 @@ public class AlgorithmRelationTypeController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
             @ApiResponse(responseCode = "404",
                     description = "Not Found. Algorithm relation type with given ID doesn't exist")
     }, description = "Update the basic properties of an algorithm relation type (e.g. name).")

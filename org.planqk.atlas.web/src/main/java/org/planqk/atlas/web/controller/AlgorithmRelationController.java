@@ -86,7 +86,8 @@ public class AlgorithmRelationController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "201"),
-            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "400",
+                    description = "Bad Request. Invalid request body or algorithm resource is not part of relation."),
             @ApiResponse(responseCode = "404",
                     description = "Not Found. Algorithm or algorithm relation type with given IDs don't exist.")
     }, description = "Create a relation between two algorithms." +
@@ -105,7 +106,8 @@ public class AlgorithmRelationController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body, algorithm resource is not part of relation " +
+                    "or specified target and source algorithms are not correct."),
             @ApiResponse(responseCode = "404",
                     description = "Not Found. Algorithm, algorithm relation or algorithm relation type with given IDs don't exist.")
     }, description = "Update a relation between two algorithms. " +

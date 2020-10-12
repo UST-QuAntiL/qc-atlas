@@ -98,7 +98,7 @@ public class SoftwarePlatformController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "201"),
-            @ApiResponse(responseCode = "400")
+            @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body.")
     }, description = "Define the basic properties of a software platform. " +
             "References to sub-objects (e.g. a compute resource) " +
             "can be added via sub-routes (e.g. via POST on /" + Constants.COMPUTE_RESOURCES + ").")
@@ -111,7 +111,7 @@ public class SoftwarePlatformController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
             @ApiResponse(responseCode = "404",
                     description = "Not Found. Software Platform with given ID doesn't exist.")
     }, description = "Update the basic properties of a software platform (e.g. name). " +
@@ -171,7 +171,7 @@ public class SoftwarePlatformController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "204"),
-            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
             @ApiResponse(responseCode = "404",
                     description = "Not Found. Software platform or implementation with given IDs don't exist or " +
                             "reference was already added.")
@@ -236,7 +236,7 @@ public class SoftwarePlatformController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "204"),
-            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
             @ApiResponse(responseCode = "404",
                     description = "Not Found. Software Platform or Cloud Service with given IDs don't exist or " +
                             "reference was already added."),
@@ -285,7 +285,7 @@ public class SoftwarePlatformController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "204"),
-            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
             @ApiResponse(responseCode = "404",
                     description = "Not Found. Software Platform or Compute Resource with given IDs don't exist or " +
                             "reference was already added."),

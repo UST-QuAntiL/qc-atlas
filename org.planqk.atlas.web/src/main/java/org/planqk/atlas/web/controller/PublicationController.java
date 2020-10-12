@@ -91,7 +91,7 @@ public class PublicationController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "201"),
-            @ApiResponse(responseCode = "400")
+            @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body.")
     }, description = "Define the basic properties of an publication.")
     @PostMapping
     public ResponseEntity<EntityModel<PublicationDto>> createPublication(
@@ -102,7 +102,7 @@ public class PublicationController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
             @ApiResponse(responseCode = "404",
                     description = "Not Found. Publication with given ID doesn't exist.")
     }, description = "Update the basic properties of an publication (e.g. title).")
@@ -157,7 +157,7 @@ public class PublicationController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "204"),
-            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
             @ApiResponse(responseCode = "404",
                     description = "Not Found. Algorithm or publication with given IDs don't exist or " +
                     "reference was already added.")

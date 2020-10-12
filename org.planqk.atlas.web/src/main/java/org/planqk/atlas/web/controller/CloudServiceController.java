@@ -93,7 +93,7 @@ public class CloudServiceController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "201"),
-            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
     }, description = "Define the basic properties of a cloud service. " +
             "References to sub-objects (e.g. a compute resource) can be added via sub-routes " +
             "(e.g. POST on /" + Constants.CLOUD_SERVICES + "/{cloudServiceId}/" + Constants.COMPUTE_RESOURCES + ").")
@@ -106,7 +106,7 @@ public class CloudServiceController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
             @ApiResponse(responseCode = "404",
                     description = "Not Found. Cloud service with given ID doesn't exist.")
     }, description = "Update the basic properties of a cloud service (e.g. name). " +
@@ -165,8 +165,6 @@ public class CloudServiceController {
         return ResponseEntity.ok(softwarePlatformAssembler.toModel(softwarePlatforms));
     }
 
-    // TODO add link and unlink calls to software platform
-
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
@@ -183,7 +181,7 @@ public class CloudServiceController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "204"),
-            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
             @ApiResponse(responseCode = "404", description = "Not Found. Cloud Service or Compute Resource with given IDs don't exist or " +
                     "reference was already added."),
     }, description = "Add a reference to an existing compute resource " +

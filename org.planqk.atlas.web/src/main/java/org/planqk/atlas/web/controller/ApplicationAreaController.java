@@ -78,7 +78,7 @@ public class ApplicationAreaController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "201"),
-            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
     }, description = "Define the basic properties of an application area.")
     @PostMapping
     public ResponseEntity<EntityModel<ApplicationAreaDto>> createApplicationArea(
@@ -90,7 +90,7 @@ public class ApplicationAreaController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
             @ApiResponse(responseCode = "404",
                     description = "Not Found. Application area with given ID does not exist"),
     }, description = "Update the basic properties of an application area (e.g. name).")

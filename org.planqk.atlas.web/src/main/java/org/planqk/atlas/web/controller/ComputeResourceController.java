@@ -101,7 +101,7 @@ public class ComputeResourceController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "201"),
-            @ApiResponse(responseCode = "400")
+            @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body.")
     }, description = "Define the basic properties of a compute resource. " +
             "References to sub-objects (e.g. a compute resource property) can be added via sub-routes " +
             "(e.g. POST on /" + Constants.COMPUTE_RESOURCES + "/{computeResourceId}/" + Constants.COMPUTE_RESOURCE_PROPERTIES + ").")
@@ -115,7 +115,7 @@ public class ComputeResourceController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
             @ApiResponse(responseCode = "404", description = "Not Found. Compute Resource with given ID doesn't exist.")
     }, description = "Update the basic properties of a compute resource (e.g. name). " +
             "References to sub-objects (e.g. a compute resource property) are not updated via this operation - " +
@@ -201,7 +201,7 @@ public class ComputeResourceController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
             @ApiResponse(responseCode = "404",
                     description = "Not Found. Compute resource or compute resource property type with given IDs don't exist.")
     }, description = "Add a compute resource property (e.g. a certain number of qubits) that is provided by an compute resource. " +
@@ -220,7 +220,7 @@ public class ComputeResourceController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
             @ApiResponse(responseCode = "404",
                     description = "Not Found. Compute resource, compute resource property or compute resource type with given IDs don't exist.")
     }, description = "Update a Compute resource property of an compute resource. " +

@@ -78,7 +78,7 @@ public class ComputeResourcePropertyTypeController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "201"),
-            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
     }, description = "Define the basic properties of an compute resource property type.")
     @PostMapping
     public ResponseEntity<EntityModel<ComputeResourcePropertyTypeDto>> createComputingResourcePropertyType(
@@ -91,7 +91,7 @@ public class ComputeResourcePropertyTypeController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
             @ApiResponse(responseCode = "404",
                     description = "Not Found. Compute resource property type with given ID doesn't exist")
     }, description = "Update the basic properties of an compute resource property type (e.g. name).")

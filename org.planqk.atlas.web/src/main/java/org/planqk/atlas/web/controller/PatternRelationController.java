@@ -77,7 +77,7 @@ public class PatternRelationController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "201"),
-            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
             @ApiResponse(responseCode = "404",
                     description = "Not Found. Algorithm or Pattern relation type with given IDs don't exist.")
     }, description = "Create a relation between a pattern and an algorithm." +
@@ -94,7 +94,7 @@ public class PatternRelationController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400",
-                    description = "Bad Request. Algorithm with given ID is not part of pattern relation."),
+                    description = "Bad Request. Invalid request body or algorithm with given ID is not part of pattern relation."),
             @ApiResponse(responseCode = "404",
                     description = "Not Found. Algorithm, pattern relation or pattern relation type with given IDs don't exist.")
     }, description = "Update a relation between a pattern and an algorithm. " +
