@@ -29,8 +29,6 @@ public class SketchServiceImpl implements SketchService {
 
     private final ImageRepository imageRepository;
 
-    private final AlgorithmRepository algorithmRepository;
-
     @Override
     @Transactional
     public Sketch update(@NonNull Sketch sketch) {
