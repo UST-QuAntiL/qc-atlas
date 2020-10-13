@@ -93,6 +93,9 @@ public interface AlgorithmRelationTypeService {
      * when it was created and first saved to the database.
      * <p>
      * If no entry with the given ID is found this method will throw a {@link java.util.NoSuchElementException}.
+     * <p>
+     * If the {@link AlgorithmRelationType} is still referenced by at least one {@link AlgorithmRelation} a
+     * {@link org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException} will be thrown.
      *
      * @param algorithmRelationTypeId The ID of the {@link AlgorithmRelationType} we want to delete
      */
