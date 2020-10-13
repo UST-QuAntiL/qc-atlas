@@ -119,14 +119,14 @@ public class ComputeResourcePropertyServiceImpl implements ComputeResourceProper
             @NonNull UUID algorithmId, @NonNull ComputeResourceProperty computeResourceProperty) {
         var computeResourcePropertyWithType = validateComputeResourceProperty(computeResourceProperty);
 
+        Algorithm algorithm = ServiceUtils.findById(algorithmId, Algorithm.class, algorithmRepository);
+
         ComputeResourceProperty persistedComputeResourceProperty;
         if (computeResourcePropertyWithType.getId() == null) {
             persistedComputeResourceProperty = this.create(computeResourcePropertyWithType);
         } else {
             persistedComputeResourceProperty = findById(computeResourcePropertyWithType.getId());
         }
-
-        Algorithm algorithm = ServiceUtils.findById(algorithmId, Algorithm.class, algorithmRepository);
 
         persistedComputeResourceProperty.setAlgorithm(algorithm);
         return this.computeResourcePropertyRepository.save(persistedComputeResourceProperty);
@@ -138,15 +138,15 @@ public class ComputeResourcePropertyServiceImpl implements ComputeResourceProper
             @NonNull UUID implementationId, @NonNull ComputeResourceProperty computeResourceProperty) {
         var computeResourcePropertyWithType = validateComputeResourceProperty(computeResourceProperty);
 
+        Implementation implementation = ServiceUtils
+                .findById(implementationId, Implementation.class, implementationRepository);
+
         ComputeResourceProperty persistedComputeResourceProperty;
         if (computeResourcePropertyWithType.getId() == null) {
             persistedComputeResourceProperty = this.create(computeResourcePropertyWithType);
         } else {
             persistedComputeResourceProperty = findById(computeResourcePropertyWithType.getId());
         }
-
-        Implementation implementation = ServiceUtils
-                .findById(implementationId, Implementation.class, implementationRepository);
 
         persistedComputeResourceProperty.setImplementation(implementation);
         return this.computeResourcePropertyRepository.save(persistedComputeResourceProperty);
@@ -158,15 +158,15 @@ public class ComputeResourcePropertyServiceImpl implements ComputeResourceProper
             @NonNull UUID computeResourceId, @NonNull ComputeResourceProperty computeResourceProperty) {
         var computeResourcePropertyWithType = validateComputeResourceProperty(computeResourceProperty);
 
+        ComputeResource computeResource = ServiceUtils
+                .findById(computeResourceId, ComputeResource.class, computeResourceRepository);
+
         ComputeResourceProperty persistedComputeResourceProperty;
         if (computeResourcePropertyWithType.getId() == null) {
             persistedComputeResourceProperty = this.create(computeResourcePropertyWithType);
         } else {
             persistedComputeResourceProperty = findById(computeResourcePropertyWithType.getId());
         }
-
-        ComputeResource computeResource = ServiceUtils
-                .findById(computeResourceId, ComputeResource.class, computeResourceRepository);
 
         persistedComputeResourceProperty.setComputeResource(computeResource);
         return this.computeResourcePropertyRepository.save(persistedComputeResourceProperty);
@@ -199,7 +199,7 @@ public class ComputeResourcePropertyServiceImpl implements ComputeResourceProper
         ComputeResourceProperty computeResourceProperty = findById(computeResourcePropertyId);
 
         if (computeResourceProperty.getComputeResource() == null ||
-                !computeResourceProperty.getComputeResource().getId() .equals(computeResourceId)) {
+                !computeResourceProperty.getComputeResource().getId().equals(computeResourceId)) {
             throw new NoSuchElementException("ComputeResourceProperty with ID \"" + computeResourcePropertyId
                     + "\" of ComputeResource with ID \"" + computeResourceId +  "\" does not exist");
         }

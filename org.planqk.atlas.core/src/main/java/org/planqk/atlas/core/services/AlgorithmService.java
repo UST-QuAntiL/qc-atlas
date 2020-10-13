@@ -45,7 +45,8 @@ public interface AlgorithmService {
      * The validation for this is done by the Controller layer, which will reject {@link Algorithm}s with a given ID in
      * its create path.
      *
-     * @param algorithm The {@link Algorithm} object describing the properties of an algorithm
+     * @param algorithm The {@link Algorithm} object describing the properties of an algorithm that should be saved to
+     *                  the database
      * @return The {@link Algorithm} object that represents the saved status from the database
      */
     @Transactional

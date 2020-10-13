@@ -59,7 +59,7 @@ public interface CloudServiceService {
      * The validation for this is done by the Controller layer, which will reject {@link CloudService}s with a given ID
      * in its create path.
      *
-     * @param cloudService The {@link CloudService} object describing a cloud service offering
+     * @param cloudService The {@link CloudService} that should be saved to the database
      * @return The {@link CloudService} object that represents the saved status from the database
      */
     @Transactional

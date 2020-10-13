@@ -51,7 +51,8 @@ public interface AlgorithmRelationService {
      * This way we will also check if the given algorithms exist in the database without another step checking for this.
      * If either of the algorithms doesn't exist a {@link java.util.NoSuchElementException} is thrown.
      *
-     * @param algorithmRelation The {@link AlgorithmRelation} object describing the relation between a source and a target algorithm
+     * @param algorithmRelation The {@link AlgorithmRelation} object describing the relation between a source and a
+     *                          target algorithm that should be saved to the database
      * @return The {@link AlgorithmRelation} object that represents the saved status of the database
      */
     @Transactional
@@ -83,7 +84,7 @@ public interface AlgorithmRelationService {
      * The {@link org.planqk.atlas.core.model.AlgorithmRelationType} has to be set and can not be null.
      * However, only the ID of the type has to be set since the correct type object will be queried from the database
      * in order to reduce the error margin for user input.
-     * As a advantage, this way we can check if the given type exists in the database without another checking step.
+     * This way we can check if the given type exists in the database without another checking step.
      * If the {@link org.planqk.atlas.core.model.AlgorithmRelationType} with given ID doesn't exist a
      * {@link java.util.NoSuchElementException} is thrown.
      * In the update process the type will not be updated itself.

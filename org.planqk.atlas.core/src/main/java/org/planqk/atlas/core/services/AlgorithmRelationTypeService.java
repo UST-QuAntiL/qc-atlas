@@ -41,7 +41,7 @@ public interface AlgorithmRelationTypeService {
      * The validation for this is done by the Controller layer, which will reject {@link AlgorithmRelationType}s with a given ID in
      * its create path.
      *
-     * @param algorithmRelationType The {@link AlgorithmRelationType} object describing a type of algorithm relation
+     * @param algorithmRelationType The {@link AlgorithmRelationType} that should be saved to the database
      * @return The {@link AlgorithmRelationType} object that represents the saved status from the database
      */
     @Transactional

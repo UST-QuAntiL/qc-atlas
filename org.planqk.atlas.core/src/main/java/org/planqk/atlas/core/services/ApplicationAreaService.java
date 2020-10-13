@@ -42,7 +42,8 @@ public interface ApplicationAreaService {
      * The validation for this is done by the Controller layer, which will reject {@link ApplicationArea}s with a given ID in
      * its create path.
      *
-     * @param applicationArea The {@link ApplicationArea} object describing an application area of an {@link org.planqk.atlas.core.model.Algorithm}
+     * @param applicationArea The {@link ApplicationArea} object describing an application area of
+     *                        an {@link org.planqk.atlas.core.model.Algorithm} that should be saved to the database
      * @return The {@link ApplicationArea} object that represents the saved status from the database
      */
     @Transactional
