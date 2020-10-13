@@ -31,6 +31,9 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.hateoas.server.core.Relation;
 
+/**
+ * Data transfer object for ProblemType ({@link org.planqk.atlas.core.model.ProblemType}).
+ */
 @EqualsAndHashCode
 @Data
 @Relation(itemRelation = "problemType", collectionRelation = "problemTypes")

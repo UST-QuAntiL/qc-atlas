@@ -63,14 +63,6 @@ public class DiscussionCommentServiceImpl implements DiscussionCommentService {
     }
 
     @Override
-    public void checkIfDiscussionCommentIsInDiscussionTopic(@NonNull UUID commentId, @NonNull UUID topicId) {
-        if (!discussionCommentRepository.existsByIdAndDiscussionTopic_Id(commentId, topicId)) {
-            throw new NoSuchElementException(String.format("A DiscussionComment with the ID \"%s\" does not " +
-                    "exist in the DiscussionTopic with ID \"%s\"", commentId.toString(), topicId.toString()));
-        }
-    }
-
-    @Override
     @Transactional
     public DiscussionComment update(@NonNull DiscussionComment comment) {
         ServiceUtils.throwIfNotExists(comment.getId(), DiscussionComment.class, discussionCommentRepository);
@@ -84,5 +76,13 @@ public class DiscussionCommentServiceImpl implements DiscussionCommentService {
         ServiceUtils.throwIfNotExists(commentId, DiscussionComment.class, discussionCommentRepository);
 
         discussionCommentRepository.deleteById(commentId);
+    }
+
+    @Override
+    public void checkIfDiscussionCommentIsInDiscussionTopic(@NonNull UUID commentId, @NonNull UUID topicId) {
+        if (!discussionCommentRepository.existsByIdAndDiscussionTopic_Id(commentId, topicId)) {
+            throw new NoSuchElementException(String.format("A DiscussionComment with the ID \"%s\" does not " +
+                    "exist in the DiscussionTopic with ID \"%s\"", commentId.toString(), topicId.toString()));
+        }
     }
 }

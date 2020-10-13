@@ -27,6 +27,7 @@ import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.model.SoftwarePlatform;
 import org.planqk.atlas.core.repository.AlgorithmRepository;
+import org.planqk.atlas.core.repository.ComputeResourcePropertyRepository;
 import org.planqk.atlas.core.repository.ImplementationRepository;
 import org.planqk.atlas.core.repository.PublicationRepository;
 import org.planqk.atlas.core.repository.SoftwarePlatformRepository;
@@ -52,6 +53,7 @@ public class ImplementationServiceImpl implements ImplementationService {
     private final PublicationRepository publicationRepository;
 
     private final AlgorithmRepository algorithmRepository;
+    private final ComputeResourcePropertyRepository computeResourcePropertyRepository;
 
     @Override
     @Transactional
@@ -105,11 +107,17 @@ public class ImplementationServiceImpl implements ImplementationService {
     }
 
     private void removeReferences(@NonNull Implementation implementation) {
+        // Remove reference from algorithm
         implementation.setImplementedAlgorithm(null);
 
+        // Delete compute resource property
+        implementation.getRequiredComputeResourceProperties().forEach(computeResourcePropertyRepository::delete);
+
+        // Remove links to publications
         implementation.getPublications().forEach(publication ->
                 publication.removeImplementation(implementation));
 
+        // Remove links to software platforms
         implementation.getSoftwarePlatforms().forEach(softwarePlatform ->
                 softwarePlatform.removeImplementation(implementation));
     }

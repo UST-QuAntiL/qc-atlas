@@ -34,6 +34,9 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.springframework.hateoas.server.core.Relation;
 
+/**
+ * Data transfer object for PatternRelation ({@link org.planqk.atlas.core.model.PatternRelation}).
+ */
 @NoArgsConstructor
 @EqualsAndHashCode
 @Data

@@ -97,6 +97,14 @@ public class PublicationServiceImpl implements PublicationService {
     }
 
     @Override
+    @Transactional
+    public void deletePublications(@NonNull Set<UUID> publicationIds) {
+        publicationIds.forEach(publicationId ->
+                ServiceUtils.throwIfNotExists(publicationId, Publication.class, publicationRepository));
+        publicationRepository.deleteByIdIn(publicationIds);
+    }
+
+    @Override
     public Page<Algorithm> findLinkedAlgorithms(@NonNull UUID publicationId, @NonNull Pageable pageable) {
         ServiceUtils.throwIfNotExists(publicationId, Publication.class, publicationRepository);
         return algorithmRepository.findAlgorithmsByPublicationId(publicationId, pageable);
@@ -106,14 +114,6 @@ public class PublicationServiceImpl implements PublicationService {
     public Page<Implementation> findLinkedImplementations(@NonNull UUID publicationId, @NonNull Pageable pageable) {
         ServiceUtils.throwIfNotExists(publicationId, Publication.class, publicationRepository);
         return implementationRepository.findImplementationsByPublicationId(publicationId, pageable);
-    }
-
-    @Override
-    @Transactional
-    public void deletePublications(@NonNull Set<UUID> publicationIds) {
-        publicationIds.forEach(publicationId ->
-                ServiceUtils.throwIfNotExists(publicationId, Publication.class, publicationRepository));
-        publicationRepository.deleteByIdIn(publicationIds);
     }
 
     @Override

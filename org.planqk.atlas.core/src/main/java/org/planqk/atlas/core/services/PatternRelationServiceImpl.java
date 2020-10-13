@@ -73,9 +73,11 @@ public class PatternRelationServiceImpl implements PatternRelationService {
     public PatternRelation update(@NonNull PatternRelation patternRelation) {
         PatternRelation persistedPatternRelation = findById(patternRelation.getId());
 
+        persistedPatternRelation.setPatternRelationType(
+                patternRelationTypeService.findById(patternRelation.getPatternRelationType().getId()));
         persistedPatternRelation.setPattern(patternRelation.getPattern());
         persistedPatternRelation.setDescription(patternRelation.getDescription());
-        persistedPatternRelation.setPatternRelationType(patternRelation.getPatternRelationType());
+
 
         return patternRelationRepository.save(persistedPatternRelation);
     }

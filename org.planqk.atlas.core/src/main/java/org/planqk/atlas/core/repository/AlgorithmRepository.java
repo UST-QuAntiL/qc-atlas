@@ -22,7 +22,6 @@ package org.planqk.atlas.core.repository;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
-import org.planqk.atlas.core.model.Publication;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

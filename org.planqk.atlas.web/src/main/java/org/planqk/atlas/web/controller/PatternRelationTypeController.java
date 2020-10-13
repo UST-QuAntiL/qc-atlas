@@ -67,7 +67,7 @@ public class PatternRelationTypeController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200")
-    }, description = "")
+    }, description = "Retrieve all pattern relation types.")
     @ListParametersDoc
     @GetMapping
     public ResponseEntity<PagedModel<EntityModel<PatternRelationTypeDto>>> getPatternRelationTypes(
@@ -78,8 +78,8 @@ public class PatternRelationTypeController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "201"),
-            @ApiResponse(responseCode = "400")
-    }, description = "Custom ID will be ignored.")
+            @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body.")
+    }, description = "Define the basic properties of an pattern relation type.")
     @PostMapping
     public ResponseEntity<EntityModel<PatternRelationTypeDto>> createPatternRelationType(
             @Validated(ValidationGroups.Create.class) @RequestBody PatternRelationTypeDto patternRelationTypeDto) {
@@ -90,9 +90,10 @@ public class PatternRelationTypeController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404")
-    }, description = "Custom ID will be ignored.")
+            @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
+            @ApiResponse(responseCode = "404",
+                    description = "Not Found. Pattern relation type with given ID doesn't exist.")
+    }, description = "Update the basic properties of an pattern relation type (e.g. name).")
     @PutMapping("/{patternRelationTypeId}")
     public ResponseEntity<EntityModel<PatternRelationTypeDto>> updatePatternRelationType(
             @PathVariable UUID patternRelationTypeId,
@@ -104,10 +105,25 @@ public class PatternRelationTypeController {
     }
 
     @Operation(responses = {
+            @ApiResponse(responseCode = "204"),
+            @ApiResponse(responseCode = "400",
+                    description = "Bad Request. Pattern relation type is still in use by at least one pattern relation."),
+            @ApiResponse(responseCode = "404",
+                    description = "Not Found. Pattern relation type with given ID doesn't exist.")
+    }, description = "Delete an pattern relation type.")
+    @DeleteMapping("/{patternRelationTypeId}")
+    public ResponseEntity<Void> deletePatternRelationType(
+            @PathVariable UUID patternRelationTypeId) {
+        patternRelationTypeService.delete(patternRelationTypeId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404")
-    }, description = "")
+            @ApiResponse(responseCode = "404",
+                    description = "Not Found. Pattern relation type with given ID doesn't exist.")
+    }, description = "Retrieve a specific pattern relation type and its basic properties.")
     @GetMapping("/{patternRelationTypeId}")
     public ResponseEntity<EntityModel<PatternRelationTypeDto>> getPatternRelationType(
             @PathVariable UUID patternRelationTypeId) {
@@ -115,15 +131,5 @@ public class PatternRelationTypeController {
         return ResponseEntity.ok(patternRelationTypeAssembler.toModel(patternRelationType));
     }
 
-    @Operation(responses = {
-            @ApiResponse(responseCode = "204"),
-            @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404", description = "Pattern relation type with given id doesn't exist")
-    }, description = "")
-    @DeleteMapping("/{patternRelationTypeId}")
-    public ResponseEntity<Void> deletePatternRelationType(
-            @PathVariable UUID patternRelationTypeId) {
-        patternRelationTypeService.delete(patternRelationTypeId);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
+
 }

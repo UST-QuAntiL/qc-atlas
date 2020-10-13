@@ -67,7 +67,7 @@ public class ApplicationAreaController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200")
-    }, description = "")
+    }, description = "Retrieve all application areas")
     @ListParametersDoc
     @GetMapping
     public ResponseEntity<PagedModel<EntityModel<ApplicationAreaDto>>> getApplicationAreas(
@@ -78,8 +78,8 @@ public class ApplicationAreaController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "201"),
-            @ApiResponse(responseCode = "400"),
-    }, description = "Custom ID will be ignored.")
+            @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
+    }, description = "Define the basic properties of an application area.")
     @PostMapping
     public ResponseEntity<EntityModel<ApplicationAreaDto>> createApplicationArea(
             @Validated(ValidationGroups.Create.class) @RequestBody ApplicationAreaDto applicationAreaDto) {
@@ -90,10 +90,10 @@ public class ApplicationAreaController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
             @ApiResponse(responseCode = "404",
-                    description = "Application area with given id does not exist"),
-    }, description = "Custom ID will be ignored.")
+                    description = "Not Found. Application area with given ID does not exist"),
+    }, description = "Update the basic properties of an application area (e.g. name).")
     @PutMapping("/{applicationAreaId}")
     public ResponseEntity<EntityModel<ApplicationAreaDto>> updateApplicationArea(
             @PathVariable UUID applicationAreaId,
@@ -107,8 +107,9 @@ public class ApplicationAreaController {
     @Operation(responses = {
             @ApiResponse(responseCode = "204"),
             @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404", description = "Application area with given id doesn't exist")
-    }, description = "")
+            @ApiResponse(responseCode = "404",
+                    description = "Not Found. Application area with given ID doesn't exist")
+    }, description = "Delete an application area. This removes the application area from all algorithms it is references in.")
     @DeleteMapping("/{applicationAreaId}")
     public ResponseEntity<Void> deleteApplicationArea(@PathVariable UUID applicationAreaId) {
         applicationAreaService.delete(applicationAreaId);
@@ -118,8 +119,9 @@ public class ApplicationAreaController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404", description = "Application area with given id doesn't exist")
-    }, description = "")
+            @ApiResponse(responseCode = "404",
+                    description = "Not Found. Application area with given ID doesn't exist")
+    }, description = "Retrieve a specific application area and its basic properties.")
     @GetMapping("/{applicationAreaId}")
     public ResponseEntity<EntityModel<ApplicationAreaDto>> getApplicationArea(@PathVariable UUID applicationAreaId) {
         ApplicationArea applicationArea = applicationAreaService.findById(applicationAreaId);

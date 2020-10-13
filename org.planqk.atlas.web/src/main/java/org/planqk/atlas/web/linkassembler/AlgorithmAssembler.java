@@ -19,8 +19,6 @@
 
 package org.planqk.atlas.web.linkassembler;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
-
 import java.util.UUID;
 
 import org.planqk.atlas.web.Constants;
@@ -34,9 +32,12 @@ import org.planqk.atlas.web.dtos.ProblemTypeDto;
 import org.planqk.atlas.web.dtos.PublicationDto;
 import org.planqk.atlas.web.dtos.TagDto;
 import org.planqk.atlas.web.utils.ListParameters;
+
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Component;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Component
 public class AlgorithmAssembler extends GenericLinkAssembler<AlgorithmDto> {

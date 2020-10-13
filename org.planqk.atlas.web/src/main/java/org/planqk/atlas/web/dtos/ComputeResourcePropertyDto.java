@@ -34,6 +34,9 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.springframework.hateoas.server.core.Relation;
 
+/**
+ * Data transfer object for ComputeResourceProperty ({@link org.planqk.atlas.core.model.ComputeResourceProperty}).
+ */
 @Data
 @EqualsAndHashCode
 @ToString

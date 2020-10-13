@@ -31,6 +31,9 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.hateoas.server.core.Relation;
 
+/**
+ * Data transfer object for ApplicationArea ({@link org.planqk.atlas.core.model.ApplicationArea}).
+ */
 @EqualsAndHashCode
 @Data
 @Relation(itemRelation = "applicationArea", collectionRelation = "applicationAreas")

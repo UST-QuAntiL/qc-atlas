@@ -69,7 +69,7 @@ public class TagController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200")
-    }, description = "Retrieve all created tags")
+    }, description = "Retrieve all created tags.")
     @ListParametersDoc
     @GetMapping
     public ResponseEntity<PagedModel<EntityModel<TagDto>>> getTags(
@@ -79,8 +79,9 @@ public class TagController {
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "201")
-    }, description = "Create a new tag")
+            @ApiResponse(responseCode = "201"),
+            @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body.")
+    }, description = "Create a new tag with its value and category.")
     @PostMapping
     public ResponseEntity<EntityModel<TagDto>> createTag(
             @Validated(ValidationGroups.Create.class) @RequestBody TagDto tagDto) {
@@ -90,8 +91,8 @@ public class TagController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "404")
-    }, description = "Retrieve a specific tag")
+            @ApiResponse(responseCode = "404", description = "Tag with given value doesn't exist.")
+    }, description = "Retrieve a specific tag.")
     @GetMapping("/{value}")
     public ResponseEntity<EntityModel<TagDto>> getTag(@PathVariable String value) {
         Tag tag = this.tagService.findByValue(value);
@@ -101,7 +102,7 @@ public class TagController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200")
-    }, description = "Retrieve all algorithms under a specific tag")
+    }, description = "Retrieve all algorithms under a specific tag.")
     @GetMapping("/{value}/" + Constants.ALGORITHMS)
     public ResponseEntity<CollectionModel<EntityModel<AlgorithmDto>>> getAlgorithmsOfTag(@PathVariable String value) {
         Tag tag = this.tagService.findByValue(value);
@@ -113,7 +114,7 @@ public class TagController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200")
-    }, description = "Retrieve all implementations under a specific tag")
+    }, description = "Retrieve all implementations under a specific tag.")
     @GetMapping("/{value}/" + Constants.IMPLEMENTATIONS)
     public ResponseEntity<CollectionModel<EntityModel<ImplementationDto>>> getImplementationsOfTag(
             @PathVariable String value) {

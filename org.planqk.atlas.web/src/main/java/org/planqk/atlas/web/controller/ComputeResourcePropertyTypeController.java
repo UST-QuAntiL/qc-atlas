@@ -67,7 +67,7 @@ public class ComputeResourcePropertyTypeController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200")
-    }, description = "")
+    }, description = "Retrieve all compute resource property types.")
     @ListParametersDoc
     @GetMapping
     public ResponseEntity<PagedModel<EntityModel<ComputeResourcePropertyTypeDto>>> getResourcePropertyTypes(
@@ -78,8 +78,8 @@ public class ComputeResourcePropertyTypeController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "201"),
-            @ApiResponse(responseCode = "400"),
-    }, description = "Custom ID will not be accepted.")
+            @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
+    }, description = "Define the basic properties of an compute resource property type.")
     @PostMapping
     public ResponseEntity<EntityModel<ComputeResourcePropertyTypeDto>> createComputingResourcePropertyType(
             @Validated(ValidationGroups.Create.class) @RequestBody ComputeResourcePropertyTypeDto computeResourcePropertyTypeDto) {
@@ -91,9 +91,10 @@ public class ComputeResourcePropertyTypeController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404", description = "Computing resource type with given id doesn't exist")
-    }, description = "Custom ID will be ignored.")
+            @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
+            @ApiResponse(responseCode = "404",
+                    description = "Not Found. Compute resource property type with given ID doesn't exist")
+    }, description = "Update the basic properties of an compute resource property type (e.g. name).")
     @PutMapping("/{computeResourcePropertyTypeId}")
     public ResponseEntity<EntityModel<ComputeResourcePropertyTypeDto>> updateComputingResourcePropertyType(
             @PathVariable UUID computeResourcePropertyTypeId,
@@ -107,9 +108,11 @@ public class ComputeResourcePropertyTypeController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "204"),
-            @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404", description = "Computing resource type with given id doesn't exist"),
-    }, description = "")
+            @ApiResponse(responseCode = "400",
+                    description = "Bad Request. Compute resource property type is still in use by at least one compute resource property"),
+            @ApiResponse(responseCode = "404",
+                    description = "Not Found. Compute resource property type with given ID doesn't exist")
+    }, description = "Delete an compute resource property type.")
     @DeleteMapping("/{computeResourcePropertyTypeId}")
     public ResponseEntity<Void> deleteComputingResourcePropertyType(
             @PathVariable UUID computeResourcePropertyTypeId) {
@@ -120,8 +123,9 @@ public class ComputeResourcePropertyTypeController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404", description = "Computing resource type with given id doesn't exist"),
-    }, description = "")
+            @ApiResponse(responseCode = "404",
+                    description = "Not Found. Compute resource property type with given ID doesn't exist")
+    }, description = "Retrieve a specific compute resource property type and its basic properties.")
     @GetMapping("/{computeResourcePropertyTypeId}")
     public ResponseEntity<EntityModel<ComputeResourcePropertyTypeDto>> getComputingResourcePropertyType(
             @PathVariable UUID computeResourcePropertyTypeId) {

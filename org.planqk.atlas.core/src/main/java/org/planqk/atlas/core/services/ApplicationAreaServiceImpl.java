@@ -82,7 +82,7 @@ public class ApplicationAreaServiceImpl implements ApplicationAreaService {
                     + applicationAreaId + "\" cannot be deleted, because it is still in use");
         }
 
-        removeReferences(applicationArea);
+        // removeReferences(applicationArea);
 
         applicationAreaRepository.deleteById(applicationAreaId);
     }

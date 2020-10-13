@@ -19,10 +19,9 @@
 
 package org.planqk.atlas.core.exceptions;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
-
-@ResponseStatus(code = HttpStatus.BAD_REQUEST, reason = "The value of the ComputingResourcePorperty is not valid for the given type.")
+/**
+ * Exception that is thrown when the datatype of a ComputeResourceProperty and its value are invalid with each other
+ */
 public class InvalidResourceTypeValueException extends RuntimeException {
 
     public InvalidResourceTypeValueException(String message) {

@@ -34,6 +34,9 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.springframework.hateoas.server.core.Relation;
 
+/**
+ * Data transfer object for SoftwarePlatform ({@link org.planqk.atlas.core.model.SoftwarePlatform}).
+ */
 @ToString(callSuper = true)
 @Data
 @NoArgsConstructor
