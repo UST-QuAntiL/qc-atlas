@@ -121,11 +121,11 @@ public interface AlgorithmService {
      * source or target algorithm.
      * If no entries are found an empty page is returned.
      * <p>
-     * The given {@link Algorithm} is identified through its ID given as a parameter.
-     * If no {@link Algorithm} with the given ID can be found a {@link java.util.NoSuchElementException} is thrown.
-     * <p>
      * The amount of entries is based on the given {@link Pageable} parameter.
      * If the page number of the {@link Pageable} is set to '-1' a {@link Page} with all entries is queried.
+     * <p>
+     * The given {@link Algorithm} is identified through its ID given as a parameter.
+     * If no {@link Algorithm} with the given ID can be found a {@link java.util.NoSuchElementException} is thrown.
      *
      * @param algorithmId The ID of the {@link Algorithm} we want find linked {@link AlgorithmRelation}s for
      * @param pageable The page information, namely page size and page number, of the page we want to retrieve
@@ -138,11 +138,11 @@ public interface AlgorithmService {
      * {@link Algorithm}.
      * If no entries are found an empty page is returned.
      * <p>
-     * The given {@link Algorithm} is identified through its ID given as a parameter.
-     * If no {@link Algorithm} with the given ID can be found a {@link java.util.NoSuchElementException} is thrown.
-     * <p>
      * The amount of entries is based on the given {@link Pageable} parameter.
      * If the page number of the {@link Pageable} is set to '-1' a {@link Page} with all entries is queried.
+     * <p>
+     * The given {@link Algorithm} is identified through its ID given as a parameter.
+     * If no {@link Algorithm} with the given ID can be found a {@link java.util.NoSuchElementException} is thrown.
      *
      * @param algorithmId The ID of the {@link Algorithm} we want find linked {@link PatternRelation}s for
      * @param pageable The page information, namely page size and page number, of the page we want to retrieve
@@ -155,11 +155,11 @@ public interface AlgorithmService {
      * given {@link Algorithm}.
      * If no entries are found an empty page is returned.
      * <p>
-     * The given {@link Algorithm} is identified through its ID given as a parameter.
-     * If no {@link Algorithm} with the given ID can be found a {@link java.util.NoSuchElementException} is thrown.
-     * <p>
      * The amount of entries is based on the given {@link Pageable} parameter.
      * If the page number of the {@link Pageable} is set to '-1' a {@link Page} with all entries is queried.
+     * <p>
+     * The given {@link Algorithm} is identified through its ID given as a parameter.
+     * If no {@link Algorithm} with the given ID can be found a {@link java.util.NoSuchElementException} is thrown.
      *
      * @param algorithmId The ID of the {@link Algorithm} we want find linked {@link Publication}s for
      * @param pageable The page information, namely page size and page number, of the page we want to retrieve
@@ -172,11 +172,11 @@ public interface AlgorithmService {
      * the given {@link Algorithm}.
      * If no entries are found an empty page is returned.
      * <p>
-     * The given {@link Algorithm} is identified through its ID given as a parameter.
-     * If no {@link Algorithm} with the given ID can be found a {@link java.util.NoSuchElementException} is thrown.
-     * <p>
      * The amount of entries is based on the given {@link Pageable} parameter.
      * If the page number of the {@link Pageable} is set to '-1' a {@link Page} with all entries is queried.
+     * <p>
+     * The given {@link Algorithm} is identified through its ID given as a parameter.
+     * If no {@link Algorithm} with the given ID can be found a {@link java.util.NoSuchElementException} is thrown.
      *
      * @param algorithmId The ID of the {@link Algorithm} we want find linked {@link ProblemType}s for
      * @param pageable The page information, namely page size and page number, of the page we want to retrieve
@@ -189,11 +189,11 @@ public interface AlgorithmService {
      * linked to the given {@link Algorithm}.
      * If no entries are found an empty page is returned.
      * <p>
-     * The given {@link Algorithm} is identified through its ID given as a parameter.
-     * If no {@link Algorithm} with the given ID can be found a {@link java.util.NoSuchElementException} is thrown.
-     * <p>
      * The amount of entries is based on the given {@link Pageable} parameter.
      * If the page number of the {@link Pageable} is set to '-1' a {@link Page} with all entries is queried.
+     * <p>
+     * The given {@link Algorithm} is identified through its ID given as a parameter.
+     * If no {@link Algorithm} with the given ID can be found a {@link java.util.NoSuchElementException} is thrown.
      *
      * @param algorithmId The ID of the {@link Algorithm} we want find linked {@link ApplicationArea}s for
      * @param pageable The page information, namely page size and page number, of the page we want to retrieve
