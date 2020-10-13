@@ -48,6 +48,7 @@ public class Implementation extends KnowledgeArtifact {
 
     private String name;
 
+    @Column(columnDefinition = "text")
     private String description;
 
     private String contributors;
@@ -63,6 +64,8 @@ public class Implementation extends KnowledgeArtifact {
     private String version;
 
     private String license;
+
+    private String technology;
 
     @Column(columnDefinition = "text")
     private String problemStatement;
@@ -106,6 +109,7 @@ public class Implementation extends KnowledgeArtifact {
             joinColumns = @JoinColumn(name = "implementation_id"),
             inverseJoinColumns = @JoinColumn(name = "software_platform_id")
     )
+
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Set<SoftwarePlatform> softwarePlatforms = new HashSet<>();

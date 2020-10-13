@@ -73,5 +73,7 @@ public class ImplementationDto implements Identifyable {
 
     private String license;
 
+    private String technology;
+
     private String problemStatement;
 }
