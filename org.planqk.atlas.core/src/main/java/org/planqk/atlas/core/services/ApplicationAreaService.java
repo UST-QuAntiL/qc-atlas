@@ -21,8 +21,6 @@ package org.planqk.atlas.core.services;
 
 import java.util.UUID;
 
-import org.planqk.atlas.core.model.AlgorithmRelation;
-import org.planqk.atlas.core.model.AlgorithmRelationType;
 import org.planqk.atlas.core.model.ApplicationArea;
 
 import org.springframework.data.domain.Page;

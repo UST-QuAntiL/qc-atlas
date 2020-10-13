@@ -22,7 +22,6 @@ package org.planqk.atlas.core.services;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.AlgorithmRelation;
-import org.planqk.atlas.core.model.AlgorithmRelationType;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,10 +44,12 @@ public interface AlgorithmRelationService {
      * If the {@link org.planqk.atlas.core.model.AlgorithmRelationType} with given ID doesn't exist a
      * {@link java.util.NoSuchElementException} is thrown.
      * <p>
-     * The same approach is taken for the source and target algorithms of the {@link AlgorithmRelation}.
+     * The same approach is taken for the source and target {@link org.planqk.atlas.core.model.Algorithm}s of the
+     * {@link AlgorithmRelation}.
      * All other properties of the source and target algorithm in the {@link AlgorithmRelation} parameter will be ignored,
-     * except the IDs which will also be used to query both algorithm object from the database.
-     * This way we will also check if the given algorithms exist in the database without another step checking for this.
+     * except the IDs which will also be used to query both {@link org.planqk.atlas.core.model.Algorithm}s from the database.
+     * This way we will also check if the given {@link org.planqk.atlas.core.model.Algorithm}s exist in the database without
+     * another step checking for this.
      * If either of the algorithms doesn't exist a {@link java.util.NoSuchElementException} is thrown.
      *
      * @param algorithmRelation The {@link AlgorithmRelation} object describing the relation between a source and a
@@ -110,11 +111,11 @@ public interface AlgorithmRelationService {
     /**
      * Checks if a {@link org.planqk.atlas.core.model.Algorithm} is either target or source algorithm of a {@link AlgorithmRelation}.
      * In order to uniquely identify the {@link org.planqk.atlas.core.model.Algorithm} and the {@link AlgorithmRelation}
-     * we will use their IDs, which are given as parameters to this method.
+     * their IDs, which are given as parameters to this method, will be used.
      * <p>
-     * If there is no {@link AlgorithmRelation} found with the ID given in the algorithmRelationId parameter or
+     * If there is no {@link AlgorithmRelation} found with the ID given in the {@param algorithmRelationId} parameter or
      * if there is a {@link AlgorithmRelation}  found but neither the target nor source algorithm match the ID
-     * given in the algorithmID parameter a {@link java.util.NoSuchElementException} is thrown.
+     * given in the {@param algorithmId} parameter a {@link java.util.NoSuchElementException} is thrown.
      *
      * @param algorithmId The ID of the {@link org.planqk.atlas.core.model.Algorithm} we want to check
      * @param algorithmRelationId The ID of the {@link AlgorithmRelation} we want to check
