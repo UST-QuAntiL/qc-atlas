@@ -53,7 +53,7 @@ public interface ApplicationAreaService {
      * Retrieve multiple {@link ApplicationArea} entries from the database.
      * <p>
      * The amount of entries is based on the given {@link Pageable} parameter.
-     * If the page number of the {@link Pageable} is set to '-1' a {@link Page} with all entries is queried.
+     * If the {@link Pageable} is unpaged a {@link Page} with all entries is queried.
      * <p>
      * If no search should be executed the search parameter can be left null or empty.
      *

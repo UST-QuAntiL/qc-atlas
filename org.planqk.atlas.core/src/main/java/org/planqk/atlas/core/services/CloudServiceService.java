@@ -43,7 +43,7 @@ public interface CloudServiceService {
      * If there are no matches found an empty {@link Page} will be returned.
      * <p>
      * The amount of entries is based on the given {@link Pageable} parameter.
-     * If the page number of the {@link Pageable} is set to '-1' a {@link Page} with all entries is queried.
+     * If the {@link Pageable} is unpaged a {@link Page} with all entries is queried.
      *
      * @param name The string based on which a search for {@link CloudService}s with a matching name will be executed
      * @param pageable The page information, namely page size and page number, of the page we want to retrieve
@@ -69,7 +69,7 @@ public interface CloudServiceService {
      * Retrieve multiple {@link CloudService} entries from the database.
      * <p>
      * The amount of entries is based on the given {@link Pageable} parameter.
-     * If the page number of the {@link Pageable} is set to '-1' a {@link Page} with all entries is queried.
+     * If the {@link Pageable} is unpaged a {@link Page} with all entries is queried.
      *
      * @param pageable The page information, namely page size and page number, of the page we want to retrieve
      * @return The page of queried {@link CloudService} entries
@@ -127,7 +127,7 @@ public interface CloudServiceService {
      * If no entries are found an empty page is returned.
      * <p>
      * The amount of entries is based on the given {@link Pageable} parameter.
-     * If the page number of the {@link Pageable} is set to '-1' a {@link Page} with all entries is queried.
+     * If the {@link Pageable} is unpaged a {@link Page} with all entries is queried.
      * <p>
      * The given {@link CloudService} is identified through its ID given as a parameter.
      * If no {@link CloudService} with the given ID can be found a {@link java.util.NoSuchElementException} is thrown.
@@ -144,7 +144,7 @@ public interface CloudServiceService {
      * If no entries are found an empty page is returned.
      * <p>
      * The amount of entries is based on the given {@link Pageable} parameter.
-     * If the page number of the {@link Pageable} is set to '-1' a {@link Page} with all entries is queried.
+     * If the {@link Pageable} is unpaged a {@link Page} with all entries is queried.
      * <p>
      * The given {@link CloudService} is identified through its ID given as a parameter.
      * If no {@link CloudService} with the given ID can be found a {@link java.util.NoSuchElementException} is thrown.

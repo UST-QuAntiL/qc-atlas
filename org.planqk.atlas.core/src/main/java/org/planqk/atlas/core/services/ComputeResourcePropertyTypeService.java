@@ -50,7 +50,7 @@ public interface ComputeResourcePropertyTypeService {
      * Retrieve multiple {@link ComputeResourcePropertyType} entries from the database.
      * <p>
      * The amount of entries is based on the given {@link Pageable} parameter.
-     * If the page number of the {@link Pageable} is set to '-1' a {@link Page} with all entries is queried.
+     * If the {@link Pageable} is unpaged a {@link Page} with all entries is queried.
      *
      * @param pageable The page information, namely page size and page number, of the page we want to retrieve
      * @return The page of queried {@link ComputeResourcePropertyType} entries

@@ -56,7 +56,7 @@ public interface AlgorithmService {
      * Retrieve multiple {@link Algorithm} entries from the database.
      * <p>
      * The amount of entries is based on the given {@link Pageable} parameter.
-     * If the page number of the {@link Pageable} is set to '-1' a {@link Page} with all entries is queried.
+     * If the {@link Pageable} is unpaged a {@link Page} with all entries is queried.
      * <p>
      * If no search should be executed the search parameter can be left null or empty.
      *
@@ -123,7 +123,7 @@ public interface AlgorithmService {
      * If no entries are found an empty page is returned.
      * <p>
      * The amount of entries is based on the given {@link Pageable} parameter.
-     * If the page number of the {@link Pageable} is set to '-1' a {@link Page} with all entries is queried.
+     * If the {@link Pageable} is unpaged a {@link Page} with all entries is queried.
      * <p>
      * The given {@link Algorithm} is identified through its ID given as a parameter.
      * If no {@link Algorithm} with the given ID can be found a {@link java.util.NoSuchElementException} is thrown.
@@ -140,7 +140,7 @@ public interface AlgorithmService {
      * If no entries are found an empty page is returned.
      * <p>
      * The amount of entries is based on the given {@link Pageable} parameter.
-     * If the page number of the {@link Pageable} is set to '-1' a {@link Page} with all entries is queried.
+     * If the {@link Pageable} is unpaged a {@link Page} with all entries is queried.
      * <p>
      * The given {@link Algorithm} is identified through its ID given as a parameter.
      * If no {@link Algorithm} with the given ID can be found a {@link java.util.NoSuchElementException} is thrown.
@@ -157,7 +157,7 @@ public interface AlgorithmService {
      * If no entries are found an empty page is returned.
      * <p>
      * The amount of entries is based on the given {@link Pageable} parameter.
-     * If the page number of the {@link Pageable} is set to '-1' a {@link Page} with all entries is queried.
+     * If the {@link Pageable} is unpaged a {@link Page} with all entries is queried.
      * <p>
      * The given {@link Algorithm} is identified through its ID given as a parameter.
      * If no {@link Algorithm} with the given ID can be found a {@link java.util.NoSuchElementException} is thrown.
@@ -174,7 +174,7 @@ public interface AlgorithmService {
      * If no entries are found an empty page is returned.
      * <p>
      * The amount of entries is based on the given {@link Pageable} parameter.
-     * If the page number of the {@link Pageable} is set to '-1' a {@link Page} with all entries is queried.
+     * If the {@link Pageable} is unpaged a {@link Page} with all entries is queried.
      * <p>
      * The given {@link Algorithm} is identified through its ID given as a parameter.
      * If no {@link Algorithm} with the given ID can be found a {@link java.util.NoSuchElementException} is thrown.
@@ -191,7 +191,7 @@ public interface AlgorithmService {
      * If no entries are found an empty page is returned.
      * <p>
      * The amount of entries is based on the given {@link Pageable} parameter.
-     * If the page number of the {@link Pageable} is set to '-1' a {@link Page} with all entries is queried.
+     * If the {@link Pageable} is unpaged a {@link Page} with all entries is queried.
      * <p>
      * The given {@link Algorithm} is identified through its ID given as a parameter.
      * If no {@link Algorithm} with the given ID can be found a {@link java.util.NoSuchElementException} is thrown.

@@ -50,7 +50,7 @@ public interface DiscussionCommentService {
      * Retrieve multiple {@link DiscussionComment} entries from the database.
      * <p>
      * The amount of entries is based on the given {@link Pageable} parameter.
-     * If the page number of the {@link Pageable} is set to '-1' a {@link Page} with all entries is queried.
+     * If the {@link Pageable} is unpaged a {@link Page} with all entries is queried.
      *
      * @param pageable The page information, namely page size and page number, of the page we want to retrieve
      * @return The page of queried {@link DiscussionComment} entries
@@ -62,7 +62,7 @@ public interface DiscussionCommentService {
      * {@link org.planqk.atlas.core.model.DiscussionTopic}.
      * <p>
      * The amount of entries is based on the given {@link Pageable} parameter.
-     * If the page number of the {@link Pageable} is set to '-1' a {@link Page} with all entries is queried.
+     * If the {@link Pageable} is unpaged a {@link Page} with all entries is queried.
      *
      * @param topicId The ID of the {@link org.planqk.atlas.core.model.DiscussionTopic} we want to find {@link DiscussionComment}s
      *                for

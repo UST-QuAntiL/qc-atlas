@@ -114,7 +114,7 @@ public interface ComputeResourcePropertyService {
      * If no entries are found an empty page is returned.
      * <p>
      * The amount of entries is based on the given {@link Pageable} parameter.
-     * If the page number of the {@link Pageable} is set to '-1' a {@link Page} with all entries is queried.
+     * If the {@link Pageable} is unpaged a {@link Page} with all entries is queried.
      * <p>
      * The given {@link org.planqk.atlas.core.model.Algorithm} is identified through its ID given as a parameter.
      * If no {@link org.planqk.atlas.core.model.Algorithm} with the given ID can be found a {@link java.util.NoSuchElementException}
@@ -133,7 +133,7 @@ public interface ComputeResourcePropertyService {
      * If no entries are found an empty page is returned.
      * <p>
      * The amount of entries is based on the given {@link Pageable} parameter.
-     * If the page number of the {@link Pageable} is set to '-1' a {@link Page} with all entries is queried.
+     * If the {@link Pageable} is unpaged a {@link Page} with all entries is queried.
      * <p>
      * The given {@link org.planqk.atlas.core.model.Implementation} is identified through its ID given as a parameter.
      * If no {@link org.planqk.atlas.core.model.Implementation} with the given ID can be found a {@link java.util.NoSuchElementException}
@@ -152,7 +152,7 @@ public interface ComputeResourcePropertyService {
      * If no entries are found an empty page is returned.
      * <p>
      * The amount of entries is based on the given {@link Pageable} parameter.
-     * If the page number of the {@link Pageable} is set to '-1' a {@link Page} with all entries is queried.
+     * If the {@link Pageable} is unpaged a {@link Page} with all entries is queried.
      * <p>
      * The given {@link org.planqk.atlas.core.model.ComputeResource} is identified through its ID given as a parameter.
      * If no {@link org.planqk.atlas.core.model.ComputeResource} with the given ID can be found a {@link java.util.NoSuchElementException}

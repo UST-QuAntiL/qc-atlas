@@ -40,7 +40,7 @@ public interface ComputeResourceService {
      * If there are no matches found an empty {@link Page} will be returned.
      * <p>
      * The amount of entries is based on the given {@link Pageable} parameter.
-     * If the page number of the {@link Pageable} is set to '-1' a {@link Page} with all entries is queried.
+     * If the {@link Pageable} is unpaged a {@link Page} with all entries is queried.
      *
      * @param name The string based on which a search for {@link ComputeResource}s with a matching name will be executed
      * @param pageable The page information, namely page size and page number, of the page we want to retrieve
@@ -66,7 +66,7 @@ public interface ComputeResourceService {
      * Retrieve multiple {@link ComputeResource} entries from the database.
      * <p>
      * The amount of entries is based on the given {@link Pageable} parameter.
-     * If the page number of the {@link Pageable} is set to '-1' a {@link Page} with all entries is queried.
+     * If the {@link Pageable} is unpaged a {@link Page} with all entries is queried.
      *
      * @param pageable The page information, namely page size and page number, of the page we want to retrieve
      * @return The page of queried {@link ComputeResource} entries
@@ -130,7 +130,7 @@ public interface ComputeResourceService {
      * If no entries are found an empty page is returned.
      * <p>
      * The amount of entries is based on the given {@link Pageable} parameter.
-     * If the page number of the {@link Pageable} is set to '-1' a {@link Page} with all entries is queried.
+     * If the {@link Pageable} is unpaged a {@link Page} with all entries is queried.
      * <p>
      * The given {@link ComputeResource} is identified through its ID given as a parameter.
      * If no {@link ComputeResource} with the given ID can be found a {@link java.util.NoSuchElementException} is thrown.
@@ -147,7 +147,7 @@ public interface ComputeResourceService {
      * If no entries are found an empty page is returned.
      * <p>
      * The amount of entries is based on the given {@link Pageable} parameter.
-     * If the page number of the {@link Pageable} is set to '-1' a {@link Page} with all entries is queried.
+     * If the {@link Pageable} is unpaged a {@link Page} with all entries is queried.
      * <p>
      * The given {@link ComputeResource} is identified through its ID given as a parameter.
      * If no {@link ComputeResource} with the given ID can be found a {@link java.util.NoSuchElementException} is thrown.
