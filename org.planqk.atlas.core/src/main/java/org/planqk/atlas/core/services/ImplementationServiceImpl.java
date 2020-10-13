@@ -31,14 +31,14 @@ import org.planqk.atlas.core.repository.ImplementationRepository;
 import org.planqk.atlas.core.repository.PublicationRepository;
 import org.planqk.atlas.core.repository.SoftwarePlatformRepository;
 import org.planqk.atlas.core.util.ServiceUtils;
-
-import lombok.AllArgsConstructor;
-import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import lombok.AllArgsConstructor;
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -46,9 +46,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class ImplementationServiceImpl implements ImplementationService {
 
     private final ImplementationRepository implementationRepository;
+
     private final SoftwarePlatformRepository softwarePlatformRepository;
 
     private final PublicationRepository publicationRepository;
+
     private final AlgorithmRepository algorithmRepository;
 
     @Override
@@ -88,7 +90,7 @@ public class ImplementationServiceImpl implements ImplementationService {
         persistedImplementation.setVersion(implementation.getVersion());
         persistedImplementation.setLicense(implementation.getLicense());
         persistedImplementation.setProblemStatement(implementation.getProblemStatement());
-
+        persistedImplementation.setTechnology(implementation.getTechnology());
         return implementationRepository.save(persistedImplementation);
     }
 
@@ -118,7 +120,7 @@ public class ImplementationServiceImpl implements ImplementationService {
 
         if (!implementation.getImplementedAlgorithm().getId().equals(algorithmId)) {
             throw new NoSuchElementException("Implementation with ID \"" + implementationId
-                    + "\" of Algorithm with ID \"" + algorithmId +  "\" does not exist");
+                    + "\" of Algorithm with ID \"" + algorithmId + "\" does not exist");
         }
     }
 
