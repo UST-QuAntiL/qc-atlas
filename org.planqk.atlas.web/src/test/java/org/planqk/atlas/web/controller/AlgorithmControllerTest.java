@@ -1082,7 +1082,7 @@ public class AlgorithmControllerTest {
         doReturn(Page.empty()).when(implementationService).findByImplementedAlgorithm(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .getImplementationsOfAlgorithm(UUID.randomUUID()));
+                .getImplementationsOfAlgorithm(UUID.randomUUID(), ListParameters.getDefault()));
 
         mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
@@ -1102,7 +1102,7 @@ public class AlgorithmControllerTest {
         doReturn(new PageImpl<>(inputList)).when(implementationService).findByImplementedAlgorithm(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .getImplementationsOfAlgorithm(UUID.randomUUID()));
+                .getImplementationsOfAlgorithm(UUID.randomUUID(), ListParameters.getDefault()));
 
         var mvcResult = mockMvc.perform(get(url)
                 .accept(MediaType.APPLICATION_JSON)

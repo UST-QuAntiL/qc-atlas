@@ -446,10 +446,12 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "404",
                     description = "Not Found. Algorithm with given ID doesn't exist.")
     }, description = "Retrieve implementations of an algorithm. If none are found an empty list is returned.")
+    @ListParametersDoc
     @GetMapping("/{algorithmId}/" + Constants.IMPLEMENTATIONS)
     public ResponseEntity<PagedModel<EntityModel<ImplementationDto>>> getImplementationsOfAlgorithm(
-            @PathVariable UUID algorithmId) {
-        var implementations = implementationService.findByImplementedAlgorithm(algorithmId, RestUtils.getAllPageable());
+            @PathVariable UUID algorithmId,
+            @Parameter(hidden = true) ListParameters listParameters) {
+        var implementations = implementationService.findByImplementedAlgorithm(algorithmId, listParameters.getPageable());
         return ResponseEntity.ok(implementationAssembler.toModel(implementations));
     }
 
