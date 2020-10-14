@@ -24,6 +24,9 @@ import java.util.UUID;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
+import java.net.URL;
+import java.util.Set;
+import java.util.UUID;
 
 import org.planqk.atlas.web.utils.Identifyable;
 import org.planqk.atlas.web.utils.ValidationGroups;
@@ -77,4 +80,6 @@ public class ImplementationDto implements Identifyable {
     private String technology;
 
     private String problemStatement;
+
+    private Set<SoftwarePlatformDto> softwarePlatforms;
 }
