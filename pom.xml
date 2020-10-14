@@ -18,6 +18,16 @@
     <properties>
         <java.version>11</java.version>
         <jacoco.reportPath>${project.basedir}/../target/jacoco.exec</jacoco.reportPath>
+
+        <!-- depdendency versions -->
+        <!-- spring.version must match parent.version -->
+        <spring.version>2.2.4.RELEASE</spring.version>
+        <org.liquibase.version>4.1.0</org.liquibase.version>
+
+        <!-- development database environment -->
+        <db.url>jdbc:postgresql://localhost:5432/planqk</db.url>
+        <db.username>planqk</db.username>
+        <db.password>planqk</db.password>
     </properties>
 
     <modules>
@@ -113,6 +123,11 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+            <version>${org.liquibase.version}</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
