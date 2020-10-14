@@ -24,11 +24,12 @@ jobs:
         postgresql db: planqk
         postgresql user: planqk
         postgresql password: planqk
-    - name: Load openapi.son
+    - name: Load openapi.json
       run: |
         java -jar org.planqk.atlas.web/target/org.planqk.atlas.web.war &
-        sleep 60
-        curl hettp://localhost:8080/atlas/v3/api-docs > openapi.json
+        # Wait for atlas to start
+        sleep 30
+        curl http://localhost:8080/atlas/v3/api-docs > openapi.json
     - name: Generate Swagger UI
       uses: Legion2/swagger-ui-action@v1
       with:
