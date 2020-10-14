@@ -1,12 +1,11 @@
-name: SwaggerUI
+name: Swagger UI
 
 on:
   push:
     branches: [ develop ]
-  pull_request:
-    branches: [ develop ]
+
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
