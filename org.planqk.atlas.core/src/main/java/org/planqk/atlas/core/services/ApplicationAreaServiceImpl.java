@@ -27,6 +27,7 @@ import javax.transaction.Transactional;
 import org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException;
 import org.planqk.atlas.core.model.ApplicationArea;
 import org.planqk.atlas.core.repository.ApplicationAreaRepository;
+import org.planqk.atlas.core.util.CollectionUtils;
 import org.planqk.atlas.core.util.ServiceUtils;
 
 import lombok.AllArgsConstructor;
@@ -88,6 +89,7 @@ public class ApplicationAreaServiceImpl implements ApplicationAreaService {
     }
 
     private void removeReferences(ApplicationArea applicationArea) {
-        applicationArea.getAlgorithms().forEach(algorithm -> algorithm.removeApplicationArea(applicationArea));
+        CollectionUtils.forEachOnCopy(applicationArea.getAlgorithms(),
+                algorithm -> algorithm.removeApplicationArea(applicationArea));
     }
 }

@@ -31,6 +31,7 @@ import org.planqk.atlas.core.repository.ComputeResourcePropertyRepository;
 import org.planqk.atlas.core.repository.ImplementationRepository;
 import org.planqk.atlas.core.repository.PublicationRepository;
 import org.planqk.atlas.core.repository.SoftwarePlatformRepository;
+import org.planqk.atlas.core.util.CollectionUtils;
 import org.planqk.atlas.core.util.ServiceUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -114,12 +115,12 @@ public class ImplementationServiceImpl implements ImplementationService {
         implementation.getRequiredComputeResourceProperties().forEach(computeResourcePropertyRepository::delete);
 
         // Remove links to publications
-        implementation.getPublications().forEach(publication ->
-                publication.removeImplementation(implementation));
+        CollectionUtils.forEachOnCopy(implementation.getPublications(),
+                publication -> publication.removeImplementation(implementation));
 
         // Remove links to software platforms
-        implementation.getSoftwarePlatforms().forEach(softwarePlatform ->
-                softwarePlatform.removeImplementation(implementation));
+        CollectionUtils.forEachOnCopy(implementation.getSoftwarePlatforms(),
+                softwarePlatform -> softwarePlatform.removeImplementation(implementation));
     }
 
     @Override

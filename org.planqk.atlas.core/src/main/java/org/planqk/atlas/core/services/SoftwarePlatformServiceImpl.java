@@ -30,6 +30,7 @@ import org.planqk.atlas.core.repository.CloudServiceRepository;
 import org.planqk.atlas.core.repository.ComputeResourceRepository;
 import org.planqk.atlas.core.repository.ImplementationRepository;
 import org.planqk.atlas.core.repository.SoftwarePlatformRepository;
+import org.planqk.atlas.core.util.CollectionUtils;
 import org.planqk.atlas.core.util.ServiceUtils;
 
 import lombok.AllArgsConstructor;
@@ -101,11 +102,11 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
     }
 
     private void removeReferences(@NonNull SoftwarePlatform softwarePlatform) {
-        softwarePlatform.getImplementations().forEach(
+        CollectionUtils.forEachOnCopy(softwarePlatform.getImplementations(),
                 implementation -> implementation.removeSoftwarePlatform(softwarePlatform));
-        softwarePlatform.getSupportedCloudServices().forEach(
+        CollectionUtils.forEachOnCopy(softwarePlatform.getSupportedCloudServices(),
                 cloudService -> cloudService.removeSoftwarePlatform(softwarePlatform));
-        softwarePlatform.getSupportedComputeResources().forEach(
+        CollectionUtils.forEachOnCopy(softwarePlatform.getSupportedComputeResources(),
                 computeResource -> computeResource.removeSoftwarePlatform(softwarePlatform));
     }
 
