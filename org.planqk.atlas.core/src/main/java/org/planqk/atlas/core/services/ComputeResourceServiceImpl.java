@@ -28,6 +28,7 @@ import org.planqk.atlas.core.model.SoftwarePlatform;
 import org.planqk.atlas.core.repository.CloudServiceRepository;
 import org.planqk.atlas.core.repository.ComputeResourceRepository;
 import org.planqk.atlas.core.repository.SoftwarePlatformRepository;
+import org.planqk.atlas.core.util.CollectionUtils;
 import org.planqk.atlas.core.util.ServiceUtils;
 
 import lombok.AllArgsConstructor;
@@ -107,8 +108,8 @@ public class ComputeResourceServiceImpl implements ComputeResourceService {
 //        computeResource.getCloudServices().forEach(
 //                cloudService -> cloudService.removeComputeResource(computeResource));
 
-        computeResource.getProvidedComputingResourceProperties().forEach(computingResourceProperty ->
-                computeResourcePropertyService.delete(computingResourceProperty.getId()));
+        CollectionUtils.forEachOnCopy(computeResource.getProvidedComputingResourceProperties(),
+                property -> computeResourcePropertyService.delete(property.getId()));
     }
 
     @Override

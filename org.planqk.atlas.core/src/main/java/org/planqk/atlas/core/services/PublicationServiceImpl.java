@@ -29,6 +29,7 @@ import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.repository.AlgorithmRepository;
 import org.planqk.atlas.core.repository.ImplementationRepository;
 import org.planqk.atlas.core.repository.PublicationRepository;
+import org.planqk.atlas.core.util.CollectionUtils;
 import org.planqk.atlas.core.util.ServiceUtils;
 
 import lombok.AllArgsConstructor;
@@ -91,9 +92,10 @@ public class PublicationServiceImpl implements PublicationService {
     }
 
     private void removeReferences(@NonNull Publication publication) {
-        publication.getAlgorithms().forEach(algorithm -> algorithm.removePublication(publication));
-
-        publication.getImplementations().forEach(implementation -> implementation.removePublication(publication));
+        CollectionUtils.forEachOnCopy(publication.getAlgorithms(),
+                algorithm -> algorithm.removePublication(publication));
+        CollectionUtils.forEachOnCopy(publication.getImplementations(),
+                implementation -> implementation.removePublication(publication));
     }
 
     @Override

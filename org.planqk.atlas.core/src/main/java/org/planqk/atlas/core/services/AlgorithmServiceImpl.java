@@ -37,6 +37,7 @@ import org.planqk.atlas.core.repository.ComputeResourcePropertyRepository;
 import org.planqk.atlas.core.repository.PatternRelationRepository;
 import org.planqk.atlas.core.repository.ProblemTypeRepository;
 import org.planqk.atlas.core.repository.PublicationRepository;
+import org.planqk.atlas.core.util.CollectionUtils;
 import org.planqk.atlas.core.util.ServiceUtils;
 
 import lombok.AllArgsConstructor;
@@ -68,7 +69,6 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 
     private final PatternRelationService patternRelationService;
     private final PatternRelationRepository patternRelationRepository;
-
 
     @Override
     @Transactional
@@ -145,19 +145,19 @@ public class AlgorithmServiceImpl implements AlgorithmService {
                 patternRelation -> patternRelationService.delete(patternRelation.getId()));
 
         // remove links to publications
-        algorithm.getPublications().forEach(
+        CollectionUtils.forEachOnCopy(algorithm.getPublications(),
                 publication -> publication.removeAlgorithm(algorithm));
 
         // remove links to application areas
-        algorithm.getApplicationAreas().forEach(
+        CollectionUtils.forEachOnCopy(algorithm.getApplicationAreas(),
                 applicationArea -> applicationArea.removeAlgorithm(algorithm));
 
         // remove links to problem types
-        algorithm.getProblemTypes().forEach(
+        CollectionUtils.forEachOnCopy(algorithm.getProblemTypes(),
                 problemType -> problemType.removeAlgorithm(algorithm));
 
         // remove link to tag
-        algorithm.getTags().forEach(tag -> tag.removeAlgorithm(algorithm));
+        CollectionUtils.forEachOnCopy(algorithm.getTags(), tag -> tag.removeAlgorithm(algorithm));
     }
 
     @Override
@@ -202,7 +202,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 
         if (!ServiceUtils.containsElementWithId(algorithm.getPublications(), publicationId)) {
             throw new NoSuchElementException("Publication with ID \"" + publicationId
-                    + "\" is not linked to Algorithm with ID \"" + algorithmId +  "\"");
+                    + "\" is not linked to Algorithm with ID \"" + algorithmId + "\"");
         }
     }
 
@@ -213,7 +213,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 
         if (!ServiceUtils.containsElementWithId(algorithm.getProblemTypes(), problemTypeId)) {
             throw new NoSuchElementException("ProblemType with ID \"" + problemTypeId
-                    + "\" is not linked to Algorithm with ID \"" + algorithmId +  "\"");
+                    + "\" is not linked to Algorithm with ID \"" + algorithmId + "\"");
         }
     }
 
@@ -224,7 +224,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 
         if (!ServiceUtils.containsElementWithId(algorithm.getApplicationAreas(), applicationAreaId)) {
             throw new NoSuchElementException("ApplicationArea with ID \"" + applicationAreaId
-                    + "\" is not linked to Algorithm with ID \"" + algorithmId +  "\"");
+                    + "\" is not linked to Algorithm with ID \"" + algorithmId + "\"");
         }
     }
 

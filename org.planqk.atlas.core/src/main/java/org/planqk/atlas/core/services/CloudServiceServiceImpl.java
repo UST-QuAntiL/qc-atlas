@@ -27,6 +27,7 @@ import org.planqk.atlas.core.model.SoftwarePlatform;
 import org.planqk.atlas.core.repository.CloudServiceRepository;
 import org.planqk.atlas.core.repository.ComputeResourceRepository;
 import org.planqk.atlas.core.repository.SoftwarePlatformRepository;
+import org.planqk.atlas.core.util.CollectionUtils;
 import org.planqk.atlas.core.util.ServiceUtils;
 
 import lombok.AllArgsConstructor;
@@ -92,9 +93,9 @@ public class CloudServiceServiceImpl implements CloudServiceService {
     }
 
     private void removeReferences(@NonNull CloudService cloudService) {
-        cloudService.getSoftwarePlatforms().forEach(
+        CollectionUtils.forEachOnCopy(cloudService.getSoftwarePlatforms(),
                 softwarePlatform -> softwarePlatform.removeCloudService(cloudService));
-        cloudService.getProvidedComputeResources().forEach(
+        CollectionUtils.forEachOnCopy(cloudService.getProvidedComputeResources(),
                 computeResource -> computeResource.removeCloudService(cloudService));
     }
 
