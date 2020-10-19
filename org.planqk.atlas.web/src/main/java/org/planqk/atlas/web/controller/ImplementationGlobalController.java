@@ -40,6 +40,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -140,4 +141,17 @@ public class ImplementationGlobalController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment")
                 .body(implementationArtifactService.getImplementationArtifactContent(artifactId));
     }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "204"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", description = "Not Found. Implementation or artifact with given IDs don't exist")
+    }, description = "Delete an artifact of an implementation.")
+    @DeleteMapping("/{implementationId}/" + Constants.IMPLEMENTATION_ARTIFACTS + "/{artifactId}")
+    public ResponseEntity<Void> deleteImplementationArtifact(@PathVariable UUID implementationId,
+                                                             @PathVariable UUID artifactId) {
+                implementationArtifactService.delete(artifactId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
 }

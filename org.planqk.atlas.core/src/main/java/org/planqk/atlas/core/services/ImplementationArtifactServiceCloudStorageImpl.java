@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.google.cloud.storage.Blob;
+import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.Bucket;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
@@ -80,6 +81,15 @@ public class ImplementationArtifactServiceCloudStorageImpl implements Implementa
 
     @Override
     public void delete(UUID id) {
+        storage.get(implementationArtifactsBucketName);
+        ImplementationArtifact storedEntity = this.findById(id);
+        BlobId blobId = BlobId.of(implementationArtifactsBucketName, storedEntity.getFileURL());
+        boolean wasDeleted = storage.delete(blobId);
+        if(wasDeleted) {
+            this.implementationArtifactRepository.delete(storedEntity);
+        } else {
+            // TODO: throw exception
+        }
 
     }
 
