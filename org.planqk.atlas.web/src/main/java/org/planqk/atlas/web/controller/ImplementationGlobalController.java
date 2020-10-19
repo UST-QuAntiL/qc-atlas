@@ -19,7 +19,6 @@
 
 package org.planqk.atlas.web.controller;
 
-import java.util.Collection;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.ImplementationArtifact;
@@ -27,17 +26,13 @@ import org.planqk.atlas.core.services.ImplementationArtifactService;
 import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.annotation.ApiVersion;
+import org.planqk.atlas.web.dtos.ImplementationArtifactDto;
 import org.planqk.atlas.web.dtos.ImplementationDto;
+import org.planqk.atlas.web.linkassembler.ImplementationArtifactAssembler;
 import org.planqk.atlas.web.linkassembler.ImplementationAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
-
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpHeaders;
@@ -52,6 +47,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Controller to access implementations outside of the context of its implemented algorithm.
@@ -68,6 +70,8 @@ public class ImplementationGlobalController {
     private final ImplementationService implementationService;
 
     private final ImplementationAssembler implementationAssembler;
+
+    private final ImplementationArtifactAssembler implementationArtifactAssembler;
 
     private final ImplementationArtifactService implementationArtifactService;
 
@@ -96,29 +100,31 @@ public class ImplementationGlobalController {
     }
 
     @PostMapping("/{implementationId}/" + Constants.IMPLEMENTATION_ARTIFACTS)
-    public ResponseEntity<ImplementationArtifact> createImplementationArtifactForImplementation(
+    public ResponseEntity<EntityModel<ImplementationArtifactDto>> createImplementationArtifactForImplementation(
             @PathVariable UUID implementationId,
             @RequestParam("file") MultipartFile file) {
         ImplementationArtifact implementationArtifact = implementationArtifactService.create(implementationId, file);
-        return ResponseEntity.status(HttpStatus.CREATED).body(implementationArtifact);
+        return ResponseEntity.status(HttpStatus.CREATED).body(implementationArtifactAssembler.toModel(implementationArtifact));
     }
 
     @GetMapping("/{implementationId}/" + Constants.IMPLEMENTATION_ARTIFACTS)
-    public ResponseEntity<Collection<ImplementationArtifact>> getAllImplementationArtifactsOfImplementation(
-            @PathVariable UUID implementationId
+    public ResponseEntity<PagedModel<EntityModel<ImplementationArtifactDto>>> getAllImplementationArtifactsOfImplementation(
+            @PathVariable UUID implementationId,
+            @Parameter(hidden = true) ListParameters listParameters
     ) {
-        Collection<ImplementationArtifact> implementationArtifacs = implementationArtifactService.findAllByImplementationId(implementationId);
-        return ResponseEntity.ok(implementationArtifacs);
+        Page<ImplementationArtifact> implementationArtifacs =
+                implementationArtifactService.findAllByImplementationId(implementationId, listParameters.getPageable());
+        return ResponseEntity.ok(implementationArtifactAssembler.toModel(implementationArtifacs));
     }
 
     @GetMapping("/{implementationId}/" + Constants.IMPLEMENTATION_ARTIFACTS + "/{artifactId}")
-    public ResponseEntity<ImplementationArtifact> getImplementationArtifactOfImplementation(
+    public ResponseEntity<EntityModel<ImplementationArtifactDto>> getImplementationArtifactOfImplementation(
             @PathVariable UUID implementationId,
             @PathVariable UUID artifactId
     ) {
         ImplementationArtifact implementationArtifact =
                 implementationArtifactService.findById(artifactId);
-        return ResponseEntity.ok(implementationArtifact);
+        return ResponseEntity.ok(implementationArtifactAssembler.toModel(implementationArtifact));
     }
 
     @GetMapping("/{implementationId}/" + Constants.IMPLEMENTATION_ARTIFACTS + "/{artifactId}/file")

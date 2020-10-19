@@ -1,9 +1,7 @@
 package org.planqk.atlas.core.services;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -13,6 +11,8 @@ import org.planqk.atlas.core.repository.ImplementationArtifactRepository;
 import org.planqk.atlas.core.repository.ImplementationRepository;
 import org.planqk.atlas.core.util.ServiceUtils;
 import org.springframework.context.annotation.Profile;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -42,8 +42,9 @@ public class ImplementationArtifactServiceCloudStorageImpl implements Implementa
             Bucket bucket = storage.get(implementationArtifactsBucketName);
             Blob blob = bucket.create(implementationId + "/" + file.getOriginalFilename(), file.getBytes(), file.getContentType());
             ImplementationArtifact implementationArtifact = getImplementationArtifactFromBlob(blob);
-            Optional<ImplementationArtifact> persistedImplementationArtifactOptional = implementationArtifactRepository.findByFileURL(implementationArtifact.getFileURL());
-            if(persistedImplementationArtifactOptional.isPresent()){
+            Optional<ImplementationArtifact> persistedImplementationArtifactOptional =
+                    implementationArtifactRepository.findByFileURL(implementationArtifact.getFileURL());
+            if (persistedImplementationArtifactOptional.isPresent()) {
                 implementationArtifact.setId(persistedImplementationArtifactOptional.get().getId());
             }
             Implementation implementation = ServiceUtils.findById(implementationId, Implementation.class, implementationRepository);
@@ -60,9 +61,8 @@ public class ImplementationArtifactServiceCloudStorageImpl implements Implementa
     }
 
     @Override
-    public Collection<ImplementationArtifact> findAllByImplementationId(UUID implementationId) {
-        Implementation implementation = ServiceUtils.findById(implementationId, Implementation.class, implementationRepository);
-        return implementation.getImplementationArtifacts();
+    public Page<ImplementationArtifact> findAllByImplementationId(UUID implementationId, Pageable pageable) {
+        return implementationArtifactRepository.findImplementationArtifactsByImplementation_Id(implementationId, pageable);
     }
 
     @Override

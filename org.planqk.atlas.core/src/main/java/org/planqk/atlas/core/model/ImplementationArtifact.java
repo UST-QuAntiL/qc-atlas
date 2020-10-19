@@ -6,10 +6,6 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
-import org.hibernate.annotations.NaturalId;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -19,7 +15,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class ImplementationArtifact extends KnowledgeArtifact{
+public class ImplementationArtifact extends KnowledgeArtifact {
 
     private String name;
 
@@ -31,6 +27,5 @@ public class ImplementationArtifact extends KnowledgeArtifact{
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "implementation_id")
     @EqualsAndHashCode.Exclude
-    @JsonIgnore
     private Implementation implementation;
 }

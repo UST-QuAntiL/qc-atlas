@@ -1,16 +1,17 @@
 package org.planqk.atlas.core.services;
 
-import java.util.Collection;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.ImplementationArtifact;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface ImplementationArtifactService {
 
     ImplementationArtifact create(UUID implementationId, MultipartFile file);
 
-    Collection<ImplementationArtifact> findAllByImplementationId(UUID implementationId);
+    Page<ImplementationArtifact> findAllByImplementationId(UUID implementationId, Pageable pageable);
 
     ImplementationArtifact findById(UUID implementationId);
 

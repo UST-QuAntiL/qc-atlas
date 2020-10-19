@@ -1,10 +1,11 @@
 package org.planqk.atlas.core.services;
 
-import java.util.Collection;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.ImplementationArtifact;
 import org.springframework.context.annotation.Profile;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,7 +24,8 @@ public class ImplementationArtifactServiceImpl implements ImplementationArtifact
     }
 
     @Override
-    public Collection<ImplementationArtifact> findAllByImplementationId(UUID implementationId) {
+    public Page<ImplementationArtifact> findAllByImplementationId(UUID implementationId,
+                                                                  Pageable pageable) {
         return null;
     }
 
