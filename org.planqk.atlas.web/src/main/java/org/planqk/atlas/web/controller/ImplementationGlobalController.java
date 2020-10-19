@@ -127,11 +127,11 @@ public class ImplementationGlobalController {
             @PathVariable UUID artifactId
     ) {
         ImplementationArtifact implementationArtifact =
-                implementationArtifactService.findByImplementationIdAndName(implementationId, artifactId.toString());
+                implementationArtifactService.findById(artifactId);
         return ResponseEntity
                 .ok()
                 .contentType(MediaType.parseMediaType(implementationArtifact.getMimeType()))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment")
-                .body(implementationArtifactService.getImplementationArtifactContent(implementationId, artifactId.toString()));
+                .body(implementationArtifactService.getImplementationArtifactContent(artifactId));
     }
 }

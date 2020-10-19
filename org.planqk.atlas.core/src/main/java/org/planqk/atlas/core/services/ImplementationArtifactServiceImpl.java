@@ -23,11 +23,6 @@ public class ImplementationArtifactServiceImpl implements ImplementationArtifact
     }
 
     @Override
-    public ImplementationArtifact findByImplementationIdAndName(UUID implementationId, String artifactName) {
-        return null;
-    }
-
-    @Override
     public Collection<ImplementationArtifact> findAllByImplementationId(UUID implementationId) {
         return null;
     }
@@ -38,9 +33,10 @@ public class ImplementationArtifactServiceImpl implements ImplementationArtifact
     }
 
     @Override
-    public ImplementationArtifact update(MultipartFile file) {
+    public ImplementationArtifact update(UUID artifactId, MultipartFile file) {
         return null;
     }
+
 
     @Override
     public void delete(UUID id) {
@@ -48,7 +44,9 @@ public class ImplementationArtifactServiceImpl implements ImplementationArtifact
     }
 
     @Override
-    public byte[] getImplementationArtifactContent(UUID implementationId, String artifactName) {
+    public byte[] getImplementationArtifactContent(UUID id) {
         return new byte[0];
     }
+
+
 }

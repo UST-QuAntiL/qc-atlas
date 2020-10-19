@@ -1,9 +1,12 @@
 package org.planqk.atlas.core.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+
+import org.hibernate.annotations.NaturalId;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -22,6 +25,7 @@ public class ImplementationArtifact extends KnowledgeArtifact{
 
     private String mimeType;
 
+    @Column(unique = true)
     private String fileURL;
 
     @ManyToOne(fetch = FetchType.LAZY)

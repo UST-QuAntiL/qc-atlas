@@ -10,16 +10,14 @@ public interface ImplementationArtifactService {
 
     ImplementationArtifact create(UUID implementationId, MultipartFile file);
 
-    ImplementationArtifact findByImplementationIdAndName(UUID implementationId, String artifactName);
-
     Collection<ImplementationArtifact> findAllByImplementationId(UUID implementationId);
 
     ImplementationArtifact findById(UUID implementationId);
 
-    ImplementationArtifact update(MultipartFile file);
+    ImplementationArtifact update(UUID artifactId, MultipartFile file);
 
     void delete(UUID id);
 
-    byte[] getImplementationArtifactContent(UUID implementationId, String artifactName);
+    byte[] getImplementationArtifactContent(UUID id);
 
 }

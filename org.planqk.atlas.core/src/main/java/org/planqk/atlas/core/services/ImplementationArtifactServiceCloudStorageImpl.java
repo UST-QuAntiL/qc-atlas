@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Implementation;
@@ -40,29 +41,19 @@ public class ImplementationArtifactServiceCloudStorageImpl implements Implementa
     public ImplementationArtifact create(UUID implementationId, MultipartFile file) {
         Bucket bucket = storage.get(implementationArtifactsBucketName);
         Blob blob = null;
-//        if(blob.exists(Blob.BlobSourceOption.generationMatch(implementationId + "/" + file.getOriginalFilename()))){
-//            System.out.println("Exists");
-//        } else {
-//            System.out.println("Not Exists");
-//        }
         try {
             blob = bucket.create(implementationId + "/" + file.getOriginalFilename(), file.getBytes(), file.getContentType());
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         ImplementationArtifact implementationArtifact = getImplementationArtifactFromBlob(blob);
+        Optional<ImplementationArtifact> persistedImplementationArtifactOptional = implementationArtifactRepository.findByFileURL(implementationArtifact.getFileURL());
+        if(persistedImplementationArtifactOptional.isPresent()){
+            implementationArtifact.setId(persistedImplementationArtifactOptional.get().getId());
+        }
         Implementation implementation = ServiceUtils.findById(implementationId, Implementation.class, implementationRepository);
         implementationArtifact.setImplementation(implementation);
         return implementationArtifactRepository.save(implementationArtifact);
-    }
-
-    @Override
-    public ImplementationArtifact findByImplementationIdAndName(UUID implementationId, String artifactName) {
-        Bucket bucket = storage.get(implementationArtifactsBucketName);
-        Blob blob = bucket.get(implementationId.toString() + "/" + artifactName);
-        ImplementationArtifact implementationArtifact = getImplementationArtifactFromBlob(blob);
-        return implementationArtifact;
     }
 
     @Override
@@ -72,24 +63,20 @@ public class ImplementationArtifactServiceCloudStorageImpl implements Implementa
 
     @Override
     public Collection<ImplementationArtifact> findAllByImplementationId(UUID implementationId) {
-        Bucket bucket = storage.get(implementationArtifactsBucketName);
-        Collection<ImplementationArtifact> implementationArtifacts = new HashSet<ImplementationArtifact>();
-        Page<Blob> blobs = bucket.list(Storage.BlobListOption.prefix(implementationId.toString()));
-        for (Blob blob : blobs.getValues()) {
-            implementationArtifacts.add(getImplementationArtifactFromBlob(blob));
-        }
-        return implementationArtifacts;
+        Implementation implementation = ServiceUtils.findById(implementationId, Implementation.class, implementationRepository);
+        return implementation.getImplementationArtifacts();
     }
 
     @Override
-    public byte[] getImplementationArtifactContent(UUID implementationId, String artifactName) {
+    public byte[] getImplementationArtifactContent(UUID id) {
         Bucket bucket = storage.get(implementationArtifactsBucketName);
-        Blob blob = bucket.get(implementationId.toString() + "/" + artifactName);
+        ImplementationArtifact implementationArtifact = ServiceUtils.findById(id, ImplementationArtifact.class, implementationArtifactRepository);
+        Blob blob = bucket.get(implementationArtifact.getFileURL());
         return blob.getContent();
     }
 
     @Override
-    public ImplementationArtifact update(MultipartFile file) {
+    public ImplementationArtifact update(UUID id, MultipartFile file) {
         return null;
     }
 
@@ -102,7 +89,7 @@ public class ImplementationArtifactServiceCloudStorageImpl implements Implementa
         ImplementationArtifact implementationArtifact = new ImplementationArtifact();
         implementationArtifact.setName(blob.getName());
         implementationArtifact.setMimeType(blob.getContentType());
-        implementationArtifact.setFileURL(blob.getMediaLink());
+        implementationArtifact.setFileURL(blob.getName());
         implementationArtifact.setCreationDate(new Date(blob.getCreateTime()));
         implementationArtifact.setLastModifiedAt(new Date(blob.getUpdateTime()));
         return implementationArtifact;
