@@ -16,7 +16,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.google.api.gax.paging.Page;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.Bucket;
 import com.google.cloud.storage.Storage;
@@ -39,21 +38,20 @@ public class ImplementationArtifactServiceCloudStorageImpl implements Implementa
 
     @Override
     public ImplementationArtifact create(UUID implementationId, MultipartFile file) {
-        Bucket bucket = storage.get(implementationArtifactsBucketName);
-        Blob blob = null;
         try {
-            blob = bucket.create(implementationId + "/" + file.getOriginalFilename(), file.getBytes(), file.getContentType());
+            Bucket bucket = storage.get(implementationArtifactsBucketName);
+            Blob blob = bucket.create(implementationId + "/" + file.getOriginalFilename(), file.getBytes(), file.getContentType());
+            ImplementationArtifact implementationArtifact = getImplementationArtifactFromBlob(blob);
+            Optional<ImplementationArtifact> persistedImplementationArtifactOptional = implementationArtifactRepository.findByFileURL(implementationArtifact.getFileURL());
+            if(persistedImplementationArtifactOptional.isPresent()){
+                implementationArtifact.setId(persistedImplementationArtifactOptional.get().getId());
+            }
+            Implementation implementation = ServiceUtils.findById(implementationId, Implementation.class, implementationRepository);
+            implementationArtifact.setImplementation(implementation);
+            return implementationArtifactRepository.save(implementationArtifact);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new IllegalArgumentException("Cannot read contents of multipart file");
         }
-        ImplementationArtifact implementationArtifact = getImplementationArtifactFromBlob(blob);
-        Optional<ImplementationArtifact> persistedImplementationArtifactOptional = implementationArtifactRepository.findByFileURL(implementationArtifact.getFileURL());
-        if(persistedImplementationArtifactOptional.isPresent()){
-            implementationArtifact.setId(persistedImplementationArtifactOptional.get().getId());
-        }
-        Implementation implementation = ServiceUtils.findById(implementationId, Implementation.class, implementationRepository);
-        implementationArtifact.setImplementation(implementation);
-        return implementationArtifactRepository.save(implementationArtifact);
     }
 
     @Override
