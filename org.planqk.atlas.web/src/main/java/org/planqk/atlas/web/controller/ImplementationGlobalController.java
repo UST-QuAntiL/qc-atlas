@@ -19,8 +19,11 @@
 
 package org.planqk.atlas.web.controller;
 
+import java.util.Collection;
 import java.util.UUID;
 
+import org.planqk.atlas.core.model.ImplementationArtifact;
+import org.planqk.atlas.core.services.ImplementationArtifactService;
 import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.annotation.ApiVersion;
@@ -37,12 +40,18 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * Controller to access implementations outside of the context of its implemented algorithm.
@@ -59,6 +68,8 @@ public class ImplementationGlobalController {
     private final ImplementationService implementationService;
 
     private final ImplementationAssembler implementationAssembler;
+
+    private final ImplementationArtifactService implementationArtifactService;
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
@@ -82,5 +93,45 @@ public class ImplementationGlobalController {
             @PathVariable UUID implementationId) {
         var implementation = this.implementationService.findById(implementationId);
         return ResponseEntity.ok(implementationAssembler.toModel(implementation));
+    }
+
+    @PostMapping("/{implementationId}/" + Constants.IMPLEMENTATION_ARTIFACTS)
+    public ResponseEntity<ImplementationArtifact> createImplementationArtifactForImplementation(
+            @PathVariable UUID implementationId,
+            @RequestParam("file") MultipartFile file) {
+        ImplementationArtifact implementationArtifact = implementationArtifactService.create(implementationId, file);
+        return ResponseEntity.status(HttpStatus.CREATED).body(implementationArtifact);
+    }
+
+    @GetMapping("/{implementationId}/" + Constants.IMPLEMENTATION_ARTIFACTS)
+    public ResponseEntity<Collection<ImplementationArtifact>> getAllImplementationArtifactsOfImplementation(
+            @PathVariable UUID implementationId
+    ) {
+        Collection<ImplementationArtifact> implementationArtifacs = implementationArtifactService.findAllByImplementationId(implementationId);
+        return ResponseEntity.ok(implementationArtifacs);
+    }
+
+    @GetMapping("/{implementationId}/" + Constants.IMPLEMENTATION_ARTIFACTS + "/{artifactId}")
+    public ResponseEntity<ImplementationArtifact> getImplementationArtifactOfImplementation(
+            @PathVariable UUID implementationId,
+            @PathVariable UUID artifactId
+    ) {
+        ImplementationArtifact implementationArtifact =
+                implementationArtifactService.findById(artifactId);
+        return ResponseEntity.ok(implementationArtifact);
+    }
+
+    @GetMapping("/{implementationId}/" + Constants.IMPLEMENTATION_ARTIFACTS + "/{artifactId}/file")
+    public ResponseEntity<byte[]> downloadImplementationArtifactAsFile(
+            @PathVariable UUID implementationId,
+            @PathVariable UUID artifactId
+    ) {
+        ImplementationArtifact implementationArtifact =
+                implementationArtifactService.findByImplementationIdAndName(implementationId, artifactId.toString());
+        return ResponseEntity
+                .ok()
+                .contentType(MediaType.parseMediaType(implementationArtifact.getMimeType()))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment")
+                .body(implementationArtifactService.getImplementationArtifactContent(implementationId, artifactId.toString()));
     }
 }

@@ -115,6 +115,12 @@ public class Implementation extends KnowledgeArtifact {
     @ToString.Exclude
     private Set<SoftwarePlatform> softwarePlatforms = new HashSet<>();
 
+    @EqualsAndHashCode.Exclude
+    @OneToMany(cascade = CascadeType.ALL,
+            mappedBy = "implementation",
+            orphanRemoval = true)
+    private Set<ImplementationArtifact> implementationArtifacts = new HashSet<>();
+
     public void addTag(@NonNull Tag tag) {
         if (tags.contains(tag)) {
             return;

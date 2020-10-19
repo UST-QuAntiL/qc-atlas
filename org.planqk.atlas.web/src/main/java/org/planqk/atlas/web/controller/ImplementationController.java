@@ -19,13 +19,16 @@
 
 package org.planqk.atlas.web.controller;
 
+import java.util.Collection;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.ComputeResourceProperty;
 import org.planqk.atlas.core.model.Implementation;
+import org.planqk.atlas.core.model.ImplementationArtifact;
 import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.services.ComputeResourcePropertyService;
+import org.planqk.atlas.core.services.ImplementationArtifactService;
 import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.core.services.LinkingService;
 import org.planqk.atlas.core.services.PublicationService;
@@ -47,17 +50,13 @@ import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.ValidationGroups;
-
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -68,7 +67,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Controller to access and manipulate implementations of quantum algorithms.
@@ -83,18 +90,23 @@ import org.springframework.web.bind.annotation.RestController;
 public class ImplementationController {
 
     private final ImplementationService implementationService;
+
     private final ImplementationAssembler implementationAssembler;
 
     private final TagService tagService;
+
     private final TagAssembler tagAssembler;
 
     private final ComputeResourcePropertyService computeResourcePropertyService;
+
     private final ComputeResourcePropertyAssembler computeResourcePropertyAssembler;
 
     private final PublicationService publicationService;
+
     private final PublicationAssembler publicationAssembler;
 
     private final SoftwarePlatformService softwarePlatformService;
+
     private final SoftwarePlatformAssembler softwarePlatformAssembler;
 
     private final LinkingService linkingService;
@@ -489,4 +501,5 @@ public class ImplementationController {
         var resource = computeResourcePropertyService.findById(computeResourcePropertyId);
         return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(resource));
     }
+
 }
