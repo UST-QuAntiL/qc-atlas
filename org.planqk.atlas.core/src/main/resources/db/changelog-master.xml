@@ -2,5 +2,12 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
-    <includeAll path="classpath:/db/changelog" />
+    <!--
+    <includeAll path="classpath:/db/changelog/" /> with a consistent naming scheme would be better,
+    but is unsupported right now.
+
+    The spring boot loader that's part of the executable JAR output doesn't seem
+    to support classpath directory listings, breaking includeAll.
+    -->
+    <include file="classpath:/db/changelog/2020-10-14-00-00-initial.xml" />
 </databaseChangeLog>
