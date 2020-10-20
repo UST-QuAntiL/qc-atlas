@@ -10,6 +10,7 @@ import org.planqk.atlas.core.model.ImplementationArtifact;
 import org.planqk.atlas.core.repository.ImplementationArtifactRepository;
 import org.planqk.atlas.core.repository.ImplementationRepository;
 import org.planqk.atlas.core.util.ServiceUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,7 +20,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.Bucket;
 import com.google.cloud.storage.Storage;
-import com.google.cloud.storage.StorageOptions;
 
 import lombok.AllArgsConstructor;
 
@@ -28,7 +28,8 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class ImplementationArtifactServiceCloudStorageImpl implements ImplementationArtifactService {
 
-    private final Storage storage = StorageOptions.getDefaultInstance().getService();
+    @Autowired
+    private final Storage storage;
 
     private final String implementationArtifactsBucketName = "planqk-algo-artifacts";
 

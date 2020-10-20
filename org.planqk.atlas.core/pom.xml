@@ -30,48 +30,6 @@
 
     <artifactId>org.planqk.atlas.core</artifactId>
 
-<!--    <properties>-->
-<!--        <spring-cloud.version>Hoxton.SR8</spring-cloud.version>-->
-<!--    </properties>-->
-
-<!--    <dependencyManagement>-->
-<!--        <dependencies>-->
-<!--            <dependency>-->
-<!--                <groupId>org.springframework.cloud</groupId>-->
-<!--                <artifactId>spring-cloud-dependencies</artifactId>-->
-<!--                <version>${spring-cloud.version}</version>-->
-<!--                <type>pom</type>-->
-<!--                <scope>import</scope>-->
-<!--            </dependency>-->
-<!--            <dependency>-->
-<!--                <groupId>org.springframework.cloud</groupId>-->
-<!--                <artifactId>spring-cloud-gcp-dependencies</artifactId>-->
-<!--                <version>1.2.5.RELEASE</version>-->
-<!--                <type>pom</type>-->
-<!--                <scope>import</scope>-->
-<!--            </dependency>-->
-<!--        </dependencies>-->
-<!--    </dependencyManagement>-->
-
-<!--    <profiles>-->
-<!--        <profile>-->
-<!--            <id>stoneOne</id>-->
-<!--            <activation>-->
-<!--                <activeByDefault>false</activeByDefault>-->
-<!--            </activation>-->
-<!--            <dependencies>-->
-<!--&lt;!&ndash;                <dependency>&ndash;&gt;-->
-<!--&lt;!&ndash;                    <groupId>org.springframework.cloud</groupId>&ndash;&gt;-->
-<!--&lt;!&ndash;                    <artifactId>spring-cloud-gcp-starter</artifactId>&ndash;&gt;-->
-<!--&lt;!&ndash;                </dependency>&ndash;&gt;-->
-<!--&lt;!&ndash;                <dependency>&ndash;&gt;-->
-<!--&lt;!&ndash;                    <groupId>org.springframework.cloud</groupId>&ndash;&gt;-->
-<!--&lt;!&ndash;                    <artifactId>spring-cloud-gcp-starter-storage</artifactId>&ndash;&gt;-->
-<!--&lt;!&ndash;                </dependency>&ndash;&gt;-->
-<!--            </dependencies>-->
-<!--        </profile>-->
-<!--    </profiles>-->
-
     <dependencies>
         <dependency>
             <groupId>com.google.cloud</groupId>
@@ -103,6 +61,12 @@
             <groupId>org.testcontainers</groupId>
             <artifactId>junit-jupiter</artifactId>
             <version>1.14.3</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.cloud</groupId>
+            <artifactId>google-cloud-nio</artifactId>
+            <version>0.121.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
