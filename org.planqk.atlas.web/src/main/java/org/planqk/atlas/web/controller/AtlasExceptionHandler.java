@@ -22,6 +22,7 @@ package org.planqk.atlas.web.controller;
 import java.beans.PropertyChangeEvent;
 import java.util.NoSuchElementException;
 
+import org.planqk.atlas.core.exceptions.CloudStorageException;
 import org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException;
 import org.planqk.atlas.core.exceptions.InvalidResourceTypeValueException;
 import org.planqk.atlas.web.controller.exceptions.InvalidRequestException;
@@ -53,6 +54,13 @@ public class AtlasExceptionHandler {
         log.error(e.getMessage(), e);
         // TODO: Find better option to suppress unparsable class path output
         return ResponseEntity.badRequest().body(new RuntimeException(e.getMessage()));
+    }
+
+    @ExceptionHandler(CloudStorageException.class)
+    public ResponseEntity<CloudStorageException> handleCloudStorageException(
+            CloudStorageException e) {
+        log.warn(e.getMessage(), e);
+        return ResponseEntity.badRequest().body(e);
     }
 
     @ExceptionHandler(EntityReferenceConstraintViolationException.class)
