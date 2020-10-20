@@ -88,12 +88,8 @@ public class ImplementationArtifactServiceCloudStorageImpl implements Implementa
         ImplementationArtifact storedEntity = this.findById(id);
         BlobId blobId = BlobId.of(implementationArtifactsBucketName, storedEntity.getFileURL());
         try {
-            boolean wasDeleted = storage.delete(blobId);
-            if (wasDeleted) {
-                this.implementationArtifactRepository.delete(storedEntity);
-            } else {
-                throw new CloudStorageException("the blob was not found in the storage");
-            }
+            storage.delete(blobId);
+            this.implementationArtifactRepository.delete(storedEntity);
         } catch (StorageException e) {
             throw new CloudStorageException("could not delete from storage");
         }
