@@ -39,7 +39,6 @@ public class ImplementationArtifactServiceImpl implements ImplementationArtifact
         return null;
     }
 
-
     @Override
     public void delete(UUID id) {
 

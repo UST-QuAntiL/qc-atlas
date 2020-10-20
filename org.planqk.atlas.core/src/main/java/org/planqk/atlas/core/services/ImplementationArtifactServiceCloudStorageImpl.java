@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.planqk.atlas.core.exceptions.CloudStorageException;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.ImplementationArtifact;
 import org.planqk.atlas.core.repository.ImplementationArtifactRepository;
@@ -18,8 +19,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.google.cloud.storage.Blob;
+import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.Bucket;
 import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageException;
+import com.google.cloud.storage.StorageOptions;
 
 import lombok.AllArgsConstructor;
 
@@ -37,11 +41,12 @@ public class ImplementationArtifactServiceCloudStorageImpl implements Implementa
 
     private final ImplementationRepository implementationRepository;
 
+    private final Bucket bucket = StorageOptions.getDefaultInstance().getService().get(implementationArtifactsBucketName);
+
     @Override
     public ImplementationArtifact create(UUID implementationId, MultipartFile file) {
         try {
-            Bucket bucket = storage.get(implementationArtifactsBucketName);
-            Blob blob = bucket.create(implementationId + "/" + file.getOriginalFilename(), file.getBytes(), file.getContentType());
+            Blob blob = this.bucket.create(implementationId + "/" + file.getOriginalFilename(), file.getBytes(), file.getContentType());
             ImplementationArtifact implementationArtifact = getImplementationArtifactFromBlob(blob);
             Optional<ImplementationArtifact> persistedImplementationArtifactOptional =
                     implementationArtifactRepository.findByFileURL(implementationArtifact.getFileURL());
@@ -53,6 +58,8 @@ public class ImplementationArtifactServiceCloudStorageImpl implements Implementa
             return implementationArtifactRepository.save(implementationArtifact);
         } catch (IOException e) {
             throw new IllegalArgumentException("Cannot read contents of multipart file");
+        } catch (StorageException e) {
+            throw new CloudStorageException("could not create in storage");
         }
     }
 
@@ -68,9 +75,8 @@ public class ImplementationArtifactServiceCloudStorageImpl implements Implementa
 
     @Override
     public byte[] getImplementationArtifactContent(UUID id) {
-        Bucket bucket = storage.get(implementationArtifactsBucketName);
         ImplementationArtifact implementationArtifact = ServiceUtils.findById(id, ImplementationArtifact.class, implementationArtifactRepository);
-        Blob blob = bucket.get(implementationArtifact.getFileURL());
+        Blob blob = this.bucket.get(implementationArtifact.getFileURL());
         return blob.getContent();
     }
 
@@ -81,6 +87,14 @@ public class ImplementationArtifactServiceCloudStorageImpl implements Implementa
 
     @Override
     public void delete(UUID id) {
+        ImplementationArtifact storedEntity = this.findById(id);
+        BlobId blobId = BlobId.of(implementationArtifactsBucketName, storedEntity.getFileURL());
+        try {
+            storage.delete(blobId);
+            this.implementationArtifactRepository.delete(storedEntity);
+        } catch (StorageException e) {
+            throw new CloudStorageException("could not delete from storage");
+        }
 
     }
 
