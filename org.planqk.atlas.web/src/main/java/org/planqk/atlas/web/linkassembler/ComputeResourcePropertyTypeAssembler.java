@@ -31,7 +31,7 @@ import org.springframework.stereotype.Component;
 public class ComputeResourcePropertyTypeAssembler extends GenericLinkAssembler<ComputeResourcePropertyTypeDto> {
     @Override
     public void addLinks(EntityModel<ComputeResourcePropertyTypeDto> resource) {
-        resource.add(links.linkTo(methodOn(ComputeResourcePropertyTypeController.class)
+        resource.add(getLinks().linkTo(methodOn(ComputeResourcePropertyTypeController.class)
             .getComputingResourcePropertyType(resource.getContent().getId()))
             .withSelfRel());
     }

@@ -33,7 +33,7 @@ public class SketchAssembler extends GenericLinkAssembler<SketchDto> {
 
     @Override
     public void addLinks(EntityModel<SketchDto> resource) {
-        resource.add(links.linkTo(methodOn(AlgorithmController.class).getSketch(this.getAlgoId(), this.getSketchId(resource))).withSelfRel());
+        resource.add(getLinks().linkTo(methodOn(AlgorithmController.class).getSketch(this.getAlgoId(), this.getSketchId(resource))).withSelfRel());
     }
 
     private UUID getSketchId(EntityModel<SketchDto> resource) {

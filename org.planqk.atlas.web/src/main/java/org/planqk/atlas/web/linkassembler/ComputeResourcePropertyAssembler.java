@@ -31,7 +31,7 @@ import org.springframework.stereotype.Component;
 public class ComputeResourcePropertyAssembler extends GenericLinkAssembler<ComputeResourcePropertyDto> {
     @Override
     public void addLinks(EntityModel<ComputeResourcePropertyDto> resource) {
-        resource.add(links.linkTo(methodOn(ComputeResourcePropertyTypeController.class)
+        resource.add(getLinks().linkTo(methodOn(ComputeResourcePropertyTypeController.class)
             .getComputingResourcePropertyType(resource.getContent().getType().getId()))
             .withRel("type"));
         // TODO (Maybe) add link to the entities linked to this quantum Resource, e.g. the Quantum Algorithms

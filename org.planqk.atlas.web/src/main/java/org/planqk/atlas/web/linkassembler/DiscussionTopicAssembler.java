@@ -33,7 +33,7 @@ public class DiscussionTopicAssembler extends GenericLinkAssembler<DiscussionTop
 
     @Override
     public void addLinks(EntityModel<DiscussionTopicDto> resource) {
-        resource.add(links.linkTo(methodOn(DiscussionTopicController.class).getDiscussionTopic(this.getID(resource))).withSelfRel());
+        resource.add(getLinks().linkTo(methodOn(DiscussionTopicController.class).getDiscussionTopic(this.getID(resource))).withSelfRel());
     }
 
     private UUID getID(EntityModel<DiscussionTopicDto> resource) {

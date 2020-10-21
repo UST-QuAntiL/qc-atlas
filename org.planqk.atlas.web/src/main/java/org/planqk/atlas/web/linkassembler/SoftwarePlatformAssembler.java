@@ -34,7 +34,7 @@ public class SoftwarePlatformAssembler extends GenericLinkAssembler<SoftwarePlat
     @Override
     public void addLinks(EntityModel<SoftwarePlatformDto> resource) {
         resource.add(
-            links.linkTo(methodOn(SoftwarePlatformController.class).getSoftwarePlatform(getId(resource))).withSelfRel());
+            getLinks().linkTo(methodOn(SoftwarePlatformController.class).getSoftwarePlatform(getId(resource))).withSelfRel());
     }
 
     private UUID getId(EntityModel<SoftwarePlatformDto> resource) {

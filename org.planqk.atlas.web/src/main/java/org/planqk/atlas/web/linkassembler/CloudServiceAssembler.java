@@ -33,7 +33,7 @@ public class CloudServiceAssembler extends GenericLinkAssembler<CloudServiceDto>
 
     @Override
     public void addLinks(EntityModel<CloudServiceDto> resource) {
-        resource.add(links.linkTo(methodOn(CloudServiceController.class).getCloudService(getId(resource))).withSelfRel());
+        resource.add(getLinks().linkTo(methodOn(CloudServiceController.class).getCloudService(getId(resource))).withSelfRel());
     }
 
     private UUID getId(EntityModel<CloudServiceDto> resource) {

@@ -35,19 +35,19 @@ public class TagAssembler extends GenericLinkAssembler<TagDto> {
 
     @Override
     public void addLinks(EntityModel<TagDto> resource) {
-        resource.add(links.linkTo(methodOn(TagController.class).getTag(getName(resource))).withSelfRel());
-        resource.add(links.linkTo(methodOn(TagController.class).getAlgorithmsOfTag(getName(resource)))
+        resource.add(getLinks().linkTo(methodOn(TagController.class).getTag(getName(resource))).withSelfRel());
+        resource.add(getLinks().linkTo(methodOn(TagController.class).getAlgorithmsOfTag(getName(resource)))
             .withRel(Constants.ALGORITHMS));
-        resource.add(links.linkTo(methodOn(TagController.class).getImplementationsOfTag(getName(resource)))
+        resource.add(getLinks().linkTo(methodOn(TagController.class).getImplementationsOfTag(getName(resource)))
             .withRel(Constants.IMPLEMENTATIONS));
     }
 
     public void addAlgorithmLink(CollectionModel<EntityModel<AlgorithmDto>> resources, String name) {
-        resources.add(links.linkTo(methodOn(TagController.class).getAlgorithmsOfTag(name)).withSelfRel());
+        resources.add(getLinks().linkTo(methodOn(TagController.class).getAlgorithmsOfTag(name)).withSelfRel());
     }
 
     public void addImplementationLink(CollectionModel<EntityModel<ImplementationDto>> resources, String name) {
-        resources.add(links.linkTo(methodOn(TagController.class).getImplementationsOfTag(name)).withSelfRel());
+        resources.add(getLinks().linkTo(methodOn(TagController.class).getImplementationsOfTag(name)).withSelfRel());
     }
 
     private String getName(EntityModel<TagDto> resource) {
