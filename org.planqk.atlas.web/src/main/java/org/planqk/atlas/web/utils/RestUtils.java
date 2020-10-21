@@ -26,7 +26,10 @@ import org.springframework.data.domain.Pageable;
 /**
  * Utility class for the REST API functionality
  */
-public class RestUtils {
+public final class RestUtils {
+
+    private RestUtils() {
+    }
 
     /**
      * Return a (default) pageable from the provided Requestparams for an endpoint that can be used with pagination.

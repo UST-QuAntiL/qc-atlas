@@ -25,7 +25,10 @@ import org.planqk.atlas.web.controller.exceptions.InvalidRequestException;
 import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
 import org.planqk.atlas.web.dtos.PatternRelationDto;
 
-public class ControllerValidationUtils {
+public final class ControllerValidationUtils {
+
+    private ControllerValidationUtils() {
+    }
 
     public static void checkIfAlgorithmIsInAlgorithmRelationDTO(
         UUID algorithmId, AlgorithmRelationDto algorithmRelationDto) {

@@ -22,7 +22,7 @@ package org.planqk.atlas.web;
 /**
  * Constants for the QC-Atlas API classes.
  */
-public class Constants {
+public final class Constants {
 
     // URL snippets
     public static final String API_VERSION = "v1";
@@ -107,4 +107,7 @@ public class Constants {
     public static final String TAG_ROOT = "root";
 
     public static final String TAG_TAG = "tag";
+
+    private Constants() {
+    }
 }

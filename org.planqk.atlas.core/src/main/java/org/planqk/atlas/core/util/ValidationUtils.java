@@ -22,7 +22,10 @@ package org.planqk.atlas.core.util;
 import org.planqk.atlas.core.exceptions.InvalidResourceTypeValueException;
 import org.planqk.atlas.core.model.ComputeResourceProperty;
 
-public class ValidationUtils {
+public final class ValidationUtils {
+
+    private ValidationUtils() {
+    }
 
     public static void validateComputeResourceProperty(ComputeResourceProperty resource) {
         if (!resource.getComputeResourcePropertyType().getDatatype().isValid(resource.getValue())) {

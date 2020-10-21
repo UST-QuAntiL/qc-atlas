@@ -44,9 +44,12 @@ import org.springframework.data.domain.Page;
 
 import lombok.NonNull;
 
-public class ModelMapperUtils {
+public final class ModelMapperUtils {
 
     public static final ModelMapper mapper = initModelMapper();
+
+    private ModelMapperUtils() {
+    }
 
     public static <D, T> Page<D> convertPage(@NonNull Page<T> entities, @NonNull Class<D> dtoClass) {
         return entities.map(objectEntity -> convert(objectEntity, dtoClass));

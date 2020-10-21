@@ -28,7 +28,11 @@ import org.springframework.data.repository.CrudRepository;
 /**
  * Utility class providing generic functions for the service layer
  */
-public class ServiceUtils {
+public final class ServiceUtils {
+
+    private ServiceUtils() {
+    }
+
     /**
      * Checks if a given object, based on its ID given by the database, exists.
      * <p>

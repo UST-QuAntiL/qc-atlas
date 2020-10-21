@@ -24,7 +24,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-public class CollectionUtils {
+public final class CollectionUtils {
+
+    private CollectionUtils() {
+    }
+
     /**
      * Performs the given action for each element of the given @link Collection. To allow concurrent modifications the collection is copied before
      * iterating over it.
