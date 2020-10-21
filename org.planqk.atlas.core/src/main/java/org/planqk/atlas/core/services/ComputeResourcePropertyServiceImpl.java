@@ -32,14 +32,14 @@ import org.planqk.atlas.core.repository.ComputeResourceRepository;
 import org.planqk.atlas.core.repository.ImplementationRepository;
 import org.planqk.atlas.core.util.ServiceUtils;
 import org.planqk.atlas.core.util.ValidationUtils;
-
-import lombok.AllArgsConstructor;
-import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import lombok.AllArgsConstructor;
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -47,18 +47,21 @@ import org.springframework.transaction.annotation.Transactional;
 public class ComputeResourcePropertyServiceImpl implements ComputeResourcePropertyService {
 
     private final ComputeResourcePropertyRepository computeResourcePropertyRepository;
+
     private final ComputeResourcePropertyTypeService computeResourcePropertyTypeService;
 
     private final AlgorithmRepository algorithmRepository;
+
     private final ImplementationRepository implementationRepository;
+
     private final ComputeResourceRepository computeResourceRepository;
 
     @Override
     @Transactional
     public ComputeResourceProperty create(@NonNull ComputeResourceProperty computeResourceProperty) {
         computeResourceProperty.setComputeResourcePropertyType(
-                computeResourcePropertyTypeService.findById(
-                        computeResourceProperty.getComputeResourcePropertyType().getId()));
+            computeResourcePropertyTypeService.findById(
+                computeResourceProperty.getComputeResourcePropertyType().getId()));
 
         return computeResourcePropertyRepository.save(computeResourceProperty);
     }
@@ -66,19 +69,19 @@ public class ComputeResourcePropertyServiceImpl implements ComputeResourceProper
     @Override
     public ComputeResourceProperty findById(@NonNull UUID computeResourcePropertyId) {
         return ServiceUtils.findById(computeResourcePropertyId, ComputeResourceProperty.class,
-                computeResourcePropertyRepository);
+            computeResourcePropertyRepository);
     }
 
     @Override
     @Transactional
     public ComputeResourceProperty update(@NonNull ComputeResourceProperty computeResourceProperty) {
-        var computeResourcePropertyWithType = validateComputeResourceProperty(computeResourceProperty);
+        final var computeResourcePropertyWithType = validateComputeResourceProperty(computeResourceProperty);
 
-        var persistedComputeResourceProperty = findById(computeResourcePropertyWithType.getId());
+        final var persistedComputeResourceProperty = findById(computeResourcePropertyWithType.getId());
 
         persistedComputeResourceProperty.setValue(computeResourcePropertyWithType.getValue());
         persistedComputeResourceProperty.setComputeResourcePropertyType(
-                computeResourcePropertyWithType.getComputeResourcePropertyType());
+            computeResourcePropertyWithType.getComputeResourcePropertyType());
 
         return computeResourcePropertyRepository.save(persistedComputeResourceProperty);
     }
@@ -87,28 +90,28 @@ public class ComputeResourcePropertyServiceImpl implements ComputeResourceProper
     @Transactional
     public void delete(@NonNull UUID computeResourcePropertyId) {
         ServiceUtils.throwIfNotExists(computeResourcePropertyId, ComputeResourceProperty.class,
-                computeResourcePropertyRepository);
+            computeResourcePropertyRepository);
 
         computeResourcePropertyRepository.deleteById(computeResourcePropertyId);
     }
 
     @Override
     public Page<ComputeResourceProperty> findComputeResourcePropertiesOfAlgorithm(
-            @NonNull UUID algorithmId, @NonNull Pageable pageable) {
+        @NonNull UUID algorithmId, @NonNull Pageable pageable) {
         ServiceUtils.throwIfNotExists(algorithmId, Algorithm.class, algorithmRepository);
         return computeResourcePropertyRepository.findAllByAlgorithmId(algorithmId, pageable);
     }
 
     @Override
     public Page<ComputeResourceProperty> findComputeResourcePropertiesOfImplementation(
-            @NonNull UUID implementationId, @NonNull Pageable pageable) {
+        @NonNull UUID implementationId, @NonNull Pageable pageable) {
         ServiceUtils.throwIfNotExists(implementationId, Implementation.class, implementationRepository);
         return computeResourcePropertyRepository.findAllByImplementationId(implementationId, pageable);
     }
 
     @Override
     public Page<ComputeResourceProperty> findComputeResourcePropertiesOfComputeResource(
-            @NonNull UUID computeResourceId, @NonNull Pageable pageable) {
+        @NonNull UUID computeResourceId, @NonNull Pageable pageable) {
         ServiceUtils.throwIfNotExists(computeResourceId, ComputeResource.class, computeResourceRepository);
         return computeResourcePropertyRepository.findAllByComputeResourceId(computeResourceId, pageable);
     }
@@ -116,12 +119,12 @@ public class ComputeResourcePropertyServiceImpl implements ComputeResourceProper
     @Override
     @Transactional
     public ComputeResourceProperty addComputeResourcePropertyToAlgorithm(
-            @NonNull UUID algorithmId, @NonNull ComputeResourceProperty computeResourceProperty) {
-        var computeResourcePropertyWithType = validateComputeResourceProperty(computeResourceProperty);
+        @NonNull UUID algorithmId, @NonNull ComputeResourceProperty computeResourceProperty) {
+        final var computeResourcePropertyWithType = validateComputeResourceProperty(computeResourceProperty);
 
-        Algorithm algorithm = ServiceUtils.findById(algorithmId, Algorithm.class, algorithmRepository);
+        final Algorithm algorithm = ServiceUtils.findById(algorithmId, Algorithm.class, algorithmRepository);
 
-        ComputeResourceProperty persistedComputeResourceProperty;
+        final ComputeResourceProperty persistedComputeResourceProperty;
         if (computeResourcePropertyWithType.getId() == null) {
             persistedComputeResourceProperty = this.create(computeResourcePropertyWithType);
         } else {
@@ -135,13 +138,13 @@ public class ComputeResourcePropertyServiceImpl implements ComputeResourceProper
     @Override
     @Transactional
     public ComputeResourceProperty addComputeResourcePropertyToImplementation(
-            @NonNull UUID implementationId, @NonNull ComputeResourceProperty computeResourceProperty) {
-        var computeResourcePropertyWithType = validateComputeResourceProperty(computeResourceProperty);
+        @NonNull UUID implementationId, @NonNull ComputeResourceProperty computeResourceProperty) {
+        final var computeResourcePropertyWithType = validateComputeResourceProperty(computeResourceProperty);
 
-        Implementation implementation = ServiceUtils
-                .findById(implementationId, Implementation.class, implementationRepository);
+        final Implementation implementation = ServiceUtils
+            .findById(implementationId, Implementation.class, implementationRepository);
 
-        ComputeResourceProperty persistedComputeResourceProperty;
+        final ComputeResourceProperty persistedComputeResourceProperty;
         if (computeResourcePropertyWithType.getId() == null) {
             persistedComputeResourceProperty = this.create(computeResourcePropertyWithType);
         } else {
@@ -155,13 +158,13 @@ public class ComputeResourcePropertyServiceImpl implements ComputeResourceProper
     @Override
     @Transactional
     public ComputeResourceProperty addComputeResourcePropertyToComputeResource(
-            @NonNull UUID computeResourceId, @NonNull ComputeResourceProperty computeResourceProperty) {
-        var computeResourcePropertyWithType = validateComputeResourceProperty(computeResourceProperty);
+        @NonNull UUID computeResourceId, @NonNull ComputeResourceProperty computeResourceProperty) {
+        final var computeResourcePropertyWithType = validateComputeResourceProperty(computeResourceProperty);
 
-        ComputeResource computeResource = ServiceUtils
-                .findById(computeResourceId, ComputeResource.class, computeResourceRepository);
+        final ComputeResource computeResource = ServiceUtils
+            .findById(computeResourceId, ComputeResource.class, computeResourceRepository);
 
-        ComputeResourceProperty persistedComputeResourceProperty;
+        final ComputeResourceProperty persistedComputeResourceProperty;
         if (computeResourcePropertyWithType.getId() == null) {
             persistedComputeResourceProperty = this.create(computeResourcePropertyWithType);
         } else {
@@ -174,40 +177,40 @@ public class ComputeResourcePropertyServiceImpl implements ComputeResourceProper
 
     @Override
     public void checkIfComputeResourcePropertyIsOfAlgorithm(UUID algorithmId, UUID computeResourcePropertyId) {
-        ComputeResourceProperty computeResourceProperty = findById(computeResourcePropertyId);
+        final ComputeResourceProperty computeResourceProperty = findById(computeResourcePropertyId);
 
         if (computeResourceProperty.getAlgorithm() == null
-                || !computeResourceProperty.getAlgorithm().getId().equals(algorithmId)) {
+            || !computeResourceProperty.getAlgorithm().getId().equals(algorithmId)) {
             throw new NoSuchElementException("ComputeResourceProperty with ID \"" + computeResourcePropertyId
-                    + "\" of Algorithm with ID \"" + algorithmId +  "\" does not exist");
+                + "\" of Algorithm with ID \"" + algorithmId + "\" does not exist");
         }
     }
 
     @Override
     public void checkIfComputeResourcePropertyIsOfImplementation(UUID implementationId, UUID computeResourcePropertyId) {
-        ComputeResourceProperty computeResourceProperty = findById(computeResourcePropertyId);
+        final ComputeResourceProperty computeResourceProperty = findById(computeResourcePropertyId);
 
         if (computeResourceProperty.getImplementation() == null
-                || !computeResourceProperty.getImplementation().getId().equals(implementationId)) {
+            || !computeResourceProperty.getImplementation().getId().equals(implementationId)) {
             throw new NoSuchElementException("ComputeResourceProperty with ID \"" + computeResourcePropertyId
-                    + "\" of Implementation with ID \"" + implementationId +  "\" does not exist");
+                + "\" of Implementation with ID \"" + implementationId + "\" does not exist");
         }
     }
 
     @Override
     public void checkIfComputeResourcePropertyIsOfComputeResource(UUID computeResourceId, UUID computeResourcePropertyId) {
-        ComputeResourceProperty computeResourceProperty = findById(computeResourcePropertyId);
+        final ComputeResourceProperty computeResourceProperty = findById(computeResourcePropertyId);
 
         if (computeResourceProperty.getComputeResource() == null ||
-                !computeResourceProperty.getComputeResource().getId().equals(computeResourceId)) {
+            !computeResourceProperty.getComputeResource().getId().equals(computeResourceId)) {
             throw new NoSuchElementException("ComputeResourceProperty with ID \"" + computeResourcePropertyId
-                    + "\" of ComputeResource with ID \"" + computeResourceId +  "\" does not exist");
+                + "\" of ComputeResource with ID \"" + computeResourceId + "\" does not exist");
         }
     }
 
     private ComputeResourceProperty validateComputeResourceProperty(ComputeResourceProperty computeResourceProperty) {
         computeResourceProperty.setComputeResourcePropertyType(computeResourcePropertyTypeService
-                .findById(computeResourceProperty.getComputeResourcePropertyType().getId()));
+            .findById(computeResourceProperty.getComputeResourcePropertyType().getId()));
 
         ValidationUtils.validateComputeResourceProperty(computeResourceProperty);
 

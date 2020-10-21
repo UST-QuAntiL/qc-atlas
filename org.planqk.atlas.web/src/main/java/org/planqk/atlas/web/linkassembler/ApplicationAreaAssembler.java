@@ -19,15 +19,14 @@
 
 package org.planqk.atlas.web.linkassembler;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 import java.util.UUID;
 
 import org.planqk.atlas.web.controller.ApplicationAreaController;
 import org.planqk.atlas.web.dtos.ApplicationAreaDto;
-
 import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Component;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Component
 public class ApplicationAreaAssembler extends GenericLinkAssembler<ApplicationAreaDto> {

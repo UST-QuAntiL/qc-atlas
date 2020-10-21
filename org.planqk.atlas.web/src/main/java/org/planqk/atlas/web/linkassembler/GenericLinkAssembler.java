@@ -16,13 +16,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
+
 package org.planqk.atlas.web.linkassembler;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
 
 import org.planqk.atlas.web.utils.ModelMapperUtils;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.data.domain.Page;
@@ -32,13 +32,13 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 
 public abstract class GenericLinkAssembler<T> {
+    private final Class<T> entityClass = inferEntityClass();
+
     @Autowired
     protected LinkBuilderService links;
 
     @Autowired
     private PagedResourcesAssembler<T> pagedResourcesAssembler;
-
-    private final Class<T> entityClass = inferEntityClass();
 
     public abstract void addLinks(EntityModel<T> resource);
 
@@ -69,7 +69,7 @@ public abstract class GenericLinkAssembler<T> {
 
     public <U> CollectionModel<EntityModel<T>> toModel(Collection<U> collection, Class<T> entityClass) {
         final var entities = collection.stream().map(item ->
-                new EntityModel<>(ModelMapperUtils.convert(item, entityClass))
+            new EntityModel<>(ModelMapperUtils.convert(item, entityClass))
         ).collect(Collectors.toUnmodifiableList());
 
         final var collectionModel = new CollectionModel<>(entities);
@@ -82,7 +82,7 @@ public abstract class GenericLinkAssembler<T> {
     }
 
     public <U> EntityModel<T> toModel(U entity, Class<T> entityClass) {
-        EntityModel<T> entityModel = new EntityModel<>(ModelMapperUtils.convert(entity, entityClass));
+        final EntityModel<T> entityModel = new EntityModel<>(ModelMapperUtils.convert(entity, entityClass));
         addLinks(entityModel);
         return entityModel;
     }

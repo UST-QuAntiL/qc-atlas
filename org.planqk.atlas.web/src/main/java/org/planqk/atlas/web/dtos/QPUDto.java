@@ -19,10 +19,11 @@
 
 package org.planqk.atlas.web.dtos;
 
+import org.springframework.hateoas.server.core.Relation;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import org.springframework.hateoas.server.core.Relation;
 
 /**
  * Data transfer object for QPU ({@link org.planqk.atlas.core.model.Qpu}).

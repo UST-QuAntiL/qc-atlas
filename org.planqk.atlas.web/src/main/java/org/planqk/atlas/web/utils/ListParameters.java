@@ -16,16 +16,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
+
 package org.planqk.atlas.web.utils;
 
 import org.planqk.atlas.web.Constants;
-
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
+
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Core parameters for a generic data list

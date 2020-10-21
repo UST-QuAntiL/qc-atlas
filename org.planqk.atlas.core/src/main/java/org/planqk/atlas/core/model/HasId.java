@@ -20,16 +20,16 @@
 package org.planqk.atlas.core.model;
 
 import java.util.UUID;
-
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
+import org.hibernate.annotations.GenericGenerator;
+
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.GenericGenerator;
 
 /**
  * Base class defining the Id property for all JPA entity classes.

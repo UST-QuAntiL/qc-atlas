@@ -33,13 +33,6 @@ import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.ValidationGroups;
-
-import io.swagger.v3.oas.annotations.Hidden;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpEntity;
@@ -56,6 +49,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 @Hidden
 @io.swagger.v3.oas.annotations.tags.Tag(name = Constants.TAG_DISCUSSION_TOPIC)
 @CrossOrigin(allowedHeaders = "*", origins = "*")
@@ -67,37 +67,39 @@ import org.springframework.web.bind.annotation.RestController;
 public class DiscussionTopicController {
 
     private final DiscussionTopicService discussionTopicService;
+
     private final DiscussionTopicAssembler discussionTopicAssembler;
+
     private final DiscussionCommentService discussionCommentService;
 
     private final DiscussionCommentController discussionCommentController;
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "200")
+        @ApiResponse(responseCode = "200")
     }, description = "")
     @ListParametersDoc
     @GetMapping
     public HttpEntity<PagedModel<EntityModel<DiscussionTopicDto>>> getDiscussionTopics(
-            @Parameter(hidden = true) ListParameters listParameters) {
-        var topics = discussionTopicService.findAll(listParameters.getPageable());
+        @Parameter(hidden = true) ListParameters listParameters) {
+        final var topics = discussionTopicService.findAll(listParameters.getPageable());
         return ResponseEntity.ok(discussionTopicAssembler.toModel(topics));
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404")
+        @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "400"),
+        @ApiResponse(responseCode = "404")
     }, description = "")
     @GetMapping("/{topicId}")
     public HttpEntity<EntityModel<DiscussionTopicDto>> getDiscussionTopic(@PathVariable UUID topicId) {
-        DiscussionTopic discussionTopic = discussionTopicService.findById(topicId);
+        final DiscussionTopic discussionTopic = discussionTopicService.findById(topicId);
         return ResponseEntity.ok(discussionTopicAssembler.toModel(discussionTopic));
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404")
+        @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "400"),
+        @ApiResponse(responseCode = "404")
     }, description = "")
     @DeleteMapping("/{topicId}")
     public HttpEntity<Void> deleteDiscussionTopic(@PathVariable UUID topicId) {
@@ -106,47 +108,47 @@ public class DiscussionTopicController {
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "201"),
-            @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404")
+        @ApiResponse(responseCode = "201"),
+        @ApiResponse(responseCode = "400"),
+        @ApiResponse(responseCode = "404")
     }, description = "")
     @PostMapping()
     public HttpEntity<EntityModel<DiscussionTopicDto>> createDiscussionTopic(
-            @Validated(ValidationGroups.Create.class) @RequestBody DiscussionTopicDto discussionTopicDto) {
-        var discussionTopic = discussionTopicService.create(ModelMapperUtils.convert(discussionTopicDto, DiscussionTopic.class));
+        @Validated(ValidationGroups.Create.class) @RequestBody DiscussionTopicDto discussionTopicDto) {
+        final var discussionTopic = discussionTopicService.create(ModelMapperUtils.convert(discussionTopicDto, DiscussionTopic.class));
         return new ResponseEntity<>(discussionTopicAssembler.toModel(discussionTopic), HttpStatus.CREATED);
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404")
+        @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "400"),
+        @ApiResponse(responseCode = "404")
     }, description = "")
     @ListParametersDoc
     @GetMapping("/{topicId}/" + Constants.DISCUSSION_COMMENTS)
     public HttpEntity<PagedModel<EntityModel<DiscussionCommentDto>>> getDiscussionComments(
-            @PathVariable UUID topicId,
-            @Parameter(hidden = true) ListParameters listParameters) {
+        @PathVariable UUID topicId,
+        @Parameter(hidden = true) ListParameters listParameters) {
         return discussionCommentController.getDiscussionCommentsOfTopic(topicId, listParameters);
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404")
+        @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "400"),
+        @ApiResponse(responseCode = "404")
     }, description = "")
     @GetMapping("/{topicId}/" + Constants.DISCUSSION_COMMENTS + "/{commentId}")
     public HttpEntity<EntityModel<DiscussionCommentDto>> getDiscussionComment(
-            @PathVariable UUID topicId,
-            @PathVariable UUID commentId) {
+        @PathVariable UUID topicId,
+        @PathVariable UUID commentId) {
         discussionCommentService.checkIfDiscussionCommentIsInDiscussionTopic(commentId, topicId);
         return discussionCommentController.getDiscussionComment(commentId);
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404")
+        @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "400"),
+        @ApiResponse(responseCode = "404")
     }, description = "")
     @DeleteMapping("/{topicId}/" + Constants.DISCUSSION_COMMENTS + "/{commentId}")
     public HttpEntity<Void> deleteDiscussionComment(@PathVariable UUID topicId, @PathVariable UUID commentId) {
@@ -155,45 +157,45 @@ public class DiscussionTopicController {
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404")
+        @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "400"),
+        @ApiResponse(responseCode = "404")
     }, description = "")
     @PutMapping("/{topicId}/" + Constants.DISCUSSION_COMMENTS + "/{commentId}")
     public HttpEntity<EntityModel<DiscussionCommentDto>> updateDiscussionComment(
-            @PathVariable UUID topicId,
-            @PathVariable UUID commentId,
-            @Validated(ValidationGroups.Update.class) @RequestBody DiscussionCommentDto discussionCommentDto) {
+        @PathVariable UUID topicId,
+        @PathVariable UUID commentId,
+        @Validated(ValidationGroups.Update.class) @RequestBody DiscussionCommentDto discussionCommentDto) {
         discussionCommentService.checkIfDiscussionCommentIsInDiscussionTopic(commentId, topicId);
         discussionCommentDto.setId(commentId);
         return discussionCommentController.updateDiscussionComment(commentId, discussionCommentDto);
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "201"),
-            @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404")
+        @ApiResponse(responseCode = "201"),
+        @ApiResponse(responseCode = "400"),
+        @ApiResponse(responseCode = "404")
     }, description = "")
     @PostMapping("/{topicId}/" + Constants.DISCUSSION_COMMENTS)
     public HttpEntity<EntityModel<DiscussionCommentDto>> createDiscussionComment(
-            @PathVariable UUID topicId,
-            @Validated(ValidationGroups.Create.class) @RequestBody DiscussionCommentDto discussionCommentDto) {
-        DiscussionTopic discussionTopic = discussionTopicService.findById(topicId);
+        @PathVariable UUID topicId,
+        @Validated(ValidationGroups.Create.class) @RequestBody DiscussionCommentDto discussionCommentDto) {
+        final DiscussionTopic discussionTopic = discussionTopicService.findById(topicId);
         discussionCommentDto.setDiscussionTopic(ModelMapperUtils.convert(discussionTopic, DiscussionTopicDto.class));
         return discussionCommentController.createDiscussionComment(discussionCommentDto);
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "201"),
-            @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404")
+        @ApiResponse(responseCode = "201"),
+        @ApiResponse(responseCode = "400"),
+        @ApiResponse(responseCode = "404")
     }, description = "")
     @PutMapping("/{topicId}")
     public HttpEntity<EntityModel<DiscussionTopicDto>> updateDiscussionTopic(
-            @PathVariable UUID topicId,
-            @Validated(ValidationGroups.Update.class) @RequestBody DiscussionTopicDto discussionTopicDto) {
+        @PathVariable UUID topicId,
+        @Validated(ValidationGroups.Update.class) @RequestBody DiscussionTopicDto discussionTopicDto) {
         discussionTopicDto.setId(topicId);
-        DiscussionTopic discussionTopic = discussionTopicService.update(ModelMapperUtils.convert(discussionTopicDto, DiscussionTopic.class));
+        final DiscussionTopic discussionTopic = discussionTopicService.update(ModelMapperUtils.convert(discussionTopicDto, DiscussionTopic.class));
         return ResponseEntity.ok(discussionTopicAssembler.toModel(discussionTopic));
     }
 }

@@ -21,7 +21,6 @@ package org.planqk.atlas.core.services;
 
 import java.util.NoSuchElementException;
 import java.util.UUID;
-
 import javax.transaction.Transactional;
 
 import org.planqk.atlas.core.model.Algorithm;
@@ -29,13 +28,13 @@ import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.repository.AlgorithmRepository;
 import org.planqk.atlas.core.repository.PatternRelationRepository;
 import org.planqk.atlas.core.util.ServiceUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
@@ -43,17 +42,19 @@ import org.springframework.stereotype.Service;
 public class PatternRelationServiceImpl implements PatternRelationService {
 
     private final PatternRelationRepository patternRelationRepository;
+
     private final PatternRelationTypeService patternRelationTypeService;
+
     private final AlgorithmRepository algorithmRepository;
 
     @Override
     @Transactional
     public PatternRelation create(@NonNull PatternRelation patternRelation) {
         patternRelation.setAlgorithm(
-                ServiceUtils.findById(patternRelation.getAlgorithm().getId(), Algorithm.class, algorithmRepository));
+            ServiceUtils.findById(patternRelation.getAlgorithm().getId(), Algorithm.class, algorithmRepository));
 
         patternRelation.setPatternRelationType(
-                patternRelationTypeService.findById(patternRelation.getPatternRelationType().getId()));
+            patternRelationTypeService.findById(patternRelation.getPatternRelationType().getId()));
 
         return patternRelationRepository.save(patternRelation);
     }
@@ -71,13 +72,12 @@ public class PatternRelationServiceImpl implements PatternRelationService {
     @Override
     @Transactional
     public PatternRelation update(@NonNull PatternRelation patternRelation) {
-        PatternRelation persistedPatternRelation = findById(patternRelation.getId());
+        final PatternRelation persistedPatternRelation = findById(patternRelation.getId());
 
         persistedPatternRelation.setPatternRelationType(
-                patternRelationTypeService.findById(patternRelation.getPatternRelationType().getId()));
+            patternRelationTypeService.findById(patternRelation.getPatternRelationType().getId()));
         persistedPatternRelation.setPattern(patternRelation.getPattern());
         persistedPatternRelation.setDescription(patternRelation.getDescription());
-
 
         return patternRelationRepository.save(persistedPatternRelation);
     }
@@ -92,11 +92,11 @@ public class PatternRelationServiceImpl implements PatternRelationService {
 
     @Override
     public void checkIfAlgorithmIsInPatternRelation(@NonNull UUID algorithmId, @NonNull UUID patternRelationId) {
-        PatternRelation patternRelation = findById(patternRelationId);
+        final PatternRelation patternRelation = findById(patternRelationId);
 
         if (!patternRelation.getAlgorithm().getId().equals(algorithmId)) {
             throw new NoSuchElementException("Algorithm with ID \"" + algorithmId
-                    + "\" is not part of PatternRelation with ID \"" + patternRelationId +  "\"");
+                + "\" is not part of PatternRelation with ID \"" + patternRelationId + "\"");
         }
     }
 }

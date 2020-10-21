@@ -16,13 +16,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
+
 package org.planqk.atlas.core.model;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -43,19 +43,21 @@ import lombok.NonNull;
 public class Publication extends KnowledgeArtifact {
 
     private String doi;
+
     private String url;
+
     private String title;
 
     @ElementCollection
     private List<String> authors = new ArrayList<>();
 
     @ManyToMany(mappedBy = "publications",
-            cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+        cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @EqualsAndHashCode.Exclude
     private Set<Algorithm> algorithms = new HashSet<>();
 
     @ManyToMany(mappedBy = "publications",
-            cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+        cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @EqualsAndHashCode.Exclude
     private Set<Implementation> implementations = new HashSet<>();
 

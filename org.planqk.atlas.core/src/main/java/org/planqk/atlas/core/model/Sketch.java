@@ -20,7 +20,6 @@
 package org.planqk.atlas.core.model;
 
 import java.net.URL;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -29,12 +28,13 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
+import org.hibernate.annotations.Type;
+
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.Type;
 
 /**
  * Entity representing a sketch with an image and a description.
@@ -60,5 +60,4 @@ public class Sketch extends KnowledgeArtifact {
     @OneToOne(mappedBy = "sketch", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
     @EqualsAndHashCode.Exclude
     private Image image;
-
 }

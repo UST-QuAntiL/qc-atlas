@@ -22,7 +22,6 @@ package org.planqk.atlas.core.model;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
@@ -45,8 +44,8 @@ public class KnowledgeArtifact extends HasId {
     private Date lastModifiedAt;
 
     @OneToMany(cascade = CascadeType.ALL,
-            mappedBy = "knowledgeArtifact",
-            orphanRemoval = true)
+        mappedBy = "knowledgeArtifact",
+        orphanRemoval = true)
     @EqualsAndHashCode.Exclude
     private Set<DiscussionTopic> discussionTopics = new HashSet<>();
 }

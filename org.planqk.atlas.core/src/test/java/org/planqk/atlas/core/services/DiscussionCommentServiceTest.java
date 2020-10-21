@@ -19,44 +19,49 @@
 
 package org.planqk.atlas.core.services;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.time.OffsetDateTime;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.planqk.atlas.core.model.DiscussionComment;
 import org.planqk.atlas.core.model.DiscussionTopic;
 import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
-
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class DiscussionCommentServiceTest extends AtlasDatabaseTestBase {
 
+    private final int page = 0;
+
+    private final int size = 2;
+
+    private final Pageable pageable = PageRequest.of(page, size);
+
     @Autowired
     private DiscussionTopicService topicService;
+
     @Autowired
     private DiscussionCommentService commentService;
+
     @Autowired
     private PublicationService publicationService;
 
     private DiscussionComment comment;
+
     private DiscussionComment comment2;
+
     private DiscussionTopic topic;
-
-    private final int page = 0;
-    private final int size = 2;
-
-    private final Pageable pageable = PageRequest.of(page, size);
 
     @BeforeEach
     public void initialize() {

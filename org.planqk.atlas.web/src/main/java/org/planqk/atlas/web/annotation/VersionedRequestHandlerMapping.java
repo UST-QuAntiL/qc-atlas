@@ -32,7 +32,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 public class VersionedRequestHandlerMapping extends RequestMappingHandlerMapping {
     /**
      * Utility function to manually add routes from a given handler instance.
-     *
+     * <p>
      * Only for testing!
      */
     public void populateFromHandler(Object handler) {
@@ -43,13 +43,13 @@ public class VersionedRequestHandlerMapping extends RequestMappingHandlerMapping
     protected RequestMappingInfo getMappingForMethod(Method method, Class<?> handlerType) {
         RequestMappingInfo info = super.getMappingForMethod(method, handlerType);
         if (info != null) {
-            ApiVersion methodAnnotation = AnnotatedElementUtils.findMergedAnnotation(method, ApiVersion.class);
+            final ApiVersion methodAnnotation = AnnotatedElementUtils.findMergedAnnotation(method, ApiVersion.class);
             if (methodAnnotation != null) {
                 // Prepend our version mapping to the real method mapping.
                 info = createApiVersionInfo(methodAnnotation).combine(info);
             }
 
-            ApiVersion typeAnnotation = AnnotatedElementUtils.findMergedAnnotation(handlerType, ApiVersion.class);
+            final ApiVersion typeAnnotation = AnnotatedElementUtils.findMergedAnnotation(handlerType, ApiVersion.class);
             if (methodAnnotation == null && typeAnnotation != null) {
                 // Append our version mapping to the real controller mapping.
                 info = createApiVersionInfo(typeAnnotation).combine(info);
@@ -60,8 +60,8 @@ public class VersionedRequestHandlerMapping extends RequestMappingHandlerMapping
 
     private RequestMappingInfo createApiVersionInfo(ApiVersion annotation) {
         return new RequestMappingInfo(
-                new PatternsRequestCondition(annotation.value(), getUrlPathHelper(), getPathMatcher(),
-                        useSuffixPatternMatch(), useTrailingSlashMatch(), getFileExtensions()),
-                null, null, null, null, null, null);
+            new PatternsRequestCondition(annotation.value(), getUrlPathHelper(), getPathMatcher(),
+                useSuffixPatternMatch(), useTrailingSlashMatch(), getFileExtensions()),
+            null, null, null, null, null, null);
     }
 }

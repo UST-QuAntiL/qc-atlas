@@ -54,14 +54,15 @@ public class ImplementationServiceImpl implements ImplementationService {
     private final PublicationRepository publicationRepository;
 
     private final AlgorithmRepository algorithmRepository;
+
     private final ComputeResourcePropertyRepository computeResourcePropertyRepository;
 
     @Override
     @Transactional
     public Implementation create(@NonNull Implementation implementation, @NonNull UUID implementedAlgorithmId) {
-        Algorithm implementedAlgorithm = ServiceUtils.findById(implementedAlgorithmId, Algorithm.class, algorithmRepository);
+        final Algorithm implementedAlgorithm = ServiceUtils.findById(implementedAlgorithmId, Algorithm.class, algorithmRepository);
         implementation.setImplementedAlgorithm(implementedAlgorithm);
-        Implementation savedImplementation = implementationRepository.save(implementation);
+        final Implementation savedImplementation = implementationRepository.save(implementation);
         implementedAlgorithm.getImplementations().add(savedImplementation);
         return savedImplementation;
     }
@@ -79,7 +80,7 @@ public class ImplementationServiceImpl implements ImplementationService {
     @Override
     @Transactional
     public Implementation update(@NonNull Implementation implementation) {
-        Implementation persistedImplementation = findById(implementation.getId());
+        final Implementation persistedImplementation = findById(implementation.getId());
 
         persistedImplementation.setName(implementation.getName());
         persistedImplementation.setDescription(implementation.getDescription());
@@ -100,7 +101,7 @@ public class ImplementationServiceImpl implements ImplementationService {
     @Override
     @Transactional
     public void delete(@NonNull UUID implementationId) {
-        Implementation implementation = findById(implementationId);
+        final Implementation implementation = findById(implementationId);
 
         removeReferences(implementation);
 
@@ -116,20 +117,20 @@ public class ImplementationServiceImpl implements ImplementationService {
 
         // Remove links to publications
         CollectionUtils.forEachOnCopy(implementation.getPublications(),
-                publication -> publication.removeImplementation(implementation));
+            publication -> publication.removeImplementation(implementation));
 
         // Remove links to software platforms
         CollectionUtils.forEachOnCopy(implementation.getSoftwarePlatforms(),
-                softwarePlatform -> softwarePlatform.removeImplementation(implementation));
+            softwarePlatform -> softwarePlatform.removeImplementation(implementation));
     }
 
     @Override
     public void checkIfImplementationIsOfAlgorithm(@NonNull UUID implementationId, @NonNull UUID algorithmId) {
-        Implementation implementation = findById(implementationId);
+        final Implementation implementation = findById(implementationId);
 
         if (!implementation.getImplementedAlgorithm().getId().equals(algorithmId)) {
             throw new NoSuchElementException("Implementation with ID \"" + implementationId
-                    + "\" of Algorithm with ID \"" + algorithmId + "\" does not exist");
+                + "\" of Algorithm with ID \"" + algorithmId + "\" does not exist");
         }
     }
 

@@ -31,14 +31,14 @@ import org.planqk.atlas.core.repository.ImplementationRepository;
 import org.planqk.atlas.core.repository.PublicationRepository;
 import org.planqk.atlas.core.util.CollectionUtils;
 import org.planqk.atlas.core.util.ServiceUtils;
-
-import lombok.AllArgsConstructor;
-import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import lombok.AllArgsConstructor;
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -46,7 +46,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class PublicationServiceImpl implements PublicationService {
 
     private final PublicationRepository publicationRepository;
+
     private final ImplementationRepository implementationRepository;
+
     private final AlgorithmRepository algorithmRepository;
 
     @Override
@@ -71,7 +73,7 @@ public class PublicationServiceImpl implements PublicationService {
     @Override
     @Transactional
     public Publication update(@NonNull Publication publication) {
-        var persistedPublication = findById(publication.getId());
+        final var persistedPublication = findById(publication.getId());
 
         persistedPublication.setTitle(publication.getTitle());
         persistedPublication.setDoi(publication.getDoi());
@@ -84,7 +86,7 @@ public class PublicationServiceImpl implements PublicationService {
     @Override
     @Transactional
     public void delete(@NonNull UUID publicationId) {
-        Publication publication = findById(publicationId);
+        final Publication publication = findById(publicationId);
 
         removeReferences(publication);
 
@@ -93,16 +95,16 @@ public class PublicationServiceImpl implements PublicationService {
 
     private void removeReferences(@NonNull Publication publication) {
         CollectionUtils.forEachOnCopy(publication.getAlgorithms(),
-                algorithm -> algorithm.removePublication(publication));
+            algorithm -> algorithm.removePublication(publication));
         CollectionUtils.forEachOnCopy(publication.getImplementations(),
-                implementation -> implementation.removePublication(publication));
+            implementation -> implementation.removePublication(publication));
     }
 
     @Override
     @Transactional
     public void deletePublications(@NonNull Set<UUID> publicationIds) {
         publicationIds.forEach(publicationId ->
-                ServiceUtils.throwIfNotExists(publicationId, Publication.class, publicationRepository));
+            ServiceUtils.throwIfNotExists(publicationId, Publication.class, publicationRepository));
         publicationRepository.deleteByIdIn(publicationIds);
     }
 
@@ -121,22 +123,22 @@ public class PublicationServiceImpl implements PublicationService {
     @Override
     public void checkIfAlgorithmIsLinkedToPublication(UUID publicationId, UUID algorithmId) {
         ServiceUtils.throwIfNotExists(publicationId, Publication.class, publicationRepository);
-        Algorithm algorithm = ServiceUtils.findById(algorithmId, Algorithm.class, algorithmRepository);
+        final Algorithm algorithm = ServiceUtils.findById(algorithmId, Algorithm.class, algorithmRepository);
 
         if (!ServiceUtils.containsElementWithId(algorithm.getPublications(), publicationId)) {
             throw new NoSuchElementException("Algorithm with ID \"" + algorithmId
-                    + "\" is not linked to Publication with ID \"" + publicationId +  "\"");
+                + "\" is not linked to Publication with ID \"" + publicationId + "\"");
         }
     }
 
     @Override
     public void checkIfImplementationIsLinkedToPublication(UUID publicationId, UUID implementationId) {
         ServiceUtils.throwIfNotExists(publicationId, Publication.class, publicationRepository);
-        Implementation implementation = ServiceUtils.findById(implementationId, Implementation.class, implementationRepository);
+        final Implementation implementation = ServiceUtils.findById(implementationId, Implementation.class, implementationRepository);
 
         if (!ServiceUtils.containsElementWithId(implementation.getPublications(), publicationId)) {
             throw new NoSuchElementException("Implementation with ID \"" + implementationId
-                    + "\" is not linked to Publication with ID \"" + publicationId +  "\"");
+                + "\" is not linked to Publication with ID \"" + publicationId + "\"");
         }
     }
 }

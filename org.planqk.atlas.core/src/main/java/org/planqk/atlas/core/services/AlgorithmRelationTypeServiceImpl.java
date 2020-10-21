@@ -26,14 +26,14 @@ import org.planqk.atlas.core.model.AlgorithmRelationType;
 import org.planqk.atlas.core.repository.AlgorithmRelationRepository;
 import org.planqk.atlas.core.repository.AlgorithmRelationTypeRepository;
 import org.planqk.atlas.core.util.ServiceUtils;
-
-import lombok.AllArgsConstructor;
-import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import lombok.AllArgsConstructor;
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -41,6 +41,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AlgorithmRelationTypeServiceImpl implements AlgorithmRelationTypeService {
 
     private final AlgorithmRelationTypeRepository algorithmRelationTypeRepository;
+
     private final AlgorithmRelationRepository algorithmRelationRepository;
 
     @Override
@@ -62,7 +63,7 @@ public class AlgorithmRelationTypeServiceImpl implements AlgorithmRelationTypeSe
     @Override
     @Transactional
     public AlgorithmRelationType update(@NonNull AlgorithmRelationType algorithmRelationType) {
-        var persistedAlgorithmRelationType = findById(algorithmRelationType.getId());
+        final var persistedAlgorithmRelationType = findById(algorithmRelationType.getId());
 
         persistedAlgorithmRelationType.setName(algorithmRelationType.getName());
 
@@ -76,7 +77,7 @@ public class AlgorithmRelationTypeServiceImpl implements AlgorithmRelationTypeSe
 
         if (algorithmRelationRepository.countByAlgorithmRelationTypeId(algorithmRelationTypeId) > 0) {
             throw new EntityReferenceConstraintViolationException("AlgorithmRelationType with ID \""
-                    + algorithmRelationTypeId + "\" cannot be deleted, because it is still in use");
+                + algorithmRelationTypeId + "\" cannot be deleted, because it is still in use");
         }
 
         algorithmRelationTypeRepository.deleteById(algorithmRelationTypeId);

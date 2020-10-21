@@ -17,8 +17,8 @@
   ~ limitations under the License.
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 
-<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
     <!--
@@ -28,5 +28,5 @@
     The spring boot loader that's part of the executable JAR output doesn't seem
     to support classpath directory listings, breaking includeAll.
     -->
-    <include file="classpath:/db/changelog/2020-10-14-00-00-initial.xml" />
+    <include file="classpath:/db/changelog/2020-10-14-00-00-initial.xml"/>
 </databaseChangeLog>

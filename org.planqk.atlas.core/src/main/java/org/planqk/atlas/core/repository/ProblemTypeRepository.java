@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.ProblemType;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -44,10 +43,11 @@ public interface ProblemTypeRepository extends JpaRepository<ProblemType, UUID> 
     }
 
     Page<ProblemType> findByNameContainingIgnoreCase(String name, Pageable pageable);
+
     @Query("SELECT pt " +
-            "FROM ProblemType pt " +
-            "JOIN pt.algorithms algos " +
-            "WHERE algos.id = :algoid")
+        "FROM ProblemType pt " +
+        "JOIN pt.algorithms algos " +
+        "WHERE algos.id = :algoid")
     Page<ProblemType> findProblemTypesByAlgorithmId(@Param("algoid") UUID algorithmId, Pageable pageable);
 
     List<ProblemType> findProblemTypesByParentProblemType(@Param("parentProblemTypeId") UUID parentProblemType);

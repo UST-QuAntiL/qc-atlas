@@ -20,7 +20,6 @@
 package org.planqk.atlas.core.repository;
 
 import org.planqk.atlas.core.model.Tag;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

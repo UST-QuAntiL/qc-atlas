@@ -22,7 +22,6 @@ package org.planqk.atlas.core.model;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -36,10 +35,9 @@ import lombok.NonNull;
 import lombok.ToString;
 
 /**
- * A software platform e.g. qiskit has a number of supported backends and a number of supported cloud services which
- * also contain a number of supported backends. E.g. the software platform qiskit supports ibmq as a cloud service and
- * both support the backend ibmq_rome. However, a software platform might not support backends which can be used by a
- * supported cloud service and vice versa.
+ * A software platform e.g. qiskit has a number of supported backends and a number of supported cloud services which also contain a number of
+ * supported backends. E.g. the software platform qiskit supports ibmq as a cloud service and both support the backend ibmq_rome. However, a software
+ * platform might not support backends which can be used by a supported cloud service and vice versa.
  */
 
 @Entity
@@ -48,31 +46,34 @@ import lombok.ToString;
 public class SoftwarePlatform extends HasId {
 
     private String name;
+
     private URL link;
+
     private String licence;
+
     private String version;
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE})
     @JoinTable(name = "software_platforms_compute_resources",
-            joinColumns = @JoinColumn(name = "software_platform_id"),
-            inverseJoinColumns = @JoinColumn(name = "compute_resource_id"))
+        joinColumns = @JoinColumn(name = "software_platform_id"),
+        inverseJoinColumns = @JoinColumn(name = "compute_resource_id"))
     private Set<ComputeResource> supportedComputeResources = new HashSet<>();
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE})
     @JoinTable(name = "software_platform_cloud_services",
-            joinColumns = @JoinColumn(name = "software_platform_id"),
-            inverseJoinColumns = @JoinColumn(name = "cloud_service_id"))
+        joinColumns = @JoinColumn(name = "software_platform_id"),
+        inverseJoinColumns = @JoinColumn(name = "cloud_service_id"))
     private Set<CloudService> supportedCloudServices = new HashSet<>();
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @ManyToMany(fetch = FetchType.LAZY,
-            cascade = {CascadeType.MERGE, CascadeType.PERSIST},
-            mappedBy = "softwarePlatforms")
+        cascade = {CascadeType.MERGE, CascadeType.PERSIST},
+        mappedBy = "softwarePlatforms")
     private Set<Implementation> implementations = new HashSet<>();
 
     public void addImplementation(@NonNull Implementation implementation) {

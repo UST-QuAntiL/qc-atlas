@@ -27,12 +27,12 @@ import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.repository.AlgorithmRelationRepository;
 import org.planqk.atlas.core.repository.AlgorithmRepository;
 import org.planqk.atlas.core.util.ServiceUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -49,7 +49,7 @@ public class AlgorithmRelationServiceImpl implements AlgorithmRelationService {
     @Transactional
     public AlgorithmRelation create(@NonNull AlgorithmRelation algorithmRelation) {
         algorithmRelation.setAlgorithmRelationType(
-                algorithmRelationTypeService.findById(algorithmRelation.getAlgorithmRelationType().getId()));
+            algorithmRelationTypeService.findById(algorithmRelation.getAlgorithmRelationType().getId()));
 
         algorithmRelation.setSourceAlgorithm(findAlgorithmById(algorithmRelation.getSourceAlgorithm().getId()));
         algorithmRelation.setTargetAlgorithm(findAlgorithmById(algorithmRelation.getTargetAlgorithm().getId()));
@@ -65,13 +65,13 @@ public class AlgorithmRelationServiceImpl implements AlgorithmRelationService {
     @Override
     @Transactional
     public AlgorithmRelation update(@NonNull AlgorithmRelation algorithmRelation) {
-        AlgorithmRelation persistedAlgorithmRelation = findById(algorithmRelation.getId());
+        final AlgorithmRelation persistedAlgorithmRelation = findById(algorithmRelation.getId());
 
         persistedAlgorithmRelation.setAlgorithmRelationType(
-                algorithmRelationTypeService.findById(algorithmRelation.getAlgorithmRelationType().getId()));
+            algorithmRelationTypeService.findById(algorithmRelation.getAlgorithmRelationType().getId()));
         persistedAlgorithmRelation.setDescription(algorithmRelation.getDescription());
 
-        return algorithmRelationRepository.save(persistedAlgorithmRelation );
+        return algorithmRelationRepository.save(persistedAlgorithmRelation);
     }
 
     @Override
@@ -83,12 +83,12 @@ public class AlgorithmRelationServiceImpl implements AlgorithmRelationService {
 
     @Override
     public void checkIfAlgorithmIsInAlgorithmRelation(@NonNull UUID algorithmId, @NonNull UUID algorithmRelationId) {
-        AlgorithmRelation algorithmRelation = findById(algorithmRelationId);
+        final AlgorithmRelation algorithmRelation = findById(algorithmRelationId);
 
         if (!algorithmRelation.getSourceAlgorithm().getId().equals(algorithmId)
-                && !algorithmRelation.getTargetAlgorithm().getId().equals(algorithmId)) {
+            && !algorithmRelation.getTargetAlgorithm().getId().equals(algorithmId)) {
             throw new NoSuchElementException("Algorithm with ID \"" + algorithmId
-                    + "\" is not part of AlgorithmRelation with ID \"" + algorithmRelationId +  "\"");
+                + "\" is not part of AlgorithmRelation with ID \"" + algorithmRelationId + "\"");
         }
     }
 

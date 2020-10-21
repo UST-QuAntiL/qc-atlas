@@ -16,10 +16,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
+
 package org.planqk.atlas.core.model;
 
 import java.time.OffsetDateTime;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -35,12 +35,13 @@ import lombok.EqualsAndHashCode;
 public class DiscussionComment extends HasId {
 
     private String text;
+
     private OffsetDateTime date;
 
     @OneToOne
     private DiscussionComment replyTo;
 
     @ManyToOne(fetch = FetchType.LAZY,
-            cascade = {CascadeType.REFRESH, CascadeType.MERGE})
+        cascade = {CascadeType.REFRESH, CascadeType.MERGE})
     private DiscussionTopic discussionTopic;
 }

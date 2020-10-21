@@ -20,7 +20,6 @@
 package org.planqk.atlas.core.model;
 
 import java.net.URI;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -42,7 +41,7 @@ public class PatternRelation extends HasId {
     private URI pattern;
 
     @ManyToOne(fetch = FetchType.LAZY,
-            cascade = {CascadeType.MERGE, CascadeType.REFRESH})
+        cascade = {CascadeType.MERGE, CascadeType.REFRESH})
     private PatternRelationType patternRelationType;
 
     private String description;

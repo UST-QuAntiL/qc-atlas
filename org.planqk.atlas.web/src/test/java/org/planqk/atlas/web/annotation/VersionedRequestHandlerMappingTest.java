@@ -19,14 +19,28 @@
 
 package org.planqk.atlas.web.annotation;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import static org.junit.Assert.assertEquals;
-
 class VersionedRequestHandlerMappingTest {
+
+    private VersionedRequestHandlerMapping mapping = new VersionedRequestHandlerMapping();
+
+    @Test
+    void getMappingForMethod() throws NoSuchMethodException {
+        assertEquals(Set.of("/v1/unversioned/versioned"), getMethodPathMapping(Unversioned.class, "versioned"));
+        assertEquals(Set.of("/v1/versioned/unversioned"), getMethodPathMapping(Versioned.class, "unversioned"));
+        assertEquals(Set.of("/v1/versioned/versioned", "/v2/versioned/versioned"),
+            getMethodPathMapping(Versioned.class, "versioned"));
+    }
+
+    private Set<String> getMethodPathMapping(Class<?> clazz, String methodName) throws NoSuchMethodException {
+        return mapping.getMappingForMethod(clazz.getMethod(methodName), clazz).getPatternsCondition().getPatterns();
+    }
 
     @RequestMapping("/unversioned")
     static class Unversioned {
@@ -44,22 +58,8 @@ class VersionedRequestHandlerMappingTest {
         }
 
         @RequestMapping("/versioned")
-        @ApiVersion({ "v1", "v2" })
+        @ApiVersion({"v1", "v2"})
         public void versioned() {
         }
-    }
-
-    private VersionedRequestHandlerMapping mapping = new VersionedRequestHandlerMapping();
-
-    @Test
-    void getMappingForMethod() throws NoSuchMethodException {
-        assertEquals(Set.of("/v1/unversioned/versioned"), getMethodPathMapping(Unversioned.class, "versioned"));
-        assertEquals(Set.of("/v1/versioned/unversioned"), getMethodPathMapping(Versioned.class, "unversioned"));
-        assertEquals(Set.of("/v1/versioned/versioned", "/v2/versioned/versioned"),
-                getMethodPathMapping(Versioned.class, "versioned"));
-    }
-
-    private Set<String> getMethodPathMapping(Class<?> clazz, String methodName) throws NoSuchMethodException {
-        return mapping.getMappingForMethod(clazz.getMethod(methodName), clazz).getPatternsCondition().getPatterns();
     }
 }

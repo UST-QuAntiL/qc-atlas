@@ -19,6 +19,25 @@
 
 package org.planqk.atlas.web.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.when;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
@@ -28,6 +47,10 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.UUID;
 
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.model.AlgorithmRelationType;
@@ -72,14 +95,6 @@ import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
 import org.planqk.atlas.web.linkassembler.LinkBuilderService;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.SneakyThrows;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -96,24 +111,10 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.web.context.WebApplicationContext;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.when;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
-import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import lombok.SneakyThrows;
 
 @WebMvcTest(value = AlgorithmController.class)
 @ExtendWith(MockitoExtension.class)
@@ -167,6 +168,7 @@ public class AlgorithmControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
     @Autowired
     private LinkBuilderService linkBuilderService;
 
@@ -265,7 +267,7 @@ public class AlgorithmControllerTest {
         initializeAlgorithms();
         assertEquals(algorithm1, algorithm1);
         assertEquals(algorithm1, ModelMapperUtils.convert(mapper.readValue(
-                mapper.writeValueAsString(algorithm1Dto), AlgorithmDto.class), Algorithm.class));
+            mapper.writeValueAsString(algorithm1Dto), AlgorithmDto.class), Algorithm.class));
     }
 
     @Test
@@ -276,14 +278,14 @@ public class AlgorithmControllerTest {
         doReturn(Page.empty()).when(algorithmService).findAll(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .getAlgorithms(new ListParameters(pageable, null)));
+            .getAlgorithms(new ListParameters(pageable, null)));
 
         MvcResult result = mockMvc.perform(get(url)
-                .accept(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk()).andReturn();
 
         var resultList = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(),
-                "algorithms", AlgorithmDto.class);
+            "algorithms", AlgorithmDto.class);
         assertEquals(0, resultList.size());
     }
 
@@ -301,16 +303,16 @@ public class AlgorithmControllerTest {
         doReturn(pageAlg).when(algorithmService).findAll(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .getAlgorithms(new ListParameters(pageable, null)));
+            .getAlgorithms(new ListParameters(pageable, null)));
 
         MvcResult result = mockMvc.perform(get(url)
-                .accept(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andReturn();
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andReturn();
 
         var resultList = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(),
-                "algorithms", AlgorithmDto.class);
+            "algorithms", AlgorithmDto.class);
         assertEquals(2, resultList.size());
     }
 
@@ -321,19 +323,19 @@ public class AlgorithmControllerTest {
         algoDto.setId(UUID.randomUUID());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .createAlgorithm(null));
+            .createAlgorithm(null));
 
         mockMvc.perform(post(url)
-                .content(mapper.writeValueAsString(algoDto))
-                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)
+            .content(mapper.writeValueAsString(algoDto))
+            .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isBadRequest());
 
         algoDto.setName("algoDto");
 
         mockMvc.perform(post(url)
-                .content(mapper.writeValueAsString(algoDto))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
+            .content(mapper.writeValueAsString(algoDto))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isBadRequest());
     }
 
@@ -346,17 +348,17 @@ public class AlgorithmControllerTest {
         doReturn(algorithm1).when(algorithmService).create(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .createAlgorithm(null));
+            .createAlgorithm(null));
 
         MvcResult result = mockMvc.perform(post(url)
-                .content(mapper.writeValueAsString(algorithm1Dto))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
+            .content(mapper.writeValueAsString(algorithm1Dto))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isCreated()).andReturn();
 
         EntityModel<AlgorithmDto> response = mapper.readValue(result.getResponse().getContentAsString(),
-                new TypeReference<>() {
-                });
+            new TypeReference<>() {
+            });
         assertEquals(response.getContent().getName(), this.algorithm1Dto.getName());
     }
 
@@ -368,11 +370,11 @@ public class AlgorithmControllerTest {
         algoDto.setId(UUID.randomUUID());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .updateAlgorithm(UUID.randomUUID(), null));
+            .updateAlgorithm(UUID.randomUUID(), null));
 
         mockMvc.perform(put(url).content(mapper.writeValueAsString(algoDto))
-                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+            .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -383,15 +385,15 @@ public class AlgorithmControllerTest {
         doReturn(algorithm1).when(algorithmService).update(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .updateAlgorithm(UUID.randomUUID(), null));
+            .updateAlgorithm(UUID.randomUUID(), null));
 
         MvcResult result = mockMvc.perform(put(url)
-                .content(mapper.writeValueAsString(algorithm1Dto)).contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
+            .content(mapper.writeValueAsString(algorithm1Dto)).contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
 
         EntityModel<AlgorithmDto> response = mapper.readValue(result.getResponse().getContentAsString(),
-                new TypeReference<EntityModel<AlgorithmDto>>() {
-                });
+            new TypeReference<EntityModel<AlgorithmDto>>() {
+            });
         assertEquals(response.getContent().getName(), algorithm1Dto.getName());
     }
 
@@ -401,10 +403,10 @@ public class AlgorithmControllerTest {
         doThrow(new NoSuchElementException()).when(algorithmService).delete(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .deleteAlgorithm(UUID.randomUUID()));
+            .deleteAlgorithm(UUID.randomUUID()));
 
         mockMvc.perform(delete(url))
-                .andExpect(status().isNotFound());
+            .andExpect(status().isNotFound());
     }
 
     @Test
@@ -413,9 +415,9 @@ public class AlgorithmControllerTest {
         doNothing().when(algorithmService).delete(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .deleteAlgorithm(UUID.randomUUID()));
+            .deleteAlgorithm(UUID.randomUUID()));
         mockMvc.perform(delete(url))
-                .andExpect(status().isNoContent()).andReturn();
+            .andExpect(status().isNoContent()).andReturn();
     }
 
     @Test
@@ -426,10 +428,10 @@ public class AlgorithmControllerTest {
         doThrow(NoSuchElementException.class).when(algorithmService).findById(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .getAlgorithm(UUID.randomUUID()));
+            .getAlgorithm(UUID.randomUUID()));
 
         mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+            .andExpect(status().isNotFound());
     }
 
     @Test
@@ -440,13 +442,13 @@ public class AlgorithmControllerTest {
         doReturn(algorithm1).when(algorithmService).findById(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .getAlgorithm(UUID.randomUUID()));
+            .getAlgorithm(UUID.randomUUID()));
         MvcResult result = mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk()).andReturn();
+            .andExpect(status().isOk()).andReturn();
 
         EntityModel<AlgorithmDto> response = mapper.readValue(result.getResponse().getContentAsString(),
-                new TypeReference<>() {
-                });
+            new TypeReference<>() {
+            });
         assertEquals(response.getContent().getId(), algorithm1Dto.getId());
     }
 
@@ -471,10 +473,10 @@ public class AlgorithmControllerTest {
         doReturn(algorithm).when(algorithmService).findById(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .addTagToAlgorithm(UUID.randomUUID(), null));
+            .addTagToAlgorithm(UUID.randomUUID(), null));
 
         mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+            .andExpect(status().isOk());
     }
 
     @Test
@@ -488,11 +490,11 @@ public class AlgorithmControllerTest {
         doNothing().when(tagService).addTagToAlgorithm(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .addTagToAlgorithm(UUID.randomUUID(), null));
+            .addTagToAlgorithm(UUID.randomUUID(), null));
 
         mockMvc.perform(post(url).content(mapper.writeValueAsString(tagDto))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isNoContent());
     }
 
@@ -502,11 +504,11 @@ public class AlgorithmControllerTest {
         TagDto tagDto = new TagDto();
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .addTagToAlgorithm(UUID.randomUUID(), null));
+            .addTagToAlgorithm(UUID.randomUUID(), null));
 
         mockMvc.perform(post(url).content(mapper.writeValueAsString(tagDto))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isBadRequest());
     }
 
@@ -521,11 +523,11 @@ public class AlgorithmControllerTest {
         doThrow(NoSuchElementException.class).when(tagService).addTagToAlgorithm(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .addTagToAlgorithm(UUID.randomUUID(), null));
+            .addTagToAlgorithm(UUID.randomUUID(), null));
 
         mockMvc.perform(post(url).content(mapper.writeValueAsString(tagDto))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isNotFound());
     }
 
@@ -540,11 +542,11 @@ public class AlgorithmControllerTest {
         doNothing().when(tagService).removeTagFromAlgorithm(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .removeTagFromAlgorithm(UUID.randomUUID(), null));
+            .removeTagFromAlgorithm(UUID.randomUUID(), null));
 
         mockMvc.perform(delete(url).content(mapper.writeValueAsString(tagDto))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isNoContent());
     }
 
@@ -556,11 +558,11 @@ public class AlgorithmControllerTest {
         doNothing().when(tagService).removeTagFromAlgorithm(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .removeTagFromAlgorithm(UUID.randomUUID(), null));
+            .removeTagFromAlgorithm(UUID.randomUUID(), null));
 
         mockMvc.perform(delete(url).content(mapper.writeValueAsString(tagDto))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isBadRequest());
     }
 
@@ -574,14 +576,13 @@ public class AlgorithmControllerTest {
         doThrow(NoSuchElementException.class).when(tagService).removeTagFromAlgorithm(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .removeTagFromAlgorithm(UUID.randomUUID(), null));
+            .removeTagFromAlgorithm(UUID.randomUUID(), null));
 
         mockMvc.perform(delete(url).content(mapper.writeValueAsString(tagDto))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isNotFound());
     }
-
 
     @Test
     @SneakyThrows
@@ -589,11 +590,11 @@ public class AlgorithmControllerTest {
         doReturn(new PageImpl<>(List.of())).when(algorithmService).findLinkedPublications(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .getPublicationsOfAlgorithm(UUID.randomUUID(), ListParameters.getDefault()));
+            .getPublicationsOfAlgorithm(UUID.randomUUID(), ListParameters.getDefault()));
         mockMvc.perform(get(url).accept(APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$._embedded.publications").doesNotExist())
-                ;
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$._embedded.publications").doesNotExist())
+        ;
     }
 
     @Test
@@ -607,12 +608,12 @@ public class AlgorithmControllerTest {
         doReturn(new PageImpl<>(List.of(pub))).when(algorithmService).findLinkedPublications(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .getPublicationsOfAlgorithm(UUID.randomUUID(), ListParameters.getDefault()));
+            .getPublicationsOfAlgorithm(UUID.randomUUID(), ListParameters.getDefault()));
         mockMvc.perform(get(url).accept(APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$._embedded.publications").isArray())
-                .andExpect(jsonPath("$._embedded.publications[0].id").value(pub.getId().toString()))
-                ;
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$._embedded.publications").isArray())
+            .andExpect(jsonPath("$._embedded.publications[0].id").value(pub.getId().toString()))
+        ;
     }
 
     @Test
@@ -621,9 +622,9 @@ public class AlgorithmControllerTest {
         doThrow(new NoSuchElementException()).when(algorithmService).findLinkedPublications(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .getPublicationsOfAlgorithm(UUID.randomUUID(), ListParameters.getDefault()));
+            .getPublicationsOfAlgorithm(UUID.randomUUID(), ListParameters.getDefault()));
         mockMvc.perform(get(url).accept(APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+            .andExpect(status().isNotFound());
     }
 
     @Test
@@ -637,14 +638,14 @@ public class AlgorithmControllerTest {
         doReturn(pub).when(publicationService).findById(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .getPublicationOfAlgorithm(UUID.randomUUID(), pub.getId()));
+            .getPublicationOfAlgorithm(UUID.randomUUID(), pub.getId()));
         mockMvc.perform(get(url).accept(APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title").value(pub.getTitle()))
-                .andExpect(jsonPath("$.id").value(pub.getId().toString()))
-                .andExpect(jsonPath("$.authors").isArray())
-                .andExpect(jsonPath("$.authors[0]").value(pub.getAuthors().get(0)))
-                ;
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.title").value(pub.getTitle()))
+            .andExpect(jsonPath("$.id").value(pub.getId().toString()))
+            .andExpect(jsonPath("$.authors").isArray())
+            .andExpect(jsonPath("$.authors[0]").value(pub.getAuthors().get(0)))
+        ;
     }
 
     @Test
@@ -654,9 +655,9 @@ public class AlgorithmControllerTest {
         doThrow(NoSuchElementException.class).when(publicationService).findById(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .getPublicationOfAlgorithm(UUID.randomUUID(), UUID.randomUUID()));
+            .getPublicationOfAlgorithm(UUID.randomUUID(), UUID.randomUUID()));
         mockMvc.perform(get(url).accept(APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+            .andExpect(status().isNotFound());
     }
 
     @Test
@@ -668,10 +669,10 @@ public class AlgorithmControllerTest {
         pubDto.setId(UUID.randomUUID());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .linkAlgorithmAndPublication(UUID.randomUUID(), null));
+            .linkAlgorithmAndPublication(UUID.randomUUID(), null));
         mockMvc.perform(post(url).accept(APPLICATION_JSON)
-                .content(mapper.writeValueAsString(pubDto)).contentType(APPLICATION_JSON))
-                .andExpect(status().isNoContent());
+            .content(mapper.writeValueAsString(pubDto)).contentType(APPLICATION_JSON))
+            .andExpect(status().isNoContent());
     }
 
     @Test
@@ -681,10 +682,10 @@ public class AlgorithmControllerTest {
         pubDto.setId(null);
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .linkAlgorithmAndPublication(UUID.randomUUID(), null));
+            .linkAlgorithmAndPublication(UUID.randomUUID(), null));
         mockMvc.perform(post(url).accept(APPLICATION_JSON)
-                .content(mapper.writeValueAsString(pubDto)).contentType(APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+            .content(mapper.writeValueAsString(pubDto)).contentType(APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -696,10 +697,10 @@ public class AlgorithmControllerTest {
         pubDto.setId(UUID.randomUUID());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .linkAlgorithmAndPublication(UUID.randomUUID(), null));
+            .linkAlgorithmAndPublication(UUID.randomUUID(), null));
         mockMvc.perform(post(url).accept(APPLICATION_JSON)
-                .content(mapper.writeValueAsString(pubDto)).contentType(APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+            .content(mapper.writeValueAsString(pubDto)).contentType(APPLICATION_JSON))
+            .andExpect(status().isNotFound());
     }
 
     @Test
@@ -711,10 +712,10 @@ public class AlgorithmControllerTest {
         pubDto.setId(UUID.randomUUID());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .linkAlgorithmAndPublication(UUID.randomUUID(), null));
+            .linkAlgorithmAndPublication(UUID.randomUUID(), null));
         mockMvc.perform(post(url).accept(APPLICATION_JSON)
-                .content(mapper.writeValueAsString(pubDto)).contentType(APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+            .content(mapper.writeValueAsString(pubDto)).contentType(APPLICATION_JSON))
+            .andExpect(status().isNotFound());
     }
 
     @Test
@@ -723,9 +724,9 @@ public class AlgorithmControllerTest {
         doNothing().when(linkingService).unlinkAlgorithmAndPublication(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .unlinkAlgorithmAndPublication(UUID.randomUUID(), UUID.randomUUID()));
+            .unlinkAlgorithmAndPublication(UUID.randomUUID(), UUID.randomUUID()));
         mockMvc.perform(delete(url).accept(APPLICATION_JSON))
-                .andExpect(status().isNoContent());
+            .andExpect(status().isNoContent());
     }
 
     @Test
@@ -734,9 +735,9 @@ public class AlgorithmControllerTest {
         doThrow(new NoSuchElementException()).when(linkingService).unlinkAlgorithmAndPublication(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .unlinkAlgorithmAndPublication(UUID.randomUUID(), UUID.randomUUID()));
+            .unlinkAlgorithmAndPublication(UUID.randomUUID(), UUID.randomUUID()));
         mockMvc.perform(delete(url).accept(APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+            .andExpect(status().isNotFound());
     }
 
     @Test
@@ -745,9 +746,9 @@ public class AlgorithmControllerTest {
         doThrow(new NoSuchElementException()).when(linkingService).unlinkAlgorithmAndPublication(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .unlinkAlgorithmAndPublication(UUID.randomUUID(), UUID.randomUUID()));
+            .unlinkAlgorithmAndPublication(UUID.randomUUID(), UUID.randomUUID()));
         mockMvc.perform(delete(url).accept(APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+            .andExpect(status().isNotFound());
     }
 
     @Test
@@ -756,11 +757,11 @@ public class AlgorithmControllerTest {
         doReturn(new PageImpl<>(List.of())).when(algorithmService).findLinkedProblemTypes(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .getProblemTypesOfAlgorithm(UUID.randomUUID(), ListParameters.getDefault()));
+            .getProblemTypesOfAlgorithm(UUID.randomUUID(), ListParameters.getDefault()));
         mockMvc.perform(get(url).accept(APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$._embedded.ProblemTypes").doesNotExist())
-                ;
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$._embedded.ProblemTypes").doesNotExist())
+        ;
     }
 
     @Test
@@ -773,12 +774,12 @@ public class AlgorithmControllerTest {
         doReturn(new PageImpl<>(List.of(problemType))).when(algorithmService).findLinkedProblemTypes(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .getProblemTypesOfAlgorithm(UUID.randomUUID(), ListParameters.getDefault()));
+            .getProblemTypesOfAlgorithm(UUID.randomUUID(), ListParameters.getDefault()));
         mockMvc.perform(get(url).accept(APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$._embedded.problemTypes").isArray())
-                .andExpect(jsonPath("$._embedded.problemTypes[0].id").value(problemType.getId().toString()))
-                ;
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$._embedded.problemTypes").isArray())
+            .andExpect(jsonPath("$._embedded.problemTypes[0].id").value(problemType.getId().toString()))
+        ;
     }
 
     @Test
@@ -787,9 +788,9 @@ public class AlgorithmControllerTest {
         doThrow(new NoSuchElementException()).when(algorithmService).findLinkedProblemTypes(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .getProblemTypesOfAlgorithm(UUID.randomUUID(), ListParameters.getDefault()));
+            .getProblemTypesOfAlgorithm(UUID.randomUUID(), ListParameters.getDefault()));
         mockMvc.perform(get(url).accept(APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+            .andExpect(status().isNotFound());
     }
 
     @Test
@@ -802,12 +803,12 @@ public class AlgorithmControllerTest {
         doReturn(problemType).when(problemTypeService).findById(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .getProblemTypeOfAlgorithm(UUID.randomUUID(), problemType.getId()));
+            .getProblemTypeOfAlgorithm(UUID.randomUUID(), problemType.getId()));
         mockMvc.perform(get(url).accept(APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value(problemType.getName()))
-                .andExpect(jsonPath("$.id").value(problemType.getId().toString()))
-                ;
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.name").value(problemType.getName()))
+            .andExpect(jsonPath("$.id").value(problemType.getId().toString()))
+        ;
     }
 
     @Test
@@ -817,9 +818,9 @@ public class AlgorithmControllerTest {
         doThrow(NoSuchElementException.class).when(problemTypeService).findById(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .getProblemTypeOfAlgorithm(UUID.randomUUID(), UUID.randomUUID()));
+            .getProblemTypeOfAlgorithm(UUID.randomUUID(), UUID.randomUUID()));
         mockMvc.perform(get(url).accept(APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+            .andExpect(status().isNotFound());
     }
 
     @Test
@@ -831,10 +832,10 @@ public class AlgorithmControllerTest {
         problemTypeDto.setId(UUID.randomUUID());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .linkAlgorithmAndProblemType(UUID.randomUUID(), null));
+            .linkAlgorithmAndProblemType(UUID.randomUUID(), null));
         mockMvc.perform(post(url).accept(APPLICATION_JSON)
-                .content(mapper.writeValueAsString(problemTypeDto)).contentType(APPLICATION_JSON))
-                .andExpect(status().isNoContent());
+            .content(mapper.writeValueAsString(problemTypeDto)).contentType(APPLICATION_JSON))
+            .andExpect(status().isNoContent());
     }
 
     @Test
@@ -844,10 +845,10 @@ public class AlgorithmControllerTest {
         problemTypeDto.setId(null);
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .linkAlgorithmAndProblemType(UUID.randomUUID(), null));
+            .linkAlgorithmAndProblemType(UUID.randomUUID(), null));
         mockMvc.perform(post(url).accept(APPLICATION_JSON)
-                .content(mapper.writeValueAsString(problemTypeDto)).contentType(APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+            .content(mapper.writeValueAsString(problemTypeDto)).contentType(APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -859,10 +860,10 @@ public class AlgorithmControllerTest {
         problemTypeDto.setId(UUID.randomUUID());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .linkAlgorithmAndProblemType(UUID.randomUUID(), null));
+            .linkAlgorithmAndProblemType(UUID.randomUUID(), null));
         mockMvc.perform(post(url).accept(APPLICATION_JSON)
-                .content(mapper.writeValueAsString(problemTypeDto)).contentType(APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+            .content(mapper.writeValueAsString(problemTypeDto)).contentType(APPLICATION_JSON))
+            .andExpect(status().isNotFound());
     }
 
     @Test
@@ -874,10 +875,10 @@ public class AlgorithmControllerTest {
         problemTypeDto.setId(UUID.randomUUID());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .linkAlgorithmAndProblemType(UUID.randomUUID(), null));
+            .linkAlgorithmAndProblemType(UUID.randomUUID(), null));
         mockMvc.perform(post(url).accept(APPLICATION_JSON)
-                .content(mapper.writeValueAsString(problemTypeDto)).contentType(APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+            .content(mapper.writeValueAsString(problemTypeDto)).contentType(APPLICATION_JSON))
+            .andExpect(status().isNotFound());
     }
 
     @Test
@@ -886,9 +887,9 @@ public class AlgorithmControllerTest {
         doNothing().when(linkingService).unlinkAlgorithmAndProblemType(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .unlinkAlgorithmAndProblemType(UUID.randomUUID(), UUID.randomUUID()));
+            .unlinkAlgorithmAndProblemType(UUID.randomUUID(), UUID.randomUUID()));
         mockMvc.perform(delete(url).accept(APPLICATION_JSON))
-                .andExpect(status().isNoContent());
+            .andExpect(status().isNoContent());
     }
 
     @Test
@@ -897,9 +898,9 @@ public class AlgorithmControllerTest {
         doThrow(new NoSuchElementException()).when(linkingService).unlinkAlgorithmAndProblemType(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .unlinkAlgorithmAndProblemType(UUID.randomUUID(), UUID.randomUUID()));
+            .unlinkAlgorithmAndProblemType(UUID.randomUUID(), UUID.randomUUID()));
         mockMvc.perform(delete(url).accept(APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+            .andExpect(status().isNotFound());
     }
 
     @Test
@@ -908,9 +909,9 @@ public class AlgorithmControllerTest {
         doThrow(new NoSuchElementException()).when(linkingService).unlinkAlgorithmAndProblemType(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .unlinkAlgorithmAndProblemType(UUID.randomUUID(), UUID.randomUUID()));
+            .unlinkAlgorithmAndProblemType(UUID.randomUUID(), UUID.randomUUID()));
         mockMvc.perform(delete(url).accept(APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+            .andExpect(status().isNotFound());
     }
 
     @Test
@@ -919,11 +920,11 @@ public class AlgorithmControllerTest {
         doReturn(new PageImpl<>(List.of())).when(algorithmService).findLinkedApplicationAreas(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .getApplicationAreasOfAlgorithm(UUID.randomUUID(), ListParameters.getDefault()));
+            .getApplicationAreasOfAlgorithm(UUID.randomUUID(), ListParameters.getDefault()));
         mockMvc.perform(get(url).accept(APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$._embedded.applicationAreas").doesNotExist())
-                ;
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$._embedded.applicationAreas").doesNotExist())
+        ;
     }
 
     @Test
@@ -936,12 +937,12 @@ public class AlgorithmControllerTest {
         doReturn(new PageImpl<>(List.of(applicationArea))).when(algorithmService).findLinkedApplicationAreas(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .getApplicationAreasOfAlgorithm(UUID.randomUUID(), ListParameters.getDefault()));
+            .getApplicationAreasOfAlgorithm(UUID.randomUUID(), ListParameters.getDefault()));
         mockMvc.perform(get(url).accept(APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$._embedded.applicationAreas").isArray())
-                .andExpect(jsonPath("$._embedded.applicationAreas[0].id").value(applicationArea.getId().toString()))
-                ;
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$._embedded.applicationAreas").isArray())
+            .andExpect(jsonPath("$._embedded.applicationAreas[0].id").value(applicationArea.getId().toString()))
+        ;
     }
 
     @Test
@@ -950,9 +951,9 @@ public class AlgorithmControllerTest {
         doThrow(new NoSuchElementException()).when(algorithmService).findLinkedApplicationAreas(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .getApplicationAreasOfAlgorithm(UUID.randomUUID(), ListParameters.getDefault()));
+            .getApplicationAreasOfAlgorithm(UUID.randomUUID(), ListParameters.getDefault()));
         mockMvc.perform(get(url).accept(APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+            .andExpect(status().isNotFound());
     }
 
     @Test
@@ -965,12 +966,12 @@ public class AlgorithmControllerTest {
         doReturn(applicationArea).when(applicationAreaService).findById(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .getApplicationAreaOfAlgorithm(UUID.randomUUID(), applicationArea.getId()));
+            .getApplicationAreaOfAlgorithm(UUID.randomUUID(), applicationArea.getId()));
         mockMvc.perform(get(url).accept(APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value(applicationArea.getName()))
-                .andExpect(jsonPath("$.id").value(applicationArea.getId().toString()))
-                ;
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.name").value(applicationArea.getName()))
+            .andExpect(jsonPath("$.id").value(applicationArea.getId().toString()))
+        ;
     }
 
     @Test
@@ -980,9 +981,9 @@ public class AlgorithmControllerTest {
         doThrow(NoSuchElementException.class).when(applicationAreaService).findById(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .getApplicationAreaOfAlgorithm(UUID.randomUUID(), UUID.randomUUID()));
+            .getApplicationAreaOfAlgorithm(UUID.randomUUID(), UUID.randomUUID()));
         mockMvc.perform(get(url).accept(APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+            .andExpect(status().isNotFound());
     }
 
     @Test
@@ -994,10 +995,10 @@ public class AlgorithmControllerTest {
         applicationAreaDto.setId(UUID.randomUUID());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .linkAlgorithmAndApplicationArea(UUID.randomUUID(), null));
+            .linkAlgorithmAndApplicationArea(UUID.randomUUID(), null));
         mockMvc.perform(post(url).accept(APPLICATION_JSON)
-                .content(mapper.writeValueAsString(applicationAreaDto)).contentType(APPLICATION_JSON))
-                .andExpect(status().isNoContent());
+            .content(mapper.writeValueAsString(applicationAreaDto)).contentType(APPLICATION_JSON))
+            .andExpect(status().isNoContent());
     }
 
     @Test
@@ -1007,10 +1008,10 @@ public class AlgorithmControllerTest {
         applicationAreaDto.setId(null);
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .linkAlgorithmAndApplicationArea(UUID.randomUUID(), null));
+            .linkAlgorithmAndApplicationArea(UUID.randomUUID(), null));
         mockMvc.perform(post(url).accept(APPLICATION_JSON)
-                .content(mapper.writeValueAsString(applicationAreaDto)).contentType(APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+            .content(mapper.writeValueAsString(applicationAreaDto)).contentType(APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -1022,10 +1023,10 @@ public class AlgorithmControllerTest {
         applicationAreaDto.setId(UUID.randomUUID());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .linkAlgorithmAndApplicationArea(UUID.randomUUID(), null));
+            .linkAlgorithmAndApplicationArea(UUID.randomUUID(), null));
         mockMvc.perform(post(url).accept(APPLICATION_JSON)
-                .content(mapper.writeValueAsString(applicationAreaDto)).contentType(APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+            .content(mapper.writeValueAsString(applicationAreaDto)).contentType(APPLICATION_JSON))
+            .andExpect(status().isNotFound());
     }
 
     @Test
@@ -1037,10 +1038,10 @@ public class AlgorithmControllerTest {
         applicationAreaDto.setId(UUID.randomUUID());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .linkAlgorithmAndApplicationArea(UUID.randomUUID(), null));
+            .linkAlgorithmAndApplicationArea(UUID.randomUUID(), null));
         mockMvc.perform(post(url).accept(APPLICATION_JSON)
-                .content(mapper.writeValueAsString(applicationAreaDto)).contentType(APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+            .content(mapper.writeValueAsString(applicationAreaDto)).contentType(APPLICATION_JSON))
+            .andExpect(status().isNotFound());
     }
 
     @Test
@@ -1049,9 +1050,9 @@ public class AlgorithmControllerTest {
         doNothing().when(linkingService).unlinkAlgorithmAndApplicationArea(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .unlinkAlgorithmAndApplicationArea(UUID.randomUUID(), UUID.randomUUID()));
+            .unlinkAlgorithmAndApplicationArea(UUID.randomUUID(), UUID.randomUUID()));
         mockMvc.perform(delete(url).accept(APPLICATION_JSON))
-                .andExpect(status().isNoContent());
+            .andExpect(status().isNoContent());
     }
 
     @Test
@@ -1060,9 +1061,9 @@ public class AlgorithmControllerTest {
         doThrow(new NoSuchElementException()).when(linkingService).unlinkAlgorithmAndApplicationArea(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .unlinkAlgorithmAndApplicationArea(UUID.randomUUID(), UUID.randomUUID()));
+            .unlinkAlgorithmAndApplicationArea(UUID.randomUUID(), UUID.randomUUID()));
         mockMvc.perform(delete(url).accept(APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+            .andExpect(status().isNotFound());
     }
 
     @Test
@@ -1071,9 +1072,9 @@ public class AlgorithmControllerTest {
         doThrow(new NoSuchElementException()).when(linkingService).unlinkAlgorithmAndApplicationArea(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .unlinkAlgorithmAndApplicationArea(UUID.randomUUID(), UUID.randomUUID()));
+            .unlinkAlgorithmAndApplicationArea(UUID.randomUUID(), UUID.randomUUID()));
         mockMvc.perform(delete(url).accept(APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+            .andExpect(status().isNotFound());
     }
 
     @Test
@@ -1082,10 +1083,10 @@ public class AlgorithmControllerTest {
         doReturn(Page.empty()).when(implementationService).findByImplementedAlgorithm(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .getImplementationsOfAlgorithm(UUID.randomUUID(), ListParameters.getDefault()));
+            .getImplementationsOfAlgorithm(UUID.randomUUID(), ListParameters.getDefault()));
 
         mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+            .andExpect(status().isOk());
     }
 
     @Test
@@ -1102,16 +1103,16 @@ public class AlgorithmControllerTest {
         doReturn(new PageImpl<>(inputList)).when(implementationService).findByImplementedAlgorithm(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .getImplementationsOfAlgorithm(UUID.randomUUID(), ListParameters.getDefault()));
+            .getImplementationsOfAlgorithm(UUID.randomUUID(), ListParameters.getDefault()));
 
         var mvcResult = mockMvc.perform(get(url)
-                .accept(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk()).andReturn();
 
         var dtoElements = ObjectMapperUtils.mapResponseToList(
-                mvcResult.getResponse().getContentAsString(),
-                "implementations",
-                Implementation.class
+            mvcResult.getResponse().getContentAsString(),
+            "implementations",
+            Implementation.class
         );
         assertThat(dtoElements.size()).isEqualTo(inputList.size());
         // Ensure every element in the input array also exists in the output array.
@@ -1124,13 +1125,13 @@ public class AlgorithmControllerTest {
     @SneakyThrows
     void getComputeResourcePropertiesOfAlgorithm_EmptyList_returnOk() {
         doReturn(new PageImpl<>(List.of())).when(computeResourcePropertyService)
-                .findComputeResourcePropertiesOfAlgorithm(any(), any());
+            .findComputeResourcePropertiesOfAlgorithm(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .getComputeResourcePropertiesOfAlgorithm( UUID.randomUUID(), ListParameters.getDefault()));
+            .getComputeResourcePropertiesOfAlgorithm(UUID.randomUUID(), ListParameters.getDefault()));
         mockMvc.perform(get(url).accept(APPLICATION_JSON))
-                .andExpect(jsonPath("$._embedded.computeResourceProperties").doesNotExist())
-                .andExpect(status().isOk());
+            .andExpect(jsonPath("$._embedded.computeResourceProperties").doesNotExist())
+            .andExpect(status().isOk());
     }
 
     @Test
@@ -1146,26 +1147,26 @@ public class AlgorithmControllerTest {
         res.setId(UUID.randomUUID());
 
         doReturn(new PageImpl<>(List.of(res))).when(computeResourcePropertyService)
-                .findComputeResourcePropertiesOfAlgorithm(any(), any());
+            .findComputeResourcePropertiesOfAlgorithm(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .getComputeResourcePropertiesOfAlgorithm( UUID.randomUUID(), ListParameters.getDefault()));
+            .getComputeResourcePropertiesOfAlgorithm(UUID.randomUUID(), ListParameters.getDefault()));
         mockMvc.perform(get(url).accept(APPLICATION_JSON))
-                .andExpect(jsonPath("$._embedded.computeResourceProperties[0].id").value(res.getId().toString()))
-                .andExpect(jsonPath("$._embedded.computeResourceProperties[0].type.id").value(type.getId().toString()))
-                .andExpect(status().isOk());
+            .andExpect(jsonPath("$._embedded.computeResourceProperties[0].id").value(res.getId().toString()))
+            .andExpect(jsonPath("$._embedded.computeResourceProperties[0].type.id").value(type.getId().toString()))
+            .andExpect(status().isOk());
     }
 
     @Test
     @SneakyThrows
     void getComputeResourcePropertiesOfAlgorithm_returnNotFound() {
         doThrow(new NoSuchElementException()).when(computeResourcePropertyService)
-                .findComputeResourcePropertiesOfAlgorithm(any(), any());
+            .findComputeResourcePropertiesOfAlgorithm(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .getComputeResourcePropertiesOfAlgorithm( UUID.randomUUID(), ListParameters.getDefault()));
+            .getComputeResourcePropertiesOfAlgorithm(UUID.randomUUID(), ListParameters.getDefault()));
         mockMvc.perform(get(url).accept(APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+            .andExpect(status().isNotFound());
     }
 
     @Test
@@ -1183,14 +1184,12 @@ public class AlgorithmControllerTest {
         doReturn(res).when(computeResourcePropertyService).findById(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .getComputeResourcePropertyOfAlgorithm( UUID.randomUUID(), res.getId()));
+            .getComputeResourcePropertyOfAlgorithm(UUID.randomUUID(), res.getId()));
         mockMvc.perform(get(url).accept(APPLICATION_JSON))
-                .andExpect(jsonPath("$.id").value(res.getId().toString()))
-                .andExpect(jsonPath("$.type.id").value(type.getId().toString()))
-                .andExpect(status().isOk());
+            .andExpect(jsonPath("$.id").value(res.getId().toString()))
+            .andExpect(jsonPath("$.type.id").value(type.getId().toString()))
+            .andExpect(status().isOk());
     }
-
-
 
     @Test
     @SneakyThrows
@@ -1198,9 +1197,9 @@ public class AlgorithmControllerTest {
         doThrow(new NoSuchElementException()).when(computeResourcePropertyService).findById(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .getComputeResourcePropertyOfAlgorithm( UUID.randomUUID(), UUID.randomUUID()));
+            .getComputeResourcePropertyOfAlgorithm(UUID.randomUUID(), UUID.randomUUID()));
         mockMvc.perform(get(url).accept(APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+            .andExpect(status().isNotFound());
     }
 
     @Test
@@ -1209,9 +1208,9 @@ public class AlgorithmControllerTest {
         doNothing().when(computeResourcePropertyService).delete(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .deleteComputeResourcePropertyOfAlgorithm( UUID.randomUUID(), UUID.randomUUID()));
+            .deleteComputeResourcePropertyOfAlgorithm(UUID.randomUUID(), UUID.randomUUID()));
         mockMvc.perform(delete(url).accept(APPLICATION_JSON))
-                .andExpect(status().isNoContent());
+            .andExpect(status().isNoContent());
     }
 
     @Test
@@ -1220,9 +1219,9 @@ public class AlgorithmControllerTest {
         doThrow(new NoSuchElementException()).when(computeResourcePropertyService).delete(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .deleteComputeResourcePropertyOfAlgorithm( UUID.randomUUID(), UUID.randomUUID()));
+            .deleteComputeResourcePropertyOfAlgorithm(UUID.randomUUID(), UUID.randomUUID()));
         mockMvc.perform(delete(url).accept(APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+            .andExpect(status().isNotFound());
     }
 
     @Test
@@ -1246,15 +1245,15 @@ public class AlgorithmControllerTest {
         doReturn(res).when(computeResourcePropertyService).addComputeResourcePropertyToAlgorithm(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .createComputeResourcePropertyForAlgorithm( UUID.randomUUID(), null));
+            .createComputeResourcePropertyForAlgorithm(UUID.randomUUID(), null));
         mockMvc.perform(
-                post(url)
-                        .accept(APPLICATION_JSON)
-                        .contentType(APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(resDto))
+            post(url)
+                .accept(APPLICATION_JSON)
+                .contentType(APPLICATION_JSON)
+                .content(mapper.writeValueAsString(resDto))
         ).andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(res.getId().toString()))
-                .andExpect(jsonPath("$.type.id").value(type.getId().toString()));
+            .andExpect(jsonPath("$.id").value(res.getId().toString()))
+            .andExpect(jsonPath("$.type.id").value(type.getId().toString()));
     }
 
     @Test
@@ -1263,12 +1262,12 @@ public class AlgorithmControllerTest {
         var resDto = new ComputeResourcePropertyDto();
         resDto.setValue("test");
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .createComputeResourcePropertyForAlgorithm( UUID.randomUUID(), null));
+            .createComputeResourcePropertyForAlgorithm(UUID.randomUUID(), null));
         mockMvc.perform(
-                post(url)
-                        .accept(APPLICATION_JSON)
-                        .contentType(APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(resDto))
+            post(url)
+                .accept(APPLICATION_JSON)
+                .contentType(APPLICATION_JSON)
+                .content(mapper.writeValueAsString(resDto))
         ).andExpect(status().isBadRequest());
     }
 
@@ -1276,7 +1275,7 @@ public class AlgorithmControllerTest {
     @SneakyThrows
     void createComputeResourcePropertyForAlgorithm_returnNotFound() {
         doThrow(new NoSuchElementException()).when(computeResourcePropertyService)
-                .addComputeResourcePropertyToAlgorithm(any(), any());
+            .addComputeResourcePropertyToAlgorithm(any(), any());
 
         var typeDto = new ComputeResourcePropertyTypeDto();
         typeDto.setId(UUID.randomUUID());
@@ -1285,12 +1284,12 @@ public class AlgorithmControllerTest {
         resDto.setType(typeDto);
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .createComputeResourcePropertyForAlgorithm( UUID.randomUUID(), null));
+            .createComputeResourcePropertyForAlgorithm(UUID.randomUUID(), null));
         mockMvc.perform(
-                post(url)
-                        .accept(APPLICATION_JSON)
-                        .contentType(APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(resDto))
+            post(url)
+                .accept(APPLICATION_JSON)
+                .contentType(APPLICATION_JSON)
+                .content(mapper.writeValueAsString(resDto))
         ).andExpect(status().isNotFound());
     }
 
@@ -1316,15 +1315,15 @@ public class AlgorithmControllerTest {
         doReturn(res).when(computeResourcePropertyService).update(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .updateComputeResourcePropertyOfAlgorithm( UUID.randomUUID(), res.getId(), null));
+            .updateComputeResourcePropertyOfAlgorithm(UUID.randomUUID(), res.getId(), null));
         mockMvc.perform(
-                put(url)
-                        .accept(APPLICATION_JSON)
-                        .contentType(APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(resDto))
+            put(url)
+                .accept(APPLICATION_JSON)
+                .contentType(APPLICATION_JSON)
+                .content(mapper.writeValueAsString(resDto))
         ).andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(res.getId().toString()))
-                .andExpect(jsonPath("$.type.id").value(type.getId().toString()));
+            .andExpect(jsonPath("$.id").value(res.getId().toString()))
+            .andExpect(jsonPath("$.type.id").value(type.getId().toString()));
     }
 
     @Test
@@ -1334,16 +1333,14 @@ public class AlgorithmControllerTest {
         resDto.setValue("123");
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .updateComputeResourcePropertyOfAlgorithm( UUID.randomUUID(), UUID.randomUUID(), null));
+            .updateComputeResourcePropertyOfAlgorithm(UUID.randomUUID(), UUID.randomUUID(), null));
         mockMvc.perform(
-                put(url)
-                        .accept(APPLICATION_JSON)
-                        .contentType(APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(resDto))
+            put(url)
+                .accept(APPLICATION_JSON)
+                .contentType(APPLICATION_JSON)
+                .content(mapper.writeValueAsString(resDto))
         ).andExpect(status().isBadRequest());
     }
-
-
 
     @Test
     @SneakyThrows
@@ -1357,12 +1354,12 @@ public class AlgorithmControllerTest {
         resDto.setType(typeDto);
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .updateComputeResourcePropertyOfAlgorithm(UUID.randomUUID(), UUID.randomUUID(), null));
+            .updateComputeResourcePropertyOfAlgorithm(UUID.randomUUID(), UUID.randomUUID(), null));
         mockMvc.perform(
-                put(url)
-                        .accept(APPLICATION_JSON)
-                        .contentType(APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(resDto))
+            put(url)
+                .accept(APPLICATION_JSON)
+                .contentType(APPLICATION_JSON)
+                .content(mapper.writeValueAsString(resDto))
         ).andExpect(status().isNotFound());
     }
 
@@ -1372,17 +1369,17 @@ public class AlgorithmControllerTest {
         initializeAlgorithms();
 
         doReturn(new PageImpl<>(new ArrayList<>(algorithm1.getRelatedPatterns())))
-                .when(algorithmService).findLinkedPatternRelations(any(), any());
+            .when(algorithmService).findLinkedPatternRelations(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .getPatternRelationsOfAlgorithm(UUID.randomUUID(), ListParameters.getDefault()));
+            .getPatternRelationsOfAlgorithm(UUID.randomUUID(), ListParameters.getDefault()));
 
         MvcResult result = mockMvc.perform(
-                get(url).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk()).andReturn();
+            get(url).accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk()).andReturn();
 
         var resultList = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(),
-                "patternRelations", PatternRelationDto.class);
+            "patternRelations", PatternRelationDto.class);
         assertEquals(2, resultList.size());
     }
 
@@ -1394,11 +1391,11 @@ public class AlgorithmControllerTest {
         doThrow(NoSuchElementException.class).when(algorithmService).findLinkedPatternRelations(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .getPatternRelationsOfAlgorithm(UUID.randomUUID(), ListParameters.getDefault()));
+            .getPatternRelationsOfAlgorithm(UUID.randomUUID(), ListParameters.getDefault()));
 
         mockMvc.perform(
-                get(url).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+            get(url).accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNotFound());
     }
 
     @Test
@@ -1424,17 +1421,17 @@ public class AlgorithmControllerTest {
         doReturn(patternRelation).when(patternRelationService).create(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .createPatternRelationForAlgorithm(algorithm.getId(), null));
+            .createPatternRelationForAlgorithm(algorithm.getId(), null));
 
         mockMvc.perform(post(url).accept(APPLICATION_JSON)
-                .contentType(APPLICATION_JSON)
-                .content(mapper.writeValueAsString(patternRelationDto))
+            .contentType(APPLICATION_JSON)
+            .content(mapper.writeValueAsString(patternRelationDto))
         ).andExpect(jsonPath("$.id").isEmpty())
-                .andExpect(jsonPath("$.algorithmId").value(algorithm.getId().toString()))
-                .andExpect(jsonPath("$.patternRelationType.id").value(type.getId().toString()))
-                .andExpect(jsonPath("$.description").value(patternRelation.getDescription()))
-                .andExpect(jsonPath("$.pattern").value(patternRelation.getPattern().toString()))
-                .andExpect(status().isCreated());
+            .andExpect(jsonPath("$.algorithmId").value(algorithm.getId().toString()))
+            .andExpect(jsonPath("$.patternRelationType.id").value(type.getId().toString()))
+            .andExpect(jsonPath("$.description").value(patternRelation.getDescription()))
+            .andExpect(jsonPath("$.pattern").value(patternRelation.getPattern().toString()))
+            .andExpect(status().isCreated());
     }
 
     @Test
@@ -1458,11 +1455,11 @@ public class AlgorithmControllerTest {
         PatternRelationDto patternRelationDto = ModelMapperUtils.convert(patternRelation, PatternRelationDto.class);
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .createPatternRelationForAlgorithm(UUID.randomUUID(), null));
+            .createPatternRelationForAlgorithm(UUID.randomUUID(), null));
 
         mockMvc.perform(post(url).accept(APPLICATION_JSON)
-                .contentType(APPLICATION_JSON)
-                .content(mapper.writeValueAsString(patternRelationDto))
+            .contentType(APPLICATION_JSON)
+            .content(mapper.writeValueAsString(patternRelationDto))
         ).andExpect(status().isBadRequest());
     }
 
@@ -1484,11 +1481,11 @@ public class AlgorithmControllerTest {
         doThrow(NoSuchElementException.class).when(patternRelationService).create(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .createPatternRelationForAlgorithm(algorithmId, null));
+            .createPatternRelationForAlgorithm(algorithmId, null));
 
         mockMvc.perform(post(url).accept(APPLICATION_JSON)
-                .contentType(APPLICATION_JSON)
-                .content(mapper.writeValueAsString(patternRelationDto))
+            .contentType(APPLICATION_JSON)
+            .content(mapper.writeValueAsString(patternRelationDto))
         ).andExpect(status().isNotFound());
     }
 
@@ -1516,17 +1513,17 @@ public class AlgorithmControllerTest {
         doReturn(patternRelation).when(patternRelationService).update(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .updatePatternRelationOfAlgorithm(algorithm.getId(), patternRelation.getId(), null));
+            .updatePatternRelationOfAlgorithm(algorithm.getId(), patternRelation.getId(), null));
 
         mockMvc.perform(put(url).accept(APPLICATION_JSON)
-                .contentType(APPLICATION_JSON)
-                .content(mapper.writeValueAsString(patternRelationDto))
+            .contentType(APPLICATION_JSON)
+            .content(mapper.writeValueAsString(patternRelationDto))
         ).andExpect(jsonPath("$.id").value(patternRelation.getId().toString()))
-                .andExpect(jsonPath("$.algorithmId").value(algorithm.getId().toString()))
-                .andExpect(jsonPath("$.patternRelationType.id").value(type.getId().toString()))
-                .andExpect(jsonPath("$.description").value(patternRelation.getDescription()))
-                .andExpect(jsonPath("$.pattern").value(patternRelation.getPattern().toString()))
-                .andExpect(status().isOk());
+            .andExpect(jsonPath("$.algorithmId").value(algorithm.getId().toString()))
+            .andExpect(jsonPath("$.patternRelationType.id").value(type.getId().toString()))
+            .andExpect(jsonPath("$.description").value(patternRelation.getDescription()))
+            .andExpect(jsonPath("$.pattern").value(patternRelation.getPattern().toString()))
+            .andExpect(status().isOk());
     }
 
     @Test
@@ -1551,11 +1548,11 @@ public class AlgorithmControllerTest {
         PatternRelationDto patternRelationDto = ModelMapperUtils.convert(patternRelation, PatternRelationDto.class);
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .updatePatternRelationOfAlgorithm(UUID.randomUUID(), patternRelation.getId(), null));
+            .updatePatternRelationOfAlgorithm(UUID.randomUUID(), patternRelation.getId(), null));
 
         mockMvc.perform(put(url).accept(APPLICATION_JSON)
-                .contentType(APPLICATION_JSON)
-                .content(mapper.writeValueAsString(patternRelationDto))
+            .contentType(APPLICATION_JSON)
+            .content(mapper.writeValueAsString(patternRelationDto))
         ).andExpect(status().isBadRequest());
     }
 
@@ -1578,11 +1575,11 @@ public class AlgorithmControllerTest {
         doThrow(NoSuchElementException.class).when(patternRelationService).update(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .updatePatternRelationOfAlgorithm(algorithmId, patternRelationDto.getId(), null));
+            .updatePatternRelationOfAlgorithm(algorithmId, patternRelationDto.getId(), null));
 
         mockMvc.perform(put(url).accept(APPLICATION_JSON)
-                .contentType(APPLICATION_JSON)
-                .content(mapper.writeValueAsString(patternRelationDto))
+            .contentType(APPLICATION_JSON)
+            .content(mapper.writeValueAsString(patternRelationDto))
         ).andExpect(status().isNotFound());
     }
 
@@ -1593,10 +1590,10 @@ public class AlgorithmControllerTest {
         doNothing().when(patternRelationService).delete(UUID.randomUUID());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .deletePatternRelationOfAlgorithm(UUID.randomUUID(), UUID.randomUUID()));
+            .deletePatternRelationOfAlgorithm(UUID.randomUUID(), UUID.randomUUID()));
 
         mockMvc.perform(delete(url).accept(APPLICATION_JSON))
-                .andExpect(status().isNoContent());
+            .andExpect(status().isNoContent());
     }
 
     @Test
@@ -1605,10 +1602,10 @@ public class AlgorithmControllerTest {
         doThrow(NoSuchElementException.class).when(patternRelationService).checkIfAlgorithmIsInPatternRelation(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .deletePatternRelationOfAlgorithm(UUID.randomUUID(), UUID.randomUUID()));
+            .deletePatternRelationOfAlgorithm(UUID.randomUUID(), UUID.randomUUID()));
 
         mockMvc.perform(delete(url).accept(APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+            .andExpect(status().isNotFound());
     }
 
     @Test
@@ -1634,15 +1631,15 @@ public class AlgorithmControllerTest {
         doReturn(patternRelation).when(patternRelationService).findById(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .getPatternRelationOfAlgorithm(algorithm.getId(), patternRelation.getId()));
+            .getPatternRelationOfAlgorithm(algorithm.getId(), patternRelation.getId()));
 
         mockMvc.perform(get(url).accept(APPLICATION_JSON))
-                .andExpect(jsonPath("$.id").value(patternRelation.getId().toString()))
-                .andExpect(jsonPath("$.algorithmId").value(algorithm.getId().toString()))
-                .andExpect(jsonPath("$.patternRelationType.id").value(type.getId().toString()))
-                .andExpect(jsonPath("$.description").value(patternRelation.getDescription()))
-                .andExpect(jsonPath("$.pattern").value(patternRelation.getPattern().toString()))
-                .andExpect(status().isOk());
+            .andExpect(jsonPath("$.id").value(patternRelation.getId().toString()))
+            .andExpect(jsonPath("$.algorithmId").value(algorithm.getId().toString()))
+            .andExpect(jsonPath("$.patternRelationType.id").value(type.getId().toString()))
+            .andExpect(jsonPath("$.description").value(patternRelation.getDescription()))
+            .andExpect(jsonPath("$.pattern").value(patternRelation.getPattern().toString()))
+            .andExpect(status().isOk());
     }
 
     @Test
@@ -1668,7 +1665,7 @@ public class AlgorithmControllerTest {
         doThrow(NoSuchElementException.class).when(patternRelationService).findById(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .getPatternRelationOfAlgorithm(algorithm.getId(), patternRelation.getId()));
+            .getPatternRelationOfAlgorithm(algorithm.getId(), patternRelation.getId()));
 
         mockMvc.perform(get(url).accept(APPLICATION_JSON)).andExpect(status().isNotFound());
     }
@@ -1692,7 +1689,7 @@ public class AlgorithmControllerTest {
         when(sketchService.addSketchToAlgorithm(algorithmId, file, description, baseURL)).thenReturn(sketch);
 
         final String path = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .uploadSketch(algorithmId, null, description, baseURL));
+            .uploadSketch(algorithmId, null, description, baseURL));
 
         // call
         ResultActions resultActions = mockMvc.perform(multipart(path).file(file)).andExpect(status().isOk());
@@ -1715,7 +1712,7 @@ public class AlgorithmControllerTest {
         when(sketchService.findByAlgorithm(algorithmId)).thenReturn(sketches);
 
         final String path = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .getSketches(algorithmId));
+            .getSketches(algorithmId));
 
         // call
         final ResultActions resultActions = mockMvc.perform(get(path)).andExpect(status().isOk());
@@ -1737,7 +1734,7 @@ public class AlgorithmControllerTest {
         final UUID sketchId = UUID.randomUUID();
 
         final String path = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .deleteSketch(algorithmId, sketchId));
+            .deleteSketch(algorithmId, sketchId));
 
         // call
         mockMvc.perform(delete(path)).andExpect(status().isNoContent());
@@ -1759,18 +1756,18 @@ public class AlgorithmControllerTest {
         when(sketchService.findById(sketchId)).thenReturn(sketch);
 
         final String url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .getSketch(algorithmId, sketchId));
+            .getSketch(algorithmId, sketchId));
 
         // call
         MvcResult result = mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk()).andReturn();
+            .andExpect(status().isOk()).andReturn();
 
         // test
         Mockito.verify(sketchService, times(1)).findById(sketchId);
 
         EntityModel<SketchDto> response = mapper.readValue(result.getResponse().getContentAsString(),
-                new TypeReference<>() {
-                });
+            new TypeReference<>() {
+            });
         assertEquals(response.getContent().getId(), sketch.getId());
     }
 
@@ -1787,14 +1784,14 @@ public class AlgorithmControllerTest {
         doReturn(sketch).when(sketchService).update(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .updateSketch(algorithmId, sketchId, null));
+            .updateSketch(algorithmId, sketchId, null));
 
         mockMvc.perform(put(url)
-                        .accept(APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(sketchDto))
-                        .contentType(APPLICATION_JSON)
+            .accept(APPLICATION_JSON)
+            .content(mapper.writeValueAsString(sketchDto))
+            .contentType(APPLICATION_JSON)
         ).andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(sketch.getId().toString()));
+            .andExpect(jsonPath("$.id").value(sketch.getId().toString()));
     }
 
     @Test
@@ -1816,7 +1813,7 @@ public class AlgorithmControllerTest {
         doReturn(image).when(sketchService).getImageBySketch(sketchId);
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .getSketchImage(algorithmId, sketchId));
+            .getSketchImage(algorithmId, sketchId));
 
         // call
         var resultActions = mockMvc.perform(get(url)).andExpect(status().isOk()).andReturn();

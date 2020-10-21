@@ -16,6 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
+
 package org.planqk.atlas.web.controller;
 
 import java.util.UUID;
@@ -37,12 +38,6 @@ import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.ValidationGroups;
-
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
@@ -58,6 +53,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * Controller to access and manipulate publication algorithms.
  */
@@ -71,68 +72,74 @@ import org.springframework.web.bind.annotation.RestController;
 public class PublicationController {
 
     private final PublicationService publicationService;
+
     private final PublicationAssembler publicationAssembler;
+
     private final AlgorithmService algorithmService;
+
     private final AlgorithmAssembler algorithmAssembler;
+
     private final ImplementationService implementationService;
+
     private final ImplementationAssembler implementationAssembler;
+
     private final LinkingService linkingService;
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "200")
+        @ApiResponse(responseCode = "200")
     }, description = "Retrieve all publications.")
     @ListParametersDoc
     @GetMapping
     public ResponseEntity<PagedModel<EntityModel<PublicationDto>>> getPublications(
-            @Parameter(hidden = true) ListParameters listParameters) {
-        var entities = publicationService.findAll(listParameters.getPageable(), listParameters.getSearch());
+        @Parameter(hidden = true) ListParameters listParameters) {
+        final var entities = publicationService.findAll(listParameters.getPageable(), listParameters.getSearch());
         return ResponseEntity.ok(publicationAssembler.toModel(entities));
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "201"),
-            @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body.")
+        @ApiResponse(responseCode = "201"),
+        @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body.")
     }, description = "Define the basic properties of an publication.")
     @PostMapping
     public ResponseEntity<EntityModel<PublicationDto>> createPublication(
-            @Validated(ValidationGroups.Create.class) @RequestBody PublicationDto publicationDto) {
-        Publication publication = publicationService.create(ModelMapperUtils.convert(publicationDto, Publication.class));
+        @Validated(ValidationGroups.Create.class) @RequestBody PublicationDto publicationDto) {
+        final Publication publication = publicationService.create(ModelMapperUtils.convert(publicationDto, Publication.class));
         return new ResponseEntity<>(publicationAssembler.toModel(publication), HttpStatus.CREATED);
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
-            @ApiResponse(responseCode = "404",
-                    description = "Not Found. Publication with given ID doesn't exist.")
+        @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
+        @ApiResponse(responseCode = "404",
+            description = "Not Found. Publication with given ID doesn't exist.")
     }, description = "Update the basic properties of an publication (e.g. title).")
     @PutMapping("/{publicationId}")
     public ResponseEntity<EntityModel<PublicationDto>> updatePublication(
-            @PathVariable UUID publicationId,
-            @Validated(ValidationGroups.Update.class) @RequestBody PublicationDto publicationDto) {
+        @PathVariable UUID publicationId,
+        @Validated(ValidationGroups.Update.class) @RequestBody PublicationDto publicationDto) {
         publicationDto.setId(publicationId);
-        Publication publication = publicationService.update(
-                ModelMapperUtils.convert(publicationDto, Publication.class));
+        final Publication publication = publicationService.update(
+            ModelMapperUtils.convert(publicationDto, Publication.class));
         return new ResponseEntity<>(publicationAssembler.toModel(publication), HttpStatus.OK);
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404",
-                    description = "Not Found. Publication with given ID doesn't exist.")
+        @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "400"),
+        @ApiResponse(responseCode = "404",
+            description = "Not Found. Publication with given ID doesn't exist.")
     }, description = "Retrieve a specific publication and its basic properties.")
     @GetMapping("/{publicationId}")
     public ResponseEntity<EntityModel<PublicationDto>> getPublication(@PathVariable UUID publicationId) {
-        Publication publication = publicationService.findById(publicationId);
+        final Publication publication = publicationService.findById(publicationId);
         return new ResponseEntity<>(publicationAssembler.toModel(publication), HttpStatus.OK);
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "204"),
-            @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404",
-                    description = "Not Found. Publication with given ID doesn't exist.")
+        @ApiResponse(responseCode = "204"),
+        @ApiResponse(responseCode = "400"),
+        @ApiResponse(responseCode = "404",
+            description = "Not Found. Publication with given ID doesn't exist.")
     }, description = "Delete an publication. This also removes all references to other entities (e.g. algorithm).")
     @DeleteMapping("/{publicationId}")
     public ResponseEntity<Void> deletePublication(@PathVariable UUID publicationId) {
@@ -141,97 +148,97 @@ public class PublicationController {
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404",
-                    description = "Not Found. Publication with given ID doesn't exist.")
+        @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "400"),
+        @ApiResponse(responseCode = "404",
+            description = "Not Found. Publication with given ID doesn't exist.")
     }, description = "Retrieve referenced algorithms of an publication. If none are found an empty list is returned.")
     @ListParametersDoc
     @GetMapping("/{publicationId}/" + Constants.ALGORITHMS)
     public ResponseEntity<PagedModel<EntityModel<AlgorithmDto>>> getAlgorithmsOfPublication(
-            @PathVariable UUID publicationId,
-            @Parameter(hidden = true) ListParameters params) {
-        var publications = publicationService.findLinkedAlgorithms(publicationId, params.getPageable());
+        @PathVariable UUID publicationId,
+        @Parameter(hidden = true) ListParameters params) {
+        final var publications = publicationService.findLinkedAlgorithms(publicationId, params.getPageable());
         return ResponseEntity.ok(algorithmAssembler.toModel(publications));
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "204"),
-            @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
-            @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or publication with given IDs don't exist or " +
-                    "reference was already added.")
+        @ApiResponse(responseCode = "204"),
+        @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
+        @ApiResponse(responseCode = "404",
+            description = "Not Found. Algorithm or publication with given IDs don't exist or " +
+                "reference was already added.")
     }, description = "Add a reference to an existing algorithm " +
-            "(that was previously created via a POST on e.g. /" + Constants.ALGORITHMS + "). " +
-            "Only the ID is required in the request body, other attributes will be ignored and not changed.")
+        "(that was previously created via a POST on e.g. /" + Constants.ALGORITHMS + "). " +
+        "Only the ID is required in the request body, other attributes will be ignored and not changed.")
     @PostMapping("/{publicationId}/" + Constants.ALGORITHMS)
     public ResponseEntity<Void> linkPublicationAndAlgorithm(
-            @PathVariable UUID publicationId,
-            @Validated({ValidationGroups.IDOnly.class}) @RequestBody AlgorithmDto algorithmDto) {
+        @PathVariable UUID publicationId,
+        @Validated({ValidationGroups.IDOnly.class}) @RequestBody AlgorithmDto algorithmDto) {
         linkingService.linkAlgorithmAndPublication(algorithmDto.getId(), publicationId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "204"),
-            @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or publication with given IDs don't exist or " +
-                    "no reference exists.")
+        @ApiResponse(responseCode = "204"),
+        @ApiResponse(responseCode = "400"),
+        @ApiResponse(responseCode = "404",
+            description = "Not Found. Algorithm or publication with given IDs don't exist or " +
+                "no reference exists.")
     }, description = "Delete a reference to a publication of an algorithm. The reference has to be previously created " +
-            "via a POST on /" + Constants.ALGORITHMS + "/{algorithmId}/" + Constants.PUBLICATIONS + "/{publicationId}).")
+        "via a POST on /" + Constants.ALGORITHMS + "/{algorithmId}/" + Constants.PUBLICATIONS + "/{publicationId}).")
     @DeleteMapping("/{publicationId}/" + Constants.ALGORITHMS + "/{algorithmId}")
     public ResponseEntity<Void> unlinkPublicationAndAlgorithm(
-            @PathVariable UUID algorithmId,
-            @PathVariable UUID publicationId) {
+        @PathVariable UUID algorithmId,
+        @PathVariable UUID publicationId) {
         linkingService.unlinkAlgorithmAndPublication(algorithmId, publicationId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or publication with given IDs don't exist.")
+        @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "400"),
+        @ApiResponse(responseCode = "404",
+            description = "Not Found. Algorithm or publication with given IDs don't exist.")
     }, description = "Retrieve a specific algorithm of a publication.")
     @GetMapping("/{publicationId}/" + Constants.ALGORITHMS + "/{algorithmId}")
     public ResponseEntity<EntityModel<AlgorithmDto>> getAlgorithmOfPublication(
-            @PathVariable UUID publicationId,
-            @PathVariable UUID algorithmId) {
+        @PathVariable UUID publicationId,
+        @PathVariable UUID algorithmId) {
         publicationService.checkIfAlgorithmIsLinkedToPublication(publicationId, algorithmId);
 
-        var algorithm = algorithmService.findById(algorithmId);
+        final var algorithm = algorithmService.findById(algorithmId);
         return ResponseEntity.ok(algorithmAssembler.toModel(algorithm));
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404",
-                    description = "Not Found. Implementation or publication with given IDs don't exist.")
+        @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "400"),
+        @ApiResponse(responseCode = "404",
+            description = "Not Found. Implementation or publication with given IDs don't exist.")
     }, description = "Retrieve referenced implementations of an publication. If none are found an empty list is returned.")
     @ListParametersDoc
     @GetMapping("/{publicationId}/" + Constants.IMPLEMENTATIONS)
     public ResponseEntity<PagedModel<EntityModel<ImplementationDto>>> getImplementationsOfPublication(
-            @PathVariable UUID publicationId,
-            @Parameter(hidden = true) ListParameters params) {
-        var implementations = publicationService.findLinkedImplementations(publicationId, params.getPageable());
+        @PathVariable UUID publicationId,
+        @Parameter(hidden = true) ListParameters params) {
+        final var implementations = publicationService.findLinkedImplementations(publicationId, params.getPageable());
         return ResponseEntity.ok(implementationAssembler.toModel(implementations));
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404",
-                    description = "Not Found. Implementation or publication with given IDs don't exist.")
+        @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "400"),
+        @ApiResponse(responseCode = "404",
+            description = "Not Found. Implementation or publication with given IDs don't exist.")
     }, description = "Retrieve a specific implementation of a publication.")
     @GetMapping("/{publicationId}/" + Constants.IMPLEMENTATIONS + "/{implementationId}")
     public ResponseEntity<EntityModel<ImplementationDto>> getImplementationOfPublication(
-            @PathVariable UUID publicationId,
-            @PathVariable UUID implementationId) {
+        @PathVariable UUID publicationId,
+        @PathVariable UUID implementationId) {
         publicationService.checkIfImplementationIsLinkedToPublication(publicationId, implementationId);
 
-        var implementation = implementationService.findById(implementationId);
+        final var implementation = implementationService.findById(implementationId);
         return ResponseEntity.ok(implementationAssembler.toModel(implementation));
     }
 }

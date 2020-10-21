@@ -19,12 +19,11 @@
 
 package org.planqk.atlas.core.model;
 
-import org.planqk.atlas.core.exceptions.InvalidResourceTypeValueException;
-import org.planqk.atlas.core.util.ValidationUtils;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.planqk.atlas.core.exceptions.InvalidResourceTypeValueException;
+import org.planqk.atlas.core.util.ValidationUtils;
 
 public class ValidationUtilsTest {
 

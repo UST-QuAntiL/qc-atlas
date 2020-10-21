@@ -16,13 +16,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
+
 package org.planqk.atlas.web;
 
 import java.util.List;
 
 import org.planqk.atlas.web.annotation.VersionedRequestHandlerMapping;
 import org.planqk.atlas.web.utils.ListParametersMethodArgumentResolver;
-
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcRegistrations;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -39,14 +39,14 @@ import org.planqk.atlas.core.repository.ProblemTypeRepository;
 import org.planqk.atlas.core.repository.PublicationRepository;
 import org.planqk.atlas.core.util.CollectionUtils;
 import org.planqk.atlas.core.util.ServiceUtils;
-
-import lombok.AllArgsConstructor;
-import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import lombok.AllArgsConstructor;
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -68,6 +68,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     private final ComputeResourcePropertyRepository computeResourcePropertyRepository;
 
     private final PatternRelationService patternRelationService;
+
     private final PatternRelationRepository patternRelationRepository;
 
     @Override
@@ -92,7 +93,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     @Override
     @Transactional
     public Algorithm update(@NonNull Algorithm algorithm) {
-        Algorithm persistedAlgorithm = findById(algorithm.getId());
+        final Algorithm persistedAlgorithm = findById(algorithm.getId());
 
         persistedAlgorithm.setName(algorithm.getName());
         persistedAlgorithm.setAcronym(algorithm.getAcronym());
@@ -106,8 +107,8 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         persistedAlgorithm.setComputationModel(algorithm.getComputationModel());
 
         if (algorithm instanceof QuantumAlgorithm) {
-            QuantumAlgorithm quantumAlgorithm = (QuantumAlgorithm) algorithm;
-            QuantumAlgorithm persistedQuantumAlgorithm = (QuantumAlgorithm) persistedAlgorithm;
+            final QuantumAlgorithm quantumAlgorithm = (QuantumAlgorithm) algorithm;
+            final QuantumAlgorithm persistedQuantumAlgorithm = (QuantumAlgorithm) persistedAlgorithm;
 
             persistedQuantumAlgorithm.setNisqReady(quantumAlgorithm.isNisqReady());
             persistedQuantumAlgorithm.setQuantumComputationModel(quantumAlgorithm.getQuantumComputationModel());
@@ -122,7 +123,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     @Override
     @Transactional
     public void delete(@NonNull UUID algorithmId) {
-        Algorithm algorithm = findById(algorithmId);
+        final Algorithm algorithm = findById(algorithmId);
 
         removeReferences(algorithm);
 
@@ -132,7 +133,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     private void removeReferences(@NonNull Algorithm algorithm) {
         // delete related implementations
         algorithm.getImplementations().forEach(
-                implementation -> implementationService.delete(implementation.getId()));
+            implementation -> implementationService.delete(implementation.getId()));
 
         // delete compute resource property
         algorithm.getRequiredComputeResourceProperties().forEach(computeResourcePropertyRepository::delete);
@@ -142,19 +143,19 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 
         // delete related pattern relations
         algorithm.getRelatedPatterns().forEach(
-                patternRelation -> patternRelationService.delete(patternRelation.getId()));
+            patternRelation -> patternRelationService.delete(patternRelation.getId()));
 
         // remove links to publications
         CollectionUtils.forEachOnCopy(algorithm.getPublications(),
-                publication -> publication.removeAlgorithm(algorithm));
+            publication -> publication.removeAlgorithm(algorithm));
 
         // remove links to application areas
         CollectionUtils.forEachOnCopy(algorithm.getApplicationAreas(),
-                applicationArea -> applicationArea.removeAlgorithm(algorithm));
+            applicationArea -> applicationArea.removeAlgorithm(algorithm));
 
         // remove links to problem types
         CollectionUtils.forEachOnCopy(algorithm.getProblemTypes(),
-                problemType -> problemType.removeAlgorithm(algorithm));
+            problemType -> problemType.removeAlgorithm(algorithm));
 
         // remove link to tag
         CollectionUtils.forEachOnCopy(algorithm.getTags(), tag -> tag.removeAlgorithm(algorithm));
@@ -198,33 +199,33 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     @Override
     public void checkIfPublicationIsLinkedToAlgorithm(UUID algorithmId, UUID publicationId) {
         ServiceUtils.throwIfNotExists(publicationId, Publication.class, publicationRepository);
-        Algorithm algorithm = findById(algorithmId);
+        final Algorithm algorithm = findById(algorithmId);
 
         if (!ServiceUtils.containsElementWithId(algorithm.getPublications(), publicationId)) {
             throw new NoSuchElementException("Publication with ID \"" + publicationId
-                    + "\" is not linked to Algorithm with ID \"" + algorithmId + "\"");
+                + "\" is not linked to Algorithm with ID \"" + algorithmId + "\"");
         }
     }
 
     @Override
     public void checkIfProblemTypeIsLinkedToAlgorithm(UUID algorithmId, UUID problemTypeId) {
         ServiceUtils.throwIfNotExists(problemTypeId, ProblemType.class, problemTypeRepository);
-        Algorithm algorithm = findById(algorithmId);
+        final Algorithm algorithm = findById(algorithmId);
 
         if (!ServiceUtils.containsElementWithId(algorithm.getProblemTypes(), problemTypeId)) {
             throw new NoSuchElementException("ProblemType with ID \"" + problemTypeId
-                    + "\" is not linked to Algorithm with ID \"" + algorithmId + "\"");
+                + "\" is not linked to Algorithm with ID \"" + algorithmId + "\"");
         }
     }
 
     @Override
     public void checkIfApplicationAreaIsLinkedToAlgorithm(UUID algorithmId, UUID applicationAreaId) {
         ServiceUtils.throwIfNotExists(applicationAreaId, ApplicationArea.class, applicationAreaRepository);
-        Algorithm algorithm = findById(algorithmId);
+        final Algorithm algorithm = findById(algorithmId);
 
         if (!ServiceUtils.containsElementWithId(algorithm.getApplicationAreas(), applicationAreaId)) {
             throw new NoSuchElementException("ApplicationArea with ID \"" + applicationAreaId
-                    + "\" is not linked to Algorithm with ID \"" + algorithmId + "\"");
+                + "\" is not linked to Algorithm with ID \"" + algorithmId + "\"");
         }
     }
 
