@@ -34,7 +34,8 @@ public interface LinkingService {
      * If either the {@link org.planqk.atlas.core.model.Algorithm} or the {@link org.planqk.atlas.core.model.Publication} with given IDs could not be
      * found a {@link java.util.NoSuchElementException} is thrown.
      * <p>
-     * If both entities exist but they are already linked this method will throw an {@link org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException}.
+     * If both entities exist but they are already linked this method will throw an
+     * {@link org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException}.
      *
      * @param algorithmId   The ID of the {@link org.planqk.atlas.core.model.Algorithm} we want to link
      * @param publicationId The ID of the {@link org.planqk.atlas.core.model.Publication} we want to link
@@ -49,7 +50,8 @@ public interface LinkingService {
      * If either the {@link org.planqk.atlas.core.model.Algorithm} or the {@link org.planqk.atlas.core.model.Publication} with given IDs could not be
      * found a {@link java.util.NoSuchElementException} is thrown.
      * <p>
-     * If both entities exist but they are not linked beforehand this method will throw an {@link org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException}.
+     * If both entities exist but they are not linked beforehand this method will throw an
+     * {@link org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException}.
      *
      * @param algorithmId   The ID of the {@link org.planqk.atlas.core.model.Algorithm} we want to unlink
      * @param publicationId The ID of the {@link org.planqk.atlas.core.model.Publication} we want to unlink
@@ -63,7 +65,8 @@ public interface LinkingService {
      * If either the {@link org.planqk.atlas.core.model.Algorithm} or the {@link org.planqk.atlas.core.model.ProblemType} with given IDs could not be
      * found a {@link java.util.NoSuchElementException} is thrown.
      * <p>
-     * If both entities exist but they are already linked this method will throw an {@link org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException}.
+     * If both entities exist but they are already linked this method will throw an
+     * {@link org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException}.
      *
      * @param algorithmId   The ID of the {@link org.planqk.atlas.core.model.Algorithm} we want to link
      * @param problemTypeId The ID of the {@link org.planqk.atlas.core.model.ProblemType} we want to link
@@ -78,7 +81,8 @@ public interface LinkingService {
      * If either the {@link org.planqk.atlas.core.model.Algorithm} or the {@link org.planqk.atlas.core.model.ProblemType} with given IDs could not be
      * found a {@link java.util.NoSuchElementException} is thrown.
      * <p>
-     * If both entities exist but they are not linked beforehand this method will throw an {@link org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException}.
+     * If both entities exist but they are not linked beforehand this method will throw an {
+     * @link org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException}.
      *
      * @param algorithmId   The ID of the {@link org.planqk.atlas.core.model.Algorithm} we want to unlink
      * @param problemTypeId The ID of the {@link org.planqk.atlas.core.model.ProblemType} we want to unlink
@@ -92,7 +96,8 @@ public interface LinkingService {
      * If either the {@link org.planqk.atlas.core.model.Algorithm} or the {@link org.planqk.atlas.core.model.ApplicationArea} with given IDs could not
      * be found a {@link java.util.NoSuchElementException} is thrown.
      * <p>
-     * If both entities exist but they are already linked this method will throw an {@link org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException}.
+     * If both entities exist but they are already linked this method will throw an
+     * {@link org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException}.
      *
      * @param algorithmId       The ID of the {@link org.planqk.atlas.core.model.Algorithm} we want to link
      * @param applicationAreaId The ID of the {@link org.planqk.atlas.core.model.ApplicationArea} we want to link
@@ -107,7 +112,8 @@ public interface LinkingService {
      * If either the {@link org.planqk.atlas.core.model.Algorithm} or the {@link org.planqk.atlas.core.model.ApplicationArea} with given IDs could not
      * be found a {@link java.util.NoSuchElementException} is thrown.
      * <p>
-     * If both entities exist but they are not linked beforehand this method will throw an {@link org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException}.
+     * If both entities exist but they are not linked beforehand this method will throw an
+     * {@link org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException}.
      *
      * @param algorithmId       The ID of the {@link org.planqk.atlas.core.model.Algorithm} we want to unlink
      * @param applicationAreaId The ID of the {@link org.planqk.atlas.core.model.ApplicationArea} we want to unlink
@@ -121,7 +127,8 @@ public interface LinkingService {
      * If either the {@link org.planqk.atlas.core.model.Implementation} or the {@link org.planqk.atlas.core.model.Publication} with given IDs could
      * not be found a {@link java.util.NoSuchElementException} is thrown.
      * <p>
-     * If both entities exist but they are already linked this method will throw an {@link org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException}.
+     * If both entities exist but they are already linked this method will throw an
+     * {@link org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException}.
      *
      * @param implementationId The ID of the {@link org.planqk.atlas.core.model.Implementation} we want to link
      * @param publicationId    The ID of the {@link org.planqk.atlas.core.model.Publication} we want to link
@@ -136,7 +143,8 @@ public interface LinkingService {
      * If either the {@link org.planqk.atlas.core.model.Implementation} or the {@link org.planqk.atlas.core.model.Publication} with given IDs could
      * not be found a {@link java.util.NoSuchElementException} is thrown.
      * <p>
-     * If both entities exist but they are not linked beforehand this method will throw an {@link org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException}.
+     * If both entities exist but they are not linked beforehand this method will throw an
+     * {@link org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException}.
      *
      * @param implementationId The ID of the {@link org.planqk.atlas.core.model.Implementation} we want to unlink
      * @param publicationId    The ID of the {@link org.planqk.atlas.core.model.Publication} we want to unlink
@@ -150,7 +158,8 @@ public interface LinkingService {
      * If either the {@link org.planqk.atlas.core.model.Implementation} or the {@link org.planqk.atlas.core.model.SoftwarePlatform} with given IDs
      * could not be found a {@link java.util.NoSuchElementException} is thrown.
      * <p>
-     * If both entities exist but they are already linked this method will throw an {@link org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException}.
+     * If both entities exist but they are already linked this method will throw an
+     * {@link org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException}.
      *
      * @param implementationId   The ID of the {@link org.planqk.atlas.core.model.Implementation} we want to link
      * @param softwarePlatformId The ID of the {@link org.planqk.atlas.core.model.SoftwarePlatform} we want to link
@@ -165,7 +174,8 @@ public interface LinkingService {
      * If either the {@link org.planqk.atlas.core.model.Implementation} or the {@link org.planqk.atlas.core.model.SoftwarePlatform} with given IDs
      * could not be found a {@link java.util.NoSuchElementException} is thrown.
      * <p>
-     * If both entities exist but they are not linked beforehand this method will throw an {@link org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException}.
+     * If both entities exist but they are not linked beforehand this method will throw an
+     * {@link org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException}.
      *
      * @param implementationId   The ID of the {@link org.planqk.atlas.core.model.Implementation} we want to unlink
      * @param softwarePlatformId The ID of the {@link org.planqk.atlas.core.model.SoftwarePlatform} we want to unlink
@@ -179,7 +189,8 @@ public interface LinkingService {
      * If either the {@link org.planqk.atlas.core.model.SoftwarePlatform} or the {@link org.planqk.atlas.core.model.CloudService} with given IDs could
      * not be found a {@link java.util.NoSuchElementException} is thrown.
      * <p>
-     * If both entities exist but they are already linked this method will throw an {@link org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException}.
+     * If both entities exist but they are already linked this method will throw an
+     * {@link org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException}.
      *
      * @param softwarePlatformId The ID of the {@link org.planqk.atlas.core.model.SoftwarePlatform} we want to link
      * @param cloudServiceId     The ID of the {@link org.planqk.atlas.core.model.CloudService} we want to link
@@ -194,7 +205,8 @@ public interface LinkingService {
      * If either the {@link org.planqk.atlas.core.model.SoftwarePlatform} or the {@link org.planqk.atlas.core.model.CloudService} with given IDs could
      * not be found a {@link java.util.NoSuchElementException} is thrown.
      * <p>
-     * If both entities exist but they are not linked beforehand this method will throw an {@link org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException}.
+     * If both entities exist but they are not linked beforehand this method will throw an
+     * {@link org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException}.
      *
      * @param softwarePlatformId The ID of the {@link org.planqk.atlas.core.model.SoftwarePlatform} we want to unlink
      * @param cloudServiceId     The ID of the {@link org.planqk.atlas.core.model.CloudService} we want to unlink
@@ -208,7 +220,8 @@ public interface LinkingService {
      * If either the {@link org.planqk.atlas.core.model.SoftwarePlatform} or the {@link org.planqk.atlas.core.model.ComputeResource} with given IDs
      * could not be found a {@link java.util.NoSuchElementException} is thrown.
      * <p>
-     * If both entities exist but they are already linked this method will throw an {@link org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException}.
+     * If both entities exist but they are already linked this method will throw an
+     * {@link org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException}.
      *
      * @param softwarePlatformId The ID of the {@link org.planqk.atlas.core.model.SoftwarePlatform} we want to link
      * @param computeResourceId  The ID of the {@link org.planqk.atlas.core.model.ComputeResource} we want to link
@@ -223,7 +236,8 @@ public interface LinkingService {
      * If either the {@link org.planqk.atlas.core.model.SoftwarePlatform} or the {@link org.planqk.atlas.core.model.ComputeResource} with given IDs
      * could not be found a {@link java.util.NoSuchElementException} is thrown.
      * <p>
-     * If both entities exist but they are not linked beforehand this method will throw an {@link org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException}.
+     * If both entities exist but they are not linked beforehand this method will throw an
+     * {@link org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException}.
      *
      * @param softwarePlatformId The ID of the {@link org.planqk.atlas.core.model.SoftwarePlatform} we want to unlink
      * @param computeResourceId  The ID of the {@link org.planqk.atlas.core.model.ComputeResource} we want to unlink
@@ -237,7 +251,8 @@ public interface LinkingService {
      * If either the {@link org.planqk.atlas.core.model.CloudService} or the {@link org.planqk.atlas.core.model.ComputeResource} with given IDs could
      * not be found a {@link java.util.NoSuchElementException} is thrown.
      * <p>
-     * If both entities exist but they are already linked this method will throw an {@link org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException}.
+     * If both entities exist but they are already linked this method will throw an
+     * {@link org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException}.
      *
      * @param cloudServiceId    The ID of the {@link org.planqk.atlas.core.model.CloudService} we want to link
      * @param computeResourceId The ID of the {@link org.planqk.atlas.core.model.ComputeResource} we want to link
@@ -252,7 +267,8 @@ public interface LinkingService {
      * If either the {@link org.planqk.atlas.core.model.CloudService} or the {@link org.planqk.atlas.core.model.ComputeResource} with given IDs could
      * not be found a {@link java.util.NoSuchElementException} is thrown.
      * <p>
-     * If both entities exist but they are not linked beforehand this method will throw an {@link org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException}.
+     * If both entities exist but they are not linked beforehand this method will throw an
+     * {@link org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException}.
      *
      * @param cloudServiceId    The ID of the {@link org.planqk.atlas.core.model.CloudService} we want to unlink
      * @param computeResourceId The ID of the {@link org.planqk.atlas.core.model.ComputeResource} we want to unlink

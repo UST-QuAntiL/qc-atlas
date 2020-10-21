@@ -85,8 +85,8 @@ public class EntityModelConverter implements ModelConverter {
             return null;
 
         final String cloneName = property.getName();
-        property = Json.mapper().readValue(Json.pretty(property), Schema.class);
-        property.setName(cloneName);
-        return property;
+        final Schema propertyClone = Json.mapper().readValue(Json.pretty(property), Schema.class);
+        propertyClone.setName(cloneName);
+        return propertyClone;
     }
 }

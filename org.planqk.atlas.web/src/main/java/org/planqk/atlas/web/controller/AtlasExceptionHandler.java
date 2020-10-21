@@ -51,7 +51,6 @@ public class AtlasExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<RuntimeException> handleInvalidJson(HttpMessageNotReadableException e) {
         log.error(e.getMessage(), e);
-        // TODO: Find better option to suppress unparsable class path output
         return ResponseEntity.badRequest().body(new RuntimeException(e.getMessage()));
     }
 

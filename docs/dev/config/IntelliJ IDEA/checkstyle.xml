@@ -99,7 +99,7 @@
         <module name="UnusedImports"/>
         <module name="BooleanExpressionComplexity"/>
         <module name="CommentsIndentation"/>
-        <module name="Indentation"/>
+<!--        <module name="Indentation"/>-->
         <module name="OuterTypeFilename"/>
         <module name="TodoComment"/>
         <module name="TrailingComment"/>

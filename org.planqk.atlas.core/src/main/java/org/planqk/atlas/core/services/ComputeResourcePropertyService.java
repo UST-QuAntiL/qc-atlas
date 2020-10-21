@@ -76,7 +76,8 @@ public interface ComputeResourcePropertyService {
      * <p>
      * The {@link org.planqk.atlas.core.model.ComputeResourcePropertyType} has to be set and can not be null. However, only the ID of the type has to
      * be set since the correct type object will be queried from the database in order to reduce the error margin for user input. This way we can
-     * check if the given type exists in the database without another checking step. If the {@link org.planqk.atlas.core.model.ComputeResourcePropertyType}
+     * check if the given type exists in the database without another checking step. If the
+     * {@link org.planqk.atlas.core.model.ComputeResourcePropertyType}
      * with given ID doesn't exist a {@link java.util.NoSuchElementException} is thrown. In the update process the type will not be updated itself.
      *
      * @param computeResourceProperty The {@link ComputeResourceProperty} we want to update with its updated properties

@@ -32,13 +32,14 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 
 public abstract class GenericLinkAssembler<T> {
+
     private final Class<T> entityClass = inferEntityClass();
 
     @Autowired
-    protected LinkBuilderService links;
+    private PagedResourcesAssembler<T> pagedResourcesAssembler;
 
     @Autowired
-    private PagedResourcesAssembler<T> pagedResourcesAssembler;
+    private LinkBuilderService links;
 
     public abstract void addLinks(EntityModel<T> resource);
 
