@@ -63,11 +63,5 @@
             <version>1.14.3</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>com.google.cloud</groupId>
-            <artifactId>google-cloud-nio</artifactId>
-            <version>0.121.0</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 </project>

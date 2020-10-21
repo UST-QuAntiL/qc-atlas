@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobId;
+import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Bucket;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageException;
@@ -41,12 +42,13 @@ public class ImplementationArtifactServiceCloudStorageImpl implements Implementa
 
     private final ImplementationRepository implementationRepository;
 
-    private final Bucket bucket = StorageOptions.getDefaultInstance().getService().get(implementationArtifactsBucketName);
 
     @Override
     public ImplementationArtifact create(UUID implementationId, MultipartFile file) {
         try {
-            Blob blob = this.bucket.create(implementationId + "/" + file.getOriginalFilename(), file.getBytes(), file.getContentType());
+            BlobId blobId = BlobId.of(implementationArtifactsBucketName, implementationId + "/" + file.getOriginalFilename());
+            BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType(file.getContentType()).build();
+            Blob blob = storage.create(blobInfo, file.getBytes());
             ImplementationArtifact implementationArtifact = getImplementationArtifactFromBlob(blob);
             Optional<ImplementationArtifact> persistedImplementationArtifactOptional =
                     implementationArtifactRepository.findByFileURL(implementationArtifact.getFileURL());
@@ -75,8 +77,9 @@ public class ImplementationArtifactServiceCloudStorageImpl implements Implementa
 
     @Override
     public byte[] getImplementationArtifactContent(UUID id) {
+        Bucket bucket = StorageOptions.getDefaultInstance().getService().get(implementationArtifactsBucketName);
         ImplementationArtifact implementationArtifact = ServiceUtils.findById(id, ImplementationArtifact.class, implementationArtifactRepository);
-        Blob blob = this.bucket.get(implementationArtifact.getFileURL());
+        Blob blob = bucket.get(implementationArtifact.getFileURL());
         return blob.getContent();
     }
 
