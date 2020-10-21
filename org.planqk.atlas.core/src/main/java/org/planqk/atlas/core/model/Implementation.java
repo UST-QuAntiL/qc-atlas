@@ -78,8 +78,8 @@ public class Implementation extends KnowledgeArtifact {
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "implementation_publication",
-            joinColumns = @JoinColumn(name = "implementation_id"),
-            inverseJoinColumns = @JoinColumn(name = "publication_id")
+        joinColumns = @JoinColumn(name = "implementation_id"),
+        inverseJoinColumns = @JoinColumn(name = "publication_id")
     )
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
@@ -92,22 +92,22 @@ public class Implementation extends KnowledgeArtifact {
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "implementation_tag",
-            joinColumns = @JoinColumn(name = "implementation_id"),
-            inverseJoinColumns = @JoinColumn(name = "tag_value"))
+        joinColumns = @JoinColumn(name = "implementation_id"),
+        inverseJoinColumns = @JoinColumn(name = "tag_value"))
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Set<Tag> tags = new HashSet<>();
 
     @EqualsAndHashCode.Exclude
     @OneToMany(cascade = CascadeType.ALL,
-            mappedBy = "implementation",
-            orphanRemoval = true)
+        mappedBy = "implementation",
+        orphanRemoval = true)
     private Set<ComputeResourceProperty> requiredComputeResourceProperties = new HashSet<>();
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "implementation_software_platforms",
-            joinColumns = @JoinColumn(name = "implementation_id"),
-            inverseJoinColumns = @JoinColumn(name = "software_platform_id")
+        joinColumns = @JoinColumn(name = "implementation_id"),
+        inverseJoinColumns = @JoinColumn(name = "software_platform_id")
     )
 
     @EqualsAndHashCode.Exclude

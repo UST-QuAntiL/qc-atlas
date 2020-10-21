@@ -22,10 +22,10 @@ package org.planqk.atlas.web.dtos;
 import javax.validation.constraints.NotNull;
 
 import org.planqk.atlas.web.utils.ValidationGroups;
+import org.springframework.hateoas.server.core.Relation;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.springframework.hateoas.server.core.Relation;
 
 /**
  * Data transfer object for Tag ({@link org.planqk.atlas.core.model.Tag}).

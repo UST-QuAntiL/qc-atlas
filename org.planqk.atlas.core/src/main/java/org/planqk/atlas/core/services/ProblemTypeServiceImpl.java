@@ -24,20 +24,19 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.UUID;
-
 import javax.transaction.Transactional;
 
 import org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException;
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.repository.ProblemTypeRepository;
 import org.planqk.atlas.core.util.ServiceUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
@@ -59,6 +58,7 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
         }
         return problemTypeRepository.findAll(pageable);
     }
+
     @Override
     public ProblemType findById(@NonNull UUID problemTypeId) {
         return ServiceUtils.findById(problemTypeId, ProblemType.class, problemTypeRepository);
@@ -67,7 +67,7 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
     @Override
     @Transactional
     public ProblemType update(@NonNull ProblemType problemType) {
-        ProblemType persistedProblemType = findById(problemType.getId());
+        final ProblemType persistedProblemType = findById(problemType.getId());
 
         persistedProblemType.setName(problemType.getName());
         persistedProblemType.setParentProblemType(problemType.getParentProblemType());
@@ -78,11 +78,11 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
     @Override
     @Transactional
     public void delete(@NonNull UUID problemTypeId) {
-        ProblemType problemType = findById(problemTypeId);
+        final ProblemType problemType = findById(problemTypeId);
 
         if (problemType.getAlgorithms().size() > 0) {
             throw new EntityReferenceConstraintViolationException("Cannot delete ProblemType with ID \"" + problemTypeId +
-                    "\". It is used by existing algorithms!");
+                "\". It is used by existing algorithms!");
         }
 
         removeReferences(problemType);
@@ -96,8 +96,8 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
     }
 
     private void removeAsParentFromProblemTypes(@NonNull ProblemType problemType) {
-        List<ProblemType> persistedProblemTypes = problemTypeRepository.findProblemTypesByParentProblemType(problemType.getId());
-        for (ProblemType persistedProblemType: persistedProblemTypes) {
+        final List<ProblemType> persistedProblemTypes = problemTypeRepository.findProblemTypesByParentProblemType(problemType.getId());
+        for (ProblemType persistedProblemType : persistedProblemTypes) {
             persistedProblemType.setParentProblemType(null);
             problemTypeRepository.save(persistedProblemType);
         }
@@ -105,9 +105,9 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
 
     @Override
     public List<ProblemType> getParentList(@NonNull UUID problemTypeId) {
-        ProblemType requestedProblemType = findById(problemTypeId);
+        final ProblemType requestedProblemType = findById(problemTypeId);
 
-        List<ProblemType> parentTree = new ArrayList<>();
+        final List<ProblemType> parentTree = new ArrayList<>();
         parentTree.add(requestedProblemType);
 
         ProblemType parentProblemType = getParent(requestedProblemType);

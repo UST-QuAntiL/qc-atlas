@@ -45,9 +45,9 @@ public interface ProblemTypeRepository extends JpaRepository<ProblemType, UUID> 
     Page<ProblemType> findByNameContainingIgnoreCase(String name, Pageable pageable);
 
     @Query("SELECT pt " +
-            "FROM ProblemType pt " +
-            "JOIN pt.algorithms algos " +
-            "WHERE algos.id = :algoid")
+        "FROM ProblemType pt " +
+        "JOIN pt.algorithms algos " +
+        "WHERE algos.id = :algoid")
     Page<ProblemType> findProblemTypesByAlgorithmId(@Param("algoid") UUID algorithmId, Pageable pageable);
 
     List<ProblemType> findProblemTypesByParentProblemType(@Param("parentProblemTypeId") UUID parentProblemType);

@@ -19,16 +19,15 @@
 
 package org.planqk.atlas.web.linkassembler;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 import java.util.UUID;
 
 import org.planqk.atlas.web.controller.AlgorithmController;
 import org.planqk.atlas.web.controller.AlgorithmRelationTypeController;
 import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
-
 import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Component;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Component
 public class AlgorithmRelationAssembler extends GenericLinkAssembler<AlgorithmRelationDto> {
@@ -36,12 +35,12 @@ public class AlgorithmRelationAssembler extends GenericLinkAssembler<AlgorithmRe
     @Override
     public void addLinks(EntityModel<AlgorithmRelationDto> resource) {
         resource.add(links.linkTo(methodOn(AlgorithmController.class).getAlgorithm(getSourceAlgorithmId(resource)))
-                .withRel("sourceAlgorithm"));
+            .withRel("sourceAlgorithm"));
         resource.add(links.linkTo(methodOn(AlgorithmController.class).getAlgorithm(getTargetAlgorithmId(resource)))
-                .withRel("targetAlgorithm"));
+            .withRel("targetAlgorithm"));
         resource.add(links.linkTo(
-                methodOn(AlgorithmRelationTypeController.class).getAlgorithmRelationType(getAlgoRelationTypeId(resource)))
-                .withRel("algoRelationType"));
+            methodOn(AlgorithmRelationTypeController.class).getAlgorithmRelationType(getAlgoRelationTypeId(resource)))
+            .withRel("algoRelationType"));
     }
 
     private UUID getSourceAlgorithmId(EntityModel<AlgorithmRelationDto> resource) {
@@ -53,7 +52,7 @@ public class AlgorithmRelationAssembler extends GenericLinkAssembler<AlgorithmRe
     }
 
     private UUID getAlgoRelationTypeId(EntityModel<AlgorithmRelationDto> resource) {
-        var type = resource.getContent().getAlgorithmRelationType();
+        final var type = resource.getContent().getAlgorithmRelationType();
         return type.getId();
     }
 }

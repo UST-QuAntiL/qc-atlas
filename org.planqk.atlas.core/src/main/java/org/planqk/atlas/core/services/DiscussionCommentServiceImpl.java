@@ -25,14 +25,14 @@ import java.util.UUID;
 import org.planqk.atlas.core.model.DiscussionComment;
 import org.planqk.atlas.core.repository.DiscussionCommentRepository;
 import org.planqk.atlas.core.util.ServiceUtils;
-
-import lombok.AllArgsConstructor;
-import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import lombok.AllArgsConstructor;
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -82,7 +82,7 @@ public class DiscussionCommentServiceImpl implements DiscussionCommentService {
     public void checkIfDiscussionCommentIsInDiscussionTopic(@NonNull UUID commentId, @NonNull UUID topicId) {
         if (!discussionCommentRepository.existsByIdAndDiscussionTopic_Id(commentId, topicId)) {
             throw new NoSuchElementException(String.format("A DiscussionComment with the ID \"%s\" does not " +
-                    "exist in the DiscussionTopic with ID \"%s\"", commentId.toString(), topicId.toString()));
+                "exist in the DiscussionTopic with ID \"%s\"", commentId.toString(), topicId.toString()));
         }
     }
 }

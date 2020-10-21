@@ -16,18 +16,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
+
 package org.planqk.atlas.web.utils;
 
 import java.util.Iterator;
 
+import org.springframework.hateoas.RepresentationModel;
+
 import com.fasterxml.jackson.databind.JavaType;
+
 import io.swagger.v3.core.converter.AnnotatedType;
 import io.swagger.v3.core.converter.ModelConverter;
 import io.swagger.v3.core.converter.ModelConverterContext;
 import io.swagger.v3.core.util.Json;
 import io.swagger.v3.oas.models.media.Schema;
 import lombok.RequiredArgsConstructor;
-import org.springframework.hateoas.RepresentationModel;
 
 /**
  * Removes `_links` from CollectionModel, PagedModel, ...

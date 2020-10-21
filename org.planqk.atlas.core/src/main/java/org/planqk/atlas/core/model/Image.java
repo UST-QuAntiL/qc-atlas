@@ -45,5 +45,4 @@ public class Image extends KnowledgeArtifact {
     @OneToOne
     @JoinColumn(name = "sketch_id")
     private Sketch sketch;
-
 }

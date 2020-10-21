@@ -18,7 +18,10 @@
   ~ limitations under the License.
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 
-<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.1.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
     <changeSet author="Tim (generated)" id="1602858179498-1">
         <createTable tableName="algorithm_application_area">
             <column name="algorithm_id" type="UUID">
@@ -262,10 +265,12 @@
     <changeSet author="Tim (generated)" id="1602858179498-24">
         <createTable tableName="software_platforms_compute_resources">
             <column name="software_platform_id" type="UUID">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="software_platforms_compute_resources_pkey"/>
+                <constraints nullable="false" primaryKey="true"
+                             primaryKeyName="software_platforms_compute_resources_pkey"/>
             </column>
             <column name="compute_resource_id" type="UUID">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="software_platforms_compute_resources_pkey"/>
+                <constraints nullable="false" primaryKey="true"
+                             primaryKeyName="software_platforms_compute_resources_pkey"/>
             </column>
         </createTable>
     </changeSet>
@@ -369,10 +374,12 @@
     <changeSet author="Tim (generated)" id="1602858179498-34">
         <createTable tableName="implementation_software_platforms">
             <column name="implementation_id" type="UUID">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="implementation_software_platforms_pkey"/>
+                <constraints nullable="false" primaryKey="true"
+                             primaryKeyName="implementation_software_platforms_pkey"/>
             </column>
             <column name="software_platform_id" type="UUID">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="implementation_software_platforms_pkey"/>
+                <constraints nullable="false" primaryKey="true"
+                             primaryKeyName="implementation_software_platforms_pkey"/>
             </column>
         </createTable>
     </changeSet>
@@ -387,147 +394,296 @@
         </createTable>
     </changeSet>
     <changeSet author="Tim (generated)" id="1602858179498-36">
-        <addForeignKeyConstraint baseColumnNames="algorithm_id" baseTableName="algorithm_tag" constraintName="fk2k599458h8m62np4m75ukcvm0" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="algorithm" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="algorithm_id" baseTableName="algorithm_tag"
+                                 constraintName="fk2k599458h8m62np4m75ukcvm0" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="algorithm" validate="true"/>
     </changeSet>
     <changeSet author="Tim (generated)" id="1602858179498-37">
-        <addForeignKeyConstraint baseColumnNames="algorithm_id" baseTableName="algorithm_application_area" constraintName="fk4kjef0upq0qftpafdd25l7t0c" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="algorithm" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="algorithm_id" baseTableName="algorithm_application_area"
+                                 constraintName="fk4kjef0upq0qftpafdd25l7t0c" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="algorithm" validate="true"/>
     </changeSet>
     <changeSet author="Tim (generated)" id="1602858179498-38">
-        <addForeignKeyConstraint baseColumnNames="algorithm_id" baseTableName="algorithm_publication" constraintName="fk4ksdqnqv8lw1685grhv4kjywf" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="algorithm" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="algorithm_id" baseTableName="algorithm_publication"
+                                 constraintName="fk4ksdqnqv8lw1685grhv4kjywf" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="algorithm" validate="true"/>
     </changeSet>
     <changeSet author="Tim (generated)" id="1602858179498-39">
-        <addForeignKeyConstraint baseColumnNames="target_algorithm" baseTableName="algorithm_relation" constraintName="fk5p53wf3j277a176t73ef3wuv2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="algorithm" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="target_algorithm" baseTableName="algorithm_relation"
+                                 constraintName="fk5p53wf3j277a176t73ef3wuv2" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="algorithm" validate="true"/>
     </changeSet>
     <changeSet author="Tim (generated)" id="1602858179498-40">
-        <addForeignKeyConstraint baseColumnNames="algorithm_id" baseTableName="pattern_relation" constraintName="fk9by0eabrmyinhakiirdy7finm" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="algorithm" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="algorithm_id" baseTableName="pattern_relation"
+                                 constraintName="fk9by0eabrmyinhakiirdy7finm" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="algorithm" validate="true"/>
     </changeSet>
     <changeSet author="Tim (generated)" id="1602858179498-41">
-        <addForeignKeyConstraint baseColumnNames="source_algorithm" baseTableName="algorithm_relation" constraintName="fk9cbjg9pmuosnnifvfqqnu77aa" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="algorithm" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="source_algorithm" baseTableName="algorithm_relation"
+                                 constraintName="fk9cbjg9pmuosnnifvfqqnu77aa" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="algorithm" validate="true"/>
     </changeSet>
     <changeSet author="Tim (generated)" id="1602858179498-42">
-        <addForeignKeyConstraint baseColumnNames="implemented_algorithm_id" baseTableName="implementation" constraintName="fkahksfpw97e0c9jet3vu489ohb" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="algorithm" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="implemented_algorithm_id" baseTableName="implementation"
+                                 constraintName="fkahksfpw97e0c9jet3vu489ohb" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="algorithm" validate="true"/>
     </changeSet>
     <changeSet author="Tim (generated)" id="1602858179498-43">
-        <addForeignKeyConstraint baseColumnNames="algorithm_id" baseTableName="algorithm_problem_type" constraintName="fkd383l41lvcuvooum4re1trytr" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="algorithm" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="algorithm_id" baseTableName="algorithm_problem_type"
+                                 constraintName="fkd383l41lvcuvooum4re1trytr" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="algorithm" validate="true"/>
     </changeSet>
     <changeSet author="Tim (generated)" id="1602858179498-44">
-        <addForeignKeyConstraint baseColumnNames="algorithm_id" baseTableName="sketch" constraintName="fkehjal9c57gebep6lsrrfkbq61" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="algorithm" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="algorithm_id" baseTableName="sketch"
+                                 constraintName="fkehjal9c57gebep6lsrrfkbq61" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="algorithm" validate="true"/>
     </changeSet>
     <changeSet author="Tim (generated)" id="1602858179498-45">
-        <addForeignKeyConstraint baseColumnNames="id" baseTableName="classic_algorithm" constraintName="fkf8hl76cv1lapta56g1vjdyyow" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="algorithm" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="classic_algorithm"
+                                 constraintName="fkf8hl76cv1lapta56g1vjdyyow" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="algorithm" validate="true"/>
     </changeSet>
     <changeSet author="Tim (generated)" id="1602858179498-46">
-        <addForeignKeyConstraint baseColumnNames="id" baseTableName="quantum_algorithm" constraintName="fkksxr1gyvxadejxfhfrfkh5m1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="algorithm" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="quantum_algorithm"
+                                 constraintName="fkksxr1gyvxadejxfhfrfkh5m1" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="algorithm" validate="true"/>
     </changeSet>
     <changeSet author="Tim (generated)" id="1602858179498-47">
-        <addForeignKeyConstraint baseColumnNames="algorithm_id" baseTableName="compute_resource_property" constraintName="fkmnnvywwb2eqox08q7x6nnyscf" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="algorithm" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="algorithm_id" baseTableName="compute_resource_property"
+                                 constraintName="fkmnnvywwb2eqox08q7x6nnyscf" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="algorithm" validate="true"/>
     </changeSet>
     <changeSet author="Tim (generated)" id="1602858179498-48">
-        <addForeignKeyConstraint baseColumnNames="algorithm_relation_type_id" baseTableName="algorithm_relation" constraintName="fksoc9d6qhee9xmia2o80adfymt" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="algorithm_relation_type" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="algorithm_relation_type_id" baseTableName="algorithm_relation"
+                                 constraintName="fksoc9d6qhee9xmia2o80adfymt" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="algorithm_relation_type"
+                                 validate="true"/>
     </changeSet>
     <changeSet author="Tim (generated)" id="1602858179498-49">
-        <addForeignKeyConstraint baseColumnNames="application_area_id" baseTableName="algorithm_application_area" constraintName="fkr5g50nihf4cl2e6cwv4hfs1p" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="application_area" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="application_area_id" baseTableName="algorithm_application_area"
+                                 constraintName="fkr5g50nihf4cl2e6cwv4hfs1p" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="application_area" validate="true"/>
     </changeSet>
     <changeSet author="Tim (generated)" id="1602858179498-50">
-        <addForeignKeyConstraint baseColumnNames="algorithm_id" baseTableName="classic_implementation" constraintName="fk3je79xy3m07m7de0rxt3pts8d" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="classic_algorithm" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="algorithm_id" baseTableName="classic_implementation"
+                                 constraintName="fk3je79xy3m07m7de0rxt3pts8d" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="classic_algorithm" validate="true"/>
     </changeSet>
     <changeSet author="Tim (generated)" id="1602858179498-51">
-        <addForeignKeyConstraint baseColumnNames="cloud_service_id" baseTableName="software_platform_cloud_services" constraintName="fk33jvx36u9tc8y97amj90aq4p5" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="cloud_service" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="cloud_service_id" baseTableName="software_platform_cloud_services"
+                                 constraintName="fk33jvx36u9tc8y97amj90aq4p5" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="cloud_service" validate="true"/>
     </changeSet>
     <changeSet author="Tim (generated)" id="1602858179498-52">
-        <addForeignKeyConstraint baseColumnNames="cloud_service_id" baseTableName="cloud_services_compute_resources" constraintName="fkdyyng98y8qeuks8qjfeg9jime" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="cloud_service" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="cloud_service_id" baseTableName="cloud_services_compute_resources"
+                                 constraintName="fkdyyng98y8qeuks8qjfeg9jime" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="cloud_service" validate="true"/>
     </changeSet>
     <changeSet author="Tim (generated)" id="1602858179498-53">
-        <addForeignKeyConstraint baseColumnNames="compute_resource_id" baseTableName="software_platforms_compute_resources" constraintName="fk3idoyrtaifamtyfdqr5ewvdtv" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="compute_resource" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="compute_resource_id"
+                                 baseTableName="software_platforms_compute_resources"
+                                 constraintName="fk3idoyrtaifamtyfdqr5ewvdtv" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="compute_resource" validate="true"/>
     </changeSet>
     <changeSet author="Tim (generated)" id="1602858179498-54">
-        <addForeignKeyConstraint baseColumnNames="compute_resource_id" baseTableName="cloud_services_compute_resources" constraintName="fkqklkuiospnsfn6n5k7uh57mwh" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="compute_resource" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="compute_resource_id" baseTableName="cloud_services_compute_resources"
+                                 constraintName="fkqklkuiospnsfn6n5k7uh57mwh" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="compute_resource" validate="true"/>
     </changeSet>
     <changeSet author="Tim (generated)" id="1602858179498-55">
-        <addForeignKeyConstraint baseColumnNames="compute_resource_id" baseTableName="compute_resource_property" constraintName="fktdgysfhlbm4cj20vfw7suap8i" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="compute_resource" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="compute_resource_id" baseTableName="compute_resource_property"
+                                 constraintName="fktdgysfhlbm4cj20vfw7suap8i" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="compute_resource" validate="true"/>
     </changeSet>
     <changeSet author="Tim (generated)" id="1602858179498-56">
-        <addForeignKeyConstraint baseColumnNames="compute_resource_property_type_id" baseTableName="compute_resource_property" constraintName="fk3ilvgc8wusnfhy0cgl8cvqsrs" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="compute_resource_property_type" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="compute_resource_property_type_id"
+                                 baseTableName="compute_resource_property" constraintName="fk3ilvgc8wusnfhy0cgl8cvqsrs"
+                                 deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="compute_resource_property_type"
+                                 validate="true"/>
     </changeSet>
     <changeSet author="Tim (generated)" id="1602858179498-57">
-        <addForeignKeyConstraint baseColumnNames="reply_to_id" baseTableName="discussion_comment" constraintName="fkhvhl406lwx2yrn62u7pdf5se5" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="discussion_comment" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="reply_to_id" baseTableName="discussion_comment"
+                                 constraintName="fkhvhl406lwx2yrn62u7pdf5se5" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="discussion_comment" validate="true"/>
     </changeSet>
     <changeSet author="Tim (generated)" id="1602858179498-58">
-        <addForeignKeyConstraint baseColumnNames="discussion_topic_id" baseTableName="discussion_comment" constraintName="fk7st41tqwtxhelg9euc4y4qqm4" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="discussion_topic" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="discussion_topic_id" baseTableName="discussion_comment"
+                                 constraintName="fk7st41tqwtxhelg9euc4y4qqm4" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="discussion_topic" validate="true"/>
     </changeSet>
     <changeSet author="Tim (generated)" id="1602858179498-59">
-        <addForeignKeyConstraint baseColumnNames="id" baseTableName="sketch" constraintName="fk1127ygjhclmhfr5twkvoymhum" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="knowledge_artifact" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="sketch"
+                                 constraintName="fk1127ygjhclmhfr5twkvoymhum" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="knowledge_artifact" validate="true"/>
     </changeSet>
     <changeSet author="Tim (generated)" id="1602858179498-60">
-        <addForeignKeyConstraint baseColumnNames="id" baseTableName="publication" constraintName="fk2m528opx84shvoyy4fxpok7t5" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="knowledge_artifact" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="publication"
+                                 constraintName="fk2m528opx84shvoyy4fxpok7t5" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="knowledge_artifact" validate="true"/>
     </changeSet>
     <changeSet author="Tim (generated)" id="1602858179498-61">
-        <addForeignKeyConstraint baseColumnNames="publication_id" baseTableName="publication_authors" constraintName="fk6iioc1g7j5y16e7vw3x1anodj" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="publication" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="publication_id" baseTableName="publication_authors"
+                                 constraintName="fk6iioc1g7j5y16e7vw3x1anodj" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="publication" validate="true"/>
     </changeSet>
     <changeSet author="Tim (generated)" id="1602858179498-62">
-        <addForeignKeyConstraint baseColumnNames="algorithm_id" baseTableName="quantum_implementation" constraintName="fk793p84p7n3qh71le8iqyvchv9" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="quantum_algorithm" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="algorithm_id" baseTableName="quantum_implementation"
+                                 constraintName="fk793p84p7n3qh71le8iqyvchv9" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="quantum_algorithm" validate="true"/>
     </changeSet>
     <changeSet author="Tim (generated)" id="1602858179498-63">
-        <addForeignKeyConstraint baseColumnNames="id" baseTableName="implementation" constraintName="fknqdt30hn1h4sm25ah5gdi38u0" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="knowledge_artifact" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="implementation"
+                                 constraintName="fknqdt30hn1h4sm25ah5gdi38u0" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="knowledge_artifact" validate="true"/>
     </changeSet>
     <changeSet author="Tim (generated)" id="1602858179498-64">
-        <addForeignKeyConstraint baseColumnNames="implementation_id" baseTableName="implementation_publication" constraintName="fkch41y23ssi6oj169speo5dxoy" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="implementation" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="implementation_id" baseTableName="implementation_publication"
+                                 constraintName="fkch41y23ssi6oj169speo5dxoy" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="implementation" validate="true"/>
     </changeSet>
     <changeSet author="Tim (generated)" id="1602858179498-65">
-        <addForeignKeyConstraint baseColumnNames="publication_id" baseTableName="implementation_publication" constraintName="fklv2uiqj4rrymnmqbuudet7fjb" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="publication" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="publication_id" baseTableName="implementation_publication"
+                                 constraintName="fklv2uiqj4rrymnmqbuudet7fjb" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="publication" validate="true"/>
     </changeSet>
     <changeSet author="Tim (generated)" id="1602858179498-66">
-        <addForeignKeyConstraint baseColumnNames="software_platform_id" baseTableName="implementation_software_platforms" constraintName="fkf2yb5f1c98uplaxylmmgpms91" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="software_platform" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="software_platform_id"
+                                 baseTableName="implementation_software_platforms"
+                                 constraintName="fkf2yb5f1c98uplaxylmmgpms91" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="software_platform" validate="true"/>
     </changeSet>
     <changeSet author="Tim (generated)" id="1602858179498-67">
-        <addForeignKeyConstraint baseColumnNames="implementation_id" baseTableName="implementation_software_platforms" constraintName="fktmwiwx6s8svey7vl5wd1wbp25" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="implementation" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="implementation_id" baseTableName="implementation_software_platforms"
+                                 constraintName="fktmwiwx6s8svey7vl5wd1wbp25" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="implementation" validate="true"/>
     </changeSet>
     <changeSet author="Tim (generated)" id="1602858179498-68">
-        <addForeignKeyConstraint baseColumnNames="sketch_id" baseTableName="image" constraintName="fkltsrliwwi922e2s4gng5m6wqx" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="sketch" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="sketch_id" baseTableName="image"
+                                 constraintName="fkltsrliwwi922e2s4gng5m6wqx" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="sketch" validate="true"/>
     </changeSet>
     <changeSet author="Tim (generated)" id="1602858179498-69">
-        <addForeignKeyConstraint baseColumnNames="id" baseTableName="image" constraintName="fkrgn16rchq4y9vhhx26m1pj2kh" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="knowledge_artifact" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="image" constraintName="fkrgn16rchq4y9vhhx26m1pj2kh"
+                                 deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="knowledge_artifact" validate="true"/>
     </changeSet>
     <changeSet author="Tim (generated)" id="1602858179498-70">
-        <addForeignKeyConstraint baseColumnNames="id" baseTableName="algorithm" constraintName="fkh714p5lo5u77x1bc14s4g8b3t" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="knowledge_artifact" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="algorithm"
+                                 constraintName="fkh714p5lo5u77x1bc14s4g8b3t" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="knowledge_artifact" validate="true"/>
     </changeSet>
     <changeSet author="Tim (generated)" id="1602858179498-71">
-        <addForeignKeyConstraint baseColumnNames="problem_type_id" baseTableName="algorithm_problem_type" constraintName="fkbqoq02m0qsrxllbnb0d7k52vi" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="problem_type" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="problem_type_id" baseTableName="algorithm_problem_type"
+                                 constraintName="fkbqoq02m0qsrxllbnb0d7k52vi" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="problem_type" validate="true"/>
     </changeSet>
     <changeSet author="Tim (generated)" id="1602858179498-72">
-        <addForeignKeyConstraint baseColumnNames="publication_id" baseTableName="algorithm_publication" constraintName="fkeks3idqeo7ys2f6duiny918dr" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="publication" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="publication_id" baseTableName="algorithm_publication"
+                                 constraintName="fkeks3idqeo7ys2f6duiny918dr" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="publication" validate="true"/>
     </changeSet>
     <changeSet author="Tim (generated)" id="1602858179498-73">
-        <addForeignKeyConstraint baseColumnNames="tag_value" baseTableName="algorithm_tag" constraintName="fk5skhq8p0k8aso9cl8cds8q3q1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="value" referencedTableName="tag" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="tag_value" baseTableName="algorithm_tag"
+                                 constraintName="fk5skhq8p0k8aso9cl8cds8q3q1" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="value" referencedTableName="tag" validate="true"/>
     </changeSet>
     <changeSet author="Tim (generated)" id="1602858179498-74">
-        <addForeignKeyConstraint baseColumnNames="id" baseTableName="classic_implementation" constraintName="fkftorvyxvkj4ok7apanwd4n5m6" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="implementation" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="classic_implementation"
+                                 constraintName="fkftorvyxvkj4ok7apanwd4n5m6" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="implementation" validate="true"/>
     </changeSet>
     <changeSet author="Tim (generated)" id="1602858179498-75">
-        <addForeignKeyConstraint baseColumnNames="implementation_id" baseTableName="compute_resource_property" constraintName="fkk7lt36lixpn6vtn3bnwk3i1e3" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="implementation" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="implementation_id" baseTableName="compute_resource_property"
+                                 constraintName="fkk7lt36lixpn6vtn3bnwk3i1e3" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="implementation" validate="true"/>
     </changeSet>
     <changeSet author="Tim (generated)" id="1602858179498-76">
-        <addForeignKeyConstraint baseColumnNames="id" baseTableName="discussion_topic" constraintName="fkeet74vudcv9mlofm7f2ttpa4p" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="knowledge_artifact" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="discussion_topic"
+                                 constraintName="fkeet74vudcv9mlofm7f2ttpa4p" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="knowledge_artifact" validate="true"/>
     </changeSet>
     <changeSet author="Tim (generated)" id="1602858179498-77">
-        <addForeignKeyConstraint baseColumnNames="knowledge_artifact_id" baseTableName="discussion_topic" constraintName="fknx1gpextw0013t1hb0lett1sk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="knowledge_artifact" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="knowledge_artifact_id" baseTableName="discussion_topic"
+                                 constraintName="fknx1gpextw0013t1hb0lett1sk" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="knowledge_artifact" validate="true"/>
     </changeSet>
     <changeSet author="Tim (generated)" id="1602858179498-78">
-        <addForeignKeyConstraint baseColumnNames="pattern_relation_type_id" baseTableName="pattern_relation" constraintName="fk2hap3a25ae7i3n1ir2srffhq9" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="pattern_relation_type" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="pattern_relation_type_id" baseTableName="pattern_relation"
+                                 constraintName="fk2hap3a25ae7i3n1ir2srffhq9" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="pattern_relation_type"
+                                 validate="true"/>
     </changeSet>
     <changeSet author="Tim (generated)" id="1602858179498-79">
-        <addForeignKeyConstraint baseColumnNames="software_platform_id" baseTableName="software_platform_cloud_services" constraintName="fkl8r1e28p0o06sar2ujke0yx4o" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="software_platform" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="software_platform_id" baseTableName="software_platform_cloud_services"
+                                 constraintName="fkl8r1e28p0o06sar2ujke0yx4o" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="software_platform" validate="true"/>
     </changeSet>
     <changeSet author="Tim (generated)" id="1602858179498-80">
-        <addForeignKeyConstraint baseColumnNames="software_platform_id" baseTableName="software_platforms_compute_resources" constraintName="fk71k3mlsekeell9ei812sduh8o" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="software_platform" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="software_platform_id"
+                                 baseTableName="software_platforms_compute_resources"
+                                 constraintName="fk71k3mlsekeell9ei812sduh8o" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="software_platform" validate="true"/>
     </changeSet>
     <changeSet author="Tim (generated)" id="1602858179498-81">
-        <addForeignKeyConstraint baseColumnNames="tag_value" baseTableName="implementation_tag" constraintName="fk3p2fgn1pojdw4kr6l4t6w3l87" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="value" referencedTableName="tag" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="tag_value" baseTableName="implementation_tag"
+                                 constraintName="fk3p2fgn1pojdw4kr6l4t6w3l87" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="value" referencedTableName="tag" validate="true"/>
     </changeSet>
     <changeSet author="Tim (generated)" id="1602858179498-82">
-        <addForeignKeyConstraint baseColumnNames="implementation_id" baseTableName="implementation_tag" constraintName="fkgllsrswnpwu9bfhvcghyj19oo" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="implementation" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="implementation_id" baseTableName="implementation_tag"
+                                 constraintName="fkgllsrswnpwu9bfhvcghyj19oo" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="implementation" validate="true"/>
     </changeSet>
     <changeSet author="Tim (generated)" id="1602858179498-83">
-        <addForeignKeyConstraint baseColumnNames="id" baseTableName="quantum_implementation" constraintName="fkm4d7ussdf2l8kf5627q84k7ld" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="implementation" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="quantum_implementation"
+                                 constraintName="fkm4d7ussdf2l8kf5627q84k7ld" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="implementation" validate="true"/>
     </changeSet>
 </databaseChangeLog>

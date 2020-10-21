@@ -19,16 +19,15 @@
 
 package org.planqk.atlas.web.linkassembler;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 import java.util.UUID;
 
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.ProblemTypeController;
 import org.planqk.atlas.web.dtos.ProblemTypeDto;
-
 import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Component;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Component
 public class ProblemTypeAssembler extends GenericLinkAssembler<ProblemTypeDto> {
@@ -37,7 +36,7 @@ public class ProblemTypeAssembler extends GenericLinkAssembler<ProblemTypeDto> {
     public void addLinks(EntityModel<ProblemTypeDto> resource) {
         resource.add(links.linkTo(methodOn(ProblemTypeController.class).getProblemType(getId(resource))).withSelfRel());
         resource.add(links.linkTo(methodOn(ProblemTypeController.class).getProblemTypeParentList(getId(resource)))
-                .withRel(Constants.PROBLEM_TYPE_PARENTS));
+            .withRel(Constants.PROBLEM_TYPE_PARENTS));
     }
 
     private UUID getId(EntityModel<ProblemTypeDto> resource) {

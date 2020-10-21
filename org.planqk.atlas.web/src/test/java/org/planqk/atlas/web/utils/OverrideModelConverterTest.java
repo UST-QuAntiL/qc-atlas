@@ -16,27 +16,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
+
 package org.planqk.atlas.web.utils;
+
+import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 import java.util.Map;
-
 import javax.validation.constraints.NotNull;
+
+import org.junit.jupiter.api.Test;
 
 import io.swagger.v3.core.converter.AnnotatedType;
 import io.swagger.v3.core.converter.ModelConverters;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.junit.jupiter.api.Test;
-
-import static org.junit.Assert.assertEquals;
 
 public class OverrideModelConverterTest {
+    @Test
+    void verifySchemaOverride() {
+        final var converters = new ModelConverters();
+        converters.addConverter(new OverrideModelConverter(Map.of(SimpleDto.class, SimpleDtoOverride.class)));
+
+        final var wrapped = converters.resolveAsResolvedSchema(new AnnotatedType().type(SimpleDto.class)
+            .resolveAsRef(false));
+        assertEquals(List.of("otherField"), wrapped.schema.getRequired());
+        assertEquals(1, wrapped.schema.getProperties().size());
+    }
+
     @NoArgsConstructor
     @Data
     private static class SimpleDto {
         @NotNull
         private String notNull;
+
         private String nullable;
     }
 
@@ -45,16 +58,5 @@ public class OverrideModelConverterTest {
     private static class SimpleDtoOverride {
         @NotNull
         private String otherField;
-    }
-
-    @Test
-    void verifySchemaOverride() {
-        final var converters = new ModelConverters();
-        converters.addConverter(new OverrideModelConverter(Map.of(SimpleDto.class, SimpleDtoOverride.class)));
-
-        final var wrapped = converters.resolveAsResolvedSchema(new AnnotatedType().type(SimpleDto.class)
-                .resolveAsRef(false));
-        assertEquals(List.of("otherField"), wrapped.schema.getRequired());
-        assertEquals(1, wrapped.schema.getProperties().size());
     }
 }

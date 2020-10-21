@@ -20,7 +20,6 @@
 package org.planqk.atlas.web.utils;
 
 import org.planqk.atlas.web.Constants;
-
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 

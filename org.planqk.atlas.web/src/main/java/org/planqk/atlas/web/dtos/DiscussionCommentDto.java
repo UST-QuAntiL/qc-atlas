@@ -21,18 +21,18 @@ package org.planqk.atlas.web.dtos;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
-
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
 
 import org.planqk.atlas.web.utils.Identifyable;
 import org.planqk.atlas.web.utils.ValidationGroups;
+import org.springframework.hateoas.server.core.Relation;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.springframework.hateoas.server.core.Relation;
 
 /**
  * Data transfer object for DiscussionComment ({@link org.planqk.atlas.core.model.DiscussionComment}).
@@ -45,11 +45,13 @@ public class DiscussionCommentDto implements Identifyable {
     @NotNull(groups = {ValidationGroups.IDOnly.class}, message = "An id is required to perform an update")
     @Null(groups = {ValidationGroups.Create.class}, message = "The id must be null for creating a discussion comment")
     private UUID id;
+
     @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
-            message = "Text must not be null!")
+        message = "Text must not be null!")
     private String text;
+
     @NotNull(
-            groups = {ValidationGroups.Update.class, ValidationGroups.Create.class}, message = "Date must not be null!")
+        groups = {ValidationGroups.Update.class, ValidationGroups.Create.class}, message = "Date must not be null!")
     private OffsetDateTime date;
 
     private DiscussionCommentDto replyTo;

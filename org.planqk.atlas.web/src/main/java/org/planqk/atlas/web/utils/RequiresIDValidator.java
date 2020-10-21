@@ -20,7 +20,6 @@
 package org.planqk.atlas.web.utils;
 
 import java.util.UUID;
-
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
@@ -28,7 +27,7 @@ public class RequiresIDValidator implements ConstraintValidator<RequiresID, Iden
     @Override
     public boolean isValid(Identifyable identifyable, ConstraintValidatorContext constraintValidatorContext) {
         return identifyable != null &&
-                identifyable.getId() != null &&
-                !identifyable.getId().equals(new UUID(0, 0));
+            identifyable.getId() != null &&
+            !identifyable.getId().equals(new UUID(0, 0));
     }
 }

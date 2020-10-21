@@ -20,16 +20,15 @@
 package org.planqk.atlas.web.dtos;
 
 import java.util.UUID;
-
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
 
 import org.planqk.atlas.web.utils.Identifyable;
 import org.planqk.atlas.web.utils.ValidationGroups;
+import org.springframework.hateoas.server.core.Relation;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.springframework.hateoas.server.core.Relation;
 
 /**
  * Data transfer object for ApplicationArea ({@link org.planqk.atlas.core.model.ApplicationArea}).
@@ -43,6 +42,6 @@ public class ApplicationAreaDto implements Identifyable {
     private UUID id;
 
     @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
-            message = "ApplicationArea-Name must not be null!")
+        message = "ApplicationArea-Name must not be null!")
     private String name;
 }

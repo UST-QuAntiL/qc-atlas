@@ -21,7 +21,6 @@ package org.planqk.atlas.core.services;
 
 import java.util.Objects;
 import java.util.UUID;
-
 import javax.transaction.Transactional;
 
 import org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException;
@@ -29,13 +28,13 @@ import org.planqk.atlas.core.model.ApplicationArea;
 import org.planqk.atlas.core.repository.ApplicationAreaRepository;
 import org.planqk.atlas.core.util.CollectionUtils;
 import org.planqk.atlas.core.util.ServiceUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
@@ -66,7 +65,7 @@ public class ApplicationAreaServiceImpl implements ApplicationAreaService {
     @Override
     @Transactional
     public ApplicationArea update(@NonNull ApplicationArea applicationArea) {
-        ApplicationArea persistedApplicationArea = findById(applicationArea.getId());
+        final ApplicationArea persistedApplicationArea = findById(applicationArea.getId());
 
         persistedApplicationArea.setName(applicationArea.getName());
 
@@ -76,11 +75,11 @@ public class ApplicationAreaServiceImpl implements ApplicationAreaService {
     @Override
     @Transactional
     public void delete(@NonNull UUID applicationAreaId) {
-        ApplicationArea applicationArea = findById(applicationAreaId);
+        final ApplicationArea applicationArea = findById(applicationAreaId);
 
         if (applicationArea.getAlgorithms().size() > 0) {
             throw new EntityReferenceConstraintViolationException("ApplicationArea with ID \""
-                    + applicationAreaId + "\" cannot be deleted, because it is still in use");
+                + applicationAreaId + "\" cannot be deleted, because it is still in use");
         }
 
         // removeReferences(applicationArea);
@@ -90,6 +89,6 @@ public class ApplicationAreaServiceImpl implements ApplicationAreaService {
 
     private void removeReferences(ApplicationArea applicationArea) {
         CollectionUtils.forEachOnCopy(applicationArea.getAlgorithms(),
-                algorithm -> algorithm.removeApplicationArea(applicationArea));
+            algorithm -> algorithm.removeApplicationArea(applicationArea));
     }
 }

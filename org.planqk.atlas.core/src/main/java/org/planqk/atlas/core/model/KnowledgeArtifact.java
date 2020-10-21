@@ -44,8 +44,8 @@ public class KnowledgeArtifact extends HasId {
     private Date lastModifiedAt;
 
     @OneToMany(cascade = CascadeType.ALL,
-            mappedBy = "knowledgeArtifact",
-            orphanRemoval = true)
+        mappedBy = "knowledgeArtifact",
+        orphanRemoval = true)
     @EqualsAndHashCode.Exclude
     private Set<DiscussionTopic> discussionTopics = new HashSet<>();
 }

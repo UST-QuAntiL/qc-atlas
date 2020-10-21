@@ -19,22 +19,22 @@
 
 package org.planqk.atlas.web.linkassembler;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 import java.util.UUID;
 
 import org.planqk.atlas.web.controller.DiscussionTopicController;
 import org.planqk.atlas.web.dtos.DiscussionCommentDto;
-
 import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Component;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Component
 public class DiscussionCommentAssembler extends GenericLinkAssembler<DiscussionCommentDto> {
 
     @Override
     public void addLinks(EntityModel<DiscussionCommentDto> resource) {
-        resource.add(links.linkTo(methodOn(DiscussionTopicController.class).getDiscussionComment(getTopicId(resource), getID(resource))).withSelfRel());
+        resource
+            .add(links.linkTo(methodOn(DiscussionTopicController.class).getDiscussionComment(getTopicId(resource), getID(resource))).withSelfRel());
     }
 
     private UUID getID(EntityModel<DiscussionCommentDto> resource) {

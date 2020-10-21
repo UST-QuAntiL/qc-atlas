@@ -16,6 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
+
 package org.planqk.atlas.web.utils;
 
 import java.lang.reflect.Type;
@@ -24,6 +25,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.core.type.ResolvedType;
 import com.fasterxml.jackson.databind.JavaType;
+
 import io.swagger.v3.core.converter.AnnotatedType;
 import io.swagger.v3.core.converter.ModelConverter;
 import io.swagger.v3.core.converter.ModelConverterContext;
@@ -37,6 +39,14 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class OverrideModelConverter implements ModelConverter {
     private final Map<Type, Type> contentOverrides;
+
+    private static Class<?> classFromType(Type type) {
+        if (type instanceof Class<?>)
+            return (Class<?>) type;
+        if (type instanceof ResolvedType)
+            return ((ResolvedType) type).getRawClass();
+        return null;
+    }
 
     @Override
     public Schema resolve(AnnotatedType annotatedType, ModelConverterContext context, Iterator<ModelConverter> chain) {
@@ -61,13 +71,5 @@ public class OverrideModelConverter implements ModelConverter {
         if (clazz != null)
             return contentOverrides.getOrDefault(clazz, type);
         return type;
-    }
-
-    private static Class<?> classFromType(Type type) {
-        if (type instanceof Class<?>)
-            return (Class<?>) type;
-        if (type instanceof ResolvedType)
-            return ((ResolvedType) type).getRawClass();
-        return null;
     }
 }

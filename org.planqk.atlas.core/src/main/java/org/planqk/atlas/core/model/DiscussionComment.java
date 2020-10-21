@@ -42,6 +42,6 @@ public class DiscussionComment extends HasId {
     private DiscussionComment replyTo;
 
     @ManyToOne(fetch = FetchType.LAZY,
-            cascade = {CascadeType.REFRESH, CascadeType.MERGE})
+        cascade = {CascadeType.REFRESH, CascadeType.MERGE})
     private DiscussionTopic discussionTopic;
 }

@@ -19,17 +19,16 @@
 
 package org.planqk.atlas.web.linkassembler;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.TagController;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.ImplementationDto;
 import org.planqk.atlas.web.dtos.TagDto;
-
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Component;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Component
 public class TagAssembler extends GenericLinkAssembler<TagDto> {
@@ -38,9 +37,9 @@ public class TagAssembler extends GenericLinkAssembler<TagDto> {
     public void addLinks(EntityModel<TagDto> resource) {
         resource.add(links.linkTo(methodOn(TagController.class).getTag(getName(resource))).withSelfRel());
         resource.add(links.linkTo(methodOn(TagController.class).getAlgorithmsOfTag(getName(resource)))
-                .withRel(Constants.ALGORITHMS));
+            .withRel(Constants.ALGORITHMS));
         resource.add(links.linkTo(methodOn(TagController.class).getImplementationsOfTag(getName(resource)))
-                .withRel(Constants.IMPLEMENTATIONS));
+            .withRel(Constants.IMPLEMENTATIONS));
     }
 
     public void addAlgorithmLink(CollectionModel<EntityModel<AlgorithmDto>> resources, String name) {

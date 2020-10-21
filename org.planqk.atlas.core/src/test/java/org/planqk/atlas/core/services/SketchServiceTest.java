@@ -19,6 +19,12 @@
 
 package org.planqk.atlas.core.services;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -28,6 +34,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
+import org.junit.jupiter.api.Test;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.ApplicationArea;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
@@ -37,16 +44,8 @@ import org.planqk.atlas.core.model.Sketch;
 import org.planqk.atlas.core.repository.ImageRepository;
 import org.planqk.atlas.core.repository.SketchRepository;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
-
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockMultipartFile;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SketchServiceTest extends AtlasDatabaseTestBase {
 
@@ -61,7 +60,6 @@ public class SketchServiceTest extends AtlasDatabaseTestBase {
 
     @Autowired
     private ImageRepository imageRepository;
-
 
     @Test
     void updateSketch() {
@@ -125,9 +123,9 @@ public class SketchServiceTest extends AtlasDatabaseTestBase {
         assertThat(persistedSketch.getId()).isNotNull();
         assertThat(persistedSketch.getDescription()).isEqualTo(description);
         assertThat(persistedSketch.getImageURL().toString())
-                .startsWith(baseURL);
+            .startsWith(baseURL);
         assertEquals(persistedSketch.getImageURL().getPath(),
-                "/atlas/v1/algorithms/" + algorithm.getId() + "/sketches/" + persistedSketch.getId());
+            "/atlas/v1/algorithms/" + algorithm.getId() + "/sketches/" + persistedSketch.getId());
 
         List<Image> images = this.imageRepository.findAll();
         assertThat(images.size()).isEqualTo(1);
@@ -238,11 +236,10 @@ public class SketchServiceTest extends AtlasDatabaseTestBase {
         byte[] data = new byte[len / 2];
         for (int i = 0; i < len; i += 2) {
             data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
-                    + Character.digit(s.charAt(i + 1), 16));
+                + Character.digit(s.charAt(i + 1), 16));
         }
         return data;
     }
-
 }
 
 

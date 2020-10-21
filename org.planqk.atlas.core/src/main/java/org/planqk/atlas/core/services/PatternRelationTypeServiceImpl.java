@@ -20,7 +20,6 @@
 package org.planqk.atlas.core.services;
 
 import java.util.UUID;
-
 import javax.transaction.Transactional;
 
 import org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException;
@@ -28,13 +27,13 @@ import org.planqk.atlas.core.model.PatternRelationType;
 import org.planqk.atlas.core.repository.PatternRelationRepository;
 import org.planqk.atlas.core.repository.PatternRelationTypeRepository;
 import org.planqk.atlas.core.util.ServiceUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
@@ -42,6 +41,7 @@ import org.springframework.stereotype.Service;
 public class PatternRelationTypeServiceImpl implements PatternRelationTypeService {
 
     private final PatternRelationTypeRepository patternRelationTypeRepository;
+
     private final PatternRelationRepository patternRelationRepository;
 
     @Override
@@ -63,7 +63,7 @@ public class PatternRelationTypeServiceImpl implements PatternRelationTypeServic
     @Override
     @Transactional
     public PatternRelationType update(@NonNull PatternRelationType patternRelationType) {
-        PatternRelationType persistedPatternRelationType = findById(patternRelationType.getId());
+        final PatternRelationType persistedPatternRelationType = findById(patternRelationType.getId());
 
         persistedPatternRelationType.setName(patternRelationType.getName());
 
@@ -77,7 +77,7 @@ public class PatternRelationTypeServiceImpl implements PatternRelationTypeServic
 
         if (patternRelationRepository.countByPatternRelationTypeId(patternRelationTypeId) > 0) {
             throw new EntityReferenceConstraintViolationException("PatternRelationType with ID \""
-                    + patternRelationTypeId + "\" cannot be deleted, because it is still in use");
+                + patternRelationTypeId + "\" cannot be deleted, because it is still in use");
         }
 
         patternRelationTypeRepository.deleteById(patternRelationTypeId);

@@ -25,8 +25,6 @@ import java.util.NoSuchElementException;
 import org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException;
 import org.planqk.atlas.core.exceptions.InvalidResourceTypeValueException;
 import org.planqk.atlas.web.controller.exceptions.InvalidRequestException;
-
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
@@ -37,6 +35,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+
+import lombok.extern.slf4j.Slf4j;
 
 @ControllerAdvice
 @Slf4j
@@ -57,7 +57,7 @@ public class AtlasExceptionHandler {
 
     @ExceptionHandler(EntityReferenceConstraintViolationException.class)
     public ResponseEntity<EntityReferenceConstraintViolationException> handleEntityReferenceConstraintViolationException(
-            EntityReferenceConstraintViolationException e) {
+        EntityReferenceConstraintViolationException e) {
         log.warn(e.getMessage(), e);
         return ResponseEntity.badRequest().body(e);
     }
@@ -76,7 +76,7 @@ public class AtlasExceptionHandler {
 
     @ExceptionHandler(InvalidResourceTypeValueException.class)
     public ResponseEntity<InvalidResourceTypeValueException> handleInvalidResourceTypeValueException(
-            InvalidResourceTypeValueException e) {
+        InvalidResourceTypeValueException e) {
         log.warn(e.getMessage(), e);
         return ResponseEntity.badRequest().body(e);
     }

@@ -19,33 +19,34 @@
 
 package org.planqk.atlas.core.services;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.UUID;
 
+import org.junit.jupiter.api.Test;
 import org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
 import org.planqk.atlas.core.model.ComputationModel;
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
-
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class ProblemTypeServiceTest extends AtlasDatabaseTestBase {
 
     @Autowired
     private ProblemTypeService problemTypeService;
+
     @Autowired
     private AlgorithmService algorithmService;
 
@@ -145,7 +146,7 @@ public class ProblemTypeServiceTest extends AtlasDatabaseTestBase {
 
         assertThat(problemTypeService.findById(problemType.getId()).getParentProblemType()).isNotNull();
         assertThat(problemTypeService.findById(problemType.getId()).getParentProblemType())
-                .isEqualTo(persistedProblemTypeParent.getId());
+            .isEqualTo(persistedProblemTypeParent.getId());
 
         problemTypeService.delete(problemTypeParent.getId());
 

@@ -40,14 +40,14 @@ public interface ImplementationRepository extends JpaRepository<Implementation, 
     Page<Implementation> findByImplementedAlgorithmId(UUID implementedAlgorithmId, Pageable pageable);
 
     @Query("SELECT impl " +
-            "FROM Implementation impl " +
-            "JOIN impl.publications pub " +
-            "WHERE  pub.id = :pubId")
+        "FROM Implementation impl " +
+        "JOIN impl.publications pub " +
+        "WHERE  pub.id = :pubId")
     Page<Implementation> findImplementationsByPublicationId(@Param("pubId") UUID publicationId, Pageable pageable);
 
     @Query("SELECT i " +
-            "FROM Implementation i " +
-            "JOIN i.softwarePlatforms sp " +
-            "WHERE sp.id = :spId")
+        "FROM Implementation i " +
+        "JOIN i.softwarePlatforms sp " +
+        "WHERE sp.id = :spId")
     Page<Implementation> findImplementationsBySoftwarePlatformId(@Param("spId") UUID softwarePlatformId, Pageable pageable);
 }

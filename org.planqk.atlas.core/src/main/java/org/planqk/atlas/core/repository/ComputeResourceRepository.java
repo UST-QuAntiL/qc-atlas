@@ -40,14 +40,14 @@ public interface ComputeResourceRepository extends JpaRepository<ComputeResource
     Page<ComputeResource> findAllByNameContainingIgnoreCase(String name, Pageable p);
 
     @Query("SELECT cr " +
-            "FROM ComputeResource cr " +
-            "JOIN cr.cloudServices cs " +
-            "WHERE cs.id = :csId")
+        "FROM ComputeResource cr " +
+        "JOIN cr.cloudServices cs " +
+        "WHERE cs.id = :csId")
     Page<ComputeResource> findComputeResourcesByCloudServiceId(@Param("csId") UUID cloudServiceId, Pageable pageable);
 
     @Query("SELECT cr " +
-            "FROM ComputeResource cr " +
-            "JOIN cr.softwarePlatforms sp " +
-            "WHERE sp.id = :spId")
+        "FROM ComputeResource cr " +
+        "JOIN cr.softwarePlatforms sp " +
+        "WHERE sp.id = :spId")
     Page<ComputeResource> findComputeResourcesBySoftwarePlatformId(@Param("spId") UUID softwarePlatformId, Pageable pageable);
 }

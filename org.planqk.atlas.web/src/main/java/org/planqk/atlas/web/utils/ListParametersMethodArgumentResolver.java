@@ -16,13 +16,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
+
 package org.planqk.atlas.web.utils;
 
 import java.util.Map;
 
 import org.planqk.atlas.web.Constants;
-
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.PageRequest;
@@ -38,18 +37,21 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import org.springframework.web.method.support.UriComponentsContributor;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Slf4j
-public class ListParametersMethodArgumentResolver extends PageableHandlerMethodArgumentResolverSupport implements HandlerMethodArgumentResolver, UriComponentsContributor {
+public class ListParametersMethodArgumentResolver extends PageableHandlerMethodArgumentResolverSupport
+    implements HandlerMethodArgumentResolver, UriComponentsContributor {
     private final HateoasSortHandlerMethodArgumentResolver sortResolver = new HateoasSortHandlerMethodArgumentResolver();
 
     @Override
     public Object resolveArgument(MethodParameter methodParameter, @Nullable ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest, @Nullable WebDataBinderFactory binderFactory) {
-        String page = webRequest.getParameter(getParameterNameToUse(Constants.PAGE, methodParameter));
-        String pageSize = webRequest.getParameter(getParameterNameToUse(Constants.SIZE, methodParameter));
-        String searchQuery = webRequest.getParameter(getParameterNameToUse(Constants.SEARCH, methodParameter));
+        final String page = webRequest.getParameter(getParameterNameToUse(Constants.PAGE, methodParameter));
+        final String pageSize = webRequest.getParameter(getParameterNameToUse(Constants.SIZE, methodParameter));
+        final String searchQuery = webRequest.getParameter(getParameterNameToUse(Constants.SEARCH, methodParameter));
 
-        Sort sort = sortResolver.resolveArgument(methodParameter, mavContainer, webRequest, binderFactory);
+        final Sort sort = sortResolver.resolveArgument(methodParameter, mavContainer, webRequest, binderFactory);
         Pageable pageable = getPageable(methodParameter, page, pageSize);
 
         if ((page != null && pageSize != null) && (page.equals("-1") && pageSize.equals("-1"))) {
@@ -68,7 +70,8 @@ public class ListParametersMethodArgumentResolver extends PageableHandlerMethodA
     }
 
     @Override
-    public void contributeMethodArgument(MethodParameter parameter, Object value, UriComponentsBuilder builder, Map<String, Object> uriVariables, ConversionService conversionService) {
+    public void contributeMethodArgument(MethodParameter parameter, Object value, UriComponentsBuilder builder, Map<String, Object> uriVariables,
+                                         ConversionService conversionService) {
         final var listParams = (ListParameters) value;
         final var pageable = listParams.getPageable();
 
@@ -78,7 +81,7 @@ public class ListParametersMethodArgumentResolver extends PageableHandlerMethodA
             final var pageNumber = pageable.getPageNumber();
             builder.replaceQueryParam(pagePropertyName, isOneIndexedParameters() ? pageNumber + 1 : pageNumber);
             builder.replaceQueryParam(sizePropertyName,
-                    pageable.getPageSize() <= getMaxPageSize() ? pageable.getPageSize() : getMaxPageSize());
+                pageable.getPageSize() <= getMaxPageSize() ? pageable.getPageSize() : getMaxPageSize());
         } else {
             builder.replaceQueryParam(pagePropertyName, "-1");
             builder.replaceQueryParam(sizePropertyName, "-1");

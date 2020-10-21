@@ -19,39 +19,6 @@
 
 package org.planqk.atlas.web.controller;
 
-import java.util.ArrayList;
-import java.util.NoSuchElementException;
-import java.util.UUID;
-
-import org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException;
-import org.planqk.atlas.core.model.CloudService;
-import org.planqk.atlas.core.model.ComputeResource;
-import org.planqk.atlas.core.model.SoftwarePlatform;
-import org.planqk.atlas.core.services.CloudServiceService;
-import org.planqk.atlas.core.services.LinkingService;
-import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
-import org.planqk.atlas.web.dtos.CloudServiceDto;
-import org.planqk.atlas.web.dtos.ComputeResourceDto;
-import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
-import org.planqk.atlas.web.linkassembler.LinkBuilderService;
-import org.planqk.atlas.web.utils.ListParameters;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.SneakyThrows;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
@@ -66,27 +33,65 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.ArrayList;
+import java.util.NoSuchElementException;
+import java.util.UUID;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException;
+import org.planqk.atlas.core.model.CloudService;
+import org.planqk.atlas.core.model.ComputeResource;
+import org.planqk.atlas.core.model.SoftwarePlatform;
+import org.planqk.atlas.core.services.CloudServiceService;
+import org.planqk.atlas.core.services.LinkingService;
+import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
+import org.planqk.atlas.web.dtos.CloudServiceDto;
+import org.planqk.atlas.web.dtos.ComputeResourceDto;
+import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
+import org.planqk.atlas.web.linkassembler.LinkBuilderService;
+import org.planqk.atlas.web.utils.ListParameters;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import lombok.SneakyThrows;
+
 @WebMvcTest(controllers = {CloudServiceController.class})
-@ExtendWith( {MockitoExtension.class})
+@ExtendWith({MockitoExtension.class})
 @AutoConfigureMockMvc
 @EnableLinkAssemblers
 public class CloudServiceControllerTest {
 
+    private final ObjectMapper mapper = ObjectMapperUtils.newTestMapper();
+
+    private final int page = 0;
+
+    private final int size = 2;
+
+    private final Pageable pageable = PageRequest.of(page, size);
+
     @MockBean
     private CloudServiceService cloudServiceService;
+
     @MockBean
     private LinkingService linkingService;
 
     @Autowired
     private MockMvc mockMvc;
+
     @Autowired
     private LinkBuilderService linkBuilderService;
-
-    private final ObjectMapper mapper = ObjectMapperUtils.newTestMapper();
-
-    private final int page = 0;
-    private final int size = 2;
-    private final Pageable pageable = PageRequest.of(page, size);
 
     @Test
     @SneakyThrows
@@ -95,11 +100,11 @@ public class CloudServiceControllerTest {
         resource.setId(UUID.randomUUID());
 
         var url = linkBuilderService.urlStringTo(methodOn(CloudServiceController.class)
-                .createCloudService(null));
+            .createCloudService(null));
 
         mockMvc.perform(post(url).content(mapper.writeValueAsString(resource))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isBadRequest());
     }
 
@@ -116,15 +121,15 @@ public class CloudServiceControllerTest {
         doReturn(returnedService).when(cloudServiceService).create(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(CloudServiceController.class)
-                .createCloudService(null));
+            .createCloudService(null));
 
         mockMvc.perform(post(url).content(mapper.writeValueAsString(service))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isCreated())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id").value(returnedService.getId().toString()))
-                .andExpect(jsonPath("$.name").value(returnedService.getName()));
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$.id").value(returnedService.getId().toString()))
+            .andExpect(jsonPath("$.name").value(returnedService.getName()));
     }
 
     @Test
@@ -137,11 +142,11 @@ public class CloudServiceControllerTest {
         doThrow(new NoSuchElementException()).when(cloudServiceService).update(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(CloudServiceController.class)
-                .updateCloudService(UUID.randomUUID(), null));
+            .updateCloudService(UUID.randomUUID(), null));
 
         mockMvc.perform(put(url).content(mapper.writeValueAsString(resource))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isNotFound());
     }
 
@@ -152,11 +157,11 @@ public class CloudServiceControllerTest {
         resource.setId(UUID.randomUUID());
 
         var url = linkBuilderService.urlStringTo(methodOn(CloudServiceController.class)
-                .updateCloudService(UUID.randomUUID(), null));
+            .updateCloudService(UUID.randomUUID(), null));
 
         mockMvc.perform(put(url).content(mapper.writeValueAsString(resource))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isBadRequest());
     }
 
@@ -174,15 +179,15 @@ public class CloudServiceControllerTest {
         doReturn(returnedResource).when(cloudServiceService).update(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(CloudServiceController.class)
-                .updateCloudService(UUID.randomUUID(), null));
+            .updateCloudService(UUID.randomUUID(), null));
 
         mockMvc.perform(put(url).content(mapper.writeValueAsString(resource))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id").value(resource.getId().toString()))
-                .andExpect(jsonPath("$.name").value(resource.getName()));
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$.id").value(resource.getId().toString()))
+            .andExpect(jsonPath("$.name").value(resource.getName()));
     }
 
     @Test
@@ -195,12 +200,12 @@ public class CloudServiceControllerTest {
         doReturn(resource).when(cloudServiceService).findById(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(CloudServiceController.class)
-                .getCloudService(resource.getId()));
+            .getCloudService(resource.getId()));
 
         mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(resource.getId().toString()))
-                .andExpect(jsonPath("$.name").value(resource.getName()));
+            .andExpect(jsonPath("$.id").value(resource.getId().toString()))
+            .andExpect(jsonPath("$.name").value(resource.getName()));
     }
 
     @Test
@@ -209,10 +214,10 @@ public class CloudServiceControllerTest {
         doReturn(Page.empty()).when(cloudServiceService).findAll(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(CloudServiceController.class)
-                .getCloudServices(new ListParameters(pageable, null)));
+            .getCloudServices(new ListParameters(pageable, null)));
 
         var mvcResult = mockMvc.perform(get(url)
-                .accept(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk()).andReturn();
 
         var page = ObjectMapperUtils.getPageInfo(mvcResult.getResponse().getContentAsString());
@@ -227,10 +232,10 @@ public class CloudServiceControllerTest {
         doReturn(Page.empty()).when(cloudServiceService).searchAllByName(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(CloudServiceController.class)
-                .getCloudServices(new ListParameters(pageable, "hello")));
+            .getCloudServices(new ListParameters(pageable, "hello")));
 
         var mvcResult = mockMvc.perform(get(url)
-                .accept(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk()).andReturn();
 
         var page = ObjectMapperUtils.getPageInfo(mvcResult.getResponse().getContentAsString());
@@ -252,16 +257,16 @@ public class CloudServiceControllerTest {
         doReturn(new PageImpl<>(inputList)).when(cloudServiceService).findAll(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(CloudServiceController.class)
-                .getCloudServices(new ListParameters(pageable, null)));
+            .getCloudServices(new ListParameters(pageable, null)));
 
         var mvcResult = mockMvc.perform(get(url)
-                .accept(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk()).andReturn();
 
         var dtoElements = ObjectMapperUtils.mapResponseToList(
-                mvcResult.getResponse().getContentAsString(),
-                "cloudServices",
-                CloudServiceDto.class
+            mvcResult.getResponse().getContentAsString(),
+            "cloudServices",
+            CloudServiceDto.class
         );
         assertThat(dtoElements.size()).isEqualTo(inputList.size());
         // Ensure every element in the input array also exists in the output array.
@@ -275,9 +280,9 @@ public class CloudServiceControllerTest {
     void deleteCloudService_returnNotFound() {
         doThrow(new NoSuchElementException()).when(cloudServiceService).delete(any());
         var url = linkBuilderService.urlStringTo(methodOn(CloudServiceController.class)
-                .deleteCloudService(UUID.randomUUID()));
+            .deleteCloudService(UUID.randomUUID()));
         mockMvc.perform(delete(url).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+            .andExpect(status().isNotFound());
     }
 
     @Test
@@ -285,9 +290,9 @@ public class CloudServiceControllerTest {
     void deleteCloudService_returnNoContent() {
         doNothing().when(cloudServiceService).delete(any());
         var url = linkBuilderService.urlStringTo(methodOn(CloudServiceController.class)
-                .deleteCloudService(UUID.randomUUID()));
+            .deleteCloudService(UUID.randomUUID()));
         mockMvc.perform(delete(url).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNoContent());
+            .andExpect(status().isNoContent());
     }
 
     @Test
@@ -296,11 +301,11 @@ public class CloudServiceControllerTest {
         doReturn(Page.empty()).when(cloudServiceService).findLinkedSoftwarePlatforms(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(CloudServiceController.class)
-                .getSoftwarePlatformsOfCloudService(UUID.randomUUID(), new ListParameters(pageable, null)));
+            .getSoftwarePlatformsOfCloudService(UUID.randomUUID(), new ListParameters(pageable, null)));
 
         var mvcResult = mockMvc.perform(get(url)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk()).andReturn();
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk()).andReturn();
 
         var page = ObjectMapperUtils.getPageInfo(mvcResult.getResponse().getContentAsString());
 
@@ -321,16 +326,16 @@ public class CloudServiceControllerTest {
         doReturn(new PageImpl<>(inputList)).when(cloudServiceService).findLinkedSoftwarePlatforms(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(CloudServiceController.class)
-                .getSoftwarePlatformsOfCloudService(UUID.randomUUID(), new ListParameters(pageable, null)));
+            .getSoftwarePlatformsOfCloudService(UUID.randomUUID(), new ListParameters(pageable, null)));
 
         var mvcResult = mockMvc.perform(get(url)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk()).andReturn();
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk()).andReturn();
 
         var dtoElements = ObjectMapperUtils.mapResponseToList(
-                mvcResult.getResponse().getContentAsString(),
-                "softwarePlatforms",
-                ComputeResourceDto.class
+            mvcResult.getResponse().getContentAsString(),
+            "softwarePlatforms",
+            ComputeResourceDto.class
         );
         assertThat(dtoElements.size()).isEqualTo(inputList.size());
         // Ensure every element in the input array also exists in the output array.
@@ -345,10 +350,10 @@ public class CloudServiceControllerTest {
         doReturn(Page.empty()).when(cloudServiceService).findLinkedComputeResources(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(CloudServiceController.class)
-                .getComputeResourcesOfCloudService(UUID.randomUUID(), new ListParameters(pageable, null)));
+            .getComputeResourcesOfCloudService(UUID.randomUUID(), new ListParameters(pageable, null)));
         var mvcResult = mockMvc.perform(get(url)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk()).andReturn();
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk()).andReturn();
 
         var page = ObjectMapperUtils.getPageInfo(mvcResult.getResponse().getContentAsString());
 
@@ -369,16 +374,16 @@ public class CloudServiceControllerTest {
         doReturn(new PageImpl<>(inputList)).when(cloudServiceService).findLinkedComputeResources(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(CloudServiceController.class)
-                .getComputeResourcesOfCloudService(UUID.randomUUID(), new ListParameters(pageable, null)));
+            .getComputeResourcesOfCloudService(UUID.randomUUID(), new ListParameters(pageable, null)));
 
         var mvcResult = mockMvc.perform(get(url)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk()).andReturn();
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk()).andReturn();
 
         var dtoElements = ObjectMapperUtils.mapResponseToList(
-                mvcResult.getResponse().getContentAsString(),
-                "computeResources",
-                ComputeResourceDto.class
+            mvcResult.getResponse().getContentAsString(),
+            "computeResources",
+            ComputeResourceDto.class
         );
         assertThat(dtoElements.size()).isEqualTo(inputList.size());
         // Ensure every element in the input array also exists in the output array.
@@ -397,11 +402,11 @@ public class CloudServiceControllerTest {
         doNothing().when(linkingService).linkCloudServiceAndComputeResource(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(CloudServiceController.class)
-                .linkCloudServiceAndComputeResource(UUID.randomUUID(), null));
+            .linkCloudServiceAndComputeResource(UUID.randomUUID(), null));
         mockMvc.perform(post(url)
-                .content(mapper.writeValueAsString(computeResourceDto))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isNoContent());
+            .content(mapper.writeValueAsString(computeResourceDto))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)).andExpect(status().isNoContent());
     }
 
     @Test
@@ -414,11 +419,11 @@ public class CloudServiceControllerTest {
         doThrow(new NoSuchElementException()).when(linkingService).linkCloudServiceAndComputeResource(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(CloudServiceController.class)
-                .linkCloudServiceAndComputeResource(UUID.randomUUID(), null));
+            .linkCloudServiceAndComputeResource(UUID.randomUUID(), null));
         mockMvc.perform(post(url)
-                .content(mapper.writeValueAsString(computeResourceDto))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
+            .content(mapper.writeValueAsString(computeResourceDto))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
     }
 
     @Test
@@ -426,7 +431,7 @@ public class CloudServiceControllerTest {
     void unlinkCloudServiceAndComputeResource_returnNoContent() {
         doNothing().when(linkingService).unlinkCloudServiceAndComputeResource(any(), any());
         var url = linkBuilderService.urlStringTo(methodOn(CloudServiceController.class)
-                .unlinkCloudServiceAndComputeResource(UUID.randomUUID(), UUID.randomUUID()));
+            .unlinkCloudServiceAndComputeResource(UUID.randomUUID(), UUID.randomUUID()));
         mockMvc.perform(delete(url).accept(MediaType.APPLICATION_JSON)).andExpect(status().isNoContent());
     }
 
@@ -435,7 +440,7 @@ public class CloudServiceControllerTest {
     void unlinkCloudServiceToComputeResource_returnNotFound() {
         doThrow(new NoSuchElementException()).when(linkingService).unlinkCloudServiceAndComputeResource(any(), any());
         var url = linkBuilderService.urlStringTo(methodOn(CloudServiceController.class)
-                .unlinkCloudServiceAndComputeResource(UUID.randomUUID(), UUID.randomUUID()));
+            .unlinkCloudServiceAndComputeResource(UUID.randomUUID(), UUID.randomUUID()));
         mockMvc.perform(delete(url).accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
     }
 
@@ -444,7 +449,7 @@ public class CloudServiceControllerTest {
     void unlinkCloudServiceToComputeResource_returnBadRequest() {
         doThrow(new EntityReferenceConstraintViolationException("")).when(linkingService).unlinkCloudServiceAndComputeResource(any(), any());
         var url = linkBuilderService.urlStringTo(methodOn(CloudServiceController.class)
-                .unlinkCloudServiceAndComputeResource(UUID.randomUUID(), UUID.randomUUID()));
+            .unlinkCloudServiceAndComputeResource(UUID.randomUUID(), UUID.randomUUID()));
         mockMvc.perform(delete(url).accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
     }
 }

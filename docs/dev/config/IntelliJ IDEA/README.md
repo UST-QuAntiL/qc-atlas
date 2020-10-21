@@ -23,8 +23,8 @@
   - Go to "Editor > Code Style"  
   - Click on the gear icon (right of "Scheme:")  
   - Click "Import Scheme"  
-  - Choose "IntelliJ IDEA code style XML"
-  - Navigate to `intellij-idea-code-style.xml`. It is located in `docs/dev/config/IntelliJ IDEA`.  
+  - Choose "CheckStyle Configuration"
+  - Navigate to `checkstyle.xml`. It is located in `docs/dev/config/IntelliJ IDEA`.  
   - Click "Apply"
   - Click "OK"  
   - Click "Close"  

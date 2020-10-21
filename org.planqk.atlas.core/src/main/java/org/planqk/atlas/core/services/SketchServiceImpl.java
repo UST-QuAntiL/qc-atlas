@@ -30,12 +30,12 @@ import org.planqk.atlas.core.model.Sketch;
 import org.planqk.atlas.core.repository.ImageRepository;
 import org.planqk.atlas.core.repository.SketchRepository;
 import org.planqk.atlas.core.util.ServiceUtils;
-
-import lombok.AllArgsConstructor;
-import lombok.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import lombok.AllArgsConstructor;
+import lombok.NonNull;
 
 @Service
 @AllArgsConstructor
@@ -65,14 +65,14 @@ public class SketchServiceImpl implements SketchService {
     public Sketch addSketchToAlgorithm(@NonNull UUID algorithmId, MultipartFile file, String description, String baseURL) {
         try {
             // Sketch
-            Sketch sketch = new Sketch();
+            final Sketch sketch = new Sketch();
             sketch.setDescription(description);
             final Algorithm algorithm = algorithmService.findById(algorithmId);
             sketch.setAlgorithm(algorithm);
             final Sketch persistedSketch = sketchRepository.save(sketch);
-            URL imageUrl = new URL(baseURL + "/algorithms/" + algorithmId + "/sketches/" + persistedSketch.getId());
+            final URL imageUrl = new URL(baseURL + "/algorithms/" + algorithmId + "/sketches/" + persistedSketch.getId());
             persistedSketch.setImageURL(imageUrl);
-            Sketch persistedSketch2 = sketchRepository.save(persistedSketch);
+            final Sketch persistedSketch2 = sketchRepository.save(persistedSketch);
             // image
             final Image image = new Image();
             image.setId(sketch.getId());
@@ -102,5 +102,4 @@ public class SketchServiceImpl implements SketchService {
     public Image getImageBySketch(@NonNull UUID sketchId) {
         return this.imageRepository.findImageBySketchId(sketchId);
     }
-
 }
