@@ -105,7 +105,6 @@ public class AtlasExceptionHandler {
     }
 
     // Return stacktrace to client if another exception occurs.
-    // TODO: When using the app in production this may be removed or overthought
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Exception> handleOtherException(Exception e) {
         log.error(e.getMessage(), e);

@@ -54,7 +54,7 @@ public class ListParametersMethodArgumentResolver extends PageableHandlerMethodA
         final Sort sort = sortResolver.resolveArgument(methodParameter, mavContainer, webRequest, binderFactory);
         Pageable pageable = getPageable(methodParameter, page, pageSize);
 
-        if ((page != null && pageSize != null) && (page.equals("-1") && pageSize.equals("-1"))) {
+        if ((page != null && pageSize != null) && ("-1".equals(page) && "-1".equals(pageSize))) {
             pageable = Pageable.unpaged();
         }
 
