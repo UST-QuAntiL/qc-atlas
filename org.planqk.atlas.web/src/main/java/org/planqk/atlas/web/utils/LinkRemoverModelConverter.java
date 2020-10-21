@@ -45,23 +45,20 @@ public class LinkRemoverModelConverter implements ModelConverter {
         } else {
             type = Json.mapper().constructType(annotatedType.getType());
         }
-        if (type != null) {
-            final var cls = type.getRawClass();
-            if (RepresentationModel.class.isAssignableFrom(cls)) {
-                if (annotatedType.isResolveAsRef()) {
-                    // Call resolve() with resolveAsRef = false, so this method here is called again
-                    // and we get to edit the type's real schema.
-                    context.resolve(annotatedType.resolveAsRef(false));
-                    annotatedType.resolveAsRef(true);
-                }
-                final var schema = chain.next().resolve(annotatedType, context, chain);
-                if (schema == null)
-                    return null;
-                if (schema.getProperties() != null) {
-                    schema.getProperties().remove("_links");
-                }
-                return schema;
+        if (type != null && RepresentationModel.class.isAssignableFrom(type.getRawClass())) {
+            if (annotatedType.isResolveAsRef()) {
+                // Call resolve() with resolveAsRef = false, so this method here is called again
+                // and we get to edit the type's real schema.
+                context.resolve(annotatedType.resolveAsRef(false));
+                annotatedType.resolveAsRef(true);
             }
+            final var schema = chain.next().resolve(annotatedType, context, chain);
+            if (schema == null)
+                return null;
+            if (schema.getProperties() != null) {
+                schema.getProperties().remove("_links");
+            }
+            return schema;
         }
         if (chain.hasNext()) {
             return chain.next().resolve(annotatedType, context, chain);
