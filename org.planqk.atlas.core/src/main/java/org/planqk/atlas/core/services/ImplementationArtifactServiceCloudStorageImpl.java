@@ -36,26 +36,26 @@ public class ImplementationArtifactServiceCloudStorageImpl implements Implementa
     @Autowired
     private final Storage storage;
 
+    //    @Value("${cloudTest}")
     private final String implementationArtifactsBucketName = "planqk-algo-artifacts";
 
     private final ImplementationArtifactRepository implementationArtifactRepository;
 
     private final ImplementationRepository implementationRepository;
 
-
     @Override
     public ImplementationArtifact create(UUID implementationId, MultipartFile file) {
         try {
-            BlobId blobId = BlobId.of(implementationArtifactsBucketName, implementationId + "/" + file.getOriginalFilename());
-            BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType(file.getContentType()).build();
-            Blob blob = storage.create(blobInfo, file.getBytes());
-            ImplementationArtifact implementationArtifact = getImplementationArtifactFromBlob(blob);
-            Optional<ImplementationArtifact> persistedImplementationArtifactOptional =
+            final BlobId blobId = BlobId.of(implementationArtifactsBucketName, implementationId + "/" + file.getOriginalFilename());
+            final BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType(file.getContentType()).build();
+            final Blob blob = storage.create(blobInfo, file.getBytes());
+            final ImplementationArtifact implementationArtifact = getImplementationArtifactFromBlob(blob);
+            final Optional<ImplementationArtifact> persistedImplementationArtifactOptional =
                     implementationArtifactRepository.findByFileURL(implementationArtifact.getFileURL());
-            if (persistedImplementationArtifactOptional.isPresent()) {
-                implementationArtifact.setId(persistedImplementationArtifactOptional.get().getId());
-            }
-            Implementation implementation = ServiceUtils.findById(implementationId, Implementation.class, implementationRepository);
+
+            persistedImplementationArtifactOptional.ifPresent(artifact -> implementationArtifact.setId(artifact.getId()));
+
+            final Implementation implementation = ServiceUtils.findById(implementationId, Implementation.class, implementationRepository);
             implementationArtifact.setImplementation(implementation);
             return implementationArtifactRepository.save(implementationArtifact);
         } catch (IOException e) {
