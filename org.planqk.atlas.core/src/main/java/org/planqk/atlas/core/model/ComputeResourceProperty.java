@@ -25,10 +25,12 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import org.hibernate.annotations.TypeDef;
+
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.hibernate.annotations.TypeDef;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -56,5 +58,5 @@ public class ComputeResourceProperty extends HasId {
     @JoinColumn(name = "compute_resource_id")
     @EqualsAndHashCode.Exclude
     private ComputeResource computeResource;
-    
+
 }

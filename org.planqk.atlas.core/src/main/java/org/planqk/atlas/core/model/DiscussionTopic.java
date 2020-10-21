@@ -16,12 +16,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
+
 package org.planqk.atlas.core.model;
 
 import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.Set;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -39,6 +39,7 @@ import lombok.EqualsAndHashCode;
 public class DiscussionTopic extends KnowledgeArtifact {
 
     private String title;
+
     private String description;
 
     @Enumerated(EnumType.STRING)

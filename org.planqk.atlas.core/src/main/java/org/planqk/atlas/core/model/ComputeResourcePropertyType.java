@@ -30,6 +30,8 @@ import lombok.EqualsAndHashCode;
 public class ComputeResourcePropertyType extends HasId {
 
     private String name;
+
     private ComputeResourcePropertyDataType datatype;
+
     private String description;
 }

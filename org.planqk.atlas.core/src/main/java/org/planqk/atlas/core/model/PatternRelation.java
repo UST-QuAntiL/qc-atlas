@@ -20,7 +20,6 @@
 package org.planqk.atlas.core.model;
 
 import java.net.URI;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;

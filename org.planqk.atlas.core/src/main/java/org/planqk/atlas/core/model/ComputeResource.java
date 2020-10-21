@@ -21,7 +21,6 @@ package org.planqk.atlas.core.model;
 
 import java.util.HashSet;
 import java.util.Set;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -47,7 +46,9 @@ import lombok.ToString;
 public class ComputeResource extends HasId {
 
     private String name;
+
     private String vendor;
+
     private String technology;
 
     @OneToMany(fetch = FetchType.LAZY,

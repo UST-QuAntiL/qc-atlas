@@ -22,7 +22,6 @@ package org.planqk.atlas.core.model;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -47,9 +46,13 @@ import lombok.ToString;
 public class CloudService extends HasId {
 
     private String name;
+
     private String provider;
+
     private URL url;
+
     private String description;
+
     private String costModel;
 
     @EqualsAndHashCode.Exclude

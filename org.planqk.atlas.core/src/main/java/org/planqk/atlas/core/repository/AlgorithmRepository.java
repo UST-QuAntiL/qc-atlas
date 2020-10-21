@@ -22,7 +22,6 @@ package org.planqk.atlas.core.repository;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -42,7 +41,8 @@ public interface AlgorithmRepository extends JpaRepository<Algorithm, UUID> {
         return findByNameContainingIgnoreCaseOrAcronymContainingIgnoreCaseOrProblemContainingIgnoreCase(search, search, search, pageable);
     }
 
-    Page<Algorithm> findByNameContainingIgnoreCaseOrAcronymContainingIgnoreCaseOrProblemContainingIgnoreCase(String name, String acronym, String problem, Pageable pageable);
+    Page<Algorithm> findByNameContainingIgnoreCaseOrAcronymContainingIgnoreCaseOrProblemContainingIgnoreCase(String name, String acronym,
+                                                                                                             String problem, Pageable pageable);
 
     @Query("SELECT algo " +
             "FROM Algorithm algo " +

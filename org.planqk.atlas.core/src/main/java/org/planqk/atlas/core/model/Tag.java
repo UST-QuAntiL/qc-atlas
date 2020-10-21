@@ -21,7 +21,6 @@ package org.planqk.atlas.core.model;
 
 import java.util.HashSet;
 import java.util.Set;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -38,10 +37,10 @@ import lombok.NonNull;
 @Data
 public class Tag {
 
-    String category;
+    private String category;
 
     @Id
-    String value;
+    private String value;
 
     @ManyToMany(mappedBy = "tags", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @EqualsAndHashCode.Exclude

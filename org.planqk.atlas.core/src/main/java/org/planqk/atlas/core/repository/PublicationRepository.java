@@ -16,13 +16,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
+
 package org.planqk.atlas.core.repository;
 
 import java.util.Set;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Publication;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -39,10 +39,15 @@ import org.springframework.stereotype.Repository;
 public interface PublicationRepository extends JpaRepository<Publication, UUID> {
 
     default Page<Publication> findAll(String search, Pageable pageable) {
-        return findByTitleContainingIgnoreCaseOrDoiContainingIgnoreCaseOrUrlContainingIgnoreCaseOrAuthorsContainingIgnoreCase(search, search, search, search, pageable);
+        return findByTitleContainingIgnoreCaseOrDoiContainingIgnoreCaseOrUrlContainingIgnoreCaseOrAuthorsContainingIgnoreCase(search, search, search,
+                search, pageable);
     }
 
-    Page<Publication> findByTitleContainingIgnoreCaseOrDoiContainingIgnoreCaseOrUrlContainingIgnoreCaseOrAuthorsContainingIgnoreCase(String title, String doi, String url, String author, Pageable pageable);
+    Page<Publication> findByTitleContainingIgnoreCaseOrDoiContainingIgnoreCaseOrUrlContainingIgnoreCaseOrAuthorsContainingIgnoreCase(String title,
+                                                                                                                                     String doi,
+                                                                                                                                     String url,
+                                                                                                                                     String author,
+                                                                                                                                     Pageable pageable);
 
     boolean existsById(UUID id);
 

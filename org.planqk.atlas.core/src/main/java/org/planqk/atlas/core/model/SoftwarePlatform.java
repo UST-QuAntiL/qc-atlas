@@ -22,7 +22,6 @@ package org.planqk.atlas.core.model;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -48,8 +47,11 @@ import lombok.ToString;
 public class SoftwarePlatform extends HasId {
 
     private String name;
+
     private URL link;
+
     private String licence;
+
     private String version;
 
     @EqualsAndHashCode.Exclude

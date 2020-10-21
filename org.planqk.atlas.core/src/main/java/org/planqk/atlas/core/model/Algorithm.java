@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -180,7 +179,7 @@ public class Algorithm extends KnowledgeArtifact {
     }
 
     public Set<AlgorithmRelation> getAlgorithmRelations() {
-        Set<AlgorithmRelation> algorithmRelations = new HashSet<>(sourceAlgorithmRelations);
+        final Set<AlgorithmRelation> algorithmRelations = new HashSet<>(sourceAlgorithmRelations);
         algorithmRelations.addAll(targetAlgorithmRelations);
         return algorithmRelations;
     }
