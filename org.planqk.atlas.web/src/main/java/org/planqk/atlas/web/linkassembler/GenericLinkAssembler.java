@@ -31,6 +31,9 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 
+import lombok.Getter;
+import lombok.Setter;
+
 public abstract class GenericLinkAssembler<T> {
 
     private final Class<T> entityClass = inferEntityClass();
@@ -39,6 +42,8 @@ public abstract class GenericLinkAssembler<T> {
     private PagedResourcesAssembler<T> pagedResourcesAssembler;
 
     @Autowired
+    @Getter
+    @Setter
     private LinkBuilderService links;
 
     public abstract void addLinks(EntityModel<T> resource);
