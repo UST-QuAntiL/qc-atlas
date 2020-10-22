@@ -43,31 +43,31 @@ public class AlgorithmAssembler extends GenericLinkAssembler<AlgorithmDto> {
 
     @Override
     public void addLinks(EntityModel<AlgorithmDto> resource) {
-        resource.add(links.linkTo(methodOn(AlgorithmController.class).getAlgorithm(getId(resource))).withSelfRel());
-        resource.add(links.linkTo(methodOn(AlgorithmController.class)
+        resource.add(getLinks().linkTo(methodOn(AlgorithmController.class).getAlgorithm(getId(resource))).withSelfRel());
+        resource.add(getLinks().linkTo(methodOn(AlgorithmController.class)
             .getProblemTypesOfAlgorithm(getId(resource), ListParameters.getDefault()))
             .withRel(Constants.PROBLEM_TYPES));
-        resource.add(links.linkTo(methodOn(AlgorithmRelationController.class)
+        resource.add(getLinks().linkTo(methodOn(AlgorithmRelationController.class)
             .getAlgorithmRelationsOfAlgorithm(getId(resource), ListParameters.getDefault()))
             .withRel(Constants.ALGORITHM_RELATIONS));
-        resource.add(links.linkTo(methodOn(AlgorithmController.class)
+        resource.add(getLinks().linkTo(methodOn(AlgorithmController.class)
             .getPublicationsOfAlgorithm(getId(resource), ListParameters.getDefault()))
             .withRel(Constants.PUBLICATIONS));
-        resource.add(links.linkTo(methodOn(AlgorithmController.class)
+        resource.add(getLinks().linkTo(methodOn(AlgorithmController.class)
             .getPatternRelationsOfAlgorithm(getId(resource), ListParameters.getDefault()))
             .withRel(Constants.PATTERN_RELATIONS));
-        resource.add(links.linkTo(methodOn(AlgorithmController.class)
+        resource.add(getLinks().linkTo(methodOn(AlgorithmController.class)
             .getSketches(getId(resource)))
             .withRel(Constants.PATTERN_RELATIONS));
     }
 
     public void addProblemTypeLink(CollectionModel<EntityModel<ProblemTypeDto>> resources, UUID id) {
-        resources.add(links.linkTo(methodOn(AlgorithmController.class)
+        resources.add(getLinks().linkTo(methodOn(AlgorithmController.class)
             .getProblemTypesOfAlgorithm(id, ListParameters.getDefault())).withSelfRel());
     }
 
     public void addApplicationAreaLink(CollectionModel<EntityModel<ApplicationAreaDto>> resources, UUID id) {
-        resources.add(links.linkTo(methodOn(AlgorithmController.class)
+        resources.add(getLinks().linkTo(methodOn(AlgorithmController.class)
             .getApplicationAreasOfAlgorithm(id, ListParameters.getDefault())).withSelfRel());
     }
 
@@ -75,21 +75,21 @@ public class AlgorithmAssembler extends GenericLinkAssembler<AlgorithmDto> {
     }
 
     public void addPublicationLink(CollectionModel<EntityModel<PublicationDto>> resources, UUID id) {
-        resources.add(links.linkTo(methodOn(AlgorithmController.class)
+        resources.add(getLinks().linkTo(methodOn(AlgorithmController.class)
             .getPublicationsOfAlgorithm(id, ListParameters.getDefault())).withSelfRel());
     }
 
     public void addAlgorithmRelationLink(CollectionModel<EntityModel<AlgorithmRelationDto>> resultCollection,
                                          UUID sourceAlgorithm_id) {
         resultCollection.add(
-            links.linkTo(methodOn(AlgorithmRelationController.class)
+            getLinks().linkTo(methodOn(AlgorithmRelationController.class)
                 .getAlgorithmRelationsOfAlgorithm(sourceAlgorithm_id, ListParameters.getDefault())).withSelfRel());
     }
 
     public void addPatternRelationLink(CollectionModel<EntityModel<PatternRelationDto>> resultCollection, UUID
         id) {
         resultCollection.add(
-            links.linkTo(methodOn(AlgorithmController.class)
+            getLinks().linkTo(methodOn(AlgorithmController.class)
                 .getPatternRelationsOfAlgorithm(id, ListParameters.getDefault())).withSelfRel());
     }
 

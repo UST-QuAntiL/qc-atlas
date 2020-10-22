@@ -33,7 +33,7 @@ public class ComputeResourceAssembler extends GenericLinkAssembler<ComputeResour
 
     @Override
     public void addLinks(EntityModel<ComputeResourceDto> resource) {
-        resource.add(links.linkTo(methodOn(ComputeResourceController.class).getComputeResource(getId(resource))).withSelfRel());
+        resource.add(getLinks().linkTo(methodOn(ComputeResourceController.class).getComputeResource(getId(resource))).withSelfRel());
     }
 
     private UUID getId(EntityModel<ComputeResourceDto> resource) {

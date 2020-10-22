@@ -37,10 +37,10 @@ public class PatternRelationAssembler extends GenericLinkAssembler<PatternRelati
     @Override
     public void addLinks(EntityModel<PatternRelationDto> resource) {
         resource.add(
-            links.linkTo(methodOn(PatternRelationController.class).getPatternRelation(getId(resource))).withSelfRel());
-        resource.add(links.linkTo(methodOn(AlgorithmController.class).getAlgorithm(getAlgorithmId(resource)))
+            getLinks().linkTo(methodOn(PatternRelationController.class).getPatternRelation(getId(resource))).withSelfRel());
+        resource.add(getLinks().linkTo(methodOn(AlgorithmController.class).getAlgorithm(getAlgorithmId(resource)))
             .withRel(Constants.ALGORITHMS));
-        resource.add(links.linkTo(methodOn(PatternRelationTypeController.class).getPatternRelationType(getTypeId(resource)))
+        resource.add(getLinks().linkTo(methodOn(PatternRelationTypeController.class).getPatternRelationType(getTypeId(resource)))
             .withRel(Constants.PATTERN_RELATION_TYPES));
     }
 

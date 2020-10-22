@@ -33,7 +33,7 @@ public class PatternRelationTypeAssembler extends GenericLinkAssembler<PatternRe
 
     @Override
     public void addLinks(EntityModel<PatternRelationTypeDto> resource) {
-        resource.add(links.linkTo(methodOn(PatternRelationTypeController.class).getPatternRelationType(getId(resource)))
+        resource.add(getLinks().linkTo(methodOn(PatternRelationTypeController.class).getPatternRelationType(getId(resource)))
             .withSelfRel());
     }
 

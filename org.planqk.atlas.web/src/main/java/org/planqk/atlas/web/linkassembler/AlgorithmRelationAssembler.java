@@ -34,11 +34,11 @@ public class AlgorithmRelationAssembler extends GenericLinkAssembler<AlgorithmRe
 
     @Override
     public void addLinks(EntityModel<AlgorithmRelationDto> resource) {
-        resource.add(links.linkTo(methodOn(AlgorithmController.class).getAlgorithm(getSourceAlgorithmId(resource)))
+        resource.add(getLinks().linkTo(methodOn(AlgorithmController.class).getAlgorithm(getSourceAlgorithmId(resource)))
             .withRel("sourceAlgorithm"));
-        resource.add(links.linkTo(methodOn(AlgorithmController.class).getAlgorithm(getTargetAlgorithmId(resource)))
+        resource.add(getLinks().linkTo(methodOn(AlgorithmController.class).getAlgorithm(getTargetAlgorithmId(resource)))
             .withRel("targetAlgorithm"));
-        resource.add(links.linkTo(
+        resource.add(getLinks().linkTo(
             methodOn(AlgorithmRelationTypeController.class).getAlgorithmRelationType(getAlgoRelationTypeId(resource)))
             .withRel("algoRelationType"));
     }

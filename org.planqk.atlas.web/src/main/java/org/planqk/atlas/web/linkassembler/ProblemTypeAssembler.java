@@ -34,8 +34,8 @@ public class ProblemTypeAssembler extends GenericLinkAssembler<ProblemTypeDto> {
 
     @Override
     public void addLinks(EntityModel<ProblemTypeDto> resource) {
-        resource.add(links.linkTo(methodOn(ProblemTypeController.class).getProblemType(getId(resource))).withSelfRel());
-        resource.add(links.linkTo(methodOn(ProblemTypeController.class).getProblemTypeParentList(getId(resource)))
+        resource.add(getLinks().linkTo(methodOn(ProblemTypeController.class).getProblemType(getId(resource))).withSelfRel());
+        resource.add(getLinks().linkTo(methodOn(ProblemTypeController.class).getProblemTypeParentList(getId(resource)))
             .withRel(Constants.PROBLEM_TYPE_PARENTS));
     }
 
