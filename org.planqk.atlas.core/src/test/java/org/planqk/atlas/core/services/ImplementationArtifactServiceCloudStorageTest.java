@@ -1,6 +1,7 @@
 package org.planqk.atlas.core.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.times;
 
 import java.io.IOException;
@@ -16,11 +17,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.planqk.atlas.core.exceptions.CloudStorageException;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.ImplementationArtifact;
 import org.planqk.atlas.core.repository.ImplementationArtifactRepository;
 import org.planqk.atlas.core.repository.ImplementationRepository;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,10 +32,15 @@ import org.springframework.web.multipart.MultipartFile;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
+import com.google.cloud.storage.Bucket;
 import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageException;
 
+/**
+ * Test class for ImplementationArtifactServiceCloudStorageImpl.
+ * The class is using mock based tests.
+ */
 @ActiveProfiles({"stoneOne"})
-// @TestPropertySource("src/test/resources/application.properties")
 public class ImplementationArtifactServiceCloudStorageTest extends AtlasDatabaseTestBase {
 
     private final String implementationArtifactsBucketName = "planqk-algo-artifacts";
@@ -50,6 +59,9 @@ public class ImplementationArtifactServiceCloudStorageTest extends AtlasDatabase
 
     @Mock
     private Storage storage;
+
+    @Mock
+    private Bucket bucket;
 
     private ImplementationArtifact implementationArtifact;
 
@@ -80,7 +92,7 @@ public class ImplementationArtifactServiceCloudStorageTest extends AtlasDatabase
     }
 
     @Test
-    public void testCreate() throws IOException {
+    public void testCreate_success() throws IOException {
 
         // mock
         BlobId blobId =
@@ -108,7 +120,24 @@ public class ImplementationArtifactServiceCloudStorageTest extends AtlasDatabase
     }
 
     @Test
-    public void testFindById() throws IOException {
+    public void testCreate_cloud_storage_exception() throws IOException {
+
+        // mock
+        BlobId blobId =
+                BlobId.of(this.implementationArtifactsBucketName, implementationArtifact.getId() + "/" + this.multipartFile.getOriginalFilename());
+        BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType(this.multipartFile.getContentType()).build();
+
+        Mockito.when(this.storage.create(blobInfo, getMultipartFile().getBytes())).thenThrow(StorageException.class);
+        // call + test
+
+        assertThatThrownBy(() -> {
+            implementationArtifactServiceCloudStorage.create(implementationArtifact.getId(), this.multipartFile);
+        }).isInstanceOf(CloudStorageException.class)
+                .hasMessageContaining("could not create in storage");
+    }
+
+    @Test
+    public void testFindById() {
 
         // mock
         Mockito.when(this.implementationArtifactRepository.findById(this.implementationArtifact.getId()
@@ -125,6 +154,69 @@ public class ImplementationArtifactServiceCloudStorageTest extends AtlasDatabase
         assertThat(persistedArtifact.getMimeType()).isEqualTo(this.implementationArtifact.getMimeType());
         assertThat(persistedArtifact.getName()).isEqualTo(this.implementationArtifact.getName());
 
+    }
+
+    @Test
+    public void testFindAllByImplementationId() {
+        // mock
+        Pageable pageable = PageRequest.of(1, 1);
+        Mockito.when(this.implementationArtifactRepository.findImplementationArtifactsByImplementation_Id(Mockito.any(), Mockito.any()))
+                .thenReturn(null);
+
+        // call
+        implementationArtifactServiceCloudStorage.findAllByImplementationId(this.persistedImplementation.getId(), pageable);
+
+        // test
+        Mockito.verify(this.implementationArtifactRepository, times(1)).findImplementationArtifactsByImplementation_Id(Mockito.any(), Mockito.any());
+    }
+
+    @Test
+    public void testGetImplementationArtifactContent() {
+        // mock
+        Mockito.when(this.implementationArtifactRepository.findById(this.implementationArtifact.getId()))
+                .thenReturn(Optional.of(this.implementationArtifact));
+        Mockito.when(this.storage.get(implementationArtifactsBucketName))
+                .thenReturn(this.bucket);
+
+        Mockito.when(this.bucket.get(this.implementationArtifact.getFileURL()))
+                .thenReturn(this.mockBlob);
+        // call
+        byte[] result = implementationArtifactServiceCloudStorage.getImplementationArtifactContent(this.implementationArtifact.getId());
+
+        // test
+        Mockito.verify(this.implementationArtifactRepository, times(1)).findById(this.implementationArtifact.getId());
+        assertThat(result).isEqualTo(this.mockBlob.getContent());
+    }
+
+    @Test
+    public void testDelete_success() {
+
+        // mock
+        Mockito.when(this.implementationArtifactRepository.findById(this.implementationArtifact.getId()
+        )).thenReturn(Optional.of(this.implementationArtifact));
+
+        // call
+        implementationArtifactServiceCloudStorage.delete(implementationArtifact.getId());
+
+        // test
+        Mockito.verify(this.storage, times(1)).delete(Mockito.any(BlobId.class));
+        Mockito.verify(this.implementationArtifactRepository, times(1)).delete(this.implementationArtifact);
+    }
+
+    @Test
+    public void testDelete_cloud_storage_exception() {
+
+        // mock
+        Mockito.when(this.implementationArtifactRepository.findById(this.implementationArtifact.getId()
+        )).thenReturn(Optional.of(this.implementationArtifact));
+        Mockito.when(this.storage.delete(Mockito.any(BlobId.class)
+        )).thenThrow(StorageException.class);
+
+        // call + test
+        assertThatThrownBy(() -> {
+            implementationArtifactServiceCloudStorage.delete(implementationArtifact.getId());
+        }).isInstanceOf(CloudStorageException.class)
+                .hasMessageContaining("could not delete from storage");
     }
 
     private MultipartFile getMultipartFile() {

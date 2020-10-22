@@ -24,7 +24,6 @@ import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Bucket;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageException;
-import com.google.cloud.storage.StorageOptions;
 
 import lombok.AllArgsConstructor;
 
@@ -77,7 +76,7 @@ public class ImplementationArtifactServiceCloudStorageImpl implements Implementa
 
     @Override
     public byte[] getImplementationArtifactContent(UUID id) {
-        Bucket bucket = StorageOptions.getDefaultInstance().getService().get(implementationArtifactsBucketName);
+        Bucket bucket = this.storage.get(implementationArtifactsBucketName);
         ImplementationArtifact implementationArtifact = ServiceUtils.findById(id, ImplementationArtifact.class, implementationArtifactRepository);
         Blob blob = bucket.get(implementationArtifact.getFileURL());
         return blob.getContent();
@@ -98,7 +97,6 @@ public class ImplementationArtifactServiceCloudStorageImpl implements Implementa
         } catch (StorageException e) {
             throw new CloudStorageException("could not delete from storage");
         }
-
     }
 
     private ImplementationArtifact getImplementationArtifactFromBlob(Blob blob) {
