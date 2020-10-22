@@ -31,7 +31,6 @@ import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
 
 @ActiveProfiles({"stoneOne"})
-// @TestPropertySource("src/test/resources/application.properties")
 public class ImplementationArtifactServiceCloudStorageTest extends AtlasDatabaseTestBase {
 
     private final String implementationArtifactsBucketName = "planqk-algo-artifacts";

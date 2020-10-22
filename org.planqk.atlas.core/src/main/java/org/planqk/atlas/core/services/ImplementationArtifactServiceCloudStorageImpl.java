@@ -2,7 +2,6 @@ package org.planqk.atlas.core.services;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.planqk.atlas.core.exceptions.CloudStorageException;
@@ -11,7 +10,7 @@ import org.planqk.atlas.core.model.ImplementationArtifact;
 import org.planqk.atlas.core.repository.ImplementationArtifactRepository;
 import org.planqk.atlas.core.repository.ImplementationRepository;
 import org.planqk.atlas.core.util.ServiceUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,18 +25,17 @@ import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageException;
 import com.google.cloud.storage.StorageOptions;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @Profile("stoneOne")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ImplementationArtifactServiceCloudStorageImpl implements ImplementationArtifactService {
 
-    @Autowired
     private final Storage storage;
 
-    //    @Value("${cloudTest}")
-    private final String implementationArtifactsBucketName = "planqk-algo-artifacts";
+    @Value("${cloud.storage.implementation-artifacts-bucket-name}")
+    private String implementationArtifactsBucketName;
 
     private final ImplementationArtifactRepository implementationArtifactRepository;
 
@@ -50,10 +48,9 @@ public class ImplementationArtifactServiceCloudStorageImpl implements Implementa
             final BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType(file.getContentType()).build();
             final Blob blob = storage.create(blobInfo, file.getBytes());
             final ImplementationArtifact implementationArtifact = getImplementationArtifactFromBlob(blob);
-            final Optional<ImplementationArtifact> persistedImplementationArtifactOptional =
-                    implementationArtifactRepository.findByFileURL(implementationArtifact.getFileURL());
 
-            persistedImplementationArtifactOptional.ifPresent(artifact -> implementationArtifact.setId(artifact.getId()));
+            implementationArtifactRepository.findByFileURL(implementationArtifact.getFileURL())
+                .ifPresent(persistedImplementationArtifact -> implementationArtifact.setId(persistedImplementationArtifact.getId()));
 
             final Implementation implementation = ServiceUtils.findById(implementationId, Implementation.class, implementationRepository);
             implementationArtifact.setImplementation(implementation);
@@ -98,7 +95,6 @@ public class ImplementationArtifactServiceCloudStorageImpl implements Implementa
         } catch (StorageException e) {
             throw new CloudStorageException("could not delete from storage");
         }
-
     }
 
     private ImplementationArtifact getImplementationArtifactFromBlob(Blob blob) {
