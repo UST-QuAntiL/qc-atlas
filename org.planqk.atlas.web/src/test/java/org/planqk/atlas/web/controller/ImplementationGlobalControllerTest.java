@@ -19,37 +19,44 @@
 
 package org.planqk.atlas.web.controller;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import java.util.List;
 import java.util.UUID;
 
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Implementation;
+import org.planqk.atlas.core.model.ImplementationArtifact;
+import org.planqk.atlas.core.services.ImplementationArtifactService;
 import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
 import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
 import org.planqk.atlas.web.linkassembler.LinkBuilderService;
 import org.planqk.atlas.web.utils.ListParameters;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.SneakyThrows;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
+import lombok.SneakyThrows;
 
 @WebMvcTest(controllers = ImplementationGlobalController.class)
 @ExtendWith(MockitoExtension.class)
@@ -59,6 +66,9 @@ public class ImplementationGlobalControllerTest {
 
     @MockBean
     private ImplementationService implementationService;
+
+    @MockBean
+    private ImplementationArtifactService implementationArtifactService;
 
     @Autowired
     private MockMvc mockMvc;
@@ -121,4 +131,29 @@ public class ImplementationGlobalControllerTest {
                 .andExpect(jsonPath("$.id").value(impl.getId().toString()))
                 .andExpect(jsonPath("$.implementedAlgorithmId").value(algo.getId().toString()));
     }
+
+    @Test
+    public void createImplementationArtifactForImplementation_returnOk() throws Exception {
+        var impl = new Implementation();
+        impl.setName("implementation for Shor");
+        impl.setId(UUID.randomUUID());
+
+        byte[] testFile = new byte[20];
+        final MockMultipartFile file = new MockMultipartFile("file", testFile);
+
+        var artifact = new ImplementationArtifact();
+        artifact.setId(UUID.randomUUID());
+        artifact.setImplementation(impl);
+        doReturn(new ImplementationArtifact()).when(implementationArtifactService).create(impl.getId(), file);
+
+        final String path = linkBuilderService.urlStringTo(methodOn(ImplementationGlobalController.class)
+                .createImplementationArtifactForImplementation(impl.getId(), file));
+
+        // call
+        ResultActions resultActions = mockMvc.perform(multipart(path).file(file)).andExpect(status().isCreated());
+
+        // test
+        Mockito.verify(implementationArtifactService, times(1)).create(impl.getId(), file);
+    }
+
 }
