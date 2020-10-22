@@ -6,7 +6,6 @@ import static org.mockito.Mockito.when;
 import java.util.Random;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -46,11 +45,6 @@ public class ImplementationArtifactServiceCloudStorageIntegrationTest extends At
 
     @Mock
     Blob mockBlob;
-
-    @BeforeEach
-    public void initialize() {
-
-    }
 
     @Test
     public void givenImplementationArtifactNotExists_WhenCreate_ThenShouldBeCreatedAndLinkedToImplementation() {
