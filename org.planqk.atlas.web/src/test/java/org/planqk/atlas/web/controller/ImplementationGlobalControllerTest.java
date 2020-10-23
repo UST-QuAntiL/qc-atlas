@@ -147,91 +147,89 @@ public class ImplementationGlobalControllerTest {
     }
 
     @Test
-    public void testCreateImplementationArtifactForImplementation_returnOk() throws Exception {
+    public void testCreateFileForImplementation_returnOk() throws Exception {
         var impl = new Implementation();
         impl.setName("implementation for Shor");
         impl.setId(UUID.randomUUID());
 
         byte[] testFile = new byte[20];
         final MockMultipartFile file = new MockMultipartFile("file", testFile);
-        doReturn(new ImplementationArtifact()).when(implementationArtifactService).create(impl.getId(), file);
+        doReturn(new File()).when(fileService).create(impl.getId(), file);
 
         final String path = linkBuilderService.urlStringTo(methodOn(ImplementationGlobalController.class)
-                .createImplementationArtifactForImplementation(impl.getId(), file));
+                .createFileForImplementation(impl.getId(), file));
 
         // call
-        ResultActions resultActions = mockMvc.perform(multipart(path).file(file)).andExpect(status().isCreated());
+        ResultActions resultActions = mockMvc.perform(multipart(path).file(file));
 
         // test
-        Mockito.verify(implementationArtifactService, times(1)).create(impl.getId(), file);
+        resultActions.andExpect(status().isCreated());
+        Mockito.verify(fileService, times(1)).create(impl.getId(), file);
     }
 
     @Test
-    public void testGetAllImplementationArtifactsOfImplementation_response_OK() throws Exception {
+    public void testGetAllFilesOfImplementation_response_OK() throws Exception {
+        // Given
         var impl = new Implementation();
         impl.setName("implementation for Shor");
         impl.setId(UUID.randomUUID());
 
         final ListParameters listParameters = new ListParameters(this.pageable, null);
+        when(fileService.findAllByImplementationId(impl.getId(), listParameters.getPageable())).thenReturn(Page.empty());
 
-        when(implementationArtifactService.findAllByImplementationId(impl.getId(), listParameters.getPageable())).thenReturn(Page.empty());
+        // When
+        final String path = linkBuilderService.urlStringTo(methodOn(ImplementationGlobalController.class)
+                .getAllFilesOfImplementation(impl.getId(), listParameters));
+        ResultActions result = mockMvc.perform(get(path).accept(MediaType.APPLICATION_JSON));
+
+
+        // Then
+        result.andExpect(status().isOk());
+        Mockito.verify(fileService, times(1)).findAllByImplementationId(impl.getId(), listParameters.getPageable());
+    }
+
+    @Test
+    public void testGetFileOfImplementation_response_OK() throws Exception {
+        var impl = new Implementation();
+        impl.setName("implementation for Shor");
+        impl.setId(UUID.randomUUID());
+
+        var file = new File();
+        file.setId(UUID.randomUUID());
+        file.setImplementation(impl);
+        file.setMimeType("img/png");
+
+        when(fileService.findById(file.getId())).thenReturn(file);
 
         final String path = linkBuilderService.urlStringTo(methodOn(ImplementationGlobalController.class)
-                .getAllImplementationArtifactsOfImplementation(impl.getId(), listParameters));
+                .getFileOfImplementation(impl.getId(), file.getId()));
 
         MvcResult result = mockMvc.perform(get(path)
                 .accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk()).andReturn();
 
         var resultList = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(),
-                "implementation-artifacts", ImplementationArtifact.class);
+                "file", File.class);
         assertEquals(0, resultList.size());
 
-        Mockito.verify(implementationArtifactService, times(1)).findAllByImplementationId(impl.getId(), listParameters.getPageable());
+        Mockito.verify(fileService, times(1)).findById(file.getId());
     }
 
     @Test
-    public void testGetImplementationArtifactOfImplementation_response_OK() throws Exception {
+    public void testDownloadFileContent_response_OK() throws Exception {
         var impl = new Implementation();
         impl.setName("implementation for Shor");
         impl.setId(UUID.randomUUID());
 
-        var artifact = new ImplementationArtifact();
-        artifact.setId(UUID.randomUUID());
-        artifact.setImplementation(impl);
-        artifact.setMimeType("img/png");
+        var file = new File();
+        file.setId(UUID.randomUUID());
+        file.setImplementation(impl);
+        file.setMimeType("img/png");
 
-        when(implementationArtifactService.findById(artifact.getId())).thenReturn(artifact);
-
-        final String path = linkBuilderService.urlStringTo(methodOn(ImplementationGlobalController.class)
-                .getImplementationArtifactOfImplementation(impl.getId(), artifact.getId()));
-
-        MvcResult result = mockMvc.perform(get(path)
-                .accept(MediaType.APPLICATION_JSON)
-        ).andExpect(status().isOk()).andReturn();
-
-        var resultList = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(),
-                "implementation-artifact", ImplementationArtifact.class);
-        assertEquals(0, resultList.size());
-
-        Mockito.verify(implementationArtifactService, times(1)).findById(artifact.getId());
-    }
-
-    @Test
-    public void testDownloadImplementationArtifactAsFile_response_OK() throws Exception {
-        var impl = new Implementation();
-        impl.setName("implementation for Shor");
-        impl.setId(UUID.randomUUID());
-
-        var artifact = new ImplementationArtifact();
-        artifact.setId(UUID.randomUUID());
-        artifact.setImplementation(impl);
-        artifact.setMimeType("img/png");
-
-        when(implementationArtifactService.findById(artifact.getId())).thenReturn(artifact);
+        when(fileService.findById(file.getId())).thenReturn(file);
 
         final String path = linkBuilderService.urlStringTo(methodOn(ImplementationGlobalController.class)
-                .downloadImplementationArtifactAsFile(impl.getId(), artifact.getId()));
+                .downloadFileContent(impl.getId(), file.getId()));
 
         // call
         mockMvc.perform(get(path)
@@ -239,28 +237,28 @@ public class ImplementationGlobalControllerTest {
         ).andExpect(status().isOk()).andReturn();
 
         // test
-        Mockito.verify(implementationArtifactService, times(1)).findById(artifact.getId());
+        Mockito.verify(fileService, times(1)).findById(file.getId());
     }
 
     @Test
-    public void testDeleteImplementationArtifact_response_no_content() throws Exception {
+    public void testDeleteFile_response_no_content() throws Exception {
         var impl = new Implementation();
         impl.setName("implementation for Shor");
         impl.setId(UUID.randomUUID());
 
-        var artifact = new ImplementationArtifact();
-        artifact.setId(UUID.randomUUID());
-        artifact.setImplementation(impl);
-        artifact.setMimeType("img/png");
+        var file = new File();
+        file.setId(UUID.randomUUID());
+        file.setImplementation(impl);
+        file.setMimeType("img/png");
 
-        doNothing().when(implementationArtifactService).delete(artifact.getId());
+        doNothing().when(fileService).delete(file.getId());
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationGlobalController.class)
-                .deleteImplementationArtifact(impl.getId(), artifact.getId()));
+                .deleteFileOfImplementation(impl.getId(), file.getId()));
         mockMvc.perform(delete(url))
                 .andExpect(status().isNoContent()).andReturn();
 
-        Mockito.verify(implementationArtifactService, times(1)).delete(artifact.getId());
+        Mockito.verify(fileService, times(1)).delete(file.getId());
     }
 
 }
