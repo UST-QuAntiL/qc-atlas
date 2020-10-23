@@ -26,7 +26,7 @@ public enum ComputeResourcePropertyDataType {
         try {
             Long.parseLong(e);
             return true;
-        } catch (Exception ex) {
+        } catch (NumberFormatException ex) {
             return false;
         }
     }),
@@ -35,7 +35,7 @@ public enum ComputeResourcePropertyDataType {
         try {
             Double.parseDouble(e);
             return true;
-        } catch (Exception ex) {
+        } catch (NumberFormatException ex) {
             return false;
         }
     });

@@ -34,7 +34,8 @@ public class DiscussionCommentAssembler extends GenericLinkAssembler<DiscussionC
     @Override
     public void addLinks(EntityModel<DiscussionCommentDto> resource) {
         resource
-            .add(getLinks().linkTo(methodOn(DiscussionTopicController.class).getDiscussionComment(getTopicId(resource), getID(resource))).withSelfRel());
+            .add(getLinks().linkTo(methodOn(DiscussionTopicController.class).getDiscussionComment(getTopicId(resource), getID(resource)))
+                .withSelfRel());
     }
 
     private UUID getID(EntityModel<DiscussionCommentDto> resource) {

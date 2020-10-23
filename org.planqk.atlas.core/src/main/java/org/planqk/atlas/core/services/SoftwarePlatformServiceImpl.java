@@ -56,10 +56,11 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
 
     @Override
     public Page<SoftwarePlatform> searchAllByName(String name, @NonNull Pageable pageable) {
-        if (name == null) {
-            name = "";
+        String nameAsSearchString = name;
+        if (nameAsSearchString == null) {
+            nameAsSearchString = "";
         }
-        return softwarePlatformRepository.findAllByNameContainingIgnoreCase(name, pageable);
+        return softwarePlatformRepository.findAllByNameContainingIgnoreCase(nameAsSearchString, pageable);
     }
 
     @Override
