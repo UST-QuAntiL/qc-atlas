@@ -19,10 +19,14 @@
 
 package org.planqk.atlas.web.controller;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.when;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -48,10 +52,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -63,6 +71,12 @@ import lombok.SneakyThrows;
 @AutoConfigureMockMvc
 @EnableLinkAssemblers
 public class ImplementationGlobalControllerTest {
+
+    private final int page = 0;
+
+    private final int size = 2;
+
+    private final Pageable pageable = PageRequest.of(page, size);
 
     @MockBean
     private ImplementationService implementationService;
@@ -133,17 +147,13 @@ public class ImplementationGlobalControllerTest {
     }
 
     @Test
-    public void createImplementationArtifactForImplementation_returnOk() throws Exception {
+    public void testCreateImplementationArtifactForImplementation_returnOk() throws Exception {
         var impl = new Implementation();
         impl.setName("implementation for Shor");
         impl.setId(UUID.randomUUID());
 
         byte[] testFile = new byte[20];
         final MockMultipartFile file = new MockMultipartFile("file", testFile);
-
-        var artifact = new ImplementationArtifact();
-        artifact.setId(UUID.randomUUID());
-        artifact.setImplementation(impl);
         doReturn(new ImplementationArtifact()).when(implementationArtifactService).create(impl.getId(), file);
 
         final String path = linkBuilderService.urlStringTo(methodOn(ImplementationGlobalController.class)
@@ -154,6 +164,103 @@ public class ImplementationGlobalControllerTest {
 
         // test
         Mockito.verify(implementationArtifactService, times(1)).create(impl.getId(), file);
+    }
+
+    @Test
+    public void testGetAllImplementationArtifactsOfImplementation_response_OK() throws Exception {
+        var impl = new Implementation();
+        impl.setName("implementation for Shor");
+        impl.setId(UUID.randomUUID());
+
+        final ListParameters listParameters = new ListParameters(this.pageable, null);
+
+        when(implementationArtifactService.findAllByImplementationId(impl.getId(), listParameters.getPageable())).thenReturn(Page.empty());
+
+        final String path = linkBuilderService.urlStringTo(methodOn(ImplementationGlobalController.class)
+                .getAllImplementationArtifactsOfImplementation(impl.getId(), listParameters));
+
+        MvcResult result = mockMvc.perform(get(path)
+                .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isOk()).andReturn();
+
+        var resultList = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(),
+                "implementation-artifacts", ImplementationArtifact.class);
+        assertEquals(0, resultList.size());
+
+        Mockito.verify(implementationArtifactService, times(1)).findAllByImplementationId(impl.getId(), listParameters.getPageable());
+    }
+
+    @Test
+    public void testGetImplementationArtifactOfImplementation_response_OK() throws Exception {
+        var impl = new Implementation();
+        impl.setName("implementation for Shor");
+        impl.setId(UUID.randomUUID());
+
+        var artifact = new ImplementationArtifact();
+        artifact.setId(UUID.randomUUID());
+        artifact.setImplementation(impl);
+        artifact.setMimeType("img/png");
+
+        when(implementationArtifactService.findById(artifact.getId())).thenReturn(artifact);
+
+        final String path = linkBuilderService.urlStringTo(methodOn(ImplementationGlobalController.class)
+                .getImplementationArtifactOfImplementation(impl.getId(), artifact.getId()));
+
+        MvcResult result = mockMvc.perform(get(path)
+                .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isOk()).andReturn();
+
+        var resultList = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(),
+                "implementation-artifact", ImplementationArtifact.class);
+        assertEquals(0, resultList.size());
+
+        Mockito.verify(implementationArtifactService, times(1)).findById(artifact.getId());
+    }
+
+    @Test
+    public void testDownloadImplementationArtifactAsFile_response_OK() throws Exception {
+        var impl = new Implementation();
+        impl.setName("implementation for Shor");
+        impl.setId(UUID.randomUUID());
+
+        var artifact = new ImplementationArtifact();
+        artifact.setId(UUID.randomUUID());
+        artifact.setImplementation(impl);
+        artifact.setMimeType("img/png");
+
+        when(implementationArtifactService.findById(artifact.getId())).thenReturn(artifact);
+
+        final String path = linkBuilderService.urlStringTo(methodOn(ImplementationGlobalController.class)
+                .downloadImplementationArtifactAsFile(impl.getId(), artifact.getId()));
+
+        // call
+        mockMvc.perform(get(path)
+                .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isOk()).andReturn();
+
+        // test
+        Mockito.verify(implementationArtifactService, times(1)).findById(artifact.getId());
+    }
+
+    @Test
+    public void testDeleteImplementationArtifact_response_no_content() throws Exception {
+        var impl = new Implementation();
+        impl.setName("implementation for Shor");
+        impl.setId(UUID.randomUUID());
+
+        var artifact = new ImplementationArtifact();
+        artifact.setId(UUID.randomUUID());
+        artifact.setImplementation(impl);
+        artifact.setMimeType("img/png");
+
+        doNothing().when(implementationArtifactService).delete(artifact.getId());
+
+        var url = linkBuilderService.urlStringTo(methodOn(ImplementationGlobalController.class)
+                .deleteImplementationArtifact(impl.getId(), artifact.getId()));
+        mockMvc.perform(delete(url))
+                .andExpect(status().isNoContent()).andReturn();
+
+        Mockito.verify(implementationArtifactService, times(1)).delete(artifact.getId());
     }
 
 }
