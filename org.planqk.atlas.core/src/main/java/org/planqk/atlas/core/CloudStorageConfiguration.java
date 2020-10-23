@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Profile;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 
-@Profile("google-cloud")
+@Profile("!test")
 @Primary
 @Configuration
 public class CloudStorageConfiguration {

@@ -100,6 +100,10 @@ public class ImplementationGlobalController {
         return ResponseEntity.ok(implementationAssembler.toModel(implementation));
     }
 
+    @Operation(responses = {
+        @ApiResponse(responseCode = "201"),
+        @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
+    }, description = "Uploads and adds a file to a given implementation")
     @PostMapping("/{implementationId}/" + Constants.FILES)
     public ResponseEntity<EntityModel<FileDto>> createFileForImplementation(
             @PathVariable UUID implementationId,
@@ -108,6 +112,9 @@ public class ImplementationGlobalController {
         return ResponseEntity.status(HttpStatus.CREATED).body(fileAssembler.toModel(file));
     }
 
+    @Operation(responses = {
+        @ApiResponse(responseCode = "200"),
+    }, description = "Retrieve all files of an implementation")
     @GetMapping("/{implementationId}/" + Constants.FILES)
     public ResponseEntity<PagedModel<EntityModel<FileDto>>> getAllFilesOfImplementation(
             @PathVariable UUID implementationId,
@@ -118,6 +125,12 @@ public class ImplementationGlobalController {
         return ResponseEntity.ok(fileAssembler.toModel(files));
     }
 
+    @Operation(responses = {
+        @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "400"),
+        @ApiResponse(responseCode = "404",
+            description = "File of Implementation with given ID doesn't exist")
+    }, description = "Retrieves a specific file of an Implementation and its basic properties.")
     @GetMapping("/{implementationId}/" + Constants.FILES + "/{fileId}")
     public ResponseEntity<EntityModel<FileDto>> getFileOfImplementation(
             @PathVariable UUID implementationId,
@@ -128,6 +141,11 @@ public class ImplementationGlobalController {
         return ResponseEntity.ok(fileAssembler.toModel(file));
     }
 
+    @Operation(responses = {
+        @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "404",
+            description = "File of Implementation with given ID doesn't exist")
+    }, description = "Downloads a specific file content of an Implementation")
     @GetMapping("/{implementationId}/" + Constants.FILES + "/{fileId}/content")
     public ResponseEntity<byte[]> downloadFileContent(
             @PathVariable UUID implementationId,
