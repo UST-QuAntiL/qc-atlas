@@ -138,7 +138,7 @@ public class ImplementationGlobalController {
         return ResponseEntity
                 .ok()
                 .contentType(MediaType.parseMediaType(file.getMimeType()))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + file.getName())
                 .body(fileService.getFileContent(fileId));
     }
 

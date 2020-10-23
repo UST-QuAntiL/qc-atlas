@@ -12,7 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import lombok.AllArgsConstructor;
 
 @Service
-@Profile("!stoneOne")
+@Profile("!google-cloud")
 @AllArgsConstructor
 public class FileServiceImpl implements FileService {
 

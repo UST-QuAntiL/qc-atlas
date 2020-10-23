@@ -27,7 +27,7 @@ import com.google.cloud.storage.StorageException;
 import lombok.RequiredArgsConstructor;
 
 @Service
-@Profile("stoneOne")
+@Profile("google-cloud")
 @RequiredArgsConstructor
 public class FileServiceCloudStorageImpl implements FileService {
 
@@ -48,6 +48,8 @@ public class FileServiceCloudStorageImpl implements FileService {
             final Blob blob = storage.create(blobInfo, file.getBytes());
             final File implementationFile = getFileFromBlob(blob);
 
+            // set the name to the original file, as the name from the blob includes the implementationId
+            implementationFile.setName(file.getOriginalFilename());
             fileRepository.findByFileURL(implementationFile.getFileURL())
                 .ifPresent(persistedFile -> implementationFile.setId(persistedFile.getId()));
 

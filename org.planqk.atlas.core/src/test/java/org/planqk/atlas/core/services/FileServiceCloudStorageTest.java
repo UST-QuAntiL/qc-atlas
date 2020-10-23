@@ -40,7 +40,7 @@ import com.google.cloud.storage.StorageException;
  * Test class for FileServiceCloudStorageImpl.
  * The class is using mock based tests.
  */
-@ActiveProfiles({"stoneOne"})
+@ActiveProfiles({"google-cloud"})
 public class FileServiceCloudStorageTest extends AtlasDatabaseTestBase {
 
     private final String implementationFileBucketName = "planqk-algo-artifacts";

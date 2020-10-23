@@ -28,7 +28,7 @@ import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageException;
 
-@ActiveProfiles({"test", "stoneOne"})
+@ActiveProfiles({"test", "google-cloud"})
 public class FileServiceCloudStorageIntegrationTest extends AtlasDatabaseTestBase {
 
     @Autowired
