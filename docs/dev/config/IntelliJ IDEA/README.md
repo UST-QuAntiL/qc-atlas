@@ -26,7 +26,11 @@
   - Choose "CheckStyle Configuration"
   - Navigate to `checkstyle.xml`. It is located in `docs/dev/config/IntelliJ IDEA`.  
   - Click "Apply"
-  - Click "OK"  
+  - Click "OK"
+  - Go to "Editor > Code Style > Java > Imports > Import Layout"
+  - Adapt the order such that "import java.\*" is before "import javax.*"  
+  - Click "Apply"
+  - Click "OK"
   - Click "Close"  
   
 4. Setup code headers to be inserted automatically  
