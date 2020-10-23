@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class ImplementationArtifact extends KnowledgeArtifact {
+public class File extends KnowledgeArtifact {
 
     private String name;
 

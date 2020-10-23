@@ -119,7 +119,7 @@ public class Implementation extends KnowledgeArtifact {
     @OneToMany(cascade = CascadeType.ALL,
             mappedBy = "implementation",
             orphanRemoval = true)
-    private Set<ImplementationArtifact> implementationArtifacts = new HashSet<>();
+    private Set<File> files = new HashSet<>();
 
     public void addTag(@NonNull Tag tag) {
         if (tags.contains(tag)) {

@@ -5,7 +5,7 @@ import java.util.UUID;
 import lombok.Data;
 
 @Data
-public class ImplementationArtifactDto {
+public class FileDto {
 
     private UUID id;
 

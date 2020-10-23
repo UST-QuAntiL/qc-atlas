@@ -21,14 +21,14 @@ package org.planqk.atlas.web.controller;
 
 import java.util.UUID;
 
-import org.planqk.atlas.core.model.ImplementationArtifact;
-import org.planqk.atlas.core.services.ImplementationArtifactService;
+import org.planqk.atlas.core.model.File;
+import org.planqk.atlas.core.services.FileService;
 import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.annotation.ApiVersion;
-import org.planqk.atlas.web.dtos.ImplementationArtifactDto;
+import org.planqk.atlas.web.dtos.FileDto;
 import org.planqk.atlas.web.dtos.ImplementationDto;
-import org.planqk.atlas.web.linkassembler.ImplementationArtifactAssembler;
+import org.planqk.atlas.web.linkassembler.FileAssembler;
 import org.planqk.atlas.web.linkassembler.ImplementationAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
@@ -72,9 +72,9 @@ public class ImplementationGlobalController {
 
     private final ImplementationAssembler implementationAssembler;
 
-    private final ImplementationArtifactAssembler implementationArtifactAssembler;
+    private final FileAssembler fileAssembler;
 
-    private final ImplementationArtifactService implementationArtifactService;
+    private final FileService fileService;
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
@@ -100,57 +100,57 @@ public class ImplementationGlobalController {
         return ResponseEntity.ok(implementationAssembler.toModel(implementation));
     }
 
-    @PostMapping("/{implementationId}/" + Constants.IMPLEMENTATION_ARTIFACTS)
-    public ResponseEntity<EntityModel<ImplementationArtifactDto>> createImplementationArtifactForImplementation(
+    @PostMapping("/{implementationId}/" + Constants.FILES)
+    public ResponseEntity<EntityModel<FileDto>> createFileForImplementation(
             @PathVariable UUID implementationId,
-            @RequestParam("file") MultipartFile file) {
-        ImplementationArtifact implementationArtifact = implementationArtifactService.create(implementationId, file);
-        return ResponseEntity.status(HttpStatus.CREATED).body(implementationArtifactAssembler.toModel(implementationArtifact));
+            @RequestParam("file") MultipartFile multipartFile) {
+        File file = fileService.create(implementationId, multipartFile);
+        return ResponseEntity.status(HttpStatus.CREATED).body(fileAssembler.toModel(file));
     }
 
-    @GetMapping("/{implementationId}/" + Constants.IMPLEMENTATION_ARTIFACTS)
-    public ResponseEntity<PagedModel<EntityModel<ImplementationArtifactDto>>> getAllImplementationArtifactsOfImplementation(
+    @GetMapping("/{implementationId}/" + Constants.FILES)
+    public ResponseEntity<PagedModel<EntityModel<FileDto>>> getAllFilesOfImplementation(
             @PathVariable UUID implementationId,
             @Parameter(hidden = true) ListParameters listParameters
     ) {
-        Page<ImplementationArtifact> implementationArtifacs =
-                implementationArtifactService.findAllByImplementationId(implementationId, listParameters.getPageable());
-        return ResponseEntity.ok(implementationArtifactAssembler.toModel(implementationArtifacs));
+        Page<File> files =
+                fileService.findAllByImplementationId(implementationId, listParameters.getPageable());
+        return ResponseEntity.ok(fileAssembler.toModel(files));
     }
 
-    @GetMapping("/{implementationId}/" + Constants.IMPLEMENTATION_ARTIFACTS + "/{artifactId}")
-    public ResponseEntity<EntityModel<ImplementationArtifactDto>> getImplementationArtifactOfImplementation(
+    @GetMapping("/{implementationId}/" + Constants.FILES + "/{fileId}")
+    public ResponseEntity<EntityModel<FileDto>> getFileOfImplementation(
             @PathVariable UUID implementationId,
-            @PathVariable UUID artifactId
+            @PathVariable UUID fileId
     ) {
-        ImplementationArtifact implementationArtifact =
-                implementationArtifactService.findById(artifactId);
-        return ResponseEntity.ok(implementationArtifactAssembler.toModel(implementationArtifact));
+        File file =
+                fileService.findById(fileId);
+        return ResponseEntity.ok(fileAssembler.toModel(file));
     }
 
-    @GetMapping("/{implementationId}/" + Constants.IMPLEMENTATION_ARTIFACTS + "/{artifactId}/file")
-    public ResponseEntity<byte[]> downloadImplementationArtifactAsFile(
+    @GetMapping("/{implementationId}/" + Constants.FILES + "/{fileId}/content")
+    public ResponseEntity<byte[]> downloadFileContent(
             @PathVariable UUID implementationId,
-            @PathVariable UUID artifactId
+            @PathVariable UUID fileId
     ) {
-        ImplementationArtifact implementationArtifact =
-                implementationArtifactService.findById(artifactId);
+        File file =
+                fileService.findById(fileId);
         return ResponseEntity
                 .ok()
-                .contentType(MediaType.parseMediaType(implementationArtifact.getMimeType()))
+                .contentType(MediaType.parseMediaType(file.getMimeType()))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment")
-                .body(implementationArtifactService.getImplementationArtifactContent(artifactId));
+                .body(fileService.getFileContent(fileId));
     }
 
     @Operation(responses = {
             @ApiResponse(responseCode = "204"),
             @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404", description = "Not Found. Implementation or artifact with given IDs don't exist")
-    }, description = "Delete an artifact of an implementation.")
-    @DeleteMapping("/{implementationId}/" + Constants.IMPLEMENTATION_ARTIFACTS + "/{artifactId}")
-    public ResponseEntity<Void> deleteImplementationArtifact(@PathVariable UUID implementationId,
-                                                             @PathVariable UUID artifactId) {
-                implementationArtifactService.delete(artifactId);
+            @ApiResponse(responseCode = "404", description = "Not Found. Implementation or File with given IDs don't exist")
+    }, description = "Delete a file of an implementation.")
+    @DeleteMapping("/{implementationId}/" + Constants.FILES + "/{fileId}")
+    public ResponseEntity<Void> deleteFileOfImplementation(@PathVariable UUID implementationId,
+                                                             @PathVariable UUID fileId) {
+                fileService.delete(fileId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 

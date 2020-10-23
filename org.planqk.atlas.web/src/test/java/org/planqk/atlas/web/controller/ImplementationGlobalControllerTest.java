@@ -37,8 +37,8 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Implementation;
-import org.planqk.atlas.core.model.ImplementationArtifact;
-import org.planqk.atlas.core.services.ImplementationArtifactService;
+import org.planqk.atlas.core.model.File;
+import org.planqk.atlas.core.services.FileService;
 import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
 import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
@@ -68,7 +68,7 @@ public class ImplementationGlobalControllerTest {
     private ImplementationService implementationService;
 
     @MockBean
-    private ImplementationArtifactService implementationArtifactService;
+    private FileService fileService;
 
     @Autowired
     private MockMvc mockMvc;
@@ -141,10 +141,10 @@ public class ImplementationGlobalControllerTest {
         byte[] testFile = new byte[20];
         final MockMultipartFile file = new MockMultipartFile("file", testFile);
 
-        var artifact = new ImplementationArtifact();
+        var artifact = new File();
         artifact.setId(UUID.randomUUID());
         artifact.setImplementation(impl);
-        doReturn(new ImplementationArtifact()).when(implementationArtifactService).create(impl.getId(), file);
+        doReturn(new File()).when(fileService).create(impl.getId(), file);
 
         final String path = linkBuilderService.urlStringTo(methodOn(ImplementationGlobalController.class)
                 .createImplementationArtifactForImplementation(impl.getId(), file));
@@ -153,7 +153,7 @@ public class ImplementationGlobalControllerTest {
         ResultActions resultActions = mockMvc.perform(multipart(path).file(file)).andExpect(status().isCreated());
 
         // test
-        Mockito.verify(implementationArtifactService, times(1)).create(impl.getId(), file);
+        Mockito.verify(fileService, times(1)).create(impl.getId(), file);
     }
 
 }

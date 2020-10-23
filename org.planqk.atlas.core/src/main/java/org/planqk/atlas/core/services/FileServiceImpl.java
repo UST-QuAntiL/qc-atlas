@@ -2,7 +2,7 @@ package org.planqk.atlas.core.services;
 
 import java.util.UUID;
 
-import org.planqk.atlas.core.model.ImplementationArtifact;
+import org.planqk.atlas.core.model.File;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,28 +14,26 @@ import lombok.AllArgsConstructor;
 @Service
 @Profile("!stoneOne")
 @AllArgsConstructor
-public class ImplementationArtifactServiceImpl implements ImplementationArtifactService {
+public class FileServiceImpl implements FileService {
 
 
     @Override
-    public ImplementationArtifact create(UUID implementationId,
-                                         MultipartFile file) {
+    public File create(UUID implementationId, MultipartFile file) {
         return null;
     }
 
     @Override
-    public Page<ImplementationArtifact> findAllByImplementationId(UUID implementationId,
-                                                                  Pageable pageable) {
+    public Page<File> findAllByImplementationId(UUID implementationId, Pageable pageable) {
         return null;
     }
 
     @Override
-    public ImplementationArtifact findById(UUID implementationId) {
+    public File findById(UUID implementationId) {
         return null;
     }
 
     @Override
-    public ImplementationArtifact update(UUID artifactId, MultipartFile file) {
+    public File update(UUID artifactId, MultipartFile file) {
         return null;
     }
 
@@ -45,9 +43,7 @@ public class ImplementationArtifactServiceImpl implements ImplementationArtifact
     }
 
     @Override
-    public byte[] getImplementationArtifactContent(UUID id) {
+    public byte[] getFileContent(UUID id) {
         return new byte[0];
     }
-
-
 }
