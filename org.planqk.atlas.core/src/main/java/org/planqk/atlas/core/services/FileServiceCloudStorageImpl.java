@@ -2,11 +2,12 @@ package org.planqk.atlas.core.services;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import org.planqk.atlas.core.exceptions.CloudStorageException;
-import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.File;
+import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.repository.FileRepository;
 import org.planqk.atlas.core.repository.ImplementationRepository;
 import org.planqk.atlas.core.util.ServiceUtils;
@@ -50,6 +51,8 @@ public class FileServiceCloudStorageImpl implements FileService {
 
             // set the name to the original file, as the name from the blob includes the implementationId
             implementationFile.setName(file.getOriginalFilename());
+
+            // check if file already exists. If so set the Id to avoid duplicates in DB
             fileRepository.findByFileURL(implementationFile.getFileURL())
                 .ifPresent(persistedFile -> implementationFile.setId(persistedFile.getId()));
 
@@ -59,7 +62,7 @@ public class FileServiceCloudStorageImpl implements FileService {
         } catch (IOException e) {
             throw new IllegalArgumentException("Cannot read contents of multipart file");
         } catch (StorageException e) {
-            throw new CloudStorageException("could not create in storage");
+            throw new CloudStorageException("Could not create file in storage");
         }
     }
 
@@ -75,10 +78,17 @@ public class FileServiceCloudStorageImpl implements FileService {
 
     @Override
     public byte[] getFileContent(UUID id) {
-        Bucket bucket = this.storage.get(implementationFilesBucketName);
         File file = ServiceUtils.findById(id, File.class, fileRepository);
-        Blob blob = bucket.get(file.getFileURL());
-        return blob.getContent();
+        try {
+            final BlobId blobId = BlobId.of(implementationFilesBucketName, file.getFileURL());
+            Blob blob = this.storage.get(blobId);
+            if (blob == null) {
+                throw new NoSuchElementException("File with URL \"" + file.getFileURL() + "\" does not exist");
+            }
+            return blob.getContent();
+        } catch (StorageException e) {
+            throw new CloudStorageException("Could not get file from storage");
+        }
     }
 
     @Override
@@ -94,7 +104,7 @@ public class FileServiceCloudStorageImpl implements FileService {
             storage.delete(blobId);
             this.fileRepository.delete(storedEntity);
         } catch (StorageException e) {
-            throw new CloudStorageException("could not delete from storage");
+            throw new CloudStorageException("Could not delete file from storage");
         }
     }
 
