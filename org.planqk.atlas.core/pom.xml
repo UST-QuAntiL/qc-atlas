@@ -60,7 +60,7 @@
         </dependency>
     </dependencies>
 
-    <build>
+<!--    <build>
         <plugins>
             <plugin>
                 <groupId>org.liquibase</groupId>
@@ -97,7 +97,7 @@
                 </dependencies>
             </plugin>
         </plugins>
-    </build>
+    </build>-->
 
     <properties>
         <!-- Default timestamp format cannot be used for filenames on Windows -->
