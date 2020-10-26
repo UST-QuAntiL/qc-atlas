@@ -1,30 +1,24 @@
 package org.planqk.atlas.core.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.when;
 
-import java.io.IOException;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.NoSuchElementException;
+import java.util.Random;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.InjectMocks;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.planqk.atlas.core.exceptions.CloudStorageException;
-import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.File;
+import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.repository.FileRepository;
 import org.planqk.atlas.core.repository.ImplementationRepository;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,199 +26,172 @@ import org.springframework.web.multipart.MultipartFile;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
-import com.google.cloud.storage.Bucket;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageException;
 
-/**
- * Test class for FileServiceCloudStorageImpl.
- * The class is using mock based tests.
- */
-@ActiveProfiles({"google-cloud"})
+@ActiveProfiles({"test", "google-cloud"})
 public class FileServiceCloudStorageTest extends AtlasDatabaseTestBase {
 
-    private final String implementationFileBucketName = "planqk-algo-artifacts";
+    @Autowired
+    private FileService fileServiceCloudStorage;
 
-    @Mock
-    Blob mockBlob;
-
-    @InjectMocks
-    private FileServiceCloudStorageImpl implementationFileServiceCloudStorage;
-
-    @Mock
-    private ImplementationRepository implementationRepository;
-
-    @Mock
-    private FileRepository fileRepository;
-
-    @Mock
+    @Autowired
     private Storage storage;
 
     @Mock
-    private Bucket bucket;
+    private Blob mockBlob;
 
-    private File file;
+    @Autowired
+    private FileRepository fileRepository;
 
-    private Implementation persistedImplementation;
+    @Autowired
+    private ImplementationRepository implementationRepository;
 
-    private MultipartFile multipartFile;
+    @Test
+    public void givenFileNotExists_WhenCreate_ThenShouldBeCreatedAndLinkedToImplementation() {
+        // Given
+        when(storage.create(Mockito.any(BlobInfo.class), Mockito.any(byte[].class))).thenReturn(mockBlob);
+        Implementation persistedImplementation = implementationRepository.save(getDummyImplementation());
+        assertThat(fileRepository.findAll().size()).isEqualTo(0);
 
-    @Before
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
+        //When
+        File createdFile =
+                fileServiceCloudStorage.create(persistedImplementation.getId(), getMultipartFile());
 
-        this.file = new File();
-        this.file.setId(UUID.randomUUID());
-        this.file.setName("name");
-        this.file.setMimeType("svg");
-        this.file.setFileURL("http://localhost:8080/");
-        this.file.setCreationDate(new Date());
-        this.file.setLastModifiedAt(new Date());
-
-        this.persistedImplementation = new Implementation();
-        this.persistedImplementation.setId(UUID.randomUUID());
-        final Set<File> fileSet = new HashSet<>();
-        fileSet.add(file);
-        this.persistedImplementation.setFiles(fileSet);
-
-        this.multipartFile = this.getMultipartFile();
-
+        //Then
+        assertThat(fileRepository.findAll().size()).isEqualTo(1);
+        assertThat(fileRepository.findById(createdFile.getId())).isPresent();
+        assertThat(createdFile.getImplementation().getId()).isEqualTo(persistedImplementation.getId());
     }
 
     @Test
-    public void testCreate_success() throws IOException {
+    public void givenNone_WhenCreateAndStorageExceptionIsThrown_ThenCatchAndThrowCloudStorageException() {
+        // Given
+        Implementation persistedImplementation = implementationRepository.save(getDummyImplementation());
+        when(storage.create(Mockito.any(BlobInfo.class), Mockito.any(byte[].class))).thenThrow(StorageException.class);
 
-        // mock
-        BlobId blobId =
-                BlobId.of(this.implementationFileBucketName, file.getId() + "/" + this.multipartFile.getOriginalFilename());
-        BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType(this.multipartFile.getContentType()).build();
-
-        Mockito.when(this.storage.create(blobInfo, getMultipartFile().getBytes())).thenReturn(this.mockBlob);
-        Mockito.when(this.fileRepository.findByFileURL(Mockito.any())).thenReturn(Optional.of(this.file));
-        Mockito.when(this.implementationRepository.findById(this.file.getId()))
-                .thenReturn(Optional.of(this.persistedImplementation));
-        Mockito.when(this.fileRepository.save(Mockito.any())).thenReturn(this.file);
-
-        // call
-        final File createdFile =
-                implementationFileServiceCloudStorage.create(file.getId(), this.multipartFile);
-
-        // test
-        Mockito.verify(this.storage, times(1)).create(blobInfo, getMultipartFile().getBytes());
-        Mockito.verify(this.fileRepository, times(1)).save(Mockito.any());
-        assertThat(createdFile.getId()).isEqualTo(this.file.getId());
-        assertThat(createdFile.getFileURL()).isEqualTo(this.file.getFileURL());
-        assertThat(createdFile.getMimeType()).isEqualTo(this.file.getMimeType());
-        assertThat(createdFile.getName()).isEqualTo(this.file.getName());
-
+        // When
+        Assertions.assertThrows(CloudStorageException.class,
+                () -> fileServiceCloudStorage.create(persistedImplementation.getId(), getMultipartFile()));
     }
 
     @Test
-    public void testCreate_cloud_storage_exception() throws IOException {
-
-        // mock
-        BlobId blobId =
-                BlobId.of(this.implementationFileBucketName, file.getId() + "/" + this.multipartFile.getOriginalFilename());
-        BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType(this.multipartFile.getContentType()).build();
-
-        Mockito.when(this.storage.create(blobInfo, getMultipartFile().getBytes())).thenThrow(StorageException.class);
-        // call + test
-
-        assertThatThrownBy(() -> {
-            implementationFileServiceCloudStorage.create(file.getId(), this.multipartFile);
-        }).isInstanceOf(CloudStorageException.class)
-                .hasMessageContaining("could not create in storage");
+    public void givenFileExists_whenFindById_ThenShouldReturnFile() {
+        // Given
+        File persistedFile = fileRepository.save(getDummyFile());
+        // When Then
+        assertThat(fileServiceCloudStorage.findById(persistedFile.getId()))
+                .isEqualToComparingFieldByField(persistedFile);
     }
 
     @Test
-    public void testFindById() {
+    public void givenFilesOfImplementationExists_whenFindAllByImplementationId_thenShouldReturnAllFilesOfImpl() {
+        // Given
+        Implementation persistedImplementation = implementationRepository.save(getDummyImplementation());
+        File file = getDummyFile();
+        File fileTwo = getDummyFile();
+        file.setImplementation(persistedImplementation);
+        fileTwo.setImplementation(persistedImplementation);
+        fileRepository.save(file);
+        fileRepository.save(fileTwo);
 
-        // mock
-        Mockito.when(this.fileRepository.findById(this.file.getId()
-        )).thenReturn(Optional.of(this.file));
+        // When
+        Page<File> implementationFiles =
+                fileServiceCloudStorage.findAllByImplementationId(persistedImplementation.getId(), PageRequest.of(1, 10));
 
-        // call
-        final File persistedFile =
-                implementationFileServiceCloudStorage.findById(file.getId());
-
-        // test
-        Mockito.verify(this.fileRepository, times(1)).findById(this.file.getId());
-        assertThat(persistedFile.getId()).isEqualTo(this.file.getId());
-        assertThat(persistedFile.getFileURL()).isEqualTo(this.file.getFileURL());
-        assertThat(persistedFile.getMimeType()).isEqualTo(this.file.getMimeType());
-        assertThat(persistedFile.getName()).isEqualTo(this.file.getName());
-
+        // Then
+        assertThat(implementationFiles.getTotalElements()).isEqualTo(2);
     }
 
     @Test
-    public void testFindAllByImplementationId() {
-        // mock
-        Pageable pageable = PageRequest.of(1, 1);
-        Mockito.when(this.fileRepository.findFilesByImplementation_Id(Mockito.any(), Mockito.any()))
-                .thenReturn(null);
+    public void delete_success() {
+        // Given
+        File persistedFile = fileRepository.save(getDummyFile());
 
-        // call
-        implementationFileServiceCloudStorage.findAllByImplementationId(this.persistedImplementation.getId(), pageable);
+        // When
+        when(storage.delete(Mockito.any(BlobId.class))).thenReturn(true);
+        fileServiceCloudStorage.delete(persistedFile.getId());
 
-        // test
-        Mockito.verify(this.fileRepository, times(1)).findFilesByImplementation_Id(Mockito.any(), Mockito.any());
+        //Then
+        assertThat(fileRepository.findById(persistedFile.getId())).isNotPresent();
     }
 
     @Test
-    public void testGetImplementationFileContent() {
-        // mock
-        Mockito.when(this.fileRepository.findById(this.file.getId()))
-                .thenReturn(Optional.of(this.file));
-        Mockito.when(this.storage.get(implementationFileBucketName))
-                .thenReturn(this.bucket);
+    public void delete_cloudStorageExceptionWasThrown() {
+        // Given
+        File persistedFile = fileRepository.save(getDummyFile());
 
-        Mockito.when(this.bucket.get(this.file.getFileURL()))
-                .thenReturn(this.mockBlob);
-        // call
-        byte[] result = implementationFileServiceCloudStorage.getFileContent(this.file.getId());
+        // When
+        when(storage.delete(Mockito.any(BlobId.class))).thenThrow(StorageException.class);
 
-        // test
-        Mockito.verify(this.fileRepository, times(1)).findById(this.file.getId());
+        // Call + Then
+        Assertions.assertThrows(CloudStorageException.class,
+                () -> fileServiceCloudStorage.delete(persistedFile.getId()));
+    }
+
+    @Test
+    public void getFileContent_success() {
+        // Given
+        File persistedFile = fileRepository.save(getDummyFile());
+
+        // When
+        when(storage.get(Mockito.any(BlobId.class))).thenReturn(this.mockBlob);
+        byte[] result = fileServiceCloudStorage.getFileContent(persistedFile.getId());
+
+        //Then
         assertThat(result).isEqualTo(this.mockBlob.getContent());
     }
 
     @Test
-    public void testDelete_success() {
+    public void getFileContent_noSuchElementExceptionWasThrown() {
+        // Given
+        File persistedFile = fileRepository.save(getDummyFile());
 
-        // mock
-        Mockito.when(this.fileRepository.findById(this.file.getId()
-        )).thenReturn(Optional.of(this.file));
-
-        // call
-        implementationFileServiceCloudStorage.delete(file.getId());
-
-        // test
-        Mockito.verify(this.storage, times(1)).delete(Mockito.any(BlobId.class));
-        Mockito.verify(this.fileRepository, times(1)).delete(this.file);
+        // Call + Then
+        Assertions.assertThrows(NoSuchElementException.class,
+                () -> fileServiceCloudStorage.getFileContent(persistedFile.getId()));
     }
 
     @Test
-    public void testDelete_cloud_storage_exception() {
+    public void getFileContent_cloudStorageExceptionWasThrown() {
+        // Given
+        File persistedFile = fileRepository.save(getDummyFile());
 
-        // mock
-        Mockito.when(this.fileRepository.findById(this.file.getId()
-        )).thenReturn(Optional.of(this.file));
-        Mockito.when(this.storage.delete(Mockito.any(BlobId.class)
-        )).thenThrow(StorageException.class);
+        //when
+        when(storage.get(Mockito.any(BlobId.class))).thenThrow(StorageException.class);
 
-        // call + test
-        assertThatThrownBy(() -> {
-            implementationFileServiceCloudStorage.delete(file.getId());
-        }).isInstanceOf(CloudStorageException.class)
-                .hasMessageContaining("could not delete from storage");
+        // Call + Then
+        Assertions.assertThrows(CloudStorageException.class,
+                () -> fileServiceCloudStorage.getFileContent(persistedFile.getId()));
+    }
+
+    private File getDummyFile() {
+        File file = new File();
+        file.setName("Test");
+        file.setFileURL("implId/fileId" + Math.random());
+        return file;
     }
 
     private MultipartFile getMultipartFile() {
         String name = "file.txt";
         String originalFileName = "file.txt";
         String contentType = "text/plain";
-        byte[] content = null;
+        byte[] content = generateRandomByteArray();
         return new MockMultipartFile(name,
                 originalFileName, contentType, content);
     }
+
+    private Implementation getDummyImplementation() {
+        Implementation dummyImplementation = new Implementation();
+        dummyImplementation.setName("dummy Impl");
+        return dummyImplementation;
+    }
+
+    private byte[] generateRandomByteArray() {
+        Random rd = new Random();
+        byte[] arr = new byte[7];
+        rd.nextBytes(arr);
+        return arr;
+    }
+
 }
