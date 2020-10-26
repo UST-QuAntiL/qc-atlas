@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -20,19 +20,18 @@
 package org.planqk.atlas.web.dtos;
 
 import java.util.UUID;
-
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
 
 import org.planqk.atlas.web.utils.Identifyable;
 import org.planqk.atlas.web.utils.RequiresID;
 import org.planqk.atlas.web.utils.ValidationGroups;
+import org.springframework.hateoas.server.core.Relation;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.springframework.hateoas.server.core.Relation;
 
 /**
  * Data transfer object for ComputeResourceProperty ({@link org.planqk.atlas.core.model.ComputeResourceProperty}).
@@ -50,7 +49,7 @@ public class ComputeResourcePropertyDto implements Identifyable {
     private String value;
 
     @RequiresID(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
-            message = "ComputeResourceProperties must have a type with an ID!")
+        message = "ComputeResourceProperties must have a type with an ID!")
     @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class})
     private ComputeResourcePropertyTypeDto type;
 }

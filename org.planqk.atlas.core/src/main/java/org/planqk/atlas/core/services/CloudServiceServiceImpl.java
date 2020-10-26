@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -29,14 +29,14 @@ import org.planqk.atlas.core.repository.ComputeResourceRepository;
 import org.planqk.atlas.core.repository.SoftwarePlatformRepository;
 import org.planqk.atlas.core.util.CollectionUtils;
 import org.planqk.atlas.core.util.ServiceUtils;
-
-import lombok.AllArgsConstructor;
-import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import lombok.AllArgsConstructor;
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -44,7 +44,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class CloudServiceServiceImpl implements CloudServiceService {
 
     private final CloudServiceRepository cloudServiceRepository;
+
     private final ComputeResourceRepository computeResourceRepository;
+
     private final SoftwarePlatformRepository softwarePlatformRepository;
 
     @Override
@@ -71,7 +73,7 @@ public class CloudServiceServiceImpl implements CloudServiceService {
     @Override
     @Transactional
     public CloudService update(@NonNull CloudService cloudService) {
-        CloudService persistedCloudService = findById(cloudService.getId());
+        final CloudService persistedCloudService = findById(cloudService.getId());
 
         persistedCloudService.setName(cloudService.getName());
         persistedCloudService.setProvider(cloudService.getProvider());
@@ -85,7 +87,7 @@ public class CloudServiceServiceImpl implements CloudServiceService {
     @Override
     @Transactional
     public void delete(@NonNull UUID cloudServiceId) {
-        CloudService cloudService = findById(cloudServiceId);
+        final CloudService cloudService = findById(cloudServiceId);
 
         removeReferences(cloudService);
 
@@ -94,9 +96,9 @@ public class CloudServiceServiceImpl implements CloudServiceService {
 
     private void removeReferences(@NonNull CloudService cloudService) {
         CollectionUtils.forEachOnCopy(cloudService.getSoftwarePlatforms(),
-                softwarePlatform -> softwarePlatform.removeCloudService(cloudService));
+            softwarePlatform -> softwarePlatform.removeCloudService(cloudService));
         CollectionUtils.forEachOnCopy(cloudService.getProvidedComputeResources(),
-                computeResource -> computeResource.removeCloudService(cloudService));
+            computeResource -> computeResource.removeCloudService(cloudService));
     }
 
     @Override

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -19,12 +19,16 @@
 
 package org.planqk.atlas.web.utils;
 
+import static org.junit.Assert.assertEquals;
+
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.ComputationModel;
 import org.planqk.atlas.core.model.PatternRelation;
@@ -34,26 +38,25 @@ import org.planqk.atlas.core.model.QuantumAlgorithm;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.PatternRelationDto;
 import org.planqk.atlas.web.dtos.ProblemTypeDto;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import static org.junit.Assert.assertEquals;
-
 public class ModelMapperUtilsTest {
 
     private Algorithm algorithm;
+
     private AlgorithmDto algorithmDto;
 
     private Set<ProblemType> problemTypes;
+
     private Set<ProblemTypeDto> problemTypesDto;
 
     private Pageable pageable = PageRequest.of(0, 2);
+
     private Page<ProblemType> pagedProblemTypes;
+
     private Page<ProblemTypeDto> pagedProblemTypesDto;
 
     @BeforeEach
@@ -110,7 +113,7 @@ public class ModelMapperUtilsTest {
         // Generate Page objects
         pagedProblemTypes = new PageImpl<ProblemType>(new ArrayList<>(problemTypes), pageable, problemTypes.size());
         pagedProblemTypesDto = new PageImpl<ProblemTypeDto>(new ArrayList<>(problemTypesDto), pageable,
-                problemTypesDto.size());
+            problemTypesDto.size());
     }
 
     @Test

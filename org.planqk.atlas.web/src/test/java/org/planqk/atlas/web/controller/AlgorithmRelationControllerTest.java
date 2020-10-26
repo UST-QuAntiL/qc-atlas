@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -19,37 +19,6 @@
 
 package org.planqk.atlas.web.controller;
 
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.UUID;
-
-import org.planqk.atlas.core.model.Algorithm;
-import org.planqk.atlas.core.model.AlgorithmRelation;
-import org.planqk.atlas.core.model.AlgorithmRelationType;
-import org.planqk.atlas.core.model.ComputationModel;
-import org.planqk.atlas.core.services.AlgorithmRelationService;
-import org.planqk.atlas.core.services.AlgorithmService;
-import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
-import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
-import org.planqk.atlas.web.dtos.AlgorithmRelationTypeDto;
-import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
-import org.planqk.atlas.web.linkassembler.LinkBuilderService;
-import org.planqk.atlas.web.utils.ListParameters;
-import org.planqk.atlas.web.utils.ModelMapperUtils;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.test.web.servlet.MockMvc;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -63,12 +32,46 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.UUID;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.AlgorithmRelation;
+import org.planqk.atlas.core.model.AlgorithmRelationType;
+import org.planqk.atlas.core.model.ComputationModel;
+import org.planqk.atlas.core.services.AlgorithmRelationService;
+import org.planqk.atlas.core.services.AlgorithmService;
+import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
+import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
+import org.planqk.atlas.web.dtos.AlgorithmRelationTypeDto;
+import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
+import org.planqk.atlas.web.linkassembler.LinkBuilderService;
+import org.planqk.atlas.web.utils.ListParameters;
+import org.planqk.atlas.web.utils.ModelMapperUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.test.web.servlet.MockMvc;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+
 @WebMvcTest(AlgorithmRelationController.class)
 @ExtendWith(MockitoExtension.class)
 @AutoConfigureMockMvc
 @EnableLinkAssemblers
 @Slf4j
 public class AlgorithmRelationControllerTest {
+
+    private final ObjectMapper mapper = ObjectMapperUtils.newTestMapper();
 
     @MockBean
     private AlgorithmRelationService algorithmRelationService;
@@ -78,11 +81,9 @@ public class AlgorithmRelationControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
     @Autowired
     private LinkBuilderService linkBuilderService;
-
-    private final ObjectMapper mapper = ObjectMapperUtils.newTestMapper();
-
 
     @Test
     @SneakyThrows
@@ -90,11 +91,11 @@ public class AlgorithmRelationControllerTest {
         doReturn(new PageImpl<AlgorithmRelation>(List.of())).when(algorithmService).findLinkedAlgorithmRelations(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmRelationController.class)
-                .getAlgorithmRelationsOfAlgorithm(UUID.randomUUID(), ListParameters.getDefault()));
+            .getAlgorithmRelationsOfAlgorithm(UUID.randomUUID(), ListParameters.getDefault()));
 
         mockMvc.perform(get(url).accept(APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$._embedded.algorithmRelations").doesNotExist());
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$._embedded.algorithmRelations").doesNotExist());
     }
 
     @Test
@@ -123,17 +124,17 @@ public class AlgorithmRelationControllerTest {
         doReturn(new PageImpl<>(List.of(algorithmRelation))).when(algorithmService).findLinkedAlgorithmRelations(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmRelationController.class)
-                .getAlgorithmRelationsOfAlgorithm(UUID.randomUUID(), ListParameters.getDefault()));
+            .getAlgorithmRelationsOfAlgorithm(UUID.randomUUID(), ListParameters.getDefault()));
 
         mockMvc.perform(get(url).accept(APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$._embedded.algorithmRelations[0].id").value(algorithmRelation.getId().toString()))
-                .andExpect(jsonPath("$._embedded.algorithmRelations[0].algoRelationType.id")
-                        .value(type.getId().toString()))
-                .andExpect(jsonPath("$._embedded.algorithmRelations[0].sourceAlgorithmId")
-                        .value(sourceAlgorithm.getId().toString()))
-                .andExpect(jsonPath("$._embedded.algorithmRelations[0].targetAlgorithmId")
-                        .value(targetAlgorithm.getId().toString()));
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$._embedded.algorithmRelations[0].id").value(algorithmRelation.getId().toString()))
+            .andExpect(jsonPath("$._embedded.algorithmRelations[0].algoRelationType.id")
+                .value(type.getId().toString()))
+            .andExpect(jsonPath("$._embedded.algorithmRelations[0].sourceAlgorithmId")
+                .value(sourceAlgorithm.getId().toString()))
+            .andExpect(jsonPath("$._embedded.algorithmRelations[0].targetAlgorithmId")
+                .value(targetAlgorithm.getId().toString()));
     }
 
     @Test
@@ -142,10 +143,10 @@ public class AlgorithmRelationControllerTest {
         doThrow(NoSuchElementException.class).when(algorithmService).findLinkedAlgorithmRelations(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmRelationController.class)
-                .getAlgorithmRelationsOfAlgorithm(UUID.randomUUID(), ListParameters.getDefault()));
+            .getAlgorithmRelationsOfAlgorithm(UUID.randomUUID(), ListParameters.getDefault()));
 
         mockMvc.perform(get(url).accept(APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+            .andExpect(status().isNotFound());
     }
 
     @Test
@@ -174,16 +175,16 @@ public class AlgorithmRelationControllerTest {
         doReturn(algorithmRelation).when(algorithmRelationService).create(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmRelationController.class)
-                .createAlgorithmRelation(sourceAlgorithm.getId(), null));
+            .createAlgorithmRelation(sourceAlgorithm.getId(), null));
 
         mockMvc.perform(post(url).accept(APPLICATION_JSON)
-                .contentType(APPLICATION_JSON)
-                .content(mapper.writeValueAsString(relationDto))
+            .contentType(APPLICATION_JSON)
+            .content(mapper.writeValueAsString(relationDto))
         ).andExpect(jsonPath("$.id").isEmpty())
-                .andExpect(jsonPath("$.sourceAlgorithmId").value(sourceAlgorithm.getId().toString()))
-                .andExpect(jsonPath("$.targetAlgorithmId").value(targetAlgorithm.getId().toString()))
-                .andExpect(jsonPath("$.algoRelationType.id").value(type.getId().toString()))
-                .andExpect(status().isCreated());
+            .andExpect(jsonPath("$.sourceAlgorithmId").value(sourceAlgorithm.getId().toString()))
+            .andExpect(jsonPath("$.targetAlgorithmId").value(targetAlgorithm.getId().toString()))
+            .andExpect(jsonPath("$.algoRelationType.id").value(type.getId().toString()))
+            .andExpect(status().isCreated());
     }
 
     @Test
@@ -193,11 +194,11 @@ public class AlgorithmRelationControllerTest {
         relationDto.setId(UUID.randomUUID());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmRelationController.class)
-                .createAlgorithmRelation(UUID.randomUUID(), null));
+            .createAlgorithmRelation(UUID.randomUUID(), null));
 
         mockMvc.perform(post(url).accept(APPLICATION_JSON)
-                .contentType(APPLICATION_JSON)
-                .content(mapper.writeValueAsString(relationDto))
+            .contentType(APPLICATION_JSON)
+            .content(mapper.writeValueAsString(relationDto))
         ).andExpect(status().isBadRequest());
     }
 
@@ -217,11 +218,11 @@ public class AlgorithmRelationControllerTest {
         doThrow(new NoSuchElementException()).when(algorithmRelationService).create(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmRelationController.class)
-                .createAlgorithmRelation(sourceId, null));
+            .createAlgorithmRelation(sourceId, null));
 
         mockMvc.perform(post(url).accept(APPLICATION_JSON)
-                .contentType(APPLICATION_JSON)
-                .content(mapper.writeValueAsString(relationDto))
+            .contentType(APPLICATION_JSON)
+            .content(mapper.writeValueAsString(relationDto))
         ).andExpect(status().isNotFound());
     }
 
@@ -252,16 +253,16 @@ public class AlgorithmRelationControllerTest {
         doReturn(algorithmRelation).when(algorithmRelationService).update(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmRelationController.class)
-                .updateAlgorithmRelation(sourceAlgorithm.getId(), algorithmRelation.getId(), null));
+            .updateAlgorithmRelation(sourceAlgorithm.getId(), algorithmRelation.getId(), null));
 
         mockMvc.perform(put(url).accept(APPLICATION_JSON)
-                .contentType(APPLICATION_JSON)
-                .content(mapper.writeValueAsString(relationDto))
+            .contentType(APPLICATION_JSON)
+            .content(mapper.writeValueAsString(relationDto))
         ).andExpect(jsonPath("$.id").value(algorithmRelation.getId().toString()))
-                .andExpect(jsonPath("$.sourceAlgorithmId").value(sourceAlgorithm.getId().toString()))
-                .andExpect(jsonPath("$.targetAlgorithmId").value(targetAlgorithm.getId().toString()))
-                .andExpect(jsonPath("$.algoRelationType.id").value(type.getId().toString()))
-                .andExpect(status().isOk());
+            .andExpect(jsonPath("$.sourceAlgorithmId").value(sourceAlgorithm.getId().toString()))
+            .andExpect(jsonPath("$.targetAlgorithmId").value(targetAlgorithm.getId().toString()))
+            .andExpect(jsonPath("$.algoRelationType.id").value(type.getId().toString()))
+            .andExpect(status().isOk());
     }
 
     @Test
@@ -271,11 +272,11 @@ public class AlgorithmRelationControllerTest {
         relationDto.setId(null);
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmRelationController.class)
-                .updateAlgorithmRelation(UUID.randomUUID(), UUID.randomUUID(), null));
+            .updateAlgorithmRelation(UUID.randomUUID(), UUID.randomUUID(), null));
 
         mockMvc.perform(put(url).accept(APPLICATION_JSON)
-                .contentType(APPLICATION_JSON)
-                .content(mapper.writeValueAsString(relationDto))
+            .contentType(APPLICATION_JSON)
+            .content(mapper.writeValueAsString(relationDto))
         ).andExpect(status().isBadRequest());
     }
 
@@ -296,11 +297,11 @@ public class AlgorithmRelationControllerTest {
         doThrow(new NoSuchElementException()).when(algorithmRelationService).update(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmRelationController.class)
-                .updateAlgorithmRelation(sourceId, relationDto.getId(), null));
+            .updateAlgorithmRelation(sourceId, relationDto.getId(), null));
 
         mockMvc.perform(put(url).accept(APPLICATION_JSON)
-                .contentType(APPLICATION_JSON)
-                .content(mapper.writeValueAsString(relationDto))
+            .contentType(APPLICATION_JSON)
+            .content(mapper.writeValueAsString(relationDto))
         ).andExpect(status().isNotFound());
     }
 
@@ -311,10 +312,10 @@ public class AlgorithmRelationControllerTest {
         doNothing().when(algorithmRelationService).delete(UUID.randomUUID());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmRelationController.class)
-                .deleteAlgorithmRelation(UUID.randomUUID(), UUID.randomUUID()));
+            .deleteAlgorithmRelation(UUID.randomUUID(), UUID.randomUUID()));
 
         mockMvc.perform(delete(url).accept(APPLICATION_JSON))
-                .andExpect(status().isNoContent());
+            .andExpect(status().isNoContent());
     }
 
     @Test
@@ -323,10 +324,10 @@ public class AlgorithmRelationControllerTest {
         doThrow(NoSuchElementException.class).when(algorithmRelationService).checkIfAlgorithmIsInAlgorithmRelation(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmRelationController.class)
-                .deleteAlgorithmRelation(UUID.randomUUID(), UUID.randomUUID()));
+            .deleteAlgorithmRelation(UUID.randomUUID(), UUID.randomUUID()));
 
         mockMvc.perform(delete(url).accept(APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+            .andExpect(status().isNotFound());
     }
 
     @Test
@@ -356,14 +357,14 @@ public class AlgorithmRelationControllerTest {
         doReturn(algorithmRelation).when(algorithmRelationService).findById(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmRelationController.class)
-                .getAlgorithmRelation(sourceAlgorithm.getId(), algorithmRelation.getId()));
+            .getAlgorithmRelation(sourceAlgorithm.getId(), algorithmRelation.getId()));
 
         mockMvc.perform(get(url).accept(APPLICATION_JSON))
-                .andExpect(jsonPath("$.id").value(algorithmRelation.getId().toString()))
-                .andExpect(jsonPath("$.sourceAlgorithmId").value(sourceAlgorithm.getId().toString()))
-                .andExpect(jsonPath("$.targetAlgorithmId").value(targetAlgorithm.getId().toString()))
-                .andExpect(jsonPath("$.algoRelationType.id").value(type.getId().toString()))
-                .andExpect(status().isOk());
+            .andExpect(jsonPath("$.id").value(algorithmRelation.getId().toString()))
+            .andExpect(jsonPath("$.sourceAlgorithmId").value(sourceAlgorithm.getId().toString()))
+            .andExpect(jsonPath("$.targetAlgorithmId").value(targetAlgorithm.getId().toString()))
+            .andExpect(jsonPath("$.algoRelationType.id").value(type.getId().toString()))
+            .andExpect(status().isOk());
     }
 
     @Test
@@ -372,9 +373,9 @@ public class AlgorithmRelationControllerTest {
         doThrow(NoSuchElementException.class).when(algorithmRelationService).checkIfAlgorithmIsInAlgorithmRelation(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmRelationController.class)
-                .getAlgorithmRelation(UUID.randomUUID(), UUID.randomUUID()));
+            .getAlgorithmRelation(UUID.randomUUID(), UUID.randomUUID()));
 
         mockMvc.perform(get(url).accept(APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+            .andExpect(status().isNotFound());
     }
 }

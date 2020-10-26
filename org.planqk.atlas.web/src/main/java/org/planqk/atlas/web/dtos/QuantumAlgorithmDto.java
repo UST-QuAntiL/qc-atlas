@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -23,13 +23,14 @@ import javax.validation.constraints.NotNull;
 
 import org.planqk.atlas.core.model.ComputationModel;
 import org.planqk.atlas.core.model.QuantumComputationModel;
+import org.springframework.hateoas.server.core.Relation;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import org.springframework.hateoas.server.core.Relation;
 
 /**
  * Data transfer object for QuantumAlgorithm ({@link org.planqk.atlas.core.model.QuantumAlgorithm}).

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -36,11 +36,4 @@ public class QuantumAlgorithm extends Algorithm {
     private QuantumComputationModel quantumComputationModel;
 
     private String speedUp;
-
-//    @OneToMany(cascade = {CascadeType.MERGE}, fetch = FetchType.LAZY)
-//    @JoinTable(name = "algorithm_implementation",
-//            joinColumns = @JoinColumn(name = "algorithm_id"),
-//            inverseJoinColumns = @JoinColumn(name = "implementation_id"))
-//    @EqualsAndHashCode.Exclude
-//    private Set<QuantumImplementation> implementations;
 }

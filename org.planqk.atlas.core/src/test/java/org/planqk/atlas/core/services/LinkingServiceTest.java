@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -19,8 +19,13 @@
 
 package org.planqk.atlas.core.services;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.util.Set;
 
+import org.junit.jupiter.api.Test;
 import org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.ApplicationArea;
@@ -34,37 +39,41 @@ import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.model.QuantumComputationModel;
 import org.planqk.atlas.core.model.SoftwarePlatform;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
-
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class LinkingServiceTest extends AtlasDatabaseTestBase {
 
     @Autowired
     private LinkingService linkingService;
+
     @Autowired
     private AlgorithmService algorithmService;
+
     @Autowired
     private ImplementationService implementationService;
+
     @Autowired
     private PublicationService publicationService;
+
     @Autowired
     private ProblemTypeService problemTypeService;
+
     @Autowired
     private ApplicationAreaService applicationAreaService;
+
     @Autowired
     private PatternRelationService patternRelationService;
+
     @Autowired
     private SoftwarePlatformService softwarePlatformService;
+
     @Autowired
     private CloudServiceService cloudServiceService;
+
     @Autowired
     private ComputeResourceService computeResourceService;
 
@@ -76,7 +85,7 @@ public class LinkingServiceTest extends AtlasDatabaseTestBase {
         linkingService.linkAlgorithmAndPublication(algorithm.getId(), publication.getId());
 
         var publications = algorithmService.findLinkedPublications(
-                algorithm.getId(), Pageable.unpaged()).toSet();
+            algorithm.getId(), Pageable.unpaged()).toSet();
 
         assertThat(publications.size()).isEqualTo(1);
     }
@@ -89,7 +98,7 @@ public class LinkingServiceTest extends AtlasDatabaseTestBase {
         assertDoesNotThrow(() -> linkingService.linkAlgorithmAndPublication(algorithm.getId(), publication.getId()));
 
         assertThrows(EntityReferenceConstraintViolationException.class, () ->
-                linkingService.linkAlgorithmAndPublication(algorithm.getId(), publication.getId()));
+            linkingService.linkAlgorithmAndPublication(algorithm.getId(), publication.getId()));
     }
 
     @Test
@@ -100,13 +109,13 @@ public class LinkingServiceTest extends AtlasDatabaseTestBase {
         linkingService.linkAlgorithmAndPublication(algorithm.getId(), publication.getId());
 
         var publications = algorithmService.findLinkedPublications(
-                algorithm.getId(), Pageable.unpaged()).toSet();
+            algorithm.getId(), Pageable.unpaged()).toSet();
         assertThat(publications.size()).isEqualTo(1);
 
         linkingService.unlinkAlgorithmAndPublication(algorithm.getId(), publication.getId());
 
         publications = algorithmService.findLinkedPublications(
-                algorithm.getId(), Pageable.unpaged()).toSet();
+            algorithm.getId(), Pageable.unpaged()).toSet();
         assertThat(publications.size()).isEqualTo(0);
     }
 
@@ -116,7 +125,7 @@ public class LinkingServiceTest extends AtlasDatabaseTestBase {
         Publication publication = getCreatedPublication();
 
         assertThrows(EntityReferenceConstraintViolationException.class, () ->
-                linkingService.unlinkAlgorithmAndPublication(algorithm.getId(), publication.getId()));
+            linkingService.unlinkAlgorithmAndPublication(algorithm.getId(), publication.getId()));
     }
 
     @Test
@@ -127,7 +136,7 @@ public class LinkingServiceTest extends AtlasDatabaseTestBase {
         linkingService.linkAlgorithmAndProblemType(algorithm.getId(), problemType.getId());
 
         var problemTypes = algorithmService.findLinkedProblemTypes(
-                algorithm.getId(), Pageable.unpaged()).toSet();
+            algorithm.getId(), Pageable.unpaged()).toSet();
 
         assertThat(problemTypes.size()).isEqualTo(1);
     }
@@ -140,7 +149,7 @@ public class LinkingServiceTest extends AtlasDatabaseTestBase {
         assertDoesNotThrow(() -> linkingService.linkAlgorithmAndProblemType(algorithm.getId(), problemType.getId()));
 
         assertThrows(EntityReferenceConstraintViolationException.class, () ->
-                linkingService.linkAlgorithmAndProblemType(algorithm.getId(), problemType.getId()));
+            linkingService.linkAlgorithmAndProblemType(algorithm.getId(), problemType.getId()));
     }
 
     @Test
@@ -151,13 +160,13 @@ public class LinkingServiceTest extends AtlasDatabaseTestBase {
         linkingService.linkAlgorithmAndProblemType(algorithm.getId(), problemType.getId());
 
         var problemTypes = algorithmService.findLinkedProblemTypes(
-                algorithm.getId(), Pageable.unpaged()).toSet();
+            algorithm.getId(), Pageable.unpaged()).toSet();
         assertThat(problemTypes.size()).isEqualTo(1);
 
         linkingService.unlinkAlgorithmAndProblemType(algorithm.getId(), problemType.getId());
 
         problemTypes = algorithmService.findLinkedProblemTypes(
-                algorithm.getId(), Pageable.unpaged()).toSet();
+            algorithm.getId(), Pageable.unpaged()).toSet();
         assertThat(problemTypes.size()).isEqualTo(0);
     }
 
@@ -167,7 +176,7 @@ public class LinkingServiceTest extends AtlasDatabaseTestBase {
         ProblemType problemType = getCreatedProblemType();
 
         assertThrows(EntityReferenceConstraintViolationException.class, () ->
-                linkingService.unlinkAlgorithmAndProblemType(algorithm.getId(), problemType.getId()));
+            linkingService.unlinkAlgorithmAndProblemType(algorithm.getId(), problemType.getId()));
     }
 
     @Test
@@ -178,7 +187,7 @@ public class LinkingServiceTest extends AtlasDatabaseTestBase {
         linkingService.linkAlgorithmAndApplicationArea(algorithm.getId(), applicationArea.getId());
 
         var applicationAreas = algorithmService.findLinkedApplicationAreas(
-                algorithm.getId(), Pageable.unpaged()).toSet();
+            algorithm.getId(), Pageable.unpaged()).toSet();
 
         assertThat(applicationAreas.size()).isEqualTo(1);
     }
@@ -191,7 +200,7 @@ public class LinkingServiceTest extends AtlasDatabaseTestBase {
         assertDoesNotThrow(() -> linkingService.linkAlgorithmAndApplicationArea(algorithm.getId(), applicationArea.getId()));
 
         assertThrows(EntityReferenceConstraintViolationException.class, () ->
-                linkingService.linkAlgorithmAndApplicationArea(algorithm.getId(), applicationArea.getId()));
+            linkingService.linkAlgorithmAndApplicationArea(algorithm.getId(), applicationArea.getId()));
     }
 
     @Test
@@ -202,13 +211,13 @@ public class LinkingServiceTest extends AtlasDatabaseTestBase {
         linkingService.linkAlgorithmAndApplicationArea(algorithm.getId(), applicationArea.getId());
 
         var applicationAreas = algorithmService.findLinkedApplicationAreas(
-                algorithm.getId(), Pageable.unpaged()).toSet();
+            algorithm.getId(), Pageable.unpaged()).toSet();
         assertThat(applicationAreas.size()).isEqualTo(1);
 
         linkingService.unlinkAlgorithmAndApplicationArea(algorithm.getId(), applicationArea.getId());
 
         applicationAreas = algorithmService.findLinkedApplicationAreas(
-                algorithm.getId(), Pageable.unpaged()).toSet();
+            algorithm.getId(), Pageable.unpaged()).toSet();
         assertThat(applicationAreas.size()).isEqualTo(0);
     }
 
@@ -218,7 +227,7 @@ public class LinkingServiceTest extends AtlasDatabaseTestBase {
         ApplicationArea applicationArea = getCreatedApplicationArea();
 
         assertThrows(EntityReferenceConstraintViolationException.class, () ->
-                linkingService.unlinkAlgorithmAndApplicationArea(algorithm.getId(), applicationArea.getId()));
+            linkingService.unlinkAlgorithmAndApplicationArea(algorithm.getId(), applicationArea.getId()));
     }
 
     @Test
@@ -229,7 +238,7 @@ public class LinkingServiceTest extends AtlasDatabaseTestBase {
         linkingService.linkImplementationAndPublication(implementation.getId(), publication.getId());
 
         var publications = implementationService.findLinkedPublications(
-                implementation.getId(), Pageable.unpaged()).toSet();
+            implementation.getId(), Pageable.unpaged()).toSet();
 
         assertThat(publications.size()).isEqualTo(1);
     }
@@ -240,10 +249,10 @@ public class LinkingServiceTest extends AtlasDatabaseTestBase {
         Implementation implementation = getCreatedImplementation();
 
         assertDoesNotThrow(() -> linkingService
-                .linkImplementationAndPublication(implementation.getId(), publication.getId()));
+            .linkImplementationAndPublication(implementation.getId(), publication.getId()));
 
         assertThrows(EntityReferenceConstraintViolationException.class, () ->
-                linkingService.linkImplementationAndPublication(implementation.getId(), publication.getId()));
+            linkingService.linkImplementationAndPublication(implementation.getId(), publication.getId()));
     }
 
     @Test
@@ -254,13 +263,13 @@ public class LinkingServiceTest extends AtlasDatabaseTestBase {
         linkingService.linkImplementationAndPublication(implementation.getId(), publication.getId());
 
         var publications = implementationService.findLinkedPublications(
-                implementation.getId(), Pageable.unpaged()).toSet();
+            implementation.getId(), Pageable.unpaged()).toSet();
         assertThat(publications.size()).isEqualTo(1);
 
         linkingService.unlinkImplementationAndPublication(implementation.getId(), publication.getId());
 
         publications = implementationService.findLinkedPublications(
-                implementation.getId(), Pageable.unpaged()).toSet();
+            implementation.getId(), Pageable.unpaged()).toSet();
         assertThat(publications.size()).isEqualTo(0);
     }
 
@@ -270,8 +279,8 @@ public class LinkingServiceTest extends AtlasDatabaseTestBase {
         Implementation implementation = getCreatedImplementation();
 
         assertThrows(EntityReferenceConstraintViolationException.class, () ->
-                linkingService.unlinkImplementationAndPublication(
-                        implementation.getId(), publication.getId()));
+            linkingService.unlinkImplementationAndPublication(
+                implementation.getId(), publication.getId()));
     }
 
     @Test
@@ -282,7 +291,7 @@ public class LinkingServiceTest extends AtlasDatabaseTestBase {
         linkingService.linkImplementationAndSoftwarePlatform(implementation.getId(), softwarePlatform.getId());
 
         Set<Implementation> implementations = softwarePlatformService.findLinkedImplementations(
-                softwarePlatform.getId(), Pageable.unpaged()).toSet();
+            softwarePlatform.getId(), Pageable.unpaged()).toSet();
 
         assertThat(implementations.size()).isEqualTo(1);
     }
@@ -293,10 +302,10 @@ public class LinkingServiceTest extends AtlasDatabaseTestBase {
         Implementation implementation = getCreatedImplementation();
 
         assertDoesNotThrow(() -> linkingService
-                .linkImplementationAndSoftwarePlatform(implementation.getId(), softwarePlatform.getId()));
+            .linkImplementationAndSoftwarePlatform(implementation.getId(), softwarePlatform.getId()));
 
         assertThrows(EntityReferenceConstraintViolationException.class, () ->
-                linkingService.linkImplementationAndSoftwarePlatform(implementation.getId(), softwarePlatform.getId()));
+            linkingService.linkImplementationAndSoftwarePlatform(implementation.getId(), softwarePlatform.getId()));
     }
 
     @Test
@@ -307,13 +316,13 @@ public class LinkingServiceTest extends AtlasDatabaseTestBase {
         linkingService.linkImplementationAndSoftwarePlatform(implementation.getId(), softwarePlatform.getId());
 
         Set<Implementation> implementations = softwarePlatformService.findLinkedImplementations(
-                softwarePlatform.getId(), Pageable.unpaged()).toSet();
+            softwarePlatform.getId(), Pageable.unpaged()).toSet();
         assertThat(implementations.size()).isEqualTo(1);
 
         linkingService.unlinkImplementationAndSoftwarePlatform(implementation.getId(), softwarePlatform.getId());
 
         implementations = softwarePlatformService.findLinkedImplementations(
-                softwarePlatform.getId(), Pageable.unpaged()).toSet();
+            softwarePlatform.getId(), Pageable.unpaged()).toSet();
         assertThat(implementations.size()).isEqualTo(0);
     }
 
@@ -323,8 +332,8 @@ public class LinkingServiceTest extends AtlasDatabaseTestBase {
         Implementation implementation = getCreatedImplementation();
 
         assertThrows(EntityReferenceConstraintViolationException.class, () ->
-                linkingService.unlinkImplementationAndSoftwarePlatform(
-                        implementation.getId(), softwarePlatform.getId()));
+            linkingService.unlinkImplementationAndSoftwarePlatform(
+                implementation.getId(), softwarePlatform.getId()));
     }
 
     @Test
@@ -335,7 +344,7 @@ public class LinkingServiceTest extends AtlasDatabaseTestBase {
         linkingService.linkSoftwarePlatformAndCloudService(softwarePlatform.getId(), cloudService.getId());
 
         Set<CloudService> cloudServices = softwarePlatformService.findLinkedCloudServices(
-                softwarePlatform.getId(), Pageable.unpaged()).toSet();
+            softwarePlatform.getId(), Pageable.unpaged()).toSet();
 
         assertThat(cloudServices.size()).isEqualTo(1);
     }
@@ -346,10 +355,10 @@ public class LinkingServiceTest extends AtlasDatabaseTestBase {
         CloudService cloudService = getCreatedCloudService();
 
         assertDoesNotThrow(() -> linkingService
-                .linkSoftwarePlatformAndCloudService(softwarePlatform.getId(), cloudService.getId()));
+            .linkSoftwarePlatformAndCloudService(softwarePlatform.getId(), cloudService.getId()));
 
         assertThrows(EntityReferenceConstraintViolationException.class, () ->
-                linkingService.linkSoftwarePlatformAndCloudService(softwarePlatform.getId(), cloudService.getId()));
+            linkingService.linkSoftwarePlatformAndCloudService(softwarePlatform.getId(), cloudService.getId()));
     }
 
     @Test
@@ -360,13 +369,13 @@ public class LinkingServiceTest extends AtlasDatabaseTestBase {
         linkingService.linkSoftwarePlatformAndCloudService(softwarePlatform.getId(), cloudService.getId());
 
         Set<CloudService> cloudServices = softwarePlatformService.findLinkedCloudServices(
-                softwarePlatform.getId(), Pageable.unpaged()).toSet();
+            softwarePlatform.getId(), Pageable.unpaged()).toSet();
         assertThat(cloudServices.size()).isEqualTo(1);
 
         linkingService.unlinkSoftwarePlatformAndCloudService(softwarePlatform.getId(), cloudService.getId());
 
         cloudServices = softwarePlatformService.findLinkedCloudServices(
-                softwarePlatform.getId(), Pageable.unpaged()).toSet();
+            softwarePlatform.getId(), Pageable.unpaged()).toSet();
         assertThat(cloudServices.size()).isEqualTo(0);
     }
 
@@ -376,8 +385,8 @@ public class LinkingServiceTest extends AtlasDatabaseTestBase {
         CloudService cloudService = getCreatedCloudService();
 
         assertThrows(EntityReferenceConstraintViolationException.class, () ->
-                linkingService.unlinkSoftwarePlatformAndCloudService(
-                        softwarePlatform.getId(), cloudService.getId()));
+            linkingService.unlinkSoftwarePlatformAndCloudService(
+                softwarePlatform.getId(), cloudService.getId()));
     }
 
     @Test
@@ -386,10 +395,10 @@ public class LinkingServiceTest extends AtlasDatabaseTestBase {
         ComputeResource computeResource = getCreatedComputeResource();
 
         linkingService.linkSoftwarePlatformAndComputeResource(
-                softwarePlatform.getId(), computeResource.getId());
+            softwarePlatform.getId(), computeResource.getId());
 
         Set<ComputeResource> computeResources = softwarePlatformService.findLinkedComputeResources(
-                softwarePlatform.getId(), Pageable.unpaged()).toSet();
+            softwarePlatform.getId(), Pageable.unpaged()).toSet();
 
         assertThat(computeResources.size()).isEqualTo(1);
     }
@@ -400,11 +409,11 @@ public class LinkingServiceTest extends AtlasDatabaseTestBase {
         ComputeResource computeResource = getCreatedComputeResource();
 
         assertDoesNotThrow(() -> linkingService
-                .linkSoftwarePlatformAndComputeResource(softwarePlatform.getId(), computeResource.getId()));
+            .linkSoftwarePlatformAndComputeResource(softwarePlatform.getId(), computeResource.getId()));
 
         assertThrows(EntityReferenceConstraintViolationException.class, () ->
-                linkingService.linkSoftwarePlatformAndComputeResource(
-                        softwarePlatform.getId(), computeResource.getId()));
+            linkingService.linkSoftwarePlatformAndComputeResource(
+                softwarePlatform.getId(), computeResource.getId()));
     }
 
     @Test
@@ -413,17 +422,17 @@ public class LinkingServiceTest extends AtlasDatabaseTestBase {
         ComputeResource computeResource = getCreatedComputeResource();
 
         linkingService.linkSoftwarePlatformAndComputeResource(
-                softwarePlatform.getId(), computeResource.getId());
+            softwarePlatform.getId(), computeResource.getId());
 
         Set<ComputeResource> computeResources = softwarePlatformService.findLinkedComputeResources(
-                softwarePlatform.getId(), Pageable.unpaged()).toSet();
+            softwarePlatform.getId(), Pageable.unpaged()).toSet();
         assertThat(computeResources.size()).isEqualTo(1);
 
         linkingService.unlinkSoftwarePlatformAndComputeResource(
-                softwarePlatform.getId(), computeResource.getId());
+            softwarePlatform.getId(), computeResource.getId());
 
         computeResources = softwarePlatformService.findLinkedComputeResources(
-                softwarePlatform.getId(), Pageable.unpaged()).toSet();
+            softwarePlatform.getId(), Pageable.unpaged()).toSet();
         assertThat(computeResources.size()).isEqualTo(0);
     }
 
@@ -433,8 +442,8 @@ public class LinkingServiceTest extends AtlasDatabaseTestBase {
         ComputeResource computeResource = getCreatedComputeResource();
 
         assertThrows(EntityReferenceConstraintViolationException.class, () ->
-                linkingService.unlinkSoftwarePlatformAndComputeResource(
-                        softwarePlatform.getId(), computeResource.getId()));
+            linkingService.unlinkSoftwarePlatformAndComputeResource(
+                softwarePlatform.getId(), computeResource.getId()));
     }
 
     @Test
@@ -443,10 +452,10 @@ public class LinkingServiceTest extends AtlasDatabaseTestBase {
         ComputeResource computeResource = getCreatedComputeResource();
 
         linkingService.linkCloudServiceAndComputeResource(
-                cloudService.getId(), computeResource.getId());
+            cloudService.getId(), computeResource.getId());
 
         Set<ComputeResource> computeResources = cloudServiceService.findLinkedComputeResources(
-                cloudService.getId(), Pageable.unpaged()).toSet();
+            cloudService.getId(), Pageable.unpaged()).toSet();
 
         assertThat(computeResources.size()).isEqualTo(1);
     }
@@ -457,11 +466,11 @@ public class LinkingServiceTest extends AtlasDatabaseTestBase {
         ComputeResource computeResource = getCreatedComputeResource();
 
         assertDoesNotThrow(() -> linkingService
-                .linkCloudServiceAndComputeResource(cloudService.getId(), computeResource.getId()));
+            .linkCloudServiceAndComputeResource(cloudService.getId(), computeResource.getId()));
 
         assertThrows(EntityReferenceConstraintViolationException.class, () ->
-                linkingService.linkCloudServiceAndComputeResource(
-                        cloudService.getId(), computeResource.getId()));
+            linkingService.linkCloudServiceAndComputeResource(
+                cloudService.getId(), computeResource.getId()));
     }
 
     @Test
@@ -470,17 +479,17 @@ public class LinkingServiceTest extends AtlasDatabaseTestBase {
         ComputeResource computeResource = getCreatedComputeResource();
 
         linkingService.linkCloudServiceAndComputeResource(
-                cloudService.getId(), computeResource.getId());
+            cloudService.getId(), computeResource.getId());
 
         Set<ComputeResource> computeResources = cloudServiceService.findLinkedComputeResources(
-                cloudService.getId(), Pageable.unpaged()).toSet();
+            cloudService.getId(), Pageable.unpaged()).toSet();
         assertThat(computeResources.size()).isEqualTo(1);
 
         linkingService.unlinkCloudServiceAndComputeResource(
-                cloudService.getId(), computeResource.getId());
+            cloudService.getId(), computeResource.getId());
 
         computeResources = cloudServiceService.findLinkedComputeResources(
-                cloudService.getId(), Pageable.unpaged()).toSet();
+            cloudService.getId(), Pageable.unpaged()).toSet();
         assertThat(computeResources.size()).isEqualTo(0);
     }
 
@@ -490,8 +499,8 @@ public class LinkingServiceTest extends AtlasDatabaseTestBase {
         ComputeResource computeResource = getCreatedComputeResource();
 
         assertThrows(EntityReferenceConstraintViolationException.class, () ->
-                linkingService.unlinkCloudServiceAndComputeResource(
-                        cloudService.getId(), computeResource.getId()));
+            linkingService.unlinkCloudServiceAndComputeResource(
+                cloudService.getId(), computeResource.getId()));
     }
 
     private Algorithm getCreatedAlgorithm() {

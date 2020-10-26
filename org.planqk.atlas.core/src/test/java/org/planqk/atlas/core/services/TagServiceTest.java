@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -19,11 +19,16 @@
 
 package org.planqk.atlas.core.services;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.junit.jupiter.api.Test;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
 import org.planqk.atlas.core.model.ClassicImplementation;
@@ -31,23 +36,20 @@ import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 import org.planqk.atlas.core.util.ServiceTestUtils;
-
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class TagServiceTest extends AtlasDatabaseTestBase {
 
     @Autowired
     private TagService tagService;
+
     @Autowired
     private AlgorithmService algorithmService;
+
     @Autowired
     private ImplementationService implementationService;
 
@@ -88,7 +90,7 @@ public class TagServiceTest extends AtlasDatabaseTestBase {
         }
 
         var filteredTags = tags.stream().filter(e -> e.getCategory().contains("1") || e.getValue().contains("1"))
-                .collect(Collectors.toSet());
+            .collect(Collectors.toSet());
         var searchedTags = tagService.findAllByContent("1", Pageable.unpaged()).getContent();
 
         assertThat(searchedTags.size()).isEqualTo(1);

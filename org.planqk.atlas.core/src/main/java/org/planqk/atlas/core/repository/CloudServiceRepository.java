@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -22,7 +22,6 @@ package org.planqk.atlas.core.repository;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.CloudService;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -42,20 +41,20 @@ public interface CloudServiceRepository extends JpaRepository<CloudService, UUID
     boolean existsCloudServiceById(UUID id);
 
     @Query("SELECT cs " +
-            "FROM CloudService cs " +
-            "JOIN cs.softwarePlatforms sp " +
-            "WHERE sp.id = :spId")
+        "FROM CloudService cs " +
+        "JOIN cs.softwarePlatforms sp " +
+        "WHERE sp.id = :spId")
     Page<CloudService> findCloudServicesBySoftwarePlatformId(@Param("spId") UUID softwarePlatformId, Pageable pageable);
 
     @Query("SELECT cs " +
-            "FROM CloudService cs " +
-            "JOIN cs.providedComputeResources cr " +
-            "WHERE cr.id = :crId")
+        "FROM CloudService cs " +
+        "JOIN cs.providedComputeResources cr " +
+        "WHERE cr.id = :crId")
     Page<CloudService> findCloudServicesByComputeResourceId(@Param("crId") UUID computeResourceId, Pageable pageable);
 
     @Query("SELECT COUNT(cs) " +
-            "FROM CloudService cs " +
-            "JOIN cs.providedComputeResources cr " +
-            "WHERE cr.id = :crId")
+        "FROM CloudService cs " +
+        "JOIN cs.providedComputeResources cr " +
+        "WHERE cr.id = :crId")
     long countCloudServiceByComputeResource(@Param("crId") UUID computeResourceId);
 }

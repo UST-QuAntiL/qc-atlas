@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -21,18 +21,17 @@ package org.planqk.atlas.web.dtos;
 
 import java.net.URL;
 import java.util.UUID;
-
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
 
 import org.planqk.atlas.web.utils.Identifyable;
 import org.planqk.atlas.web.utils.ValidationGroups;
+import org.springframework.hateoas.server.core.Relation;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.springframework.hateoas.server.core.Relation;
 
 /**
  * Data transfer object for SoftwarePlatform ({@link org.planqk.atlas.core.model.SoftwarePlatform}).
@@ -48,7 +47,7 @@ public class SoftwarePlatformDto implements Identifyable {
     private UUID id;
 
     @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
-            message = "SoftwarePlatform name must not be null!")
+        message = "SoftwarePlatform name must not be null!")
     private String name;
 
     @Schema(description = "URL", example = "https://qiskit.org/")

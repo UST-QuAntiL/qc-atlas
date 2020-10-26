@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -25,8 +25,6 @@ import java.util.NoSuchElementException;
 import org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException;
 import org.planqk.atlas.core.exceptions.InvalidResourceTypeValueException;
 import org.planqk.atlas.web.controller.exceptions.InvalidRequestException;
-
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
@@ -37,6 +35,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+
+import lombok.extern.slf4j.Slf4j;
 
 @ControllerAdvice
 @Slf4j
@@ -51,13 +51,12 @@ public class AtlasExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<RuntimeException> handleInvalidJson(HttpMessageNotReadableException e) {
         log.error(e.getMessage(), e);
-        // TODO: Find better option to suppress unparsable class path output
         return ResponseEntity.badRequest().body(new RuntimeException(e.getMessage()));
     }
 
     @ExceptionHandler(EntityReferenceConstraintViolationException.class)
     public ResponseEntity<EntityReferenceConstraintViolationException> handleEntityReferenceConstraintViolationException(
-            EntityReferenceConstraintViolationException e) {
+        EntityReferenceConstraintViolationException e) {
         log.warn(e.getMessage(), e);
         return ResponseEntity.badRequest().body(e);
     }
@@ -76,7 +75,7 @@ public class AtlasExceptionHandler {
 
     @ExceptionHandler(InvalidResourceTypeValueException.class)
     public ResponseEntity<InvalidResourceTypeValueException> handleInvalidResourceTypeValueException(
-            InvalidResourceTypeValueException e) {
+        InvalidResourceTypeValueException e) {
         log.warn(e.getMessage(), e);
         return ResponseEntity.badRequest().body(e);
     }
@@ -106,7 +105,6 @@ public class AtlasExceptionHandler {
     }
 
     // Return stacktrace to client if another exception occurs.
-    // TODO: When using the app in production this may be removed or overthought
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Exception> handleOtherException(Exception e) {
         log.error(e.getMessage(), e);

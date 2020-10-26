@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -19,9 +19,14 @@
 
 package org.planqk.atlas.core.services;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
+import org.junit.jupiter.api.Test;
 import org.planqk.atlas.core.exceptions.InvalidResourceTypeValueException;
 import org.planqk.atlas.core.model.ComputationModel;
 import org.planqk.atlas.core.model.ComputeResource;
@@ -33,27 +38,26 @@ import org.planqk.atlas.core.model.QuantumComputationModel;
 import org.planqk.atlas.core.model.QuantumImplementation;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 import org.planqk.atlas.core.util.ServiceTestUtils;
-
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
 
     @Autowired
     private ComputeResourcePropertyService computeResourcePropertyService;
+
     @Autowired
     private ComputeResourcePropertyTypeService computeResourcePropertyTypeService;
+
     @Autowired
     private AlgorithmService algorithmService;
+
     @Autowired
     private ImplementationService implementationService;
+
     @Autowired
     private ComputeResourceService computeResourceService;
 
@@ -116,17 +120,17 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         assertThat(editedProperty.getValue()).isNotEqualTo(compareProperty.getValue());
 
         assertThat(editedProperty.getComputeResourcePropertyType().getId())
-                .isNotEqualTo(compareProperty.getComputeResourcePropertyType().getId());
+            .isNotEqualTo(compareProperty.getComputeResourcePropertyType().getId());
         assertThat(editedProperty.getComputeResourcePropertyType().getId()).isEqualTo(editedPropertyType.getId());
 
         assertThat(editedProperty.getComputeResourcePropertyType().getName())
-                .isNotEqualTo(compareProperty.getComputeResourcePropertyType().getName());
+            .isNotEqualTo(compareProperty.getComputeResourcePropertyType().getName());
         assertThat(editedProperty.getComputeResourcePropertyType().getName()).isEqualTo(editedPropertyType.getName());
 
         assertThat(editedProperty.getComputeResourcePropertyType().getDescription())
-                .isEqualTo(compareProperty.getComputeResourcePropertyType().getDescription());
+            .isEqualTo(compareProperty.getComputeResourcePropertyType().getDescription());
         assertThat(editedProperty.getComputeResourcePropertyType().getDatatype())
-                .isEqualTo(compareProperty.getComputeResourcePropertyType().getDatatype());
+            .isEqualTo(compareProperty.getComputeResourcePropertyType().getDatatype());
     }
 
     @Test
@@ -144,7 +148,7 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         storedProperty.setValue(editedValue);
 
         assertThrows(InvalidResourceTypeValueException.class, () ->
-                computeResourcePropertyService.update(storedProperty));
+            computeResourcePropertyService.update(storedProperty));
     }
 
     @Test
@@ -164,7 +168,7 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         storedProperty.setValue(editedValue);
 
         assertThrows(NoSuchElementException.class, () ->
-                computeResourcePropertyService.update(storedProperty));
+            computeResourcePropertyService.update(storedProperty));
     }
 
     @Test
@@ -190,13 +194,13 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         computeResourcePropertyService.delete(storedResource.getId());
 
         assertThrows(NoSuchElementException.class, () ->
-                computeResourcePropertyService.findById(storedResource.getId()));
+            computeResourcePropertyService.findById(storedResource.getId()));
     }
 
     @Test
     void deleteComputeResourceProperty_ElementNotFound() {
         assertThrows(NoSuchElementException.class, () ->
-                computeResourcePropertyService.delete(UUID.randomUUID()));
+            computeResourcePropertyService.delete(UUID.randomUUID()));
     }
 
     @Test
@@ -208,14 +212,14 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         resource.setComputeResourcePropertyType(resourceType);
 
         var storedResource = computeResourcePropertyService
-                .addComputeResourcePropertyToAlgorithm(algorithm.getId(), resource);
+            .addComputeResourcePropertyToAlgorithm(algorithm.getId(), resource);
 
         assertDoesNotThrow(() -> computeResourcePropertyService.findById(storedResource.getId()));
 
         algorithmService.delete(algorithm.getId());
 
         assertThrows(NoSuchElementException.class, () ->
-                computeResourcePropertyService.findById(storedResource.getId()));
+            computeResourcePropertyService.findById(storedResource.getId()));
     }
 
     @Test
@@ -227,14 +231,14 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         resource.setComputeResourcePropertyType(resourceType);
 
         var storedResource = computeResourcePropertyService
-                .addComputeResourcePropertyToImplementation(implementation.getId(), resource);
+            .addComputeResourcePropertyToImplementation(implementation.getId(), resource);
 
         assertDoesNotThrow(() -> computeResourcePropertyService.findById(storedResource.getId()));
 
         implementationService.delete(implementation.getId());
 
         assertThrows(NoSuchElementException.class, () ->
-                computeResourcePropertyService.findById(storedResource.getId()));
+            computeResourcePropertyService.findById(storedResource.getId()));
     }
 
     @Test
@@ -246,14 +250,14 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         resource.setComputeResourcePropertyType(resourceType);
 
         var storedResource = computeResourcePropertyService
-                .addComputeResourcePropertyToComputeResource(computeResource.getId(), resource);
+            .addComputeResourcePropertyToComputeResource(computeResource.getId(), resource);
 
         assertDoesNotThrow(() -> computeResourcePropertyService.findById(storedResource.getId()));
 
         computeResourceService.delete(computeResource.getId());
 
         assertThrows(NoSuchElementException.class, () ->
-                computeResourcePropertyService.findById(storedResource.getId()));
+            computeResourcePropertyService.findById(storedResource.getId()));
     }
 
     @Test
@@ -267,7 +271,7 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         computeResourcePropertyService.addComputeResourcePropertyToAlgorithm(algorithm.getId(), resource);
 
         var resources = computeResourcePropertyService.findComputeResourcePropertiesOfAlgorithm(
-                algorithm.getId(), Pageable.unpaged()).getContent();
+            algorithm.getId(), Pageable.unpaged()).getContent();
 
         assertThat(resources.size()).isEqualTo(1);
     }
@@ -283,7 +287,7 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         computeResourcePropertyService.addComputeResourcePropertyToImplementation(implementation.getId(), resource);
 
         var resources = computeResourcePropertyService.findComputeResourcePropertiesOfImplementation(
-                implementation.getId(), Pageable.unpaged()).getContent();
+            implementation.getId(), Pageable.unpaged()).getContent();
 
         assertThat(resources.size()).isEqualTo(1);
     }
@@ -299,7 +303,7 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         computeResourcePropertyService.addComputeResourcePropertyToComputeResource(computeResource.getId(), resource);
 
         var resources = computeResourcePropertyService.findComputeResourcePropertiesOfComputeResource(
-                computeResource.getId(), Pageable.unpaged()).getContent();
+            computeResource.getId(), Pageable.unpaged()).getContent();
 
         assertThat(resources.size()).isEqualTo(1);
     }
@@ -314,7 +318,7 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         resource = computeResourcePropertyService.create(resource);
 
         var storedResource = computeResourcePropertyService
-                .addComputeResourcePropertyToAlgorithm(algorithm.getId(), resource);
+            .addComputeResourcePropertyToAlgorithm(algorithm.getId(), resource);
 
         var resultAlgorithm = (QuantumAlgorithm) algorithmService.findById(algorithm.getId());
 
@@ -326,7 +330,7 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
             assertThat(storedResource.getId()).isEqualTo(resultResource.getId());
             assertDoesNotThrow(() -> computeResourcePropertyService.findById(resultResource.getId()));
             assertThat(storedResource.getComputeResourcePropertyType().getId())
-                    .isEqualTo(resultResource.getComputeResourcePropertyType().getId());
+                .isEqualTo(resultResource.getComputeResourcePropertyType().getId());
         });
     }
 
@@ -339,7 +343,7 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         resource.setComputeResourcePropertyType(resourceType);
 
         var storedResource = computeResourcePropertyService
-                .addComputeResourcePropertyToAlgorithm(algorithm.getId(), resource);
+            .addComputeResourcePropertyToAlgorithm(algorithm.getId(), resource);
 
         var resultAlgorithm = (QuantumAlgorithm) algorithmService.findById(algorithm.getId());
 
@@ -351,7 +355,7 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
             assertThat(storedResource.getId()).isEqualTo(resultResource.getId());
             assertDoesNotThrow(() -> computeResourcePropertyService.findById(resultResource.getId()));
             assertThat(storedResource.getComputeResourcePropertyType().getId())
-                    .isEqualTo(resultResource.getComputeResourcePropertyType().getId());
+                .isEqualTo(resultResource.getComputeResourcePropertyType().getId());
         });
     }
 
@@ -363,7 +367,7 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         resource.setComputeResourcePropertyType(resourceType);
 
         assertThrows(NoSuchElementException.class, () -> computeResourcePropertyService
-                .addComputeResourcePropertyToAlgorithm(UUID.randomUUID(), resource));
+            .addComputeResourcePropertyToAlgorithm(UUID.randomUUID(), resource));
     }
 
     @Test
@@ -376,7 +380,7 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         resource = computeResourcePropertyService.create(resource);
 
         var storedResource = computeResourcePropertyService
-                .addComputeResourcePropertyToImplementation(implementation.getId(), resource);
+            .addComputeResourcePropertyToImplementation(implementation.getId(), resource);
 
         var resultImplementation = (QuantumImplementation) implementationService.findById(implementation.getId());
 
@@ -388,7 +392,7 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
             assertThat(storedResource.getId()).isEqualTo(resultResource.getId());
             assertDoesNotThrow(() -> computeResourcePropertyService.findById(resultResource.getId()));
             assertThat(storedResource.getComputeResourcePropertyType().getId())
-                    .isEqualTo(resultResource.getComputeResourcePropertyType().getId());
+                .isEqualTo(resultResource.getComputeResourcePropertyType().getId());
         });
     }
 
@@ -401,7 +405,7 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         resource.setComputeResourcePropertyType(resourceType);
 
         var storedResource = computeResourcePropertyService
-                .addComputeResourcePropertyToImplementation(implementation.getId(), resource);
+            .addComputeResourcePropertyToImplementation(implementation.getId(), resource);
 
         var resultImplementation = (QuantumImplementation) implementationService.findById(implementation.getId());
 
@@ -413,7 +417,7 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
             assertThat(storedResource.getId()).isEqualTo(resultResource.getId());
             assertDoesNotThrow(() -> computeResourcePropertyService.findById(resultResource.getId()));
             assertThat(storedResource.getComputeResourcePropertyType().getId())
-                    .isEqualTo(resultResource.getComputeResourcePropertyType().getId());
+                .isEqualTo(resultResource.getComputeResourcePropertyType().getId());
         });
     }
 
@@ -425,7 +429,7 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         resource.setComputeResourcePropertyType(resourceType);
 
         assertThrows(NoSuchElementException.class, () -> computeResourcePropertyService
-                .addComputeResourcePropertyToImplementation(UUID.randomUUID(), resource));
+            .addComputeResourcePropertyToImplementation(UUID.randomUUID(), resource));
     }
 
     @Test
@@ -438,7 +442,7 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         resource = computeResourcePropertyService.create(resource);
 
         var storedResource = computeResourcePropertyService
-                .addComputeResourcePropertyToComputeResource(computeResource.getId(), resource);
+            .addComputeResourcePropertyToComputeResource(computeResource.getId(), resource);
 
         var resultComputeResource = computeResourceService.findById(computeResource.getId());
 
@@ -450,7 +454,7 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
             assertThat(storedResource.getId()).isEqualTo(resultResource.getId());
             assertDoesNotThrow(() -> computeResourcePropertyService.findById(resultResource.getId()));
             assertThat(storedResource.getComputeResourcePropertyType().getId())
-                    .isEqualTo(resultResource.getComputeResourcePropertyType().getId());
+                .isEqualTo(resultResource.getComputeResourcePropertyType().getId());
         });
     }
 
@@ -463,7 +467,7 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         resource.setComputeResourcePropertyType(resourceType);
 
         var storedResource = computeResourcePropertyService
-                .addComputeResourcePropertyToComputeResource(computeResource.getId(), resource);
+            .addComputeResourcePropertyToComputeResource(computeResource.getId(), resource);
 
         var resultComputeResource = computeResourceService.findById(computeResource.getId());
 
@@ -475,7 +479,7 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
             assertThat(storedResource.getId()).isEqualTo(resultResource.getId());
             assertDoesNotThrow(() -> computeResourcePropertyService.findById(resultResource.getId()));
             assertThat(storedResource.getComputeResourcePropertyType().getId())
-                    .isEqualTo(resultResource.getComputeResourcePropertyType().getId());
+                .isEqualTo(resultResource.getComputeResourcePropertyType().getId());
         });
     }
 
@@ -487,7 +491,7 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         resource.setComputeResourcePropertyType(resourceType);
 
         assertThrows(NoSuchElementException.class, () -> computeResourcePropertyService
-                .addComputeResourcePropertyToComputeResource(UUID.randomUUID(), resource));
+            .addComputeResourcePropertyToComputeResource(UUID.randomUUID(), resource));
     }
 
     @Test
@@ -499,12 +503,12 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         resource.setComputeResourcePropertyType(resourceType);
 
         var storedResource = computeResourcePropertyService
-                .addComputeResourcePropertyToAlgorithm(algorithm.getId(), resource);
+            .addComputeResourcePropertyToAlgorithm(algorithm.getId(), resource);
 
         var resultAlgorithm = (QuantumAlgorithm) algorithmService.findById(algorithm.getId());
 
         assertDoesNotThrow(() -> computeResourcePropertyService
-                .checkIfComputeResourcePropertyIsOfAlgorithm(resultAlgorithm.getId(), storedResource.getId()));
+            .checkIfComputeResourcePropertyIsOfAlgorithm(resultAlgorithm.getId(), storedResource.getId()));
     }
 
     @Test
@@ -517,10 +521,10 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         resource.setComputeResourcePropertyType(resourceType);
 
         var storedResource = computeResourcePropertyService
-                .addComputeResourcePropertyToImplementation(implementation.getId(), resource);
+            .addComputeResourcePropertyToImplementation(implementation.getId(), resource);
 
         assertThrows(NoSuchElementException.class, () -> computeResourcePropertyService
-                .checkIfComputeResourcePropertyIsOfAlgorithm(algorithm.getId(), storedResource.getId()));
+            .checkIfComputeResourcePropertyIsOfAlgorithm(algorithm.getId(), storedResource.getId()));
     }
 
     @Test
@@ -533,10 +537,10 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         resource.setComputeResourcePropertyType(resourceType);
 
         var storedResource = computeResourcePropertyService
-                .addComputeResourcePropertyToAlgorithm(resourceAlgorithm.getId(), resource);
+            .addComputeResourcePropertyToAlgorithm(resourceAlgorithm.getId(), resource);
 
         assertThrows(NoSuchElementException.class, () -> computeResourcePropertyService
-                .checkIfComputeResourcePropertyIsOfAlgorithm(algorithm.getId(), storedResource.getId()));
+            .checkIfComputeResourcePropertyIsOfAlgorithm(algorithm.getId(), storedResource.getId()));
     }
 
     @Test
@@ -548,12 +552,12 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         resource.setComputeResourcePropertyType(resourceType);
 
         var storedResource = computeResourcePropertyService
-                .addComputeResourcePropertyToImplementation(implementation.getId(), resource);
+            .addComputeResourcePropertyToImplementation(implementation.getId(), resource);
 
         var resultImplementation = (QuantumImplementation) implementationService.findById(implementation.getId());
 
         assertDoesNotThrow(() -> computeResourcePropertyService
-                .checkIfComputeResourcePropertyIsOfImplementation(resultImplementation.getId(), storedResource.getId()));
+            .checkIfComputeResourcePropertyIsOfImplementation(resultImplementation.getId(), storedResource.getId()));
     }
 
     @Test
@@ -566,10 +570,10 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         resource.setComputeResourcePropertyType(resourceType);
 
         var storedResource = computeResourcePropertyService
-                .addComputeResourcePropertyToAlgorithm(algorithm.getId(), resource);
+            .addComputeResourcePropertyToAlgorithm(algorithm.getId(), resource);
 
         assertThrows(NoSuchElementException.class, () -> computeResourcePropertyService
-                .checkIfComputeResourcePropertyIsOfImplementation(implementation.getId(), storedResource.getId()));
+            .checkIfComputeResourcePropertyIsOfImplementation(implementation.getId(), storedResource.getId()));
     }
 
     @Test
@@ -582,10 +586,10 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         resource.setComputeResourcePropertyType(resourceType);
 
         var storedResource = computeResourcePropertyService
-                .addComputeResourcePropertyToImplementation(resourceImplementation.getId(), resource);
+            .addComputeResourcePropertyToImplementation(resourceImplementation.getId(), resource);
 
         assertThrows(NoSuchElementException.class, () -> computeResourcePropertyService
-                .checkIfComputeResourcePropertyIsOfImplementation(implementation.getId(), storedResource.getId()));
+            .checkIfComputeResourcePropertyIsOfImplementation(implementation.getId(), storedResource.getId()));
     }
 
     @Test
@@ -597,12 +601,12 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         resource.setComputeResourcePropertyType(resourceType);
 
         var storedResource = computeResourcePropertyService
-                .addComputeResourcePropertyToComputeResource(computeResource.getId(), resource);
+            .addComputeResourcePropertyToComputeResource(computeResource.getId(), resource);
 
         var resultComputeResource = computeResourceService.findById(computeResource.getId());
 
         assertDoesNotThrow(() -> computeResourcePropertyService
-                .checkIfComputeResourcePropertyIsOfComputeResource(resultComputeResource.getId(), storedResource.getId()));
+            .checkIfComputeResourcePropertyIsOfComputeResource(resultComputeResource.getId(), storedResource.getId()));
     }
 
     @Test
@@ -615,10 +619,10 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         resource.setComputeResourcePropertyType(resourceType);
 
         var storedResource = computeResourcePropertyService
-                .addComputeResourcePropertyToAlgorithm(algorithm.getId(), resource);
+            .addComputeResourcePropertyToAlgorithm(algorithm.getId(), resource);
 
         assertThrows(NoSuchElementException.class, () -> computeResourcePropertyService
-                .checkIfComputeResourcePropertyIsOfComputeResource(computeResource.getId(), storedResource.getId()));
+            .checkIfComputeResourcePropertyIsOfComputeResource(computeResource.getId(), storedResource.getId()));
     }
 
     @Test
@@ -631,10 +635,10 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         resource.setComputeResourcePropertyType(resourceType);
 
         var storedResource = computeResourcePropertyService
-                .addComputeResourcePropertyToComputeResource(resourceComputeResource.getId(), resource);
+            .addComputeResourcePropertyToComputeResource(resourceComputeResource.getId(), resource);
 
         assertThrows(NoSuchElementException.class, () -> computeResourcePropertyService
-                .checkIfComputeResourcePropertyIsOfComputeResource(computeResource.getId(), storedResource.getId()));
+            .checkIfComputeResourcePropertyIsOfComputeResource(computeResource.getId(), storedResource.getId()));
     }
 
     private ComputeResourceProperty getFullComputeResourceProperty(String value) {

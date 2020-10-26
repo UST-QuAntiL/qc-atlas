@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -19,6 +19,10 @@
 
 package org.planqk.atlas.core.services;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -26,6 +30,7 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.UUID;
 
+import org.junit.jupiter.api.Test;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
 import org.planqk.atlas.core.model.ClassicImplementation;
@@ -34,25 +39,23 @@ import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 import org.planqk.atlas.core.util.ServiceTestUtils;
-
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class PublicationServiceTest extends AtlasDatabaseTestBase {
 
     @Autowired
     private PublicationService publicationService;
+
     @Autowired
     private AlgorithmService algorithmService;
+
     @Autowired
     private ImplementationService implementationService;
+
     @Autowired
     private LinkingService linkingService;
 
@@ -95,7 +98,7 @@ public class PublicationServiceTest extends AtlasDatabaseTestBase {
     @Test
     void findPublicationById_ElementNotFound() {
         assertThrows(NoSuchElementException.class, () ->
-                publicationService.findById(UUID.randomUUID()));
+            publicationService.findById(UUID.randomUUID()));
     }
 
     @Test
@@ -114,7 +117,7 @@ public class PublicationServiceTest extends AtlasDatabaseTestBase {
         Publication publication = getFullPublication("publicationTitle");
         publication.setId(UUID.randomUUID());
         assertThrows(NoSuchElementException.class, () ->
-                publicationService.update(publication));
+            publicationService.update(publication));
     }
 
     @Test
@@ -141,7 +144,7 @@ public class PublicationServiceTest extends AtlasDatabaseTestBase {
     @Test
     void deletePublication_ElementNotFound() {
         assertThrows(NoSuchElementException.class, () ->
-                publicationService.delete(UUID.randomUUID()));
+            publicationService.delete(UUID.randomUUID()));
     }
 
     @Test
@@ -154,7 +157,7 @@ public class PublicationServiceTest extends AtlasDatabaseTestBase {
         publicationService.delete(storedPublication.getId());
 
         assertThrows(NoSuchElementException.class, () ->
-                publicationService.findById(storedPublication.getId()));
+            publicationService.findById(storedPublication.getId()));
     }
 
     @Test
@@ -174,15 +177,15 @@ public class PublicationServiceTest extends AtlasDatabaseTestBase {
         publicationService.deletePublications(publicationIds);
 
         assertThrows(NoSuchElementException.class, () ->
-                publicationService.findById(storedPublication1.getId()));
+            publicationService.findById(storedPublication1.getId()));
         assertThrows(NoSuchElementException.class, () ->
-                publicationService.findById(storedPublication2.getId()));
+            publicationService.findById(storedPublication2.getId()));
     }
 
     @Test
     void findLinkedAlgorithms_PublicationNotFound() {
         assertThrows(NoSuchElementException.class, () ->
-                publicationService.findLinkedAlgorithms(UUID.randomUUID(), Pageable.unpaged()));
+            publicationService.findLinkedAlgorithms(UUID.randomUUID(), Pageable.unpaged()));
     }
 
     @Test
@@ -198,7 +201,7 @@ public class PublicationServiceTest extends AtlasDatabaseTestBase {
         linkingService.linkAlgorithmAndPublication(algorithm.getId(), publication.getId());
 
         Set<Algorithm> publicationAlgorithms = publicationService
-                .findLinkedAlgorithms(publication.getId(), Pageable.unpaged()).toSet();
+            .findLinkedAlgorithms(publication.getId(), Pageable.unpaged()).toSet();
 
         Algorithm finalAlgorithm = algorithm;
         publicationAlgorithms.forEach(algo -> {
@@ -209,7 +212,7 @@ public class PublicationServiceTest extends AtlasDatabaseTestBase {
     @Test
     void findLinkedImplementations_PublicationNotFound() {
         assertThrows(NoSuchElementException.class, () ->
-                publicationService.findLinkedImplementations(UUID.randomUUID(), Pageable.unpaged()));
+            publicationService.findLinkedImplementations(UUID.randomUUID(), Pageable.unpaged()));
     }
 
     @Test
@@ -228,7 +231,7 @@ public class PublicationServiceTest extends AtlasDatabaseTestBase {
         linkingService.linkImplementationAndPublication(implementation.getId(), publication.getId());
 
         Set<Implementation> publicationImplementations = publicationService
-                .findLinkedImplementations(publication.getId(), Pageable.unpaged()).toSet();
+            .findLinkedImplementations(publication.getId(), Pageable.unpaged()).toSet();
 
         Implementation finalImplementation = implementation;
         publicationImplementations.forEach(impl -> {
@@ -248,7 +251,7 @@ public class PublicationServiceTest extends AtlasDatabaseTestBase {
         linkingService.linkAlgorithmAndPublication(persistedAlgorithm.getId(), persistedPublication.getId());
 
         assertDoesNotThrow(() -> publicationService
-                .checkIfAlgorithmIsLinkedToPublication(persistedPublication.getId(), persistedAlgorithm.getId()));
+            .checkIfAlgorithmIsLinkedToPublication(persistedPublication.getId(), persistedAlgorithm.getId()));
     }
 
     @Test
@@ -261,7 +264,7 @@ public class PublicationServiceTest extends AtlasDatabaseTestBase {
         Publication persistedPublication = publicationService.create(publication);
 
         assertThrows(NoSuchElementException.class, () -> publicationService
-                .checkIfAlgorithmIsLinkedToPublication(persistedPublication.getId(), persistedAlgorithm.getId()));
+            .checkIfAlgorithmIsLinkedToPublication(persistedPublication.getId(), persistedAlgorithm.getId()));
     }
 
     @Test
@@ -280,7 +283,7 @@ public class PublicationServiceTest extends AtlasDatabaseTestBase {
         linkingService.linkImplementationAndPublication(persistedImplementation.getId(), persistedPublication.getId());
 
         assertDoesNotThrow(() -> publicationService
-                .checkIfImplementationIsLinkedToPublication(persistedPublication.getId(), persistedImplementation.getId()));
+            .checkIfImplementationIsLinkedToPublication(persistedPublication.getId(), persistedImplementation.getId()));
     }
 
     @Test
@@ -297,7 +300,7 @@ public class PublicationServiceTest extends AtlasDatabaseTestBase {
         Publication persistedPublication = publicationService.create(publication);
 
         assertThrows(NoSuchElementException.class, () -> publicationService
-                .checkIfImplementationIsLinkedToPublication(persistedPublication.getId(), persistedImplementation.getId()));
+            .checkIfImplementationIsLinkedToPublication(persistedPublication.getId(), persistedImplementation.getId()));
     }
 
     private Publication getFullPublication(String title) {

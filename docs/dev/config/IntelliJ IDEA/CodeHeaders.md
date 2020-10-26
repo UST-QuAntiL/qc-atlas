@@ -6,7 +6,7 @@ This file explains how to create and maintain copyright headers in source files.
 
 ```
  /*******************************************************************************
- * Copyright (c) ${YEAR} University of Stuttgart
+ * Copyright (c) ${YEAR} the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional 
  * information regarding copyright ownership.
@@ -28,7 +28,7 @@ See also <http://www.apache.org/licenses/LICENSE-2.0#apply>
 ## Header for IntelliJ configuration
 
 ```
-Copyright (c) $today.year University of Stuttgart
+Copyright (c) $today.year the qc-atlas contributors.
 
 See the NOTICE file(s) distributed with this work for additional
 information regarding copyright ownership.

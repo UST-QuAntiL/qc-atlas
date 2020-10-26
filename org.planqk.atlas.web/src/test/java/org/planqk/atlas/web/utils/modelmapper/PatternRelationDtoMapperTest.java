@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -19,16 +19,15 @@
 
 package org.planqk.atlas.web.utils.modelmapper;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.UUID;
 
+import org.junit.jupiter.api.Test;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.web.dtos.PatternRelationDto;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
-
-import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class PatternRelationDtoMapperTest {
 
@@ -56,8 +55,8 @@ public class PatternRelationDtoMapperTest {
         var mappedPatternRelation = ModelMapperUtils.convert(patternRelationDto, PatternRelationDto.class);
 
         assertThat(mappedPatternRelation.getId())
-                .isEqualTo(patternRelationDto.getId());
+            .isEqualTo(patternRelationDto.getId());
         assertThat(mappedPatternRelation.getAlgorithmId())
-                .isEqualTo(patternRelationDto.getAlgorithmId());
+            .isEqualTo(patternRelationDto.getAlgorithmId());
     }
 }

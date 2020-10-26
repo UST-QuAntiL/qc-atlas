@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -24,10 +24,18 @@ import org.testcontainers.containers.PostgreSQLContainer;
 public class DatabaseContainer extends PostgreSQLContainer<DatabaseContainer> {
 
     private static final String IMAGE = "postgres:12-alpine";
+
     private static DatabaseContainer instance = null;
 
     public DatabaseContainer() {
         super(IMAGE);
+    }
+
+    public static DatabaseContainer getInstance() {
+        if (instance == null) {
+            instance = new DatabaseContainer();
+        }
+        return instance;
     }
 
     @Override
@@ -36,12 +44,5 @@ public class DatabaseContainer extends PostgreSQLContainer<DatabaseContainer> {
         System.setProperty("DB_JDBC_URL", this.getJdbcUrl());
         System.setProperty("DB_USERNAME", this.getUsername());
         System.setProperty("DB_PASSWORD", this.getPassword());
-    }
-
-    public static DatabaseContainer getInstance() {
-        if (instance == null) {
-            instance = new DatabaseContainer();
-        }
-        return instance;
     }
 }

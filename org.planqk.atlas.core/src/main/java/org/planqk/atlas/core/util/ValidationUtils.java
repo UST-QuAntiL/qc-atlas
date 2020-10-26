@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -22,12 +22,15 @@ package org.planqk.atlas.core.util;
 import org.planqk.atlas.core.exceptions.InvalidResourceTypeValueException;
 import org.planqk.atlas.core.model.ComputeResourceProperty;
 
-public class ValidationUtils {
+public final class ValidationUtils {
+
+    private ValidationUtils() {
+    }
 
     public static void validateComputeResourceProperty(ComputeResourceProperty resource) {
         if (!resource.getComputeResourcePropertyType().getDatatype().isValid(resource.getValue())) {
             throw new InvalidResourceTypeValueException("The value \"" + resource.getValue() +
-                    "\" is not valid for the Type " + resource.getComputeResourcePropertyType().getDatatype().name());
+                "\" is not valid for the Type " + resource.getComputeResourcePropertyType().getDatatype().name());
         }
     }
 }

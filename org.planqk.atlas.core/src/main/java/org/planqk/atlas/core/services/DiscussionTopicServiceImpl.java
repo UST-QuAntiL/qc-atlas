@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -25,14 +25,14 @@ import org.planqk.atlas.core.model.DiscussionTopic;
 import org.planqk.atlas.core.model.KnowledgeArtifact;
 import org.planqk.atlas.core.repository.DiscussionTopicRepository;
 import org.planqk.atlas.core.util.ServiceUtils;
-
-import lombok.AllArgsConstructor;
-import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import lombok.AllArgsConstructor;
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -54,7 +54,7 @@ public class DiscussionTopicServiceImpl implements DiscussionTopicService {
 
     @Override
     public Page<DiscussionTopic> findByKnowledgeArtifact(
-            @NonNull KnowledgeArtifact knowledgeArtifact, @NonNull Pageable pageable) {
+        @NonNull KnowledgeArtifact knowledgeArtifact, @NonNull Pageable pageable) {
         return discussionTopicRepository.findByKnowledgeArtifact(knowledgeArtifact, pageable);
     }
 

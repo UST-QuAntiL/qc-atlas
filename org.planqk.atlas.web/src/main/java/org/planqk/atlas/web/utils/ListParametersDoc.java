@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -16,6 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
+
 package org.planqk.atlas.web.utils;
 
 import java.lang.annotation.ElementType;
@@ -23,16 +24,17 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.springdoc.data.rest.converters.PageableAsQueryParam;
+
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-import org.springdoc.data.rest.converters.PageableAsQueryParam;
 
-@Target( {ElementType.METHOD, ElementType.ANNOTATION_TYPE})
+@Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @PageableAsQueryParam
 @Parameter(in = ParameterIn.QUERY, description = "Filter criteria for this query ", name = "search",
-        content = @Content(schema = @Schema(type = "string")))
+    content = @Content(schema = @Schema(type = "string")))
 public @interface ListParametersDoc {
 }
