@@ -41,6 +41,8 @@ public final class Constants {
 
     public static final String COMPUTE_RESOURCE_PROPERTIES = "compute-resource-properties";
 
+    public static final String FILES = "files";
+
     public static final String COMPUTE_RESOURCE_PROPERTY_TYPES = "compute-resource-property-types";
 
     public static final String DISCUSSION_COMMENTS = "discussion-comments";

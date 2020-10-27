@@ -22,6 +22,7 @@ package org.planqk.atlas.web.controller;
 import java.beans.PropertyChangeEvent;
 import java.util.NoSuchElementException;
 
+import org.planqk.atlas.core.exceptions.CloudStorageException;
 import org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException;
 import org.planqk.atlas.core.exceptions.InvalidResourceTypeValueException;
 import org.planqk.atlas.web.controller.exceptions.InvalidRequestException;
@@ -52,6 +53,13 @@ public class AtlasExceptionHandler {
     public ResponseEntity<RuntimeException> handleInvalidJson(HttpMessageNotReadableException e) {
         log.error(e.getMessage(), e);
         return ResponseEntity.badRequest().body(new RuntimeException(e.getMessage()));
+    }
+
+    @ExceptionHandler(CloudStorageException.class)
+    public ResponseEntity<CloudStorageException> handleCloudStorageException(
+        CloudStorageException e) {
+        log.error(e.getMessage(), e);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
     }
 
     @ExceptionHandler(EntityReferenceConstraintViolationException.class)

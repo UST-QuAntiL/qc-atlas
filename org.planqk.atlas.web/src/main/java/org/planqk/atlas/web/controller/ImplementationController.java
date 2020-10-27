@@ -494,4 +494,5 @@ public class ImplementationController {
         final var resource = computeResourcePropertyService.findById(computeResourcePropertyId);
         return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(resource));
     }
+
 }
