@@ -14,7 +14,7 @@ public class FileAssembler extends GenericLinkAssembler<FileDto> {
 
     @Override
     public void addLinks(EntityModel<FileDto> resource) {
-        resource.add(links.linkTo(methodOn(ImplementationGlobalController.class)
+        resource.add(getLinks().linkTo(methodOn(ImplementationGlobalController.class)
                 .getFileOfImplementation(getImplementationId(resource), getId(resource))).withSelfRel());
     }
 
