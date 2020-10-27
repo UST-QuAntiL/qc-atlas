@@ -21,7 +21,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
-import com.google.cloud.storage.Bucket;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageException;
 
@@ -78,10 +77,10 @@ public class FileServiceCloudStorageImpl implements FileService {
 
     @Override
     public byte[] getFileContent(UUID id) {
-        File file = ServiceUtils.findById(id, File.class, fileRepository);
+        final File file = ServiceUtils.findById(id, File.class, fileRepository);
         try {
             final BlobId blobId = BlobId.of(implementationFilesBucketName, file.getFileURL());
-            Blob blob = this.storage.get(blobId);
+            final Blob blob = this.storage.get(blobId);
             if (blob == null) {
                 throw new NoSuchElementException("File with URL \"" + file.getFileURL() + "\" does not exist");
             }
@@ -98,8 +97,8 @@ public class FileServiceCloudStorageImpl implements FileService {
 
     @Override
     public void delete(UUID id) {
-        File storedEntity = this.findById(id);
-        BlobId blobId = BlobId.of(implementationFilesBucketName, storedEntity.getFileURL());
+        final File storedEntity = this.findById(id);
+        final BlobId blobId = BlobId.of(implementationFilesBucketName, storedEntity.getFileURL());
         try {
             storage.delete(blobId);
             this.fileRepository.delete(storedEntity);
@@ -109,7 +108,7 @@ public class FileServiceCloudStorageImpl implements FileService {
     }
 
     private File getFileFromBlob(Blob blob) {
-        File file = new File();
+        final File file = new File();
         file.setName(blob.getName());
         file.setMimeType(blob.getContentType());
         file.setFileURL(blob.getName());

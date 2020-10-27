@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -19,6 +19,10 @@
 
 package org.planqk.atlas.core.services;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -26,6 +30,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
+import org.junit.jupiter.api.Test;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
 import org.planqk.atlas.core.model.ClassicImplementation;
@@ -37,27 +42,26 @@ import org.planqk.atlas.core.model.QuantumImplementation;
 import org.planqk.atlas.core.model.SoftwarePlatform;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 import org.planqk.atlas.core.util.ServiceTestUtils;
-
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class ImplementationServiceTest extends AtlasDatabaseTestBase {
 
     @Autowired
     private ImplementationService implementationService;
+
     @Autowired
     private AlgorithmService algorithmService;
+
     @Autowired
     private PublicationService publicationService;
+
     @Autowired
     private SoftwarePlatformService softwarePlatformService;
+
     @Autowired
     private LinkingService linkingService;
 
@@ -167,9 +171,9 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
         assertThat(editedImplementation.getLink()).isEqualTo(compareImplementation.getLink());
         assertThat(editedImplementation.getDependencies()).isEqualTo(compareImplementation.getDependencies());
         assertThat(editedImplementation.getImplementedAlgorithm().getId())
-                .isEqualTo(compareImplementation.getImplementedAlgorithm().getId());
+            .isEqualTo(compareImplementation.getImplementedAlgorithm().getId());
         ServiceTestUtils.assertAlgorithmEquality(
-                editedImplementation.getImplementedAlgorithm(), compareImplementation.getImplementedAlgorithm());
+            editedImplementation.getImplementedAlgorithm(), compareImplementation.getImplementedAlgorithm());
     }
 
     @Test
@@ -223,20 +227,20 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
         Implementation finalImplementation = implementationService.findById(implementation.getId());
 
         finalImplementation.getPublications().forEach(pub ->
-                assertDoesNotThrow(() -> publicationService.findById(pub.getId())));
+            assertDoesNotThrow(() -> publicationService.findById(pub.getId())));
         finalImplementation.getSoftwarePlatforms().forEach(sp ->
-                assertDoesNotThrow(() -> softwarePlatformService.findById(sp.getId())));
+            assertDoesNotThrow(() -> softwarePlatformService.findById(sp.getId())));
 
         implementationService.delete(finalImplementation.getId());
 
         assertThrows(NoSuchElementException.class, () ->
-                implementationService.findById(finalImplementation.getId()));
+            implementationService.findById(finalImplementation.getId()));
 
         // check if implementation links are removed
         finalImplementation.getPublications().forEach(pub ->
-                assertThat(publicationService.findById(pub.getId()).getImplementations().size()).isEqualTo(0));
+            assertThat(publicationService.findById(pub.getId()).getImplementations().size()).isEqualTo(0));
         finalImplementation.getSoftwarePlatforms().forEach(sp ->
-                assertThat(softwarePlatformService.findById(sp.getId()).getImplementations().size()).isEqualTo(0));
+            assertThat(softwarePlatformService.findById(sp.getId()).getImplementations().size()).isEqualTo(0));
     }
 
     @Test
@@ -265,7 +269,7 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
         implementationService.create(implementation, algorithm.getId());
 
         assertDoesNotThrow(() -> implementationService
-                .checkIfImplementationIsOfAlgorithm(implementation.getId(), persistedAlgorithm.getId()));
+            .checkIfImplementationIsOfAlgorithm(implementation.getId(), persistedAlgorithm.getId()));
     }
 
     @Test
@@ -283,7 +287,7 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
         implementationService.create(implementation, algorithm1.getId());
 
         assertThrows(NoSuchElementException.class, () -> implementationService
-                .checkIfImplementationIsOfAlgorithm(implementation.getId(), persistedAlgorithm2.getId()));
+            .checkIfImplementationIsOfAlgorithm(implementation.getId(), persistedAlgorithm2.getId()));
     }
 
     @Test
@@ -302,7 +306,7 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
         implementationService.create(implementation2, algorithm.getId());
 
         List<Implementation> implementations = implementationService
-                .findByImplementedAlgorithm(algorithm.getId(), Pageable.unpaged()).getContent();
+            .findByImplementedAlgorithm(algorithm.getId(), Pageable.unpaged()).getContent();
 
         assertThat(implementations.size()).isEqualTo(2);
     }
@@ -329,7 +333,7 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
         linkingService.linkImplementationAndSoftwarePlatform(storedImplementation.getId(), softwarePlatform2.getId());
 
         var linkedSoftwarePlatforms = implementationService
-                .findLinkedSoftwarePlatforms(storedImplementation.getId(), Pageable.unpaged());
+            .findLinkedSoftwarePlatforms(storedImplementation.getId(), Pageable.unpaged());
 
         assertThat(linkedSoftwarePlatforms.getTotalElements()).isEqualTo(2);
     }
@@ -356,7 +360,7 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
         linkingService.linkImplementationAndPublication(storedImplementation.getId(), publication2.getId());
 
         var linkedPublications = implementationService
-                .findLinkedPublications(storedImplementation.getId(), Pageable.unpaged());
+            .findLinkedPublications(storedImplementation.getId(), Pageable.unpaged());
 
         assertThat(linkedPublications.getTotalElements()).isEqualTo(2);
     }

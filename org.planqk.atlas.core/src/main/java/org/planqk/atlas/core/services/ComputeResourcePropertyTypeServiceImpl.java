@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -26,14 +26,14 @@ import org.planqk.atlas.core.model.ComputeResourcePropertyType;
 import org.planqk.atlas.core.repository.ComputeResourcePropertyRepository;
 import org.planqk.atlas.core.repository.ComputeResourcePropertyTypeRepository;
 import org.planqk.atlas.core.util.ServiceUtils;
-
-import lombok.AllArgsConstructor;
-import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import lombok.AllArgsConstructor;
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -41,6 +41,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ComputeResourcePropertyTypeServiceImpl implements ComputeResourcePropertyTypeService {
 
     private final ComputeResourcePropertyTypeRepository computeResourcePropertyTypeRepository;
+
     private final ComputeResourcePropertyRepository computeResourcePropertyRepository;
 
     @Override
@@ -57,15 +58,15 @@ public class ComputeResourcePropertyTypeServiceImpl implements ComputeResourcePr
     @Override
     public ComputeResourcePropertyType findById(@NonNull UUID computeResourcePropertyTypeId) {
         return ServiceUtils.findById(
-                computeResourcePropertyTypeId,
-                ComputeResourcePropertyType.class,
-                computeResourcePropertyTypeRepository);
+            computeResourcePropertyTypeId,
+            ComputeResourcePropertyType.class,
+            computeResourcePropertyTypeRepository);
     }
 
     @Override
     @Transactional
     public ComputeResourcePropertyType update(@NonNull ComputeResourcePropertyType computeResourcePropertyType) {
-        var persistedComputeResourcePropertyType = findById(computeResourcePropertyType.getId());
+        final var persistedComputeResourcePropertyType = findById(computeResourcePropertyType.getId());
 
         persistedComputeResourcePropertyType.setName(computeResourcePropertyType.getName());
         persistedComputeResourcePropertyType.setDescription(computeResourcePropertyType.getDescription());
@@ -78,13 +79,13 @@ public class ComputeResourcePropertyTypeServiceImpl implements ComputeResourcePr
     @Transactional
     public void delete(@NonNull UUID computeResourcePropertyTypeId) {
         ServiceUtils.throwIfNotExists(
-                computeResourcePropertyTypeId,
-                ComputeResourcePropertyType.class,
-                computeResourcePropertyTypeRepository);
+            computeResourcePropertyTypeId,
+            ComputeResourcePropertyType.class,
+            computeResourcePropertyTypeRepository);
 
         if (computeResourcePropertyRepository.countByComputeResourcePropertyTypeId(computeResourcePropertyTypeId) > 0) {
             throw new EntityReferenceConstraintViolationException("ComputeResourcePropertyType with ID \""
-                    + computeResourcePropertyTypeId + "\" cannot be deleted, because it is still in use");
+                + computeResourcePropertyTypeId + "\" cannot be deleted, because it is still in use");
         }
 
         this.computeResourcePropertyTypeRepository.deleteById(computeResourcePropertyTypeId);

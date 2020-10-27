@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -30,15 +30,16 @@ import org.planqk.atlas.core.repository.CloudServiceRepository;
 import org.planqk.atlas.core.repository.ComputeResourceRepository;
 import org.planqk.atlas.core.repository.ImplementationRepository;
 import org.planqk.atlas.core.repository.SoftwarePlatformRepository;
+import org.planqk.atlas.core.util.CollectionUtils;
 import org.planqk.atlas.core.util.ServiceUtils;
-
-import lombok.AllArgsConstructor;
-import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import lombok.AllArgsConstructor;
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -55,10 +56,11 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
 
     @Override
     public Page<SoftwarePlatform> searchAllByName(String name, @NonNull Pageable pageable) {
-        if (name == null) {
-            name = "";
+        String nameAsSearchString = name;
+        if (nameAsSearchString == null) {
+            nameAsSearchString = "";
         }
-        return softwarePlatformRepository.findAllByNameContainingIgnoreCase(name, pageable);
+        return softwarePlatformRepository.findAllByNameContainingIgnoreCase(nameAsSearchString, pageable);
     }
 
     @Override
@@ -80,7 +82,7 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
     @Override
     @Transactional
     public SoftwarePlatform update(@NonNull SoftwarePlatform softwarePlatform) {
-        SoftwarePlatform persistedSoftwarePlatform = findById(softwarePlatform.getId());
+        final SoftwarePlatform persistedSoftwarePlatform = findById(softwarePlatform.getId());
 
         persistedSoftwarePlatform.setName(softwarePlatform.getName());
         persistedSoftwarePlatform.setLink(softwarePlatform.getLink());
@@ -93,7 +95,7 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
     @Override
     @Transactional
     public void delete(@NonNull UUID softwarePlatformId) {
-        SoftwarePlatform softwarePlatform = findById(softwarePlatformId);
+        final SoftwarePlatform softwarePlatform = findById(softwarePlatformId);
 
         removeReferences(softwarePlatform);
 
@@ -101,12 +103,12 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
     }
 
     private void removeReferences(@NonNull SoftwarePlatform softwarePlatform) {
-        softwarePlatform.getImplementations().forEach(
-                implementation -> implementation.removeSoftwarePlatform(softwarePlatform));
-        softwarePlatform.getSupportedCloudServices().forEach(
-                cloudService -> cloudService.removeSoftwarePlatform(softwarePlatform));
-        softwarePlatform.getSupportedComputeResources().forEach(
-                computeResource -> computeResource.removeSoftwarePlatform(softwarePlatform));
+        CollectionUtils.forEachOnCopy(softwarePlatform.getImplementations(),
+            implementation -> implementation.removeSoftwarePlatform(softwarePlatform));
+        CollectionUtils.forEachOnCopy(softwarePlatform.getSupportedCloudServices(),
+            cloudService -> cloudService.removeSoftwarePlatform(softwarePlatform));
+        CollectionUtils.forEachOnCopy(softwarePlatform.getSupportedComputeResources(),
+            computeResource -> computeResource.removeSoftwarePlatform(softwarePlatform));
     }
 
     @Override
@@ -133,11 +135,11 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
     @Override
     public void checkIfImplementationIsLinkedToSoftwarePlatform(UUID softwarePlatformId, UUID implementationId) {
         ServiceUtils.throwIfNotExists(softwarePlatformId, SoftwarePlatform.class, softwarePlatformRepository);
-        Implementation implementation = ServiceUtils.findById(implementationId, Implementation.class, implementationRepository);
+        final Implementation implementation = ServiceUtils.findById(implementationId, Implementation.class, implementationRepository);
 
         if (!ServiceUtils.containsElementWithId(implementation.getSoftwarePlatforms(), softwarePlatformId)) {
             throw new NoSuchElementException("Implementation with ID \"" + implementationId
-                    + "\" is not linked to SoftwarePlatform with ID \"" + softwarePlatformId +  "\"");
+                + "\" is not linked to SoftwarePlatform with ID \"" + softwarePlatformId + "\"");
         }
     }
 }

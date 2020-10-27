@@ -14,6 +14,9 @@ buildNumber.properties
 .mvn/
 .idea/
 
+# generateChangeLog output - you shouldn't need to run that
+/org.planqk.atlas.core/src/main/resources/db/changelog.xml
+
 ### STS ###
 .apt_generated
 .classpath
@@ -22,3 +25,4 @@ buildNumber.properties
 .settings
 .springBeans
 .sts4-cache
+.DS_Store

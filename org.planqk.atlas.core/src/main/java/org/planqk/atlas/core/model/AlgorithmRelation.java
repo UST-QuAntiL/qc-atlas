@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -35,14 +35,14 @@ import lombok.ToString;
 public class AlgorithmRelation extends HasId {
 
     @ManyToOne(fetch = FetchType.LAZY,
-            cascade = {CascadeType.MERGE})
+        cascade = {CascadeType.MERGE})
     @JoinColumn(name = "sourceAlgorithm")
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Algorithm sourceAlgorithm;
 
     @ManyToOne(fetch = FetchType.LAZY,
-            cascade = {CascadeType.MERGE})
+        cascade = {CascadeType.MERGE})
     @JoinColumn(name = "targetAlgorithm")
     @EqualsAndHashCode.Exclude
     @ToString.Exclude

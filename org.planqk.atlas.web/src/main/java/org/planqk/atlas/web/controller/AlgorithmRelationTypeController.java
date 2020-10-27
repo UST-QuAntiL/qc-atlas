@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -31,13 +31,6 @@ import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.ValidationGroups;
-
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
@@ -53,6 +46,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 @Tag(name = Constants.TAG_ALGORITHM_RELATION_TYPE)
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
@@ -63,53 +63,54 @@ import org.springframework.web.bind.annotation.RestController;
 public class AlgorithmRelationTypeController {
 
     private final AlgorithmRelationTypeService algorithmRelationTypeService;
+
     private final AlgorithmRelationTypeAssembler algorithmRelationTypeAssembler;
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "200")
+        @ApiResponse(responseCode = "200")
     }, description = "Retrieve all algorithm relation types.")
     @ListParametersDoc
     @GetMapping
     public ResponseEntity<PagedModel<EntityModel<AlgorithmRelationTypeDto>>> getAlgorithmRelationTypes(
-            @Parameter(hidden = true) ListParameters params) {
-        var algorithmRelationTypes = algorithmRelationTypeService.findAll(params.getPageable());
+        @Parameter(hidden = true) ListParameters params) {
+        final var algorithmRelationTypes = algorithmRelationTypeService.findAll(params.getPageable());
         return ResponseEntity.ok(algorithmRelationTypeAssembler.toModel(algorithmRelationTypes));
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "201"),
-            @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
+        @ApiResponse(responseCode = "201"),
+        @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
     }, description = "Define the basic properties of an algorithm relation type.")
     @PostMapping
     public ResponseEntity<EntityModel<AlgorithmRelationTypeDto>> createAlgorithmRelationType(
-            @Validated(ValidationGroups.Create.class) @RequestBody AlgorithmRelationTypeDto AlgorithmRelationTypeDto) {
-        var savedAlgorithmRelationType = algorithmRelationTypeService.create(
-                ModelMapperUtils.convert(AlgorithmRelationTypeDto, AlgorithmRelationType.class));
+        @Validated(ValidationGroups.Create.class) @RequestBody AlgorithmRelationTypeDto AlgorithmRelationTypeDto) {
+        final var savedAlgorithmRelationType = algorithmRelationTypeService.create(
+            ModelMapperUtils.convert(AlgorithmRelationTypeDto, AlgorithmRelationType.class));
         return new ResponseEntity<>(algorithmRelationTypeAssembler.toModel(savedAlgorithmRelationType), HttpStatus.CREATED);
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
-            @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm relation type with given ID doesn't exist")
+        @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
+        @ApiResponse(responseCode = "404",
+            description = "Not Found. Algorithm relation type with given ID doesn't exist")
     }, description = "Update the basic properties of an algorithm relation type (e.g. name).")
     @PutMapping("/{algorithmRelationTypeId}")
     public ResponseEntity<EntityModel<AlgorithmRelationTypeDto>> updateAlgorithmRelationType(
-            @PathVariable UUID algorithmRelationTypeId,
-            @Validated(ValidationGroups.Update.class) @RequestBody AlgorithmRelationTypeDto algorithmRelationTypeDto) {
+        @PathVariable UUID algorithmRelationTypeId,
+        @Validated(ValidationGroups.Update.class) @RequestBody AlgorithmRelationTypeDto algorithmRelationTypeDto) {
         algorithmRelationTypeDto.setId(algorithmRelationTypeId);
-        var savedAlgorithmRelationType = algorithmRelationTypeService.update(
-                ModelMapperUtils.convert(algorithmRelationTypeDto, AlgorithmRelationType.class));
+        final var savedAlgorithmRelationType = algorithmRelationTypeService.update(
+            ModelMapperUtils.convert(algorithmRelationTypeDto, AlgorithmRelationType.class));
         return ResponseEntity.ok(algorithmRelationTypeAssembler.toModel(savedAlgorithmRelationType));
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "204"),
-            @ApiResponse(responseCode = "400",
-                    description = "Bad Request. Algorithm relation type is still in use by at least one algorithm relation"),
-            @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm relation type with given ID doesn't exist")
+        @ApiResponse(responseCode = "204"),
+        @ApiResponse(responseCode = "400",
+            description = "Bad Request. Algorithm relation type is still in use by at least one algorithm relation"),
+        @ApiResponse(responseCode = "404",
+            description = "Not Found. Algorithm relation type with given ID doesn't exist")
     }, description = "Delete an algorithm relation type.")
     @DeleteMapping("/{algorithmRelationTypeId}")
     public ResponseEntity<Void> deleteAlgorithmRelationType(@PathVariable UUID algorithmRelationTypeId) {
@@ -118,15 +119,15 @@ public class AlgorithmRelationTypeController {
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm relation type with given ID doesn't exist")
+        @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "400"),
+        @ApiResponse(responseCode = "404",
+            description = "Not Found. Algorithm relation type with given ID doesn't exist")
     }, description = "Retrieve a specific algorithm relation type and its basic properties.")
     @GetMapping("/{algorithmRelationTypeId}")
     public ResponseEntity<EntityModel<AlgorithmRelationTypeDto>> getAlgorithmRelationType(
-            @PathVariable UUID algorithmRelationTypeId) {
-        var algorithmRelationType = algorithmRelationTypeService.findById(algorithmRelationTypeId);
+        @PathVariable UUID algorithmRelationTypeId) {
+        final var algorithmRelationType = algorithmRelationTypeService.findById(algorithmRelationTypeId);
         return ResponseEntity.ok(algorithmRelationTypeAssembler.toModel(algorithmRelationType));
     }
 }

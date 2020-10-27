@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -52,7 +52,6 @@ public class AtlasExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<RuntimeException> handleInvalidJson(HttpMessageNotReadableException e) {
         log.error(e.getMessage(), e);
-        // TODO: Find better option to suppress unparsable class path output
         return ResponseEntity.badRequest().body(new RuntimeException(e.getMessage()));
     }
 
@@ -114,7 +113,6 @@ public class AtlasExceptionHandler {
     }
 
     // Return stacktrace to client if another exception occurs.
-    // TODO: When using the app in production this may be removed or overthought
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Exception> handleOtherException(Exception e) {
         log.error(e.getMessage(), e);

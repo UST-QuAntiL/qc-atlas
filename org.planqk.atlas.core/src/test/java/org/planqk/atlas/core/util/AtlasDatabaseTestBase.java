@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -28,7 +28,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Testcontainers(disabledWithoutDocker = true)
-@ContextConfiguration(classes = { DatabaseTestEnvironmentConfiguration.class })
+@ContextConfiguration(classes = {DatabaseTestEnvironmentConfiguration.class})
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
@@ -36,5 +36,4 @@ public abstract class AtlasDatabaseTestBase {
 
     @Container
     public static DatabaseContainer postgreSQLContainer = DatabaseContainer.getInstance();
-
 }

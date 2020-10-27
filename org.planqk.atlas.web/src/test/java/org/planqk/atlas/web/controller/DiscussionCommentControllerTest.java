@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -19,12 +19,26 @@
 
 package org.planqk.atlas.web.controller;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.planqk.atlas.core.model.DiscussionComment;
 import org.planqk.atlas.core.model.DiscussionTopic;
 import org.planqk.atlas.core.model.Status;
@@ -36,13 +50,6 @@ import org.planqk.atlas.web.dtos.DiscussionCommentDto;
 import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
 import org.planqk.atlas.web.linkassembler.LinkBuilderService;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -56,21 +63,22 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-@WebMvcTest( {DiscussionCommentController.class, DiscussionTopicController.class})
-@ExtendWith( {MockitoExtension.class})
+@WebMvcTest({DiscussionCommentController.class, DiscussionTopicController.class})
+@ExtendWith({MockitoExtension.class})
 @AutoConfigureMockMvc
 @EnableLinkAssemblers
 public class DiscussionCommentControllerTest {
+
+    private final ObjectMapper mapper = ObjectMapperUtils.newTestMapper();
+
+    private final int page = 0;
+
+    private final int size = 1;
+
+    private final Pageable pageable = PageRequest.of(page, size);
 
     @MockBean
     private DiscussionCommentService discussionCommentService;
@@ -80,21 +88,20 @@ public class DiscussionCommentControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
     @Autowired
     private LinkBuilderService linkBuilderService;
 
-    private final ObjectMapper mapper = ObjectMapperUtils.newTestMapper();
-
-    private final int page = 0;
-    private final int size = 1;
-    private final Pageable pageable = PageRequest.of(page, size);
-
     private DiscussionCommentDto discussionCommentDto;
+
     private DiscussionComment discussionComment;
+
     private DiscussionTopic discussionTopic;
 
     private List<DiscussionComment> discussionCommentList;
+
     private Page<DiscussionComment> discussionCommentPage;
+
     private Page<DiscussionCommentDto> discussionCommentPageDto;
 
     @BeforeEach
@@ -124,13 +131,15 @@ public class DiscussionCommentControllerTest {
         discussionCommentDto.setId(null);
 
         MvcResult result = mockMvc
-                .perform(post("/" + Constants.API_VERSION + "/" + Constants.DISCUSSION_TOPICS + "/" + discussionTopic.getId() + "/" + Constants.DISCUSSION_COMMENTS).content(mapper.writeValueAsString(discussionCommentDto))
-                        .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated()).andReturn();
+            .perform(post(
+                "/" + Constants.API_VERSION + "/" + Constants.DISCUSSION_TOPICS + "/" + discussionTopic.getId() + "/" + Constants.DISCUSSION_COMMENTS)
+                .content(mapper.writeValueAsString(discussionCommentDto))
+                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isCreated()).andReturn();
 
         EntityModel<DiscussionCommentDto> response = mapper.readValue(result.getResponse().getContentAsString(),
-                new TypeReference<EntityModel<DiscussionCommentDto>>() {
-                });
+            new TypeReference<EntityModel<DiscussionCommentDto>>() {
+            });
 
         assertEquals(response.getContent().getText(), discussionCommentDto.getText());
     }
@@ -141,9 +150,11 @@ public class DiscussionCommentControllerTest {
 
         // Missing required attribute
         discussionCommentDto.setDate(null);
-        mockMvc.perform(post("/" + Constants.API_VERSION + "/" + Constants.DISCUSSION_TOPICS + "/" + discussionTopic.getId() + "/" + Constants.DISCUSSION_COMMENTS + "/")
-                .content(mapper.writeValueAsString(discussionCommentDto)).contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
+        mockMvc.perform(post(
+            "/" + Constants.API_VERSION + "/" + Constants.DISCUSSION_TOPICS + "/" + discussionTopic.getId() + "/" + Constants.DISCUSSION_COMMENTS +
+                "/")
+            .content(mapper.writeValueAsString(discussionCommentDto)).contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
     }
 
     @Test
@@ -152,13 +163,14 @@ public class DiscussionCommentControllerTest {
         when(discussionTopicService.findById(discussionTopic.getId())).thenReturn(discussionTopic);
 
         MvcResult result = mockMvc
-                .perform(get("/" + Constants.API_VERSION + "/" + Constants.DISCUSSION_TOPICS + "/" + discussionTopic.getId() + "/" + Constants.DISCUSSION_COMMENTS + "/").queryParam(Constants.PAGE, Integer.toString(page))
-                        .queryParam(Constants.SIZE, Integer.toString(size)).accept(MediaType.APPLICATION_JSON)
-                        .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk()).andReturn();
+            .perform(get("/" + Constants.API_VERSION + "/" + Constants.DISCUSSION_TOPICS + "/" + discussionTopic.getId() + "/" +
+                Constants.DISCUSSION_COMMENTS + "/").queryParam(Constants.PAGE, Integer.toString(page))
+                .queryParam(Constants.SIZE, Integer.toString(size)).accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk()).andReturn();
 
         var resultList = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(),
-                "discussionComments", DiscussionCommentDto.class);
+            "discussionComments", DiscussionCommentDto.class);
 
         assertEquals(resultList.size(), 1);
         assertEquals(resultList.get(0).getText(), discussionCommentDto.getText());
@@ -171,7 +183,9 @@ public class DiscussionCommentControllerTest {
         when(discussionCommentService.findById(id)).thenReturn(discussionComment);
 
         doThrow(new NoSuchElementException()).when(discussionCommentService).delete(id);
-        mockMvc.perform(delete("/" + Constants.API_VERSION + "/" + Constants.DISCUSSION_TOPICS + "/" + discussionTopic.getId() + "/" + Constants.DISCUSSION_COMMENTS + "/" + id).accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
+        mockMvc.perform(delete(
+            "/" + Constants.API_VERSION + "/" + Constants.DISCUSSION_TOPICS + "/" + discussionTopic.getId() + "/" + Constants.DISCUSSION_COMMENTS +
+                "/" + id).accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
     }
 
     @Test
@@ -179,12 +193,13 @@ public class DiscussionCommentControllerTest {
         when(discussionCommentService.findById(discussionComment.getId())).thenReturn(discussionComment);
 
         MvcResult result = mockMvc.perform(
-                get("/" + Constants.API_VERSION + "/" + Constants.DISCUSSION_TOPICS + "/" + discussionTopic.getId() + "/" + Constants.DISCUSSION_COMMENTS + "/" + discussionComment.getId()).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk()).andReturn();
+            get("/" + Constants.API_VERSION + "/" + Constants.DISCUSSION_TOPICS + "/" + discussionTopic.getId() + "/" +
+                Constants.DISCUSSION_COMMENTS + "/" + discussionComment.getId()).accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk()).andReturn();
 
         EntityModel<DiscussionCommentDto> response = mapper.readValue(
-                result.getResponse().getContentAsString(), new TypeReference<EntityModel<DiscussionCommentDto>>() {
-                });
+            result.getResponse().getContentAsString(), new TypeReference<EntityModel<DiscussionCommentDto>>() {
+            });
 
         assertEquals(response.getContent().getId(), discussionCommentDto.getId());
         assertEquals(response.getContent().getText(), discussionCommentDto.getText());
@@ -195,15 +210,18 @@ public class DiscussionCommentControllerTest {
     public void getDiscussionComment_returnNotFound() throws Exception {
         when(discussionCommentService.findById(any(UUID.class))).thenThrow(new NoSuchElementException());
 
-        mockMvc.perform(get("/" + Constants.API_VERSION + "/" + Constants.DISCUSSION_TOPICS + "/" + discussionTopic.getId() + "/" + Constants.DISCUSSION_COMMENTS + "/" + UUID.randomUUID()).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+        mockMvc.perform(get("/" + Constants.API_VERSION + "/" + Constants.DISCUSSION_TOPICS + "/" + discussionTopic.getId() + "/" +
+            Constants.DISCUSSION_COMMENTS + "/" + UUID.randomUUID()).accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNotFound());
     }
 
     @Test
     public void deleteDiscussionComment_returnOK() throws Exception {
         when(discussionCommentService.findById(discussionComment.getId())).thenReturn(discussionComment);
-        mockMvc.perform(delete("/" + Constants.API_VERSION + "/" + Constants.DISCUSSION_TOPICS + "/" + discussionTopic.getId() + "/" + Constants.DISCUSSION_COMMENTS + "/{id}", this.discussionComment.getId()))
-                .andExpect(status().isOk()).andReturn();
+        mockMvc.perform(delete(
+            "/" + Constants.API_VERSION + "/" + Constants.DISCUSSION_TOPICS + "/" + discussionTopic.getId() + "/" + Constants.DISCUSSION_COMMENTS +
+                "/{id}", this.discussionComment.getId()))
+            .andExpect(status().isOk()).andReturn();
     }
 
     @Test
@@ -211,13 +229,14 @@ public class DiscussionCommentControllerTest {
         when(discussionCommentService.findById(discussionComment.getId())).thenReturn(discussionComment);
         when(discussionCommentService.update(discussionComment)).thenReturn(discussionComment);
 
-        MvcResult result = mockMvc.perform(put("/" + Constants.API_VERSION + "/" + Constants.DISCUSSION_TOPICS + "/" + discussionTopic.getId() + "/" + Constants.DISCUSSION_COMMENTS + "/" + discussionComment.getId())
-                .content(mapper.writeValueAsString(discussionCommentDto)).contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
+        MvcResult result = mockMvc.perform(put("/" + Constants.API_VERSION + "/" + Constants.DISCUSSION_TOPICS + "/" + discussionTopic.getId() + "/" +
+            Constants.DISCUSSION_COMMENTS + "/" + discussionComment.getId())
+            .content(mapper.writeValueAsString(discussionCommentDto)).contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
 
         EntityModel<DiscussionCommentDto> response = mapper.readValue(result.getResponse().getContentAsString(),
-                new TypeReference<EntityModel<DiscussionCommentDto>>() {
-                });
+            new TypeReference<EntityModel<DiscussionCommentDto>>() {
+            });
 
         assertEquals(response.getContent().getText(), discussionCommentDto.getText());
         assertEquals(response.getContent().getId(), discussionCommentDto.getId());
@@ -231,8 +250,9 @@ public class DiscussionCommentControllerTest {
         discussionComment.setDate(null);
         when(discussionCommentService.update(discussionComment)).thenReturn(discussionComment);
 
-        mockMvc.perform(put("/" + Constants.API_VERSION + "/" + Constants.DISCUSSION_TOPICS + "/" + discussionTopic.getId() + "/" + Constants.DISCUSSION_COMMENTS + "/" + discussionComment.getId())
-                .content(mapper.writeValueAsString(discussionComment)).contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
+        mockMvc.perform(put("/" + Constants.API_VERSION + "/" + Constants.DISCUSSION_TOPICS + "/" + discussionTopic.getId() + "/" +
+            Constants.DISCUSSION_COMMENTS + "/" + discussionComment.getId())
+            .content(mapper.writeValueAsString(discussionComment)).contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
     }
 }

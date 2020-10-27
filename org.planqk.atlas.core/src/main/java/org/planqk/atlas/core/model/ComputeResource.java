@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -21,7 +21,6 @@ package org.planqk.atlas.core.model;
 
 import java.util.HashSet;
 import java.util.Set;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -36,8 +35,7 @@ import lombok.NonNull;
 import lombok.ToString;
 
 /**
- * A compute resource is a QPU or a Simulator which are both able to run Quantum Algorithms. E.g. ibmq_rome or
- * qasm_simulator.
+ * A compute resource is a QPU or a Simulator which are both able to run Quantum Algorithms. E.g. ibmq_rome or qasm_simulator.
  */
 
 @EqualsAndHashCode(callSuper = true)
@@ -47,13 +45,15 @@ import lombok.ToString;
 public class ComputeResource extends HasId {
 
     private String name;
+
     private String vendor;
+
     private String technology;
 
     @OneToMany(fetch = FetchType.LAZY,
-            cascade = {CascadeType.ALL},
-            mappedBy = "computeResource",
-            orphanRemoval = true)
+        cascade = {CascadeType.ALL},
+        mappedBy = "computeResource",
+        orphanRemoval = true)
     private Set<ComputeResourceProperty> providedComputingResourceProperties = new HashSet<>();
 
     private QuantumComputationModel quantumComputationModel;
@@ -61,15 +61,15 @@ public class ComputeResource extends HasId {
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @ManyToMany(fetch = FetchType.LAZY,
-            cascade = {CascadeType.MERGE},
-            mappedBy = "supportedComputeResources")
+        cascade = {CascadeType.MERGE},
+        mappedBy = "supportedComputeResources")
     private Set<SoftwarePlatform> softwarePlatforms = new HashSet<>();
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @ManyToMany(fetch = FetchType.LAZY,
-            cascade = {CascadeType.MERGE},
-            mappedBy = "providedComputeResources")
+        cascade = {CascadeType.MERGE},
+        mappedBy = "providedComputeResources")
     private Set<CloudService> cloudServices = new HashSet<>();
 
     public void addSoftwarePlatform(@NonNull SoftwarePlatform softwarePlatform) {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -22,7 +22,6 @@ package org.planqk.atlas.core.repository;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Implementation;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -41,14 +40,14 @@ public interface ImplementationRepository extends JpaRepository<Implementation, 
     Page<Implementation> findByImplementedAlgorithmId(UUID implementedAlgorithmId, Pageable pageable);
 
     @Query("SELECT impl " +
-            "FROM Implementation impl " +
-            "JOIN impl.publications pub " +
-            "WHERE  pub.id = :pubId")
+        "FROM Implementation impl " +
+        "JOIN impl.publications pub " +
+        "WHERE  pub.id = :pubId")
     Page<Implementation> findImplementationsByPublicationId(@Param("pubId") UUID publicationId, Pageable pageable);
 
     @Query("SELECT i " +
-            "FROM Implementation i " +
-            "JOIN i.softwarePlatforms sp " +
-            "WHERE sp.id = :spId")
+        "FROM Implementation i " +
+        "JOIN i.softwarePlatforms sp " +
+        "WHERE sp.id = :spId")
     Page<Implementation> findImplementationsBySoftwarePlatformId(@Param("spId") UUID softwarePlatformId, Pageable pageable);
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -19,10 +19,16 @@
 
 package org.planqk.atlas.core.services;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.net.URI;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
@@ -32,40 +38,43 @@ import org.planqk.atlas.core.model.PatternRelationType;
 import org.planqk.atlas.core.repository.AlgorithmRepository;
 import org.planqk.atlas.core.repository.PatternRelationTypeRepository;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
-
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class PatternRelationTypeServiceTest extends AtlasDatabaseTestBase {
 
+    private final int page = 0;
+
+    private final int size = 2;
+
+    private final Pageable pageable = PageRequest.of(page, size);
+
     @Autowired
     private PatternRelationTypeService patternRelationTypeService;
+
     @Autowired
     private PatternRelationTypeRepository patternRelationTypeRepository;
+
     @Autowired
     private PatternRelationService patternRelationService;
+
     @Autowired
     private AlgorithmRepository algorithmRepository;
 
     private PatternRelationType type1;
-    private PatternRelationType type2;
-    private PatternRelationType type1Updated;
-    private Algorithm algorithm;
-    private PatternRelation relation;
 
-    private final int page = 0;
-    private final int size = 2;
-    private final Pageable pageable = PageRequest.of(page, size);
+    private PatternRelationType type2;
+
+    private PatternRelationType type1Updated;
+
+    private Algorithm algorithm;
+
+    private PatternRelation relation;
 
     @BeforeEach
     public void initialize() {
@@ -159,7 +168,7 @@ public class PatternRelationTypeServiceTest extends AtlasDatabaseTestBase {
         PatternRelation storedRelation = patternRelationService.create(relation);
 
         assertThrows(EntityReferenceConstraintViolationException.class, () ->
-                patternRelationTypeService.delete(storedType1.getId()));
+            patternRelationTypeService.delete(storedType1.getId()));
     }
 
     @Test
@@ -176,6 +185,6 @@ public class PatternRelationTypeServiceTest extends AtlasDatabaseTestBase {
     @Test
     void deletePatternRelationType_ElementNotFound() {
         assertThrows(NoSuchElementException.class, () ->
-                patternRelationTypeService.delete(UUID.randomUUID()));
+            patternRelationTypeService.delete(UUID.randomUUID()));
     }
 }

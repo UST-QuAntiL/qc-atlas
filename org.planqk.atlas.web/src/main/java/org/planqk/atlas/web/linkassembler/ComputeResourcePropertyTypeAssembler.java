@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -19,21 +19,20 @@
 
 package org.planqk.atlas.web.linkassembler;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 import org.planqk.atlas.web.controller.ComputeResourcePropertyTypeController;
 import org.planqk.atlas.web.dtos.ComputeResourcePropertyTypeDto;
-
 import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Component;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @SuppressWarnings("ConstantConditions")
 @Component
 public class ComputeResourcePropertyTypeAssembler extends GenericLinkAssembler<ComputeResourcePropertyTypeDto> {
     @Override
     public void addLinks(EntityModel<ComputeResourcePropertyTypeDto> resource) {
-        resource.add(links.linkTo(methodOn(ComputeResourcePropertyTypeController.class)
-                .getComputingResourcePropertyType(resource.getContent().getId()))
-                .withSelfRel());
+        resource.add(getLinks().linkTo(methodOn(ComputeResourcePropertyTypeController.class)
+            .getComputingResourcePropertyType(resource.getContent().getId()))
+            .withSelfRel());
     }
 }

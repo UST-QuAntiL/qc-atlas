@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -77,26 +77,26 @@ public class ImplementationGlobalController {
     private final FileService fileService;
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "200"),
     }, description = "Retrieve all implementations unaffected by its implemented algorithm")
     @ListParametersDoc
     @GetMapping
     public ResponseEntity<PagedModel<EntityModel<ImplementationDto>>> getImplementations(
-            @Parameter(hidden = true) ListParameters listParameters) {
-        var implementations = implementationService.findAll(listParameters.getPageable());
+        @Parameter(hidden = true) ListParameters listParameters) {
+        final var implementations = implementationService.findAll(listParameters.getPageable());
         return ResponseEntity.ok(implementationAssembler.toModel(implementations));
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404",
-                    description = "Implementation with given ID doesn't exist")
+        @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "400"),
+        @ApiResponse(responseCode = "404",
+            description = "Implementation with given ID doesn't exist")
     }, description = "Retrieve a specific implementation and its basic properties.")
     @GetMapping("/{implementationId}")
     public ResponseEntity<EntityModel<ImplementationDto>> getImplementation(
-            @PathVariable UUID implementationId) {
-        var implementation = this.implementationService.findById(implementationId);
+        @PathVariable UUID implementationId) {
+        final var implementation = this.implementationService.findById(implementationId);
         return ResponseEntity.ok(implementationAssembler.toModel(implementation));
     }
 
@@ -106,9 +106,9 @@ public class ImplementationGlobalController {
     }, description = "Uploads and adds a file to a given implementation")
     @PostMapping("/{implementationId}/" + Constants.FILES)
     public ResponseEntity<EntityModel<FileDto>> createFileForImplementation(
-            @PathVariable UUID implementationId,
-            @RequestParam("file") MultipartFile multipartFile) {
-        File file = fileService.create(implementationId, multipartFile);
+        @PathVariable UUID implementationId,
+        @RequestParam("file") MultipartFile multipartFile) {
+        final File file = fileService.create(implementationId, multipartFile);
         return ResponseEntity.status(HttpStatus.CREATED).body(fileAssembler.toModel(file));
     }
 
@@ -117,11 +117,11 @@ public class ImplementationGlobalController {
     }, description = "Retrieve all files of an implementation")
     @GetMapping("/{implementationId}/" + Constants.FILES)
     public ResponseEntity<PagedModel<EntityModel<FileDto>>> getAllFilesOfImplementation(
-            @PathVariable UUID implementationId,
-            @Parameter(hidden = true) ListParameters listParameters
+        @PathVariable UUID implementationId,
+        @Parameter(hidden = true) ListParameters listParameters
     ) {
-        Page<File> files =
-                fileService.findAllByImplementationId(implementationId, listParameters.getPageable());
+        final Page<File> files =
+            fileService.findAllByImplementationId(implementationId, listParameters.getPageable());
         return ResponseEntity.ok(fileAssembler.toModel(files));
     }
 
@@ -133,11 +133,11 @@ public class ImplementationGlobalController {
     }, description = "Retrieves a specific file of an Implementation and its basic properties.")
     @GetMapping("/{implementationId}/" + Constants.FILES + "/{fileId}")
     public ResponseEntity<EntityModel<FileDto>> getFileOfImplementation(
-            @PathVariable UUID implementationId,
-            @PathVariable UUID fileId
+        @PathVariable UUID implementationId,
+        @PathVariable UUID fileId
     ) {
-        File file =
-                fileService.findById(fileId);
+        final File file =
+            fileService.findById(fileId);
         return ResponseEntity.ok(fileAssembler.toModel(file));
     }
 
@@ -148,27 +148,27 @@ public class ImplementationGlobalController {
     }, description = "Downloads a specific file content of an Implementation")
     @GetMapping("/{implementationId}/" + Constants.FILES + "/{fileId}/content")
     public ResponseEntity<byte[]> downloadFileContent(
-            @PathVariable UUID implementationId,
-            @PathVariable UUID fileId
+        @PathVariable UUID implementationId,
+        @PathVariable UUID fileId
     ) {
-        File file =
-                fileService.findById(fileId);
+        final File file =
+            fileService.findById(fileId);
         return ResponseEntity
-                .ok()
-                .contentType(MediaType.parseMediaType(file.getMimeType()))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + file.getName())
-                .body(fileService.getFileContent(fileId));
+            .ok()
+            .contentType(MediaType.parseMediaType(file.getMimeType()))
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + file.getName())
+            .body(fileService.getFileContent(fileId));
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "204"),
-            @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404", description = "Not Found. Implementation or File with given IDs don't exist")
+        @ApiResponse(responseCode = "204"),
+        @ApiResponse(responseCode = "400"),
+        @ApiResponse(responseCode = "404", description = "Not Found. Implementation or File with given IDs don't exist")
     }, description = "Delete a file of an implementation.")
     @DeleteMapping("/{implementationId}/" + Constants.FILES + "/{fileId}")
     public ResponseEntity<Void> deleteFileOfImplementation(@PathVariable UUID implementationId,
-                                                             @PathVariable UUID fileId) {
-                fileService.delete(fileId);
+                                                           @PathVariable UUID fileId) {
+        fileService.delete(fileId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 

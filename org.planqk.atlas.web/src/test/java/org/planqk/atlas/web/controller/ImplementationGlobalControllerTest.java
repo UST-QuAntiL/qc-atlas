@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -40,8 +40,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.planqk.atlas.core.model.Algorithm;
-import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.File;
+import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.services.FileService;
 import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
@@ -98,10 +98,10 @@ public class ImplementationGlobalControllerTest {
         doReturn(new PageImpl<>(List.of())).when(implementationService).findAll(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationGlobalController.class)
-                .getImplementations(ListParameters.getDefault()));
+            .getImplementations(ListParameters.getDefault()));
         mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON)
         ).andExpect(jsonPath("$._embedded.implementations").doesNotExist())
-                .andExpect(status().isOk());
+            .andExpect(status().isOk());
     }
 
     @Test
@@ -117,12 +117,12 @@ public class ImplementationGlobalControllerTest {
         doReturn(new PageImpl<>(List.of(impl))).when(implementationService).findAll(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationGlobalController.class)
-                .getImplementations(ListParameters.getDefault()));
+            .getImplementations(ListParameters.getDefault()));
         mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON)
         ).andExpect(jsonPath("$._embedded.implementations[0].name").value(impl.getName()))
-                .andExpect(jsonPath("$._embedded.implementations[0].implementedAlgorithmId").value(algo.getId().toString()))
-                .andExpect(jsonPath("$._embedded.implementations[0].id").value(impl.getId().toString()))
-                .andExpect(status().isOk());
+            .andExpect(jsonPath("$._embedded.implementations[0].implementedAlgorithmId").value(algo.getId().toString()))
+            .andExpect(jsonPath("$._embedded.implementations[0].id").value(impl.getId().toString()))
+            .andExpect(status().isOk());
     }
 
     @Test
@@ -139,11 +139,11 @@ public class ImplementationGlobalControllerTest {
         doReturn(impl).when(implementationService).findById(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationGlobalController.class)
-                .getImplementation(impl.getId()));
+            .getImplementation(impl.getId()));
         mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(impl.getId().toString()))
-                .andExpect(jsonPath("$.implementedAlgorithmId").value(algo.getId().toString()));
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.id").value(impl.getId().toString()))
+            .andExpect(jsonPath("$.implementedAlgorithmId").value(algo.getId().toString()));
     }
 
     @Test
@@ -157,7 +157,7 @@ public class ImplementationGlobalControllerTest {
         doReturn(new File()).when(fileService).create(impl.getId(), file);
 
         final String path = linkBuilderService.urlStringTo(methodOn(ImplementationGlobalController.class)
-                .createFileForImplementation(impl.getId(), file));
+            .createFileForImplementation(impl.getId(), file));
 
         // call
         ResultActions resultActions = mockMvc.perform(multipart(path).file(file));
@@ -179,7 +179,7 @@ public class ImplementationGlobalControllerTest {
 
         // When
         final String path = linkBuilderService.urlStringTo(methodOn(ImplementationGlobalController.class)
-                .getAllFilesOfImplementation(impl.getId(), listParameters));
+            .getAllFilesOfImplementation(impl.getId(), listParameters));
         ResultActions result = mockMvc.perform(get(path).accept(MediaType.APPLICATION_JSON));
 
 
@@ -202,14 +202,14 @@ public class ImplementationGlobalControllerTest {
         when(fileService.findById(file.getId())).thenReturn(file);
 
         final String path = linkBuilderService.urlStringTo(methodOn(ImplementationGlobalController.class)
-                .getFileOfImplementation(impl.getId(), file.getId()));
+            .getFileOfImplementation(impl.getId(), file.getId()));
 
         MvcResult result = mockMvc.perform(get(path)
-                .accept(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk()).andReturn();
 
         var resultList = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(),
-                "file", File.class);
+            "file", File.class);
         assertEquals(0, resultList.size());
 
         Mockito.verify(fileService, times(1)).findById(file.getId());
@@ -229,11 +229,11 @@ public class ImplementationGlobalControllerTest {
         when(fileService.findById(file.getId())).thenReturn(file);
 
         final String path = linkBuilderService.urlStringTo(methodOn(ImplementationGlobalController.class)
-                .downloadFileContent(impl.getId(), file.getId()));
+            .downloadFileContent(impl.getId(), file.getId()));
 
         // call
         mockMvc.perform(get(path)
-                .accept(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk()).andReturn();
 
         // test
@@ -254,9 +254,9 @@ public class ImplementationGlobalControllerTest {
         doNothing().when(fileService).delete(file.getId());
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationGlobalController.class)
-                .deleteFileOfImplementation(impl.getId(), file.getId()));
+            .deleteFileOfImplementation(impl.getId(), file.getId()));
         mockMvc.perform(delete(url))
-                .andExpect(status().isNoContent()).andReturn();
+            .andExpect(status().isNoContent()).andReturn();
 
         Mockito.verify(fileService, times(1)).delete(file.getId());
     }

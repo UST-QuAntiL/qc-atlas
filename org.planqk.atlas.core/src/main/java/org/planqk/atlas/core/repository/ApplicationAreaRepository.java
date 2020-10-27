@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -22,7 +22,6 @@ package org.planqk.atlas.core.repository;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.ApplicationArea;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -45,8 +44,8 @@ public interface ApplicationAreaRepository extends JpaRepository<ApplicationArea
     Page<ApplicationArea> findByNameContainingIgnoreCase(String name, Pageable pageable);
 
     @Query("SELECT aa " +
-            "FROM ApplicationArea aa " +
-            "JOIN aa.algorithms algos " +
-            "WHERE algos.id = :algoId")
+        "FROM ApplicationArea aa " +
+        "JOIN aa.algorithms algos " +
+        "WHERE algos.id = :algoId")
     Page<ApplicationArea> findApplicationAreasByAlgorithmId(@Param("algoId") UUID algorithmId, Pageable pageable);
 }
