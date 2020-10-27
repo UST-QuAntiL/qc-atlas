@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -20,7 +20,6 @@
 package org.planqk.atlas.web.controller;
 
 import java.util.UUID;
-
 import javax.validation.Valid;
 
 import org.planqk.atlas.core.model.DiscussionComment;
@@ -33,14 +32,6 @@ import org.planqk.atlas.web.linkassembler.DiscussionCommentAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
-
-import io.swagger.v3.oas.annotations.Hidden;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
@@ -49,6 +40,14 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Hidden
 @Tag(name = Constants.TAG_DISCUSSION_TOPIC)
@@ -60,48 +59,50 @@ import org.springframework.web.bind.annotation.RestController;
 public class DiscussionCommentController {
 
     private final DiscussionCommentService discussionCommentService;
+
     private final DiscussionTopicService discussionTopicService;
+
     private final DiscussionCommentAssembler discussionCommentAssembler;
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "200")
+        @ApiResponse(responseCode = "200")
     }, description = "")
     @ListParametersDoc
     public ResponseEntity<PagedModel<EntityModel<DiscussionCommentDto>>> getDiscussionCommentsOfTopic(
-            @PathVariable("topicId") UUID topicId,
-            @Parameter(hidden = true) ListParameters listParameters) {
-        var result = discussionCommentService.findAllByTopic(topicId, listParameters.getPageable());
+        @PathVariable("topicId") UUID topicId,
+        @Parameter(hidden = true) ListParameters listParameters) {
+        final var result = discussionCommentService.findAllByTopic(topicId, listParameters.getPageable());
         return ResponseEntity.ok(discussionCommentAssembler.toModel(result));
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "201")
+        @ApiResponse(responseCode = "201")
     }, description = "")
     public ResponseEntity<EntityModel<DiscussionCommentDto>> createDiscussionComment(
-            @Valid @RequestBody DiscussionCommentDto discussionCommentDto) {
-        var comment = discussionCommentService.create(ModelMapperUtils.convert(discussionCommentDto, DiscussionComment.class));
+        @Valid @RequestBody DiscussionCommentDto discussionCommentDto) {
+        final var comment = discussionCommentService.create(ModelMapperUtils.convert(discussionCommentDto, DiscussionComment.class));
         return new ResponseEntity<>(discussionCommentAssembler.toModel(comment), HttpStatus.CREATED);
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "200")
+        @ApiResponse(responseCode = "200")
     }, description = "")
     public ResponseEntity<EntityModel<DiscussionCommentDto>> updateDiscussionComment(
-            @PathVariable UUID commentId,
-            @Valid @RequestBody DiscussionCommentDto discussionCommentDto) {
-        var discussionCommentObject = discussionCommentService.findById(commentId);
-        var discussionComment = ModelMapperUtils.convert(discussionCommentDto, DiscussionComment.class);
+        @PathVariable UUID commentId,
+        @Valid @RequestBody DiscussionCommentDto discussionCommentDto) {
+        final var discussionCommentObject = discussionCommentService.findById(commentId);
+        final var discussionComment = ModelMapperUtils.convert(discussionCommentDto, DiscussionComment.class);
         discussionComment.setDiscussionTopic(discussionCommentObject.getDiscussionTopic());
-        var discussionTopic = discussionCommentObject.getDiscussionTopic();
+        final var discussionTopic = discussionCommentObject.getDiscussionTopic();
         discussionTopic.getDiscussionComments().add(discussionComment);
         discussionTopicService.update(discussionTopic);
         return ResponseEntity.ok(discussionCommentAssembler.toModel(discussionComment));
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404", description = "Discussion comment with given id doesn't exist")
+        @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "400"),
+        @ApiResponse(responseCode = "404", description = "Discussion comment with given id doesn't exist")
     })
     public ResponseEntity<Void> deleteDiscussionComment(@PathVariable UUID commentId) {
         discussionCommentService.findById(commentId);
@@ -110,10 +111,10 @@ public class DiscussionCommentController {
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "200")
+        @ApiResponse(responseCode = "200")
     }, description = "")
     public ResponseEntity<EntityModel<DiscussionCommentDto>> getDiscussionComment(@PathVariable UUID commentId) {
-        var discussionComment = discussionCommentService.findById(commentId);
+        final var discussionComment = discussionCommentService.findById(commentId);
         return ResponseEntity.ok(discussionCommentAssembler.toModel(discussionComment));
     }
 }

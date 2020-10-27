@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -19,6 +19,10 @@
 
 package org.planqk.atlas.core.services;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
@@ -26,31 +30,30 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.UUID;
 
+import org.junit.jupiter.api.Test;
 import org.planqk.atlas.core.model.CloudService;
 import org.planqk.atlas.core.model.ComputeResource;
 import org.planqk.atlas.core.model.QuantumComputationModel;
 import org.planqk.atlas.core.model.SoftwarePlatform;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 import org.planqk.atlas.core.util.ServiceTestUtils;
-
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
 
     @Autowired
     private CloudServiceService cloudServiceService;
+
     @Autowired
     private ComputeResourceService computeResourceService;
+
     @Autowired
     private SoftwarePlatformService softwarePlatformService;
+
     @Autowired
     private LinkingService linkingService;
 
@@ -96,7 +99,7 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
     @Test
     void findCloudServiceById_ElementNotFound() {
         assertThrows(NoSuchElementException.class, () ->
-                cloudServiceService.findById(UUID.randomUUID()));
+            cloudServiceService.findById(UUID.randomUUID()));
     }
 
     @Test
@@ -116,7 +119,7 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
         CloudService cloudService = getFullCloudService("cloudServiceName");
         cloudService.setId(UUID.randomUUID());
         assertThrows(NoSuchElementException.class, () ->
-                cloudServiceService.update(cloudService));
+            cloudServiceService.update(cloudService));
     }
 
     @Test
@@ -149,7 +152,7 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
         cloudServiceService.delete(storedCloudService.getId());
 
         assertThrows(NoSuchElementException.class, () ->
-                cloudServiceService.findById(storedCloudService.getId()));
+            cloudServiceService.findById(storedCloudService.getId()));
     }
 
     @Test
@@ -174,13 +177,13 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
         // Delete
         cloudServiceService.delete(storedCloudService.getId());
         assertThrows(NoSuchElementException.class, () ->
-                cloudServiceService.findById(storedCloudService.getId()));
+            cloudServiceService.findById(storedCloudService.getId()));
 
         // Test if links are removed
         assertThat(computeResourceService.findById(storedComputeResource.getId())
-                .getCloudServices().size()).isEqualTo(0);
+            .getCloudServices().size()).isEqualTo(0);
         assertThat(softwarePlatformService.findById(storedSoftwarePlatform.getId())
-                .getSupportedCloudServices().size()).isEqualTo(0);
+            .getSupportedCloudServices().size()).isEqualTo(0);
     }
 
     @Test
@@ -196,17 +199,17 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
         ComputeResource storedComputeResource = computeResourceService.create(computeResource);
 
         linkingService.linkCloudServiceAndComputeResource(
-                storedCloudService.getId(), storedComputeResource.getId());
+            storedCloudService.getId(), storedComputeResource.getId());
 
         Set<ComputeResource> computeResources = cloudServiceService.findLinkedComputeResources(
-                storedCloudService.getId(), Pageable.unpaged()).toSet();
+            storedCloudService.getId(), Pageable.unpaged()).toSet();
         assertThat(computeResources.size()).isEqualTo(1);
 
         linkingService.unlinkCloudServiceAndComputeResource(
-                storedCloudService.getId(), storedComputeResource.getId());
+            storedCloudService.getId(), storedComputeResource.getId());
 
         computeResources = cloudServiceService.findLinkedComputeResources(
-                storedCloudService.getId(), Pageable.unpaged()).toSet();
+            storedCloudService.getId(), Pageable.unpaged()).toSet();
         assertThat(computeResources.size()).isEqualTo(0);
     }
 
@@ -225,7 +228,7 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
         linkingService.linkSoftwarePlatformAndCloudService(softwarePlatform2.getId(), cloudService.getId());
 
         var softwarePlatforms = cloudServiceService
-                .findLinkedSoftwarePlatforms(cloudService.getId(), Pageable.unpaged());
+            .findLinkedSoftwarePlatforms(cloudService.getId(), Pageable.unpaged());
 
         assertThat(softwarePlatforms.getTotalElements()).isEqualTo(2);
     }
@@ -245,7 +248,7 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
         linkingService.linkCloudServiceAndComputeResource(cloudService.getId(), computeResource2.getId());
 
         var computeResources = cloudServiceService
-                .findLinkedComputeResources(cloudService.getId(), Pageable.unpaged());
+            .findLinkedComputeResources(cloudService.getId(), Pageable.unpaged());
 
         assertThat(computeResources.getTotalElements()).isEqualTo(2);
     }

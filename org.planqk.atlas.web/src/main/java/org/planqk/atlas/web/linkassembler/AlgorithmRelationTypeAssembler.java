@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -19,23 +19,22 @@
 
 package org.planqk.atlas.web.linkassembler;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 import java.util.UUID;
 
 import org.planqk.atlas.web.controller.AlgorithmRelationTypeController;
 import org.planqk.atlas.web.dtos.AlgorithmRelationTypeDto;
-
 import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Component;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Component
 public class AlgorithmRelationTypeAssembler extends GenericLinkAssembler<AlgorithmRelationTypeDto> {
 
     @Override
     public void addLinks(EntityModel<AlgorithmRelationTypeDto> resource) {
-        resource.add(links.linkTo(methodOn(AlgorithmRelationTypeController.class).getAlgorithmRelationType(getId(resource)))
-                .withSelfRel());
+        resource.add(getLinks().linkTo(methodOn(AlgorithmRelationTypeController.class).getAlgorithmRelationType(getId(resource)))
+            .withSelfRel());
     }
 
     private UUID getId(EntityModel<AlgorithmRelationTypeDto> resource) {

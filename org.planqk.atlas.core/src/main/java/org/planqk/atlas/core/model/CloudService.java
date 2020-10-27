@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -22,7 +22,6 @@ package org.planqk.atlas.core.model;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -36,9 +35,8 @@ import lombok.NonNull;
 import lombok.ToString;
 
 /**
- * A cloud service is a service which provides backends and can be used by developers via a software platform which
- * supports the cloud service. E.g. qiskit is a software platform which supports the cloud service ibmq, which provides
- * the backend ibmq_rome.
+ * A cloud service is a service which provides backends and can be used by developers via a software platform which supports the cloud service. E.g.
+ * qiskit is a software platform which supports the cloud service ibmq, which provides the backend ibmq_rome.
  */
 
 @EqualsAndHashCode(callSuper = true)
@@ -47,24 +45,28 @@ import lombok.ToString;
 public class CloudService extends HasId {
 
     private String name;
+
     private String provider;
+
     private URL url;
+
     private String description;
+
     private String costModel;
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE})
     @JoinTable(name = "cloud_services_compute_resources",
-            joinColumns = @JoinColumn(name = "cloud_service_id"),
-            inverseJoinColumns = @JoinColumn(name = "compute_resource_id"))
+        joinColumns = @JoinColumn(name = "cloud_service_id"),
+        inverseJoinColumns = @JoinColumn(name = "compute_resource_id"))
     private Set<ComputeResource> providedComputeResources = new HashSet<>();
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @ManyToMany(fetch = FetchType.LAZY,
-            cascade = {CascadeType.MERGE},
-            mappedBy = "supportedCloudServices")
+        cascade = {CascadeType.MERGE},
+        mappedBy = "supportedCloudServices")
     private Set<SoftwarePlatform> softwarePlatforms = new HashSet<>();
 
     public void addSoftwarePlatform(@NonNull SoftwarePlatform softwarePlatform) {

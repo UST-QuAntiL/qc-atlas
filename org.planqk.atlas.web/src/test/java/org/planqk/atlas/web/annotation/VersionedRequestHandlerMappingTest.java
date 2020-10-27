@@ -1,13 +1,46 @@
+/*******************************************************************************
+ * Copyright (c) 2020 the qc-atlas contributors.
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *******************************************************************************/
+
 package org.planqk.atlas.web.annotation;
+
+import static org.junit.Assert.assertEquals;
 
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import static org.junit.Assert.assertEquals;
-
 class VersionedRequestHandlerMappingTest {
+
+    private VersionedRequestHandlerMapping mapping = new VersionedRequestHandlerMapping();
+
+    @Test
+    void getMappingForMethod() throws NoSuchMethodException {
+        assertEquals(Set.of("/v1/unversioned/versioned"), getMethodPathMapping(Unversioned.class, "versioned"));
+        assertEquals(Set.of("/v1/versioned/unversioned"), getMethodPathMapping(Versioned.class, "unversioned"));
+        assertEquals(Set.of("/v1/versioned/versioned", "/v2/versioned/versioned"),
+            getMethodPathMapping(Versioned.class, "versioned"));
+    }
+
+    private Set<String> getMethodPathMapping(Class<?> clazz, String methodName) throws NoSuchMethodException {
+        return mapping.getMappingForMethod(clazz.getMethod(methodName), clazz).getPatternsCondition().getPatterns();
+    }
 
     @RequestMapping("/unversioned")
     static class Unversioned {
@@ -25,22 +58,8 @@ class VersionedRequestHandlerMappingTest {
         }
 
         @RequestMapping("/versioned")
-        @ApiVersion({ "v1", "v2" })
+        @ApiVersion({"v1", "v2"})
         public void versioned() {
         }
-    }
-
-    private VersionedRequestHandlerMapping mapping = new VersionedRequestHandlerMapping();
-
-    @Test
-    void getMappingForMethod() throws NoSuchMethodException {
-        assertEquals(Set.of("/v1/unversioned/versioned"), getMethodPathMapping(Unversioned.class, "versioned"));
-        assertEquals(Set.of("/v1/versioned/unversioned"), getMethodPathMapping(Versioned.class, "unversioned"));
-        assertEquals(Set.of("/v1/versioned/versioned", "/v2/versioned/versioned"),
-                getMethodPathMapping(Versioned.class, "versioned"));
-    }
-
-    private Set<String> getMethodPathMapping(Class<?> clazz, String methodName) throws NoSuchMethodException {
-        return mapping.getMappingForMethod(clazz.getMethod(methodName), clazz).getPatternsCondition().getPatterns();
     }
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -16,18 +16,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
+
 package org.planqk.atlas.web.utils;
 
 import java.util.Iterator;
 
+import org.springframework.hateoas.RepresentationModel;
+
 import com.fasterxml.jackson.databind.JavaType;
+
 import io.swagger.v3.core.converter.AnnotatedType;
 import io.swagger.v3.core.converter.ModelConverter;
 import io.swagger.v3.core.converter.ModelConverterContext;
 import io.swagger.v3.core.util.Json;
 import io.swagger.v3.oas.models.media.Schema;
 import lombok.RequiredArgsConstructor;
-import org.springframework.hateoas.RepresentationModel;
 
 /**
  * Removes `_links` from CollectionModel, PagedModel, ...
@@ -42,23 +45,20 @@ public class LinkRemoverModelConverter implements ModelConverter {
         } else {
             type = Json.mapper().constructType(annotatedType.getType());
         }
-        if (type != null) {
-            final var cls = type.getRawClass();
-            if (RepresentationModel.class.isAssignableFrom(cls)) {
-                if (annotatedType.isResolveAsRef()) {
-                    // Call resolve() with resolveAsRef = false, so this method here is called again
-                    // and we get to edit the type's real schema.
-                    context.resolve(annotatedType.resolveAsRef(false));
-                    annotatedType.resolveAsRef(true);
-                }
-                final var schema = chain.next().resolve(annotatedType, context, chain);
-                if (schema == null)
-                    return null;
-                if (schema.getProperties() != null) {
-                    schema.getProperties().remove("_links");
-                }
-                return schema;
+        if (type != null && RepresentationModel.class.isAssignableFrom(type.getRawClass())) {
+            if (annotatedType.isResolveAsRef()) {
+                // Call resolve() with resolveAsRef = false, so this method here is called again
+                // and we get to edit the type's real schema.
+                context.resolve(annotatedType.resolveAsRef(false));
+                annotatedType.resolveAsRef(true);
             }
+            final var schema = chain.next().resolve(annotatedType, context, chain);
+            if (schema == null)
+                return null;
+            if (schema.getProperties() != null) {
+                schema.getProperties().remove("_links");
+            }
+            return schema;
         }
         if (chain.hasNext()) {
             return chain.next().resolve(annotatedType, context, chain);

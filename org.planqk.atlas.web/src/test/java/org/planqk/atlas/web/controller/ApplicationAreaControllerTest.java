@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -19,34 +19,6 @@
 
 package org.planqk.atlas.web.controller;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.UUID;
-
-import org.planqk.atlas.core.model.ApplicationArea;
-import org.planqk.atlas.core.services.ApplicationAreaService;
-import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
-import org.planqk.atlas.web.dtos.ApplicationAreaDto;
-import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
-import org.planqk.atlas.web.linkassembler.LinkBuilderService;
-import org.planqk.atlas.web.utils.ListParameters;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
@@ -60,6 +32,35 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.UUID;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.planqk.atlas.core.model.ApplicationArea;
+import org.planqk.atlas.core.services.ApplicationAreaService;
+import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
+import org.planqk.atlas.web.dtos.ApplicationAreaDto;
+import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
+import org.planqk.atlas.web.linkassembler.LinkBuilderService;
+import org.planqk.atlas.web.utils.ListParameters;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import lombok.extern.slf4j.Slf4j;
+
 @WebMvcTest(ApplicationAreaController.class)
 @ExtendWith(MockitoExtension.class)
 @AutoConfigureMockMvc
@@ -67,15 +68,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Slf4j
 public class ApplicationAreaControllerTest {
 
+    private final ObjectMapper mapper = ObjectMapperUtils.newTestMapper();
+
     @MockBean
     private ApplicationAreaService applicationAreaService;
 
     @Autowired
     private MockMvc mockMvc;
+
     @Autowired
     private LinkBuilderService linkBuilderService;
-
-    private final ObjectMapper mapper = ObjectMapperUtils.newTestMapper();
 
     @Test
     @SuppressWarnings("ConstantConditions")
@@ -83,14 +85,14 @@ public class ApplicationAreaControllerTest {
         doReturn(new PageImpl<ApplicationArea>(new ArrayList<>())).when(applicationAreaService).findAll(any(), any());
 
         MvcResult result = mockMvc
-                .perform(
-                        get(
-                                linkBuilderService.urlStringTo(
-                                        methodOn(ApplicationAreaController.class)
-                                                .getApplicationAreas(new ListParameters(PageRequest.of(1, 10), "hellp"))
-                                )
-                        ).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk()).andReturn();
+            .perform(
+                get(
+                    linkBuilderService.urlStringTo(
+                        methodOn(ApplicationAreaController.class)
+                            .getApplicationAreas(new ListParameters(PageRequest.of(1, 10), "hellp"))
+                    )
+                ).accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk()).andReturn();
 
         var page = ObjectMapperUtils.getPageInfo(result.getResponse().getContentAsString());
 
@@ -108,17 +110,17 @@ public class ApplicationAreaControllerTest {
         doReturn(new PageImpl<ApplicationArea>(List.of(area))).when(applicationAreaService).findAll(any(), any());
 
         MvcResult result = mockMvc
-                .perform(
-                        get(
-                                linkBuilderService.urlStringTo(
-                                        methodOn(ApplicationAreaController.class)
-                                                .getApplicationAreas(new ListParameters(PageRequest.of(1, 10), "hellp"))
-                                )
-                        ).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$._embedded.applicationAreas[0].id").value(area.getId().toString()))
-                .andExpect(jsonPath("$._embedded.applicationAreas[0].name").value(area.getName()))
-                .andReturn();
+            .perform(
+                get(
+                    linkBuilderService.urlStringTo(
+                        methodOn(ApplicationAreaController.class)
+                            .getApplicationAreas(new ListParameters(PageRequest.of(1, 10), "hellp"))
+                    )
+                ).accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$._embedded.applicationAreas[0].id").value(area.getId().toString()))
+            .andExpect(jsonPath("$._embedded.applicationAreas[0].name").value(area.getName()))
+            .andReturn();
 
         var page = ObjectMapperUtils.getPageInfo(result.getResponse().getContentAsString());
 
@@ -139,17 +141,17 @@ public class ApplicationAreaControllerTest {
         doReturn(area).when(applicationAreaService).create(any());
 
         mockMvc.perform(
-                post(
-                        linkBuilderService.urlStringTo(
-                                methodOn(ApplicationAreaController.class)
-                                        .createApplicationArea(null)
-                        )
-                ).accept(MediaType.APPLICATION_JSON)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(areaDto))
+            post(
+                linkBuilderService.urlStringTo(
+                    methodOn(ApplicationAreaController.class)
+                        .createApplicationArea(null)
+                )
+            ).accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(areaDto))
         ).andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(area.getId().toString()))
-                .andExpect(jsonPath("$.name").value(area.getName()));
+            .andExpect(jsonPath("$.id").value(area.getId().toString()))
+            .andExpect(jsonPath("$.name").value(area.getName()));
     }
 
     @Test
@@ -159,14 +161,14 @@ public class ApplicationAreaControllerTest {
         areaDto.setName(null);
 
         mockMvc.perform(
-                post(
-                        linkBuilderService.urlStringTo(
-                                methodOn(ApplicationAreaController.class)
-                                        .createApplicationArea(null)
-                        )
-                ).accept(MediaType.APPLICATION_JSON)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(areaDto))
+            post(
+                linkBuilderService.urlStringTo(
+                    methodOn(ApplicationAreaController.class)
+                        .createApplicationArea(null)
+                )
+            ).accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(areaDto))
         ).andExpect(status().isBadRequest());
     }
 
@@ -183,17 +185,17 @@ public class ApplicationAreaControllerTest {
         doReturn(area).when(applicationAreaService).update(any());
 
         mockMvc.perform(
-                put(
-                        linkBuilderService.urlStringTo(
-                                methodOn(ApplicationAreaController.class)
-                                        .updateApplicationArea(area.getId(), null)
-                        )
-                ).accept(MediaType.APPLICATION_JSON)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(areaDto))
+            put(
+                linkBuilderService.urlStringTo(
+                    methodOn(ApplicationAreaController.class)
+                        .updateApplicationArea(area.getId(), null)
+                )
+            ).accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(areaDto))
         ).andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(area.getId().toString()))
-                .andExpect(jsonPath("$.name").value(area.getName()));
+            .andExpect(jsonPath("$.id").value(area.getId().toString()))
+            .andExpect(jsonPath("$.name").value(area.getName()));
     }
 
     @Test
@@ -203,14 +205,14 @@ public class ApplicationAreaControllerTest {
         areaDto.setId(UUID.randomUUID());
         areaDto.setName(null);
         mockMvc.perform(
-                put(
-                        linkBuilderService.urlStringTo(
-                                methodOn(ApplicationAreaController.class)
-                                        .updateApplicationArea(areaDto.getId(), null)
-                        )
-                ).accept(MediaType.APPLICATION_JSON)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(areaDto))
+            put(
+                linkBuilderService.urlStringTo(
+                    methodOn(ApplicationAreaController.class)
+                        .updateApplicationArea(areaDto.getId(), null)
+                )
+            ).accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(areaDto))
         ).andExpect(status().isBadRequest());
     }
 
@@ -224,14 +226,14 @@ public class ApplicationAreaControllerTest {
         doThrow(new NoSuchElementException()).when(applicationAreaService).update(any());
 
         mockMvc.perform(
-                put(
-                        linkBuilderService.urlStringTo(
-                                methodOn(ApplicationAreaController.class)
-                                        .updateApplicationArea(areaDto.getId(), null)
-                        )
-                ).accept(MediaType.APPLICATION_JSON)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(areaDto))
+            put(
+                linkBuilderService.urlStringTo(
+                    methodOn(ApplicationAreaController.class)
+                        .updateApplicationArea(areaDto.getId(), null)
+                )
+            ).accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(areaDto))
         ).andExpect(status().isNotFound());
     }
 
@@ -241,12 +243,12 @@ public class ApplicationAreaControllerTest {
         doNothing().when(applicationAreaService).delete(any());
 
         mockMvc.perform(
-                delete(
-                        linkBuilderService.urlStringTo(
-                                methodOn(ApplicationAreaController.class)
-                                        .deleteApplicationArea(UUID.randomUUID())
-                        )
-                ).accept(MediaType.APPLICATION_JSON)
+            delete(
+                linkBuilderService.urlStringTo(
+                    methodOn(ApplicationAreaController.class)
+                        .deleteApplicationArea(UUID.randomUUID())
+                )
+            ).accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isNoContent());
     }
 
@@ -256,12 +258,12 @@ public class ApplicationAreaControllerTest {
         doThrow(new NoSuchElementException()).when(applicationAreaService).delete(any());
 
         mockMvc.perform(
-                delete(
-                        linkBuilderService.urlStringTo(
-                                methodOn(ApplicationAreaController.class)
-                                        .deleteApplicationArea(UUID.randomUUID())
-                        )
-                ).accept(MediaType.APPLICATION_JSON)
+            delete(
+                linkBuilderService.urlStringTo(
+                    methodOn(ApplicationAreaController.class)
+                        .deleteApplicationArea(UUID.randomUUID())
+                )
+            ).accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isNotFound());
     }
 
@@ -275,15 +277,15 @@ public class ApplicationAreaControllerTest {
         doReturn(area).when(applicationAreaService).findById(any());
 
         mockMvc.perform(
-                get(
-                        linkBuilderService.urlStringTo(
-                                methodOn(ApplicationAreaController.class)
-                                        .getApplicationArea(UUID.randomUUID())
-                        )
-                ).accept(MediaType.APPLICATION_JSON)
+            get(
+                linkBuilderService.urlStringTo(
+                    methodOn(ApplicationAreaController.class)
+                        .getApplicationArea(UUID.randomUUID())
+                )
+            ).accept(MediaType.APPLICATION_JSON)
         ).andExpect(jsonPath("$.id").value(area.getId().toString()))
-                .andExpect(jsonPath("$.name").value(area.getName()))
-                .andExpect(status().isOk());
+            .andExpect(jsonPath("$.name").value(area.getName()))
+            .andExpect(status().isOk());
     }
 
     @Test
@@ -292,12 +294,12 @@ public class ApplicationAreaControllerTest {
         doThrow(new NoSuchElementException()).when(applicationAreaService).delete(any());
 
         mockMvc.perform(
-                delete(
-                        linkBuilderService.urlStringTo(
-                                methodOn(ApplicationAreaController.class)
-                                        .deleteApplicationArea(UUID.randomUUID())
-                        )
-                ).accept(MediaType.APPLICATION_JSON)
+            delete(
+                linkBuilderService.urlStringTo(
+                    methodOn(ApplicationAreaController.class)
+                        .deleteApplicationArea(UUID.randomUUID())
+                )
+            ).accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isNotFound());
     }
 }

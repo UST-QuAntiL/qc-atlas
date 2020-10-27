@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -19,49 +19,57 @@
 
 package org.planqk.atlas.core.services;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.net.URI;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
 import org.planqk.atlas.core.model.ComputationModel;
 import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.model.PatternRelationType;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
-
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class PatternRelationServiceTest extends AtlasDatabaseTestBase {
 
+    private final int page = 0;
+
+    private final int size = 2;
+
+    private final Pageable pageable = PageRequest.of(page, size);
+
     @Autowired
     private PatternRelationService patternRelationService;
+
     @Autowired
     private AlgorithmService algorithmService;
+
     @Autowired
     private PatternRelationTypeService patternRelationTypeService;
 
-    private final int page = 0;
-    private final int size = 2;
-    private final Pageable pageable = PageRequest.of(page, size);
-
     private Algorithm algorithm;
+
     private PatternRelationType type;
+
     private PatternRelation relation1;
+
     private PatternRelation relation2;
 
     private PatternRelationType savedType;
+
     private Algorithm savedAlgorithm;
 
     @BeforeEach
@@ -164,7 +172,7 @@ public class PatternRelationServiceTest extends AtlasDatabaseTestBase {
     @Test
     void findPatternRelationById_ElementNotFound() {
         assertThrows(NoSuchElementException.class, () ->
-                patternRelationService.findById(UUID.randomUUID()));
+            patternRelationService.findById(UUID.randomUUID()));
     }
 
     @Test
@@ -172,7 +180,7 @@ public class PatternRelationServiceTest extends AtlasDatabaseTestBase {
         relation1.setId(UUID.randomUUID());
 
         assertThrows(NoSuchElementException.class, () ->
-                patternRelationService.update(relation1));
+            patternRelationService.update(relation1));
     }
 
     @Test
@@ -202,7 +210,7 @@ public class PatternRelationServiceTest extends AtlasDatabaseTestBase {
     @Test
     void deletePatternRelation_ElementNotFound() {
         assertThrows(NoSuchElementException.class, () ->
-                patternRelationService.delete(UUID.randomUUID()));
+            patternRelationService.delete(UUID.randomUUID()));
     }
 
     @Test
@@ -233,7 +241,7 @@ public class PatternRelationServiceTest extends AtlasDatabaseTestBase {
         PatternRelation savedRelation = patternRelationService.create(relation1);
 
         assertDoesNotThrow(() -> patternRelationService
-                .checkIfAlgorithmIsInPatternRelation(savedAlgorithm.getId(), savedRelation.getId()));
+            .checkIfAlgorithmIsInPatternRelation(savedAlgorithm.getId(), savedRelation.getId()));
     }
 
     @Test
@@ -252,7 +260,7 @@ public class PatternRelationServiceTest extends AtlasDatabaseTestBase {
         PatternRelation savedRelation = patternRelationService.create(relation1);
 
         assertThrows(NoSuchElementException.class, () -> patternRelationService
-                .checkIfAlgorithmIsInPatternRelation(persistedRelationAlgorithm.getId(), relation1.getId()));
+            .checkIfAlgorithmIsInPatternRelation(persistedRelationAlgorithm.getId(), relation1.getId()));
     }
 
     private PatternRelation getFullPatternRelation(String description) {

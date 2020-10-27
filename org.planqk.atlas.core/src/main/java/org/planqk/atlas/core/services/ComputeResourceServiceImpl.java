@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -30,14 +30,14 @@ import org.planqk.atlas.core.repository.ComputeResourceRepository;
 import org.planqk.atlas.core.repository.SoftwarePlatformRepository;
 import org.planqk.atlas.core.util.CollectionUtils;
 import org.planqk.atlas.core.util.ServiceUtils;
-
-import lombok.AllArgsConstructor;
-import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import lombok.AllArgsConstructor;
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -45,8 +45,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class ComputeResourceServiceImpl implements ComputeResourceService {
 
     private final ComputeResourceRepository computeResourceRepository;
+
     private final CloudServiceRepository cloudServiceRepository;
+
     private final SoftwarePlatformRepository softwarePlatformRepository;
+
     private final ComputeResourcePropertyService computeResourcePropertyService;
 
     @Override
@@ -73,7 +76,7 @@ public class ComputeResourceServiceImpl implements ComputeResourceService {
     @Override
     @Transactional
     public ComputeResource update(@NonNull ComputeResource computeResource) {
-        ComputeResource persistedComputeResource = findById(computeResource.getId());
+        final ComputeResource persistedComputeResource = findById(computeResource.getId());
 
         persistedComputeResource.setName(computeResource.getName());
         persistedComputeResource.setVendor(computeResource.getVendor());
@@ -89,13 +92,13 @@ public class ComputeResourceServiceImpl implements ComputeResourceService {
         ServiceUtils.throwIfNotExists(computeResourceId, ComputeResource.class, computeResourceRepository);
 
         if ((cloudServiceRepository.countCloudServiceByComputeResource(computeResourceId) +
-                softwarePlatformRepository.countSoftwarePlatformByComputeResource(computeResourceId)) > 0) {
+            softwarePlatformRepository.countSoftwarePlatformByComputeResource(computeResourceId)) > 0) {
             throw new EntityReferenceConstraintViolationException(
-                    "ComputeResource with ID \"" + computeResourceId + "\" cannot be deleted, " +
-                            "because it is still in linked to existing software platforms or cloud services");
+                "ComputeResource with ID \"" + computeResourceId + "\" cannot be deleted, " +
+                    "because it is still in linked to existing software platforms or cloud services");
         }
 
-        ComputeResource computeResource = findById(computeResourceId);
+        final ComputeResource computeResource = findById(computeResourceId);
 
         removeReferences(computeResource);
 
@@ -103,13 +106,8 @@ public class ComputeResourceServiceImpl implements ComputeResourceService {
     }
 
     private void removeReferences(@NonNull ComputeResource computeResource) {
-//        computeResource.getSoftwarePlatforms().forEach(
-//                softwarePlatform -> softwarePlatform.removeComputeResource(computeResource));
-//        computeResource.getCloudServices().forEach(
-//                cloudService -> cloudService.removeComputeResource(computeResource));
-
         CollectionUtils.forEachOnCopy(computeResource.getProvidedComputingResourceProperties(),
-                property -> computeResourcePropertyService.delete(property.getId()));
+            property -> computeResourcePropertyService.delete(property.getId()));
     }
 
     @Override

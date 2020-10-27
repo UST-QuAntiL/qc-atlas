@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -16,12 +16,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
+
 package org.planqk.atlas.core.model;
 
 import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.Set;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -39,6 +39,7 @@ import lombok.EqualsAndHashCode;
 public class DiscussionTopic extends KnowledgeArtifact {
 
     private String title;
+
     private String description;
 
     @Enumerated(EnumType.STRING)
@@ -47,13 +48,13 @@ public class DiscussionTopic extends KnowledgeArtifact {
     private OffsetDateTime date;
 
     @ManyToOne(fetch = FetchType.LAZY,
-            optional = false)
+        optional = false)
     @EqualsAndHashCode.Exclude
     private KnowledgeArtifact knowledgeArtifact;
 
     @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "discussionTopic",
-            orphanRemoval = true,
-            cascade = {CascadeType.MERGE, CascadeType.REFRESH})
+        orphanRemoval = true,
+        cascade = {CascadeType.MERGE, CascadeType.REFRESH})
     private Set<DiscussionComment> discussionComments = new HashSet<>();
 }

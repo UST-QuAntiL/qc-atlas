@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -16,6 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
+
 package org.planqk.atlas.web;
 
 import java.util.Map;
@@ -29,14 +30,14 @@ import org.planqk.atlas.web.dtos.QuantumImplementationDto;
 import org.planqk.atlas.web.utils.EntityModelConverter;
 import org.planqk.atlas.web.utils.LinkRemoverModelConverter;
 import org.planqk.atlas.web.utils.OverrideModelConverter;
-
-import io.swagger.v3.core.converter.ModelConverters;
-import io.swagger.v3.oas.annotations.media.DiscriminatorMapping;
-import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Lazy;
+
+import io.swagger.v3.core.converter.ModelConverters;
+import io.swagger.v3.oas.annotations.media.DiscriminatorMapping;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
  * This configuration contains the Swagger / SpringDoc configurations we need.
@@ -67,8 +68,8 @@ public class SwaggerConfiguration {
     @DependsOn("entityModelConverter")
     public OverrideModelConverter overrideModelConverter() {
         final var converter = new OverrideModelConverter(Map.of(
-                AlgorithmDto.class, AlgorithmSchema.class,
-                ImplementationDto.class, ImplementationSchema.class
+            AlgorithmDto.class, AlgorithmSchema.class,
+            ImplementationDto.class, ImplementationSchema.class
         ));
         ModelConverters.getInstance().addConverter(converter);
         return converter;
@@ -81,25 +82,25 @@ public class SwaggerConfiguration {
     // AlgorithmDto -- (via oneOf) --> ClassicAlgorithmDto -- (extends) --> AlgorithmDto
 
     @Schema(
-            name = "AlgorithmDto",
-            description = "Either a quantum or a classic algorithm",
-            oneOf = {ClassicAlgorithmDto.class, QuantumAlgorithmDto.class},
-            discriminatorMapping = {
-                    @DiscriminatorMapping(value = "CLASSIC", schema = ClassicAlgorithmDto.class),
-                    @DiscriminatorMapping(value = "QUANTUM", schema = QuantumAlgorithmDto.class),
-            }
+        name = "AlgorithmDto",
+        description = "Either a quantum or a classic algorithm",
+        oneOf = {ClassicAlgorithmDto.class, QuantumAlgorithmDto.class},
+        discriminatorMapping = {
+            @DiscriminatorMapping(value = "CLASSIC", schema = ClassicAlgorithmDto.class),
+            @DiscriminatorMapping(value = "QUANTUM", schema = QuantumAlgorithmDto.class),
+        }
     )
     private static class AlgorithmSchema {
     }
 
     @Schema(
-            name = "ImplementationDto",
-            description = "Either a quantum or a classic implementation",
-            oneOf = {ClassicImplementationDto.class, QuantumImplementationDto.class},
-            discriminatorMapping = {
-                    @DiscriminatorMapping(value = "CLASSIC", schema = ClassicImplementationDto.class),
-                    @DiscriminatorMapping(value = "QUANTUM", schema = QuantumImplementationDto.class),
-            }
+        name = "ImplementationDto",
+        description = "Either a quantum or a classic implementation",
+        oneOf = {ClassicImplementationDto.class, QuantumImplementationDto.class},
+        discriminatorMapping = {
+            @DiscriminatorMapping(value = "CLASSIC", schema = ClassicImplementationDto.class),
+            @DiscriminatorMapping(value = "QUANTUM", schema = QuantumImplementationDto.class),
+        }
     )
     private static class ImplementationSchema {
     }

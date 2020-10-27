@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -47,12 +47,6 @@ import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.ValidationGroups;
-
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
@@ -70,6 +64,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * Controller to access and manipulate implementations of quantum algorithms.
  */
@@ -83,74 +83,79 @@ import org.springframework.web.bind.annotation.RestController;
 public class ImplementationController {
 
     private final ImplementationService implementationService;
+
     private final ImplementationAssembler implementationAssembler;
 
     private final TagService tagService;
+
     private final TagAssembler tagAssembler;
 
     private final ComputeResourcePropertyService computeResourcePropertyService;
+
     private final ComputeResourcePropertyAssembler computeResourcePropertyAssembler;
 
     private final PublicationService publicationService;
+
     private final PublicationAssembler publicationAssembler;
 
     private final SoftwarePlatformService softwarePlatformService;
+
     private final SoftwarePlatformAssembler softwarePlatformAssembler;
 
     private final LinkingService linkingService;
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "201"),
-            @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
-            @ApiResponse(responseCode = "404",
-                    description = "Algorithm with given ID doesn't exist")
+        @ApiResponse(responseCode = "201"),
+        @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
+        @ApiResponse(responseCode = "404",
+            description = "Algorithm with given ID doesn't exist")
     }, description = "Define the basic properties of an implementation for an algorithm. " +
-            "References to sub-objects (e.g. a software platform) can be added via sub-routes " +
-            "(e.g. POST on /" + Constants.SOFTWARE_PLATFORMS + ").")
+        "References to sub-objects (e.g. a software platform) can be added via sub-routes " +
+        "(e.g. POST on /" + Constants.SOFTWARE_PLATFORMS + ").")
     @PostMapping
     public ResponseEntity<EntityModel<ImplementationDto>> createImplementation(
-            @PathVariable UUID algorithmId,
-            @Validated(ValidationGroups.Create.class) @RequestBody ImplementationDto implementationDto) {
-        Implementation savedImplementation = implementationService.create(
-                ModelMapperUtils.convert(implementationDto, Implementation.class), algorithmId);
+        @PathVariable UUID algorithmId,
+        @Validated(ValidationGroups.Create.class) @RequestBody ImplementationDto implementationDto) {
+        final Implementation savedImplementation = implementationService.create(
+            ModelMapperUtils.convert(implementationDto, Implementation.class), algorithmId);
         return new ResponseEntity<>(implementationAssembler.toModel(savedImplementation), HttpStatus.CREATED);
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400",
-                    description = "Bad Request. Invalid request body or algorithm resource is not implemented algorithm of implementation."),
-            @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or implementation with given IDs don't exist.")
+        @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "400",
+            description = "Bad Request. Invalid request body or algorithm resource is not implemented algorithm of implementation."),
+        @ApiResponse(responseCode = "404",
+            description = "Not Found. Algorithm or implementation with given IDs don't exist.")
     }, description = "Update the basic properties of an implementation (e.g. name). " +
-            "References to sub-objects (e.g. a software platform) are not updated via this operation - " +
-            "use the corresponding sub-route for updating them (e.g. PUT on /" + Constants.SOFTWARE_PLATFORMS + "/{softwarePlatformId}).\n")
+        "References to sub-objects (e.g. a software platform) are not updated via this operation - " +
+        "use the corresponding sub-route for updating them (e.g. PUT on /" + Constants.SOFTWARE_PLATFORMS + "/{softwarePlatformId}).\n")
     @PutMapping("/{implementationId}")
     public ResponseEntity<EntityModel<ImplementationDto>> updateImplementation(
-            @PathVariable UUID algorithmId,
-            @PathVariable UUID implementationId,
-            @Validated(ValidationGroups.Update.class) @RequestBody ImplementationDto implementationDto) {
+        @PathVariable UUID algorithmId,
+        @PathVariable UUID implementationId,
+        @Validated(ValidationGroups.Update.class) @RequestBody ImplementationDto implementationDto) {
         implementationService.checkIfImplementationIsOfAlgorithm(implementationId, algorithmId);
 
         implementationDto.setId(implementationId);
         implementationDto.setImplementedAlgorithmId(algorithmId);
-        Implementation updatedImplementation = implementationService.update(
-                ModelMapperUtils.convert(implementationDto, Implementation.class));
+        final Implementation updatedImplementation = implementationService.update(
+            ModelMapperUtils.convert(implementationDto, Implementation.class));
         return ResponseEntity.ok(implementationAssembler.toModel(updatedImplementation));
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "204"),
-            @ApiResponse(responseCode = "400",
-                    description = "Bad Request. Invalid request body or algorithm resource is not implemented algorithm of implementation."),
-            @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or implementation with given IDs don't exist.")
+        @ApiResponse(responseCode = "204"),
+        @ApiResponse(responseCode = "400",
+            description = "Bad Request. Invalid request body or algorithm resource is not implemented algorithm of implementation."),
+        @ApiResponse(responseCode = "404",
+            description = "Not Found. Algorithm or implementation with given IDs don't exist.")
     }, description = "Delete an implementation. " +
-            "This also removes all references to other entities (e.g. software platforms).")
+        "This also removes all references to other entities (e.g. software platforms).")
     @DeleteMapping("/{implementationId}")
     public ResponseEntity<Void> deleteImplementation(
-            @PathVariable UUID algorithmId,
-            @PathVariable UUID implementationId) {
+        @PathVariable UUID algorithmId,
+        @PathVariable UUID implementationId) {
         implementationService.checkIfImplementationIsOfAlgorithm(implementationId, algorithmId);
 
         implementationService.delete(implementationId);
@@ -158,50 +163,50 @@ public class ImplementationController {
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400",
-                    description = "Bad Request. Invalid request body or algorithm resource is not implemented algorithm of implementation."),
-            @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or implementation with given IDs don't exist.")
+        @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "400",
+            description = "Bad Request. Invalid request body or algorithm resource is not implemented algorithm of implementation."),
+        @ApiResponse(responseCode = "404",
+            description = "Not Found. Algorithm or implementation with given IDs don't exist.")
     }, description = "Retrieve a specific implementation and its basic properties of an algorithm.")
     @GetMapping("/{implementationId}")
     public ResponseEntity<EntityModel<ImplementationDto>> getImplementation(
-            @PathVariable UUID algorithmId,
-            @PathVariable UUID implementationId) {
+        @PathVariable UUID algorithmId,
+        @PathVariable UUID implementationId) {
         implementationService.checkIfImplementationIsOfAlgorithm(implementationId, algorithmId);
 
-        var implementation = implementationService.findById(implementationId);
+        final var implementation = implementationService.findById(implementationId);
         return ResponseEntity.ok(implementationAssembler.toModel(implementation));
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400",
-                    description = "Bad Request. Invalid request body or algorithm resource is not implemented algorithm of implementation."),
-            @ApiResponse(responseCode = "404", description = "Not Found. Algorithm or implementation with given IDs don't exist.")
+        @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "400",
+            description = "Bad Request. Invalid request body or algorithm resource is not implemented algorithm of implementation."),
+        @ApiResponse(responseCode = "404", description = "Not Found. Algorithm or implementation with given IDs don't exist.")
     }, description = "Retrieve all tags associated with a specific implementation.")
     @GetMapping("/{implementationId}/" + Constants.TAGS)
     public ResponseEntity<CollectionModel<EntityModel<TagDto>>> getTagsOfImplementation(
-            @PathVariable UUID algorithmId,
-            @PathVariable UUID implementationId) {
+        @PathVariable UUID algorithmId,
+        @PathVariable UUID implementationId) {
         implementationService.checkIfImplementationIsOfAlgorithm(implementationId, algorithmId);
 
-        Implementation implementation = implementationService.findById(implementationId);
+        final Implementation implementation = implementationService.findById(implementationId);
         return ResponseEntity.ok(tagAssembler.toModel(implementation.getTags()));
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400",
-                    description = "Bad Request. Invalid request body or algorithm resource is not implemented algorithm of implementation."),
-            @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or implementation with given IDs don't exist.")
+        @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "400",
+            description = "Bad Request. Invalid request body or algorithm resource is not implemented algorithm of implementation."),
+        @ApiResponse(responseCode = "404",
+            description = "Not Found. Algorithm or implementation with given IDs don't exist.")
     }, description = "Add a tag to an implementation. The tag does not have to exist before adding it.")
     @PostMapping("/{implementationId}/" + Constants.TAGS)
     public ResponseEntity<Void> addTagToImplementation(
-            @PathVariable UUID algorithmId,
-            @PathVariable UUID implementationId,
-            @Validated(ValidationGroups.Create.class) @RequestBody TagDto tagDto) {
+        @PathVariable UUID algorithmId,
+        @PathVariable UUID implementationId,
+        @Validated(ValidationGroups.Create.class) @RequestBody TagDto tagDto) {
         implementationService.checkIfImplementationIsOfAlgorithm(implementationId, algorithmId);
 
         tagService.addTagToImplementation(implementationId, ModelMapperUtils.convert(tagDto, Tag.class));
@@ -209,17 +214,17 @@ public class ImplementationController {
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400",
-                    description = "Bad Request. Invalid request body or algorithm resource is not implemented algorithm of implementation."),
-            @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or implementation with given IDs or Tag don't exist.")
+        @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "400",
+            description = "Bad Request. Invalid request body or algorithm resource is not implemented algorithm of implementation."),
+        @ApiResponse(responseCode = "404",
+            description = "Not Found. Algorithm or implementation with given IDs or Tag don't exist.")
     }, description = "Remove a tag from an implementation.")
     @DeleteMapping("/{implementationId}/" + Constants.TAGS)
     public ResponseEntity<Void> removeTagFromImplementation(
-            @PathVariable UUID algorithmId,
-            @PathVariable UUID implementationId,
-            @Validated(ValidationGroups.IDOnly.class) @RequestBody TagDto tagDto) {
+        @PathVariable UUID algorithmId,
+        @PathVariable UUID implementationId,
+        @Validated(ValidationGroups.IDOnly.class) @RequestBody TagDto tagDto) {
         implementationService.checkIfImplementationIsOfAlgorithm(implementationId, algorithmId);
 
         tagService.removeTagFromImplementation(implementationId, ModelMapperUtils.convert(tagDto, Tag.class));
@@ -227,39 +232,39 @@ public class ImplementationController {
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400",
-                    description = "Bad Request. Invalid request body or algorithm resource is not implemented algorithm of implementation."),
-            @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or implementation with given IDs don't exist.")
+        @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "400",
+            description = "Bad Request. Invalid request body or algorithm resource is not implemented algorithm of implementation."),
+        @ApiResponse(responseCode = "404",
+            description = "Not Found. Algorithm or implementation with given IDs don't exist.")
     }, description = "Retrieve referenced publications of an implementation. If none are found an empty list is returned.")
     @ListParametersDoc
     @GetMapping("/{implementationId}/" + Constants.PUBLICATIONS)
     public ResponseEntity<PagedModel<EntityModel<PublicationDto>>> getPublicationsOfImplementation(
-            @PathVariable UUID algorithmId,
-            @PathVariable UUID implementationId,
-            @Parameter(hidden = true) ListParameters listParameters) {
+        @PathVariable UUID algorithmId,
+        @PathVariable UUID implementationId,
+        @Parameter(hidden = true) ListParameters listParameters) {
         implementationService.checkIfImplementationIsOfAlgorithm(implementationId, algorithmId);
 
-        var publications = implementationService.findLinkedPublications(implementationId, listParameters.getPageable());
+        final var publications = implementationService.findLinkedPublications(implementationId, listParameters.getPageable());
         return ResponseEntity.ok(publicationAssembler.toModel(publications));
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "204"),
-            @ApiResponse(responseCode = "400",
-                    description = "Bad Request. Invalid request body or algorithm resource is not implemented algorithm of implementation."),
-            @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm, implementation or publication with given IDs don't exist or " +
-                            "reference was already added.")
+        @ApiResponse(responseCode = "204"),
+        @ApiResponse(responseCode = "400",
+            description = "Bad Request. Invalid request body or algorithm resource is not implemented algorithm of implementation."),
+        @ApiResponse(responseCode = "404",
+            description = "Not Found. Algorithm, implementation or publication with given IDs don't exist or " +
+                "reference was already added.")
     }, description = "Add a reference to an existing publication " +
-            "(that was previously created via a POST on e.g. /" + Constants.PUBLICATIONS + "). " +
-            "Only the ID is required in the request body, other attributes will be ignored and not changed.")
+        "(that was previously created via a POST on e.g. /" + Constants.PUBLICATIONS + "). " +
+        "Only the ID is required in the request body, other attributes will be ignored and not changed.")
     @PostMapping("/{implementationId}/" + Constants.PUBLICATIONS)
     public ResponseEntity<Void> linkImplementationAndPublication(
-            @PathVariable UUID algorithmId,
-            @PathVariable UUID implementationId,
-            @Validated({ValidationGroups.IDOnly.class}) @RequestBody PublicationDto publicationDto) {
+        @PathVariable UUID algorithmId,
+        @PathVariable UUID implementationId,
+        @Validated({ValidationGroups.IDOnly.class}) @RequestBody PublicationDto publicationDto) {
         implementationService.checkIfImplementationIsOfAlgorithm(implementationId, algorithmId);
 
         linkingService.linkImplementationAndPublication(implementationId, publicationDto.getId());
@@ -267,20 +272,20 @@ public class ImplementationController {
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400",
-                    description = "Bad Request. Invalid request body or algorithm resource is not implemented algorithm of implementation."),
-            @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm, implementation or publication with given IDs don't exist or " +
-                            "no reference exists."),
+        @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "400",
+            description = "Bad Request. Invalid request body or algorithm resource is not implemented algorithm of implementation."),
+        @ApiResponse(responseCode = "404",
+            description = "Not Found. Algorithm, implementation or publication with given IDs don't exist or " +
+                "no reference exists."),
     }, description = "Delete a reference to a publication of an implementation. " +
-            "The reference has to be previously created via a POST on /" + Constants.ALGORITHMS + "/{algorithmId}/" +
-            Constants.IMPLEMENTATIONS + "/{implementationId}/" + Constants.PUBLICATIONS + ").")
+        "The reference has to be previously created via a POST on /" + Constants.ALGORITHMS + "/{algorithmId}/" +
+        Constants.IMPLEMENTATIONS + "/{implementationId}/" + Constants.PUBLICATIONS + ").")
     @DeleteMapping("/{implementationId}/" + Constants.PUBLICATIONS + "/{publicationId}")
     public ResponseEntity<Void> unlinkImplementationAndPublication(
-            @PathVariable UUID algorithmId,
-            @PathVariable UUID implementationId,
-            @PathVariable UUID publicationId) {
+        @PathVariable UUID algorithmId,
+        @PathVariable UUID implementationId,
+        @PathVariable UUID publicationId) {
         implementationService.checkIfImplementationIsOfAlgorithm(implementationId, algorithmId);
 
         linkingService.unlinkImplementationAndPublication(implementationId, publicationId);
@@ -288,57 +293,57 @@ public class ImplementationController {
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400",
-                    description = "Bad Request. Invalid request body or algorithm resource is not implemented algorithm of implementation."),
-            @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm, implementation or publication with given IDs don't exist.")
+        @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "400",
+            description = "Bad Request. Invalid request body or algorithm resource is not implemented algorithm of implementation."),
+        @ApiResponse(responseCode = "404",
+            description = "Not Found. Algorithm, implementation or publication with given IDs don't exist.")
     }, description = "Retrieve a specific publication of an implementation")
     @GetMapping("/{implementationId}/" + Constants.PUBLICATIONS + "/{publicationId}")
     public ResponseEntity<EntityModel<PublicationDto>> getPublicationOfImplementation(
-            @PathVariable UUID algorithmId,
-            @PathVariable UUID implementationId,
-            @PathVariable UUID publicationId) {
+        @PathVariable UUID algorithmId,
+        @PathVariable UUID implementationId,
+        @PathVariable UUID publicationId) {
         implementationService.checkIfImplementationIsOfAlgorithm(implementationId, algorithmId);
 
-        Publication publication = publicationService.findById(publicationId);
+        final Publication publication = publicationService.findById(publicationId);
         return new ResponseEntity<>(publicationAssembler.toModel(publication), HttpStatus.OK);
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400",
-                    description = "Bad Request. Invalid request body or algorithm resource is not implemented algorithm of implementation."),
-            @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or implementation with given IDs don't exist.")
+        @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "400",
+            description = "Bad Request. Invalid request body or algorithm resource is not implemented algorithm of implementation."),
+        @ApiResponse(responseCode = "404",
+            description = "Not Found. Algorithm or implementation with given IDs don't exist.")
     }, description = "Retrieve referenced software platform for an implementation. If none are found an empty list is returned.")
     @ListParametersDoc
     @GetMapping("/{implementationId}/" + Constants.SOFTWARE_PLATFORMS)
     public ResponseEntity<CollectionModel<EntityModel<SoftwarePlatformDto>>> getSoftwarePlatformsOfImplementation(
-            @PathVariable UUID algorithmId,
-            @PathVariable UUID implementationId,
-            @Parameter(hidden = true) ListParameters listParameters) {
+        @PathVariable UUID algorithmId,
+        @PathVariable UUID implementationId,
+        @Parameter(hidden = true) ListParameters listParameters) {
         implementationService.checkIfImplementationIsOfAlgorithm(implementationId, algorithmId);
 
-        var softwarePlatforms = implementationService.findLinkedSoftwarePlatforms(implementationId, listParameters.getPageable());
+        final var softwarePlatforms = implementationService.findLinkedSoftwarePlatforms(implementationId, listParameters.getPageable());
         return ResponseEntity.ok(softwarePlatformAssembler.toModel(softwarePlatforms));
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "204"),
-            @ApiResponse(responseCode = "400",
-                    description = "Bad Request. Invalid request body or algorithm resource is not implemented algorithm of implementation."),
-            @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm, implementation or software platform with given IDs don't exist or " +
-                            "reference was already added.")
+        @ApiResponse(responseCode = "204"),
+        @ApiResponse(responseCode = "400",
+            description = "Bad Request. Invalid request body or algorithm resource is not implemented algorithm of implementation."),
+        @ApiResponse(responseCode = "404",
+            description = "Not Found. Algorithm, implementation or software platform with given IDs don't exist or " +
+                "reference was already added.")
     }, description = "Add a reference to an existing software platform " +
-            "(that was previously created via a POST on e.g. /" + Constants.SOFTWARE_PLATFORMS + "). " +
-            "Only the ID is required in the request body, other attributes will be ignored and not changed.")
+        "(that was previously created via a POST on e.g. /" + Constants.SOFTWARE_PLATFORMS + "). " +
+        "Only the ID is required in the request body, other attributes will be ignored and not changed.")
     @PostMapping("/{implementationId}/" + Constants.SOFTWARE_PLATFORMS)
     public ResponseEntity<Void> linkImplementationAndSoftwarePlatform(
-            @PathVariable UUID algorithmId,
-            @PathVariable UUID implementationId,
-            @Validated({ValidationGroups.IDOnly.class}) @RequestBody SoftwarePlatformDto softwarePlatformDto) {
+        @PathVariable UUID algorithmId,
+        @PathVariable UUID implementationId,
+        @Validated({ValidationGroups.IDOnly.class}) @RequestBody SoftwarePlatformDto softwarePlatformDto) {
         implementationService.checkIfImplementationIsOfAlgorithm(implementationId, algorithmId);
 
         linkingService.linkImplementationAndSoftwarePlatform(implementationId, softwarePlatformDto.getId());
@@ -346,20 +351,20 @@ public class ImplementationController {
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "204"),
-            @ApiResponse(responseCode = "400",
-                    description = "Bad Request. Invalid request body or algorithm resource is not implemented algorithm of implementation."),
-            @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm, implementation or software platform with given IDs don't exist or " +
-                            "no reference exists.")
+        @ApiResponse(responseCode = "204"),
+        @ApiResponse(responseCode = "400",
+            description = "Bad Request. Invalid request body or algorithm resource is not implemented algorithm of implementation."),
+        @ApiResponse(responseCode = "404",
+            description = "Not Found. Algorithm, implementation or software platform with given IDs don't exist or " +
+                "no reference exists.")
     }, description = "Delete a reference to a software platform of an implementation. " +
-            "The reference has to be previously created via a POST on /" + Constants.ALGORITHMS + "/{algorithmId}/" +
-            Constants.IMPLEMENTATIONS + "/{implementationId}/" + Constants.SOFTWARE_PLATFORMS + ").")
+        "The reference has to be previously created via a POST on /" + Constants.ALGORITHMS + "/{algorithmId}/" +
+        Constants.IMPLEMENTATIONS + "/{implementationId}/" + Constants.SOFTWARE_PLATFORMS + ").")
     @DeleteMapping("/{implementationId}/" + Constants.SOFTWARE_PLATFORMS + "/{softwarePlatformId}")
     public ResponseEntity<Void> unlinkImplementationAndSoftwarePlatform(
-            @PathVariable UUID algorithmId,
-            @PathVariable UUID implementationId,
-            @PathVariable UUID softwarePlatformId) {
+        @PathVariable UUID algorithmId,
+        @PathVariable UUID implementationId,
+        @PathVariable UUID softwarePlatformId) {
         implementationService.checkIfImplementationIsOfAlgorithm(implementationId, algorithmId);
 
         linkingService.unlinkImplementationAndSoftwarePlatform(implementationId, softwarePlatformId);
@@ -367,103 +372,103 @@ public class ImplementationController {
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400",
-                    description = "Bad Request. Invalid request body or algorithm resource is not implemented algorithm of implementation."),
-            @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm, implementation or software platform with given IDs don't exist."),
+        @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "400",
+            description = "Bad Request. Invalid request body or algorithm resource is not implemented algorithm of implementation."),
+        @ApiResponse(responseCode = "404",
+            description = "Not Found. Algorithm, implementation or software platform with given IDs don't exist."),
     }, description = "Retrieve a specific software platform and its basic properties of an implementation.")
     @GetMapping("/{implementationId}/" + Constants.SOFTWARE_PLATFORMS + "/{softwarePlatformId}")
     public ResponseEntity<EntityModel<SoftwarePlatformDto>> getSoftwarePlatformOfImplementation(
-            @PathVariable UUID algorithmId,
-            @PathVariable UUID implementationId,
-            @PathVariable UUID softwarePlatformId) {
+        @PathVariable UUID algorithmId,
+        @PathVariable UUID implementationId,
+        @PathVariable UUID softwarePlatformId) {
         implementationService.checkIfImplementationIsOfAlgorithm(implementationId, algorithmId);
 
-        var softwarePlatform = softwarePlatformService.findById(softwarePlatformId);
+        final var softwarePlatform = softwarePlatformService.findById(softwarePlatformId);
         return ResponseEntity.ok(softwarePlatformAssembler.toModel(softwarePlatform));
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400",
-                    description = "Bad Request. Invalid request body or algorithm resource is not implemented algorithm of implementation."),
-            @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or implementation with given IDs don't exist.")
+        @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "400",
+            description = "Bad Request. Invalid request body or algorithm resource is not implemented algorithm of implementation."),
+        @ApiResponse(responseCode = "404",
+            description = "Not Found. Algorithm or implementation with given IDs don't exist.")
     }, description = "Retrieve referenced compute resource properties of an implementation. If none are found an empty list is returned.")
     @ListParametersDoc
     @GetMapping("/{implementationId}/" + Constants.COMPUTE_RESOURCE_PROPERTIES)
     public ResponseEntity<PagedModel<EntityModel<ComputeResourcePropertyDto>>> getComputeResourcePropertiesOfImplementation(
-            @PathVariable UUID algorithmId,
-            @PathVariable UUID implementationId,
-            @Parameter(hidden = true) ListParameters listParameters) {
+        @PathVariable UUID algorithmId,
+        @PathVariable UUID implementationId,
+        @Parameter(hidden = true) ListParameters listParameters) {
         implementationService.checkIfImplementationIsOfAlgorithm(implementationId, algorithmId);
 
-        var resources = computeResourcePropertyService.findComputeResourcePropertiesOfImplementation(
-                implementationId, listParameters.getPageable());
+        final var resources = computeResourcePropertyService.findComputeResourcePropertiesOfImplementation(
+            implementationId, listParameters.getPageable());
         return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(resources));
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400",
-                    description = "Bad Request. Invalid request body or algorithm resource is not implemented algorithm of implementation."),
-            @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm, implementation or compute resource property type with given IDs don't exist.")
+        @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "400",
+            description = "Bad Request. Invalid request body or algorithm resource is not implemented algorithm of implementation."),
+        @ApiResponse(responseCode = "404",
+            description = "Not Found. Algorithm, implementation or compute resource property type with given IDs don't exist.")
     }, description = "Add a compute resource property (e.g. a certain number of qubits) that is required by an implementation. " +
-            "The compute resource property type has to be already created (e.g. via POST on /" + Constants.COMPUTE_RESOURCE_PROPERTY_TYPES + "). " +
-            "As a result only the ID is required for the compute resource property type, other attributes will be ignored not changed.")
+        "The compute resource property type has to be already created (e.g. via POST on /" + Constants.COMPUTE_RESOURCE_PROPERTY_TYPES + "). " +
+        "As a result only the ID is required for the compute resource property type, other attributes will be ignored not changed.")
     @PostMapping("/{implementationId}/" + Constants.COMPUTE_RESOURCE_PROPERTIES)
     public ResponseEntity<EntityModel<ComputeResourcePropertyDto>> createComputeResourcePropertyForImplementation(
-            @PathVariable UUID algorithmId,
-            @PathVariable UUID implementationId,
-            @Validated(ValidationGroups.Create.class) @RequestBody ComputeResourcePropertyDto computeResourcePropertyDto) {
+        @PathVariable UUID algorithmId,
+        @PathVariable UUID implementationId,
+        @Validated(ValidationGroups.Create.class) @RequestBody ComputeResourcePropertyDto computeResourcePropertyDto) {
         implementationService.checkIfImplementationIsOfAlgorithm(implementationId, algorithmId);
 
-        var computeResourceProperty = ModelMapperUtils.convert(computeResourcePropertyDto, ComputeResourceProperty.class);
+        final var computeResourceProperty = ModelMapperUtils.convert(computeResourcePropertyDto, ComputeResourceProperty.class);
 
-        var createdComputeResourceProperty = computeResourcePropertyService
-                .addComputeResourcePropertyToImplementation(implementationId, computeResourceProperty);
+        final var createdComputeResourceProperty = computeResourcePropertyService
+            .addComputeResourcePropertyToImplementation(implementationId, computeResourceProperty);
         return ResponseEntity.status(HttpStatus.CREATED).body(computeResourcePropertyAssembler.toModel(createdComputeResourceProperty));
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400",
-                    description = "Bad Request. Invalid request body or algorithm resource is not implemented algorithm of implementation."),
-            @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm, implementation, compute resource property or compute resource type with given IDs don't exist.")
+        @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "400",
+            description = "Bad Request. Invalid request body or algorithm resource is not implemented algorithm of implementation."),
+        @ApiResponse(responseCode = "404",
+            description = "Not Found. Algorithm, implementation, compute resource property or compute resource type with given IDs don't exist.")
     }, description = "Update a Compute resource property of an implementation. " +
-            "For the compute resource property type only the ID is required, " +
-            "other compute resource property type attributes will be ignored and not changed.")
+        "For the compute resource property type only the ID is required, " +
+        "other compute resource property type attributes will be ignored and not changed.")
     @PutMapping("/{implementationId}/" + Constants.COMPUTE_RESOURCE_PROPERTIES + "/{computeResourcePropertyId}")
     public ResponseEntity<EntityModel<ComputeResourcePropertyDto>> updateComputeResourcePropertyOfImplementation(
-            @PathVariable UUID algorithmId,
-            @PathVariable UUID implementationId,
-            @PathVariable UUID computeResourcePropertyId,
-            @Validated(ValidationGroups.Update.class) @RequestBody ComputeResourcePropertyDto computeResourcePropertyDto) {
+        @PathVariable UUID algorithmId,
+        @PathVariable UUID implementationId,
+        @PathVariable UUID computeResourcePropertyId,
+        @Validated(ValidationGroups.Update.class) @RequestBody ComputeResourcePropertyDto computeResourcePropertyDto) {
         implementationService.checkIfImplementationIsOfAlgorithm(implementationId, algorithmId);
         computeResourcePropertyService.checkIfComputeResourcePropertyIsOfImplementation(implementationId, computeResourcePropertyId);
 
         computeResourcePropertyDto.setId(computeResourcePropertyId);
-        var resource = ModelMapperUtils.convert(computeResourcePropertyDto, ComputeResourceProperty.class);
-        var updatedResource = computeResourcePropertyService.update(resource);
+        final var resource = ModelMapperUtils.convert(computeResourcePropertyDto, ComputeResourceProperty.class);
+        final var updatedResource = computeResourcePropertyService.update(resource);
         return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(updatedResource));
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400",
-                    description = "Bad Request. Invalid request body or algorithm resource is not implemented algorithm of implementation."),
-            @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm, implementation or compute resource property with given IDs don't exist."),
+        @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "400",
+            description = "Bad Request. Invalid request body or algorithm resource is not implemented algorithm of implementation."),
+        @ApiResponse(responseCode = "404",
+            description = "Not Found. Algorithm, implementation or compute resource property with given IDs don't exist."),
     }, description = "Delete a Compute resource property of an implementation. " +
-            "The compute resource property type is not affected by this.")
+        "The compute resource property type is not affected by this.")
     @DeleteMapping("/{implementationId}/" + Constants.COMPUTE_RESOURCE_PROPERTIES + "/{computeResourcePropertyId}")
     public HttpEntity<Void> deleteComputeResourcePropertyOfImplementation(
-            @PathVariable UUID algorithmId,
-            @PathVariable UUID implementationId,
-            @PathVariable UUID computeResourcePropertyId) {
+        @PathVariable UUID algorithmId,
+        @PathVariable UUID implementationId,
+        @PathVariable UUID computeResourcePropertyId) {
         implementationService.checkIfImplementationIsOfAlgorithm(implementationId, algorithmId);
         computeResourcePropertyService.checkIfComputeResourcePropertyIsOfImplementation(implementationId, computeResourcePropertyId);
 
@@ -472,21 +477,22 @@ public class ImplementationController {
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400",
-                    description = "Bad Request. Invalid request body or algorithm resource is not implemented algorithm of implementation."),
-            @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm, implementation or compute resource property with given IDs don't exist."),
+        @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "400",
+            description = "Bad Request. Invalid request body or algorithm resource is not implemented algorithm of implementation."),
+        @ApiResponse(responseCode = "404",
+            description = "Not Found. Algorithm, implementation or compute resource property with given IDs don't exist."),
     }, description = "Retrieve a specific compute resource property of an implementation.")
     @GetMapping("/{implementationId}/" + Constants.COMPUTE_RESOURCE_PROPERTIES + "/{computeResourcePropertyId}")
     public HttpEntity<EntityModel<ComputeResourcePropertyDto>> getComputeResourcePropertyOfImplementation(
-            @PathVariable UUID algorithmId,
-            @PathVariable UUID implementationId,
-            @PathVariable UUID computeResourcePropertyId) {
+        @PathVariable UUID algorithmId,
+        @PathVariable UUID implementationId,
+        @PathVariable UUID computeResourcePropertyId) {
         implementationService.checkIfImplementationIsOfAlgorithm(implementationId, algorithmId);
         computeResourcePropertyService.checkIfComputeResourcePropertyIsOfImplementation(implementationId, computeResourcePropertyId);
 
-        var resource = computeResourcePropertyService.findById(computeResourcePropertyId);
+        final var resource = computeResourcePropertyService.findById(computeResourcePropertyId);
         return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(resource));
     }
+
 }

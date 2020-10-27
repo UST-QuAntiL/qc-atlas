@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -16,13 +16,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
+
 package org.planqk.atlas.web.linkassembler;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.planqk.atlas.web.utils.ListParametersMethodArgumentResolver;
-
 import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ParameterNameDiscoverer;
@@ -45,20 +45,21 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 /**
- * Custom HATEOAS {@link org.springframework.hateoas.server.LinkBuilder} that resolves path mappings using the
- * container's {@link RequestMappingInfoHandlerMapping} instance.
+ * Custom HATEOAS {@link org.springframework.hateoas.server.LinkBuilder} that resolves path mappings using the container's {@link
+ * RequestMappingInfoHandlerMapping} instance.
  */
 @Component
 public class LinkBuilderService {
     private static final ParameterNameDiscoverer parameterNameDiscoverer = new DefaultParameterNameDiscoverer();
 
     private final CompositeUriComponentsContributor contributor;
+
     private final RequestMappingHandlerMapping mappings;
 
     public LinkBuilderService(ListParametersMethodArgumentResolver listResolver, RequestMappingHandlerMapping mappings) {
         contributor = new CompositeUriComponentsContributor(
-                new PathVariableMethodArgumentResolver(), new RequestParamMethodArgumentResolver(false),
-                listResolver);
+            new PathVariableMethodArgumentResolver(), new RequestParamMethodArgumentResolver(false),
+            listResolver);
         this.mappings = mappings;
     }
 
@@ -92,8 +93,7 @@ public class LinkBuilderService {
     }
 
     /**
-     * Special version of {@link WebMvcLinkBuilder#linkTo(Object)} that resolves paths via {@link
-     * RequestMappingInfoHandlerMapping}.
+     * Special version of {@link WebMvcLinkBuilder#linkTo(Object)} that resolves paths via {@link RequestMappingInfoHandlerMapping}.
      * <p>
      * If that is impossible, the class- and method-annotations are considered.
      */
@@ -125,7 +125,7 @@ public class LinkBuilderService {
         final var argCount = invocation.getArguments().length;
         if (paramCount != argCount) {
             throw new IllegalArgumentException("Number of method parameters " + paramCount +
-                    " does not match number of argument values " + argCount);
+                " does not match number of argument values " + argCount);
         }
 
         final Map<String, Object> uriVars = new HashMap<>();

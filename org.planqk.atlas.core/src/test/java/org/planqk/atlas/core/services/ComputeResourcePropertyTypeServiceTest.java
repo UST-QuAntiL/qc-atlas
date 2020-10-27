@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -19,30 +19,31 @@
 
 package org.planqk.atlas.core.services;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
+import org.junit.jupiter.api.Test;
 import org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException;
 import org.planqk.atlas.core.model.ComputeResourceProperty;
 import org.planqk.atlas.core.model.ComputeResourcePropertyDataType;
 import org.planqk.atlas.core.model.ComputeResourcePropertyType;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
-
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class ComputeResourcePropertyTypeServiceTest extends AtlasDatabaseTestBase {
 
     @Autowired
     private ComputeResourcePropertyService computeResourcePropertyService;
+
     @Autowired
     private ComputeResourcePropertyTypeService computeResourcePropertyTypeService;
 
@@ -122,13 +123,13 @@ public class ComputeResourcePropertyTypeServiceTest extends AtlasDatabaseTestBas
         computeResourcePropertyTypeService.delete(storedType.getId());
 
         assertThrows(NoSuchElementException.class, () ->
-                computeResourcePropertyTypeService.findById(storedType.getId()));
+            computeResourcePropertyTypeService.findById(storedType.getId()));
     }
 
     @Test
     void deleteComputeResourcePropertyType_ElementNotFound() {
         assertThrows(NoSuchElementException.class, () ->
-                computeResourcePropertyTypeService.delete(UUID.randomUUID()));
+            computeResourcePropertyTypeService.delete(UUID.randomUUID()));
     }
 
     @Test

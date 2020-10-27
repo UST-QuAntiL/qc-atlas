@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -54,8 +53,8 @@ public class Algorithm extends KnowledgeArtifact {
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "algorithm_publication",
-            joinColumns = @JoinColumn(name = "algorithm_id"),
-            inverseJoinColumns = @JoinColumn(name = "publication_id")
+        joinColumns = @JoinColumn(name = "algorithm_id"),
+        inverseJoinColumns = @JoinColumn(name = "publication_id")
     )
     @EqualsAndHashCode.Exclude
     private Set<Publication> publications = new HashSet<>();
@@ -73,23 +72,23 @@ public class Algorithm extends KnowledgeArtifact {
     private String outputFormat;
 
     @OneToMany(fetch = FetchType.LAZY,
-            cascade = {CascadeType.ALL},
-            mappedBy = "sourceAlgorithm",
-            orphanRemoval = true)
+        cascade = {CascadeType.ALL},
+        mappedBy = "sourceAlgorithm",
+        orphanRemoval = true)
     @EqualsAndHashCode.Exclude
     private Set<AlgorithmRelation> sourceAlgorithmRelations = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY,
-            cascade = {CascadeType.ALL},
-            mappedBy = "targetAlgorithm",
-            orphanRemoval = true)
+        cascade = {CascadeType.ALL},
+        mappedBy = "targetAlgorithm",
+        orphanRemoval = true)
     @EqualsAndHashCode.Exclude
     private Set<AlgorithmRelation> targetAlgorithmRelations = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL,
-            mappedBy = "algorithm",
-            orphanRemoval = true)
+        cascade = CascadeType.ALL,
+        mappedBy = "algorithm",
+        orphanRemoval = true)
     @EqualsAndHashCode.Exclude
     private Set<ComputeResourceProperty> requiredComputeResourceProperties = new HashSet<>();
 
@@ -107,38 +106,38 @@ public class Algorithm extends KnowledgeArtifact {
     private ComputationModel computationModel;
 
     @OneToMany(fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL,
-            mappedBy = "algorithm",
-            orphanRemoval = true)
+        cascade = CascadeType.ALL,
+        mappedBy = "algorithm",
+        orphanRemoval = true)
     @EqualsAndHashCode.Exclude
     private Set<PatternRelation> relatedPatterns = new HashSet<>();
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "algorithm_problem_type",
-            joinColumns = @JoinColumn(name = "algorithm_id"),
-            inverseJoinColumns = @JoinColumn(name = "problem_type_id"))
+        joinColumns = @JoinColumn(name = "algorithm_id"),
+        inverseJoinColumns = @JoinColumn(name = "problem_type_id"))
     @EqualsAndHashCode.Exclude
     private Set<ProblemType> problemTypes = new HashSet<>();
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "algorithm_application_area",
-            joinColumns = @JoinColumn(name = "algorithm_id"),
-            inverseJoinColumns = @JoinColumn(name = "application_area_id"))
+        joinColumns = @JoinColumn(name = "algorithm_id"),
+        inverseJoinColumns = @JoinColumn(name = "application_area_id"))
     @EqualsAndHashCode.Exclude
     private Set<ApplicationArea> applicationAreas = new HashSet<>();
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "algorithm_tag",
-            joinColumns = @JoinColumn(name = "algorithm_id"),
-            inverseJoinColumns = @JoinColumn(name = "tag_value"))
+        joinColumns = @JoinColumn(name = "algorithm_id"),
+        inverseJoinColumns = @JoinColumn(name = "tag_value"))
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Set<Tag> tags = new HashSet<>();
 
     @OneToMany(mappedBy = "implementedAlgorithm",
-            fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL,
-            orphanRemoval = true)
+        fetch = FetchType.LAZY,
+        cascade = CascadeType.ALL,
+        orphanRemoval = true)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Set<Implementation> implementations = new HashSet<>();
@@ -180,7 +179,7 @@ public class Algorithm extends KnowledgeArtifact {
     }
 
     public Set<AlgorithmRelation> getAlgorithmRelations() {
-        Set<AlgorithmRelation> algorithmRelations = new HashSet<>(sourceAlgorithmRelations);
+        final Set<AlgorithmRelation> algorithmRelations = new HashSet<>(sourceAlgorithmRelations);
         algorithmRelations.addAll(targetAlgorithmRelations);
         return algorithmRelations;
     }
@@ -258,5 +257,4 @@ public class Algorithm extends KnowledgeArtifact {
         sketch.setAlgorithm(null);
         return this;
     }
-
 }
