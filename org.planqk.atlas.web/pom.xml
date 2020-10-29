@@ -29,7 +29,6 @@
     </parent>
 
     <artifactId>org.planqk.atlas.web</artifactId>
-    <packaging>war</packaging>
 
     <dependencies>
         <dependency>
@@ -59,6 +58,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <mainClass>org.planqk.atlas.web.Application</mainClass>
+                    <classifier>exec</classifier>
                 </configuration>
             </plugin>
         </plugins>
