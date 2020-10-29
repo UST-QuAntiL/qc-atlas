@@ -155,4 +155,30 @@ public class DiscussionTopicServiceTest extends AtlasDatabaseTestBase {
         var page = topicService.findByKnowledgeArtifact(knowledgeArtifact, Pageable.unpaged());
         assertThat(page.getTotalElements()).isEqualTo(2);
     }
+
+    @Test
+    void findByKnowledgeArtifactId() {
+        topicService.create(topic);
+        topicService.create(topic2);
+
+        var page = topicService.findByKnowledgeArtifactId(knowledgeArtifact.getId(), Pageable.unpaged());
+        assertThat(page.getTotalElements()).isEqualTo(2);
+    }
+
+    @Test
+    void checkIfDiscussionTopicIsLinkedToKnowledgeArtifact() {
+        var pub = new Publication();
+        pub.setTitle("discussion");
+        pub = publicationService.create(pub);
+        topic.setKnowledgeArtifact(pub);
+        topic = topicService.create(topic);
+        topicService.checkIfDiscussionTopicIsLinkedToKnowledgeArtifact(topic.getId(), pub.getId());
+
+        assertThrows(NoSuchElementException.class, () -> {
+            var pub2 = new Publication();
+            pub2.setTitle("discussion2");
+            pub2 = publicationService.create(pub2);
+            topicService.checkIfDiscussionTopicIsLinkedToKnowledgeArtifact(topic.getId(), pub2.getId());
+        });
+    }
 }

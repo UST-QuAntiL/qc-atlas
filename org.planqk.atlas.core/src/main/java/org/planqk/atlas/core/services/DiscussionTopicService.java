@@ -21,6 +21,7 @@ package org.planqk.atlas.core.services;
 
 import java.util.UUID;
 
+import org.planqk.atlas.core.model.DiscussionComment;
 import org.planqk.atlas.core.model.DiscussionTopic;
 import org.planqk.atlas.core.model.KnowledgeArtifact;
 import org.springframework.data.domain.Page;
@@ -105,6 +106,15 @@ public interface DiscussionTopicService {
     @Transactional
     void delete(UUID topicId);
 
+    /**
+     * Checks if a given {@link DiscussionTopic} is made linked to a given {@link org.planqk.atlas.core.model.KnowledgeArtifact}.
+     * <p>
+     * If either the {@link DiscussionTopic} or the {@link org.planqk.atlas.core.model.KnowledgeArtifact} with given IDs could not be found or if a
+     * database entry for both could be found but they are not linked a {@link java.util.NoSuchElementException} is thrown.
+     *
+     * @param knowledgeArtifactId The ID of the {@link org.planqk.atlas.core.model.KnowledgeArtifact} we want to check
+     * @param topicId   The ID of the {@link org.planqk.atlas.core.model.DiscussionTopic} we want to check
+     */
     void checkIfDiscussionTopicIsLinkedToKnowledgeArtifact(UUID topicId, UUID knowledgeArtifactId);
 
     /**
