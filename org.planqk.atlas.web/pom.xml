@@ -29,7 +29,31 @@
     </parent>
 
     <artifactId>org.planqk.atlas.web</artifactId>
-    <packaging>jar</packaging>
+
+    <packaging>${packaging.type}</packaging>
+
+    <profiles>
+        <profile>
+            <id>webapp</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <packaging.type>war</packaging.type>
+            </properties>
+        </profile>
+        <profile>
+            <id>batch</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <packaging.type>jar</packaging.type>
+            </properties>
+        </profile>
+    </profiles>
+
+
 
     <dependencies>
         <dependency>
@@ -62,27 +86,27 @@
                     <classifier>exec</classifier>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>3.3.1</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>war</goal>
-                        </goals>
-                    </execution>
-                </executions>
-<!--                <configuration>-->
-<!--                    <webResources>-->
-<!--                        <resource>-->
-<!--                            &lt;!&ndash; this is relative to the pom.xml directory &ndash;&gt;-->
-<!--                            <directory>resource2</directory>-->
-<!--                        </resource>-->
-<!--                    </webResources>-->
-<!--                </configuration>-->
-            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-war-plugin</artifactId>-->
+<!--                <version>3.3.1</version>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <phase>package</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>war</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--&lt;!&ndash;                <configuration>&ndash;&gt;-->
+<!--&lt;!&ndash;                    <webResources>&ndash;&gt;-->
+<!--&lt;!&ndash;                        <resource>&ndash;&gt;-->
+<!--&lt;!&ndash;                            &lt;!&ndash; this is relative to the pom.xml directory &ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;                            <directory>resource2</directory>&ndash;&gt;-->
+<!--&lt;!&ndash;                        </resource>&ndash;&gt;-->
+<!--&lt;!&ndash;                    </webResources>&ndash;&gt;-->
+<!--&lt;!&ndash;                </configuration>&ndash;&gt;-->
+<!--            </plugin>-->
         </plugins>
     </build>
 </project>
