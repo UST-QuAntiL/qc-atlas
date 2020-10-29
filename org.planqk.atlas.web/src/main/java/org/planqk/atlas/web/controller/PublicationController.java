@@ -21,7 +21,6 @@ package org.planqk.atlas.web.controller;
 
 import java.util.UUID;
 
-import org.planqk.atlas.core.model.DiscussionTopic;
 import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.core.services.DiscussionTopicService;
@@ -301,7 +300,8 @@ public class PublicationController {
         @PathVariable UUID topicId,
         @RequestBody DiscussionTopicDto discussionTopicDto,
         @Parameter(hidden = true) ListParameters listParameters) {
-        return discussionTopicController.updateDiscussionTopic(publicationId, topicId, discussionTopicDto);
+        final var publication = publicationService.findById(publicationId);
+        return discussionTopicController.updateDiscussionTopic(publication, topicId, discussionTopicDto);
     }
 
     @Operation(responses = {

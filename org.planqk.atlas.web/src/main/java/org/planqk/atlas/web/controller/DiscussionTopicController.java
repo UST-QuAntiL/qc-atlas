@@ -51,12 +51,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+@Hidden
 @io.swagger.v3.oas.annotations.tags.Tag(name = Constants.TAG_DISCUSSION_TOPIC)
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/" + Constants.DISCUSSION_TOPICS)
@@ -257,7 +259,7 @@ public class DiscussionTopicController {
         discussionTopicService.checkIfDiscussionTopicIsLinkedToKnowledgeArtifact(topicId, knowledgeArtifactId);
         final DiscussionTopic discussionTopic = discussionTopicService.findById(topicId);
         discussionCommentDto.setDiscussionTopic(ModelMapperUtils.convert(discussionTopic, DiscussionTopicDto.class));
-        return discussionCommentController.createDiscussionComment(discussionCommentDto);
+        return discussionCommentController.createDiscussionComment(discussionCommentDto, discussionTopic.getKnowledgeArtifact());
     }
 
     @Operation(responses = {
@@ -275,12 +277,14 @@ public class DiscussionTopicController {
     }
 
     public HttpEntity<EntityModel<DiscussionTopicDto>> updateDiscussionTopic(
-        UUID knowledgeArtifactId,
+        KnowledgeArtifact knowledgeArtifact,
         UUID topicId,
         @Validated(ValidationGroups.Update.class) @RequestBody DiscussionTopicDto discussionTopicDto) {
-        discussionTopicService.checkIfDiscussionTopicIsLinkedToKnowledgeArtifact(topicId, knowledgeArtifactId);
+        discussionTopicService.checkIfDiscussionTopicIsLinkedToKnowledgeArtifact(topicId, knowledgeArtifact.getId());
         discussionTopicDto.setId(topicId);
-        final DiscussionTopic discussionTopic = discussionTopicService.update(ModelMapperUtils.convert(discussionTopicDto, DiscussionTopic.class));
+        final DiscussionTopic convertedDiscussionTopic = ModelMapperUtils.convert(discussionTopicDto, DiscussionTopic.class);
+        convertedDiscussionTopic.setKnowledgeArtifact(knowledgeArtifact);
+        final DiscussionTopic discussionTopic = discussionTopicService.update(convertedDiscussionTopic);
         return ResponseEntity.ok(discussionTopicAssembler.toModel(discussionTopic));
     }
 }
