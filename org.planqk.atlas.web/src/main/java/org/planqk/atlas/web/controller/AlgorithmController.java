@@ -518,7 +518,7 @@ public class AlgorithmController {
     @PostMapping("/{algorithmId}/" + Constants.DISCUSSION_TOPICS)
     public HttpEntity<EntityModel<DiscussionTopicDto>> createDiscussionTopicOfAlgorithm(
         @PathVariable UUID algorithmId,
-        @RequestBody DiscussionTopicDto discussionTopicDto,
+        @Validated(ValidationGroups.Create.class) @RequestBody DiscussionTopicDto discussionTopicDto,
         @Parameter(hidden = true) ListParameters listParameters) {
         final var algorithm = algorithmService.findById(algorithmId);
         return discussionTopicController.createDiscussionTopic(algorithm, discussionTopicDto);
@@ -536,7 +536,7 @@ public class AlgorithmController {
     public HttpEntity<EntityModel<DiscussionTopicDto>> updateDiscussionTopicOfAlgorithm(
         @PathVariable UUID algorithmId,
         @PathVariable UUID topicId,
-        @RequestBody DiscussionTopicDto discussionTopicDto,
+        @Validated(ValidationGroups.Update.class) @RequestBody DiscussionTopicDto discussionTopicDto,
         @Parameter(hidden = true) ListParameters listParameters) {
         final var algorithm = algorithmService.findById(algorithmId);
         return discussionTopicController.updateDiscussionTopic(algorithm, topicId, discussionTopicDto);
@@ -604,7 +604,7 @@ public class AlgorithmController {
     public HttpEntity<EntityModel<DiscussionCommentDto>> createDiscussionCommentOfDiscussionTopicOfAlgorithm(
         @PathVariable UUID algorithmId,
         @PathVariable UUID topicId,
-        @RequestBody DiscussionCommentDto discussionCommentDto,
+        @Validated(ValidationGroups.Create.class) @RequestBody DiscussionCommentDto discussionCommentDto,
         @Parameter(hidden = true) ListParameters listParameters) {
         return discussionTopicController.createDiscussionComment(algorithmId, topicId, discussionCommentDto);
     }
@@ -622,7 +622,7 @@ public class AlgorithmController {
         @PathVariable UUID algorithmId,
         @PathVariable UUID topicId,
         @PathVariable UUID commentId,
-        @RequestBody DiscussionCommentDto discussionCommentDto,
+        @Validated(ValidationGroups.Update.class) @RequestBody DiscussionCommentDto discussionCommentDto,
         @Parameter(hidden = true) ListParameters listParameters) {
         return discussionTopicController.updateDiscussionComment(algorithmId, topicId, commentId, discussionCommentDto);
     }

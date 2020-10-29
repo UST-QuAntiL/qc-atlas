@@ -231,7 +231,7 @@ public class DiscussionTopicController {
         UUID knowledgeArtifactId,
         UUID topicId,
         UUID commentId,
-        @Validated(ValidationGroups.Update.class) @RequestBody DiscussionCommentDto discussionCommentDto) {
+        DiscussionCommentDto discussionCommentDto) {
         discussionTopicService.checkIfDiscussionTopicIsLinkedToKnowledgeArtifact(topicId, knowledgeArtifactId);
         discussionCommentService.checkIfDiscussionCommentIsInDiscussionTopic(commentId, topicId);
         discussionCommentDto.setId(commentId);

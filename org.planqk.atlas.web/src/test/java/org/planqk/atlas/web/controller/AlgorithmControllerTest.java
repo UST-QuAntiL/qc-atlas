@@ -40,6 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.net.URI;
 import java.net.URL;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -47,6 +48,7 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.UUID;
 
+import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -60,6 +62,8 @@ import org.planqk.atlas.core.model.ComputationModel;
 import org.planqk.atlas.core.model.ComputeResourceProperty;
 import org.planqk.atlas.core.model.ComputeResourcePropertyDataType;
 import org.planqk.atlas.core.model.ComputeResourcePropertyType;
+import org.planqk.atlas.core.model.DiscussionComment;
+import org.planqk.atlas.core.model.DiscussionTopic;
 import org.planqk.atlas.core.model.Image;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.PatternRelation;
@@ -67,11 +71,14 @@ import org.planqk.atlas.core.model.PatternRelationType;
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.model.Sketch;
+import org.planqk.atlas.core.model.Status;
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.core.services.ApplicationAreaService;
 import org.planqk.atlas.core.services.ComputeResourcePropertyService;
 import org.planqk.atlas.core.services.ComputeResourcePropertyTypeService;
+import org.planqk.atlas.core.services.DiscussionCommentService;
+import org.planqk.atlas.core.services.DiscussionTopicService;
 import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.core.services.LinkingService;
 import org.planqk.atlas.core.services.PatternRelationService;
@@ -85,6 +92,8 @@ import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
 import org.planqk.atlas.web.dtos.ApplicationAreaDto;
 import org.planqk.atlas.web.dtos.ComputeResourcePropertyDto;
 import org.planqk.atlas.web.dtos.ComputeResourcePropertyTypeDto;
+import org.planqk.atlas.web.dtos.DiscussionCommentDto;
+import org.planqk.atlas.web.dtos.DiscussionTopicDto;
 import org.planqk.atlas.web.dtos.PatternRelationDto;
 import org.planqk.atlas.web.dtos.PatternRelationTypeDto;
 import org.planqk.atlas.web.dtos.ProblemTypeDto;
@@ -116,7 +125,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.SneakyThrows;
 
-@WebMvcTest(value = AlgorithmController.class)
+@WebMvcTest(controllers = {AlgorithmController.class, DiscussionCommentController.class, DiscussionTopicController.class})
 @ExtendWith(MockitoExtension.class)
 @AutoConfigureMockMvc
 @EnableLinkAssemblers
@@ -166,6 +175,12 @@ public class AlgorithmControllerTest {
     @MockBean
     private PublicationService publicationService;
 
+    @MockBean
+    private DiscussionTopicService discussionTopicService;
+
+    @MockBean
+    private DiscussionCommentService discussionCommentService;
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -175,6 +190,24 @@ public class AlgorithmControllerTest {
     private Algorithm algorithm1;
 
     private Algorithm algorithm2;
+
+    private DiscussionTopic discussionTopic1;
+
+    private DiscussionTopicDto discussionTopic1Dto;
+
+    private DiscussionComment discussionComment1;
+
+    private DiscussionCommentDto discussionComment1Dto;
+
+    private DiscussionTopic discussionTopic2;
+
+    private DiscussionTopicDto discussionTopic2Dto;
+
+    private DiscussionComment discussionComment2;
+
+    private DiscussionCommentDto discussionComment2Dto;
+
+    private Set<DiscussionTopic> discussionTopics;
 
     private AlgorithmRelation algorithmRelation1;
 
@@ -244,6 +277,41 @@ public class AlgorithmControllerTest {
         patternRelations.add(patternRelation1);
         patternRelations.add(patternRelation2);
         algorithm1.setRelatedPatterns(patternRelations);
+
+        discussionTopic1 = new DiscussionTopic();
+        discussionTopic1.setId(UUID.randomUUID());
+        discussionTopic1.setTitle("DiscussionTopic1");
+        discussionTopic1.setDate(OffsetDateTime.now());
+        discussionTopic1.setDescription("Description1");
+        discussionTopic1.setStatus(Status.OPEN);
+        discussionTopic1.setKnowledgeArtifact(algorithm1);
+        discussionTopic1Dto = ModelMapperUtils.convert(discussionTopic1, DiscussionTopicDto.class);
+        discussionTopics = new HashSet<>();
+        discussionTopics.add(discussionTopic1);
+        algorithm1.setDiscussionTopics(discussionTopics);
+
+        discussionComment1 = new DiscussionComment();
+        discussionComment1.setId(UUID.randomUUID());
+        discussionComment1.setText("This is a comment");
+        discussionComment1.setDiscussionTopic(discussionTopic1);
+        discussionComment1.setDate(OffsetDateTime.now());
+        discussionComment1Dto = ModelMapperUtils.convert(discussionComment1, DiscussionCommentDto.class);
+
+        discussionTopic2 = new DiscussionTopic();
+        discussionTopic2.setId(UUID.randomUUID());
+        discussionTopic2.setTitle("DiscussionTopic2");
+        discussionTopic2.setDate(OffsetDateTime.now());
+        discussionTopic2.setDescription("Description2");
+        discussionTopic2.setStatus(Status.OPEN);
+        discussionTopic2.setKnowledgeArtifact(algorithm2);
+        discussionTopic2Dto = ModelMapperUtils.convert(discussionTopic2, DiscussionTopicDto.class);
+
+        discussionComment2 = new DiscussionComment();
+        discussionComment2.setId(UUID.randomUUID());
+        discussionComment2.setText("This is another comment");
+        discussionComment2.setDiscussionTopic(discussionTopic2);
+        discussionComment2.setDate(OffsetDateTime.now());
+        discussionComment2Dto = ModelMapperUtils.convert(discussionComment2, DiscussionCommentDto.class);
 
         algorithmRelations.forEach(algorithmRelation -> algorithm1.addAlgorithmRelation(algorithmRelation));
         algorithm1.setProblemTypes(problemTypes);
@@ -1821,5 +1889,374 @@ public class AlgorithmControllerTest {
         byte[] responseImage = resultActions.getResponse().getContentAsByteArray();
 
         assertThat(image.getImage()).isEqualTo(responseImage);
+    }
+
+    @Test
+    @SneakyThrows
+    void getDiscussionTopics() {
+        initializeAlgorithms();
+
+        List<DiscussionTopic> discussionTopicList = new ArrayList<>();
+        discussionTopicList.add(discussionTopic1);
+        final Page<DiscussionTopic> discussionTopics = new PageImpl<DiscussionTopic>(discussionTopicList);
+        when(discussionTopicService.findByKnowledgeArtifactId(algorithm1.getId(), pageable)).thenReturn(discussionTopics);
+
+        final String path = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
+            .getDiscussionTopicsOfAlgorithm(algorithm1.getId(), new ListParameters(pageable, null)));
+
+        // call
+        final MvcResult result = mockMvc.perform(get(path)).andExpect(status().isOk()).andReturn();
+
+        // test
+        Mockito.verify(discussionTopicService, times(1)).findByKnowledgeArtifactId(algorithm1.getId(), pageable);
+
+        JSONObject rootObject = new JSONObject(result.getResponse().getContentAsString());
+        var embeddedJSONObjects = rootObject.getJSONObject("_embedded").getJSONArray("discussionTopics");
+        var resultObject = mapper.readValue(embeddedJSONObjects.getJSONObject(0).toString(), DiscussionTopicDto.class);
+
+        assertEquals(1, embeddedJSONObjects.length());
+        assertEquals(resultObject.getTitle(), discussionTopic1.getTitle());
+        assertEquals(resultObject.getId(), discussionTopic1.getId());
+        assertEquals(resultObject.getDate(), discussionTopic1.getDate());
+    }
+
+    @Test
+    @SneakyThrows
+    void getDiscussionTopic() {
+        initializeAlgorithms();
+
+        when(discussionTopicService.findById(discussionTopic1.getId())).thenReturn(discussionTopic1);
+
+        final String path = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
+            .getDiscussionTopicOfAlgorithm(algorithm1.getId(), discussionTopic1.getId(), new ListParameters(pageable, null)));
+
+        // call
+        final MvcResult result = mockMvc.perform(get(path)).andExpect(status().isOk()).andReturn();
+
+        // test
+        Mockito.verify(discussionTopicService, times(1)).findById(discussionTopic1.getId());
+
+        EntityModel<DiscussionTopicDto> response = mapper.readValue(result.getResponse().getContentAsString(),
+            new TypeReference<>() {
+            });
+
+        assertEquals(response.getContent().getDate(), discussionTopic1.getDate());
+        assertEquals(response.getContent().getTitle(), discussionTopic1.getTitle());
+        assertEquals(response.getContent().getStatus(), discussionTopic1.getStatus());
+    }
+
+    @Test
+    @SneakyThrows
+    void getDiscussionTopicAndFail() {
+        initializeAlgorithms();
+
+        doThrow(new NoSuchElementException()).when(discussionTopicService)
+            .checkIfDiscussionTopicIsLinkedToKnowledgeArtifact(discussionTopic2.getId(), algorithm1.getId());
+
+        final String path = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
+            .getDiscussionTopicOfAlgorithm(algorithm1.getId(), discussionTopic2.getId(), new ListParameters(pageable, null)));
+
+        // call
+        mockMvc.perform(get(path)).andExpect(status().isNotFound());
+    }
+
+    @Test
+    @SneakyThrows
+    void createDiscussionTopic() {
+        initializeAlgorithms();
+
+        when(discussionTopicService.create(any())).thenReturn(discussionTopic2);
+
+        discussionTopic2Dto.setId(null);
+
+        final String path = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
+            .createDiscussionTopicOfAlgorithm(algorithm2.getId(), discussionTopic2Dto, new ListParameters(pageable, null)));
+
+        // call
+        final MvcResult result = mockMvc.perform(post(path).content(mapper.writeValueAsString(discussionTopic2Dto))
+            .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andExpect(status().isCreated()).andReturn();
+
+        // test
+        Mockito.verify(discussionTopicService, times(1)).create(any());
+
+        EntityModel<DiscussionTopicDto> response = mapper.readValue(result.getResponse().getContentAsString(),
+            new TypeReference<>() {
+            });
+
+        assertEquals(response.getContent().getDate(), discussionTopic2.getDate());
+        assertEquals(response.getContent().getTitle(), discussionTopic2.getTitle());
+        assertEquals(response.getContent().getStatus(), discussionTopic2.getStatus());
+    }
+
+    @Test
+    @SneakyThrows
+    void createDiscussionTopicAndFail() {
+        initializeAlgorithms();
+
+        discussionTopic2Dto.setDate(null);
+        final String path = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
+            .createDiscussionTopicOfAlgorithm(algorithm2.getId(), discussionTopic2Dto, new ListParameters(pageable, null)));
+
+        // call
+        mockMvc.perform(post(path).content(mapper.writeValueAsString(discussionTopic2Dto))
+            .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @SneakyThrows
+    void updateDiscussionTopic() {
+        initializeAlgorithms();
+
+        discussionTopic1.setDescription("Test123");
+        when(discussionTopicService.update(any())).thenReturn(discussionTopic1);
+
+        final String path = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
+            .updateDiscussionTopicOfAlgorithm(algorithm1.getId(), discussionTopic1.getId(), discussionTopic1Dto, new ListParameters(pageable, null)));
+
+        // call
+        final MvcResult result = mockMvc.perform(put(path).content(mapper.writeValueAsString(discussionTopic1Dto))
+            .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
+
+        // test
+        Mockito.verify(discussionTopicService, times(1)).update(any());
+
+        EntityModel<DiscussionTopicDto> response = mapper.readValue(result.getResponse().getContentAsString(),
+            new TypeReference<>() {
+            });
+
+        assertEquals(discussionTopic1Dto.getId(), response.getContent().getId());
+        assertEquals(discussionTopic1Dto.getTitle(), response.getContent().getTitle());
+        assertEquals(discussionTopic1Dto.getDate(), response.getContent().getDate());
+        assertEquals(discussionTopic1Dto.getStatus(), response.getContent().getStatus());
+    }
+
+    @Test
+    @SneakyThrows
+    void updateDiscussionTopicAndFail() {
+        initializeAlgorithms();
+
+        discussionTopic1Dto.setDate(null);
+        discussionTopic1.setDate(null);
+        when(discussionTopicService.update(any())).thenReturn(discussionTopic1);
+
+        final String path = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
+            .updateDiscussionTopicOfAlgorithm(algorithm1.getId(), discussionTopic1.getId(), discussionTopic1Dto, new ListParameters(pageable, null)));
+
+        // call
+        mockMvc.perform(put(path).content(mapper.writeValueAsString(discussionTopic1Dto))
+            .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).characterEncoding("utf-8"))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @SneakyThrows
+    void deleteDiscussionTopic() {
+        initializeAlgorithms();
+
+        final String path = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
+            .deleteDiscussionTopicOfAlgorithm(algorithm1.getId(), discussionTopic1.getId(), new ListParameters(pageable, null)));
+
+        // call
+        final MvcResult result = mockMvc.perform(delete(path)).andExpect(status().isOk()).andReturn();
+    }
+
+    @Test
+    @SneakyThrows
+    void deleteDiscussionTopicAndFail() {
+        initializeAlgorithms();
+
+        doThrow(new NoSuchElementException()).when(discussionTopicService)
+            .checkIfDiscussionTopicIsLinkedToKnowledgeArtifact(discussionTopic2.getId(), algorithm1.getId());
+
+        final String path = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
+            .deleteDiscussionTopicOfAlgorithm(algorithm1.getId(), discussionTopic2.getId(), new ListParameters(pageable, null)));
+
+        // call
+        mockMvc.perform(delete(path)).andExpect(status().isNotFound());
+    }
+
+    @Test
+    @SneakyThrows
+    void getDiscussionComments() {
+        initializeAlgorithms();
+
+        List<DiscussionComment> discussionCommentList = new ArrayList<>();
+        discussionCommentList.add(discussionComment1);
+        Page<DiscussionComment> discussionCommentPage = new PageImpl<>(discussionCommentList);
+
+        when(discussionCommentService.findAllByTopic(discussionTopic1.getId(), pageable)).thenReturn(discussionCommentPage);
+
+        final String path = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
+            .getDiscussionCommentsOfDiscussionTopicOfAlgorithm(algorithm1.getId(), discussionTopic1.getId(), new ListParameters(pageable, null)));
+
+        // call
+        final MvcResult result = mockMvc.perform(get(path)).andExpect(status().isOk()).andReturn();
+
+        // test
+        Mockito.verify(discussionCommentService, times(1)).findAllByTopic(discussionTopic1.getId(), pageable);
+
+
+        var resultList = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(),
+            "discussionComments", DiscussionCommentDto.class);
+
+        assertEquals(resultList.size(), 1);
+        assertEquals(resultList.get(0).getText(), discussionComment1Dto.getText());
+        assertEquals(resultList.get(0).getId(), discussionComment1Dto.getId());
+    }
+
+    @Test
+    @SneakyThrows
+    void getDiscussionComment() {
+        initializeAlgorithms();
+
+        when(discussionCommentService.findById(discussionComment1.getId())).thenReturn(discussionComment1);
+
+        final String path = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
+            .getDiscussionCommentOfDiscussionTopicOfAlgorithm(algorithm1.getId(), discussionTopic1.getId(), discussionComment1.getId(), new ListParameters(pageable, null)));
+
+        // call
+        final MvcResult result = mockMvc.perform(get(path)).andExpect(status().isOk()).andReturn();
+
+        // test
+        Mockito.verify(discussionCommentService, times(1)).findById(discussionComment1.getId());
+
+        EntityModel<DiscussionCommentDto> response = mapper.readValue(result.getResponse().getContentAsString(),
+            new TypeReference<>() {
+            });
+
+        assertEquals(response.getContent().getId(), discussionComment1Dto.getId());
+        assertEquals(response.getContent().getText(), discussionComment1Dto.getText());
+        assertEquals(response.getContent().getDate(), discussionComment1Dto.getDate());
+    }
+
+    @Test
+    @SneakyThrows
+    void getDiscussionCommentAndFail() {
+        initializeAlgorithms();
+
+        doThrow(new NoSuchElementException()).when(discussionCommentService)
+            .checkIfDiscussionCommentIsInDiscussionTopic(discussionComment2.getId(), discussionTopic1.getId());
+
+        final String path = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
+            .getDiscussionCommentOfDiscussionTopicOfAlgorithm(algorithm1.getId(), discussionTopic1.getId(), discussionComment2.getId(), new ListParameters(pageable, null)));
+
+        // call
+        mockMvc.perform(get(path)).andExpect(status().isNotFound());
+    }
+
+    @Test
+    @SneakyThrows
+    void createDiscussionComment() {
+        initializeAlgorithms();
+
+        discussionComment2Dto.setId(null);
+        when(discussionCommentService.create(any())).thenReturn(discussionComment2);
+        when(discussionTopicService.findById(discussionTopic1.getId())).thenReturn(discussionTopic1);
+
+        final String path = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
+            .createDiscussionCommentOfDiscussionTopicOfAlgorithm(algorithm1.getId(), discussionTopic1.getId(), discussionComment2Dto, new ListParameters(pageable, null)));
+
+        // call
+        final MvcResult result = mockMvc.perform(post(path).content(mapper.writeValueAsString(discussionComment2Dto))
+            .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).characterEncoding("utf-8")).andExpect(status().isCreated()).andReturn();
+
+        // test
+        Mockito.verify(discussionCommentService, times(1)).create(any());
+        Mockito.verify(discussionTopicService, times(1)).findById(discussionTopic1.getId());
+
+        EntityModel<DiscussionCommentDto> response = mapper.readValue(result.getResponse().getContentAsString(),
+            new TypeReference<>() {
+            });
+
+        assertEquals(response.getContent().getText(), discussionComment2Dto.getText());
+    }
+
+    @Test
+    @SneakyThrows
+    void createDiscussionCommentAndFail() {
+        initializeAlgorithms();
+
+        discussionComment2Dto.setDate(null);
+        final String path = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
+            .createDiscussionCommentOfDiscussionTopicOfAlgorithm(algorithm1.getId(), discussionTopic1.getId(), discussionComment2Dto, new ListParameters(pageable, null)));
+
+        // call
+        mockMvc.perform(post(path).content(mapper.writeValueAsString(discussionComment2Dto))
+            .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @SneakyThrows
+    void updateDiscussionComment() {
+        initializeAlgorithms();
+
+        discussionComment1Dto.setText("Test123");
+        when(discussionCommentService.update(any())).thenReturn(discussionComment1);
+        when(discussionCommentService.findById(discussionComment1.getId())).thenReturn(discussionComment1);
+
+        final String path = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
+            .updateDiscussionCommentOfDiscussionTopicOfAlgorithm(algorithm1.getId(), discussionTopic1.getId(), discussionComment1.getId(), discussionComment1Dto, new ListParameters(pageable, null)));
+
+        // call
+        final MvcResult result = mockMvc.perform(put(path).content(mapper.writeValueAsString(discussionComment1Dto))
+            .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
+
+        // test
+        Mockito.verify(discussionCommentService, times(1)).update(any());
+        Mockito.verify(discussionCommentService, times(1)).findById(discussionComment1.getId());
+
+        EntityModel<DiscussionCommentDto> response = mapper.readValue(result.getResponse().getContentAsString(),
+            new TypeReference<>() {
+            });
+
+        assertEquals(response.getContent().getText(), discussionComment1Dto.getText());
+        assertEquals(response.getContent().getId(), discussionComment1Dto.getId());
+    }
+
+    @Test
+    @SneakyThrows
+    void updateDiscussionCommentAndFail() {
+        initializeAlgorithms();
+
+        discussionComment1Dto.setDate(null);
+        discussionComment1Dto.setText(null);
+        discussionComment1.setDate(null);
+        when(discussionCommentService.update(any())).thenReturn(discussionComment1);
+        when(discussionCommentService.findById(discussionComment1.getId())).thenReturn(discussionComment1);
+
+        final String path = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
+            .updateDiscussionCommentOfDiscussionTopicOfAlgorithm(algorithm1.getId(), discussionTopic1.getId(), discussionComment1.getId(), discussionComment1Dto, new ListParameters(pageable, null)));
+
+        // call
+        mockMvc.perform(put(path).content(mapper.writeValueAsString(discussionComment1Dto))
+            .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).characterEncoding("utf-8"))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @SneakyThrows
+    void deleteDiscussionComment() {
+        initializeAlgorithms();
+
+        final String path = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
+            .deleteDiscussionCommentOfDiscussionTopicOfAlgorithm(algorithm1.getId(), discussionTopic1.getId(), discussionComment1.getId(), new ListParameters(pageable, null)));
+
+        // call
+        final MvcResult result = mockMvc.perform(delete(path)).andExpect(status().isOk()).andReturn();
+    }
+
+    @Test
+    @SneakyThrows
+    void deleteDiscussionCommentAndFail() {
+        initializeAlgorithms();
+
+        doThrow(new NoSuchElementException()).when(discussionCommentService)
+            .checkIfDiscussionCommentIsInDiscussionTopic(discussionComment1.getId(), discussionTopic2.getId());
+
+        final String path = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
+            .deleteDiscussionCommentOfDiscussionTopicOfAlgorithm(algorithm1.getId(), discussionTopic2.getId(), discussionComment1.getId(), new ListParameters(pageable, null)));
+
+        // call
+        mockMvc.perform(delete(path)).andExpect(status().isNotFound());
     }
 }

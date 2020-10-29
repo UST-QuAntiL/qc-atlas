@@ -564,7 +564,7 @@ public class ImplementationController {
     public HttpEntity<EntityModel<DiscussionTopicDto>> createDiscussionTopicOfImplementation(
         @PathVariable UUID algorithmId,
         @PathVariable UUID implementationId,
-        @RequestBody DiscussionTopicDto discussionTopicDto,
+        @Validated(ValidationGroups.Create.class) @RequestBody DiscussionTopicDto discussionTopicDto,
         @Parameter(hidden = true) ListParameters listParameters) {
         implementationService.checkIfImplementationIsOfAlgorithm(implementationId, algorithmId);
         final var implementation = implementationService.findById(implementationId);
@@ -584,7 +584,7 @@ public class ImplementationController {
         @PathVariable UUID algorithmId,
         @PathVariable UUID implementationId,
         @PathVariable UUID topicId,
-        @RequestBody DiscussionTopicDto discussionTopicDto,
+        @Validated(ValidationGroups.Update.class) @RequestBody DiscussionTopicDto discussionTopicDto,
         @Parameter(hidden = true) ListParameters listParameters) {
         implementationService.checkIfImplementationIsOfAlgorithm(implementationId, algorithmId);
         final var implementation = implementationService.findById(implementationId);
@@ -665,7 +665,7 @@ public class ImplementationController {
         @PathVariable UUID algorithmId,
         @PathVariable UUID implementationId,
         @PathVariable UUID topicId,
-        @RequestBody DiscussionCommentDto discussionCommentDto,
+        @Validated(ValidationGroups.Create.class) @RequestBody DiscussionCommentDto discussionCommentDto,
         @Parameter(hidden = true) ListParameters listParameters) {
         implementationService.checkIfImplementationIsOfAlgorithm(implementationId, algorithmId);
         return discussionTopicController.createDiscussionComment(implementationId, topicId, discussionCommentDto);
@@ -686,7 +686,7 @@ public class ImplementationController {
         @PathVariable UUID implementationId,
         @PathVariable UUID topicId,
         @PathVariable UUID commentId,
-        @RequestBody DiscussionCommentDto discussionCommentDto,
+        @Validated(ValidationGroups.Update.class) @RequestBody DiscussionCommentDto discussionCommentDto,
         @Parameter(hidden = true) ListParameters listParameters) {
         implementationService.checkIfImplementationIsOfAlgorithm(implementationId, algorithmId);
         return discussionTopicController.updateDiscussionComment(implementationId, topicId, commentId, discussionCommentDto);

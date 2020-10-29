@@ -280,7 +280,7 @@ public class PublicationController {
     @PostMapping("/{publicationId}/" + Constants.DISCUSSION_TOPICS)
     public HttpEntity<EntityModel<DiscussionTopicDto>> createDiscussionTopicOfPublication(
         @PathVariable UUID publicationId,
-        @RequestBody DiscussionTopicDto discussionTopicDto,
+        @Validated(ValidationGroups.Create.class) @RequestBody DiscussionTopicDto discussionTopicDto,
         @Parameter(hidden = true) ListParameters listParameters) {
         final var publication = publicationService.findById(publicationId);
         return discussionTopicController.createDiscussionTopic(publication, discussionTopicDto);
@@ -298,7 +298,7 @@ public class PublicationController {
     public HttpEntity<EntityModel<DiscussionTopicDto>> updateDiscussionTopicOfPublication(
         @PathVariable UUID publicationId,
         @PathVariable UUID topicId,
-        @RequestBody DiscussionTopicDto discussionTopicDto,
+        @Validated(ValidationGroups.Update.class) @RequestBody DiscussionTopicDto discussionTopicDto,
         @Parameter(hidden = true) ListParameters listParameters) {
         final var publication = publicationService.findById(publicationId);
         return discussionTopicController.updateDiscussionTopic(publication, topicId, discussionTopicDto);
@@ -366,7 +366,7 @@ public class PublicationController {
     public HttpEntity<EntityModel<DiscussionCommentDto>> createDiscussionCommentOfDiscussionTopicOfPublication(
         @PathVariable UUID publicationId,
         @PathVariable UUID topicId,
-        @RequestBody DiscussionCommentDto discussionCommentDto,
+        @Validated(ValidationGroups.Create.class) @RequestBody DiscussionCommentDto discussionCommentDto,
         @Parameter(hidden = true) ListParameters listParameters) {
         return discussionTopicController.createDiscussionComment(publicationId, topicId, discussionCommentDto);
     }
@@ -384,7 +384,7 @@ public class PublicationController {
         @PathVariable UUID publicationId,
         @PathVariable UUID topicId,
         @PathVariable UUID commentId,
-        @RequestBody DiscussionCommentDto discussionCommentDto,
+        @Validated(ValidationGroups.Update.class) @RequestBody DiscussionCommentDto discussionCommentDto,
         @Parameter(hidden = true) ListParameters listParameters) {
         return discussionTopicController.updateDiscussionComment(publicationId, topicId, commentId, discussionCommentDto);
     }
