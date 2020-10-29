@@ -47,6 +47,8 @@ import org.planqk.atlas.web.annotation.ApiVersion;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.ApplicationAreaDto;
 import org.planqk.atlas.web.dtos.ComputeResourcePropertyDto;
+import org.planqk.atlas.web.dtos.DiscussionCommentDto;
+import org.planqk.atlas.web.dtos.DiscussionTopicDto;
 import org.planqk.atlas.web.dtos.ImplementationDto;
 import org.planqk.atlas.web.dtos.PatternRelationDto;
 import org.planqk.atlas.web.dtos.ProblemTypeDto;
@@ -122,6 +124,8 @@ public class AlgorithmController {
     private final ImplementationService implementationService;
 
     private final ImplementationAssembler implementationAssembler;
+
+    private final DiscussionTopicController discussionTopicController;
 
     private final ProblemTypeService problemTypeService;
 
@@ -454,6 +458,344 @@ public class AlgorithmController {
         @Parameter(hidden = true) ListParameters listParameters) {
         final var implementations = implementationService.findByImplementedAlgorithm(algorithmId, listParameters.getPageable());
         return ResponseEntity.ok(implementationAssembler.toModel(implementations));
+    }
+
+    @Operation(responses = {
+        @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "400"),
+        @ApiResponse(responseCode = "404",
+            description = "Not Found. implementation with given ID doesn't exist.")
+    }, description = "Retrieve discussion topics of an implementation of an algorithm. If none are found an empty list is returned."
+    )
+    @ListParametersDoc
+    @GetMapping("/{algorithmId}/" + Constants.IMPLEMENTATIONS + "/{implementationId}/" + Constants.DISCUSSION_TOPICS)
+    public HttpEntity<PagedModel<EntityModel<DiscussionTopicDto>>> getDiscussionTopicsOfImplementationOfAlgorithm(
+        @PathVariable UUID implementationId,
+        @Parameter(hidden = true) ListParameters listParameters) {
+        return discussionTopicController.getDiscussionTopics(implementationId, listParameters);
+    }
+
+    @Operation(responses = {
+        @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "400"),
+        @ApiResponse(responseCode = "404",
+            description = "Not Found. implementation or discussion topic with given ID doesn't exist.")
+    }, description = "Retrieve discussion topic of an implementation of an algorithm."
+    )
+    @ListParametersDoc
+    @GetMapping("/{algorithmId}/" + Constants.IMPLEMENTATIONS + "/{implementationId}/" + Constants.DISCUSSION_TOPICS + "/{topicId}")
+    public HttpEntity<EntityModel<DiscussionTopicDto>> getDiscussionTopicOfImplementationOfAlgorithm(
+        @PathVariable UUID implementationId,
+        @PathVariable UUID topicId,
+        @Parameter(hidden = true) ListParameters listParameters) {
+        return discussionTopicController.getDiscussionTopic(implementationId, topicId);
+    }
+
+    @Operation(responses = {
+        @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "400"),
+        @ApiResponse(responseCode = "404",
+            description = "Not Found. implementation or discussion topic with given ID doesn't exist.")
+    }, description = "Delete discussion topic of an implementation of an algorithm."
+    )
+    @ListParametersDoc
+    @DeleteMapping("/{algorithmId}/" + Constants.IMPLEMENTATIONS + "/{implementationId}/" + Constants.DISCUSSION_TOPICS + "/{topicId}")
+    public HttpEntity<Void> deleteDiscussionTopicOfImplementationOfAlgorithm(
+        @PathVariable UUID implementationId,
+        @PathVariable UUID topicId,
+        @Parameter(hidden = true) ListParameters listParameters) {
+        return discussionTopicController.deleteDiscussionTopic(implementationId, topicId);
+    }
+
+    @Operation(responses = {
+        @ApiResponse(responseCode = "201"),
+        @ApiResponse(responseCode = "400"),
+        @ApiResponse(responseCode = "404",
+            description = "Not Found. implementation or discussion topic with given ID doesn't exist.")
+    }, description = "Create a discussion topic of an implementation of an algorithm."
+    )
+    @ListParametersDoc
+    @PostMapping("/{algorithmId}/" + Constants.IMPLEMENTATIONS + "/{implementationId}/" + Constants.DISCUSSION_TOPICS)
+    public HttpEntity<EntityModel<DiscussionTopicDto>> createDiscussionTopicOfImplementationOfAlgorithm(
+        @PathVariable UUID implementationId,
+        @RequestBody DiscussionTopicDto discussionTopicDto,
+        @Parameter(hidden = true) ListParameters listParameters) {
+        final var implementation = implementationService.findById(implementationId);
+        return discussionTopicController.createDiscussionTopic(implementation, discussionTopicDto);
+    }
+
+    @Operation(responses = {
+        @ApiResponse(responseCode = "201"),
+        @ApiResponse(responseCode = "400"),
+        @ApiResponse(responseCode = "404",
+            description = "Not Found. implementation or discussion topic with given ID doesn't exist.")
+    }, description = "Update discussion topic of an implementation of an algorithm."
+    )
+    @ListParametersDoc
+    @PutMapping("/{algorithmId}/" + Constants.IMPLEMENTATIONS + "/{implementationId}/" + Constants.DISCUSSION_TOPICS + "/{topicId}")
+    public HttpEntity<EntityModel<DiscussionTopicDto>> updateDiscussionTopicOfImplementationOfAlgorithm(
+        @PathVariable UUID implementationId,
+        @PathVariable UUID topicId,
+        @RequestBody DiscussionTopicDto discussionTopicDto,
+        @Parameter(hidden = true) ListParameters listParameters) {
+        return discussionTopicController.updateDiscussionTopic(implementationId, topicId, discussionTopicDto);
+    }
+
+    @Operation(responses = {
+        @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "400"),
+        @ApiResponse(responseCode = "404",
+            description = "Not Found. implementation or discussion topic with given ID doesn't exist.")
+    }, description = "Retrieve discussion comments of a discussion topic of an implementation of an algorithm." +
+        " If none are found an empty list is returned."
+    )
+    @ListParametersDoc
+    @GetMapping("/{algorithmId}/" + Constants.IMPLEMENTATIONS + "/{implementationId}/" +
+        Constants.DISCUSSION_TOPICS + "/{topicId}/" + Constants.DISCUSSION_COMMENTS)
+    public HttpEntity<PagedModel<EntityModel<DiscussionCommentDto>>> getDiscussionCommentsOfDiscussionTopicOfImplementationOfAlgorithm(
+        @PathVariable UUID implementationId,
+        @PathVariable UUID topicId,
+        @Parameter(hidden = true) ListParameters listParameters) {
+        return discussionTopicController.getDiscussionComments(implementationId, topicId, listParameters);
+    }
+
+    @Operation(responses = {
+        @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "400"),
+        @ApiResponse(responseCode = "404",
+            description = "Not Found. implementation, discussion topic or discussion comment with given ID doesn't exist.")
+    }, description = "Retrieve discussion comment of a discussion topic of an implementation of an algorithm."
+    )
+    @ListParametersDoc
+    @GetMapping("/{algorithmId}/" + Constants.IMPLEMENTATIONS + "/{implementationId}/" + Constants.DISCUSSION_TOPICS + "/{topicId}/" +
+        Constants.DISCUSSION_COMMENTS + "/{commentId}")
+    public HttpEntity<EntityModel<DiscussionCommentDto>> getDiscussionCommentOfDiscussionTopicOfImplementationOfAlgorithm(
+        @PathVariable UUID implementationId,
+        @PathVariable UUID topicId,
+        @PathVariable UUID commentId,
+        @Parameter(hidden = true) ListParameters listParameters) {
+        return discussionTopicController.getDiscussionComment(implementationId, topicId, commentId);
+    }
+
+    @Operation(responses = {
+        @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "400"),
+        @ApiResponse(responseCode = "404",
+            description = "Not Found. implementation, discussion topic or discussion comment with given ID doesn't exist.")
+    }, description = "Delete discussion comment of a discussion topic of an implementation of an algorithm."
+    )
+    @ListParametersDoc
+    @DeleteMapping("/{algorithmId}/" + Constants.IMPLEMENTATIONS + "/{implementationId}/" + Constants.DISCUSSION_TOPICS + "/{topicId}/" +
+        Constants.DISCUSSION_COMMENTS + "/{commentId}")
+    public HttpEntity<Void> deleteDiscussionCommentOfDiscussionTopicOfImplementationOfAlgorithm(
+        @PathVariable UUID implementationId,
+        @PathVariable UUID topicId,
+        @PathVariable UUID commentId,
+        @Parameter(hidden = true) ListParameters listParameters) {
+        return discussionTopicController.deleteDiscussionComment(implementationId, topicId, commentId);
+    }
+
+    @Operation(responses = {
+        @ApiResponse(responseCode = "201"),
+        @ApiResponse(responseCode = "400"),
+        @ApiResponse(responseCode = "404",
+            description = "Not Found. implementation or discussion topic with given ID doesn't exist.")
+    }, description = "Create discussion comment of a discussion topic of an implementation of an algorithm."
+    )
+    @ListParametersDoc
+    @PostMapping("/{algorithmId}/" + Constants.IMPLEMENTATIONS + "/{implementationId}/" + Constants.DISCUSSION_TOPICS + "/{topicId}/" +
+        Constants.DISCUSSION_COMMENTS)
+    public HttpEntity<EntityModel<DiscussionCommentDto>> createDiscussionCommentOfDiscussionTopicOfImplementationOfAlgorithm(
+        @PathVariable UUID implementationId,
+        @PathVariable UUID topicId,
+        @RequestBody DiscussionCommentDto discussionCommentDto,
+        @Parameter(hidden = true) ListParameters listParameters) {
+        return discussionTopicController.createDiscussionComment(implementationId, topicId, discussionCommentDto);
+    }
+
+    @Operation(responses = {
+        @ApiResponse(responseCode = "201"),
+        @ApiResponse(responseCode = "400"),
+        @ApiResponse(responseCode = "404",
+            description = "Not Found. implementation or discussion topic with given ID doesn't exist.")
+    }, description = "Update discussion comment of a discussion topic of an implementation of an algorithm."
+    )
+    @ListParametersDoc
+    @PutMapping("/{algorithmId}/" + Constants.IMPLEMENTATIONS + "/{implementationId}/" + Constants.DISCUSSION_TOPICS + "/{topicId}/" +
+        Constants.DISCUSSION_COMMENTS + "/{commentId}")
+    public HttpEntity<EntityModel<DiscussionCommentDto>> updateDiscussionCommentOfDiscussionTopicOfImplementationOfAlgorithm(
+        @PathVariable UUID implementationId,
+        @PathVariable UUID topicId,
+        @PathVariable UUID commentId,
+        @RequestBody DiscussionCommentDto discussionCommentDto,
+        @Parameter(hidden = true) ListParameters listParameters) {
+        return discussionTopicController.updateDiscussionComment(implementationId, topicId, commentId, discussionCommentDto);
+    }
+
+    @Operation(responses = {
+        @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "400"),
+        @ApiResponse(responseCode = "404",
+            description = "Not Found. Algorithm with given ID doesn't exist.")
+    }, description = "Retrieve discussion topics of an algorithm. If none are found an empty list is returned."
+    )
+    @ListParametersDoc
+    @GetMapping("/{algorithmId}/" + Constants.DISCUSSION_TOPICS)
+    public HttpEntity<PagedModel<EntityModel<DiscussionTopicDto>>> getDiscussionTopicsOfAlgorithm(
+        @PathVariable UUID algorithmId,
+        @Parameter(hidden = true) ListParameters listParameters) {
+        return discussionTopicController.getDiscussionTopics(algorithmId, listParameters);
+    }
+
+    @Operation(responses = {
+        @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "400"),
+        @ApiResponse(responseCode = "404",
+            description = "Not Found. Algorithm or discussion topic with given ID doesn't exist.")
+    }, description = "Retrieve discussion topic of an algorithm."
+    )
+    @ListParametersDoc
+    @GetMapping("/{algorithmId}/" + Constants.DISCUSSION_TOPICS + "/{topicId}")
+    public HttpEntity<EntityModel<DiscussionTopicDto>> getDiscussionTopicOfAlgorithm(
+        @PathVariable UUID algorithmId,
+        @PathVariable UUID topicId,
+        @Parameter(hidden = true) ListParameters listParameters) {
+        return discussionTopicController.getDiscussionTopic(algorithmId, topicId);
+    }
+
+    @Operation(responses = {
+        @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "400"),
+        @ApiResponse(responseCode = "404",
+            description = "Not Found. Algorithm or discussion topic with given ID doesn't exist.")
+    }, description = "Delete discussion topic of an algorithm."
+    )
+    @ListParametersDoc
+    @DeleteMapping("/{algorithmId}/" + Constants.DISCUSSION_TOPICS + "/{topicId}")
+    public HttpEntity<Void> deleteDiscussionTopicOfAlgorithm(
+        @PathVariable UUID algorithmId,
+        @PathVariable UUID topicId,
+        @Parameter(hidden = true) ListParameters listParameters) {
+        return discussionTopicController.deleteDiscussionTopic(algorithmId, topicId);
+    }
+
+    @Operation(responses = {
+        @ApiResponse(responseCode = "201"),
+        @ApiResponse(responseCode = "400"),
+        @ApiResponse(responseCode = "404",
+            description = "Not Found. Algorithm or discussion topic with given ID doesn't exist.")
+    }, description = "Create a discussion topic of an algorithm."
+    )
+    @ListParametersDoc
+    @PostMapping("/{algorithmId}/" + Constants.DISCUSSION_TOPICS)
+    public HttpEntity<EntityModel<DiscussionTopicDto>> createDiscussionTopicOfAlgorithm(
+        @PathVariable UUID algorithmId,
+        @RequestBody DiscussionTopicDto discussionTopicDto,
+        @Parameter(hidden = true) ListParameters listParameters) {
+        final var algorithm = algorithmService.findById(algorithmId);
+        return discussionTopicController.createDiscussionTopic(algorithm, discussionTopicDto);
+    }
+
+    @Operation(responses = {
+        @ApiResponse(responseCode = "201"),
+        @ApiResponse(responseCode = "400"),
+        @ApiResponse(responseCode = "404",
+            description = "Not Found. Algorithm or discussion topic with given ID doesn't exist.")
+    }, description = "Update discussion topic of an algorithm."
+    )
+    @ListParametersDoc
+    @PutMapping("/{algorithmId}/" + Constants.DISCUSSION_TOPICS + "/{topicId}")
+    public HttpEntity<EntityModel<DiscussionTopicDto>> updateDiscussionTopicOfAlgorithm(
+        @PathVariable UUID algorithmId,
+        @PathVariable UUID topicId,
+        @RequestBody DiscussionTopicDto discussionTopicDto,
+        @Parameter(hidden = true) ListParameters listParameters) {
+        return discussionTopicController.updateDiscussionTopic(algorithmId, topicId, discussionTopicDto);
+    }
+
+    @Operation(responses = {
+        @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "400"),
+        @ApiResponse(responseCode = "404",
+            description = "Not Found. Algorithm or discussion topic with given ID doesn't exist.")
+    }, description = "Retrieve discussion comments of a discussion topic of an algorithm. If none are found an empty list is returned."
+    )
+    @ListParametersDoc
+    @GetMapping("/{algorithmId}/" + Constants.DISCUSSION_TOPICS + "/{topicId}/" + Constants.DISCUSSION_COMMENTS)
+    public HttpEntity<PagedModel<EntityModel<DiscussionCommentDto>>> getDiscussionCommentsOfDiscussionTopicOfAlgorithm(
+        @PathVariable UUID algorithmId,
+        @PathVariable UUID topicId,
+        @Parameter(hidden = true) ListParameters listParameters) {
+        return discussionTopicController.getDiscussionComments(algorithmId, topicId, listParameters);
+    }
+
+    @Operation(responses = {
+        @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "400"),
+        @ApiResponse(responseCode = "404",
+            description = "Not Found. Algorithm, discussion topic or discussion comment with given ID doesn't exist.")
+    }, description = "Retrieve discussion comment of a discussion topic of an algorithm."
+    )
+    @ListParametersDoc
+    @GetMapping("/{algorithmId}/" + Constants.DISCUSSION_TOPICS + "/{topicId}/" + Constants.DISCUSSION_COMMENTS + "/{commentId}")
+    public HttpEntity<EntityModel<DiscussionCommentDto>> getDiscussionCommentOfDiscussionTopicOfAlgorithm(
+        @PathVariable UUID algorithmId,
+        @PathVariable UUID topicId,
+        @PathVariable UUID commentId,
+        @Parameter(hidden = true) ListParameters listParameters) {
+        return discussionTopicController.getDiscussionComment(algorithmId, topicId, commentId);
+    }
+
+    @Operation(responses = {
+        @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "400"),
+        @ApiResponse(responseCode = "404",
+            description = "Not Found. Algorithm, discussion topic or discussion comment with given ID doesn't exist.")
+    }, description = "Delete discussion comment of a discussion topic of an algorithm."
+    )
+    @ListParametersDoc
+    @DeleteMapping("/{algorithmId}/" + Constants.DISCUSSION_TOPICS + "/{topicId}/" + Constants.DISCUSSION_COMMENTS + "/{commentId}")
+    public HttpEntity<Void> deleteDiscussionCommentOfDiscussionTopicOfAlgorithm(
+        @PathVariable UUID algorithmId,
+        @PathVariable UUID topicId,
+        @PathVariable UUID commentId,
+        @Parameter(hidden = true) ListParameters listParameters) {
+        return discussionTopicController.deleteDiscussionComment(algorithmId, topicId, commentId);
+    }
+
+    @Operation(responses = {
+        @ApiResponse(responseCode = "201"),
+        @ApiResponse(responseCode = "400"),
+        @ApiResponse(responseCode = "404",
+            description = "Not Found. Algorithm or discussion topic with given ID doesn't exist.")
+    }, description = "Create discussion comment of a discussion topic of an algorithm."
+    )
+    @ListParametersDoc
+    @PostMapping("/{algorithmId}/" + Constants.DISCUSSION_TOPICS + "/{topicId}/" + Constants.DISCUSSION_COMMENTS)
+    public HttpEntity<EntityModel<DiscussionCommentDto>> createDiscussionCommentOfDiscussionTopicOfAlgorithm(
+        @PathVariable UUID algorithmId,
+        @PathVariable UUID topicId,
+        @RequestBody DiscussionCommentDto discussionCommentDto,
+        @Parameter(hidden = true) ListParameters listParameters) {
+        return discussionTopicController.createDiscussionComment(algorithmId, topicId, discussionCommentDto);
+    }
+
+    @Operation(responses = {
+        @ApiResponse(responseCode = "201"),
+        @ApiResponse(responseCode = "400"),
+        @ApiResponse(responseCode = "404",
+            description = "Not Found. Algorithm or discussion topic with given ID doesn't exist.")
+    }, description = "Update discussion comment of a discussion topic of an algorithm."
+    )
+    @ListParametersDoc
+    @PutMapping("/{algorithmId}/" + Constants.DISCUSSION_TOPICS + "/{topicId}/" + Constants.DISCUSSION_COMMENTS + "/{commentId}")
+    public HttpEntity<EntityModel<DiscussionCommentDto>> updateDiscussionCommentOfDiscussionTopicOfAlgorithm(
+        @PathVariable UUID algorithmId,
+        @PathVariable UUID topicId,
+        @PathVariable UUID commentId,
+        @RequestBody DiscussionCommentDto discussionCommentDto,
+        @Parameter(hidden = true) ListParameters listParameters) {
+        return discussionTopicController.updateDiscussionComment(algorithmId, topicId, commentId, discussionCommentDto);
     }
 
     @Operation(responses = {

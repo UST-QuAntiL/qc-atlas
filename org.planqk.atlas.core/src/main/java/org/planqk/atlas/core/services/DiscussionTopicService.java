@@ -104,4 +104,18 @@ public interface DiscussionTopicService {
      */
     @Transactional
     void delete(UUID topicId);
+
+    void checkIfDiscussionTopicIsLinkedToKnowledgeArtifact(UUID topicId, UUID knowledgeArtifactId);
+
+    /**
+     * Retrieve multiple {@link DiscussionTopic} entries from the database of a given {@link KnowledgeArtifact}.
+     * <p>
+     * The amount of entries is based on the given {@link Pageable} parameter. If the {@link Pageable} is unpaged a {@link Page} with all entries is
+     * queried.
+     *
+     * @param knowledgeArtifactId The {@link UUID} we want to update with its updated properties
+     * @param pageable          The page information, namely page size and page number, of the page we want to retrieve
+     * @return The page of queried {@link DiscussionTopic} entries of a given {@link KnowledgeArtifact}
+     */
+    Page<DiscussionTopic> findByKnowledgeArtifactId(UUID knowledgeArtifactId, Pageable pageable);
 }

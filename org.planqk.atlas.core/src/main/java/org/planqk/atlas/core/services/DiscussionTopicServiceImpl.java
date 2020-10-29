@@ -19,6 +19,7 @@
 
 package org.planqk.atlas.core.services;
 
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.DiscussionTopic;
@@ -59,6 +60,12 @@ public class DiscussionTopicServiceImpl implements DiscussionTopicService {
     }
 
     @Override
+    public Page<DiscussionTopic> findByKnowledgeArtifactId(
+        @NonNull UUID knowledgeArtifactId, @NonNull Pageable pageable) {
+        return discussionTopicRepository.findByKnowledgeArtifactId(knowledgeArtifactId, pageable);
+    }
+
+    @Override
     public DiscussionTopic findById(@NonNull UUID topicId) {
         return ServiceUtils.findById(topicId, DiscussionTopic.class, discussionTopicRepository);
     }
@@ -76,5 +83,13 @@ public class DiscussionTopicServiceImpl implements DiscussionTopicService {
         ServiceUtils.throwIfNotExists(topicId, DiscussionTopic.class, discussionTopicRepository);
 
         discussionTopicRepository.deleteById(topicId);
+    }
+
+    @Override
+    public void checkIfDiscussionTopicIsLinkedToKnowledgeArtifact(@NonNull UUID topicId, @NonNull UUID knowledgeArtifactId) {
+        if (!discussionTopicRepository.existsByIdAndKnowledgeArtifact_Id(topicId, knowledgeArtifactId)) {
+            throw new NoSuchElementException(String.format("A DiscussionTopic with the ID \"%s\" does not " +
+                "exist in the DiscussionTopics of KnowledgeArtifact with ID \"%s\"", topicId.toString(), knowledgeArtifactId.toString()));
+        }
     }
 }
