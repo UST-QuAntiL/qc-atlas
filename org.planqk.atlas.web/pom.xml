@@ -49,7 +49,7 @@
 <!--        </profile>-->
 <!--    </profiles>-->
 
-    <packaging>${env.VARIABLE_NAME}</packaging>
+    <packaging>${VARIABLE_NAME}</packaging>
 
 
     <dependencies>
