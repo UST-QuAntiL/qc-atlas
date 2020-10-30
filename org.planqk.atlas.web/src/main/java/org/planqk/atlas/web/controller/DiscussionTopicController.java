@@ -19,9 +19,11 @@
 
 package org.planqk.atlas.web.controller;
 
+import java.util.Set;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.DiscussionTopic;
+import org.planqk.atlas.core.model.KnowledgeArtifact;
 import org.planqk.atlas.core.services.DiscussionCommentService;
 import org.planqk.atlas.core.services.DiscussionTopicService;
 import org.planqk.atlas.web.Constants;
@@ -85,6 +87,13 @@ public class DiscussionTopicController {
         return ResponseEntity.ok(discussionTopicAssembler.toModel(topics));
     }
 
+    public HttpEntity<PagedModel<EntityModel<DiscussionTopicDto>>> getDiscussionTopics(
+        UUID knowledgeArtifactId,
+        @Parameter(hidden = true) ListParameters listParameters) {
+        final var topics = discussionTopicService.findByKnowledgeArtifactId(knowledgeArtifactId, listParameters.getPageable());
+        return ResponseEntity.ok(discussionTopicAssembler.toModel(topics));
+    }
+
     @Operation(responses = {
         @ApiResponse(responseCode = "200"),
         @ApiResponse(responseCode = "400"),
@@ -96,6 +105,12 @@ public class DiscussionTopicController {
         return ResponseEntity.ok(discussionTopicAssembler.toModel(discussionTopic));
     }
 
+    public HttpEntity<EntityModel<DiscussionTopicDto>> getDiscussionTopic(UUID knowledgeArtifactId, UUID topicId) {
+        discussionTopicService.checkIfDiscussionTopicIsLinkedToKnowledgeArtifact(topicId, knowledgeArtifactId);
+        final DiscussionTopic discussionTopic = discussionTopicService.findById(topicId);
+        return ResponseEntity.ok(discussionTopicAssembler.toModel(discussionTopic));
+    }
+
     @Operation(responses = {
         @ApiResponse(responseCode = "200"),
         @ApiResponse(responseCode = "400"),
@@ -103,6 +118,12 @@ public class DiscussionTopicController {
     }, description = "")
     @DeleteMapping("/{topicId}")
     public HttpEntity<Void> deleteDiscussionTopic(@PathVariable UUID topicId) {
+        discussionTopicService.delete(topicId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    public HttpEntity<Void> deleteDiscussionTopic(UUID knowledgeArtifactId, UUID topicId) {
+        discussionTopicService.checkIfDiscussionTopicIsLinkedToKnowledgeArtifact(topicId, knowledgeArtifactId);
         discussionTopicService.delete(topicId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -119,6 +140,18 @@ public class DiscussionTopicController {
         return new ResponseEntity<>(discussionTopicAssembler.toModel(discussionTopic), HttpStatus.CREATED);
     }
 
+    public HttpEntity<EntityModel<DiscussionTopicDto>> createDiscussionTopic(
+        KnowledgeArtifact knowledgeArtifact,
+        @Validated(ValidationGroups.Create.class) @RequestBody DiscussionTopicDto discussionTopicDto) {
+        final DiscussionTopic convertedDiscussionTopic = ModelMapperUtils.convert(discussionTopicDto, DiscussionTopic.class);
+        convertedDiscussionTopic.setKnowledgeArtifact(knowledgeArtifact);
+        final var discussionTopic = discussionTopicService.create(convertedDiscussionTopic);
+        final Set<DiscussionTopic> discussionTopics = knowledgeArtifact.getDiscussionTopics();
+        discussionTopics.add(discussionTopic);
+        knowledgeArtifact.setDiscussionTopics(discussionTopics);
+        return new ResponseEntity<>(discussionTopicAssembler.toModel(discussionTopic), HttpStatus.CREATED);
+    }
+
     @Operation(responses = {
         @ApiResponse(responseCode = "200"),
         @ApiResponse(responseCode = "400"),
@@ -129,6 +162,14 @@ public class DiscussionTopicController {
     public HttpEntity<PagedModel<EntityModel<DiscussionCommentDto>>> getDiscussionComments(
         @PathVariable UUID topicId,
         @Parameter(hidden = true) ListParameters listParameters) {
+        return discussionCommentController.getDiscussionCommentsOfTopic(topicId, listParameters);
+    }
+
+    public HttpEntity<PagedModel<EntityModel<DiscussionCommentDto>>> getDiscussionComments(
+        UUID knowledgeArtifactId,
+        UUID topicId,
+        @Parameter(hidden = true) ListParameters listParameters) {
+        discussionTopicService.checkIfDiscussionTopicIsLinkedToKnowledgeArtifact(topicId, knowledgeArtifactId);
         return discussionCommentController.getDiscussionCommentsOfTopic(topicId, listParameters);
     }
 
@@ -145,6 +186,15 @@ public class DiscussionTopicController {
         return discussionCommentController.getDiscussionComment(commentId);
     }
 
+    public HttpEntity<EntityModel<DiscussionCommentDto>> getDiscussionComment(
+        UUID knowledgeArtifactId,
+        UUID topicId,
+        UUID commentId) {
+        discussionTopicService.checkIfDiscussionTopicIsLinkedToKnowledgeArtifact(topicId, knowledgeArtifactId);
+        discussionCommentService.checkIfDiscussionCommentIsInDiscussionTopic(commentId, topicId);
+        return discussionCommentController.getDiscussionComment(commentId);
+    }
+
     @Operation(responses = {
         @ApiResponse(responseCode = "200"),
         @ApiResponse(responseCode = "400"),
@@ -152,6 +202,12 @@ public class DiscussionTopicController {
     }, description = "")
     @DeleteMapping("/{topicId}/" + Constants.DISCUSSION_COMMENTS + "/{commentId}")
     public HttpEntity<Void> deleteDiscussionComment(@PathVariable UUID topicId, @PathVariable UUID commentId) {
+        discussionCommentService.checkIfDiscussionCommentIsInDiscussionTopic(commentId, topicId);
+        return discussionCommentController.deleteDiscussionComment(commentId);
+    }
+
+    public HttpEntity<Void> deleteDiscussionComment(UUID knowledgeArtifactId, UUID topicId, UUID commentId) {
+        discussionTopicService.checkIfDiscussionTopicIsLinkedToKnowledgeArtifact(topicId, knowledgeArtifactId);
         discussionCommentService.checkIfDiscussionCommentIsInDiscussionTopic(commentId, topicId);
         return discussionCommentController.deleteDiscussionComment(commentId);
     }
@@ -171,6 +227,17 @@ public class DiscussionTopicController {
         return discussionCommentController.updateDiscussionComment(commentId, discussionCommentDto);
     }
 
+    public HttpEntity<EntityModel<DiscussionCommentDto>> updateDiscussionComment(
+        UUID knowledgeArtifactId,
+        UUID topicId,
+        UUID commentId,
+        DiscussionCommentDto discussionCommentDto) {
+        discussionTopicService.checkIfDiscussionTopicIsLinkedToKnowledgeArtifact(topicId, knowledgeArtifactId);
+        discussionCommentService.checkIfDiscussionCommentIsInDiscussionTopic(commentId, topicId);
+        discussionCommentDto.setId(commentId);
+        return discussionCommentController.updateDiscussionComment(commentId, discussionCommentDto);
+    }
+
     @Operation(responses = {
         @ApiResponse(responseCode = "201"),
         @ApiResponse(responseCode = "400"),
@@ -185,6 +252,16 @@ public class DiscussionTopicController {
         return discussionCommentController.createDiscussionComment(discussionCommentDto);
     }
 
+    public HttpEntity<EntityModel<DiscussionCommentDto>> createDiscussionComment(
+        UUID knowledgeArtifactId,
+        UUID topicId,
+        @Validated(ValidationGroups.Create.class) @RequestBody DiscussionCommentDto discussionCommentDto) {
+        discussionTopicService.checkIfDiscussionTopicIsLinkedToKnowledgeArtifact(topicId, knowledgeArtifactId);
+        final DiscussionTopic discussionTopic = discussionTopicService.findById(topicId);
+        discussionCommentDto.setDiscussionTopic(ModelMapperUtils.convert(discussionTopic, DiscussionTopicDto.class));
+        return discussionCommentController.createDiscussionComment(discussionCommentDto, discussionTopic.getKnowledgeArtifact());
+    }
+
     @Operation(responses = {
         @ApiResponse(responseCode = "201"),
         @ApiResponse(responseCode = "400"),
@@ -196,6 +273,18 @@ public class DiscussionTopicController {
         @Validated(ValidationGroups.Update.class) @RequestBody DiscussionTopicDto discussionTopicDto) {
         discussionTopicDto.setId(topicId);
         final DiscussionTopic discussionTopic = discussionTopicService.update(ModelMapperUtils.convert(discussionTopicDto, DiscussionTopic.class));
+        return ResponseEntity.ok(discussionTopicAssembler.toModel(discussionTopic));
+    }
+
+    public HttpEntity<EntityModel<DiscussionTopicDto>> updateDiscussionTopic(
+        KnowledgeArtifact knowledgeArtifact,
+        UUID topicId,
+        @Validated(ValidationGroups.Update.class) @RequestBody DiscussionTopicDto discussionTopicDto) {
+        discussionTopicService.checkIfDiscussionTopicIsLinkedToKnowledgeArtifact(topicId, knowledgeArtifact.getId());
+        discussionTopicDto.setId(topicId);
+        final DiscussionTopic convertedDiscussionTopic = ModelMapperUtils.convert(discussionTopicDto, DiscussionTopic.class);
+        convertedDiscussionTopic.setKnowledgeArtifact(knowledgeArtifact);
+        final DiscussionTopic discussionTopic = discussionTopicService.update(convertedDiscussionTopic);
         return ResponseEntity.ok(discussionTopicAssembler.toModel(discussionTopic));
     }
 }

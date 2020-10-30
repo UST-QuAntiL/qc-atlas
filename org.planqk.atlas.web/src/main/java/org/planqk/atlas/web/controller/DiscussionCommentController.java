@@ -23,6 +23,7 @@ import java.util.UUID;
 import javax.validation.Valid;
 
 import org.planqk.atlas.core.model.DiscussionComment;
+import org.planqk.atlas.core.model.KnowledgeArtifact;
 import org.planqk.atlas.core.services.DiscussionCommentService;
 import org.planqk.atlas.core.services.DiscussionTopicService;
 import org.planqk.atlas.web.Constants;
@@ -41,7 +42,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -49,7 +49,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-@Hidden
 @Tag(name = Constants.TAG_DISCUSSION_TOPIC)
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RestController("discussion-comment")
@@ -84,6 +83,15 @@ public class DiscussionCommentController {
         return new ResponseEntity<>(discussionCommentAssembler.toModel(comment), HttpStatus.CREATED);
     }
 
+    public ResponseEntity<EntityModel<DiscussionCommentDto>> createDiscussionComment(
+        @Valid @RequestBody DiscussionCommentDto discussionCommentDto,
+        KnowledgeArtifact knowledgeArtifact) {
+        final DiscussionComment convertedDiscussionComment = ModelMapperUtils.convert(discussionCommentDto, DiscussionComment.class);
+        convertedDiscussionComment.getDiscussionTopic().setKnowledgeArtifact(knowledgeArtifact);
+        final var comment = discussionCommentService.create(convertedDiscussionComment);
+        return new ResponseEntity<>(discussionCommentAssembler.toModel(comment), HttpStatus.CREATED);
+    }
+
     @Operation(responses = {
         @ApiResponse(responseCode = "200")
     }, description = "")
@@ -92,10 +100,9 @@ public class DiscussionCommentController {
         @Valid @RequestBody DiscussionCommentDto discussionCommentDto) {
         final var discussionCommentObject = discussionCommentService.findById(commentId);
         final var discussionComment = ModelMapperUtils.convert(discussionCommentDto, DiscussionComment.class);
-        discussionComment.setDiscussionTopic(discussionCommentObject.getDiscussionTopic());
         final var discussionTopic = discussionCommentObject.getDiscussionTopic();
-        discussionTopic.getDiscussionComments().add(discussionComment);
-        discussionTopicService.update(discussionTopic);
+        discussionComment.setDiscussionTopic(discussionTopic);
+        discussionCommentService.update(discussionComment);
         return ResponseEntity.ok(discussionCommentAssembler.toModel(discussionComment));
     }
 

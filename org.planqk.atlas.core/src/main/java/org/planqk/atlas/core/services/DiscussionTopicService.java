@@ -104,4 +104,27 @@ public interface DiscussionTopicService {
      */
     @Transactional
     void delete(UUID topicId);
+
+    /**
+     * Checks if a given {@link DiscussionTopic} is made linked to a given {@link org.planqk.atlas.core.model.KnowledgeArtifact}.
+     * <p>
+     * If either the {@link DiscussionTopic} or the {@link org.planqk.atlas.core.model.KnowledgeArtifact} with given IDs could not be found or if a
+     * database entry for both could be found but they are not linked a {@link java.util.NoSuchElementException} is thrown.
+     *
+     * @param knowledgeArtifactId The ID of the {@link org.planqk.atlas.core.model.KnowledgeArtifact} we want to check
+     * @param topicId   The ID of the {@link org.planqk.atlas.core.model.DiscussionTopic} we want to check
+     */
+    void checkIfDiscussionTopicIsLinkedToKnowledgeArtifact(UUID topicId, UUID knowledgeArtifactId);
+
+    /**
+     * Retrieve multiple {@link DiscussionTopic} entries from the database of a given {@link KnowledgeArtifact}.
+     * <p>
+     * The amount of entries is based on the given {@link Pageable} parameter. If the {@link Pageable} is unpaged a {@link Page} with all entries is
+     * queried.
+     *
+     * @param knowledgeArtifactId The {@link UUID} we want to update with its updated properties
+     * @param pageable          The page information, namely page size and page number, of the page we want to retrieve
+     * @return The page of queried {@link DiscussionTopic} entries of a given {@link KnowledgeArtifact}
+     */
+    Page<DiscussionTopic> findByKnowledgeArtifactId(UUID knowledgeArtifactId, Pageable pageable);
 }
