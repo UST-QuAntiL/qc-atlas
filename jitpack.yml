@@ -1,4 +1,4 @@
 install:
-    - ./mvn clean install -DskipTests -P jar
+    - ./mvn clean install -DskipTests
 env:
     VARIABLE_NAME: "jar"
