@@ -1,3 +1,4 @@
 install:
-    - echo "Running a custom install command"
     - ./mvn clean install -DskipTests -P jar
+env:
+    VARIABLE_NAME: "jar"

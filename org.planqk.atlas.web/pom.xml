@@ -31,25 +31,25 @@
     <artifactId>org.planqk.atlas.web</artifactId>
 
 
-    <profiles>
-        <profile>
-            <id>war</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <properties>
-                <type>war</type>
-            </properties>
-        </profile>
-        <profile>
-            <id>jar</id>
-            <properties>
-                <type>jar</type>
-            </properties>
-        </profile>
-    </profiles>
+<!--    <profiles>-->
+<!--        <profile>-->
+<!--            <id>war</id>-->
+<!--            <activation>-->
+<!--                <activeByDefault>true</activeByDefault>-->
+<!--            </activation>-->
+<!--            <properties>-->
+<!--                <type>war</type>-->
+<!--            </properties>-->
+<!--        </profile>-->
+<!--        <profile>-->
+<!--            <id>jar</id>-->
+<!--            <properties>-->
+<!--                <type>jar</type>-->
+<!--            </properties>-->
+<!--        </profile>-->
+<!--    </profiles>-->
 
-    <packaging>${type}</packaging>
+    <packaging>${env.VARIABLE_NAME}</packaging>
 
 
     <dependencies>
