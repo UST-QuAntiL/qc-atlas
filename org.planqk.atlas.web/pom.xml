@@ -30,8 +30,6 @@
 
     <artifactId>org.planqk.atlas.web</artifactId>
 
-    <packaging>${packaging.type}</packaging>
-
     <profiles>
         <profile>
             <id>webapp</id>
