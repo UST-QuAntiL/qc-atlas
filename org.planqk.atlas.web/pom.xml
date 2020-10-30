@@ -30,27 +30,26 @@
 
     <artifactId>org.planqk.atlas.web</artifactId>
 
-    <profiles>
-        <profile>
-            <id>war</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <properties>
-                <packaging.type>war</packaging.type>
-            </properties>
-        </profile>
-        <profile>
-            <id>jar</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <properties>
-                <packaging.type>jar</packaging.type>
-            </properties>
-        </profile>
-    </profiles>
-
+<!--    <profiles>-->
+<!--        <profile>-->
+<!--            <id>war</id>-->
+<!--            <activation>-->
+<!--                <activeByDefault>false</activeByDefault>-->
+<!--            </activation>-->
+<!--&lt;!&ndash;            <properties>&ndash;&gt;-->
+<!--&lt;!&ndash;                <packaging.type>war</packaging.type>&ndash;&gt;-->
+<!--&lt;!&ndash;            </properties>&ndash;&gt;-->
+<!--        </profile>-->
+<!--        <profile>-->
+<!--            <id>jar</id>-->
+<!--            <activation>-->
+<!--                <activeByDefault>true</activeByDefault>-->
+<!--            </activation>-->
+<!--&lt;!&ndash;            <properties>&ndash;&gt;-->
+<!--&lt;!&ndash;                <packaging.type>jar</packaging.type>&ndash;&gt;-->
+<!--&lt;!&ndash;            </properties>&ndash;&gt;-->
+<!--        </profile>-->
+<!--    </profiles>-->
 
 
     <dependencies>
