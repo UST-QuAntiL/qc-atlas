@@ -132,8 +132,5 @@
     <properties>
         <!-- Default timestamp format cannot be used for filenames on Windows -->
         <maven.build.timestamp.format>yyyy-MM-dd-hh-mm</maven.build.timestamp.format>
-        <checkstyle.config.location>../checkstyle.xml</checkstyle.config.location>
-        <maven.checkstyle.version>3.1.1</maven.checkstyle.version>
-        <checkstyle.addons.version>6.0.1</checkstyle.addons.version>
     </properties>
 </project>
