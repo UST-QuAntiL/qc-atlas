@@ -51,6 +51,9 @@
         <db.url>jdbc:postgresql://localhost:5432/planqk</db.url>
         <db.username>planqk</db.username>
         <db.password>planqk</db.password>
+        <checkstyle.config.location>checkstyle.xml</checkstyle.config.location>
+        <maven.checkstyle.version>3.1.1</maven.checkstyle.version>
+        <checkstyle.addons.version>6.0.1</checkstyle.addons.version>
     </properties>
 
     <modules>
@@ -78,6 +81,31 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>${maven.checkstyle.version}</version>
+                <configuration>
+                    <failOnViolation>false</failOnViolation>
+                    <violationSeverity>warning</violationSeverity>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>checkstyle</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.thomasjensen.checkstyle.addons</groupId>
+                        <artifactId>checkstyle-addons</artifactId>
+                        <version>${checkstyle.addons.version}</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>

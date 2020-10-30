@@ -10,7 +10,7 @@
   - Repeat the previous steps for the Lombok Plugin
   - Open the Settings (by pressing <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>S</kbd>; **Mac**: <kbd>command</kbd> + <kbd>,</kbd>)
   - Go to "Other Settings > Checkstyle".
-  - Click on "+" under Configuration File and add `checkstyle.xml`. It is located in `docs/dev/config/IntelliJ IDEA`. Confirm.
+  - Click on "+" under Configuration File and add `checkstyle.xml`. It is located in the root directory. Confirm.
   
     ![checkstyle](graphics/checkstyle-config.PNG)
     
@@ -24,7 +24,7 @@
   - Click on the gear icon (right of "Scheme:")  
   - Click "Import Scheme"  
   - Choose "CheckStyle Configuration"
-  - Navigate to `checkstyle.xml`. It is located in `docs/dev/config/IntelliJ IDEA`.  
+  - Navigate to `checkstyle.xml`. It is located in root directory.  
   - Click "Apply"
   - Click "OK"
   - Go to "Editor > Code Style > Java > Imports > Import Layout"
