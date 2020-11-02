@@ -1,2 +1,0 @@
-#install:
-#  - mvn package -DskipTests -P jar
