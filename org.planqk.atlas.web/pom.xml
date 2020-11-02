@@ -41,11 +41,11 @@
         </profile>
         <profile>
             <id>jar</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
             <properties>
                 <type>jar</type>
-                <activation>
-                    <activeByDefault>true</activeByDefault>
-                </activation>
             </properties>
         </profile>
     </profiles>
