@@ -1,5 +1,4 @@
 env:
-    PACKAGING: "jar"
-    install:
-        - mvn package -DskipTests -P jar
+  install:
+    - mvn package -DskipTests -P jar
 
