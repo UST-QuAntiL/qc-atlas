@@ -1,2 +1,2 @@
-install:
-    - mvn install -DskipTests -P jar
+#install:
+#    - mvn install -DskipTests -P jar
