@@ -35,9 +35,6 @@
     <profiles>
         <profile>
             <id>default</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
             <properties>
                 <type>war</type>
             </properties>
@@ -46,6 +43,9 @@
             <id>jar</id>
             <properties>
                 <type>jar</type>
+                <activation>
+                    <activeByDefault>true</activeByDefault>
+                </activation>
             </properties>
         </profile>
     </profiles>
