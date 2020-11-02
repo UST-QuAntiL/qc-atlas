@@ -1,5 +1,3 @@
-jdk:
-  - openjdk9
 install:
   - mvn package -DskipTests -P jar
 
