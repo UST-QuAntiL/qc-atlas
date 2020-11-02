@@ -35,15 +35,15 @@
     <profiles>
         <profile>
             <id>default</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
             <properties>
                 <type>war</type>
             </properties>
         </profile>
         <profile>
             <id>jar</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
             <properties>
                 <type>jar</type>
             </properties>
