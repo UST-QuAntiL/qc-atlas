@@ -1,4 +1,5 @@
-env:
-  install:
-    - mvn package -DskipTests -P jar
+jdk:
+  - openjdk9
+install:
+  - mvn package -DskipTests -P jar
 
