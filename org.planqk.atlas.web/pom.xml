@@ -30,7 +30,7 @@
 
     <artifactId>org.planqk.atlas.web</artifactId>
 
-    <packaging>${type}</packaging>
+    <packaging>${packaging.type}</packaging>
 
     <profiles>
         <profile>
@@ -39,13 +39,13 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
-                <type>war</type>
+                <packaging.type>war</packaging.type>
             </properties>
         </profile>
         <profile>
             <id>jar</id>
             <properties>
-                <type>jar</type>
+                <packaging.type>jar</packaging.type>
             </properties>
         </profile>
     </profiles>
