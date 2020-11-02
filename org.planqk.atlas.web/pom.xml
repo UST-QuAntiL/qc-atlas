@@ -81,27 +81,6 @@
                     <classifier>exec</classifier>
                 </configuration>
             </plugin>
-            <!--            <plugin>-->
-            <!--                <groupId>org.apache.maven.plugins</groupId>-->
-            <!--                <artifactId>maven-war-plugin</artifactId>-->
-            <!--                <version>3.3.1</version>-->
-            <!--                <executions>-->
-            <!--                    <execution>-->
-            <!--                        <phase>package</phase>-->
-            <!--                        <goals>-->
-            <!--                            <goal>war</goal>-->
-            <!--                        </goals>-->
-            <!--                    </execution>-->
-            <!--                </executions>-->
-            <!--&lt;!&ndash;                <configuration>&ndash;&gt;-->
-            <!--&lt;!&ndash;                    <webResources>&ndash;&gt;-->
-            <!--&lt;!&ndash;                        <resource>&ndash;&gt;-->
-            <!--&lt;!&ndash;                            &lt;!&ndash; this is relative to the pom.xml directory &ndash;&gt;&ndash;&gt;-->
-            <!--&lt;!&ndash;                            <directory>resource2</directory>&ndash;&gt;-->
-            <!--&lt;!&ndash;                        </resource>&ndash;&gt;-->
-            <!--&lt;!&ndash;                    </webResources>&ndash;&gt;-->
-            <!--&lt;!&ndash;                </configuration>&ndash;&gt;-->
-            <!--            </plugin>-->
         </plugins>
     </build>
 </project>
