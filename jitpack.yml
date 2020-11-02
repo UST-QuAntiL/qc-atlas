@@ -1,2 +1,2 @@
 install:
-  - ./mvnw install -DskipTests -P jar
+  - mvn package -DskipTests -P jar
