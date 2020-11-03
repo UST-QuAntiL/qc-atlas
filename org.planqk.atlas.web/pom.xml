@@ -46,6 +46,7 @@
             <id>jar</id>
             <properties>
                 <packaging.type>jar</packaging.type>
+                <classifier>exec</classifier>
             </properties>
         </profile>
     </profiles>
@@ -102,7 +103,6 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <mainClass>org.planqk.atlas.web.Application</mainClass>
-                    <classifier>exec</classifier>
                 </configuration>
             </plugin>
         </plugins>
