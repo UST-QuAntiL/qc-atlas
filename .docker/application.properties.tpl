@@ -7,7 +7,7 @@ spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
 spring.jpa.properties.hibernate.enable_lazy_load_no_trans=true
 spring.jpa.properties.hibernate.event.merge.entity_copy_observer=allow
 spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation=true
-spring.jpa.hibernate.ddl-auto=validate
+spring.jpa.hibernate.ddl-auto=update
 spring.liquibase.change-log=classpath:/db/changelog-master.xml
 
 logging.level.org.planqk.atlas=DEBUG
