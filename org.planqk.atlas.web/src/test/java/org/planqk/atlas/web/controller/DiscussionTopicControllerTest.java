@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -19,29 +19,38 @@
 
 package org.planqk.atlas.web.controller;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
-import org.planqk.atlas.core.model.DiscussionTopic;
-import org.planqk.atlas.core.model.Status;
-import org.planqk.atlas.core.services.DiscussionCommentService;
-import org.planqk.atlas.core.services.DiscussionTopicService;
-import org.planqk.atlas.web.Constants;
-import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
-import org.planqk.atlas.web.dtos.DiscussionTopicDto;
-import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
-import org.planqk.atlas.web.utils.ModelMapperUtils;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.planqk.atlas.core.model.DiscussionTopic;
+import org.planqk.atlas.core.model.Status;
+import org.planqk.atlas.core.services.DiscussionCommentService;
+import org.planqk.atlas.core.services.DiscussionTopicService;
+import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
+import org.planqk.atlas.web.dtos.DiscussionTopicDto;
+import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
+import org.planqk.atlas.web.linkassembler.LinkBuilderService;
+import org.planqk.atlas.web.utils.ListParameters;
+import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -55,45 +64,47 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-@WebMvcTest( {DiscussionCommentController.class, DiscussionTopicController.class})
+@WebMvcTest({DiscussionCommentController.class, DiscussionTopicController.class})
 @ExtendWith(MockitoExtension.class)
 @AutoConfigureMockMvc
 @EnableLinkAssemblers
 public class DiscussionTopicControllerTest {
+
+    private final ObjectMapper mapper = ObjectMapperUtils.newTestMapper();
+
+    private final int page = 0;
+
+    private final int size = 1;
+
+    private final Pageable pageable = PageRequest.of(page, size);
+
     @MockBean
     private DiscussionTopicService discussionTopicService;
+
     @MockBean
     private DiscussionCommentService discussionCommentService;
 
     @Autowired
     private MockMvc mockMvc;
 
-    private ObjectMapper mapper;
-
-    private final int page = 0;
-    private final int size = 1;
-    private final Pageable pageable = PageRequest.of(page, size);
+    @Autowired
+    private LinkBuilderService linkBuilderService;
 
     private DiscussionTopicDto discussionTopicDto;
+
     private DiscussionTopic discussionTopic;
 
     private List<DiscussionTopic> discussionTopicList;
+
     private Page<DiscussionTopic> discussionTopicPage;
+
     private Page<DiscussionTopicDto> discussionTopicPageDto;
 
     @BeforeEach
     public void init() {
-        mapper = ObjectMapperUtils.newTestMapper();
         discussionTopic = new DiscussionTopic();
         discussionTopic.setDescription("Description");
         discussionTopic.setTitle("Topic");
@@ -109,20 +120,23 @@ public class DiscussionTopicControllerTest {
 
     @Test
     public void createDiscussionTopic_returnDiscussionTopic() throws Exception {
-        when(discussionTopicService.save(any())).thenReturn(discussionTopic);
+        when(discussionTopicService.create(any())).thenReturn(discussionTopic);
+        discussionTopicDto.setId(null);
 
+        var url = linkBuilderService.urlStringTo(methodOn(DiscussionTopicController.class)
+            .createDiscussionTopic(discussionTopicDto));
         MvcResult result = mockMvc
-                .perform(post("/" + Constants.API_VERSION + "/" + Constants.DISCUSSION_TOPICS + "/").content(mapper.writeValueAsString(discussionTopicDto))
-                        .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated()).andReturn();
+            .perform(post(url)
+                .content(mapper.writeValueAsString(discussionTopicDto))
+                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isCreated()).andReturn();
 
         EntityModel<DiscussionTopicDto> response = mapper.readValue(result.getResponse().getContentAsString(),
-                new TypeReference<EntityModel<DiscussionTopicDto>>() {
-                });
+            new TypeReference<>() {
+            });
 
         assertEquals(response.getContent().getDate(), discussionTopicDto.getDate());
         assertEquals(response.getContent().getTitle(), discussionTopicDto.getTitle());
-        assertEquals(response.getContent().getId(), discussionTopicDto.getId());
         assertEquals(response.getContent().getStatus(), discussionTopicDto.getStatus());
     }
 
@@ -130,19 +144,22 @@ public class DiscussionTopicControllerTest {
     public void createDiscussionTopic_returnBadRequest() throws Exception {
         // Missing required attribute
         discussionTopicDto.setDate(null);
-        mockMvc.perform(post("/" + Constants.API_VERSION + "/" + Constants.DISCUSSION_TOPICS + "/")
-                .content(mapper.writeValueAsString(discussionTopicDto)).contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
+        var url = linkBuilderService.urlStringTo(methodOn(DiscussionTopicController.class)
+            .createDiscussionTopic(discussionTopicDto));
+        mockMvc.perform(post(url)
+            .content(mapper.writeValueAsString(discussionTopicDto)).contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
     }
 
     @Test
     public void getDiscussionTopics_returnDiscussionTopics() throws Exception {
         when(discussionTopicService.findAll(pageable)).thenReturn(discussionTopicPage);
+        var url = linkBuilderService.urlStringTo(methodOn(DiscussionTopicController.class)
+            .getDiscussionTopics(new ListParameters(pageable, null)));
         MvcResult result = mockMvc
-                .perform(get("/" + Constants.API_VERSION + "/" + Constants.DISCUSSION_TOPICS + "/").queryParam(Constants.PAGE, Integer.toString(page))
-                        .queryParam(Constants.SIZE, Integer.toString(size)).accept(MediaType.APPLICATION_JSON)
-                        .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk()).andReturn();
+            .perform(get(url).accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk()).andReturn();
 
         JSONObject rootObject = new JSONObject(result.getResponse().getContentAsString());
         var embeddedJSONObjects = rootObject.getJSONObject("_embedded").getJSONArray("discussionTopics");
@@ -155,23 +172,18 @@ public class DiscussionTopicControllerTest {
     }
 
     @Test
-    public void deleteDiscussionTopic_returnNotFound() throws Exception {
-        UUID id = UUID.randomUUID();
-        doThrow(new NoSuchElementException()).when(discussionTopicService).deleteById(id);
-        mockMvc.perform(delete("/" + Constants.API_VERSION + "/" + Constants.DISCUSSION_TOPICS + "/" + id).accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
-    }
-
-    @Test
     public void getDiscussionTopic_returnDiscussionTopic() throws Exception {
         when(discussionTopicService.findById(discussionTopic.getId())).thenReturn(discussionTopic);
 
+        var url = linkBuilderService.urlStringTo(methodOn(DiscussionTopicController.class)
+            .getDiscussionTopic(discussionTopic.getId()));
         MvcResult result = mockMvc.perform(
-                get("/" + Constants.API_VERSION + "/" + Constants.DISCUSSION_TOPICS + "/" + discussionTopic.getId()).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk()).andReturn();
+            get(url).accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk()).andReturn();
 
         EntityModel<DiscussionTopicDto> response = mapper.readValue(
-                result.getResponse().getContentAsString(), new TypeReference<EntityModel<DiscussionTopicDto>>() {
-                });
+            result.getResponse().getContentAsString(), new TypeReference<>() {
+            });
 
         assertEquals(response.getContent().getId(), discussionTopicDto.getId());
         assertEquals(response.getContent().getTitle(), discussionTopicDto.getTitle());
@@ -183,31 +195,46 @@ public class DiscussionTopicControllerTest {
     public void getDiscussionTopic_returnNotFound() throws Exception {
         when(discussionTopicService.findById(any(UUID.class))).thenThrow(new NoSuchElementException());
 
-        mockMvc.perform(get("/" + Constants.API_VERSION + "/" + Constants.DISCUSSION_TOPICS + "/" + UUID.randomUUID()).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+        var url = linkBuilderService.urlStringTo(methodOn(DiscussionTopicController.class)
+            .getDiscussionTopic(discussionTopic.getId()));
+        mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNotFound());
     }
 
     @Test
     public void deleteDiscussionTopic_returnOK() throws Exception {
-        mockMvc.perform(delete("/" + Constants.API_VERSION + "/" + Constants.DISCUSSION_TOPICS + "/{id}", this.discussionTopic.getId()))
-                .andExpect(status().isOk()).andReturn();
+        var url = linkBuilderService.urlStringTo(methodOn(DiscussionTopicController.class)
+            .deleteDiscussionTopic(discussionTopic.getId()));
+        mockMvc.perform(delete(url))
+            .andExpect(status().isOk()).andReturn();
+    }
+
+    @Test
+    public void deleteDiscussionTopic_returnNotFound() throws Exception {
+        UUID id = UUID.randomUUID();
+        doThrow(new NoSuchElementException()).when(discussionTopicService).delete(id);
+        var url = linkBuilderService.urlStringTo(methodOn(DiscussionTopicController.class)
+            .deleteDiscussionTopic(id));
+        mockMvc.perform(delete(url).accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
     }
 
     @Test
     public void updateDiscussionTopic_returnDiscussionTopic() throws Exception {
-        when(discussionTopicService.update(discussionTopic.getId(), discussionTopic)).thenReturn(discussionTopic);
-        MvcResult result = mockMvc.perform(put("/" + Constants.API_VERSION + "/" + Constants.DISCUSSION_TOPICS + "/" + discussionTopic.getId())
-                .content(mapper.writeValueAsString(discussionTopicDto)).contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
+        when(discussionTopicService.update(discussionTopic)).thenReturn(discussionTopic);
+        var url = linkBuilderService.urlStringTo(methodOn(DiscussionTopicController.class)
+            .updateDiscussionTopic(discussionTopic.getId(), discussionTopicDto));
+        MvcResult result = mockMvc.perform(put(url)
+            .content(mapper.writeValueAsString(discussionTopicDto)).contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
 
         EntityModel<DiscussionTopicDto> response = mapper.readValue(result.getResponse().getContentAsString(),
-                new TypeReference<EntityModel<DiscussionTopicDto>>() {
-                });
+            new TypeReference<>() {
+            });
 
-        assertEquals(response.getContent().getId(), discussionTopicDto.getId());
-        assertEquals(response.getContent().getTitle(), discussionTopicDto.getTitle());
-        assertEquals(response.getContent().getDate(), discussionTopicDto.getDate());
-        assertEquals(response.getContent().getStatus(), discussionTopicDto.getStatus());
+        assertEquals(discussionTopicDto.getId(), response.getContent().getId());
+        assertEquals(discussionTopicDto.getTitle(), response.getContent().getTitle());
+        assertEquals(discussionTopicDto.getDate(), response.getContent().getDate());
+        assertEquals(discussionTopicDto.getStatus(), response.getContent().getStatus());
     }
 
     @Test
@@ -215,10 +242,12 @@ public class DiscussionTopicControllerTest {
 
         // Missing required attribute
         discussionTopic.setDate(null);
-        when(discussionTopicService.update(discussionTopic.getId(), discussionTopic)).thenReturn(discussionTopic);
+        when(discussionTopicService.update(discussionTopic)).thenReturn(discussionTopic);
 
-        mockMvc.perform(put("/" + Constants.API_VERSION + "/" + Constants.DISCUSSION_TOPICS + "/" + discussionTopic.getId())
-                .content(mapper.writeValueAsString(discussionTopic)).contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
+        var url = linkBuilderService.urlStringTo(methodOn(DiscussionTopicController.class)
+            .updateDiscussionTopic(discussionTopic.getId(), discussionTopicDto));
+        mockMvc.perform(put(url)
+            .content(mapper.writeValueAsString(discussionTopic)).contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
     }
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -16,38 +16,48 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
+
 package org.planqk.atlas.web.dtos;
 
 import java.util.List;
 import java.util.UUID;
-
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
+
+import org.hibernate.validator.constraints.URL;
+import org.planqk.atlas.web.utils.Identifyable;
+import org.planqk.atlas.web.utils.ValidationGroups;
+import org.planqk.atlas.web.utils.ValidationGroups.Create;
+import org.springframework.hateoas.server.core.Relation;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.URL;
-import org.springframework.hateoas.server.core.Relation;
 
+/**
+ * Data transfer object for Publication ({@link org.planqk.atlas.core.model.Publication}).
+ */
 @EqualsAndHashCode
 @Data
 @NoArgsConstructor
 @Relation(itemRelation = "publication", collectionRelation = "publications")
-public class PublicationDto {
+public class PublicationDto implements Identifyable {
 
+    @NotNull(groups = {ValidationGroups.IDOnly.class}, message = "The id must not be null to perform an update")
+    @Null(groups = {Create.class}, message = "When Creating a resource the id must be null")
     private UUID id;
 
-    @NotNull(message = "Title of the Publication must not be null!")
+    @NotNull(groups = {Create.class}, message = "Title of the Publication must not be null!")
     private String title;
 
     private String doi;
 
     @Schema(description = "URL", example = "https://www.ibm.com/quantum-computing/", required = false)
-    @URL(message = "Publication URL must be a valid URL!")
+    @URL(groups = {Create.class}, message = "Publication URL must be a valid URL!")
     private String url;
 
-    @NotEmpty(message = "Authors of the Publication must not be empty!")
+    @NotEmpty(groups = {Create.class}, message = "Authors of the Publication must not be empty!")
     private List<String> authors;
 }

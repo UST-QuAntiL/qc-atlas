@@ -10,7 +10,7 @@
   - Repeat the previous steps for the Lombok Plugin
   - Open the Settings (by pressing <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>S</kbd>; **Mac**: <kbd>command</kbd> + <kbd>,</kbd>)
   - Go to "Other Settings > Checkstyle".
-  - Click on "+" under Configuration File and add `checkstyle.xml`. It is located in `docs/dev/config/IntelliJ IDEA`. Confirm.
+  - Click on "+" under Configuration File and add `checkstyle.xml`. It is located in the root directory. Confirm.
   
     ![checkstyle](graphics/checkstyle-config.PNG)
     
@@ -23,10 +23,14 @@
   - Go to "Editor > Code Style"  
   - Click on the gear icon (right of "Scheme:")  
   - Click "Import Scheme"  
-  - Choose "IntelliJ IDEA code style XML"
-  - Navigate to `intellij-idea-code-style.xml`. It is located in `docs/dev/config/IntelliJ IDEA`.  
+  - Choose "CheckStyle Configuration"
+  - Navigate to `checkstyle.xml`. It is located in root directory.  
   - Click "Apply"
-  - Click "OK"  
+  - Click "OK"
+  - Go to "Editor > Code Style > Java > Imports > Import Layout"
+  - Adapt the order such that "import java.\*" is before "import javax.*"  
+  - Click "Apply"
+  - Click "OK"
   - Click "Close"  
   
 4. Setup code headers to be inserted automatically  

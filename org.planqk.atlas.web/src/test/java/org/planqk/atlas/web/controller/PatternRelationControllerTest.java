@@ -1,4 +1,35 @@
+/*******************************************************************************
+ * Copyright (c) 2020 the qc-atlas contributors.
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *******************************************************************************/
+
 package org.planqk.atlas.web.controller;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -6,6 +37,10 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.ComputationModel;
 import org.planqk.atlas.core.model.PatternRelation;
@@ -13,26 +48,18 @@ import org.planqk.atlas.core.model.PatternRelationType;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.core.services.PatternRelationService;
 import org.planqk.atlas.core.services.PatternRelationTypeService;
-import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.PatternRelationDto;
 import org.planqk.atlas.web.dtos.PatternRelationTypeDto;
 import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
+import org.planqk.atlas.web.linkassembler.LinkBuilderService;
+import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -42,59 +69,79 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @WebMvcTest(PatternRelationController.class)
 @ExtendWith(MockitoExtension.class)
 @AutoConfigureMockMvc
 @EnableLinkAssemblers
 public class PatternRelationControllerTest {
+
+    private final ObjectMapper mapper = ObjectMapperUtils.newTestMapper();
+
     private final int page = 0;
+
     private final int size = 2;
+
     private final Pageable pageable = PageRequest.of(page, size);
-    private List<PatternRelation> relationList;
-    private Page<PatternRelation> relationPage;
-    private Page<PatternRelationDto> relationPageDto;
+
     @MockBean
     private PatternRelationService patternRelationService;
+
     @MockBean
     private AlgorithmService algorithmService;
+
     @MockBean
     private PatternRelationTypeService patternRelationTypeService;
+
     @Autowired
     private MockMvc mockMvc;
-    private ObjectMapper mapper;
+
+    @Autowired
+    private LinkBuilderService linkBuilderService;
+
+    private List<PatternRelation> relationList;
+
+    private Page<PatternRelation> relationPage;
+
+    private Page<PatternRelationDto> relationPageDto;
+
     private PatternRelation relation1;
+
     private PatternRelation relation2;
+
     private PatternRelation missingReqParamRelation;
+
     private PatternRelation relationUpdated;
+
     private PatternRelationDto relation1Dto;
+
     private PatternRelationDto relation2Dto;
+
     private PatternRelationDto missingReqParamRelationDto;
+
     private PatternRelationDto relationUpdatedDto;
+
     private PatternRelationType type1;
+
     private PatternRelationType type2;
+
     private PatternRelationTypeDto type1Dto;
+
     private PatternRelationTypeDto type2Dto;
+
     private Algorithm algorithm1;
+
     private Algorithm algorithm2;
+
     private AlgorithmDto algorithm1Dto;
+
     private AlgorithmDto algorithm2Dto;
 
     @BeforeEach
     public void initialize() {
-        // Init Object-Mapper
-        mapper = ObjectMapperUtils.newTestMapper();
-
         // Generate UUIDs
         UUID relationId1 = UUID.randomUUID();
         UUID relationId2 = UUID.randomUUID();
@@ -165,53 +212,63 @@ public class PatternRelationControllerTest {
     public void createRelation_returnRelation() throws Exception {
         // Ignore annontations when writing Java objects to Json to enable writing WRITE_ONLY field which are required as input
         mapper.configure(MapperFeature.USE_ANNOTATIONS, false);
+        var id = relation1Dto.getId();
+        relation1Dto.setId(null);
 
-        when(patternRelationService.save(any())).thenReturn(relation1);
+        when(patternRelationService.create(any())).thenReturn(relation1);
 
+        var url = linkBuilderService.urlStringTo(methodOn(PatternRelationController.class)
+            .createPatternRelation(relation1Dto));
         MvcResult result = mockMvc
-                .perform(post("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATIONS + "/").content(mapper.writeValueAsString(relation1Dto))
-                        .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated()).andReturn();
+            .perform(post(url).content(mapper.writeValueAsString(relation1Dto))
+                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isCreated()).andReturn();
 
         mapper.configure(MapperFeature.USE_ANNOTATIONS, true);
         EntityModel<PatternRelationDto> response = mapper.readValue(result.getResponse().getContentAsString(),
-                new TypeReference<EntityModel<PatternRelationDto>>() {
-                });
+            new TypeReference<EntityModel<PatternRelationDto>>() {
+            });
 
-        assertEquals(response.getContent().getId(), relation1Dto.getId());
+        assertEquals(response.getContent().getId(), id);
     }
 
     @Test
     public void createRelation_returnBadRequest() throws Exception {
-        mockMvc.perform(post("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATIONS + "/")
-                .content(mapper.writeValueAsString(missingReqParamRelationDto)).contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
+        var url = linkBuilderService.urlStringTo(methodOn(PatternRelationController.class)
+            .createPatternRelation(relation1Dto));
+        mockMvc.perform(post(url)
+            .content(mapper.writeValueAsString(missingReqParamRelationDto)).contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
     }
 
     @Test
     public void createRelation_returnAlgorithmNotFound() throws Exception {
         // Ignore annontations when writing Java objects to Json to enable writing WRITE_ONLY field which are required as input
         mapper.configure(MapperFeature.USE_ANNOTATIONS, false);
+        relation1Dto.setId(null);
 
-        when(patternRelationService.save(any())).thenThrow(NoSuchElementException.class);
+        when(patternRelationService.create(any())).thenThrow(NoSuchElementException.class);
 
-        mockMvc.perform(post("/" + Constants.PATTERN_RELATIONS + "/").content(mapper.writeValueAsString(relation2Dto))
-                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+        var url = linkBuilderService.urlStringTo(methodOn(PatternRelationController.class)
+            .createPatternRelation(relation1Dto));
+        mockMvc.perform(post(url).content(mapper.writeValueAsString(relation1Dto))
+            .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNotFound());
     }
 
     @Test
     public void getRelationsPaged_returnRelationsPaged() throws Exception {
         when(patternRelationService.findAll(pageable)).thenReturn(relationPage);
 
+        var url = linkBuilderService.urlStringTo(methodOn(PatternRelationController.class)
+            .getPatternRelations(new ListParameters(pageable, null)));
         MvcResult result = mockMvc
-                .perform(get("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATIONS + "/").queryParam(Constants.PAGE, Integer.toString(page))
-                        .queryParam(Constants.SIZE, Integer.toString(size)).accept(MediaType.APPLICATION_JSON)
-                        .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk()).andReturn();
+            .perform(get(url).accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk()).andReturn();
 
         var resultList = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(),
-                "patternRelations", PatternRelationDto.class);
+            "patternRelations", PatternRelationDto.class);
 
         assertEquals(resultList.size(), 2);
         assertEquals(resultList.get(0).getDescription(), relation1Dto.getDescription());
@@ -226,13 +283,15 @@ public class PatternRelationControllerTest {
     public void getRelation_returnRelation() throws Exception {
         when(patternRelationService.findById(relation1.getId())).thenReturn(relation1);
 
+        var url = linkBuilderService.urlStringTo(methodOn(PatternRelationController.class)
+            .getPatternRelation(relation1.getId()));
         MvcResult result = mockMvc.perform(
-                get("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATIONS + "/" + relation1.getId()).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk()).andReturn();
+            get(url).accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk()).andReturn();
 
         EntityModel<PatternRelationDto> response = new ObjectMapper().readValue(
-                result.getResponse().getContentAsString(), new TypeReference<EntityModel<PatternRelationDto>>() {
-                });
+            result.getResponse().getContentAsString(), new TypeReference<EntityModel<PatternRelationDto>>() {
+            });
 
         assertEquals(response.getContent().getPatternRelationType(), type1Dto);
         assertEquals(response.getContent().getId(), relation1Dto.getId());
@@ -244,8 +303,10 @@ public class PatternRelationControllerTest {
     public void getRelation_returnNotFound() throws Exception {
         when(patternRelationService.findById(any())).thenThrow(NoSuchElementException.class);
 
-        mockMvc.perform(get("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATIONS + "/" + type1.getId()).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+        var url = linkBuilderService.urlStringTo(methodOn(PatternRelationController.class)
+            .getPatternRelation(relation1.getId()));
+        mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNotFound());
     }
 
     @Test
@@ -253,16 +314,18 @@ public class PatternRelationControllerTest {
         // Ignore annontations when writing Java objects to Json to enable writing WRITE_ONLY field which are required as input
         mapper.configure(MapperFeature.USE_ANNOTATIONS, false);
 
-        when(patternRelationService.save(any())).thenReturn(relationUpdated);
+        when(patternRelationService.update(any())).thenReturn(relationUpdated);
 
-        MvcResult result = mockMvc.perform(put("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATIONS + "/{id}", relation1.getId())
-                .content(mapper.writeValueAsString(relation1Dto)).contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
+        var url = linkBuilderService.urlStringTo(methodOn(PatternRelationController.class)
+            .updatePatternRelation(relation1.getId(), relation1Dto));
+        MvcResult result = mockMvc.perform(put(url)
+            .content(mapper.writeValueAsString(relation1Dto)).contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
 
         mapper.configure(MapperFeature.USE_ANNOTATIONS, true);
         EntityModel<PatternRelationDto> response = mapper.readValue(result.getResponse().getContentAsString(),
-                new TypeReference<EntityModel<PatternRelationDto>>() {
-                });
+            new TypeReference<EntityModel<PatternRelationDto>>() {
+            });
 
         assertEquals(response.getContent().getPatternRelationType(), type2Dto);
         assertEquals(response.getContent().getDescription(), relationUpdatedDto.getDescription());
@@ -272,11 +335,13 @@ public class PatternRelationControllerTest {
 
     @Test
     public void updateRelation_returnBadRequest() throws Exception {
-        when(patternRelationService.update(relation1.getId(), relation1)).thenReturn(relationUpdated);
+        when(patternRelationService.update(relation1)).thenReturn(relationUpdated);
 
-        mockMvc.perform(put("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATIONS + "/{id}", type1.getId())
-                .content(mapper.writeValueAsString(missingReqParamRelation)).contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
+        var url = linkBuilderService.urlStringTo(methodOn(PatternRelationController.class)
+            .updatePatternRelation(relation1.getId(), relation1Dto));
+        mockMvc.perform(put(url)
+            .content(mapper.writeValueAsString(missingReqParamRelation)).contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
     }
 
     @Test
@@ -284,26 +349,32 @@ public class PatternRelationControllerTest {
         // Ignore annontations when writing Java objects to Json to enable writing WRITE_ONLY field which are required as input
         mapper.configure(MapperFeature.USE_ANNOTATIONS, false);
 
-        when(patternRelationService.save(any())).thenThrow(NoSuchElementException.class);
+        when(patternRelationService.update(any())).thenThrow(NoSuchElementException.class);
 
-        mockMvc.perform(put("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATIONS + "/{id}", UUID.randomUUID())
-                .content(mapper.writeValueAsString(relation1Dto)).contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
+        var url = linkBuilderService.urlStringTo(methodOn(PatternRelationController.class)
+            .updatePatternRelation(relation1.getId(), relation1Dto));
+        mockMvc.perform(put(url)
+            .content(mapper.writeValueAsString(relation1Dto)).contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
     }
 
     @Test
     public void deleteRelation_returnOk() throws Exception {
-        doNothing().when(patternRelationService).deleteById(relation1.getId());
+        doNothing().when(patternRelationService).delete(relation1.getId());
 
-        mockMvc.perform(delete("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATIONS + "/{id}", relation1.getId())
-                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
+        var url = linkBuilderService.urlStringTo(methodOn(PatternRelationController.class)
+            .deletePatternRelation(relation1.getId()));
+        mockMvc.perform(delete(url)
+            .accept(MediaType.APPLICATION_JSON)).andExpect(status().isNoContent());
     }
 
     @Test
     public void deleteRelation_returnNotFound() throws Exception {
-        doThrow(EmptyResultDataAccessException.class).when(patternRelationService).deleteById(any());
+        doThrow(NoSuchElementException.class).when(patternRelationService).delete(any());
 
-        mockMvc.perform(delete("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATIONS + "/{id}", UUID.randomUUID())
-                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
+        var url = linkBuilderService.urlStringTo(methodOn(PatternRelationController.class)
+            .deletePatternRelation(relation1.getId()));
+        mockMvc.perform(delete(url)
+            .accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
     }
 }

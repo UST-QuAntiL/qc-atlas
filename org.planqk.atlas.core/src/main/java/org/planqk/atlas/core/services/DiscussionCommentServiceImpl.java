@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -24,59 +24,65 @@ import java.util.UUID;
 
 import org.planqk.atlas.core.model.DiscussionComment;
 import org.planqk.atlas.core.repository.DiscussionCommentRepository;
-
-import lombok.AllArgsConstructor;
+import org.planqk.atlas.core.util.ServiceUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-@AllArgsConstructor
+import lombok.AllArgsConstructor;
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
+@AllArgsConstructor
 public class DiscussionCommentServiceImpl implements DiscussionCommentService {
 
-    private DiscussionCommentRepository repository;
+    private final DiscussionCommentRepository discussionCommentRepository;
 
     @Override
-    public DiscussionComment save(DiscussionComment discussionComment) {
-        return repository.save(discussionComment);
+    @Transactional
+    public DiscussionComment create(@NonNull DiscussionComment discussionComment) {
+        return discussionCommentRepository.save(discussionComment);
     }
 
     @Override
-    public Page<DiscussionComment> findAll(Pageable pageable) {
-        return repository.findAll(pageable);
+    public Page<DiscussionComment> findAll(@NonNull Pageable pageable) {
+        return discussionCommentRepository.findAll(pageable);
     }
 
     @Override
-    public Page<DiscussionComment> findAllByTopic(UUID topicId, Pageable pageable) {
-        return repository.findByDiscussionTopic_Id(topicId, pageable);
+    public Page<DiscussionComment> findAllByTopic(@NonNull UUID topicId, @NonNull Pageable pageable) {
+        return discussionCommentRepository.findByDiscussionTopicId(topicId, pageable);
     }
 
     @Override
-    public DiscussionComment findById(UUID id) {
+    public DiscussionComment findById(@NonNull UUID commentId) {
+        return ServiceUtils.findById(commentId, DiscussionComment.class, discussionCommentRepository);
+    }
 
-        if (!this.existsDiscussionCommentById(id)) {
-            throw new NoSuchElementException();
+    @Override
+    @Transactional
+    public DiscussionComment update(@NonNull DiscussionComment comment) {
+        ServiceUtils.throwIfNotExists(comment.getId(), DiscussionComment.class, discussionCommentRepository);
+
+        return discussionCommentRepository.save(comment);
+    }
+
+    @Override
+    @Transactional
+    public void delete(@NonNull UUID commentId) {
+        ServiceUtils.throwIfNotExists(commentId, DiscussionComment.class, discussionCommentRepository);
+
+        discussionCommentRepository.deleteById(commentId);
+    }
+
+    @Override
+    public void checkIfDiscussionCommentIsInDiscussionTopic(@NonNull UUID commentId, @NonNull UUID topicId) {
+        if (!discussionCommentRepository.existsByIdAndDiscussionTopic_Id(commentId, topicId)) {
+            throw new NoSuchElementException(String.format("A DiscussionComment with the ID \"%s\" does not " +
+                "exist in the DiscussionTopic with ID \"%s\"", commentId.toString(), topicId.toString()));
         }
-        return repository.findById(id).get();
-    }
-
-    @Override
-    public DiscussionComment update(UUID id, DiscussionComment comment) {
-
-        if (!this.existsDiscussionCommentById(id)) {
-            throw new NoSuchElementException();
-        }
-        return repository.save(comment);
-    }
-
-    @Override
-    public void deleteById(UUID id) {
-        repository.deleteById(id);
-    }
-
-    @Override
-    public boolean existsDiscussionCommentById(UUID id) {
-
-        return repository.existsById(id);
     }
 }

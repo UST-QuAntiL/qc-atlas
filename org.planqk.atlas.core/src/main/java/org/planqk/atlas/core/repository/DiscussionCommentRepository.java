@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -16,22 +16,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
+
 package org.planqk.atlas.core.repository;
-
-import org.planqk.atlas.core.model.DiscussionComment;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.querydsl.QPageRequest;
-import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import java.util.UUID;
 
+import org.planqk.atlas.core.model.DiscussionComment;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import org.springframework.stereotype.Repository;
+
+/**
+ * Repository to access {@link DiscussionComment}s available in the data base with different queries.
+ */
+@Repository
 @RepositoryRestResource(exported = false)
 public interface DiscussionCommentRepository extends JpaRepository<DiscussionComment, UUID> {
 
     boolean existsById(UUID id);
 
-    Page<DiscussionComment> findByDiscussionTopic_Id(UUID id, Pageable pageable);
+    Page<DiscussionComment> findByDiscussionTopicId(UUID discussionTopicId, Pageable pageable);
+
+    boolean existsByIdAndDiscussionTopic_Id(UUID commentId, UUID topicId);
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -16,6 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
+
 package org.planqk.atlas.web.linkassembler;
 
 import java.util.List;
@@ -27,7 +28,7 @@ import org.springframework.web.util.UriComponents;
 
 /**
  * Helper class that mimics {@link org.springframework.hateoas.server.mvc.WebMvcLinkBuilder}
- *
+ * <p>
  * Needed to retain WebMvcLinkBuilder's flexibility and interface.
  */
 public class LinkBuilder extends TemplateVariableAwareLinkBuilderSupport<LinkBuilder> {

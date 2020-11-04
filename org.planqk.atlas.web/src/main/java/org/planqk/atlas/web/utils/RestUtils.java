@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -20,15 +20,16 @@
 package org.planqk.atlas.web.utils;
 
 import org.planqk.atlas.web.Constants;
-
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 
 /**
  * Utility class for the REST API functionality
  */
-public class RestUtils {
+public final class RestUtils {
+
+    private RestUtils() {
+    }
 
     /**
      * Return a (default) pageable from the provided Requestparams for an endpoint that can be used with pagination.

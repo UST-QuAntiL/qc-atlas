@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -19,27 +19,19 @@
 
 package org.planqk.atlas.web.dtos;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import org.planqk.atlas.core.model.QuantumAlgorithm;
-import org.planqk.atlas.core.model.SoftwarePlatform;
+import org.springframework.hateoas.server.core.Relation;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import org.springframework.hateoas.server.core.Relation;
 
+/**
+ * Data transfer object for QuantumImplementation ({@link org.planqk.atlas.core.model.QuantumImplementation}).
+ */
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @Data
 @Relation(itemRelation = "implementation", collectionRelation = "implementations")
 public class QuantumImplementationDto extends ImplementationDto {
-
-    private QuantumAlgorithm algorithm;
-
-    private Set<ComputingResourcePropertyDto> requiredQuantumResources = new HashSet<>();
-
-    private SoftwarePlatform usedSoftwarePlatform;
 
 }

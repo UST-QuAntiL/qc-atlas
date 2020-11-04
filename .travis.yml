@@ -2,15 +2,14 @@ dist: bionic
 sudo: required
 language: java
 jdk:
-  - openjdk11
+    - openjdk11
 services:
-  - docker
+    - docker
 
-before_script:
-  - docker pull postgres:12
-  # TODO Consider replacing with planqk/initialized-db:latest once that image becomes mandatory
-  - docker run --rm -d -p 5432:5432 -e POSTGRES_DB=planqk_test -e POSTGRES_PASSWORD=planqk -e POSTGRES_USER=planqk -d postgres
 script:
-  - mvn package --fail-at-end
+    # Filter Stacktraces to reduce log length significantly
+    # Log messages and exceptions are still shown, but without
+    # the attached Stacktrace
+    - mvn package --fail-at-end | grep -v -E 'at .*\((.*\.java:[0-9]*|Native Method)\)|o\.h\.e\.jdbc\.spi\.SqlExceptionHelper'
 after_success:
-  - bash <(curl -s https://codecov.io/bash)
+    - bash <(curl -s https://codecov.io/bash)

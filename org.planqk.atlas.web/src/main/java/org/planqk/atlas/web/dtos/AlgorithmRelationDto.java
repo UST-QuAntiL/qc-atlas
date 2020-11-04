@@ -1,5 +1,5 @@
-/********************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+/*******************************************************************************
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -20,34 +20,45 @@
 package org.planqk.atlas.web.dtos;
 
 import java.util.UUID;
-
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import org.planqk.atlas.web.utils.Identifyable;
+import org.planqk.atlas.web.utils.RequiresID;
+import org.planqk.atlas.web.utils.ValidationGroups;
 import org.springframework.hateoas.server.core.Relation;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 /**
- * Data transfer object for Algorithms ({@link org.planqk.atlas.core.model.Algorithm}).
+ * Data transfer object for AlgorithmRelation ({@link org.planqk.atlas.core.model.AlgorithmRelation}).
  */
 @NoArgsConstructor
 @Data
 @Relation(itemRelation = "algorithmRelation", collectionRelation = "algorithmRelations")
-public class AlgorithmRelationDto {
+public class AlgorithmRelationDto implements Identifyable {
 
+    @NotNull(groups = {ValidationGroups.IDOnly.class}, message = "An id is required to perform an update")
+    @Null(groups = {ValidationGroups.Create.class}, message = "The id must be null for creating an algorithm relation")
     private UUID id;
 
-    @NotNull(message = "Source Algorithm must not be null!")
-    @EqualsAndHashCode.Exclude
-    private AlgorithmDto sourceAlgorithm;
+    @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
+        message = "Source Algorithm id must not be null!")
+    private UUID sourceAlgorithmId;
 
-    @NotNull(message = "Target Algorithm must not be null!")
-    @EqualsAndHashCode.Exclude
-    private AlgorithmDto targetAlgorithm;
+    @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
+        message = "Target Algorithm id must not be null!")
+    private UUID targetAlgorithmId;
 
-    @NotNull(message = "AlgorithmRelationType must not be null!")
-    private AlgoRelationTypeDto algoRelationType;
+    @JsonProperty("algoRelationType")
+    @RequiresID(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
+        message = "AlgorithmRelationType must have a type with an ID!")
+    @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
+        message = "AlgorithmRelationType must not be null!")
+    private AlgorithmRelationTypeDto algorithmRelationType;
 
     private String description;
 }

@@ -1,33 +1,41 @@
+/*******************************************************************************
+ * Copyright (c) 2020 the qc-atlas contributors.
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *******************************************************************************/
+
 package org.planqk.atlas.web.controller;
 
-import java.util.Objects;
 import java.util.UUID;
 
-import javax.validation.Valid;
-
-import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.PatternRelation;
-import org.planqk.atlas.core.model.PatternRelationType;
-import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.core.services.PatternRelationService;
-import org.planqk.atlas.core.services.PatternRelationTypeService;
 import org.planqk.atlas.web.Constants;
+import org.planqk.atlas.web.annotation.ApiVersion;
 import org.planqk.atlas.web.dtos.PatternRelationDto;
 import org.planqk.atlas.web.linkassembler.PatternRelationAssembler;
-import org.planqk.atlas.web.utils.RestUtils;
-
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Pageable;
+import org.planqk.atlas.web.utils.ListParameters;
+import org.planqk.atlas.web.utils.ListParametersDoc;
+import org.planqk.atlas.web.utils.ModelMapperUtils;
+import org.planqk.atlas.web.utils.ValidationGroups;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,89 +44,96 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@io.swagger.v3.oas.annotations.tags.Tag(name = "pattern-relation")
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+@Tag(name = Constants.TAG_PATTERN_RELATION)
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
-@RequestMapping("/" + Constants.API_VERSION + "/" + Constants.PATTERN_RELATIONS)
+@RequestMapping("/" + Constants.PATTERN_RELATIONS)
+@ApiVersion("v1")
 @AllArgsConstructor
 @Slf4j
 public class PatternRelationController {
 
-    private AlgorithmService algorithmService;
-    private PatternRelationTypeService patternRelationTypeService;
-    private PatternRelationService patternRelationService;
-    private PatternRelationAssembler patternRelationAssembler;
+    private final PatternRelationService patternRelationService;
 
-    @Operation(responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404")}, description = "Add a pattern relation from an algorithm to a given pattern. Custom ID will be ignored. For pattern relation type only ID is required, other pattern relation type attributes will not change.")
-    @PostMapping()
-    public HttpEntity<EntityModel<PatternRelationDto>> createPatternRelation(
-            @Valid @RequestBody PatternRelationDto relationDto) {
-        log.debug("Post to create new PatternRelation received.");
-        return new ResponseEntity<>(handlePatternRelationUpdate(relationDto, null), HttpStatus.CREATED);
-    }
+    private final PatternRelationAssembler patternRelationAssembler;
 
-    @Operation(operationId = "getAllPatternRelationTypes",
-            responses = {@ApiResponse(responseCode = "200")})
-    @GetMapping()
-    public HttpEntity<PagedModel<EntityModel<PatternRelationDto>>> getPatternRelationTypes(
-            @RequestParam(required = false) Integer page, @RequestParam(required = false) Integer size) {
-        log.debug("Get to retrieve all PatternRelations received.");
-        Pageable p = RestUtils.getPageableFromRequestParams(page, size);
-        var entities = patternRelationService.findAll(p);
-        return ResponseEntity.ok(patternRelationAssembler.toModel(entities));
-    }
-
-    @Operation(responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400"), @ApiResponse(responseCode = "404")})
-    @GetMapping("/{id}")
-    public HttpEntity<EntityModel<PatternRelationDto>> getPatternRelation(@PathVariable UUID id) {
-        log.debug("Get to retrieve PatternRelation with id: {}.", id);
-        var patternRelation = patternRelationService.findById(id);
-        return ResponseEntity.ok(patternRelationAssembler.toModel(patternRelation));
-    }
-
-    @Operation(operationId = "updatePatternRelationTypeByPattern",
-            responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "400"),
-                    @ApiResponse(responseCode = "404")},
-            description = "Update a reference to a pattern. Custom ID will be ignored. For pattern relation type only ID is required, other pattern relation type attributes will not change.")
-    @PutMapping("/{id}")
-    public HttpEntity<EntityModel<PatternRelationDto>> updatePatternRelationType(@PathVariable UUID id,
-                                                                                 @Valid @RequestBody PatternRelationDto relationDto) {
-        log.debug("Put to update PatternRelation with id: {}.", id);
-        return ResponseEntity.ok(handlePatternRelationUpdate(relationDto, id));
+    @Operation(responses = {
+        @ApiResponse(responseCode = "200")
+    }, description = "Retrieve all relations between pattern and algorithms.")
+    @ListParametersDoc
+    @GetMapping
+    public ResponseEntity<PagedModel<EntityModel<PatternRelationDto>>> getPatternRelations(
+        @Parameter(hidden = true) ListParameters listParameters) {
+        final var patternRelations = patternRelationService.findAll(listParameters.getPageable());
+        return ResponseEntity.ok(patternRelationAssembler.toModel(patternRelations));
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404", description = "Pattern relation with given id doesn't exist")})
-    @DeleteMapping("/{id}")
-    public HttpEntity<Void> deletePatternRelation(@PathVariable UUID id) {
-        log.debug("Delete to remove PatternRelation with id: {}.", id);
-        patternRelationService.findById(id);
-        patternRelationService.deleteById(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+        @ApiResponse(responseCode = "201"),
+        @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
+        @ApiResponse(responseCode = "404",
+            description = "Not Found. Algorithm or Pattern relation type with given IDs don't exist.")
+    }, description = "Create a relation between a pattern and an algorithm." +
+        "The pattern relation type has to be already created (e.g. via POST on /" + Constants.PATTERN_RELATION_TYPES + "). " +
+        "As a result only the ID is required for the pattern relation type, other attributes will be ignored not changed.")
+    @PostMapping
+    public ResponseEntity<EntityModel<PatternRelationDto>> createPatternRelation(
+        @Validated({ValidationGroups.Create.class}) @RequestBody PatternRelationDto patternRelationDto) {
+        final var savedPatternRelation = patternRelationService.create(
+            ModelMapperUtils.convert(patternRelationDto, PatternRelation.class));
+        return new ResponseEntity<>(patternRelationAssembler.toModel(savedPatternRelation), HttpStatus.CREATED);
     }
 
-    private EntityModel<PatternRelationDto> handlePatternRelationUpdate(PatternRelationDto relationDto, UUID relationId) {
-        PatternRelation patternRelation = new PatternRelation();
-        if (Objects.nonNull(relationId)) {
-            patternRelation.setId(relationId);
-        }
+    @Operation(responses = {
+        @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "400",
+            description = "Bad Request. Invalid request body or algorithm with given ID is not part of pattern relation."),
+        @ApiResponse(responseCode = "404",
+            description = "Not Found. Algorithm, pattern relation or pattern relation type with given IDs don't exist.")
+    }, description = "Update a relation between a pattern and an algorithm. " +
+        "For the pattern relation type only the ID is required," +
+        "other pattern relation type attributes will be ignored and not changed.")
+    @PutMapping("/{patternRelationId}")
+    public ResponseEntity<EntityModel<PatternRelationDto>> updatePatternRelation(
+        @PathVariable UUID patternRelationId,
+        @Validated({ValidationGroups.Update.class}) @RequestBody PatternRelationDto patternRelationDto) {
+        patternRelationDto.setId(patternRelationId);
+        final var savedPatternRelation = patternRelationService.update(
+            ModelMapperUtils.convert(patternRelationDto, PatternRelation.class));
+        return ResponseEntity.ok(patternRelationAssembler.toModel(savedPatternRelation));
+    }
 
-        // Convert Dto to PatternRelation by using content from the database
-        Algorithm algorithm = algorithmService.findById(relationDto.getAlgorithm().getId());
-        PatternRelationType patternRelationType = patternRelationTypeService.findById(relationDto.getPatternRelationType().getId());
-        patternRelation.setAlgorithm(algorithm);
-        patternRelation.setPattern(relationDto.getPattern());
-        patternRelation.setDescription(relationDto.getDescription());
-        patternRelation.setPatternRelationType(patternRelationType);
+    @Operation(responses = {
+        @ApiResponse(responseCode = "204"),
+        @ApiResponse(responseCode = "400"),
+        @ApiResponse(responseCode = "404",
+            description = "Not Found. Algorithm or pattern relation with given IDs don't exist.")
+    }, description = "Delete a specific relation between a pattern and an algorithm. " +
+        "The pattern relation type is not affected by this.")
+    @DeleteMapping("/{patternRelationId}")
+    public ResponseEntity<Void> deletePatternRelation(@PathVariable UUID patternRelationId) {
+        patternRelationService.delete(patternRelationId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 
-        // Store and return PatternRelation
-        PatternRelation savedRelation = patternRelationService.save(patternRelation);
-        return patternRelationAssembler.toModel(savedRelation);
+    @Operation(responses = {
+        @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "400"),
+        @ApiResponse(responseCode = "404",
+            description = "Not Found. Algorithm or pattern relation with given IDs don't exist.")
+    }, description = "Retrieve a specific relation between a pattern and an algorithm.")
+    @GetMapping("/{patternRelationId}")
+    public ResponseEntity<EntityModel<PatternRelationDto>> getPatternRelation(@PathVariable UUID patternRelationId) {
+        final var patternRelation = patternRelationService.findById(patternRelationId);
+        return ResponseEntity.ok(patternRelationAssembler.toModel(patternRelation));
     }
 }

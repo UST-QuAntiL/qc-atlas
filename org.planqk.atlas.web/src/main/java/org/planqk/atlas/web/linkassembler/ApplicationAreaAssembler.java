@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -19,22 +19,21 @@
 
 package org.planqk.atlas.web.linkassembler;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 import java.util.UUID;
 
 import org.planqk.atlas.web.controller.ApplicationAreaController;
 import org.planqk.atlas.web.dtos.ApplicationAreaDto;
-
 import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Component;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Component
 public class ApplicationAreaAssembler extends GenericLinkAssembler<ApplicationAreaDto> {
 
     @Override
     public void addLinks(EntityModel<ApplicationAreaDto> resource) {
-        resource.add(links.linkTo(methodOn(ApplicationAreaController.class).getApplicationAreaById(getId(resource))).withSelfRel());
+        resource.add(getLinks().linkTo(methodOn(ApplicationAreaController.class).getApplicationArea(getId(resource))).withSelfRel());
     }
 
     private UUID getId(EntityModel<ApplicationAreaDto> resource) {

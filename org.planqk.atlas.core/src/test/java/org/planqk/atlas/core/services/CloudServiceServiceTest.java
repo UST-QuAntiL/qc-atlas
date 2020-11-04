@@ -1,5 +1,5 @@
-/********************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+/*******************************************************************************
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -19,79 +19,119 @@
 
 package org.planqk.atlas.core.services;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
-import org.planqk.atlas.core.model.Backend;
-import org.planqk.atlas.core.model.CloudService;
-import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.UUID;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.Test;
+import org.planqk.atlas.core.model.CloudService;
+import org.planqk.atlas.core.model.ComputeResource;
+import org.planqk.atlas.core.model.QuantumComputationModel;
+import org.planqk.atlas.core.model.SoftwarePlatform;
+import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
+import org.planqk.atlas.core.util.ServiceTestUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
 
     @Autowired
     private CloudServiceService cloudServiceService;
+
     @Autowired
-    private BackendService backendService;
+    private ComputeResourceService computeResourceService;
+
+    @Autowired
+    private SoftwarePlatformService softwarePlatformService;
+
+    @Autowired
+    private LinkingService linkingService;
 
     @Test
-    void testAddCloudService_WithoutBackends() throws MalformedURLException {
-        CloudService cloudService = getGenericTestCloudServiceWithoutRelations("testCloudService");
+    void createCloudService() {
+        CloudService cloudService = getFullCloudService("cloudServiceName");
 
-        CloudService storedCloudService = cloudServiceService.save(cloudService);
-        assertCloudServiceEquality(storedCloudService, cloudService);
+        CloudService storedCloudService = cloudServiceService.create(cloudService);
+
+        assertThat(storedCloudService.getId()).isNotNull();
+        ServiceTestUtils.assertCloudServiceEquality(storedCloudService, cloudService);
     }
 
     @Test
-    void testAddCloudService_WithBackends() throws MalformedURLException {
-        CloudService cloudService = getGenericTestCloudServiceWithoutRelations("testCloudService");
-        Set<Backend> backends = new HashSet<>();
+    void createComputeResource_WithComputeResource() {
 
-        Backend backend = new Backend();
-        backend.setName("testBackend");
-        backends.add(backend);
-
-        cloudService.setProvidedBackends(backends);
-
-        CloudService storedCloudService = cloudServiceService.save(cloudService);
-        assertCloudServiceEquality(storedCloudService, cloudService);
-
-        storedCloudService.getProvidedBackends().forEach(b -> {
-            assertThat(b.getId()).isNotNull();
-            assertThat(b.getName()).isEqualTo(backend.getName());
-            Assertions.assertDoesNotThrow(() -> backendService.findById(b.getId()));
-        });
-
-        assertThat(storedCloudService.getProvidedBackends().size()).isEqualTo(1);
     }
 
     @Test
-    void testUpdateCloudService_ElementNotFound() {
-        Assertions.assertThrows(NoSuchElementException.class, () ->
-                cloudServiceService.update(UUID.randomUUID(), null));
+    void searchAllCloudServicesByName() {
+        CloudService cloudService1 = getFullCloudService("cloudServiceName1");
+        cloudServiceService.create(cloudService1);
+        CloudService cloudService2 = getFullCloudService("cloudServiceName2");
+        cloudServiceService.create(cloudService2);
+
+        List<CloudService> cloudServices = cloudServiceService.searchAllByName("1", Pageable.unpaged()).getContent();
+
+        assertThat(cloudServices.size()).isEqualTo(1);
     }
 
     @Test
-    void testUpdateCloudService_ElementFound() throws MalformedURLException {
-        CloudService cloudService = getGenericTestCloudServiceWithoutRelations("testCloudService");
-        CloudService storedCloudService = getGenericTestCloudServiceWithoutRelations("testCloudService");
+    void findAllCloudServices() {
+        CloudService cloudService1 = getFullCloudService("cloudServiceName1");
+        cloudServiceService.create(cloudService1);
+        CloudService cloudService2 = getFullCloudService("cloudServiceName2");
+        cloudServiceService.create(cloudService2);
 
-        CloudService storedEditedCloudService = cloudServiceService.save(cloudService);
+        List<CloudService> cloudServices = cloudServiceService.findAll(Pageable.unpaged()).getContent();
+
+        assertThat(cloudServices.size()).isEqualTo(2);
+    }
+
+    @Test
+    void findCloudServiceById_ElementNotFound() {
+        assertThrows(NoSuchElementException.class, () ->
+            cloudServiceService.findById(UUID.randomUUID()));
+    }
+
+    @Test
+    void findCloudServiceById_ElementFound() {
+        CloudService cloudService = getFullCloudService("cloudServiceName");
+
+        CloudService storedCloudService = cloudServiceService.create(cloudService);
+
+        storedCloudService = cloudServiceService.findById(storedCloudService.getId());
+
+        assertThat(storedCloudService.getId()).isNotNull();
+        ServiceTestUtils.assertCloudServiceEquality(storedCloudService, cloudService);
+    }
+
+    @Test
+    void updateCloudService_ElementNotFound() {
+        CloudService cloudService = getFullCloudService("cloudServiceName");
+        cloudService.setId(UUID.randomUUID());
+        assertThrows(NoSuchElementException.class, () ->
+            cloudServiceService.update(cloudService));
+    }
+
+    @Test
+    void updateCloudService_ElementFound() {
+        CloudService cloudService = getFullCloudService("cloudServiceName");
+        CloudService storedCloudService = getFullCloudService("cloudServiceName");
+
+        CloudService storedEditedCloudService = cloudServiceService.create(cloudService);
         storedCloudService.setId(storedEditedCloudService.getId());
-        String editName = "editedCloudService";
+        String editName = "editedCloudServiceName";
         storedEditedCloudService.setName(editName);
-        storedEditedCloudService = cloudServiceService.update(storedEditedCloudService.getId(), storedEditedCloudService);
+        storedEditedCloudService = cloudServiceService.update(storedEditedCloudService);
 
         assertThat(storedEditedCloudService.getId()).isEqualTo(storedCloudService.getId());
         assertThat(storedEditedCloudService.getName()).isNotEqualTo(storedCloudService.getName());
@@ -102,89 +142,126 @@ public class CloudServiceServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
-    void testFindCloudServiceById_ElementNotFound() {
-        Assertions.assertThrows(NoSuchElementException.class, () ->
-            cloudServiceService.findById(UUID.randomUUID()));
-    }
+    void deleteCloudService_NoReferences() {
+        CloudService cloudService = getFullCloudService("cloudServiceName");
 
-    @Test
-    void testFindCloudServiceById_ElementFound() throws MalformedURLException {
-        CloudService cloudService = getGenericTestCloudServiceWithoutRelations("testCloudService");
+        CloudService storedCloudService = cloudServiceService.create(cloudService);
 
-        CloudService storedCloudService = cloudServiceService.save(cloudService);
-
-        storedCloudService = cloudServiceService.findById(storedCloudService.getId());
-
-        assertCloudServiceEquality(storedCloudService, cloudService);
-    }
-
-    @Test
-    void testFindAll() throws MalformedURLException {
-        CloudService cloudService1 = getGenericTestCloudServiceWithoutRelations("testCloudService1");
-        cloudServiceService.save(cloudService1);
-        CloudService cloudService2 = getGenericTestCloudServiceWithoutRelations("testCloudService2");
-        cloudServiceService.save(cloudService2);
-
-        List<CloudService> cloudServices = cloudServiceService.findAll(Pageable.unpaged()).getContent();
-
-        assertThat(cloudServices.size()).isEqualTo(2);
-    }
-
-    @Test
-    void testDeleteCloudService_WithoutBackends() throws MalformedURLException {
-        CloudService cloudService = getGenericTestCloudServiceWithoutRelations("testCloudService");
-
-        CloudService storedCloudService = cloudServiceService.save(cloudService);
-
-        Assertions.assertDoesNotThrow(() -> cloudServiceService.findById(storedCloudService.getId()));
+        assertDoesNotThrow(() -> cloudServiceService.findById(storedCloudService.getId()));
 
         cloudServiceService.delete(storedCloudService.getId());
 
-        Assertions.assertThrows(NoSuchElementException.class, () ->
+        assertThrows(NoSuchElementException.class, () ->
             cloudServiceService.findById(storedCloudService.getId()));
     }
 
     @Test
-    void testDeleteSoftwarePlatform_WithBackends() throws MalformedURLException {
-        CloudService cloudService = getGenericTestCloudServiceWithoutRelations("testCloudService");
-        Set<Backend> backends = new HashSet<>();
+    void deleteCloudService_HasReferences() {
+        CloudService cloudService = getFullCloudService("cloudServiceName");
+        CloudService storedCloudService = cloudServiceService.create(cloudService);
 
-        Backend backend = new Backend();
-        backend.setName("testBackend");
-        backends.add(backend);
+        assertDoesNotThrow(() -> cloudServiceService.findById(storedCloudService.getId()));
 
-        cloudService.setProvidedBackends(backends);
+        // Link ComputeResource
+        ComputeResource computeResource = new ComputeResource();
+        computeResource.setName("computeResource");
+        var storedComputeResource = computeResourceService.create(computeResource);
+        linkingService.linkCloudServiceAndComputeResource(storedCloudService.getId(), computeResource.getId());
 
-        CloudService storedCloudService = cloudServiceService.save(cloudService);
+        // Link SoftwarePlatform
+        SoftwarePlatform softwarePlatform = new SoftwarePlatform();
+        softwarePlatform.setName("softwarePlatformName1");
+        var storedSoftwarePlatform = softwarePlatformService.create(softwarePlatform);
+        linkingService.linkSoftwarePlatformAndCloudService(softwarePlatform.getId(), cloudService.getId());
 
-        Assertions.assertDoesNotThrow(() -> cloudServiceService.findById(storedCloudService.getId()));
-        storedCloudService.getProvidedBackends().forEach(b -> {
-            Assertions.assertDoesNotThrow(() -> backendService.findById(b.getId()));
-        });
-
+        // Delete
         cloudServiceService.delete(storedCloudService.getId());
+        assertThrows(NoSuchElementException.class, () ->
+            cloudServiceService.findById(storedCloudService.getId()));
 
-        Assertions.assertThrows(NoSuchElementException.class, () ->
-                cloudServiceService.findById(storedCloudService.getId()));
-        storedCloudService.getProvidedBackends().forEach(b -> {
-            Assertions.assertDoesNotThrow(() -> backendService.findById(b.getId()));
-        });
+        // Test if links are removed
+        assertThat(computeResourceService.findById(storedComputeResource.getId())
+            .getCloudServices().size()).isEqualTo(0);
+        assertThat(softwarePlatformService.findById(storedSoftwarePlatform.getId())
+            .getSupportedCloudServices().size()).isEqualTo(0);
     }
 
-    private void assertCloudServiceEquality(CloudService dbCloudService, CloudService compareCloudService) {
-        assertThat(dbCloudService.getId()).isNotNull();
-        assertThat(dbCloudService.getName()).isEqualTo(compareCloudService.getName());
-        assertThat(dbCloudService.getProvider()).isEqualTo(compareCloudService.getProvider());
-        assertThat(dbCloudService.getUrl()).isEqualTo(compareCloudService.getUrl());
-        assertThat(dbCloudService.getCostModel()).isEqualTo(compareCloudService.getCostModel());
+    @Test
+    void deleteComputeResourceReference() {
+        CloudService cloudService = getFullCloudService("cloudServiceName");
+        CloudService storedCloudService = cloudServiceService.create(cloudService);
+
+        ComputeResource computeResource = new ComputeResource();
+        computeResource.setName("computeResource");
+        computeResource.setVendor("vendor");
+        computeResource.setTechnology("technology");
+        computeResource.setQuantumComputationModel(QuantumComputationModel.QUANTUM_ANNEALING);
+        ComputeResource storedComputeResource = computeResourceService.create(computeResource);
+
+        linkingService.linkCloudServiceAndComputeResource(
+            storedCloudService.getId(), storedComputeResource.getId());
+
+        Set<ComputeResource> computeResources = cloudServiceService.findLinkedComputeResources(
+            storedCloudService.getId(), Pageable.unpaged()).toSet();
+        assertThat(computeResources.size()).isEqualTo(1);
+
+        linkingService.unlinkCloudServiceAndComputeResource(
+            storedCloudService.getId(), storedComputeResource.getId());
+
+        computeResources = cloudServiceService.findLinkedComputeResources(
+            storedCloudService.getId(), Pageable.unpaged()).toSet();
+        assertThat(computeResources.size()).isEqualTo(0);
     }
 
-    private CloudService getGenericTestCloudServiceWithoutRelations(String name) throws MalformedURLException {
+    @Test
+    void findLinkedSoftwarePlatforms() {
+        CloudService cloudService = getFullCloudService("cloudServiceName");
+        cloudService = cloudServiceService.create(cloudService);
+
+        SoftwarePlatform softwarePlatform1 = new SoftwarePlatform();
+        softwarePlatform1.setName("softwarePlatformName1");
+        softwarePlatform1 = softwarePlatformService.create(softwarePlatform1);
+        linkingService.linkSoftwarePlatformAndCloudService(softwarePlatform1.getId(), cloudService.getId());
+        SoftwarePlatform softwarePlatform2 = new SoftwarePlatform();
+        softwarePlatform2.setName("softwarePlatformName1");
+        softwarePlatform2 = softwarePlatformService.create(softwarePlatform2);
+        linkingService.linkSoftwarePlatformAndCloudService(softwarePlatform2.getId(), cloudService.getId());
+
+        var softwarePlatforms = cloudServiceService
+            .findLinkedSoftwarePlatforms(cloudService.getId(), Pageable.unpaged());
+
+        assertThat(softwarePlatforms.getTotalElements()).isEqualTo(2);
+    }
+
+    @Test
+    void findLinkedComputeResources() {
+        CloudService cloudService = getFullCloudService("cloudServiceName");
+        cloudService = cloudServiceService.create(cloudService);
+
+        ComputeResource computeResource1 = new ComputeResource();
+        computeResource1.setName("cloudServiceName1");
+        computeResource1 = computeResourceService.create(computeResource1);
+        linkingService.linkCloudServiceAndComputeResource(cloudService.getId(), computeResource1.getId());
+        ComputeResource computeResource2 = new ComputeResource();
+        computeResource2.setName("cloudServiceName1");
+        computeResource2 = computeResourceService.create(computeResource2);
+        linkingService.linkCloudServiceAndComputeResource(cloudService.getId(), computeResource2.getId());
+
+        var computeResources = cloudServiceService
+            .findLinkedComputeResources(cloudService.getId(), Pageable.unpaged());
+
+        assertThat(computeResources.getTotalElements()).isEqualTo(2);
+    }
+
+    private CloudService getFullCloudService(String name) {
         CloudService cloudService = new CloudService();
         cloudService.setName(name);
-        cloudService.setProvider("testProvider");
-        cloudService.setUrl(new URL("http://example.com"));
-        cloudService.setCostModel("testCostModel");
+        cloudService.setProvider("provider");
+        try {
+            cloudService.setUrl(new URL("http://example.com"));
+        } catch (MalformedURLException ignored) {
+        }
+        cloudService.setCostModel("costModel");
         return cloudService;
     }
 }

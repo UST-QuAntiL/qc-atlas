@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -16,32 +16,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
+
 package org.planqk.atlas.web.utils;
 
-import java.util.List;
-import java.util.Map;
+import static org.junit.Assert.assertEquals;
 
+import java.util.List;
 import javax.validation.constraints.NotNull;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.hateoas.EntityModel;
 
 import io.swagger.v3.core.converter.AnnotatedType;
 import io.swagger.v3.core.converter.ModelConverters;
 import io.swagger.v3.core.util.Json;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.junit.jupiter.api.Test;
-import org.springframework.hateoas.EntityModel;
-
-import static org.junit.Assert.assertEquals;
 
 public class EntityModelConverterTest {
-    @NoArgsConstructor
-    @Data
-    private static class SimpleDto {
-        @NotNull
-        private String notNull;
-        private String nullable;
-    }
-
     @Test
     void verifySchema() {
         final var converters = new ModelConverters();
@@ -52,9 +44,18 @@ public class EntityModelConverterTest {
         assertEquals(2, normal.schema.getProperties().size());
 
         final var wrapped = converters.resolveAsResolvedSchema(new AnnotatedType().type(
-                Json.mapper().getTypeFactory().constructParametricType(EntityModel.class, SimpleDto.class))
-                .resolveAsRef(false));
+            Json.mapper().getTypeFactory().constructParametricType(EntityModel.class, SimpleDto.class))
+            .resolveAsRef(false));
         assertEquals(List.of("notNull"), wrapped.schema.getRequired());
         assertEquals(3, wrapped.schema.getProperties().size());
+    }
+
+    @NoArgsConstructor
+    @Data
+    private static class SimpleDto {
+        @NotNull
+        private String notNull;
+
+        private String nullable;
     }
 }

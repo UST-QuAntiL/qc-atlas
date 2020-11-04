@@ -1,5 +1,5 @@
-/********************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+/*******************************************************************************
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -19,85 +19,97 @@
 
 package org.planqk.atlas.core.services;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Deque;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.UUID;
-
 import javax.transaction.Transactional;
 
+import org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException;
 import org.planqk.atlas.core.model.ProblemType;
-import org.planqk.atlas.core.model.exceptions.ConsistencyException;
-import org.planqk.atlas.core.repository.AlgorithmRepository;
 import org.planqk.atlas.core.repository.ProblemTypeRepository;
-
-import lombok.AllArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.planqk.atlas.core.util.ServiceUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import lombok.AllArgsConstructor;
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 @AllArgsConstructor
 public class ProblemTypeServiceImpl implements ProblemTypeService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ProblemTypeServiceImpl.class);
-
-    private final ProblemTypeRepository repo;
-    private final AlgorithmRepository algRepo;
+    private final ProblemTypeRepository problemTypeRepository;
 
     @Override
     @Transactional
-    public ProblemType save(ProblemType problemType) {
-        return repo.save(problemType);
+    public ProblemType create(@NonNull ProblemType problemType) {
+        return problemTypeRepository.save(problemType);
     }
 
     @Override
-    @Transactional
-    public ProblemType update(UUID id, ProblemType problemType) {
-        // Get existing ProblemType if it exists
-        ProblemType persistedType = findById(id);
-        // Update fields
-        persistedType.setName(problemType.getName());
-        persistedType.setParentProblemType(problemType.getParentProblemType());
-        // Save and return updated object
-        return save(persistedType);
-    }
-
-    @Override
-    @Transactional
-    public void delete(ProblemType problemType) {
-        if (this.algRepo.findAllByProblemTypes(problemType).size() > 0) {
-            LOG.info("Trying to delete ProblemType that is used by at least 1 algorithm");
-            throw new ConsistencyException("Cannot delete ProbemType, since it is used by existing algorithms!");
+    public Page<ProblemType> findAll(@NonNull Pageable pageable, String search) {
+        if (!Objects.isNull(search) && !search.isEmpty()) {
+            return problemTypeRepository.findAll(search, pageable);
         }
-        repo.deleteById(problemType.getId());
+        return problemTypeRepository.findAll(pageable);
     }
 
     @Override
-    public ProblemType findById(UUID id) {
-        return repo.findById(id).orElseThrow(NoSuchElementException::new);
+    public ProblemType findById(@NonNull UUID problemTypeId) {
+        return ServiceUtils.findById(problemTypeId, ProblemType.class, problemTypeRepository);
     }
 
     @Override
-    public ProblemType findByName(String name) {
-        return repo.findByName(name).orElseThrow(NoSuchElementException::new);
+    @Transactional
+    public ProblemType update(@NonNull ProblemType problemType) {
+        final ProblemType persistedProblemType = findById(problemType.getId());
+
+        persistedProblemType.setName(problemType.getName());
+        persistedProblemType.setParentProblemType(problemType.getParentProblemType());
+
+        return create(persistedProblemType);
     }
 
     @Override
-    public Page<ProblemType> findAll(Pageable pageable) {
-        return repo.findAll(pageable);
+    @Transactional
+    public void delete(@NonNull UUID problemTypeId) {
+        final ProblemType problemType = findById(problemTypeId);
+
+        if (problemType.getAlgorithms().size() > 0) {
+            throw new EntityReferenceConstraintViolationException("Cannot delete ProblemType with ID \"" + problemTypeId +
+                "\". It is used by existing algorithms!");
+        }
+
+        removeReferences(problemType);
+
+        problemTypeRepository.deleteById(problemTypeId);
+    }
+
+    private void removeReferences(@NonNull ProblemType problemType) {
+        removeAsParentFromProblemTypes(problemType);
+        // problemType.getAlgorithms().forEach(algorithm -> algorithm.removeProblemType(problemType));
+    }
+
+    private void removeAsParentFromProblemTypes(@NonNull ProblemType problemType) {
+        final List<ProblemType> persistedProblemTypes = problemTypeRepository.findProblemTypesByParentProblemType(problemType.getId());
+        for (ProblemType persistedProblemType : persistedProblemTypes) {
+            persistedProblemType.setParentProblemType(null);
+            problemTypeRepository.save(persistedProblemType);
+        }
     }
 
     @Override
-    public List<ProblemType> getParentList(UUID id) {
-        List<ProblemType> parentTree = new ArrayList<>();
-        ProblemType requestedProblemType = findById(id);
+    public List<ProblemType> getParentList(@NonNull UUID problemTypeId) {
+        final ProblemType requestedProblemType = findById(problemTypeId);
+
+        final List<ProblemType> parentTree = new ArrayList<>();
         parentTree.add(requestedProblemType);
+
         ProblemType parentProblemType = getParent(requestedProblemType);
         while (parentProblemType != null) {
             parentTree.add(parentProblemType);
@@ -106,8 +118,7 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
         return parentTree;
     }
 
-    // returns the parent problem type if present, else returns null
-    private ProblemType getParent(ProblemType child) {
+    private ProblemType getParent(@NonNull ProblemType child) {
         try {
             if (child.getParentProblemType() != null) {
                 return findById(child.getParentProblemType());

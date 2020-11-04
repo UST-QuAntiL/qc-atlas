@@ -1,5 +1,5 @@
-/********************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+/*******************************************************************************
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -19,25 +19,24 @@
 
 package org.planqk.atlas.web.dtos;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import org.springframework.hateoas.server.core.Relation;
-
-import java.util.UUID;
-
 import javax.validation.constraints.NotNull;
 
+import org.planqk.atlas.web.utils.ValidationGroups;
+import org.springframework.hateoas.server.core.Relation;
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+/**
+ * Data transfer object for Tag ({@link org.planqk.atlas.core.model.Tag}).
+ */
 @EqualsAndHashCode
 @Data
 @Relation(itemRelation = "tag", collectionRelation = "tags")
 public class TagDto {
 
-    @NotNull(message = "Tag key must not be null!")
-    private String key;
+    private String category;
 
-    @NotNull(message = "Tag value must not be null!")
+    @NotNull(groups = {ValidationGroups.IDOnly.class, ValidationGroups.Create.class}, message = "Tag value must not be null!")
     private String value;
-
-    private UUID id;
-
 }

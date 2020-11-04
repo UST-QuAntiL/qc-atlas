@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -16,32 +16,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
+
 package org.planqk.atlas.web.linkassembler;
 
 import java.util.UUID;
 
-import org.planqk.atlas.web.controller.PublicationController;
 import org.planqk.atlas.web.dtos.PublicationDto;
-
 import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Component;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Component
 public class PublicationAssembler extends GenericLinkAssembler<PublicationDto> {
 
     @Override
     public void addLinks(EntityModel<PublicationDto> resource) {
-        resource.add(links.linkTo(methodOn(PublicationController.class).getPublication(this.getId(resource))).withSelfRel());
-//        resource.add(links.linkTo(methodOn(PublicationController.class).getAlgorithms(this.getId(resource))).withRel(Constants.ALGORITHMS));
     }
 
     private UUID getId(EntityModel<PublicationDto> resource) {
         return resource.getContent().getId();
     }
-
-//    public void addAlgorithmLink(CollectionModel<EntityModel<AlgorithmDto>> ressources, UUID id) {
-//        ressources.add(links.linkTo(methodOn(PublicationController.class).getAlgorithms(id)).withSelfRel());
-//    }
 }

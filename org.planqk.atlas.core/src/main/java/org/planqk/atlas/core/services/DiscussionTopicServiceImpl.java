@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -23,52 +23,73 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.DiscussionTopic;
+import org.planqk.atlas.core.model.KnowledgeArtifact;
 import org.planqk.atlas.core.repository.DiscussionTopicRepository;
-
-import lombok.AllArgsConstructor;
+import org.planqk.atlas.core.util.ServiceUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-@AllArgsConstructor
+import lombok.AllArgsConstructor;
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
+@AllArgsConstructor
 public class DiscussionTopicServiceImpl implements DiscussionTopicService {
 
-    private DiscussionTopicRepository repository;
+    private final DiscussionTopicRepository discussionTopicRepository;
 
     @Override
-    public DiscussionTopic save(DiscussionTopic discussionTopic) {
-        return repository.save(discussionTopic);
+    @Transactional
+    public DiscussionTopic create(@NonNull DiscussionTopic discussionTopic) {
+        return discussionTopicRepository.save(discussionTopic);
     }
 
     @Override
-    public Page<DiscussionTopic> findAll(Pageable pageable) {
-        return repository.findAll(pageable);
+    public Page<DiscussionTopic> findAll(@NonNull Pageable pageable) {
+        return discussionTopicRepository.findAll(pageable);
     }
 
     @Override
-    public DiscussionTopic findById(UUID id) {
-        if (!this.existsDiscussionTopicById(id)) {
-            throw new NoSuchElementException();
+    public Page<DiscussionTopic> findByKnowledgeArtifact(
+        @NonNull KnowledgeArtifact knowledgeArtifact, @NonNull Pageable pageable) {
+        return discussionTopicRepository.findByKnowledgeArtifact(knowledgeArtifact, pageable);
+    }
+
+    @Override
+    public Page<DiscussionTopic> findByKnowledgeArtifactId(
+        @NonNull UUID knowledgeArtifactId, @NonNull Pageable pageable) {
+        return discussionTopicRepository.findByKnowledgeArtifactId(knowledgeArtifactId, pageable);
+    }
+
+    @Override
+    public DiscussionTopic findById(@NonNull UUID topicId) {
+        return ServiceUtils.findById(topicId, DiscussionTopic.class, discussionTopicRepository);
+    }
+
+    @Override
+    @Transactional
+    public DiscussionTopic update(@NonNull DiscussionTopic topic) {
+        ServiceUtils.throwIfNotExists(topic.getId(), DiscussionTopic.class, discussionTopicRepository);
+        return discussionTopicRepository.save(topic);
+    }
+
+    @Override
+    @Transactional
+    public void delete(@NonNull UUID topicId) {
+        ServiceUtils.throwIfNotExists(topicId, DiscussionTopic.class, discussionTopicRepository);
+
+        discussionTopicRepository.deleteById(topicId);
+    }
+
+    @Override
+    public void checkIfDiscussionTopicIsLinkedToKnowledgeArtifact(@NonNull UUID topicId, @NonNull UUID knowledgeArtifactId) {
+        if (!discussionTopicRepository.existsByIdAndKnowledgeArtifact_Id(topicId, knowledgeArtifactId)) {
+            throw new NoSuchElementException(String.format("A DiscussionTopic with the ID \"%s\" does not " +
+                "exist in the DiscussionTopics of KnowledgeArtifact with ID \"%s\"", topicId.toString(), knowledgeArtifactId.toString()));
         }
-        return repository.findById(id).get();
-    }
-
-    @Override
-    public DiscussionTopic update(UUID id, DiscussionTopic topic) {
-        if (!this.existsDiscussionTopicById(id)) {
-            throw new NoSuchElementException();
-        }
-        return repository.save(topic);
-    }
-
-    @Override
-    public boolean existsDiscussionTopicById(UUID id) {
-        return repository.existsById(id);
-    }
-
-    @Override
-    public void deleteById(UUID id) {
-        repository.deleteById(id);
     }
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -16,22 +16,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package org.planqk.atlas.web.linkassembler;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.hateoas.IanaLinkRelations;
-import org.springframework.http.HttpEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+package org.planqk.atlas.web.linkassembler;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
-public class LinkBuilderServiceTest {
-    private final Controller c = new Controller();
-    private RequestMappingHandlerMapping mappings = new RequestMappingHandlerMapping();
-    private LinkBuilderService service = new LinkBuilderService(mappings);
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.planqk.atlas.web.annotation.VersionedRequestHandlerMapping;
+import org.planqk.atlas.web.utils.ListParametersMethodArgumentResolver;
+import org.springframework.hateoas.IanaLinkRelations;
+import org.springframework.http.HttpEntity;
+import org.springframework.web.bind.annotation.RequestMapping;
 
+public class LinkBuilderServiceTest {
+    private VersionedRequestHandlerMapping mappings = new VersionedRequestHandlerMapping();
+
+    private ListParametersMethodArgumentResolver listParamResolver = new ListParametersMethodArgumentResolver();
+
+    private LinkBuilderService service = new LinkBuilderService(listParamResolver, mappings);
+
+    @BeforeEach
+    public void setupMappings() {
+        mappings.populateFromHandler(new Controller());
+    }
 
     @Test
     public void invalid() {

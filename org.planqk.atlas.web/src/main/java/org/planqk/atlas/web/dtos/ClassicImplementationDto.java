@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -19,19 +19,20 @@
 
 package org.planqk.atlas.web.dtos;
 
-import org.planqk.atlas.core.model.ClassicAlgorithm;
+import org.springframework.hateoas.server.core.Relation;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import org.springframework.hateoas.server.core.Relation;
 
+/**
+ * Data transfer object for ClassicImplementation ({@link org.planqk.atlas.core.model.ClassicImplementation}).
+ */
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @Data
 @Relation(itemRelation = "implementation", collectionRelation = "implementations")
 public class ClassicImplementationDto extends ImplementationDto {
 
-    private ClassicAlgorithm algorithm;
-
+    private ClassicAlgorithmDto algorithm;
 }

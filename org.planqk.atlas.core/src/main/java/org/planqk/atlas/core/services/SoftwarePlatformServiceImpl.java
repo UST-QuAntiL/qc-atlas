@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -19,59 +19,127 @@
 
 package org.planqk.atlas.core.services;
 
-import lombok.AllArgsConstructor;
+import java.util.NoSuchElementException;
+import java.util.UUID;
 
+import org.planqk.atlas.core.model.CloudService;
+import org.planqk.atlas.core.model.ComputeResource;
+import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.SoftwarePlatform;
+import org.planqk.atlas.core.repository.CloudServiceRepository;
+import org.planqk.atlas.core.repository.ComputeResourceRepository;
+import org.planqk.atlas.core.repository.ImplementationRepository;
 import org.planqk.atlas.core.repository.SoftwarePlatformRepository;
-
+import org.planqk.atlas.core.util.CollectionUtils;
+import org.planqk.atlas.core.util.ServiceUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.NoSuchElementException;
-import java.util.UUID;
+import lombok.AllArgsConstructor;
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
 
     private final SoftwarePlatformRepository softwarePlatformRepository;
-    private final CloudServiceService cloudServiceService;
-    private final BackendService backendService;
 
-    @Transactional
+    private final ImplementationRepository implementationRepository;
+
+    private final ComputeResourceRepository computeResourceRepository;
+
+    private final CloudServiceRepository cloudServiceRepository;
+
     @Override
-    public SoftwarePlatform save(SoftwarePlatform softwarePlatform) {
-        backendService.saveOrUpdateAll(softwarePlatform.getSupportedBackends());
-        cloudServiceService.createOrUpdateAll(softwarePlatform.getSupportedCloudServices());
+    public Page<SoftwarePlatform> searchAllByName(String name, @NonNull Pageable pageable) {
+        String nameAsSearchString = name;
+        if (nameAsSearchString == null) {
+            nameAsSearchString = "";
+        }
+        return softwarePlatformRepository.findAllByNameContainingIgnoreCase(nameAsSearchString, pageable);
+    }
 
+    @Override
+    @Transactional
+    public SoftwarePlatform create(@NonNull SoftwarePlatform softwarePlatform) {
         return this.softwarePlatformRepository.save(softwarePlatform);
     }
 
     @Override
-    public Page<SoftwarePlatform> findAll(Pageable pageable) {
+    public Page<SoftwarePlatform> findAll(@NonNull Pageable pageable) {
         return softwarePlatformRepository.findAll(pageable);
     }
 
     @Override
-    public SoftwarePlatform findById(UUID platformId) {
-        return softwarePlatformRepository.findById(platformId).orElseThrow(NoSuchElementException::new);
+    public SoftwarePlatform findById(@NonNull UUID softwarePlatformId) {
+        return ServiceUtils.findById(softwarePlatformId, SoftwarePlatform.class, softwarePlatformRepository);
     }
 
-    @Transactional
     @Override
-    public SoftwarePlatform update(UUID id, SoftwarePlatform softwarePlatform) {
-        if (softwarePlatformRepository.existsSoftwarePlatformById(id)) {
-            softwarePlatform.setId(id);
-            return save(softwarePlatform);
+    @Transactional
+    public SoftwarePlatform update(@NonNull SoftwarePlatform softwarePlatform) {
+        final SoftwarePlatform persistedSoftwarePlatform = findById(softwarePlatform.getId());
+
+        persistedSoftwarePlatform.setName(softwarePlatform.getName());
+        persistedSoftwarePlatform.setLink(softwarePlatform.getLink());
+        persistedSoftwarePlatform.setLicence(softwarePlatform.getLicence());
+        persistedSoftwarePlatform.setVersion(softwarePlatform.getVersion());
+
+        return softwarePlatformRepository.save(softwarePlatform);
+    }
+
+    @Override
+    @Transactional
+    public void delete(@NonNull UUID softwarePlatformId) {
+        final SoftwarePlatform softwarePlatform = findById(softwarePlatformId);
+
+        removeReferences(softwarePlatform);
+
+        softwarePlatformRepository.deleteById(softwarePlatformId);
+    }
+
+    private void removeReferences(@NonNull SoftwarePlatform softwarePlatform) {
+        CollectionUtils.forEachOnCopy(softwarePlatform.getImplementations(),
+            implementation -> implementation.removeSoftwarePlatform(softwarePlatform));
+        CollectionUtils.forEachOnCopy(softwarePlatform.getSupportedCloudServices(),
+            cloudService -> cloudService.removeSoftwarePlatform(softwarePlatform));
+        CollectionUtils.forEachOnCopy(softwarePlatform.getSupportedComputeResources(),
+            computeResource -> computeResource.removeSoftwarePlatform(softwarePlatform));
+    }
+
+    @Override
+    public Page<Implementation> findLinkedImplementations(@NonNull UUID softwarePlatformId, @NonNull Pageable pageable) {
+        ServiceUtils.throwIfNotExists(softwarePlatformId, SoftwarePlatform.class, softwarePlatformRepository);
+
+        return implementationRepository.findImplementationsBySoftwarePlatformId(softwarePlatformId, pageable);
+    }
+
+    @Override
+    public Page<CloudService> findLinkedCloudServices(@NonNull UUID softwarePlatformId, @NonNull Pageable pageable) {
+        ServiceUtils.throwIfNotExists(softwarePlatformId, SoftwarePlatform.class, softwarePlatformRepository);
+
+        return cloudServiceRepository.findCloudServicesBySoftwarePlatformId(softwarePlatformId, pageable);
+    }
+
+    @Override
+    public Page<ComputeResource> findLinkedComputeResources(@NonNull UUID softwarePlatformId, @NonNull Pageable pageable) {
+        ServiceUtils.throwIfNotExists(softwarePlatformId, SoftwarePlatform.class, softwarePlatformRepository);
+
+        return computeResourceRepository.findComputeResourcesBySoftwarePlatformId(softwarePlatformId, pageable);
+    }
+
+    @Override
+    public void checkIfImplementationIsLinkedToSoftwarePlatform(UUID softwarePlatformId, UUID implementationId) {
+        ServiceUtils.throwIfNotExists(softwarePlatformId, SoftwarePlatform.class, softwarePlatformRepository);
+        final Implementation implementation = ServiceUtils.findById(implementationId, Implementation.class, implementationRepository);
+
+        if (!ServiceUtils.containsElementWithId(implementation.getSoftwarePlatforms(), softwarePlatformId)) {
+            throw new NoSuchElementException("Implementation with ID \"" + implementationId
+                + "\" is not linked to SoftwarePlatform with ID \"" + softwarePlatformId + "\"");
         }
-        throw new NoSuchElementException();
-    }
-
-    @Transactional
-    @Override
-    public void delete(UUID platformId) {
-        softwarePlatformRepository.deleteById(platformId);
     }
 }

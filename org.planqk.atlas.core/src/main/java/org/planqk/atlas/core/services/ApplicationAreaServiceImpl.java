@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -19,71 +19,76 @@
 
 package org.planqk.atlas.core.services;
 
-import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.UUID;
-
 import javax.transaction.Transactional;
 
+import org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException;
 import org.planqk.atlas.core.model.ApplicationArea;
-import org.planqk.atlas.core.model.exceptions.ConsistencyException;
-import org.planqk.atlas.core.repository.AlgorithmRepository;
 import org.planqk.atlas.core.repository.ApplicationAreaRepository;
-
-import lombok.AllArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.planqk.atlas.core.util.CollectionUtils;
+import org.planqk.atlas.core.util.ServiceUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import lombok.AllArgsConstructor;
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 @AllArgsConstructor
 public class ApplicationAreaServiceImpl implements ApplicationAreaService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ApplicationAreaServiceImpl.class);
-
-    private final ApplicationAreaRepository repo;
-    private final AlgorithmRepository algRepo;
+    private final ApplicationAreaRepository applicationAreaRepository;
 
     @Override
     @Transactional
-    public ApplicationArea save(ApplicationArea applicationArea) {
-        return repo.save(applicationArea);
+    public ApplicationArea create(@NonNull ApplicationArea applicationArea) {
+        return applicationAreaRepository.save(applicationArea);
+    }
+
+    @Override
+    public Page<ApplicationArea> findAll(@NonNull Pageable pageable, String search) {
+        if (!Objects.isNull(search) && !search.isEmpty()) {
+            return applicationAreaRepository.findAll(search, pageable);
+        }
+        return applicationAreaRepository.findAll(pageable);
+    }
+
+    @Override
+    public ApplicationArea findById(@NonNull UUID applicationAreaId) {
+        return ServiceUtils.findById(applicationAreaId, ApplicationArea.class, applicationAreaRepository);
     }
 
     @Override
     @Transactional
-    public ApplicationArea update(UUID id, ApplicationArea problemType) {
-        // Get existing ApplicationArea if it exists
-        ApplicationArea persistedType = findById(id);
-        // Update fields
-        persistedType.setName(problemType.getName());
-        return save(persistedType);
+    public ApplicationArea update(@NonNull ApplicationArea applicationArea) {
+        final ApplicationArea persistedApplicationArea = findById(applicationArea.getId());
+
+        persistedApplicationArea.setName(applicationArea.getName());
+
+        return applicationAreaRepository.save(persistedApplicationArea);
     }
 
     @Override
     @Transactional
-    public void delete(ApplicationArea applicationArea) {
-        if (algRepo.findAllByApplicationAreas(applicationArea).size() > 0) {
-            LOG.info("Trying to delete applicationArea that is used by at least 1 algorithm");
-            throw new ConsistencyException("Cannot delete applicationArea, since it is used by existing algorithms!");
+    public void delete(@NonNull UUID applicationAreaId) {
+        final ApplicationArea applicationArea = findById(applicationAreaId);
+
+        if (applicationArea.getAlgorithms().size() > 0) {
+            throw new EntityReferenceConstraintViolationException("ApplicationArea with ID \""
+                + applicationAreaId + "\" cannot be deleted, because it is still in use");
         }
 
-        repo.delete(applicationArea);
+        // removeReferences(applicationArea);
+
+        applicationAreaRepository.deleteById(applicationAreaId);
     }
 
-    @Override
-    public ApplicationArea findById(UUID id) {
-        return repo.findById(id).orElseThrow(NoSuchElementException::new);
-    }
-
-    @Override
-    public ApplicationArea findByName(String name) {
-        return repo.findByName(name).orElseThrow(NoSuchElementException::new);
-    }
-
-    @Override
-    public Page<ApplicationArea> findAll(Pageable pageable) {
-        return repo.findAll(pageable);
+    private void removeReferences(ApplicationArea applicationArea) {
+        CollectionUtils.forEachOnCopy(applicationArea.getAlgorithms(),
+            algorithm -> algorithm.removeApplicationArea(applicationArea));
     }
 }

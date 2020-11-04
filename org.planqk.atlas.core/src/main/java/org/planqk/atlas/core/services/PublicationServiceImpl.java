@@ -1,5 +1,5 @@
-/********************************************************************************
- * Copyright (c) 2020 University of Stuttgart
+/*******************************************************************************
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -19,92 +19,126 @@
 
 package org.planqk.atlas.core.services;
 
-import java.util.HashSet;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.repository.AlgorithmRepository;
+import org.planqk.atlas.core.repository.ImplementationRepository;
 import org.planqk.atlas.core.repository.PublicationRepository;
-
-import lombok.AllArgsConstructor;
+import org.planqk.atlas.core.util.CollectionUtils;
+import org.planqk.atlas.core.util.ServiceUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import lombok.AllArgsConstructor;
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 @AllArgsConstructor
 public class PublicationServiceImpl implements PublicationService {
 
     private final PublicationRepository publicationRepository;
+
+    private final ImplementationRepository implementationRepository;
+
     private final AlgorithmRepository algorithmRepository;
 
     @Override
     @Transactional
-    public Publication save(Publication publication) {
+    public Publication create(@NonNull Publication publication) {
         return publicationRepository.save(publication);
     }
 
     @Override
-    @Transactional
-    public Publication update(UUID id, Publication publication) {
-        var existingPublication = publicationRepository.findById(id).orElseThrow(NoSuchElementException::new);
-
-        fillExistingPublication(publication, existingPublication);
-        return publicationRepository.save(existingPublication);
-    }
-
-    @Override
-    @Transactional
-    public void deleteById(UUID id) {
-        publicationRepository.deleteById(id);
-    }
-
-    @Override
-    public Page<Publication> findAll(Pageable pageable) {
+    public Page<Publication> findAll(@NonNull Pageable pageable, String search) {
+        if (search != null && !search.isEmpty()) {
+            return publicationRepository.findAll(search, pageable);
+        }
         return publicationRepository.findAll(pageable);
     }
 
     @Override
-    public Publication findById(UUID pubId) {
-
-        return findOptionalById(pubId).orElseThrow(NoSuchElementException::new);
-    }
-
-    @Override
-    public Optional<Publication> findOptionalById(UUID pubId) {
-        return publicationRepository.findById(pubId);
+    public Publication findById(@NonNull UUID publicationId) {
+        return ServiceUtils.findById(publicationId, Publication.class, publicationRepository);
     }
 
     @Override
     @Transactional
-    public Set<Publication> createOrUpdateAll(Set<Publication> publications) {
-        if (publications == null) {
-            return new HashSet<>();
-        }
+    public Publication update(@NonNull Publication publication) {
+        final var persistedPublication = findById(publication.getId());
 
-        return new HashSet<>(this.publicationRepository.saveAll(publications));
-    }
+        persistedPublication.setTitle(publication.getTitle());
+        persistedPublication.setDoi(publication.getDoi());
+        persistedPublication.setUrl(publication.getUrl());
+        persistedPublication.setAuthors(publication.getAuthors());
 
-    private void fillExistingPublication(Publication updatedPublication, Publication persistedPublication) {
-        persistedPublication.setTitle(updatedPublication.getTitle());
-        persistedPublication.setDoi(updatedPublication.getDoi());
-        persistedPublication.setUrl(updatedPublication.getUrl());
-        persistedPublication.setAuthors(updatedPublication.getAuthors());
-    }
-
-    @Override
-    public Set<Algorithm> findPublicationAlgorithms(UUID publicationId) {
-        return algorithmRepository.getAlgorithmsWithPublicationId(publicationId);
+        return publicationRepository.save(persistedPublication);
     }
 
     @Override
     @Transactional
-    public void deletePublicationsByIds(Set<UUID> publicationIds) {
+    public void delete(@NonNull UUID publicationId) {
+        final Publication publication = findById(publicationId);
+
+        removeReferences(publication);
+
+        publicationRepository.deleteById(publicationId);
+    }
+
+    private void removeReferences(@NonNull Publication publication) {
+        CollectionUtils.forEachOnCopy(publication.getAlgorithms(),
+            algorithm -> algorithm.removePublication(publication));
+        CollectionUtils.forEachOnCopy(publication.getImplementations(),
+            implementation -> implementation.removePublication(publication));
+    }
+
+    @Override
+    @Transactional
+    public void deletePublications(@NonNull Set<UUID> publicationIds) {
+        publicationIds.forEach(publicationId ->
+            ServiceUtils.throwIfNotExists(publicationId, Publication.class, publicationRepository));
         publicationRepository.deleteByIdIn(publicationIds);
+    }
+
+    @Override
+    public Page<Algorithm> findLinkedAlgorithms(@NonNull UUID publicationId, @NonNull Pageable pageable) {
+        ServiceUtils.throwIfNotExists(publicationId, Publication.class, publicationRepository);
+        return algorithmRepository.findAlgorithmsByPublicationId(publicationId, pageable);
+    }
+
+    @Override
+    public Page<Implementation> findLinkedImplementations(@NonNull UUID publicationId, @NonNull Pageable pageable) {
+        ServiceUtils.throwIfNotExists(publicationId, Publication.class, publicationRepository);
+        return implementationRepository.findImplementationsByPublicationId(publicationId, pageable);
+    }
+
+    @Override
+    public void checkIfAlgorithmIsLinkedToPublication(UUID publicationId, UUID algorithmId) {
+        ServiceUtils.throwIfNotExists(publicationId, Publication.class, publicationRepository);
+        final Algorithm algorithm = ServiceUtils.findById(algorithmId, Algorithm.class, algorithmRepository);
+
+        if (!ServiceUtils.containsElementWithId(algorithm.getPublications(), publicationId)) {
+            throw new NoSuchElementException("Algorithm with ID \"" + algorithmId
+                + "\" is not linked to Publication with ID \"" + publicationId + "\"");
+        }
+    }
+
+    @Override
+    public void checkIfImplementationIsLinkedToPublication(UUID publicationId, UUID implementationId) {
+        ServiceUtils.throwIfNotExists(publicationId, Publication.class, publicationRepository);
+        final Implementation implementation = ServiceUtils.findById(implementationId, Implementation.class, implementationRepository);
+
+        if (!ServiceUtils.containsElementWithId(implementation.getPublications(), publicationId)) {
+            throw new NoSuchElementException("Implementation with ID \"" + implementationId
+                + "\" is not linked to Publication with ID \"" + publicationId + "\"");
+        }
     }
 }
