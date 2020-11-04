@@ -168,7 +168,6 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
         assertThat(editedImplementation.getContributors()).isEqualTo(compareImplementation.getContributors());
         assertThat(editedImplementation.getAssumptions()).isEqualTo(compareImplementation.getAssumptions());
         assertThat(editedImplementation.getParameter()).isEqualTo(compareImplementation.getParameter());
-        assertThat(editedImplementation.getLink()).isEqualTo(compareImplementation.getLink());
         assertThat(editedImplementation.getDependencies()).isEqualTo(compareImplementation.getDependencies());
         assertThat(editedImplementation.getImplementedAlgorithm().getId())
             .isEqualTo(compareImplementation.getImplementedAlgorithm().getId());
@@ -380,10 +379,6 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
         implementation.setProblemStatement("problemStatement");
         implementation.setInputFormat("inputFormat");
         implementation.setOutputFormat("outputFormat");
-        try {
-            implementation.setLink(new URL("http://www.example.com"));
-        } catch (MalformedURLException ignored) {
-        }
 
         return implementation;
     }

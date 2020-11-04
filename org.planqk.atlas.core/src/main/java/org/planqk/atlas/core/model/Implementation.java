@@ -19,7 +19,6 @@
 
 package org.planqk.atlas.core.model;
 
-import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.CascadeType;
@@ -56,8 +55,6 @@ public class Implementation extends KnowledgeArtifact {
     private String assumptions;
 
     private String parameter;
-
-    private URL link;
 
     private String dependencies;
 
