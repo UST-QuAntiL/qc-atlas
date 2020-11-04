@@ -121,6 +121,11 @@ public class Implementation extends KnowledgeArtifact {
     )
     private Set<File> files = new HashSet<>();
 
+    @OneToMany
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private ImplementationPackage implementationPackage;
+
     public void addTag(@NonNull Tag tag) {
         if (tags.contains(tag)) {
             return;
