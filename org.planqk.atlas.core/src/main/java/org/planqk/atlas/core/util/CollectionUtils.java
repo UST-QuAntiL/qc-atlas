@@ -32,7 +32,7 @@ public final class CollectionUtils {
     /**
      * Performs the given action for each element of the given @link Collection. To allow concurrent modifications the collection is copied before
      * iterating over it.
-     * 
+     *
      * @param coll   The collection to iterate over
      * @param action The action to be performed for each element
      */
