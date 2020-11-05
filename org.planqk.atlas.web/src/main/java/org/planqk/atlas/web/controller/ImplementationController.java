@@ -24,6 +24,7 @@ import java.util.UUID;
 import org.planqk.atlas.core.model.ComputeResourceProperty;
 import org.planqk.atlas.core.model.File;
 import org.planqk.atlas.core.model.Implementation;
+import org.planqk.atlas.core.model.ImplementationPackage;
 import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.services.ComputeResourcePropertyService;
@@ -41,12 +42,14 @@ import org.planqk.atlas.web.dtos.DiscussionCommentDto;
 import org.planqk.atlas.web.dtos.DiscussionTopicDto;
 import org.planqk.atlas.web.dtos.FileDto;
 import org.planqk.atlas.web.dtos.ImplementationDto;
+import org.planqk.atlas.web.dtos.ImplementationPackageDto;
 import org.planqk.atlas.web.dtos.PublicationDto;
 import org.planqk.atlas.web.dtos.SoftwarePlatformDto;
 import org.planqk.atlas.web.dtos.TagDto;
 import org.planqk.atlas.web.linkassembler.ComputeResourcePropertyAssembler;
 import org.planqk.atlas.web.linkassembler.FileAssembler;
 import org.planqk.atlas.web.linkassembler.ImplementationAssembler;
+import org.planqk.atlas.web.linkassembler.ImplementationPackageAssembler;
 import org.planqk.atlas.web.linkassembler.PublicationAssembler;
 import org.planqk.atlas.web.linkassembler.SoftwarePlatformAssembler;
 import org.planqk.atlas.web.linkassembler.TagAssembler;
@@ -123,6 +126,8 @@ public class ImplementationController {
     private final FileService fileService;
 
     private final FileAssembler fileAssembler;
+
+    private final ImplementationPackageAssembler implementationPackageAssembler;
 
     @Operation(responses = {
             @ApiResponse(responseCode = "201"),
@@ -717,14 +722,14 @@ public class ImplementationController {
     )
     @ListParametersDoc
     @GetMapping("/{implementationId}/" + Constants.IMPLEMENTATION_PACKAGES)
-    public ResponseEntity<PagedModel<EntityModel<ImplementationDto>>> getImplementationPackagesOfImplementation(
+    public ResponseEntity<PagedModel<EntityModel<ImplementationPackageDto>>> getImplementationPackagesOfImplementation(
             @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId,
             @Parameter(hidden = true) ListParameters listParameters) {
         implementationService.checkIfImplementationIsOfAlgorithm(implementationId, algorithmId);
         final var packages =
                 implementationPackageService.findImplementationPackagesByImplementationId(implementationId, listParameters.getPageable());
-        return ResponseEntity.ok(implementationAssembler.toModel(packages));
+        return ResponseEntity.ok(implementationPackageAssembler.toModel(packages));
     }
 
     @Operation(responses = {
@@ -736,16 +741,37 @@ public class ImplementationController {
     )
     @ListParametersDoc
     @GetMapping("/{implementationId}/" + Constants.IMPLEMENTATION_PACKAGES + "/{packageId}/")
-    public ResponseEntity<EntityModel<ImplementationDto>> getImplementationPackageOfImplementation(
+    public ResponseEntity<EntityModel<ImplementationPackageDto>> getImplementationPackageOfImplementation(
             @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId,
             @PathVariable UUID packageId,
             @Parameter(hidden = true) ListParameters listParameters) {
         implementationService.checkIfImplementationIsOfAlgorithm(implementationId, algorithmId);
-        implementationPackageService.checkIfImplementationPackageIsLinkedToImplemenation(packageId, implementationId);
+        implementationPackageService.checkIfImplementationPackageIsLinkedToImplementation(packageId, implementationId);
         final var implementationPackage =
                 implementationPackageService.findById(packageId);
-        return ResponseEntity.ok(implementationAssembler.toModel(implementationPackage));
+        return ResponseEntity.ok(implementationPackageAssembler.toModel(implementationPackage));
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "201"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404",
+                    description = "Not Found. implementation or discussion topic with given ID doesn't exist.")
+    }, description = "Create a discussion topic of an implementation of an algorithm."
+    )
+    @ListParametersDoc
+    @PostMapping("/{implementationId}/" + Constants.IMPLEMENTATION_PACKAGES)
+    public HttpEntity<EntityModel<ImplementationPackageDto>> createImplementationPackageOfImplementation(
+            @PathVariable UUID algorithmId,
+            @PathVariable UUID implementationId,
+            @Validated(ValidationGroups.Create.class) @RequestBody ImplementationPackageDto implementationPackageDto,
+            @Parameter(hidden = true) ListParameters listParameters) {
+        implementationService.checkIfImplementationIsOfAlgorithm(implementationId, algorithmId);
+        final ImplementationPackage implementationP = ModelMapperUtils.convert(implementationPackageDto, ImplementationPackage.class);
+        final ImplementationPackage implementationPackageToSave =
+                implementationPackageService.create(implementationP, implementationId);
+        return new ResponseEntity<>(implementationPackageAssembler.toModel(implementationPackageToSave), HttpStatus.CREATED);
     }
     @Operation(responses = {
         @ApiResponse(responseCode = "201"),

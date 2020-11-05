@@ -19,11 +19,15 @@
 
 package org.planqk.atlas.core.services;
 
+import javax.transaction.Transactional;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
+import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.ImplementationPackage;
 import org.planqk.atlas.core.repository.ImplementationPackageRepository;
+import org.planqk.atlas.core.repository.ImplementationRepository;
+import org.planqk.atlas.core.util.ServiceUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -39,18 +43,25 @@ public class ImplementationPackageServiceImpl implements ImplementationPackageSe
 
     private final ImplementationPackageRepository implementationPackageRepository;
 
+    private final ImplementationRepository implementationRepository;
+
     @Override
-    public ImplementationPackageRepository create(
-            ImplementationPackageRepository implementationPackage) {
+    @Transactional
+    public ImplementationPackage create(
+            @NonNull ImplementationPackage implementationPackage, UUID implementationId) {
+        final Implementation implementation = ServiceUtils.findById(implementationId, Implementation.class, implementationRepository);
+        implementationPackage.setImplementation(implementation);
+        return implementationPackageRepository.save(implementationPackage);
+    }
+
+    @Override
+    @Transactional
+    public ImplementationPackage update(ImplementationPackage implementationPackage) {
         return null;
     }
 
     @Override
-    public ImplementationPackageRepository update(ImplementationPackageRepository implementationPackage) {
-        return null;
-    }
-
-    @Override
+    @Transactional
     public void delete(UUID implementationPackageId) {
 
     }
@@ -66,7 +77,7 @@ public class ImplementationPackageServiceImpl implements ImplementationPackageSe
     }
 
     @Override
-    public void checkIfImplementationPackageIsLinkedToImplemenation(UUID packageId, UUID implementationId) {
+    public void checkIfImplementationPackageIsLinkedToImplementation(UUID packageId, UUID implementationId) {
         final ImplementationPackage implementationPackage = findById(packageId);
 
         if (!implementationPackage.getImplementation().getId().equals(implementationId)) {
