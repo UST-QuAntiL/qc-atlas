@@ -68,7 +68,8 @@ public class ImplementationPackageServiceImpl implements ImplementationPackageSe
 
     @Override
     public ImplementationPackage findById(UUID packageId) {
-        return null;
+        return ServiceUtils.findById(packageId, ImplementationPackage.class, implementationPackageRepository);
+
     }
 
     @Override
