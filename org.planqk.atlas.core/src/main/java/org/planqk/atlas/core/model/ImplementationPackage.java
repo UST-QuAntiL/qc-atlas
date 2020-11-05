@@ -39,6 +39,8 @@ public abstract class ImplementationPackage extends HasId {
 
     private String description;
 
+    private ImplementationPackageType packageType;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "implementation_package_id")
     private Implementation implementation;

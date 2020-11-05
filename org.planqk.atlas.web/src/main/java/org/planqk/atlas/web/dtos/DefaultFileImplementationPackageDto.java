@@ -19,18 +19,30 @@
 
 package org.planqk.atlas.web.dtos;
 
+import org.planqk.atlas.core.model.ImplementationPackageType;
+import org.springframework.hateoas.server.core.Relation;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
+
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
-import java.util.UUID;
-
+/**
+ * Data transfer object for QuantumAlgorithm ({@link org.planqk.atlas.core.model.QuantumAlgorithm}).
+ */
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 @Data
-public class FileDto {
+@JsonTypeName("DEFAULT_FILE")
+@Relation(itemRelation = "implementationPackage", collectionRelation = "implementationPackages")
+public class DefaultFileImplementationPackageDto extends ImplementationPackageDto {
 
-    private UUID id;
 
-    private String name;
-
-    private String mimeType;
-
-    private String fileURL;
+    @Override
+    @Schema(type = "string", allowableValues = {"DEFAULT_FILE"})
+    public ImplementationPackageType getPackageType() {
+        return super.getPackageType();
+    }
 }

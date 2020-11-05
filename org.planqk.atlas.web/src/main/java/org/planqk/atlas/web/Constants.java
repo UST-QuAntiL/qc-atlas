@@ -51,6 +51,8 @@ public final class Constants {
 
     public static final String IMPLEMENTATIONS = "implementations";
 
+    public static final String IMPLEMENTATION_PACKAGES = "implementation-packages";
+
     public static final String PATTERN_RELATIONS = "pattern-relations";
 
     public static final String PATTERN_RELATION_TYPES = "pattern-relation-types";

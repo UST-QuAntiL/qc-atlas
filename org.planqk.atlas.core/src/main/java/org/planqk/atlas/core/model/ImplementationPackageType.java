@@ -17,20 +17,8 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.planqk.atlas.web.dtos;
+package org.planqk.atlas.core.model;
 
-import lombok.Data;
-
-import java.util.UUID;
-
-@Data
-public class FileDto {
-
-    private UUID id;
-
-    private String name;
-
-    private String mimeType;
-
-    private String fileURL;
+public enum ImplementationPackageType {
+    DEFAULT_FILE, TOSCA, FUNCTION
 }
