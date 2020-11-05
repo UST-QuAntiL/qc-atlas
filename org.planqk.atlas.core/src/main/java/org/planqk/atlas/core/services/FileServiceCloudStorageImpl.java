@@ -38,12 +38,10 @@ public class FileServiceCloudStorageImpl implements FileService {
 
     private final FileRepository fileRepository;
 
-    private final ImplementationRepository implementationRepository;
-
     @Override
-    public File create(UUID implementationId, MultipartFile file) {
+    public File create(MultipartFile file) {
         try {
-            final BlobId blobId = BlobId.of(implementationFilesBucketName, implementationId + "/" + file.getOriginalFilename());
+            final BlobId blobId = BlobId.of(implementationFilesBucketName, file.getOriginalFilename());
             final BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType(file.getContentType()).build();
             final Blob blob = storage.create(blobInfo, file.getBytes());
             final File implementationFile = getFileFromBlob(blob);
@@ -55,8 +53,6 @@ public class FileServiceCloudStorageImpl implements FileService {
             fileRepository.findByFileURL(implementationFile.getFileURL())
                 .ifPresent(persistedFile -> implementationFile.setId(persistedFile.getId()));
 
-            final Implementation implementation = ServiceUtils.findById(implementationId, Implementation.class, implementationRepository);
-            implementationFile.setImplementation(implementation);
             return fileRepository.save(implementationFile);
         } catch (IOException e) {
             throw new IllegalArgumentException("Cannot read contents of multipart file");
@@ -68,11 +64,6 @@ public class FileServiceCloudStorageImpl implements FileService {
     @Override
     public File findById(UUID id) {
         return ServiceUtils.findById(id, File.class, fileRepository);
-    }
-
-    @Override
-    public Page<File> findAllByImplementationId(UUID implementationId, Pageable pageable) {
-        return fileRepository.findFilesByImplementation_Id(implementationId, pageable);
     }
 
     @Override

@@ -22,6 +22,7 @@ package org.planqk.atlas.core.services;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.File;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.model.SoftwarePlatform;
@@ -162,4 +163,8 @@ public interface ImplementationService {
      * @return The page of queried {@link Publication} entries which are linked to the {@link Implementation}
      */
     Page<Publication> findLinkedPublications(UUID implementationId, Pageable pageable);
+
+    Page<File> findLinkedFiles(UUID implementationId, Pageable pageable);
+
+    void addFileToImplementation(UUID implementationId, File file);
 }

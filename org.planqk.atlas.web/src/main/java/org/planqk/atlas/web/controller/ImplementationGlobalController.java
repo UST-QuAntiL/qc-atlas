@@ -108,7 +108,8 @@ public class ImplementationGlobalController {
     public ResponseEntity<EntityModel<FileDto>> createFileForImplementation(
         @PathVariable UUID implementationId,
         @RequestParam("file") MultipartFile multipartFile) {
-        final File file = fileService.create(implementationId, multipartFile);
+        final File file = fileService.create(multipartFile);
+        implementationService.addFileToImplementation(implementationId, file);
         return ResponseEntity.status(HttpStatus.CREATED).body(fileAssembler.toModel(file));
     }
 
@@ -121,7 +122,7 @@ public class ImplementationGlobalController {
         @Parameter(hidden = true) ListParameters listParameters
     ) {
         final Page<File> files =
-            fileService.findAllByImplementationId(implementationId, listParameters.getPageable());
+            implementationService.findLinkedFiles(implementationId, listParameters.getPageable());
         return ResponseEntity.ok(fileAssembler.toModel(files));
     }
 

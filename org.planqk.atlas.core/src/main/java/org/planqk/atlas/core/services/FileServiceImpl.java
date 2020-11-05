@@ -4,8 +4,6 @@ import java.util.UUID;
 
 import org.planqk.atlas.core.model.File;
 import org.springframework.context.annotation.Profile;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,12 +15,7 @@ import lombok.AllArgsConstructor;
 public class FileServiceImpl implements FileService {
 
     @Override
-    public File create(UUID implementationId, MultipartFile file) {
-        return null;
-    }
-
-    @Override
-    public Page<File> findAllByImplementationId(UUID implementationId, Pageable pageable) {
+    public File create(MultipartFile file) {
         return null;
     }
 

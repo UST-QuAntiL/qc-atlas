@@ -23,11 +23,13 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.File;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.model.SoftwarePlatform;
 import org.planqk.atlas.core.repository.AlgorithmRepository;
 import org.planqk.atlas.core.repository.ComputeResourcePropertyRepository;
+import org.planqk.atlas.core.repository.FileRepository;
 import org.planqk.atlas.core.repository.ImplementationRepository;
 import org.planqk.atlas.core.repository.PublicationRepository;
 import org.planqk.atlas.core.repository.SoftwarePlatformRepository;
@@ -56,6 +58,8 @@ public class ImplementationServiceImpl implements ImplementationService {
     private final AlgorithmRepository algorithmRepository;
 
     private final ComputeResourcePropertyRepository computeResourcePropertyRepository;
+
+    private final FileRepository fileRepository;
 
     @Override
     @Transactional
@@ -154,4 +158,18 @@ public class ImplementationServiceImpl implements ImplementationService {
 
         return publicationRepository.findPublicationsByImplementationId(implementationId, pageable);
     }
+
+    @Override
+    public Page<File> findLinkedFiles(UUID implementationId, Pageable pageable) {
+        ServiceUtils.throwIfNotExists(implementationId, Implementation.class, implementationRepository);
+        return fileRepository.findFilesByImplementation_Id(implementationId, pageable);
+    }
+
+    @Override
+    public void addFileToImplementation(UUID implementationId, File file) {
+        final Implementation implementation = ServiceUtils.findById(implementationId, Implementation.class, implementationRepository);
+        implementation.getFiles().add(file);
+        implementationRepository.save(implementation);
+    }
+
 }

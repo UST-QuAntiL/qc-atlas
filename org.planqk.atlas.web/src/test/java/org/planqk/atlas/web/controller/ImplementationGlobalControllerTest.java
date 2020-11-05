@@ -154,7 +154,7 @@ public class ImplementationGlobalControllerTest {
 
         byte[] testFile = new byte[20];
         final MockMultipartFile file = new MockMultipartFile("file", testFile);
-        doReturn(new File()).when(fileService).create(impl.getId(), file);
+        doReturn(new File()).when(fileService).create(file);
 
         final String path = linkBuilderService.urlStringTo(methodOn(ImplementationGlobalController.class)
             .createFileForImplementation(impl.getId(), file));
@@ -164,7 +164,7 @@ public class ImplementationGlobalControllerTest {
 
         // test
         resultActions.andExpect(status().isCreated());
-        Mockito.verify(fileService, times(1)).create(impl.getId(), file);
+        Mockito.verify(fileService, times(1)).create(file);
     }
 
     @Test
@@ -175,7 +175,7 @@ public class ImplementationGlobalControllerTest {
         impl.setId(UUID.randomUUID());
 
         final ListParameters listParameters = new ListParameters(this.pageable, null);
-        when(fileService.findAllByImplementationId(impl.getId(), listParameters.getPageable())).thenReturn(Page.empty());
+        when(implementationService.findLinkedFiles(impl.getId(), listParameters.getPageable())).thenReturn(Page.empty());
 
         // When
         final String path = linkBuilderService.urlStringTo(methodOn(ImplementationGlobalController.class)
@@ -185,7 +185,7 @@ public class ImplementationGlobalControllerTest {
 
         // Then
         result.andExpect(status().isOk());
-        Mockito.verify(fileService, times(1)).findAllByImplementationId(impl.getId(), listParameters.getPageable());
+        Mockito.verify(implementationService, times(1)).findLinkedFiles(impl.getId(), listParameters.getPageable());
     }
 
     @Test

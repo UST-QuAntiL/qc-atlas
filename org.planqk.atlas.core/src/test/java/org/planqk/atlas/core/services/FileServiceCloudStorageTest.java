@@ -48,7 +48,7 @@ public class FileServiceCloudStorageTest extends AtlasDatabaseTestBase {
     private ImplementationRepository implementationRepository;
 
     @Test
-    public void givenFileNotExists_WhenCreate_ThenShouldBeCreatedAndLinkedToImplementation() {
+    public void givenFileNotExists_WhenCreate_ThenShouldBeCreated() {
         // Given
         when(storage.create(Mockito.any(BlobInfo.class), Mockito.any(byte[].class))).thenReturn(mockBlob);
         Implementation persistedImplementation = implementationRepository.save(getDummyImplementation());
@@ -56,12 +56,11 @@ public class FileServiceCloudStorageTest extends AtlasDatabaseTestBase {
 
         //When
         File createdFile =
-                fileServiceCloudStorage.create(persistedImplementation.getId(), getMultipartFile());
+            fileServiceCloudStorage.create(getMultipartFile());
 
         //Then
         assertThat(fileRepository.findAll().size()).isEqualTo(1);
         assertThat(fileRepository.findById(createdFile.getId())).isPresent();
-        assertThat(createdFile.getImplementation().getId()).isEqualTo(persistedImplementation.getId());
     }
 
     @Test
@@ -72,7 +71,7 @@ public class FileServiceCloudStorageTest extends AtlasDatabaseTestBase {
 
         // When
         Assertions.assertThrows(CloudStorageException.class,
-                () -> fileServiceCloudStorage.create(persistedImplementation.getId(), getMultipartFile()));
+            () -> fileServiceCloudStorage.create(getMultipartFile()));
     }
 
     @Test
@@ -81,26 +80,7 @@ public class FileServiceCloudStorageTest extends AtlasDatabaseTestBase {
         File persistedFile = fileRepository.save(getDummyFile());
         // When Then
         assertThat(fileServiceCloudStorage.findById(persistedFile.getId()))
-                .isEqualToComparingFieldByField(persistedFile);
-    }
-
-    @Test
-    public void givenFilesOfImplementationExists_whenFindAllByImplementationId_thenShouldReturnAllFilesOfImpl() {
-        // Given
-        Implementation persistedImplementation = implementationRepository.save(getDummyImplementation());
-        File file = getDummyFile();
-        File fileTwo = getDummyFile();
-        file.setImplementation(persistedImplementation);
-        fileTwo.setImplementation(persistedImplementation);
-        fileRepository.save(file);
-        fileRepository.save(fileTwo);
-
-        // When
-        Page<File> implementationFiles =
-                fileServiceCloudStorage.findAllByImplementationId(persistedImplementation.getId(), PageRequest.of(1, 10));
-
-        // Then
-        assertThat(implementationFiles.getTotalElements()).isEqualTo(2);
+            .isEqualToComparingFieldByField(persistedFile);
     }
 
     @Test
@@ -126,7 +106,7 @@ public class FileServiceCloudStorageTest extends AtlasDatabaseTestBase {
 
         // Call + Then
         Assertions.assertThrows(CloudStorageException.class,
-                () -> fileServiceCloudStorage.delete(persistedFile.getId()));
+            () -> fileServiceCloudStorage.delete(persistedFile.getId()));
     }
 
     @Test
@@ -149,7 +129,7 @@ public class FileServiceCloudStorageTest extends AtlasDatabaseTestBase {
 
         // Call + Then
         Assertions.assertThrows(NoSuchElementException.class,
-                () -> fileServiceCloudStorage.getFileContent(persistedFile.getId()));
+            () -> fileServiceCloudStorage.getFileContent(persistedFile.getId()));
     }
 
     @Test
@@ -162,7 +142,7 @@ public class FileServiceCloudStorageTest extends AtlasDatabaseTestBase {
 
         // Call + Then
         Assertions.assertThrows(CloudStorageException.class,
-                () -> fileServiceCloudStorage.getFileContent(persistedFile.getId()));
+            () -> fileServiceCloudStorage.getFileContent(persistedFile.getId()));
     }
 
     private File getDummyFile() {
@@ -178,7 +158,7 @@ public class FileServiceCloudStorageTest extends AtlasDatabaseTestBase {
         String contentType = "text/plain";
         byte[] content = generateRandomByteArray();
         return new MockMultipartFile(name,
-                originalFileName, contentType, content);
+            originalFileName, contentType, content);
     }
 
     private Implementation getDummyImplementation() {
