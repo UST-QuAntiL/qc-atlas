@@ -39,6 +39,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
@@ -60,6 +61,8 @@ public class ImplementationServiceImpl implements ImplementationService {
     private final ComputeResourcePropertyRepository computeResourcePropertyRepository;
 
     private final FileRepository fileRepository;
+
+    private final FileService fileService;
 
     @Override
     @Transactional
@@ -166,10 +169,12 @@ public class ImplementationServiceImpl implements ImplementationService {
     }
 
     @Override
-    public void addFileToImplementation(UUID implementationId, File file) {
+    public File addFileToImplementation(UUID implementationId, MultipartFile multipartFile) {
         final Implementation implementation = ServiceUtils.findById(implementationId, Implementation.class, implementationRepository);
+        final File file = fileService.create(multipartFile);
         implementation.getFiles().add(file);
         implementationRepository.save(implementation);
+        return file;
     }
 
 }

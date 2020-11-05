@@ -29,6 +29,7 @@ import org.planqk.atlas.core.model.SoftwarePlatform;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * Service class for operations related to interacting and modifying {@link Implementation}s in the database.
@@ -166,5 +167,5 @@ public interface ImplementationService {
 
     Page<File> findLinkedFiles(UUID implementationId, Pageable pageable);
 
-    void addFileToImplementation(UUID implementationId, File file);
+    File addFileToImplementation(UUID implementationId, MultipartFile multipartFile);
 }
