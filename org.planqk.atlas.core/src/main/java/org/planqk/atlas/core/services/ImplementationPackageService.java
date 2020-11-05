@@ -21,7 +21,10 @@ package org.planqk.atlas.core.services;
 
 import java.util.UUID;
 
+import org.planqk.atlas.core.model.ImplementationPackage;
 import org.planqk.atlas.core.repository.ImplementationPackageRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 public interface ImplementationPackageService {
@@ -73,4 +76,18 @@ public interface ImplementationPackageService {
      */
     @Transactional
     void delete(UUID implementationPackageId);
+
+    /**
+     * Find a database entry of a {@link ImplementationPackage} that is already saved in the database.
+     * <p>
+     * If there is no entry found in the database this method will throw a {@link java.util.NoSuchElementException}.
+     *
+     * @param packageId The ID of the {@link ImplementationPackage} we want to find
+     * @return The {@link ImplementationPackage} with the given ID
+     */
+    ImplementationPackage findById(UUID packageId);
+
+    Page<ImplementationPackage> findImplementationPackagesByImplementationId(UUID implementationId, Pageable pageable);
+
+    void checkIfImplementationPackageIsLinkedToImplemenation(UUID packageId, UUID implementationId);
 }

@@ -20,6 +20,8 @@
 package org.planqk.atlas.web.dtos;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
+import java.util.UUID;
 
 import org.planqk.atlas.core.model.ImplementationPackageType;
 import org.planqk.atlas.web.utils.ValidationGroups;
@@ -39,6 +41,10 @@ import lombok.NoArgsConstructor;
         @JsonSubTypes.Type(value = FunctionImplementationPackageDto.class, name = "FUNCTION")})
 @Relation(itemRelation = "implementationPackage", collectionRelation = "implementationPackages")
 public class ImplementationPackageDto {
+
+    @NotNull(groups = {ValidationGroups.IDOnly.class}, message = "An id is required to perform an update")
+    @Null(groups = {ValidationGroups.Create.class}, message = "The id must be null for creating an implementation package")
+    private UUID id;
 
     private String name;
 

@@ -28,6 +28,7 @@ import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.services.ComputeResourcePropertyService;
 import org.planqk.atlas.core.services.FileService;
+import org.planqk.atlas.core.services.ImplementationPackageService;
 import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.core.services.LinkingService;
 import org.planqk.atlas.core.services.PublicationService;
@@ -116,6 +117,8 @@ public class ImplementationController {
     private final LinkingService linkingService;
 
     private final DiscussionTopicController discussionTopicController;
+
+    private final ImplementationPackageService implementationPackageService;
 
     private final FileService fileService;
 
@@ -705,6 +708,45 @@ public class ImplementationController {
         return discussionTopicController.updateDiscussionComment(implementationId, topicId, commentId, discussionCommentDto);
     }
 
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404",
+                    description = "Not Found. implementation with given ID doesn't exist.")
+    }, description = "Retrieve discussion topics of an implementation of an algorithm. If none are found an empty list is returned."
+    )
+    @ListParametersDoc
+    @GetMapping("/{implementationId}/" + Constants.IMPLEMENTATION_PACKAGES)
+    public ResponseEntity<PagedModel<EntityModel<ImplementationDto>>> getImplementationPackagesOfImplementation(
+            @PathVariable UUID algorithmId,
+            @PathVariable UUID implementationId,
+            @Parameter(hidden = true) ListParameters listParameters) {
+        implementationService.checkIfImplementationIsOfAlgorithm(implementationId, algorithmId);
+        final var packages =
+                implementationPackageService.findImplementationPackagesByImplementationId(implementationId, listParameters.getPageable());
+        return ResponseEntity.ok(implementationAssembler.toModel(packages));
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404",
+                    description = "Not Found. implementation with given ID doesn't exist.")
+    }, description = "Retrieve implementation package of an implementation of an algorithm."
+    )
+    @ListParametersDoc
+    @GetMapping("/{implementationId}/" + Constants.IMPLEMENTATION_PACKAGES + "/{packageId}/")
+    public ResponseEntity<EntityModel<ImplementationDto>> getImplementationPackageOfImplementation(
+            @PathVariable UUID algorithmId,
+            @PathVariable UUID implementationId,
+            @PathVariable UUID packageId,
+            @Parameter(hidden = true) ListParameters listParameters) {
+        implementationService.checkIfImplementationIsOfAlgorithm(implementationId, algorithmId);
+        implementationPackageService.checkIfImplementationPackageIsLinkedToImplemenation(packageId, implementationId);
+        final var implementationPackage =
+                implementationPackageService.findById(packageId);
+        return ResponseEntity.ok(implementationAssembler.toModel(implementationPackage));
+    }
     @Operation(responses = {
         @ApiResponse(responseCode = "201"),
         @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),

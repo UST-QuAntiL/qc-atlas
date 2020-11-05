@@ -17,21 +17,23 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.planqk.atlas.core.repository;
+package org.planqk.atlas.web.linkassembler;
 
 import java.util.UUID;
 
-import org.planqk.atlas.core.model.ImplementationPackage;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.rest.core.annotation.RepositoryRestResource;
-import org.springframework.stereotype.Repository;
+import org.planqk.atlas.web.dtos.ImplementationPackageDto;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.stereotype.Component;
 
-@Repository
-@RepositoryRestResource(exported = false)
-public interface ImplementationPackageRepository extends JpaRepository<ImplementationPackage, UUID> {
+@Component
+public class ImplementationPackageAssembler extends GenericLinkAssembler<ImplementationPackageDto> {
 
-    Page<ImplementationPackage> findImplementationPackagesByImplementationId(UUID implementation, Pageable pageable);
+    @Override
+    public void addLinks(EntityModel<ImplementationPackageDto> resource) {
+    }
+
+    private UUID getID(EntityModel<ImplementationPackageDto> resource) {
+        return resource.getContent().getId();
+    }
 
 }
