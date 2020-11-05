@@ -17,7 +17,21 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.planqk.atlas.core.services;
+package org.planqk.atlas.core.repository;
 
-public class FunctionImplementationPackageServiceImpl {
+import java.util.UUID;
+
+import org.planqk.atlas.core.model.ImplementationPackage;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import org.springframework.stereotype.Repository;
+
+@Repository
+@RepositoryRestResource(exported = false)
+public interface ImplementationPackageRepository extends JpaRepository<ImplementationPackage, UUID> {
+
+    Page<ImplementationPackageRepository> findDefaultFileImplementationPackagesByImplementationId(UUID implementation, Pageable pageable);
+
 }

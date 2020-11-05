@@ -19,5 +19,24 @@
 
 package org.planqk.atlas.core.services;
 
-public class TOSCAImplementationPackageServiceImpl {
+import java.util.UUID;
+
+import org.planqk.atlas.core.repository.ImplementationPackageRepository;
+
+public class ImplementationPackageServiceImpl implements ImplementationPackageService {
+    @Override
+    public ImplementationPackageRepository create(
+            ImplementationPackageRepository implementationPackage) {
+        return null;
+    }
+
+    @Override
+    public ImplementationPackageRepository update(ImplementationPackageRepository implementationPackage) {
+        return null;
+    }
+
+    @Override
+    public void delete(UUID implementationPackageId) {
+
+    }
 }
