@@ -24,6 +24,7 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -121,9 +122,12 @@ public class Implementation extends KnowledgeArtifact {
     )
     private Set<File> files = new HashSet<>();
 
+    @OneToMany(mappedBy = "implementation",
+        cascade = CascadeType.ALL,
+        orphanRemoval = true)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    private ImplementationPackage implementationPackage;
+    private Set<ImplementationPackage> implementationPackage = new HashSet<>();
 
     public void addTag(@NonNull Tag tag) {
         if (tags.contains(tag)) {

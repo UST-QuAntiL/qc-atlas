@@ -19,6 +19,9 @@
 
 package org.planqk.atlas.core.model;
 
+import javax.persistence.Entity;
+
+@Entity
 public class TOSCAImplementationPackage extends ImplementationPackage {
 
     @Override

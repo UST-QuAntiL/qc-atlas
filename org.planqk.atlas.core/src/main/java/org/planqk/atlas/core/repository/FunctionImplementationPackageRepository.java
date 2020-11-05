@@ -17,33 +17,16 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.planqk.atlas.core.model;
+package org.planqk.atlas.core.repository;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import java.util.UUID;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-@Entity
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-@NoArgsConstructor
-@Data
-public abstract class ImplementationPackage extends HasId {
+public interface FunctionImplementationPackageRepository extends JpaRepository<FunctionImplementationPackageRepository, UUID> {
 
-    private String name;
+    Page<TOSCAImplementationPackageRepository> findDefaultFileImplementationPackagesByImplementationId(UUID implementation, Pageable pageable);
 
-    private String description;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "implementation_package_id")
-    private Implementation implementation;
-
-    public abstract void download();
-
-    public abstract void upload();
 }

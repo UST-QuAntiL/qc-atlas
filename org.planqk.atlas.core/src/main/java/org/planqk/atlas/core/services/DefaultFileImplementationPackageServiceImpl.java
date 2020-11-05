@@ -17,33 +17,7 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.planqk.atlas.core.model;
+package org.planqk.atlas.core.services;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-@Entity
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-@NoArgsConstructor
-@Data
-public abstract class ImplementationPackage extends HasId {
-
-    private String name;
-
-    private String description;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "implementation_package_id")
-    private Implementation implementation;
-
-    public abstract void download();
-
-    public abstract void upload();
+public class DefaultFileImplementationPackageServiceImpl {
 }
