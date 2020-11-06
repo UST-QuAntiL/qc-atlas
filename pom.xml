@@ -41,8 +41,6 @@
         <!-- depdendency versions -->
         <!-- spring.version must match parent.version -->
         <spring.version>2.2.4.RELEASE</spring.version>
-        <org.liquibase.version>4.1.0</org.liquibase.version>
-
         <!--
         The database specified here is used for the following:
         * Default database in non-Docker development environments
@@ -51,6 +49,9 @@
         <db.url>jdbc:postgresql://localhost:5432/planqk</db.url>
         <db.username>planqk</db.username>
         <db.password>planqk</db.password>
+        <flyway.url>jdbc:postgresql://localhost:5432/planqk</flyway.url>
+        <flyway.user>planqk</flyway.user>
+        <flyway.password>planqk</flyway.password>
         <checkstyle.config.location>checkstyle.xml</checkstyle.config.location>
         <maven.checkstyle.version>3.1.1</maven.checkstyle.version>
         <checkstyle.addons.version>6.0.1</checkstyle.addons.version>
@@ -180,8 +181,6 @@
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
         </dependency>
-
-
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
