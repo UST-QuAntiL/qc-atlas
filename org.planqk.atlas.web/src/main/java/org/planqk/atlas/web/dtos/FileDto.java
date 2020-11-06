@@ -19,9 +19,9 @@
 
 package org.planqk.atlas.web.dtos;
 
-import lombok.Data;
-
 import java.util.UUID;
+
+import lombok.Data;
 
 @Data
 public class FileDto {

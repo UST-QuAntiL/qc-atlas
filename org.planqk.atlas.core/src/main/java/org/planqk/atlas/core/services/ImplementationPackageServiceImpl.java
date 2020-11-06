@@ -19,9 +19,10 @@
 
 package org.planqk.atlas.core.services;
 
-import javax.transaction.Transactional;
 import java.util.NoSuchElementException;
 import java.util.UUID;
+import javax.transaction.Transactional;
+import javax.validation.constraints.NotNull;
 
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.ImplementationPackage;
@@ -48,7 +49,7 @@ public class ImplementationPackageServiceImpl implements ImplementationPackageSe
     @Override
     @Transactional
     public ImplementationPackage create(
-            @NonNull ImplementationPackage implementationPackage, UUID implementationId) {
+        @NonNull ImplementationPackage implementationPackage, UUID implementationId) {
         final Implementation implementation = ServiceUtils.findById(implementationId, Implementation.class, implementationRepository);
         implementationPackage.setImplementation(implementation);
         return implementationPackageRepository.save(implementationPackage);
@@ -56,20 +57,28 @@ public class ImplementationPackageServiceImpl implements ImplementationPackageSe
 
     @Override
     @Transactional
-    public ImplementationPackage update(ImplementationPackage implementationPackage) {
-        return null;
+    public ImplementationPackage update(@NotNull ImplementationPackage implementationPackage) {
+        final ImplementationPackage persistedImplementationPackage = findById(implementationPackage.getId());
+
+        persistedImplementationPackage.setName(implementationPackage.getName());
+        persistedImplementationPackage.setDescription(implementationPackage.getDescription());
+        persistedImplementationPackage.setPackageType(implementationPackage.getPackageType());
+        return implementationPackageRepository.save(persistedImplementationPackage);
     }
 
     @Override
     @Transactional
     public void delete(UUID implementationPackageId) {
+        // final ImplementationPackage implementationPackage = findById(implementationPackageId);
 
+        // removeReferences(implementationPackage);
+
+        implementationPackageRepository.deleteById(implementationPackageId);
     }
 
     @Override
     public ImplementationPackage findById(UUID packageId) {
         return ServiceUtils.findById(packageId, ImplementationPackage.class, implementationPackageRepository);
-
     }
 
     @Override
@@ -83,7 +92,7 @@ public class ImplementationPackageServiceImpl implements ImplementationPackageSe
 
         if (!implementationPackage.getImplementation().getId().equals(implementationId)) {
             throw new NoSuchElementException("ImplementationPackage with ID \"" + packageId
-                    + "\" of Implementation with ID \"" + implementationId + "\" does not exist");
+                + "\" of Implementation with ID \"" + implementationId + "\" does not exist");
         }
     }
 }
