@@ -104,7 +104,7 @@ public class ImplementationGlobalController {
         @ApiResponse(responseCode = "201"),
         @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
     }, description = "Uploads and adds a file to a given implementation")
-    @PostMapping("/{implementationId}/" + Constants.FILES)
+    @PostMapping(value = "/{implementationId}/" + Constants.FILES, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<EntityModel<FileDto>> createFileForImplementation(
         @PathVariable UUID implementationId,
         @RequestParam("file") MultipartFile multipartFile) {
