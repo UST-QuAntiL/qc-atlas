@@ -26,6 +26,7 @@ import java.util.UUID;
 
 import org.planqk.atlas.core.exceptions.CloudStorageException;
 import org.planqk.atlas.core.model.File;
+import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.repository.FileRepository;
 import org.planqk.atlas.core.util.ServiceUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -54,7 +55,7 @@ public class FileServiceCloudStorageImpl implements FileService {
     private final FileRepository fileRepository;
 
     @Override
-    public File create(MultipartFile file) {
+    public File create(UUID implementationPackageId, MultipartFile file) {
         try {
             final BlobId blobId = BlobId.of(implementationFilesBucketName, file.getOriginalFilename());
             final BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType(file.getContentType()).build();
@@ -68,6 +69,8 @@ public class FileServiceCloudStorageImpl implements FileService {
             fileRepository.findByFileURL(implementationFile.getFileURL())
                     .ifPresent(persistedFile -> implementationFile.setId(persistedFile.getId()));
 
+            final Implementation implementation = ServiceUtils.findById(implementationPackageId, Implementation.class, implementationRepository);
+            implementationFile.setImplementation(implementation);
             return fileRepository.save(implementationFile);
         } catch (IOException e) {
             throw new IllegalArgumentException("Cannot read contents of multipart file");
@@ -77,8 +80,8 @@ public class FileServiceCloudStorageImpl implements FileService {
     }
 
     @Override
-    public File findById(UUID id) {
-        return ServiceUtils.findById(id, File.class, fileRepository);
+    public File findById(UUID implementationPackageId) {
+        return ServiceUtils.findById(implementationPackageId, File.class, fileRepository);
     }
 
     @Override

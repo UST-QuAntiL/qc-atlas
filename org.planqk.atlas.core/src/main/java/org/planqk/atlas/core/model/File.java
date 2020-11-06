@@ -21,6 +21,9 @@ package org.planqk.atlas.core.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -41,4 +44,8 @@ public class File extends KnowledgeArtifact {
     @Column(unique = true)
     private String fileURL;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "implementation_package_id")
+    @EqualsAndHashCode.Exclude
+    private ImplementationPackage implementationPackage;
 }
