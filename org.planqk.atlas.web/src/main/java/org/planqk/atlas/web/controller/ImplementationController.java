@@ -22,10 +22,12 @@ package org.planqk.atlas.web.controller;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.ComputeResourceProperty;
+import org.planqk.atlas.core.model.File;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.services.ComputeResourcePropertyService;
+import org.planqk.atlas.core.services.FileService;
 import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.core.services.LinkingService;
 import org.planqk.atlas.core.services.PublicationService;
@@ -36,11 +38,13 @@ import org.planqk.atlas.web.annotation.ApiVersion;
 import org.planqk.atlas.web.dtos.ComputeResourcePropertyDto;
 import org.planqk.atlas.web.dtos.DiscussionCommentDto;
 import org.planqk.atlas.web.dtos.DiscussionTopicDto;
+import org.planqk.atlas.web.dtos.FileDto;
 import org.planqk.atlas.web.dtos.ImplementationDto;
 import org.planqk.atlas.web.dtos.PublicationDto;
 import org.planqk.atlas.web.dtos.SoftwarePlatformDto;
 import org.planqk.atlas.web.dtos.TagDto;
 import org.planqk.atlas.web.linkassembler.ComputeResourcePropertyAssembler;
+import org.planqk.atlas.web.linkassembler.FileAssembler;
 import org.planqk.atlas.web.linkassembler.ImplementationAssembler;
 import org.planqk.atlas.web.linkassembler.PublicationAssembler;
 import org.planqk.atlas.web.linkassembler.SoftwarePlatformAssembler;
@@ -49,11 +53,14 @@ import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.ValidationGroups;
+import org.springframework.data.domain.Page;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -64,7 +71,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -107,6 +116,10 @@ public class ImplementationController {
     private final LinkingService linkingService;
 
     private final DiscussionTopicController discussionTopicController;
+
+    private final FileService fileService;
+
+    private final FileAssembler fileAssembler;
 
     @Operation(responses = {
         @ApiResponse(responseCode = "201"),
@@ -498,7 +511,7 @@ public class ImplementationController {
         final var resource = computeResourcePropertyService.findById(computeResourcePropertyId);
         return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(resource));
     }
-    
+
     @Operation(responses = {
         @ApiResponse(responseCode = "200"),
         @ApiResponse(responseCode = "400"),
@@ -690,5 +703,77 @@ public class ImplementationController {
         @Parameter(hidden = true) ListParameters listParameters) {
         implementationService.checkIfImplementationIsOfAlgorithm(implementationId, algorithmId);
         return discussionTopicController.updateDiscussionComment(implementationId, topicId, commentId, discussionCommentDto);
+    }
+
+    @Operation(responses = {
+        @ApiResponse(responseCode = "201"),
+        @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
+    }, description = "Uploads and adds a file to a given implementation")
+    @PostMapping(value = "/{implementationId}/" + Constants.FILES, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<EntityModel<FileDto>> createFileForImplementation(
+        @PathVariable UUID implementationId,
+        @RequestParam("file") MultipartFile multipartFile) {
+        final File file = implementationService.addFileToImplementation(implementationId, multipartFile);
+        return ResponseEntity.status(HttpStatus.CREATED).body(fileAssembler.toModel(file));
+    }
+
+    @Operation(responses = {
+        @ApiResponse(responseCode = "200"),
+    }, description = "Retrieve all files of an implementation")
+    @GetMapping("/{implementationId}/" + Constants.FILES)
+    public ResponseEntity<PagedModel<EntityModel<FileDto>>> getAllFilesOfImplementation(
+        @PathVariable UUID implementationId,
+        @Parameter(hidden = true) ListParameters listParameters
+    ) {
+        final Page<File> files =
+            implementationService.findLinkedFiles(implementationId, listParameters.getPageable());
+        return ResponseEntity.ok(fileAssembler.toModel(files));
+    }
+
+    @Operation(responses = {
+        @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "400"),
+        @ApiResponse(responseCode = "404",
+            description = "File of Implementation with given ID doesn't exist")
+    }, description = "Retrieves a specific file of an Implementation and its basic properties.")
+    @GetMapping("/{implementationId}/" + Constants.FILES + "/{fileId}")
+    public ResponseEntity<EntityModel<FileDto>> getFileOfImplementation(
+        @PathVariable UUID implementationId,
+        @PathVariable UUID fileId
+    ) {
+        final File file =
+            fileService.findById(fileId);
+        return ResponseEntity.ok(fileAssembler.toModel(file));
+    }
+
+    @Operation(responses = {
+        @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "404",
+            description = "File of Implementation with given ID doesn't exist")
+    }, description = "Downloads a specific file content of an Implementation")
+    @GetMapping("/{implementationId}/" + Constants.FILES + "/{fileId}/content")
+    public ResponseEntity<byte[]> downloadFileContent(
+        @PathVariable UUID implementationId,
+        @PathVariable UUID fileId
+    ) {
+        final File file =
+            fileService.findById(fileId);
+        return ResponseEntity
+            .ok()
+            .contentType(MediaType.parseMediaType(file.getMimeType()))
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + file.getName())
+            .body(fileService.getFileContent(fileId));
+    }
+
+    @Operation(responses = {
+        @ApiResponse(responseCode = "204"),
+        @ApiResponse(responseCode = "400"),
+        @ApiResponse(responseCode = "404", description = "Not Found. Implementation or File with given IDs don't exist")
+    }, description = "Delete a file of an implementation.")
+    @DeleteMapping("/{implementationId}/" + Constants.FILES + "/{fileId}")
+    public ResponseEntity<Void> deleteFileOfImplementation(@PathVariable UUID implementationId,
+                                                           @PathVariable UUID fileId) {
+        fileService.delete(fileId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
