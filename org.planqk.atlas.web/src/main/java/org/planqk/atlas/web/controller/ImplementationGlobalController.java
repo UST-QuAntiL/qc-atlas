@@ -108,7 +108,7 @@ public class ImplementationGlobalController {
     public ResponseEntity<EntityModel<FileDto>> createFileForImplementation(
         @PathVariable UUID implementationId,
         @RequestParam("file") MultipartFile multipartFile) {
-        File file = implementationService.addFileToImplementation(implementationId, multipartFile);
+        final File file = implementationService.addFileToImplementation(implementationId, multipartFile);
         return ResponseEntity.status(HttpStatus.CREATED).body(fileAssembler.toModel(file));
     }
 

@@ -196,7 +196,6 @@ public class ImplementationGlobalControllerTest {
 
         var file = new File();
         file.setId(UUID.randomUUID());
-        file.setImplementation(impl);
         file.setMimeType("img/png");
 
         when(fileService.findById(file.getId())).thenReturn(file);
@@ -223,7 +222,6 @@ public class ImplementationGlobalControllerTest {
 
         var file = new File();
         file.setId(UUID.randomUUID());
-        file.setImplementation(impl);
         file.setMimeType("img/png");
 
         when(fileService.findById(file.getId())).thenReturn(file);
@@ -248,7 +246,6 @@ public class ImplementationGlobalControllerTest {
 
         var file = new File();
         file.setId(UUID.randomUUID());
-        file.setImplementation(impl);
         file.setMimeType("img/png");
 
         doNothing().when(fileService).delete(file.getId());

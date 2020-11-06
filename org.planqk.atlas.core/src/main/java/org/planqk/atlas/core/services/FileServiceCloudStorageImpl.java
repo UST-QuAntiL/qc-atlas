@@ -7,14 +7,10 @@ import java.util.UUID;
 
 import org.planqk.atlas.core.exceptions.CloudStorageException;
 import org.planqk.atlas.core.model.File;
-import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.repository.FileRepository;
-import org.planqk.atlas.core.repository.ImplementationRepository;
 import org.planqk.atlas.core.util.ServiceUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 

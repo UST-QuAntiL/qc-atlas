@@ -165,7 +165,7 @@ public class ImplementationServiceImpl implements ImplementationService {
     @Override
     public Page<File> findLinkedFiles(UUID implementationId, Pageable pageable) {
         ServiceUtils.throwIfNotExists(implementationId, Implementation.class, implementationRepository);
-        return fileRepository.findFilesByImplementation_Id(implementationId, pageable);
+        return fileRepository.findFilesByImplementation(implementationId, pageable);
     }
 
     @Override

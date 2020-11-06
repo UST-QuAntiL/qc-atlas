@@ -50,4 +50,5 @@ public interface ImplementationRepository extends JpaRepository<Implementation, 
         "JOIN i.softwarePlatforms sp " +
         "WHERE sp.id = :spId")
     Page<Implementation> findImplementationsBySoftwarePlatformId(@Param("spId") UUID softwarePlatformId, Pageable pageable);
+
 }
