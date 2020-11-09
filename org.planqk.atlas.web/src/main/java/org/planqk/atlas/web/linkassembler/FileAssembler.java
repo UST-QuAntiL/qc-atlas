@@ -9,7 +9,6 @@ public class FileAssembler extends GenericLinkAssembler<FileDto> {
 
     @Override
     public void addLinks(EntityModel<FileDto> resource) {
-
     }
 
 }
