@@ -22,14 +22,12 @@ package org.planqk.atlas.core.services;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
-import org.planqk.atlas.core.model.File;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.model.SoftwarePlatform;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 /**
  * Service class for operations related to interacting and modifying {@link Implementation}s in the database.
@@ -165,24 +163,5 @@ public interface ImplementationService {
      */
     Page<Publication> findLinkedPublications(UUID implementationId, Pageable pageable);
 
-    /**
-     * Retrieve multiple {@link File}s entries from the database of {@link File}s that are linked to the given {@link Implementation} If
-     * no entries are found an empty page is returned.
-     * <p>
-     * The amount of entries is based on the given {@link Pageable} parameter. If the {@link Pageable} is unpaged a {@link Page} with all entries is
-     * queried.
-     * <p>
-     * @param implementationId The ID of the {@link Implementation} we want find linked {@link File}s for
-     * @param pageable         The page information, namely page size and page number, of the page we want to retrieve
-     * @return The page of queried {@link File} entries which are linked to the {@link Implementation}
-     */
-    Page<File> findLinkedFiles(UUID implementationId, Pageable pageable);
 
-    /**
-     * Creates a {@link File} entry in the database from a multipartfile and links it to a given {@link Implementation}.
-     * @param implementationId The ID of the {@link Implementation} we want the {@link File} to be linked.
-     * @param multipartFile The multipart from which we want to create a File entity and link it to the {@link Implementation}
-     * @return The created and linked {@link File}
-     */
-    File addFileToImplementation(UUID implementationId, MultipartFile multipartFile);
 }

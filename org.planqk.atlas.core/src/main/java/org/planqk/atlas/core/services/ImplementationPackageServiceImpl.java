@@ -19,19 +19,22 @@
 
 package org.planqk.atlas.core.services;
 
-import java.util.NoSuchElementException;
-import java.util.UUID;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
+import java.util.NoSuchElementException;
+import java.util.UUID;
 
+import org.planqk.atlas.core.model.File;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.ImplementationPackage;
+import org.planqk.atlas.core.repository.FileRepository;
 import org.planqk.atlas.core.repository.ImplementationPackageRepository;
 import org.planqk.atlas.core.repository.ImplementationRepository;
 import org.planqk.atlas.core.util.ServiceUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
@@ -46,10 +49,14 @@ public class ImplementationPackageServiceImpl implements ImplementationPackageSe
 
     private final ImplementationRepository implementationRepository;
 
+    private final FileRepository fileRepository;
+
+    private final FileService fileService;
+
     @Override
     @Transactional
     public ImplementationPackage create(
-        @NonNull ImplementationPackage implementationPackage, UUID implementationId) {
+            @NonNull ImplementationPackage implementationPackage, UUID implementationId) {
         final Implementation implementation = ServiceUtils.findById(implementationId, Implementation.class, implementationRepository);
         implementationPackage.setImplementation(implementation);
         return implementationPackageRepository.save(implementationPackage);
@@ -92,7 +99,24 @@ public class ImplementationPackageServiceImpl implements ImplementationPackageSe
 
         if (!implementationPackage.getImplementation().getId().equals(implementationId)) {
             throw new NoSuchElementException("ImplementationPackage with ID \"" + packageId
-                + "\" of Implementation with ID \"" + implementationId + "\" does not exist");
+                    + "\" of Implementation with ID \"" + implementationId + "\" does not exist");
         }
+    }
+
+    @Override
+    public File findLinkedFile(UUID implementationPackageId) {
+        ServiceUtils.throwIfNotExists(implementationPackageId, ImplementationPackage.class, implementationPackageRepository);
+        return fileRepository.findByImplementationPackage_Id(implementationPackageId)
+                .orElseThrow(() -> new NoSuchElementException("ImplementationPackage with ID \"" + implementationPackageId + "\" does not exist"));
+    }
+
+    @Override
+    public File addFileToImplementationPackage(UUID implementationPackageId, MultipartFile multipartFile) {
+        final ImplementationPackage implementationPackage =
+                ServiceUtils.findById(implementationPackageId, ImplementationPackage.class, implementationPackageRepository);
+        final File file = fileService.create(implementationPackageId, multipartFile);
+        implementationPackage.setFile(file);
+        implementationPackageRepository.save(implementationPackage);
+        return file;
     }
 }

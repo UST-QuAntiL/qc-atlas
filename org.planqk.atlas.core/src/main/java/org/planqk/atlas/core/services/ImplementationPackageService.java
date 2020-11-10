@@ -21,11 +21,14 @@ package org.planqk.atlas.core.services;
 
 import java.util.UUID;
 
+import org.planqk.atlas.core.model.File;
+import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.ImplementationPackage;
 import org.planqk.atlas.core.repository.ImplementationPackageRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface ImplementationPackageService {
 
@@ -90,4 +93,22 @@ public interface ImplementationPackageService {
     Page<ImplementationPackage> findImplementationPackagesByImplementationId(UUID implementationId, Pageable pageable);
 
     void checkIfImplementationPackageIsLinkedToImplementation(UUID packageId, UUID implementationId);
+
+    /**
+     * Retrieve zero or one {@link File} entry from the database of {@link File}s that are linked to the given {@link ImplementationPackage} If
+     * no entries are found an empty page is returned.
+     *
+     * @param implementationPackageId The ID of the {@link ImplementationPackage} we want find the linked {@link File} for
+     * @return The page of queried {@link File} entries which are linked to the {@link Implementation}
+     */
+    File findLinkedFile(UUID implementationPackageId);
+
+    /**
+     * Creates a {@link File} entry in the database from a multipartfile and links it to a given {@link Implementation}.
+     *
+     * @param implementationId The ID of the {@link Implementation} we want the {@link File} to be linked.
+     * @param multipartFile    The multipart from which we want to create a File entity and link it to the {@link Implementation}
+     * @return The created and linked {@link File}
+     */
+    File addFileToImplementationPackage(UUID implementationId, MultipartFile multipartFile);
 }

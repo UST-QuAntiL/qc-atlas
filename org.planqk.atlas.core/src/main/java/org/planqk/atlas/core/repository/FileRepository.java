@@ -23,13 +23,11 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.File;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface FileRepository extends JpaRepository<File, UUID> {
 
     Optional<File> findByFileURL(String fileURL);
 
-    Page<File> findFilesByImplementationPackage_Id(UUID implementationPackageId, Pageable pageable);
+    Optional<File> findByImplementationPackage_Id(UUID implementationPackageId);
 }

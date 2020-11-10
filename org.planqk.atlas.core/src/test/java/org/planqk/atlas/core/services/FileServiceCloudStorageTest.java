@@ -31,13 +31,11 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.planqk.atlas.core.exceptions.CloudStorageException;
 import org.planqk.atlas.core.model.File;
-import org.planqk.atlas.core.model.Implementation;
+import org.planqk.atlas.core.model.ImplementationPackage;
 import org.planqk.atlas.core.repository.FileRepository;
-import org.planqk.atlas.core.repository.ImplementationRepository;
+import org.planqk.atlas.core.repository.ImplementationPackageRepository;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.multipart.MultipartFile;
@@ -64,18 +62,18 @@ public class FileServiceCloudStorageTest extends AtlasDatabaseTestBase {
     private FileRepository fileRepository;
 
     @Autowired
-    private ImplementationRepository implementationRepository;
+    private ImplementationPackageRepository implementationPackageRepository;
 
     @Test
     public void givenFileNotExists_WhenCreate_ThenShouldBeCreated() {
         // Given
         when(storage.create(Mockito.any(BlobInfo.class), Mockito.any(byte[].class))).thenReturn(mockBlob);
-        Implementation persistedImplementation = implementationRepository.save(getDummyImplementation());
+        ImplementationPackage persistedImplementationPackage = implementationPackageRepository.save(getDummyImplementation());
         assertThat(fileRepository.findAll().size()).isEqualTo(0);
 
         //When
         File createdFile =
-            fileServiceCloudStorage.create(getMultipartFile());
+                fileServiceCloudStorage.create(persistedImplementationPackage.getId(), getMultipartFile());
 
         //Then
         assertThat(fileRepository.findAll().size()).isEqualTo(1);
@@ -85,12 +83,12 @@ public class FileServiceCloudStorageTest extends AtlasDatabaseTestBase {
     @Test
     public void givenNone_WhenCreateAndStorageExceptionIsThrown_ThenCatchAndThrowCloudStorageException() {
         // Given
-        Implementation persistedImplementation = implementationRepository.save(getDummyImplementation());
+        ImplementationPackage persistedImplementationPackage = implementationPackageRepository.save(getDummyImplementation());
         when(storage.create(Mockito.any(BlobInfo.class), Mockito.any(byte[].class))).thenThrow(StorageException.class);
 
         // When
         Assertions.assertThrows(CloudStorageException.class,
-            () -> fileServiceCloudStorage.create(getMultipartFile()));
+                () -> fileServiceCloudStorage.create(persistedImplementationPackage.getId(), getMultipartFile()));
     }
 
     @Test
@@ -99,7 +97,7 @@ public class FileServiceCloudStorageTest extends AtlasDatabaseTestBase {
         File persistedFile = fileRepository.save(getDummyFile());
         // When Then
         assertThat(fileServiceCloudStorage.findById(persistedFile.getId()))
-            .isEqualToComparingFieldByField(persistedFile);
+                .isEqualToComparingFieldByField(persistedFile);
     }
 
     @Test
@@ -125,7 +123,7 @@ public class FileServiceCloudStorageTest extends AtlasDatabaseTestBase {
 
         // Call + Then
         Assertions.assertThrows(CloudStorageException.class,
-            () -> fileServiceCloudStorage.delete(persistedFile.getId()));
+                () -> fileServiceCloudStorage.delete(persistedFile.getId()));
     }
 
     @Test
@@ -148,7 +146,7 @@ public class FileServiceCloudStorageTest extends AtlasDatabaseTestBase {
 
         // Call + Then
         Assertions.assertThrows(NoSuchElementException.class,
-            () -> fileServiceCloudStorage.getFileContent(persistedFile.getId()));
+                () -> fileServiceCloudStorage.getFileContent(persistedFile.getId()));
     }
 
     @Test
@@ -161,7 +159,7 @@ public class FileServiceCloudStorageTest extends AtlasDatabaseTestBase {
 
         // Call + Then
         Assertions.assertThrows(CloudStorageException.class,
-            () -> fileServiceCloudStorage.getFileContent(persistedFile.getId()));
+                () -> fileServiceCloudStorage.getFileContent(persistedFile.getId()));
     }
 
     private File getDummyFile() {
@@ -177,13 +175,23 @@ public class FileServiceCloudStorageTest extends AtlasDatabaseTestBase {
         String contentType = "text/plain";
         byte[] content = generateRandomByteArray();
         return new MockMultipartFile(name,
-            originalFileName, contentType, content);
+                originalFileName, contentType, content);
     }
 
-    private Implementation getDummyImplementation() {
-        Implementation dummyImplementation = new Implementation();
-        dummyImplementation.setName("dummy Impl");
-        return dummyImplementation;
+    private ImplementationPackage getDummyImplementation() {
+        ImplementationPackage dummyImplementationpackage = new ImplementationPackage() {
+            @Override
+            public void download() {
+
+            }
+
+            @Override
+            public void upload() {
+
+            }
+        };
+        dummyImplementationpackage.setName("dummy Impl");
+        return dummyImplementationpackage;
     }
 
     private byte[] generateRandomByteArray() {

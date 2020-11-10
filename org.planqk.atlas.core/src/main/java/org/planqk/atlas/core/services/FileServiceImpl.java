@@ -41,7 +41,7 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public Page<File> findAllByImplementationId(UUID implementationId, Pageable pageable) {
+    public Page<File> findAllByImplementationPackageId(UUID implementationPackageId, Pageable pageable) {
         return null;
     }
 

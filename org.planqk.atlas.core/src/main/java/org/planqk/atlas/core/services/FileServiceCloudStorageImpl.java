@@ -26,11 +26,14 @@ import java.util.UUID;
 
 import org.planqk.atlas.core.exceptions.CloudStorageException;
 import org.planqk.atlas.core.model.File;
-import org.planqk.atlas.core.model.Implementation;
+import org.planqk.atlas.core.model.ImplementationPackage;
 import org.planqk.atlas.core.repository.FileRepository;
+import org.planqk.atlas.core.repository.ImplementationPackageRepository;
 import org.planqk.atlas.core.util.ServiceUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -54,6 +57,8 @@ public class FileServiceCloudStorageImpl implements FileService {
 
     private final FileRepository fileRepository;
 
+    private final ImplementationPackageRepository implementationPackageRepository;
+
     @Override
     public File create(UUID implementationPackageId, MultipartFile file) {
         try {
@@ -69,14 +74,22 @@ public class FileServiceCloudStorageImpl implements FileService {
             fileRepository.findByFileURL(implementationFile.getFileURL())
                     .ifPresent(persistedFile -> implementationFile.setId(persistedFile.getId()));
 
-            final Implementation implementation = ServiceUtils.findById(implementationPackageId, Implementation.class, implementationRepository);
-            implementationFile.setImplementation(implementation);
+            final ImplementationPackage
+                    implementationPackage =
+                    ServiceUtils.findById(implementationPackageId, ImplementationPackage.class, implementationPackageRepository);
+            implementationFile.setImplementationPackage(implementationPackage);
             return fileRepository.save(implementationFile);
         } catch (IOException e) {
             throw new IllegalArgumentException("Cannot read contents of multipart file");
         } catch (StorageException e) {
             throw new CloudStorageException("Could not create file in storage");
         }
+    }
+
+    @Override
+    public Page<File> findAllByImplementationPackageId(UUID implementationPackageId,
+                                                       Pageable pageable) {
+        return null;
     }
 
     @Override

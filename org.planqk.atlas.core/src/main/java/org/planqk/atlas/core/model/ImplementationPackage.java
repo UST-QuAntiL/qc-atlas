@@ -25,13 +25,16 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @NoArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 @Data
 public abstract class ImplementationPackage extends HasId {
 
@@ -42,10 +45,16 @@ public abstract class ImplementationPackage extends HasId {
     private ImplementationPackageType packageType;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "implementation_package_id")
+    @JoinColumn(name = "implementation_id")
     private Implementation implementation;
+
+    @EqualsAndHashCode.Exclude
+    @OneToOne
+    @JoinColumn(name = "file_id")
+    private File file;
 
     public abstract void download();
 
     public abstract void upload();
+
 }

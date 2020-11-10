@@ -23,7 +23,6 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
-import org.planqk.atlas.core.model.File;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.model.SoftwarePlatform;
@@ -39,7 +38,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
@@ -123,11 +121,11 @@ public class ImplementationServiceImpl implements ImplementationService {
 
         // Remove links to publications
         CollectionUtils.forEachOnCopy(implementation.getPublications(),
-            publication -> publication.removeImplementation(implementation));
+                publication -> publication.removeImplementation(implementation));
 
         // Remove links to software platforms
         CollectionUtils.forEachOnCopy(implementation.getSoftwarePlatforms(),
-            softwarePlatform -> softwarePlatform.removeImplementation(implementation));
+                softwarePlatform -> softwarePlatform.removeImplementation(implementation));
     }
 
     @Override
@@ -136,7 +134,7 @@ public class ImplementationServiceImpl implements ImplementationService {
 
         if (!implementation.getImplementedAlgorithm().getId().equals(algorithmId)) {
             throw new NoSuchElementException("Implementation with ID \"" + implementationId
-                + "\" of Algorithm with ID \"" + algorithmId + "\" does not exist");
+                    + "\" of Algorithm with ID \"" + algorithmId + "\" does not exist");
         }
     }
 
@@ -161,19 +159,5 @@ public class ImplementationServiceImpl implements ImplementationService {
         return publicationRepository.findPublicationsByImplementationId(implementationId, pageable);
     }
 
-    @Override
-    public Page<File> findLinkedFiles(UUID implementationId, Pageable pageable) {
-        ServiceUtils.throwIfNotExists(implementationId, Implementation.class, implementationRepository);
-        return fileRepository.findFilesByImplementation(implementationId, pageable);
-    }
-
-    @Override
-    public File addFileToImplementation(UUID implementationId, MultipartFile multipartFile) {
-        final Implementation implementation = ServiceUtils.findById(implementationId, Implementation.class, implementationRepository);
-        final File file = fileService.create(multipartFile);
-        implementation.getFiles().add(file);
-        implementationRepository.save(implementation);
-        return file;
-    }
 
 }
