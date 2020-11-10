@@ -9,8 +9,6 @@ public class FileDto {
 
     private UUID id;
 
-    private UUID implementationId;
-
     private String name;
 
     private String mimeType;

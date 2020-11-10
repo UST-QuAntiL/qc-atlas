@@ -116,8 +116,12 @@ public class Implementation extends KnowledgeArtifact {
 
     @EqualsAndHashCode.Exclude
     @OneToMany(cascade = CascadeType.ALL,
-            mappedBy = "implementation",
-            orphanRemoval = true)
+        orphanRemoval = true)
+    @JoinTable(
+        name = "ImplementationFiles",
+        joinColumns = @JoinColumn(name = "implementation_id"),
+        inverseJoinColumns = @JoinColumn(name = "file_id")
+    )
     private Set<File> files = new HashSet<>();
 
     public void addTag(@NonNull Tag tag) {

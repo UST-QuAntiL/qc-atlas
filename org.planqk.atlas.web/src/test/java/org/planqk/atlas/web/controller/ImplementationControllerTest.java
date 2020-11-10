@@ -30,6 +30,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -56,6 +57,7 @@ import org.planqk.atlas.core.model.ComputeResourcePropertyDataType;
 import org.planqk.atlas.core.model.ComputeResourcePropertyType;
 import org.planqk.atlas.core.model.DiscussionComment;
 import org.planqk.atlas.core.model.DiscussionTopic;
+import org.planqk.atlas.core.model.File;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.model.SoftwarePlatform;
@@ -64,6 +66,7 @@ import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.services.ComputeResourcePropertyService;
 import org.planqk.atlas.core.services.DiscussionCommentService;
 import org.planqk.atlas.core.services.DiscussionTopicService;
+import org.planqk.atlas.core.services.FileService;
 import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.core.services.LinkingService;
 import org.planqk.atlas.core.services.PublicationService;
@@ -92,8 +95,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -137,6 +142,9 @@ public class ImplementationControllerTest {
 
     @MockBean
     private TagService tagService;
+
+    @MockBean
+    private FileService fileService;
 
     @Autowired
     private MockMvc mockMvc;
@@ -190,7 +198,7 @@ public class ImplementationControllerTest {
         implementation2.setId(UUID.randomUUID());
         implementation2.setName("Impl2");
         implementation2.setImplementedAlgorithm(algorithm2);
-        
+
         discussionTopic1 = new DiscussionTopic();
         discussionTopic1.setId(UUID.randomUUID());
         discussionTopic1.setTitle("DiscussionTopic1");
@@ -1260,7 +1268,8 @@ public class ImplementationControllerTest {
         when(discussionTopicService.findById(discussionTopic1.getId())).thenReturn(discussionTopic1);
 
         final String path = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
-            .getDiscussionTopicOfImplementation(algorithm1.getId(), implementation1.getId(), discussionTopic1.getId(), new ListParameters(pageable, null)));
+            .getDiscussionTopicOfImplementation(algorithm1.getId(), implementation1.getId(), discussionTopic1.getId(),
+                new ListParameters(pageable, null)));
 
         // call
         final MvcResult result = mockMvc.perform(get(path)).andExpect(status().isOk()).andReturn();
@@ -1286,7 +1295,8 @@ public class ImplementationControllerTest {
             .checkIfDiscussionTopicIsLinkedToKnowledgeArtifact(discussionTopic2.getId(), implementation1.getId());
 
         final String path = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
-            .getDiscussionTopicOfImplementation(algorithm1.getId(), implementation1.getId(), discussionTopic2.getId(), new ListParameters(pageable, null)));
+            .getDiscussionTopicOfImplementation(algorithm1.getId(), implementation1.getId(), discussionTopic2.getId(),
+                new ListParameters(pageable, null)));
 
         // call
         mockMvc.perform(get(path)).andExpect(status().isNotFound());
@@ -1302,7 +1312,8 @@ public class ImplementationControllerTest {
         discussionTopic2Dto.setId(null);
 
         final String path = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
-            .createDiscussionTopicOfImplementation(algorithm2.getId(), implementation2.getId(), discussionTopic2Dto, new ListParameters(pageable, null)));
+            .createDiscussionTopicOfImplementation(algorithm2.getId(), implementation2.getId(), discussionTopic2Dto,
+                new ListParameters(pageable, null)));
 
         // call
         final MvcResult result = mockMvc.perform(post(path).content(mapper.writeValueAsString(discussionTopic2Dto))
@@ -1327,7 +1338,8 @@ public class ImplementationControllerTest {
 
         discussionTopic2Dto.setDate(null);
         final String path = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
-            .createDiscussionTopicOfImplementation(algorithm2.getId(), implementation2.getId(), discussionTopic2Dto, new ListParameters(pageable, null)));
+            .createDiscussionTopicOfImplementation(algorithm2.getId(), implementation2.getId(), discussionTopic2Dto,
+                new ListParameters(pageable, null)));
 
         // call
         mockMvc.perform(post(path).content(mapper.writeValueAsString(discussionTopic2Dto))
@@ -1343,7 +1355,8 @@ public class ImplementationControllerTest {
         when(discussionTopicService.update(any())).thenReturn(discussionTopic1);
 
         final String path = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
-            .updateDiscussionTopicOfImplementation(algorithm1.getId(), implementation1.getId(), discussionTopic1.getId(), discussionTopic1Dto, new ListParameters(pageable, null)));
+            .updateDiscussionTopicOfImplementation(algorithm1.getId(), implementation1.getId(), discussionTopic1.getId(), discussionTopic1Dto,
+                new ListParameters(pageable, null)));
 
         // call
         final MvcResult result = mockMvc.perform(put(path).content(mapper.writeValueAsString(discussionTopic1Dto))
@@ -1372,7 +1385,8 @@ public class ImplementationControllerTest {
         when(discussionTopicService.update(any())).thenReturn(discussionTopic1);
 
         final String path = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
-            .updateDiscussionTopicOfImplementation(algorithm1.getId(), implementation1.getId(), discussionTopic1.getId(), discussionTopic1Dto, new ListParameters(pageable, null)));
+            .updateDiscussionTopicOfImplementation(algorithm1.getId(), implementation1.getId(), discussionTopic1.getId(), discussionTopic1Dto,
+                new ListParameters(pageable, null)));
 
         // call
         mockMvc.perform(put(path).content(mapper.writeValueAsString(discussionTopic1Dto))
@@ -1386,7 +1400,8 @@ public class ImplementationControllerTest {
         initializeDiscussions();
 
         final String path = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
-            .deleteDiscussionTopicOfImplementation(algorithm1.getId(), implementation1.getId(), discussionTopic1.getId(), new ListParameters(pageable, null)));
+            .deleteDiscussionTopicOfImplementation(algorithm1.getId(), implementation1.getId(), discussionTopic1.getId(),
+                new ListParameters(pageable, null)));
 
         // call
         final MvcResult result = mockMvc.perform(delete(path)).andExpect(status().isOk()).andReturn();
@@ -1401,7 +1416,8 @@ public class ImplementationControllerTest {
             .checkIfDiscussionTopicIsLinkedToKnowledgeArtifact(discussionTopic2.getId(), implementation1.getId());
 
         final String path = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
-            .deleteDiscussionTopicOfImplementation(algorithm1.getId(), implementation1.getId(), discussionTopic2.getId(), new ListParameters(pageable, null)));
+            .deleteDiscussionTopicOfImplementation(algorithm1.getId(), implementation1.getId(), discussionTopic2.getId(),
+                new ListParameters(pageable, null)));
 
         // call
         mockMvc.perform(delete(path)).andExpect(status().isNotFound());
@@ -1419,7 +1435,8 @@ public class ImplementationControllerTest {
         when(discussionCommentService.findAllByTopic(discussionTopic1.getId(), pageable)).thenReturn(discussionCommentPage);
 
         final String path = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
-            .getDiscussionCommentsOfDiscussionTopicOfImplementation(algorithm1.getId(), implementation1.getId(), discussionTopic1.getId(), new ListParameters(pageable, null)));
+            .getDiscussionCommentsOfDiscussionTopicOfImplementation(algorithm1.getId(), implementation1.getId(), discussionTopic1.getId(),
+                new ListParameters(pageable, null)));
 
         // call
         final MvcResult result = mockMvc.perform(get(path)).andExpect(status().isOk()).andReturn();
@@ -1444,7 +1461,8 @@ public class ImplementationControllerTest {
         when(discussionCommentService.findById(discussionComment1.getId())).thenReturn(discussionComment1);
 
         final String path = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
-            .getDiscussionCommentOfDiscussionTopicOfImplementation(algorithm1.getId(), implementation1.getId(), discussionTopic1.getId(), discussionComment1.getId(), new ListParameters(pageable, null)));
+            .getDiscussionCommentOfDiscussionTopicOfImplementation(algorithm1.getId(), implementation1.getId(), discussionTopic1.getId(),
+                discussionComment1.getId(), new ListParameters(pageable, null)));
 
         // call
         final MvcResult result = mockMvc.perform(get(path)).andExpect(status().isOk()).andReturn();
@@ -1470,7 +1488,8 @@ public class ImplementationControllerTest {
             .checkIfDiscussionCommentIsInDiscussionTopic(discussionComment2.getId(), discussionTopic1.getId());
 
         final String path = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
-            .getDiscussionCommentOfDiscussionTopicOfImplementation(algorithm1.getId(), implementation1.getId(), discussionTopic1.getId(), discussionComment2.getId(), new ListParameters(pageable, null)));
+            .getDiscussionCommentOfDiscussionTopicOfImplementation(algorithm1.getId(), implementation1.getId(), discussionTopic1.getId(),
+                discussionComment2.getId(), new ListParameters(pageable, null)));
 
         // call
         mockMvc.perform(get(path)).andExpect(status().isNotFound());
@@ -1486,11 +1505,13 @@ public class ImplementationControllerTest {
         when(discussionTopicService.findById(discussionTopic1.getId())).thenReturn(discussionTopic1);
 
         final String path = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
-            .createDiscussionCommentOfDiscussionTopicOfImplementation(algorithm1.getId(), implementation1.getId(), discussionTopic1.getId(), discussionComment2Dto, new ListParameters(pageable, null)));
+            .createDiscussionCommentOfDiscussionTopicOfImplementation(algorithm1.getId(), implementation1.getId(), discussionTopic1.getId(),
+                discussionComment2Dto, new ListParameters(pageable, null)));
 
         // call
         final MvcResult result = mockMvc.perform(post(path).content(mapper.writeValueAsString(discussionComment2Dto))
-            .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).characterEncoding("utf-8")).andExpect(status().isCreated()).andReturn();
+            .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).characterEncoding("utf-8")).andExpect(status().isCreated())
+            .andReturn();
 
         // test
         Mockito.verify(discussionCommentService, times(1)).create(any());
@@ -1510,7 +1531,8 @@ public class ImplementationControllerTest {
 
         discussionComment2Dto.setDate(null);
         final String path = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
-            .createDiscussionCommentOfDiscussionTopicOfImplementation(algorithm1.getId(), implementation1.getId(), discussionTopic1.getId(), discussionComment2Dto, new ListParameters(pageable, null)));
+            .createDiscussionCommentOfDiscussionTopicOfImplementation(algorithm1.getId(), implementation1.getId(), discussionTopic1.getId(),
+                discussionComment2Dto, new ListParameters(pageable, null)));
 
         // call
         mockMvc.perform(post(path).content(mapper.writeValueAsString(discussionComment2Dto))
@@ -1527,7 +1549,8 @@ public class ImplementationControllerTest {
         when(discussionCommentService.findById(discussionComment1.getId())).thenReturn(discussionComment1);
 
         final String path = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
-            .updateDiscussionCommentOfDiscussionTopicOfImplementation(algorithm1.getId(), implementation1.getId(), discussionTopic1.getId(), discussionComment1.getId(), discussionComment1Dto, new ListParameters(pageable, null)));
+            .updateDiscussionCommentOfDiscussionTopicOfImplementation(algorithm1.getId(), implementation1.getId(), discussionTopic1.getId(),
+                discussionComment1.getId(), discussionComment1Dto, new ListParameters(pageable, null)));
 
         // call
         final MvcResult result = mockMvc.perform(put(path).content(mapper.writeValueAsString(discussionComment1Dto))
@@ -1557,7 +1580,8 @@ public class ImplementationControllerTest {
         when(discussionCommentService.findById(discussionComment1.getId())).thenReturn(discussionComment1);
 
         final String path = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
-            .updateDiscussionCommentOfDiscussionTopicOfImplementation(algorithm1.getId(), implementation1.getId(), discussionTopic1.getId(), discussionComment1.getId(), discussionComment1Dto, new ListParameters(pageable, null)));
+            .updateDiscussionCommentOfDiscussionTopicOfImplementation(algorithm1.getId(), implementation1.getId(), discussionTopic1.getId(),
+                discussionComment1.getId(), discussionComment1Dto, new ListParameters(pageable, null)));
 
         // call
         mockMvc.perform(put(path).content(mapper.writeValueAsString(discussionComment1Dto))
@@ -1571,7 +1595,8 @@ public class ImplementationControllerTest {
         initializeDiscussions();
 
         final String path = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
-            .deleteDiscussionCommentOfDiscussionTopicOfImplementation(algorithm1.getId(), implementation1.getId(), discussionTopic1.getId(), discussionComment1.getId(), new ListParameters(pageable, null)));
+            .deleteDiscussionCommentOfDiscussionTopicOfImplementation(algorithm1.getId(), implementation1.getId(), discussionTopic1.getId(),
+                discussionComment1.getId(), new ListParameters(pageable, null)));
 
         // call
         final MvcResult result = mockMvc.perform(delete(path)).andExpect(status().isOk()).andReturn();
@@ -1586,9 +1611,146 @@ public class ImplementationControllerTest {
             .checkIfDiscussionCommentIsInDiscussionTopic(discussionComment1.getId(), discussionTopic2.getId());
 
         final String path = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
-            .deleteDiscussionCommentOfDiscussionTopicOfImplementation(algorithm1.getId(), implementation1.getId(), discussionTopic2.getId(), discussionComment1.getId(), new ListParameters(pageable, null)));
+            .deleteDiscussionCommentOfDiscussionTopicOfImplementation(algorithm1.getId(), implementation1.getId(), discussionTopic2.getId(),
+                discussionComment1.getId(), new ListParameters(pageable, null)));
 
         // call
         mockMvc.perform(delete(path)).andExpect(status().isNotFound());
     }
+
+    @Test
+    @SneakyThrows
+    public void testCreateFileForImplementation_returnOk() {
+        // Given
+        var impl = new Implementation();
+        impl.setName("implementation for Shor");
+        impl.setId(UUID.randomUUID());
+
+        var algo = new Algorithm();
+        algo.setId(UUID.randomUUID());
+
+        byte[] testFile = new byte[20];
+        final MockMultipartFile file = new MockMultipartFile("file", testFile);
+        doReturn(new File()).when(implementationService).addFileToImplementation(impl.getId(), file);
+
+        final String path = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
+            .createFileForImplementation(algo.getId(), impl.getId(), file));
+
+        // When
+        ResultActions resultActions = mockMvc.perform(multipart(path).file(file));
+
+        // Then
+        resultActions.andExpect(status().isCreated());
+        Mockito.verify(implementationService, times(1)).addFileToImplementation(impl.getId(), file);
+    }
+
+    @Test
+    @SneakyThrows
+    public void testGetAllFilesOfImplementation_response_OK() {
+        // Given
+        var impl = new Implementation();
+        impl.setName("implementation for Shor");
+        impl.setId(UUID.randomUUID());
+
+        var algo = new Algorithm();
+        algo.setId(UUID.randomUUID());
+
+        when(implementationService.findLinkedFiles(impl.getId(), pageable)).thenReturn(Page.empty());
+
+        // When
+        final String path = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
+            .getAllFilesOfImplementation(algo.getId(), impl.getId(), new ListParameters(pageable, null)));
+        ResultActions result = mockMvc.perform(get(path).accept(MediaType.APPLICATION_JSON));
+
+
+        // Then
+        result.andExpect(status().isOk());
+        Mockito.verify(implementationService, times(1)).findLinkedFiles(impl.getId(), pageable);
+    }
+
+    @Test
+    @SneakyThrows
+    public void testGetFileOfImplementation_response_OK() {
+        // Given
+        var impl = new Implementation();
+        impl.setName("implementation for Shor");
+        impl.setId(UUID.randomUUID());
+
+        var algo = new Algorithm();
+        algo.setId(UUID.randomUUID());
+
+        var file = new File();
+        file.setId(UUID.randomUUID());
+        file.setMimeType("img/png");
+
+        when(fileService.findById(file.getId())).thenReturn(file);
+
+        // When
+        final String path = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
+            .getFileOfImplementation(algo.getId(), impl.getId(), file.getId()));
+
+        ResultActions result = mockMvc.perform(get(path).accept(MediaType.APPLICATION_JSON));
+
+        // Then
+        result.andExpect(status().isOk()).andReturn();
+
+        var resultList = ObjectMapperUtils.mapResponseToList(result.andReturn().getResponse().getContentAsString(),
+            "file", File.class);
+        assertEquals(0, resultList.size());
+
+        Mockito.verify(fileService, times(1)).findById(file.getId());
+    }
+
+    @Test
+    @SneakyThrows
+    public void testDownloadFileContent_response_OK() {
+        // Given
+        var impl = new Implementation();
+        impl.setName("implementation for Shor");
+        impl.setId(UUID.randomUUID());
+
+        var algo = new Algorithm();
+        algo.setId(UUID.randomUUID());
+
+        var file = new File();
+        file.setId(UUID.randomUUID());
+        file.setMimeType("img/png");
+
+        when(fileService.findById(file.getId())).thenReturn(file);
+
+        // When
+        final String path = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
+            .downloadFileContent(algo.getId(), impl.getId(), file.getId()));
+
+        ResultActions result = mockMvc.perform(get(path).accept(MediaType.APPLICATION_JSON));
+
+        // Then
+        result.andExpect(status().isOk()).andReturn();
+        Mockito.verify(fileService, times(1)).findById(file.getId());
+    }
+
+    @Test
+    @SneakyThrows
+    public void testDeleteFile_response_no_content() {
+        var impl = new Implementation();
+        impl.setName("implementation for Shor");
+        impl.setId(UUID.randomUUID());
+
+        var algo = new Algorithm();
+        algo.setId(UUID.randomUUID());
+
+        var file = new File();
+        file.setId(UUID.randomUUID());
+        file.setMimeType("img/png");
+
+        doNothing().when(fileService).delete(file.getId());
+
+        var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
+            .deleteFileOfImplementation(algo.getId(), impl.getId(), file.getId()));
+        mockMvc.perform(delete(url))
+            .andExpect(status().isNoContent()).andReturn();
+
+        Mockito.verify(fileService, times(1)).delete(file.getId());
+    }
+
 }

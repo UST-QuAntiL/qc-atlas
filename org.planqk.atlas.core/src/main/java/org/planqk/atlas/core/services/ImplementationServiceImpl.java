@@ -23,11 +23,13 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.File;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.model.SoftwarePlatform;
 import org.planqk.atlas.core.repository.AlgorithmRepository;
 import org.planqk.atlas.core.repository.ComputeResourcePropertyRepository;
+import org.planqk.atlas.core.repository.FileRepository;
 import org.planqk.atlas.core.repository.ImplementationRepository;
 import org.planqk.atlas.core.repository.PublicationRepository;
 import org.planqk.atlas.core.repository.SoftwarePlatformRepository;
@@ -37,6 +39,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
@@ -56,6 +59,10 @@ public class ImplementationServiceImpl implements ImplementationService {
     private final AlgorithmRepository algorithmRepository;
 
     private final ComputeResourcePropertyRepository computeResourcePropertyRepository;
+
+    private final FileRepository fileRepository;
+
+    private final FileService fileService;
 
     @Override
     @Transactional
@@ -154,4 +161,20 @@ public class ImplementationServiceImpl implements ImplementationService {
 
         return publicationRepository.findPublicationsByImplementationId(implementationId, pageable);
     }
+
+    @Override
+    public Page<File> findLinkedFiles(UUID implementationId, Pageable pageable) {
+        ServiceUtils.throwIfNotExists(implementationId, Implementation.class, implementationRepository);
+        return fileRepository.findFilesByImplementation(implementationId, pageable);
+    }
+
+    @Override
+    public File addFileToImplementation(UUID implementationId, MultipartFile multipartFile) {
+        final Implementation implementation = ServiceUtils.findById(implementationId, Implementation.class, implementationRepository);
+        final File file = fileService.create(multipartFile);
+        implementation.getFiles().add(file);
+        implementationRepository.save(implementation);
+        return file;
+    }
+
 }
