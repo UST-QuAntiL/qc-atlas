@@ -22,15 +22,11 @@ package org.planqk.atlas.core.services;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.File;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface FileService {
 
     File create(UUID implementationPackageId, MultipartFile file);
-
-    Page<File> findAllByImplementationPackageId(UUID implementationPackageId, Pageable pageable);
 
     File findById(UUID implementationPackageId);
 

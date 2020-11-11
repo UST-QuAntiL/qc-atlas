@@ -19,12 +19,15 @@
 
 package org.planqk.atlas.core.services;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.File;
+import org.planqk.atlas.core.repository.FileRepository;
 import org.springframework.context.annotation.Profile;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -35,13 +38,46 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class FileServiceImpl implements FileService {
 
-    @Override
-    public File create(UUID implementationPackageId, MultipartFile file) {
-        return null;
-    }
+    private final FileRepository fileRepository;
 
     @Override
-    public Page<File> findAllByImplementationPackageId(UUID implementationPackageId, Pageable pageable) {
+    public File create(UUID implementationPackageId, MultipartFile file) {
+        final InputStream inputStream;
+        final OutputStream outputStream;
+
+        final java.io.File dir = new java.io.File(System.getProperty("java.io.tmpdir") + java.io.File.separator + "qc-atlas");
+        if (!dir.exists())
+            dir.mkdirs();
+        final String fileName = String.valueOf(implementationPackageId);
+        final java.io.File newFile = new java.io.File(dir.getAbsolutePath() + java.io.File.separator + fileName);
+
+        try {
+            inputStream = file.getInputStream();
+
+            if (!newFile.exists()) {
+                newFile.createNewFile();
+            }
+            outputStream = new FileOutputStream(newFile);
+            int read = 0;
+            final int maxSize = 1024;
+            final byte[] bytes = new byte[maxSize];
+
+            while ((read = inputStream.read(bytes)) != -1) {
+                outputStream.write(bytes, 0, read);
+            }
+
+            final File createdFile = new File();
+            createdFile.setName(file.getName());
+            createdFile.setMimeType(file.getContentType());
+            createdFile.setFileURL(newFile.getAbsolutePath());
+
+            final File savedFile = fileRepository.save(createdFile);
+
+            return savedFile;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         return null;
     }
 

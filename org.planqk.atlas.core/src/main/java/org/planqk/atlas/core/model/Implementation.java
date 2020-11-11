@@ -19,6 +19,8 @@
 
 package org.planqk.atlas.core.model;
 
+import java.util.HashSet;
+import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -27,8 +29,6 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import java.util.HashSet;
-import java.util.Set;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;

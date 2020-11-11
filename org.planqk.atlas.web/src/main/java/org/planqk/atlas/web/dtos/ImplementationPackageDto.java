@@ -19,9 +19,9 @@
 
 package org.planqk.atlas.web.dtos;
 
-import java.util.UUID;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
+import java.util.UUID;
 
 import org.planqk.atlas.core.model.ImplementationPackageType;
 import org.planqk.atlas.web.utils.ValidationGroups;
@@ -37,8 +37,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "packageType", visible = true)
 @JsonSubTypes({@JsonSubTypes.Type(value = DefaultFileImplementationPackageDto.class, name = "DEFAULT_FILE"),
-        @JsonSubTypes.Type(value = TOSCAImplementationPackageDto.class, name = "TOSCA"),
-        @JsonSubTypes.Type(value = FunctionImplementationPackageDto.class, name = "FUNCTION")})
+    @JsonSubTypes.Type(value = TOSCAImplementationPackageDto.class, name = "TOSCA"),
+    @JsonSubTypes.Type(value = FunctionImplementationPackageDto.class, name = "FUNCTION")})
 @Relation(itemRelation = "implementationPackage", collectionRelation = "implementationPackages")
 public class ImplementationPackageDto {
 
@@ -51,7 +51,6 @@ public class ImplementationPackageDto {
     private String description;
 
     @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
-            message = "PackageType must not be null!")
+        message = "PackageType must not be null!")
     private ImplementationPackageType packageType;
-
 }

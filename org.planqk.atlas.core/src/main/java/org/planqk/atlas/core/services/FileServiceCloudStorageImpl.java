@@ -32,8 +32,6 @@ import org.planqk.atlas.core.repository.ImplementationPackageRepository;
 import org.planqk.atlas.core.util.ServiceUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -84,12 +82,6 @@ public class FileServiceCloudStorageImpl implements FileService {
         } catch (StorageException e) {
             throw new CloudStorageException("Could not create file in storage");
         }
-    }
-
-    @Override
-    public Page<File> findAllByImplementationPackageId(UUID implementationPackageId,
-                                                       Pageable pageable) {
-        return null;
     }
 
     @Override
