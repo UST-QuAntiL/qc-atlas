@@ -44,7 +44,7 @@ public class Image extends KnowledgeArtifact {
 
     private String mimeType;
 
-    @OneToOne
+    @OneToOne(optional = false)
     @JoinColumn(name = "sketch_id")
     private Sketch sketch;
 }

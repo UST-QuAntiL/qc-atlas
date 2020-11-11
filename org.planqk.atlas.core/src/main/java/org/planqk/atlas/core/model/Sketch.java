@@ -57,7 +57,7 @@ public class Sketch extends KnowledgeArtifact {
     @EqualsAndHashCode.Exclude
     private Algorithm algorithm;
 
-    @OneToOne(mappedBy = "sketch", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
+    @OneToOne(mappedBy = "sketch", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @EqualsAndHashCode.Exclude
     private Image image;
 }
