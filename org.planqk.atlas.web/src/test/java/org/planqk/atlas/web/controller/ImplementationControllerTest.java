@@ -1745,7 +1745,7 @@ public class ImplementationControllerTest {
 
         // When
         final String path = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
-                .downloadFileContent(algo.getId(), impl.getId(), implementationPackage.getId());
+                .downloadFileContent(algo.getId(), impl.getId(), implementationPackage.getId()));
 
         ResultActions result = mockMvc.perform(get(path).accept(MediaType.APPLICATION_JSON));
 

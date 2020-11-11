@@ -812,8 +812,8 @@ public class ImplementationController {
     public ResponseEntity<byte[]> downloadFileContent(
             @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId,
-            @PathVariable UUID implementationPackageId,
-            ) {
+            @PathVariable UUID implementationPackageId
+    ) {
         implementationService.checkIfImplementationIsOfAlgorithm(implementationId, algorithmId);
         implementationPackageService.checkIfImplementationPackageIsLinkedToImplementation(implementationPackageId, implementationId);
         final File file =
