@@ -1687,6 +1687,11 @@ public class ImplementationControllerTest {
     @SneakyThrows
     public void testGetFileOfImplementation_response_OK() {
         // Given
+        var implementationPackage = new DefaultFileImplementationPackage();
+        implementationPackage.setName("implementation for Shor");
+        implementationPackage.setId(UUID.randomUUID());
+
+
         var impl = new Implementation();
         impl.setName("implementation for Shor");
         impl.setId(UUID.randomUUID());
@@ -1697,12 +1702,13 @@ public class ImplementationControllerTest {
         var file = new File();
         file.setId(UUID.randomUUID());
         file.setMimeType("img/png");
+        implementationPackage.setFile(file);
 
         when(fileService.findById(file.getId())).thenReturn(file);
 
         // When
         final String path = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
-                .getFileOfImplementation(algo.getId(), impl.getId(), file.getId()));
+                .getFileOfImplementationPackage(algo.getId(), impl.getId(), implementationPackage.getId()));
 
         ResultActions result = mockMvc.perform(get(path).accept(MediaType.APPLICATION_JSON));
 
@@ -1720,6 +1726,10 @@ public class ImplementationControllerTest {
     @SneakyThrows
     public void testDownloadFileContent_response_OK() {
         // Given
+        var implementationPackage = new DefaultFileImplementationPackage();
+        implementationPackage.setName("implementation for Shor");
+        implementationPackage.setId(UUID.randomUUID());
+
         var impl = new Implementation();
         impl.setName("implementation for Shor");
         impl.setId(UUID.randomUUID());
@@ -1735,7 +1745,7 @@ public class ImplementationControllerTest {
 
         // When
         final String path = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
-                .downloadFileContent(algo.getId(), impl.getId(), file.getId()));
+                .downloadFileContent(algo.getId(), impl.getId(), implementationPackage.getId());
 
         ResultActions result = mockMvc.perform(get(path).accept(MediaType.APPLICATION_JSON));
 

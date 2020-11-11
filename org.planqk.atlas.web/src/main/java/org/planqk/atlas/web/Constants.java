@@ -43,6 +43,8 @@ public final class Constants {
 
     public static final String FILES = "files";
 
+    public static final String FILE = "file";
+
     public static final String COMPUTE_RESOURCE_PROPERTY_TYPES = "compute-resource-property-types";
 
     public static final String DISCUSSION_COMMENTS = "discussion-comments";
