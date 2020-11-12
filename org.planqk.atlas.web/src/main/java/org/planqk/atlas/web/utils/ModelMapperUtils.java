@@ -20,13 +20,16 @@
 package org.planqk.atlas.web.utils;
 
 import java.util.UUID;
+import java.util.function.Supplier;
 
+import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
 import org.planqk.atlas.core.model.ComputeResource;
 import org.planqk.atlas.core.model.DefaultFileImplementationPackage;
+import org.planqk.atlas.core.model.File;
 import org.planqk.atlas.core.model.FunctionImplementationPackage;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.ImplementationPackage;
@@ -40,6 +43,7 @@ import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
 import org.planqk.atlas.web.dtos.ClassicAlgorithmDto;
 import org.planqk.atlas.web.dtos.ComputeResourceDto;
 import org.planqk.atlas.web.dtos.DefaultFileImplementationPackageDto;
+import org.planqk.atlas.web.dtos.FileDto;
 import org.planqk.atlas.web.dtos.FunctionImplementationPackageDto;
 import org.planqk.atlas.web.dtos.ImplementationDto;
 import org.planqk.atlas.web.dtos.ImplementationPackageDto;
@@ -105,6 +109,10 @@ public final class ModelMapperUtils {
                 .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), Qpu.class));
         mapper.createTypeMap(SimulatorDto.class, ComputeResource.class)
                 .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), Simulator.class));
+        mapper.createTypeMap(File.class, FileDto.class)
+            .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), FileDto.class));
+        mapper.createTypeMap(FileDto.class, File.class)
+            .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), File.class));
     }
 
     private static void initializeUUIDMappings(ModelMapper mapper) {

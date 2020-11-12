@@ -29,19 +29,15 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-/**
- * Data transfer object for QuantumAlgorithm ({@link org.planqk.atlas.core.model.QuantumAlgorithm}).
- */
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @Data
-@JsonTypeName("DEFAULT_FILE")
+@JsonTypeName("DEFAULTFILE")
 @Relation(itemRelation = "implementationPackage", collectionRelation = "implementationPackages")
 public class DefaultFileImplementationPackageDto extends ImplementationPackageDto {
 
-
     @Override
-    @Schema(type = "string", allowableValues = {"DEFAULT_FILE"})
+    @Schema(type = "string", allowableValues = {"DEFAULTFILE"})
     public ImplementationPackageType getPackageType() {
         return super.getPackageType();
     }

@@ -117,7 +117,7 @@ public class Implementation extends KnowledgeArtifact {
             orphanRemoval = true)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    private Set<ImplementationPackage> implementationPackage = new HashSet<>();
+    private Set<ImplementationPackage> implementationPackages = new HashSet<>();
 
     public void addTag(@NonNull Tag tag) {
         if (tags.contains(tag)) {
@@ -165,5 +165,21 @@ public class Implementation extends KnowledgeArtifact {
         }
         softwarePlatforms.remove(softwarePlatform);
         softwarePlatform.removeImplementation(this);
+    }
+
+    public void addImplementationPackage(@NonNull ImplementationPackage implementationPackage) {
+        if (implementationPackages.contains(implementationPackage)) {
+            return;
+        }
+        this.implementationPackages.add(implementationPackage);
+        implementationPackage.setImplementation(this);
+    }
+
+    public void removeImplementationPackage(@NonNull ImplementationPackage implementationPackage) {
+        if (!implementationPackages.contains(implementationPackage)) {
+            return;
+        }
+        this.implementationPackages.remove(implementationPackage);
+        implementationPackage.setImplementation(null);
     }
 }

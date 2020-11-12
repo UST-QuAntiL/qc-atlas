@@ -19,11 +19,12 @@
 
 package org.planqk.atlas.web.dtos;
 
+import java.util.UUID;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
-import java.util.UUID;
 
 import org.planqk.atlas.core.model.ImplementationPackageType;
+import org.planqk.atlas.web.utils.Identifyable;
 import org.planqk.atlas.web.utils.ValidationGroups;
 import org.springframework.hateoas.server.core.Relation;
 
@@ -36,11 +37,11 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "packageType", visible = true)
-@JsonSubTypes({@JsonSubTypes.Type(value = DefaultFileImplementationPackageDto.class, name = "DEFAULT_FILE"),
+@JsonSubTypes({@JsonSubTypes.Type(value = DefaultFileImplementationPackageDto.class, name = "DEFAULTFILE"),
     @JsonSubTypes.Type(value = TOSCAImplementationPackageDto.class, name = "TOSCA"),
     @JsonSubTypes.Type(value = FunctionImplementationPackageDto.class, name = "FUNCTION")})
 @Relation(itemRelation = "implementationPackage", collectionRelation = "implementationPackages")
-public class ImplementationPackageDto {
+public class ImplementationPackageDto implements Identifyable {
 
     @NotNull(groups = {ValidationGroups.IDOnly.class}, message = "An id is required to perform an update")
     @Null(groups = {ValidationGroups.Create.class}, message = "The id must be null for creating an implementation package")

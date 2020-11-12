@@ -19,6 +19,7 @@
 
 package org.planqk.atlas.core.model;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
@@ -36,7 +37,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Data
-public abstract class ImplementationPackage extends HasId {
+public class ImplementationPackage extends HasId {
 
     private String name;
 
@@ -48,13 +49,11 @@ public abstract class ImplementationPackage extends HasId {
     @JoinColumn(name = "implementation_id")
     private Implementation implementation;
 
+    @OneToOne(mappedBy = "implementationPackage", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @EqualsAndHashCode.Exclude
-    @OneToOne
-    @JoinColumn(name = "file_id")
     private File file;
 
-    public abstract void download();
+    public void download() { }
 
-    public abstract void upload();
-
+    public void upload() { }
 }

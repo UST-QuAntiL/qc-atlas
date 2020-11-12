@@ -59,7 +59,9 @@ public class ImplementationPackageServiceImpl implements ImplementationPackageSe
             @NonNull ImplementationPackage implementationPackage, UUID implementationId) {
         final Implementation implementation = ServiceUtils.findById(implementationId, Implementation.class, implementationRepository);
         implementationPackage.setImplementation(implementation);
-        return implementationPackageRepository.save(implementationPackage);
+        final ImplementationPackage persistedImplementationPackage = implementationPackageRepository.save(implementationPackage);
+        implementation.getImplementationPackages().add(implementationPackage);
+        return persistedImplementationPackage;
     }
 
     @Override
