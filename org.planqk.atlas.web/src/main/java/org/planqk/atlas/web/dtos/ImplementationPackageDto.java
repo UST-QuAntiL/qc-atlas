@@ -38,8 +38,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "packageType", visible = true)
 @JsonSubTypes({@JsonSubTypes.Type(value = DefaultFileImplementationPackageDto.class, name = "DEFAULTFILE"),
-    @JsonSubTypes.Type(value = TOSCAImplementationPackageDto.class, name = "TOSCA"),
-    @JsonSubTypes.Type(value = FunctionImplementationPackageDto.class, name = "FUNCTION")})
+        @JsonSubTypes.Type(value = TOSCAImplementationPackageDto.class, name = "TOSCA"),
+        @JsonSubTypes.Type(value = FunctionImplementationPackageDto.class, name = "FUNCTION")})
 @Relation(itemRelation = "implementationPackage", collectionRelation = "implementationPackages")
 public class ImplementationPackageDto implements Identifyable {
 
@@ -52,6 +52,6 @@ public class ImplementationPackageDto implements Identifyable {
     private String description;
 
     @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
-        message = "PackageType must not be null!")
+            message = "PackageType must not be null!")
     private ImplementationPackageType packageType;
 }

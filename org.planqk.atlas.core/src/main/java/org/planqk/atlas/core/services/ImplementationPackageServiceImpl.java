@@ -59,8 +59,9 @@ public class ImplementationPackageServiceImpl implements ImplementationPackageSe
             @NonNull ImplementationPackage implementationPackage, UUID implementationId) {
         final Implementation implementation = ServiceUtils.findById(implementationId, Implementation.class, implementationRepository);
         implementationPackage.setImplementation(implementation);
+        // reset file to null because the ModelMapper sometimes instanciates the file object
+        implementationPackage.setFile(null);
         final ImplementationPackage persistedImplementationPackage = implementationPackageRepository.save(implementationPackage);
-        implementation.getImplementationPackages().add(implementationPackage);
         return persistedImplementationPackage;
     }
 
