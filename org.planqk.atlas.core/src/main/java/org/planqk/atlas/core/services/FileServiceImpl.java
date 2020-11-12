@@ -103,11 +103,6 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public File update(UUID artifactId, MultipartFile file) {
-        return null;
-    }
-
-    @Override
     public void delete(UUID id) {
         final File file = findById(id);
         boolean deletedSucessfully = false;

@@ -30,8 +30,6 @@ public interface FileService {
 
     File findById(UUID fileId);
 
-    File update(UUID artifactId, MultipartFile file);
-
     void delete(UUID id);
 
     byte[] getFileContent(UUID id);

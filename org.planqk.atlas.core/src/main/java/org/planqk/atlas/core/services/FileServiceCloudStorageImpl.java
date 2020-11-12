@@ -104,10 +104,6 @@ public class FileServiceCloudStorageImpl implements FileService {
         }
     }
 
-    @Override
-    public File update(UUID id, MultipartFile file) {
-        return null;
-    }
 
     @Override
     public void delete(UUID id) {
