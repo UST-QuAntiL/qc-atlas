@@ -23,16 +23,23 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.File;
+import org.planqk.atlas.core.model.ImplementationPackage;
 import org.planqk.atlas.core.repository.FileRepository;
+import org.planqk.atlas.core.repository.ImplementationPackageRepository;
+import org.planqk.atlas.core.util.ServiceUtils;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @Profile("!google-cloud")
 @AllArgsConstructor
@@ -40,16 +47,22 @@ public class FileServiceImpl implements FileService {
 
     private final FileRepository fileRepository;
 
+    private final ImplementationPackageRepository implementationPackageRepository;
+
+    private final String path = System.getProperty("java.io.tmpdir");
+
+    private final String storageFolder = path + java.io.File.separator + "qc-atlas";
+
     @Override
     public File create(UUID implementationPackageId, MultipartFile file) {
         final InputStream inputStream;
         final OutputStream outputStream;
 
-        final java.io.File dir = new java.io.File(System.getProperty("java.io.tmpdir") + java.io.File.separator + "qc-atlas");
+        final java.io.File dir = new java.io.File(storageFolder);
         if (!dir.exists())
             dir.mkdirs();
         final String fileName = String.valueOf(implementationPackageId);
-        final java.io.File newFile = new java.io.File(dir.getAbsolutePath() + java.io.File.separator + fileName);
+        final java.io.File newFile = new java.io.File(dir.getAbsolutePath() + java.io.File.separator + file.getOriginalFilename());
 
         try {
             inputStream = file.getInputStream();
@@ -67,13 +80,16 @@ public class FileServiceImpl implements FileService {
             }
 
             final File createdFile = new File();
-            createdFile.setName(file.getName());
+            createdFile.setName(file.getOriginalFilename());
             createdFile.setMimeType(file.getContentType());
             createdFile.setFileURL(newFile.getAbsolutePath());
+            createdFile.setImplementationPackage(
+                    ServiceUtils.findById(implementationPackageId, ImplementationPackage.class, implementationPackageRepository));
 
             final File savedFile = fileRepository.save(createdFile);
-
             return savedFile;
+
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -82,8 +98,8 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public File findById(UUID implementationPackageId) {
-        return null;
+    public File findById(UUID fileId) {
+        return ServiceUtils.findById(fileId, File.class, fileRepository);
     }
 
     @Override
@@ -93,7 +109,14 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public void delete(UUID id) {
-
+        final File file = findById(id);
+        boolean deletedSucessfully = false;
+        try {
+            deletedSucessfully = Files.deleteIfExists(Paths.get(file.getFileURL()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        fileRepository.deleteById(id);
     }
 
     @Override

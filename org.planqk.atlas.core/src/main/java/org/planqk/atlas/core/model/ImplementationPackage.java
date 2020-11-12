@@ -49,11 +49,13 @@ public class ImplementationPackage extends HasId {
     @JoinColumn(name = "implementation_id")
     private Implementation implementation;
 
-    @OneToOne(mappedBy = "implementationPackage", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "implementationPackage", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @EqualsAndHashCode.Exclude
     private File file;
 
-    public void download() { }
+    public void download() {
+    }
 
-    public void upload() { }
+    public void upload() {
+    }
 }

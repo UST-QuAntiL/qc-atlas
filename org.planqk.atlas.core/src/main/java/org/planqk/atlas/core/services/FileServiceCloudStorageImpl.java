@@ -85,8 +85,8 @@ public class FileServiceCloudStorageImpl implements FileService {
     }
 
     @Override
-    public File findById(UUID implementationPackageId) {
-        return ServiceUtils.findById(implementationPackageId, File.class, fileRepository);
+    public File findById(UUID fileId) {
+        return ServiceUtils.findById(fileId, File.class, fileRepository);
     }
 
     @Override

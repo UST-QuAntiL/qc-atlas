@@ -19,6 +19,7 @@
 
 package org.planqk.atlas.core.model;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -46,7 +47,7 @@ public class File extends KnowledgeArtifact {
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "implementation_package_id")
     private ImplementationPackage implementationPackage;
 }

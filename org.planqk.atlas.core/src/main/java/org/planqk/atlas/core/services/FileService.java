@@ -28,7 +28,7 @@ public interface FileService {
 
     File create(UUID implementationPackageId, MultipartFile file);
 
-    File findById(UUID implementationPackageId);
+    File findById(UUID fileId);
 
     File update(UUID artifactId, MultipartFile file);
 
