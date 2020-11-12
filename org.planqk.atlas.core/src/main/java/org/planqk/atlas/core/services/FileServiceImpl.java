@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.File;
@@ -116,6 +117,11 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public byte[] getFileContent(UUID id) {
-        return new byte[0];
+        final File file = findById(id);
+        try {
+            return Files.readAllBytes(Paths.get(file.getFileURL()));
+        } catch (IOException e) {
+            throw new NoSuchElementException("File with URL \"" + file.getFileURL() + "\" does not exist");
+        }
     }
 }
