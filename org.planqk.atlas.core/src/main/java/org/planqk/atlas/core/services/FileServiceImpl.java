@@ -63,7 +63,8 @@ public class FileServiceImpl implements FileService {
         if (!dir.exists())
             dir.mkdirs();
         final String fileName = String.valueOf(implementationPackageId);
-        final java.io.File newFile = new java.io.File(dir.getAbsolutePath() + java.io.File.separator + file.getOriginalFilename());
+        final java.io.File newFile = new java.io.File(dir.getAbsolutePath() + java.io.File.separator + implementationPackageId + "_" +
+                file.getOriginalFilename());
 
         try {
             inputStream = file.getInputStream();
