@@ -37,7 +37,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "packageType", visible = true)
-@JsonSubTypes({@JsonSubTypes.Type(value = DefaultFileImplementationPackageDto.class, name = "DEFAULTFILE"),
+@JsonSubTypes({@JsonSubTypes.Type(value = FileImplementationPackageDto.class, name = "FILE"),
         @JsonSubTypes.Type(value = TOSCAImplementationPackageDto.class, name = "TOSCA"),
         @JsonSubTypes.Type(value = FunctionImplementationPackageDto.class, name = "FUNCTION")})
 @Relation(itemRelation = "implementationPackage", collectionRelation = "implementationPackages")

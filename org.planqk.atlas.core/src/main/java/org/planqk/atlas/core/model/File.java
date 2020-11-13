@@ -47,7 +47,7 @@ public class File extends KnowledgeArtifact {
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = {CascadeType.REFRESH, CascadeType.MERGE, CascadeType.PERSIST})
     @JoinColumn(name = "implementation_package_id")
     private ImplementationPackage implementationPackage;
 }

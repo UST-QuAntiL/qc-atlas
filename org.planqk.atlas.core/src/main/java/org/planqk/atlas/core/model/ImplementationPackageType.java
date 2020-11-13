@@ -20,5 +20,5 @@
 package org.planqk.atlas.core.model;
 
 public enum ImplementationPackageType {
-    DEFAULTFILE, TOSCA, FUNCTION
+    FILE, TOSCA, FUNCTION
 }

@@ -26,7 +26,7 @@ import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
 import org.planqk.atlas.core.model.ComputeResource;
-import org.planqk.atlas.core.model.DefaultFileImplementationPackage;
+import org.planqk.atlas.core.model.FileImplementationPackage;
 import org.planqk.atlas.core.model.FunctionImplementationPackage;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.ImplementationPackage;
@@ -39,7 +39,7 @@ import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
 import org.planqk.atlas.web.dtos.ClassicAlgorithmDto;
 import org.planqk.atlas.web.dtos.ComputeResourceDto;
-import org.planqk.atlas.web.dtos.DefaultFileImplementationPackageDto;
+import org.planqk.atlas.web.dtos.FileImplementationPackageDto;
 import org.planqk.atlas.web.dtos.FunctionImplementationPackageDto;
 import org.planqk.atlas.web.dtos.ImplementationDto;
 import org.planqk.atlas.web.dtos.ImplementationPackageDto;
@@ -85,14 +85,14 @@ public final class ModelMapperUtils {
                 .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), ClassicAlgorithm.class));
         mapper.createTypeMap(QuantumAlgorithmDto.class, Algorithm.class)
                 .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), QuantumAlgorithm.class));
-        mapper.createTypeMap(DefaultFileImplementationPackage.class, ImplementationPackageDto.class)
-                .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), DefaultFileImplementationPackageDto.class));
+        mapper.createTypeMap(FileImplementationPackage.class, ImplementationPackageDto.class)
+                .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), FileImplementationPackageDto.class));
         mapper.createTypeMap(TOSCAImplementationPackage.class, ImplementationPackageDto.class)
                 .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), TOSCAImplementationPackageDto.class));
         mapper.createTypeMap(FunctionImplementationPackage.class, ImplementationPackageDto.class)
                 .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), FunctionImplementationPackageDto.class));
-        mapper.createTypeMap(DefaultFileImplementationPackageDto.class, ImplementationPackage.class)
-                .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), DefaultFileImplementationPackage.class));
+        mapper.createTypeMap(FileImplementationPackageDto.class, ImplementationPackage.class)
+                .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), FileImplementationPackage.class));
         mapper.createTypeMap(TOSCAImplementationPackageDto.class, ImplementationPackage.class)
                 .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), TOSCAImplementationPackage.class));
         mapper.createTypeMap(FunctionImplementationPackageDto.class, ImplementationPackage.class)

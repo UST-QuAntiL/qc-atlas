@@ -32,12 +32,12 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @Data
-@JsonTypeName("DEFAULTFILE")
+@JsonTypeName("FILE")
 @Relation(itemRelation = "implementationPackage", collectionRelation = "implementationPackages")
-public class DefaultFileImplementationPackageDto extends ImplementationPackageDto {
+public class FileImplementationPackageDto extends ImplementationPackageDto {
 
     @Override
-    @Schema(type = "string", allowableValues = {"DEFAULTFILE"})
+    @Schema(type = "string", allowableValues = {"FILE"})
     public ImplementationPackageType getPackageType() {
         return super.getPackageType();
     }

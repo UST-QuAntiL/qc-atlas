@@ -55,7 +55,7 @@ import org.planqk.atlas.core.model.ComputationModel;
 import org.planqk.atlas.core.model.ComputeResourceProperty;
 import org.planqk.atlas.core.model.ComputeResourcePropertyDataType;
 import org.planqk.atlas.core.model.ComputeResourcePropertyType;
-import org.planqk.atlas.core.model.DefaultFileImplementationPackage;
+import org.planqk.atlas.core.model.FileImplementationPackage;
 import org.planqk.atlas.core.model.DiscussionComment;
 import org.planqk.atlas.core.model.DiscussionTopic;
 import org.planqk.atlas.core.model.File;
@@ -1633,7 +1633,7 @@ public class ImplementationControllerTest {
         impl.setName("implementation for Shor");
         impl.setId(UUID.randomUUID());
 
-        var implementationPackage = new DefaultFileImplementationPackage();
+        var implementationPackage = new FileImplementationPackage();
         implementationPackage.setName("implementation for Shor");
         implementationPackage.setId(UUID.randomUUID());
 
@@ -1659,7 +1659,7 @@ public class ImplementationControllerTest {
     @SneakyThrows
     public void testGetFileOfImplementationPackage_response_OK() {
         // Given
-        var implementationPackage = new DefaultFileImplementationPackage();
+        var implementationPackage = new FileImplementationPackage();
         implementationPackage.setName("implementation for Shor");
         implementationPackage.setId(UUID.randomUUID());
 
@@ -1687,7 +1687,7 @@ public class ImplementationControllerTest {
     @SneakyThrows
     public void testGetFileOfImplementation_response_OK() {
         // Given
-        var implementationPackage = new DefaultFileImplementationPackage();
+        var implementationPackage = new FileImplementationPackage();
         implementationPackage.setName("implementation for Shor");
         implementationPackage.setId(UUID.randomUUID());
 
@@ -1726,7 +1726,7 @@ public class ImplementationControllerTest {
     @SneakyThrows
     public void testDownloadFileContent_response_OK() {
         // Given
-        var implementationPackage = new DefaultFileImplementationPackage();
+        var implementationPackage = new FileImplementationPackage();
         implementationPackage.setName("implementation for Shor");
         implementationPackage.setId(UUID.randomUUID());
 

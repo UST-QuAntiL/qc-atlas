@@ -107,6 +107,7 @@ public class FileServiceImpl implements FileService {
     @Override
     public void delete(UUID id) {
         final File file = findById(id);
+        file.getImplementationPackage().setFile(null);
         boolean deletedSucessfully = false;
         try {
             deletedSucessfully = Files.deleteIfExists(Paths.get(file.getFileURL()));

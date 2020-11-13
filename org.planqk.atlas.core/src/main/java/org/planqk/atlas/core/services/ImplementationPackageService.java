@@ -22,6 +22,7 @@ package org.planqk.atlas.core.services;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.File;
+import org.planqk.atlas.core.model.FileImplementationPackage;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.ImplementationPackage;
 import org.planqk.atlas.core.repository.ImplementationPackageRepository;
@@ -64,7 +65,7 @@ public interface ImplementationPackageService {
      * Delete an existing {@link ImplementationPackage} entry from the database. This deletion is based on the ID the database has given
      * the {@link ImplementationPackage} when it was created and first saved to the database.
      * <p>
-     * When deleting an {@link ImplementationPackage} related {@link org.planqk.atlas.core.model.DefaultFileImplementationPackage}s will be
+     * When deleting an {@link ImplementationPackage} related {@link FileImplementationPackage}s will be
      * deleted together with it.
      * <p>
      * Objects that can be related to multiple {@link ImplementationPackage}s will not be deleted. Only the reference to the deleted {@link
