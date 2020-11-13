@@ -101,6 +101,7 @@ public class ImplementationPackageServiceTest extends AtlasDatabaseTestBase {
         impl = implementationService.create(impl, algo.getId());
 
         implementationPackage.setImplementation(impl);
+        implementationPackage1.setImplementation(impl);
         implementation = impl;
 
         MultipartFile file = new MockMultipartFile("file.txt", "file.txt", "text/plain", new byte[0]);
@@ -192,5 +193,13 @@ public class ImplementationPackageServiceTest extends AtlasDatabaseTestBase {
             impl2 = implementationService.create(impl2, finalAlgo.getId());
             implementationPackageService.checkIfImplementationPackageIsLinkedToImplementation(implementationPackage.getId(), impl2.getId());
         });
+    }
+
+    @Test
+    void findLinkedFile() {
+        ImplementationPackage implementationPackage = implementationPackageService.create(this.implementationPackage, implementation.getId());
+        File file = implementationPackageService.addFileToImplementationPackage(implementationPackage.getId(), this.multipartFile);
+
+        assertThat(file).isEqualToComparingFieldByField(implementationPackageService.findLinkedFile(implementationPackage.getId()));
     }
 }
