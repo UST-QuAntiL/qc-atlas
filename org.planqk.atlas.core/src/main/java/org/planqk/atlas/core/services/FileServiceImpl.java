@@ -35,6 +35,7 @@ import org.planqk.atlas.core.repository.ImplementationPackageRepository;
 import org.planqk.atlas.core.util.ServiceUtils;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import lombok.AllArgsConstructor;
@@ -105,16 +106,17 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
+    @Transactional
     public void delete(UUID id) {
         final File file = findById(id);
         file.getImplementationPackage().setFile(null);
         boolean deletedSucessfully = false;
         try {
             deletedSucessfully = Files.deleteIfExists(Paths.get(file.getFileURL()));
+            fileRepository.deleteById(id);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        fileRepository.deleteById(id);
     }
 
     @Override
