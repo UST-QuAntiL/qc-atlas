@@ -24,6 +24,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.NoSuchElementException;
 import java.util.Random;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -32,6 +33,7 @@ import org.mockito.Mockito;
 import org.planqk.atlas.core.exceptions.CloudStorageException;
 import org.planqk.atlas.core.model.File;
 import org.planqk.atlas.core.model.ImplementationPackage;
+import org.planqk.atlas.core.model.ImplementationPackageType;
 import org.planqk.atlas.core.repository.FileRepository;
 import org.planqk.atlas.core.repository.ImplementationPackageRepository;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
@@ -68,7 +70,7 @@ public class FileServiceCloudStorageTest extends AtlasDatabaseTestBase {
     public void givenFileNotExists_WhenCreate_ThenShouldBeCreated() {
         // Given
         when(storage.create(Mockito.any(BlobInfo.class), Mockito.any(byte[].class))).thenReturn(mockBlob);
-        ImplementationPackage persistedImplementationPackage = implementationPackageRepository.save(getDummyImplementation());
+        ImplementationPackage persistedImplementationPackage = implementationPackageRepository.save(getDummyImplementationPackage());
         assertThat(fileRepository.findAll().size()).isEqualTo(0);
 
         //When
@@ -83,7 +85,7 @@ public class FileServiceCloudStorageTest extends AtlasDatabaseTestBase {
     @Test
     public void givenNone_WhenCreateAndStorageExceptionIsThrown_ThenCatchAndThrowCloudStorageException() {
         // Given
-        ImplementationPackage persistedImplementationPackage = implementationPackageRepository.save(getDummyImplementation());
+        ImplementationPackage persistedImplementationPackage = implementationPackageRepository.save(getDummyImplementationPackage());
         when(storage.create(Mockito.any(BlobInfo.class), Mockito.any(byte[].class))).thenThrow(StorageException.class);
 
         // When
@@ -178,7 +180,7 @@ public class FileServiceCloudStorageTest extends AtlasDatabaseTestBase {
                 originalFileName, contentType, content);
     }
 
-    private ImplementationPackage getDummyImplementation() {
+    private ImplementationPackage getDummyImplementationPackage() {
         ImplementationPackage dummyImplementationpackage = new ImplementationPackage() {
             @Override
             public void download() {
@@ -190,7 +192,10 @@ public class FileServiceCloudStorageTest extends AtlasDatabaseTestBase {
 
             }
         };
-        dummyImplementationpackage.setName("dummy Impl");
+        dummyImplementationpackage.setId(UUID.randomUUID());
+        dummyImplementationpackage.setName("dummy ImplPackage");
+        dummyImplementationpackage.setPackageType(ImplementationPackageType.TOSCA);
+        dummyImplementationpackage.setFile(null);
         return dummyImplementationpackage;
     }
 

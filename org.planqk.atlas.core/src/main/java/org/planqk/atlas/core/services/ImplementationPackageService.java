@@ -107,9 +107,9 @@ public interface ImplementationPackageService {
     /**
      * Creates a {@link File} entry in the database from a multipartfile and links it to a given {@link Implementation}.
      *
-     * @param implementationId The ID of the {@link Implementation} we want the {@link File} to be linked.
+     * @param implementationPackageId The ID of the {@link Implementation} we want the {@link File} to be linked.
      * @param multipartFile    The multipart from which we want to create a File entity and link it to the {@link Implementation}
      * @return The created and linked {@link File}
      */
-    File addFileToImplementationPackage(UUID implementationId, MultipartFile multipartFile);
+    File addFileToImplementationPackage(UUID implementationPackageId, MultipartFile multipartFile);
 }
