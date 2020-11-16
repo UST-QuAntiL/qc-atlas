@@ -32,6 +32,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.planqk.atlas.core.exceptions.CloudStorageException;
 import org.planqk.atlas.core.model.File;
+import org.planqk.atlas.core.model.FileImplementationPackage;
 import org.planqk.atlas.core.model.ImplementationPackage;
 import org.planqk.atlas.core.model.ImplementationPackageType;
 import org.planqk.atlas.core.repository.FileRepository;
@@ -181,22 +182,12 @@ public class FileServiceCloudStorageTest extends AtlasDatabaseTestBase {
     }
 
     private ImplementationPackage getDummyImplementationPackage() {
-        ImplementationPackage dummyImplementationpackage = new ImplementationPackage() {
-            @Override
-            public void download() {
-
-            }
-
-            @Override
-            public void upload() {
-
-            }
-        };
-        dummyImplementationpackage.setId(UUID.randomUUID());
-        dummyImplementationpackage.setName("dummy ImplPackage");
-        dummyImplementationpackage.setPackageType(ImplementationPackageType.TOSCA);
-        dummyImplementationpackage.setFile(null);
-        return dummyImplementationpackage;
+        ImplementationPackage dummyImplementationPackage = new FileImplementationPackage();
+        dummyImplementationPackage.setId(UUID.randomUUID());
+        dummyImplementationPackage.setName("dummy ImplPackage");
+        dummyImplementationPackage.setPackageType(ImplementationPackageType.FILE);
+        dummyImplementationPackage.setFile(null);
+        return dummyImplementationPackage;
     }
 
     private byte[] generateRandomByteArray() {
