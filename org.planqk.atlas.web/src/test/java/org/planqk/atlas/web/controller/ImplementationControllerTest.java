@@ -60,6 +60,8 @@ import org.planqk.atlas.core.model.DiscussionTopic;
 import org.planqk.atlas.core.model.File;
 import org.planqk.atlas.core.model.FileImplementationPackage;
 import org.planqk.atlas.core.model.Implementation;
+import org.planqk.atlas.core.model.ImplementationPackage;
+import org.planqk.atlas.core.model.ImplementationPackageType;
 import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.model.SoftwarePlatform;
 import org.planqk.atlas.core.model.Status;
@@ -81,6 +83,7 @@ import org.planqk.atlas.web.dtos.ComputeResourcePropertyTypeDto;
 import org.planqk.atlas.web.dtos.DiscussionCommentDto;
 import org.planqk.atlas.web.dtos.DiscussionTopicDto;
 import org.planqk.atlas.web.dtos.ImplementationDto;
+import org.planqk.atlas.web.dtos.ImplementationPackageDto;
 import org.planqk.atlas.web.dtos.PublicationDto;
 import org.planqk.atlas.web.dtos.SoftwarePlatformDto;
 import org.planqk.atlas.web.dtos.TagDto;
@@ -1624,6 +1627,277 @@ public class ImplementationControllerTest {
 
         // call
         mockMvc.perform(delete(path)).andExpect(status().isNotFound());
+    }
+
+    @Test
+    @SneakyThrows
+    void getImplementationPackages() {
+        // Given
+        var impl = new Implementation();
+        impl.setName("implementation for Shor");
+        impl.setId(UUID.randomUUID());
+
+        var implementationPackage = new FileImplementationPackage();
+        implementationPackage.setName("Test Implementation Package");
+        implementationPackage.setPackageType(ImplementationPackageType.FILE);
+        implementationPackage.setId(UUID.randomUUID());
+
+        var algo = new Algorithm();
+        algo.setId(UUID.randomUUID());
+
+        List<ImplementationPackage> implementationPackages = new ArrayList<>();
+        implementationPackages.add(implementationPackage);
+        final Page<ImplementationPackage> implementationPackages1 = new PageImpl<ImplementationPackage>(implementationPackages);
+        when(implementationPackageService.findImplementationPackagesByImplementationId(impl.getId(), pageable)).thenReturn(implementationPackages1);
+
+        final String path = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
+            .getImplementationPackagesOfImplementation(algo.getId(), impl.getId(), new ListParameters(pageable, null)));
+
+        ResultActions result = mockMvc.perform(get(path).accept(MediaType.APPLICATION_JSON));
+
+        // Then
+        result.andExpect(status().isOk()).andReturn();
+
+        var resultList = ObjectMapperUtils.mapResponseToList(result.andReturn().getResponse().getContentAsString(),
+            "implementationPackages", ImplementationPackageDto.class);
+        assertEquals(1, resultList.size());
+
+        Mockito.verify(implementationPackageService, times(1))
+            .findImplementationPackagesByImplementationId(impl.getId(), pageable);
+    }
+
+    @Test
+    @SneakyThrows
+    void getImplementationPackage() {
+        // Given
+        var impl = new Implementation();
+        impl.setName("implementation for Shor");
+        impl.setId(UUID.randomUUID());
+
+        var implementationPackage = new FileImplementationPackage();
+        implementationPackage.setName("Test Implementation Package");
+        implementationPackage.setPackageType(ImplementationPackageType.FILE);
+        implementationPackage.setId(UUID.randomUUID());
+
+        var algo = new Algorithm();
+        algo.setId(UUID.randomUUID());
+
+        when(implementationPackageService.findById(implementationPackage.getId())).thenReturn(implementationPackage);
+
+        final String path = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
+            .getImplementationPackageOfImplementation(algo.getId(), impl.getId(), implementationPackage.getId()));
+
+        // call
+        final MvcResult result = mockMvc.perform(get(path)).andExpect(status().isOk()).andReturn();
+
+        // test
+        Mockito.verify(implementationPackageService, times(1)).findById(implementationPackage.getId());
+
+        EntityModel<ImplementationPackageDto> response = mapper.readValue(result.getResponse().getContentAsString(),
+            new TypeReference<>() {
+            });
+
+        assertEquals(response.getContent().getName(), implementationPackage.getName());
+        assertEquals(response.getContent().getPackageType(), implementationPackage.getPackageType());
+    }
+
+    @Test
+    @SneakyThrows
+    void getImplementationPackageAndFail() {
+        // Given
+        var impl = new Implementation();
+        impl.setName("implementation for Shor");
+        impl.setId(UUID.randomUUID());
+
+        var implementationPackage = new FileImplementationPackage();
+        implementationPackage.setName("Test Implementation Package");
+        implementationPackage.setPackageType(ImplementationPackageType.FILE);
+        implementationPackage.setId(UUID.randomUUID());
+
+        var algo = new Algorithm();
+        algo.setId(UUID.randomUUID());
+
+        doThrow(new NoSuchElementException()).when(implementationPackageService)
+            .checkIfImplementationPackageIsLinkedToImplementation(implementationPackage.getId(), impl.getId());
+
+        final String path = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
+            .getImplementationPackageOfImplementation(algo.getId(), impl.getId(), implementationPackage.getId()));
+
+        // call
+        mockMvc.perform(get(path)).andExpect(status().isNotFound());
+    }
+
+    @Test
+    @SneakyThrows
+    void createImplementationPackage() {
+        // Given
+        var impl = new Implementation();
+        impl.setName("implementation for Shor");
+        impl.setId(UUID.randomUUID());
+
+        var implementationPackage = new FileImplementationPackage();
+        implementationPackage.setName("Test Implementation Package");
+        implementationPackage.setPackageType(ImplementationPackageType.FILE);
+        implementationPackage.setId(UUID.randomUUID());
+
+        var algo = new Algorithm();
+        algo.setId(UUID.randomUUID());
+
+        when(implementationPackageService.create(any(), any())).thenReturn(implementationPackage);
+
+        ImplementationPackageDto implementationPackageDto = new ImplementationPackageDto();
+        implementationPackageDto.setId(null);
+        implementationPackageDto.setPackageType(ImplementationPackageType.FILE);
+
+        final String path = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
+            .createImplementationPackageOfImplementation(algo.getId(), impl.getId(), implementationPackageDto));
+
+        // call
+        final MvcResult result = mockMvc.perform(post(path).content(mapper.writeValueAsString(implementationPackageDto))
+            .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andExpect(status().isCreated()).andReturn();
+
+        // test
+        Mockito.verify(implementationPackageService, times(1)).create(any(), any());
+
+        EntityModel<ImplementationPackageDto> response = mapper.readValue(result.getResponse().getContentAsString(),
+            new TypeReference<>() {
+            });
+
+        assertEquals(response.getContent().getName(), implementationPackage.getName());
+        assertEquals(response.getContent().getPackageType(), implementationPackage.getPackageType());
+    }
+
+    @Test
+    @SneakyThrows
+    void createImplementationPackageAndFail() {
+        // Given
+        var impl = new Implementation();
+        impl.setName("implementation for Shor");
+        impl.setId(UUID.randomUUID());
+
+        var implementationPackage = new FileImplementationPackage();
+        implementationPackage.setName("Test Implementation Package");
+        implementationPackage.setPackageType(ImplementationPackageType.FILE);
+        implementationPackage.setId(UUID.randomUUID());
+
+        var algo = new Algorithm();
+        algo.setId(UUID.randomUUID());
+
+        ImplementationPackageDto implementationPackageDto = new ImplementationPackageDto();
+        implementationPackageDto.setId(null);
+        implementationPackageDto.setPackageType(ImplementationPackageType.FILE);
+
+        final String path = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
+            .createImplementationPackageOfImplementation(algo.getId(), impl.getId(), implementationPackageDto));
+
+        // call
+        mockMvc.perform(post(path).content(mapper.writeValueAsString(implementationPackageDto))
+            .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @SneakyThrows
+    void updateImplementationPackage() {
+        // Given
+        var impl = new Implementation();
+        impl.setName("implementation for Shor");
+        impl.setId(UUID.randomUUID());
+
+        var implementationPackage = new FileImplementationPackage();
+        implementationPackage.setName("Test Implementation Package");
+        implementationPackage.setPackageType(ImplementationPackageType.FILE);
+        implementationPackage.setId(UUID.randomUUID());
+        implementationPackage.setDescription("Test123");
+
+        ImplementationPackageDto implementationPackageDto = ModelMapperUtils.convert(implementationPackage, ImplementationPackageDto.class);
+
+        var algo = new Algorithm();
+        algo.setId(UUID.randomUUID());
+
+        when(implementationPackageService.update(any())).thenReturn(implementationPackage);
+
+        final String path = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
+            .updateImplementationPackageOfImplementation(algo.getId(), impl.getId(), implementationPackage.getId(), implementationPackageDto));
+
+        // call
+        final MvcResult result = mockMvc.perform(put(path).content(mapper.writeValueAsString(implementationPackageDto))
+            .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
+
+        // test
+        Mockito.verify(implementationPackageService, times(1)).update(any());
+
+        EntityModel<ImplementationPackageDto> response = mapper.readValue(result.getResponse().getContentAsString(),
+            new TypeReference<>() {
+            });
+
+        assertEquals(implementationPackageDto.getId(), response.getContent().getId());
+        assertEquals(implementationPackageDto.getPackageType(), response.getContent().getPackageType());
+        assertEquals(implementationPackageDto.getDescription(), response.getContent().getDescription());
+    }
+
+    @Test
+    @SneakyThrows
+    void updateImplementationPackageAndFail() {
+        var implementationPackageDto = new ImplementationPackageDto();
+        implementationPackageDto.setPackageType(ImplementationPackageType.FILE);
+
+        var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
+            .updateImplementationPackageOfImplementation(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), null));
+        mockMvc.perform(
+            put(url)
+                .accept(APPLICATION_JSON)
+                .contentType(APPLICATION_JSON)
+                .content(mapper.writeValueAsString(implementationPackageDto))
+        ).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @SneakyThrows
+    void deleteImplementationPackage() {
+        // Given
+        var impl = new Implementation();
+        impl.setName("implementation for Shor");
+        impl.setId(UUID.randomUUID());
+
+        var implementationPackage = new FileImplementationPackage();
+        implementationPackage.setName("Test Implementation Package");
+        implementationPackage.setPackageType(ImplementationPackageType.FILE);
+        implementationPackage.setId(UUID.randomUUID());
+        implementationPackage.setDescription("Test123");
+
+        var algo = new Algorithm();
+        algo.setId(UUID.randomUUID());
+
+        final String path = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
+            .deleteImplementationPackageOfImplementation(algo.getId(), impl.getId(), implementationPackage.getId()));
+
+        // call
+        mockMvc.perform(delete(path)).andExpect(status().isNoContent());
+    }
+
+    @Test
+    @SneakyThrows
+    void deleteImplementationPackageAndFail() {
+        // Given
+        var impl = new Implementation();
+        impl.setName("implementation for Shor");
+        impl.setId(UUID.randomUUID());
+
+        var implementationPackage = new FileImplementationPackage();
+        implementationPackage.setName("Test Implementation Package");
+        implementationPackage.setPackageType(ImplementationPackageType.FILE);
+        implementationPackage.setId(UUID.randomUUID());
+        implementationPackage.setDescription("Test123");
+
+        var algo = new Algorithm();
+        algo.setId(UUID.randomUUID());
+
+        doThrow(new NoSuchElementException()).when(implementationPackageService).checkIfImplementationPackageIsLinkedToImplementation(any(), any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
+            .deleteImplementationPackageOfImplementation(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()));
+        mockMvc.perform(delete(url).accept(APPLICATION_JSON))
+            .andExpect(status().isNotFound());
     }
 
     @Test

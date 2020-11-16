@@ -461,7 +461,8 @@ public class ImplementationController {
             @ApiResponse(responseCode = "400",
                     description = "Bad Request. Invalid request body or algorithm resource is not implemented algorithm of implementation."),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm, implementation, compute resource property or compute resource type with given IDs don't exist.")
+                    description = "Not Found. " +
+                        "Algorithm, implementation, compute resource property or compute resource type with given IDs don't exist.")
     }, description = "Update a Compute resource property of an implementation. " +
             "For the compute resource property type only the ID is required, " +
             "other compute resource property type attributes will be ignored and not changed.")
