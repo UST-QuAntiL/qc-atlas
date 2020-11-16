@@ -55,14 +55,15 @@ import org.planqk.atlas.core.model.ComputationModel;
 import org.planqk.atlas.core.model.ComputeResourceProperty;
 import org.planqk.atlas.core.model.ComputeResourcePropertyDataType;
 import org.planqk.atlas.core.model.ComputeResourcePropertyType;
-import org.planqk.atlas.core.model.FileImplementationPackage;
 import org.planqk.atlas.core.model.DiscussionComment;
 import org.planqk.atlas.core.model.DiscussionTopic;
 import org.planqk.atlas.core.model.File;
+import org.planqk.atlas.core.model.FileImplementationPackage;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.model.SoftwarePlatform;
 import org.planqk.atlas.core.model.Status;
+import org.planqk.atlas.core.model.TOSCAImplementationPackage;
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.services.ComputeResourcePropertyService;
 import org.planqk.atlas.core.services.DiscussionCommentService;
@@ -1704,7 +1705,8 @@ public class ImplementationControllerTest {
         file.setMimeType("img/png");
         implementationPackage.setFile(file);
 
-        when(fileService.findById(file.getId())).thenReturn(file);
+
+        when(implementationPackageService.findLinkedFile(implementationPackage.getId())).thenReturn(file);
 
         // When
         final String path = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
@@ -1719,7 +1721,7 @@ public class ImplementationControllerTest {
                 "file", File.class);
         assertEquals(0, resultList.size());
 
-        Mockito.verify(fileService, times(1)).findById(file.getId());
+        Mockito.verify(implementationPackageService, times(1)).findLinkedFile(implementationPackage.getId());
     }
 
     @Test
@@ -1741,7 +1743,7 @@ public class ImplementationControllerTest {
         file.setId(UUID.randomUUID());
         file.setMimeType("img/png");
 
-        when(fileService.findById(file.getId())).thenReturn(file);
+        when(implementationPackageService.findLinkedFile(implementationPackage.getId())).thenReturn(file);
 
         // When
         final String path = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
@@ -1751,7 +1753,33 @@ public class ImplementationControllerTest {
 
         // Then
         result.andExpect(status().isOk()).andReturn();
-        Mockito.verify(fileService, times(1)).findById(file.getId());
+        Mockito.verify(implementationPackageService, times(1)).findLinkedFile(implementationPackage.getId());
+    }
+
+    @Test
+    @SneakyThrows
+    public void testDeleteFile_response_file_not_found() {
+        var impl = new Implementation();
+        impl.setName("implementation for Shor");
+        impl.setId(UUID.randomUUID());
+
+        var algo = new Algorithm();
+        algo.setId(UUID.randomUUID());
+
+        var implementationPackage = new TOSCAImplementationPackage();
+        implementationPackage.setId(UUID.randomUUID());
+
+        var file = new File();
+        file.setId(UUID.randomUUID());
+        file.setMimeType("img/png");
+
+        doNothing().when(fileService).delete(file.getId());
+
+        var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
+                .deleteFileOfImplementation(algo.getId(), impl.getId(), implementationPackage.getId()));
+        mockMvc.perform(delete(url))
+                .andExpect(status().isNotFound()).andReturn();
+
     }
 
     @Test
@@ -1764,18 +1792,21 @@ public class ImplementationControllerTest {
         var algo = new Algorithm();
         algo.setId(UUID.randomUUID());
 
+        var implementationPackage = new TOSCAImplementationPackage();
+        implementationPackage.setId(UUID.randomUUID());
+
         var file = new File();
         file.setId(UUID.randomUUID());
         file.setMimeType("img/png");
 
         doNothing().when(fileService).delete(file.getId());
+        when(implementationPackageService.findLinkedFile(implementationPackage.getId())).thenReturn(file);
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
-                .deleteFileOfImplementation(algo.getId(), impl.getId(), file.getId()));
+                .deleteFileOfImplementation(algo.getId(), impl.getId(), implementationPackage.getId()));
         mockMvc.perform(delete(url))
                 .andExpect(status().isNoContent()).andReturn();
 
-        Mockito.verify(fileService, times(1)).delete(file.getId());
     }
 
 }
