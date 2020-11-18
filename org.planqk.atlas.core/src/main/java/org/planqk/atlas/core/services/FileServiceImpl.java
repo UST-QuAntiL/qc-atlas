@@ -80,13 +80,12 @@ public class FileServiceImpl implements FileService {
             while ((read = inputStream.read(bytes)) != -1) {
                 outputStream.write(bytes, 0, read);
             }
+            outputStream.close();
 
             final File createdFile = new File();
             createdFile.setName(file.getOriginalFilename());
             createdFile.setMimeType(file.getContentType());
             createdFile.setFileURL(newFile.getAbsolutePath());
-//            createdFile.setImplementationPackage(
-//                    ServiceUtils.findById(implementationPackageId, ImplementationPackage.class, implementationPackageRepository));
 
             final File savedFile = fileRepository.save(createdFile);
             return savedFile;
@@ -107,11 +106,10 @@ public class FileServiceImpl implements FileService {
     @Override
     @Transactional
     public void delete(UUID id) {
-        final File file = findById(id);
-        boolean deletedSucessfully = false;
+        final String url = findById(id).getFileURL();
         try {
-            deletedSucessfully = Files.deleteIfExists(Paths.get(file.getFileURL()));
             fileRepository.deleteById(id);
+            Files.deleteIfExists(Paths.get(url));
         } catch (IOException e) {
             e.printStackTrace();
         }

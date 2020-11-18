@@ -22,7 +22,6 @@ package org.planqk.atlas.core.services;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.io.IOException;
 import java.util.NoSuchElementException;
 import java.util.Random;
 import java.util.UUID;
@@ -126,9 +125,9 @@ public class FileServiceTest extends AtlasDatabaseTestBase {
 
     @Test
     void deleteFile_ElementFound() {
-        File persistedFile = fileService.create(implementationPackage.getId(), multipartFile);
-        fileService.delete(persistedFile.getId());
-        assertThat(fileRepository.findById(persistedFile.getId())).isNotPresent();
+        UUID persistedFileId = fileService.create(implementationPackage.getId(), multipartFile).getId();
+        fileService.delete(persistedFileId);
+        assertThat(fileRepository.findById(persistedFileId)).isNotPresent();
     }
 
     @Test
@@ -139,7 +138,7 @@ public class FileServiceTest extends AtlasDatabaseTestBase {
         byte[] content = generateRandomByteArray();
 
         MultipartFile multipartFileWithContent = new MockMultipartFile(name,
-            originalFileName, contentType, content);
+                originalFileName, contentType, content);
         File persistedFile = fileService.create(implementationPackage.getId(), multipartFileWithContent);
         byte[] result = fileService.getFileContent(persistedFile.getId());
 
