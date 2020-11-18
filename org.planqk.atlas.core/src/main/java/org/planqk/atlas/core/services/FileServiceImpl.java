@@ -29,7 +29,6 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.File;
-import org.planqk.atlas.core.model.ImplementationPackage;
 import org.planqk.atlas.core.repository.FileRepository;
 import org.planqk.atlas.core.repository.ImplementationPackageRepository;
 import org.planqk.atlas.core.util.ServiceUtils;
@@ -86,8 +85,8 @@ public class FileServiceImpl implements FileService {
             createdFile.setName(file.getOriginalFilename());
             createdFile.setMimeType(file.getContentType());
             createdFile.setFileURL(newFile.getAbsolutePath());
-            createdFile.setImplementationPackage(
-                    ServiceUtils.findById(implementationPackageId, ImplementationPackage.class, implementationPackageRepository));
+//            createdFile.setImplementationPackage(
+//                    ServiceUtils.findById(implementationPackageId, ImplementationPackage.class, implementationPackageRepository));
 
             final File savedFile = fileRepository.save(createdFile);
             return savedFile;
@@ -109,7 +108,6 @@ public class FileServiceImpl implements FileService {
     @Transactional
     public void delete(UUID id) {
         final File file = findById(id);
-        file.getImplementationPackage().setFile(null);
         boolean deletedSucessfully = false;
         try {
             deletedSucessfully = Files.deleteIfExists(Paths.get(file.getFileURL()));

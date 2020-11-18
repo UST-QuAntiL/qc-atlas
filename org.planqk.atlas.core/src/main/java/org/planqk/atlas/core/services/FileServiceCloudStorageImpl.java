@@ -75,7 +75,6 @@ public class FileServiceCloudStorageImpl implements FileService {
             final ImplementationPackage
                     implementationPackage =
                     ServiceUtils.findById(implementationPackageId, ImplementationPackage.class, implementationPackageRepository);
-            implementationFile.setImplementationPackage(implementationPackage);
             return fileRepository.save(implementationFile);
         } catch (IOException e) {
             throw new IllegalArgumentException("Cannot read contents of multipart file");

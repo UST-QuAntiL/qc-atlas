@@ -19,7 +19,6 @@
 
 package org.planqk.atlas.core.model;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -46,13 +45,9 @@ public class ImplementationPackage extends HasId {
     @JoinColumn(name = "implementation_id")
     private Implementation implementation;
 
-    @OneToOne(mappedBy = "implementationPackage", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToOne(fetch = FetchType.LAZY, orphanRemoval = true)
     @EqualsAndHashCode.Exclude
+    @JoinColumn(name = "file_id")
     private File file;
 
-    public void download() {
-    }
-
-    public void upload() {
-    }
 }

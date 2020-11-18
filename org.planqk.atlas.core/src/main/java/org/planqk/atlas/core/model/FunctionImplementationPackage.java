@@ -24,13 +24,4 @@ import javax.persistence.Entity;
 @Entity
 public class FunctionImplementationPackage extends ImplementationPackage {
 
-    @Override
-    public void download() {
-
-    }
-
-    @Override
-    public void upload() {
-
-    }
 }
