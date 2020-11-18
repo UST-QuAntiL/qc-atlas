@@ -1651,7 +1651,7 @@ public class ImplementationControllerTest {
         when(implementationPackageService.findImplementationPackagesByImplementationId(impl.getId(), pageable)).thenReturn(implementationPackages1);
 
         final String path = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
-            .getImplementationPackagesOfImplementation(algo.getId(), impl.getId(), new ListParameters(pageable, null)));
+                .getImplementationPackagesOfImplementation(algo.getId(), impl.getId(), new ListParameters(pageable, null)));
 
         ResultActions result = mockMvc.perform(get(path).accept(MediaType.APPLICATION_JSON));
 
@@ -1659,11 +1659,11 @@ public class ImplementationControllerTest {
         result.andExpect(status().isOk()).andReturn();
 
         var resultList = ObjectMapperUtils.mapResponseToList(result.andReturn().getResponse().getContentAsString(),
-            "implementationPackages", ImplementationPackageDto.class);
+                "implementationPackages", ImplementationPackageDto.class);
         assertEquals(1, resultList.size());
 
         Mockito.verify(implementationPackageService, times(1))
-            .findImplementationPackagesByImplementationId(impl.getId(), pageable);
+                .findImplementationPackagesByImplementationId(impl.getId(), pageable);
     }
 
     @Test
@@ -1685,7 +1685,7 @@ public class ImplementationControllerTest {
         when(implementationPackageService.findById(implementationPackage.getId())).thenReturn(implementationPackage);
 
         final String path = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
-            .getImplementationPackageOfImplementation(algo.getId(), impl.getId(), implementationPackage.getId()));
+                .getImplementationPackageOfImplementation(algo.getId(), impl.getId(), implementationPackage.getId()));
 
         // call
         final MvcResult result = mockMvc.perform(get(path)).andExpect(status().isOk()).andReturn();
@@ -1694,8 +1694,8 @@ public class ImplementationControllerTest {
         Mockito.verify(implementationPackageService, times(1)).findById(implementationPackage.getId());
 
         EntityModel<ImplementationPackageDto> response = mapper.readValue(result.getResponse().getContentAsString(),
-            new TypeReference<>() {
-            });
+                new TypeReference<>() {
+                });
 
         assertEquals(response.getContent().getName(), implementationPackage.getName());
         assertEquals(response.getContent().getPackageType(), implementationPackage.getPackageType());
@@ -1718,10 +1718,10 @@ public class ImplementationControllerTest {
         algo.setId(UUID.randomUUID());
 
         doThrow(new NoSuchElementException()).when(implementationPackageService)
-            .checkIfImplementationPackageIsLinkedToImplementation(implementationPackage.getId(), impl.getId());
+                .checkIfImplementationPackageIsLinkedToImplementation(implementationPackage.getId(), impl.getId());
 
         final String path = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
-            .getImplementationPackageOfImplementation(algo.getId(), impl.getId(), implementationPackage.getId()));
+                .getImplementationPackageOfImplementation(algo.getId(), impl.getId(), implementationPackage.getId()));
 
         // call
         mockMvc.perform(get(path)).andExpect(status().isNotFound());
@@ -1750,18 +1750,18 @@ public class ImplementationControllerTest {
         implementationPackageDto.setPackageType(ImplementationPackageType.FILE);
 
         final String path = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
-            .createImplementationPackageOfImplementation(algo.getId(), impl.getId(), implementationPackageDto));
+                .createImplementationPackageOfImplementation(algo.getId(), impl.getId(), implementationPackageDto));
 
         // call
         final MvcResult result = mockMvc.perform(post(path).content(mapper.writeValueAsString(implementationPackageDto))
-            .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andExpect(status().isCreated()).andReturn();
+                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andExpect(status().isCreated()).andReturn();
 
         // test
         Mockito.verify(implementationPackageService, times(1)).create(any(), any());
 
         EntityModel<ImplementationPackageDto> response = mapper.readValue(result.getResponse().getContentAsString(),
-            new TypeReference<>() {
-            });
+                new TypeReference<>() {
+                });
 
         assertEquals(response.getContent().getName(), implementationPackage.getName());
         assertEquals(response.getContent().getPackageType(), implementationPackage.getPackageType());
@@ -1788,11 +1788,11 @@ public class ImplementationControllerTest {
         implementationPackageDto.setPackageType(ImplementationPackageType.FILE);
 
         final String path = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
-            .createImplementationPackageOfImplementation(algo.getId(), impl.getId(), implementationPackageDto));
+                .createImplementationPackageOfImplementation(algo.getId(), impl.getId(), implementationPackageDto));
 
         // call
         mockMvc.perform(post(path).content(mapper.writeValueAsString(implementationPackageDto))
-            .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
+                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
     }
 
     @Test
@@ -1817,18 +1817,18 @@ public class ImplementationControllerTest {
         when(implementationPackageService.update(any())).thenReturn(implementationPackage);
 
         final String path = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
-            .updateImplementationPackageOfImplementation(algo.getId(), impl.getId(), implementationPackage.getId(), implementationPackageDto));
+                .updateImplementationPackageOfImplementation(algo.getId(), impl.getId(), implementationPackage.getId(), implementationPackageDto));
 
         // call
         final MvcResult result = mockMvc.perform(put(path).content(mapper.writeValueAsString(implementationPackageDto))
-            .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
+                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
 
         // test
         Mockito.verify(implementationPackageService, times(1)).update(any());
 
         EntityModel<ImplementationPackageDto> response = mapper.readValue(result.getResponse().getContentAsString(),
-            new TypeReference<>() {
-            });
+                new TypeReference<>() {
+                });
 
         assertEquals(implementationPackageDto.getId(), response.getContent().getId());
         assertEquals(implementationPackageDto.getPackageType(), response.getContent().getPackageType());
@@ -1842,12 +1842,12 @@ public class ImplementationControllerTest {
         implementationPackageDto.setPackageType(ImplementationPackageType.FILE);
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
-            .updateImplementationPackageOfImplementation(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), null));
+                .updateImplementationPackageOfImplementation(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), null));
         mockMvc.perform(
-            put(url)
-                .accept(APPLICATION_JSON)
-                .contentType(APPLICATION_JSON)
-                .content(mapper.writeValueAsString(implementationPackageDto))
+                put(url)
+                        .accept(APPLICATION_JSON)
+                        .contentType(APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(implementationPackageDto))
         ).andExpect(status().isBadRequest());
     }
 
@@ -1869,7 +1869,7 @@ public class ImplementationControllerTest {
         algo.setId(UUID.randomUUID());
 
         final String path = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
-            .deleteImplementationPackageOfImplementation(algo.getId(), impl.getId(), implementationPackage.getId()));
+                .deleteImplementationPackageOfImplementation(algo.getId(), impl.getId(), implementationPackage.getId()));
 
         // call
         mockMvc.perform(delete(path)).andExpect(status().isNoContent());
@@ -1895,9 +1895,9 @@ public class ImplementationControllerTest {
         doThrow(new NoSuchElementException()).when(implementationPackageService).checkIfImplementationPackageIsLinkedToImplementation(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
-            .deleteImplementationPackageOfImplementation(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()));
+                .deleteImplementationPackageOfImplementation(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()));
         mockMvc.perform(delete(url).accept(APPLICATION_JSON))
-            .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -2074,6 +2074,8 @@ public class ImplementationControllerTest {
         file.setMimeType("img/png");
 
         doNothing().when(fileService).delete(file.getId());
+        when(implementationPackageService.update(any())).thenReturn(implementationPackage);
+        when(implementationPackageService.findById(any())).thenReturn(implementationPackage);
         when(implementationPackageService.findLinkedFile(implementationPackage.getId())).thenReturn(file);
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
