@@ -108,8 +108,8 @@ public class FileServiceImpl implements FileService {
     public void delete(UUID id) {
         final String url = findById(id).getFileURL();
         try {
-            fileRepository.deleteById(id);
             Files.deleteIfExists(Paths.get(url));
+            fileRepository.deleteById(id);
         } catch (IOException e) {
             e.printStackTrace();
         }

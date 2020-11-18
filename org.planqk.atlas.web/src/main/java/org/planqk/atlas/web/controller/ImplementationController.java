@@ -462,7 +462,7 @@ public class ImplementationController {
                     description = "Bad Request. Invalid request body or algorithm resource is not implemented algorithm of implementation."),
             @ApiResponse(responseCode = "404",
                     description = "Not Found. " +
-                        "Algorithm, implementation, compute resource property or compute resource type with given IDs don't exist.")
+                            "Algorithm, implementation, compute resource property or compute resource type with given IDs don't exist.")
     }, description = "Update a Compute resource property of an implementation. " +
             "For the compute resource property type only the ID is required, " +
             "other compute resource property type attributes will be ignored and not changed.")
@@ -845,7 +845,10 @@ public class ImplementationController {
         if (file == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+        final ImplementationPackage implementationPackage = implementationPackageService.findById(implementationPackageId);
+        implementationPackage.setFile(null);
         fileService.delete(file.getId());
+        implementationPackageService.update(implementationPackage);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
