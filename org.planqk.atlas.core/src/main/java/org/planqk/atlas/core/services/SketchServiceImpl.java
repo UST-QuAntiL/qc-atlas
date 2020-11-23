@@ -20,7 +20,6 @@
 package org.planqk.atlas.core.services;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
@@ -71,7 +70,7 @@ public class SketchServiceImpl implements SketchService {
             final Algorithm algorithm = algorithmService.findById(algorithmId);
             sketch.setAlgorithm(algorithm);
             final Sketch persistedSketch = sketchRepository.save(sketch);
-            final String imageUrl =baseURL + "/algorithms/" + algorithmId + "/sketches/" + persistedSketch.getId();
+            final String imageUrl = baseURL + "/algorithms/" + algorithmId + "/sketches/" + persistedSketch.getId();
             persistedSketch.setImageURL(imageUrl);
             final Sketch persistedSketch2 = sketchRepository.save(persistedSketch);
             // image
