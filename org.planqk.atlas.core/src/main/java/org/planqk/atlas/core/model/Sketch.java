@@ -46,9 +46,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class Sketch extends KnowledgeArtifact {
 
-    @Lob
-    @Type(type = "org.hibernate.type.UrlType")
-    private URL imageURL;
+    @Column(columnDefinition = "text")
+    private String imageURL;
 
     @Column(columnDefinition = "text")
     private String description;

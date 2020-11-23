@@ -71,7 +71,7 @@ public class SketchServiceImpl implements SketchService {
             final Algorithm algorithm = algorithmService.findById(algorithmId);
             sketch.setAlgorithm(algorithm);
             final Sketch persistedSketch = sketchRepository.save(sketch);
-            final URL imageUrl = new URL(baseURL + "/algorithms/" + algorithmId + "/sketches/" + persistedSketch.getId());
+            final String imageUrl =baseURL + "/algorithms/" + algorithmId + "/sketches/" + persistedSketch.getId();
             persistedSketch.setImageURL(imageUrl);
             final Sketch persistedSketch2 = sketchRepository.save(persistedSketch);
             // image
