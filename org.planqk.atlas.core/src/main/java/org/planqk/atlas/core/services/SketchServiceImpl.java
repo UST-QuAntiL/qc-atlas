@@ -21,6 +21,7 @@ package org.planqk.atlas.core.services;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
 
@@ -76,7 +77,7 @@ public class SketchServiceImpl implements SketchService {
             // image
             final Image image = new Image();
             image.setId(sketch.getId());
-            image.setImage(file.getBytes());
+            image.setImage(Base64.getEncoder().encode(file.getBytes()));
             image.setMimeType(file.getContentType());
             image.setSketch(persistedSketch2);
             this.imageRepository.save(image);
