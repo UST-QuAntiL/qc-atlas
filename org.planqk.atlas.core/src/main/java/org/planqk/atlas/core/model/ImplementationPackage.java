@@ -22,6 +22,7 @@ package org.planqk.atlas.core.model;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
@@ -47,7 +48,10 @@ public class ImplementationPackage extends HasId {
 
     @OneToOne(fetch = FetchType.LAZY, orphanRemoval = true)
     @EqualsAndHashCode.Exclude
-    @JoinColumn(name = "file_id")
+    @JoinTable(
+        name = "ImplementationPackageFile",
+        joinColumns = @JoinColumn(name = "implementation_package_id"),
+        inverseJoinColumns = @JoinColumn(name = "file_id")
+    )
     private File file;
-
 }

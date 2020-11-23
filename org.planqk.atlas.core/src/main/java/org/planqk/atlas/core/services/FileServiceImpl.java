@@ -30,7 +30,6 @@ import java.util.UUID;
 
 import org.planqk.atlas.core.model.File;
 import org.planqk.atlas.core.repository.FileRepository;
-import org.planqk.atlas.core.repository.ImplementationPackageRepository;
 import org.planqk.atlas.core.util.ServiceUtils;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -48,23 +47,19 @@ public class FileServiceImpl implements FileService {
 
     private final FileRepository fileRepository;
 
-    private final ImplementationPackageRepository implementationPackageRepository;
-
     private final String path = System.getProperty("java.io.tmpdir");
 
     private final String storageFolder = path + java.io.File.separator + "qc-atlas";
 
     @Override
-    public File create(UUID implementationPackageId, MultipartFile file) {
+    public File create(MultipartFile file) {
         final InputStream inputStream;
         final OutputStream outputStream;
 
         final java.io.File dir = new java.io.File(storageFolder);
         if (!dir.exists())
             dir.mkdirs();
-        final String fileName = String.valueOf(implementationPackageId);
-        final java.io.File newFile = new java.io.File(dir.getAbsolutePath() + java.io.File.separator + implementationPackageId + "_" +
-                file.getOriginalFilename());
+        final java.io.File newFile = new java.io.File(dir.getAbsolutePath() + java.io.File.separator + file.getOriginalFilename());
 
         try {
             inputStream = file.getInputStream();

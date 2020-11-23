@@ -26,7 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface FileService {
 
-    File create(UUID implementationPackageId, MultipartFile file);
+    File create(MultipartFile file);
 
     File findById(UUID fileId);
 

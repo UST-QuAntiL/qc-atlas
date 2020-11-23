@@ -76,7 +76,7 @@ public class FileServiceCloudStorageTest extends AtlasDatabaseTestBase {
 
         //When
         File createdFile =
-                fileServiceCloudStorage.create(persistedImplementationPackage.getId(), getMultipartFile());
+                fileServiceCloudStorage.create(getMultipartFile());
 
         //Then
         assertThat(fileRepository.findAll().size()).isEqualTo(1);
@@ -91,7 +91,7 @@ public class FileServiceCloudStorageTest extends AtlasDatabaseTestBase {
 
         // When
         Assertions.assertThrows(CloudStorageException.class,
-                () -> fileServiceCloudStorage.create(persistedImplementationPackage.getId(), getMultipartFile()));
+                () -> fileServiceCloudStorage.create(getMultipartFile()));
     }
 
     @Test

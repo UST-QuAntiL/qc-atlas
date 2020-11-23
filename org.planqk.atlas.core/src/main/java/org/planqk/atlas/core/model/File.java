@@ -21,13 +21,11 @@ package org.planqk.atlas.core.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.OneToOne;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 @Entity
 @AllArgsConstructor
@@ -42,9 +40,4 @@ public class File extends KnowledgeArtifact {
 
     @Column(unique = true)
     private String fileURL;
-
-    @EqualsAndHashCode.Exclude
-    @ToString.Exclude
-    @OneToOne(mappedBy = "file")
-    private ImplementationPackage implementationPackage;
 }

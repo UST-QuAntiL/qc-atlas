@@ -118,7 +118,7 @@ public class ImplementationPackageServiceImpl implements ImplementationPackageSe
     public File addFileToImplementationPackage(UUID implementationPackageId, MultipartFile multipartFile) {
         final ImplementationPackage implementationPackage =
             ServiceUtils.findById(implementationPackageId, ImplementationPackage.class, implementationPackageRepository);
-        final File file = fileService.create(implementationPackageId, multipartFile);
+        final File file = fileService.create(multipartFile);
         implementationPackage.setFile(file);
         implementationPackageRepository.save(implementationPackage);
         return file;

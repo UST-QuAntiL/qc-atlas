@@ -28,17 +28,10 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.File;
-import org.planqk.atlas.core.model.Implementation;
-import org.planqk.atlas.core.model.ImplementationPackage;
-import org.planqk.atlas.core.model.ImplementationPackageType;
 import org.planqk.atlas.core.repository.FileRepository;
-import org.planqk.atlas.core.repository.ImplementationPackageRepository;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -48,60 +41,23 @@ public class FileServiceTest extends AtlasDatabaseTestBase {
 
     private final int size = 2;
 
-    private final Pageable pageable = PageRequest.of(page, size);
-
     @Autowired
     private FileService fileService;
 
     @Autowired
-    private ImplementationService implementationService;
-
-    @Autowired
-    private AlgorithmService algorithmService;
-
-    @Autowired
-    private ImplementationPackageService implementationPackageService;
-
-    @Autowired
     private FileRepository fileRepository;
-
-    @Autowired
-    private ImplementationPackageRepository implementationPackageRepository;
-
-    private ImplementationPackage implementationPackage;
-
-    private ImplementationPackage implementationPackage1;
-
-    private Implementation implementation;
 
     private MultipartFile multipartFile;
 
     @BeforeEach
     public void initialize() {
-        var algo = new Algorithm();
-        algo.setName("TestAlgo");
-        algo = algorithmService.create(algo);
-
-        var impl = new Implementation();
-        impl.setName("TestImpl");
-        impl = implementationService.create(impl, algo.getId());
-
-        implementation = impl;
-
-        implementationPackage = new ImplementationPackage();
-        implementationPackage.setName("Name");
-        implementationPackage.setDescription("Description");
-        implementationPackage.setPackageType(ImplementationPackageType.FILE);
-        implementationPackage.setImplementation(implementation);
-        implementationPackage = implementationPackageService.create(implementationPackage, implementation.getId());
-
         MultipartFile file = new MockMultipartFile("file.txt", "file.txt", "text/plain", new byte[0]);
         multipartFile = file;
     }
 
     @Test
     public void createFile() {
-        File file = fileService.create(implementationPackage.getId(), multipartFile);
+        File file = fileService.create(multipartFile);
         assertThat(new java.io.File(file.getFileURL()).isFile()).isTrue();
         assertThat(new java.io.File(file.getFileURL()).exists()).isTrue();
         assertThat(fileRepository.findAll().size()).isEqualTo(1);
@@ -109,7 +65,7 @@ public class FileServiceTest extends AtlasDatabaseTestBase {
 
     @Test
     public void findFileById() {
-        var storedFile = fileService.create(implementationPackage.getId(), multipartFile);
+        var storedFile = fileService.create(multipartFile);
 
         var foundFile = fileService.findById(storedFile.getId());
 
@@ -125,7 +81,7 @@ public class FileServiceTest extends AtlasDatabaseTestBase {
 
     @Test
     void deleteFile_ElementFound() {
-        UUID persistedFileId = fileService.create(implementationPackage.getId(), multipartFile).getId();
+        UUID persistedFileId = fileService.create(multipartFile).getId();
         fileService.delete(persistedFileId);
         assertThat(fileRepository.findById(persistedFileId)).isNotPresent();
     }
@@ -139,7 +95,7 @@ public class FileServiceTest extends AtlasDatabaseTestBase {
 
         MultipartFile multipartFileWithContent = new MockMultipartFile(name,
                 originalFileName, contentType, content);
-        File persistedFile = fileService.create(implementationPackage.getId(), multipartFileWithContent);
+        File persistedFile = fileService.create(multipartFileWithContent);
         byte[] result = fileService.getFileContent(persistedFile.getId());
 
         assertThat(result).isEqualTo(content);
