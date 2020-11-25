@@ -25,8 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -122,10 +121,10 @@ public class SketchServiceTest extends AtlasDatabaseTestBase {
         // test
         assertThat(persistedSketch.getId()).isNotNull();
         assertThat(persistedSketch.getDescription()).isEqualTo(description);
-        assertThat(persistedSketch.getImageURL().toString())
-            .startsWith(baseURL);
-        assertEquals(persistedSketch.getImageURL().getPath(),
-            "/atlas/v1/algorithms/" + algorithm.getId() + "/sketches/" + persistedSketch.getId());
+        assertThat(persistedSketch.getImageURL())
+                .startsWith(baseURL);
+        assertEquals(persistedSketch.getImageURL(),
+                baseURL + "/algorithms/" + algorithm.getId() + "/sketches/" + persistedSketch.getId());
 
         List<Image> images = this.imageRepository.findAll();
         assertThat(images.size()).isEqualTo(1);
@@ -192,13 +191,7 @@ public class SketchServiceTest extends AtlasDatabaseTestBase {
     private Sketch getSketch(final Image image, final String imageURLAsString, final String description) {
         final Sketch sketch = new Sketch();
         sketch.setImage(image);
-        URL imageURL = null;
-        try {
-            imageURL = new URL(imageURLAsString);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-        sketch.setImageURL(imageURL);
+        sketch.setImageURL(imageURLAsString);
         sketch.setDescription(description);
         return sketch;
     }
@@ -236,7 +229,7 @@ public class SketchServiceTest extends AtlasDatabaseTestBase {
         byte[] data = new byte[len / 2];
         for (int i = 0; i < len; i += 2) {
             data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
-                + Character.digit(s.charAt(i + 1), 16));
+                    + Character.digit(s.charAt(i + 1), 16));
         }
         return data;
     }
