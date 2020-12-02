@@ -84,7 +84,6 @@ public class ServiceTestUtils {
         assertThat(implementation1.getContributors()).isEqualTo(implementation2.getContributors());
         assertThat(implementation1.getAssumptions()).isEqualTo(implementation2.getAssumptions());
         assertThat(implementation1.getParameter()).isEqualTo(implementation2.getParameter());
-        assertThat(implementation1.getLink()).isEqualTo(implementation2.getLink());
         assertThat(implementation1.getDependencies()).isEqualTo(implementation2.getDependencies());
         assertThat(implementation1.getImplementedAlgorithm().getId())
             .isEqualTo(implementation2.getImplementedAlgorithm().getId());

@@ -17,20 +17,11 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.planqk.atlas.web.dtos;
+package org.planqk.atlas.core.model;
 
-import java.util.UUID;
+import javax.persistence.Entity;
 
-import lombok.Data;
+@Entity
+public class FunctionImplementationPackage extends ImplementationPackage {
 
-@Data
-public class FileDto {
-
-    private UUID id;
-
-    private String name;
-
-    private String mimeType;
-
-    private String fileURL;
 }

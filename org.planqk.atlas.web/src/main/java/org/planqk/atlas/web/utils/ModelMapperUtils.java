@@ -26,20 +26,28 @@ import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
 import org.planqk.atlas.core.model.ComputeResource;
+import org.planqk.atlas.core.model.FileImplementationPackage;
+import org.planqk.atlas.core.model.FunctionImplementationPackage;
 import org.planqk.atlas.core.model.Implementation;
+import org.planqk.atlas.core.model.ImplementationPackage;
 import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.model.Qpu;
 import org.planqk.atlas.core.model.QuantumAlgorithm;
 import org.planqk.atlas.core.model.Simulator;
+import org.planqk.atlas.core.model.TOSCAImplementationPackage;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
 import org.planqk.atlas.web.dtos.ClassicAlgorithmDto;
 import org.planqk.atlas.web.dtos.ComputeResourceDto;
+import org.planqk.atlas.web.dtos.FileImplementationPackageDto;
+import org.planqk.atlas.web.dtos.FunctionImplementationPackageDto;
 import org.planqk.atlas.web.dtos.ImplementationDto;
+import org.planqk.atlas.web.dtos.ImplementationPackageDto;
 import org.planqk.atlas.web.dtos.PatternRelationDto;
 import org.planqk.atlas.web.dtos.QPUDto;
 import org.planqk.atlas.web.dtos.QuantumAlgorithmDto;
 import org.planqk.atlas.web.dtos.SimulatorDto;
+import org.planqk.atlas.web.dtos.TOSCAImplementationPackageDto;
 import org.springframework.data.domain.Page;
 
 import lombok.NonNull;
@@ -67,45 +75,58 @@ public final class ModelMapperUtils {
         return mapper;
     }
 
+
     private static void initializeConverters(ModelMapper mapper) {
         mapper.createTypeMap(ClassicAlgorithm.class, AlgorithmDto.class)
-            .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), ClassicAlgorithmDto.class));
+                .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), ClassicAlgorithmDto.class));
         mapper.createTypeMap(QuantumAlgorithm.class, AlgorithmDto.class)
-            .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), QuantumAlgorithmDto.class));
+                .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), QuantumAlgorithmDto.class));
         mapper.createTypeMap(ClassicAlgorithmDto.class, Algorithm.class)
-            .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), ClassicAlgorithm.class));
+                .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), ClassicAlgorithm.class));
         mapper.createTypeMap(QuantumAlgorithmDto.class, Algorithm.class)
-            .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), QuantumAlgorithm.class));
+                .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), QuantumAlgorithm.class));
+        mapper.createTypeMap(FileImplementationPackage.class, ImplementationPackageDto.class)
+                .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), FileImplementationPackageDto.class));
+        mapper.createTypeMap(TOSCAImplementationPackage.class, ImplementationPackageDto.class)
+                .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), TOSCAImplementationPackageDto.class));
+        mapper.createTypeMap(FunctionImplementationPackage.class, ImplementationPackageDto.class)
+                .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), FunctionImplementationPackageDto.class));
+        mapper.createTypeMap(FileImplementationPackageDto.class, ImplementationPackage.class)
+                .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), FileImplementationPackage.class));
+        mapper.createTypeMap(TOSCAImplementationPackageDto.class, ImplementationPackage.class)
+                .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), TOSCAImplementationPackage.class));
+        mapper.createTypeMap(FunctionImplementationPackageDto.class, ImplementationPackage.class)
+                .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), FunctionImplementationPackage.class));
         mapper.createTypeMap(Qpu.class, ComputeResourceDto.class)
-            .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), QPUDto.class));
+                .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), QPUDto.class));
         mapper.createTypeMap(Simulator.class, ComputeResourceDto.class)
-            .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), SimulatorDto.class));
+                .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), SimulatorDto.class));
         mapper.createTypeMap(QPUDto.class, ComputeResource.class)
-            .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), Qpu.class));
+                .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), Qpu.class));
         mapper.createTypeMap(SimulatorDto.class, ComputeResource.class)
-            .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), Simulator.class));
+                .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), Simulator.class));
     }
 
     private static void initializeUUIDMappings(ModelMapper mapper) {
         // Algorithm Relations
         mapper.createTypeMap(AlgorithmRelation.class, AlgorithmRelationDto.class)
-            .addMapping(e -> e.getSourceAlgorithm().getId(), AlgorithmRelationDto::setSourceAlgorithmId)
-            .addMapping(e -> e.getTargetAlgorithm().getId(), AlgorithmRelationDto::setTargetAlgorithmId);
+                .addMapping(e -> e.getSourceAlgorithm().getId(), AlgorithmRelationDto::setSourceAlgorithmId)
+                .addMapping(e -> e.getTargetAlgorithm().getId(), AlgorithmRelationDto::setTargetAlgorithmId);
         mapper.createTypeMap(AlgorithmRelationDto.class, AlgorithmRelation.class)
-            .addMapping(e -> newAlgorithmWithId(e.getSourceAlgorithmId()), AlgorithmRelation::setSourceAlgorithm)
-            .addMapping(e -> newAlgorithmWithId(e.getTargetAlgorithmId()), AlgorithmRelation::setTargetAlgorithm);
+                .addMapping(e -> newAlgorithmWithId(e.getSourceAlgorithmId()), AlgorithmRelation::setSourceAlgorithm)
+                .addMapping(e -> newAlgorithmWithId(e.getTargetAlgorithmId()), AlgorithmRelation::setTargetAlgorithm);
 
         // Implementations
         mapper.createTypeMap(Implementation.class, ImplementationDto.class)
-            .addMapping(e -> e.getImplementedAlgorithm().getId(), ImplementationDto::setImplementedAlgorithmId);
+                .addMapping(e -> e.getImplementedAlgorithm().getId(), ImplementationDto::setImplementedAlgorithmId);
         mapper.createTypeMap(ImplementationDto.class, Implementation.class)
-            .addMapping(e -> newAlgorithmWithId(e.getImplementedAlgorithmId()), Implementation::setImplementedAlgorithm);
+                .addMapping(e -> newAlgorithmWithId(e.getImplementedAlgorithmId()), Implementation::setImplementedAlgorithm);
 
         // Pattern Relations
         mapper.createTypeMap(PatternRelation.class, PatternRelationDto.class)
-            .addMapping(e -> e.getAlgorithm().getId(), PatternRelationDto::setAlgorithmId);
+                .addMapping(e -> e.getAlgorithm().getId(), PatternRelationDto::setAlgorithmId);
         mapper.createTypeMap(PatternRelationDto.class, PatternRelation.class)
-            .addMapping(e -> newAlgorithmWithId(e.getAlgorithmId()), PatternRelation::setAlgorithm);
+                .addMapping(e -> newAlgorithmWithId(e.getAlgorithmId()), PatternRelation::setAlgorithm);
     }
 
     private static Algorithm newAlgorithmWithId(UUID id) {

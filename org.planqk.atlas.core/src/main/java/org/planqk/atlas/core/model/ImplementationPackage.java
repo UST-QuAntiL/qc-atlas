@@ -19,25 +19,39 @@
 
 package org.planqk.atlas.core.model;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Entity
-@AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class File extends KnowledgeArtifact {
+public class ImplementationPackage extends HasId {
 
     private String name;
 
-    private String mimeType;
+    private String description;
 
-    @Column(unique = true)
-    private String fileURL;
+    private ImplementationPackageType packageType;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "implementation_id")
+    private Implementation implementation;
+
+    @OneToOne(fetch = FetchType.LAZY, orphanRemoval = true)
+    @EqualsAndHashCode.Exclude
+    @JoinTable(
+        name = "ImplementationPackageFile",
+        joinColumns = @JoinColumn(name = "implementation_package_id"),
+        inverseJoinColumns = @JoinColumn(name = "file_id")
+    )
+    private File file;
 }

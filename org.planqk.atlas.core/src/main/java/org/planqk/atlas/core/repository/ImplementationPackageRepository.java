@@ -17,20 +17,21 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.planqk.atlas.web.dtos;
+package org.planqk.atlas.core.repository;
 
 import java.util.UUID;
 
-import lombok.Data;
+import org.planqk.atlas.core.model.ImplementationPackage;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import org.springframework.stereotype.Repository;
 
-@Data
-public class FileDto {
+@Repository
+@RepositoryRestResource(exported = false)
+public interface ImplementationPackageRepository extends JpaRepository<ImplementationPackage, UUID> {
 
-    private UUID id;
+    Page<ImplementationPackage> findImplementationPackagesByImplementationId(UUID implementation, Pageable pageable);
 
-    private String name;
-
-    private String mimeType;
-
-    private String fileURL;
 }

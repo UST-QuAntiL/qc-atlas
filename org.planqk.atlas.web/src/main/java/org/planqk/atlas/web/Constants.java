@@ -43,6 +43,8 @@ public final class Constants {
 
     public static final String FILES = "files";
 
+    public static final String FILE = "file";
+
     public static final String COMPUTE_RESOURCE_PROPERTY_TYPES = "compute-resource-property-types";
 
     public static final String DISCUSSION_COMMENTS = "discussion-comments";
@@ -50,6 +52,8 @@ public final class Constants {
     public static final String DISCUSSION_TOPICS = "discussion-topics";
 
     public static final String IMPLEMENTATIONS = "implementations";
+
+    public static final String IMPLEMENTATION_PACKAGES = "implementation-packages";
 
     public static final String PATTERN_RELATIONS = "pattern-relations";
 
@@ -109,6 +113,7 @@ public final class Constants {
     public static final String TAG_ROOT = "root";
 
     public static final String TAG_TAG = "tag";
+
 
     private Constants() {
     }

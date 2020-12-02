@@ -17,20 +17,23 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.planqk.atlas.web.dtos;
+package org.planqk.atlas.web.linkassembler;
 
 import java.util.UUID;
 
-import lombok.Data;
+import org.planqk.atlas.web.dtos.ImplementationPackageDto;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.stereotype.Component;
 
-@Data
-public class FileDto {
+@Component
+public class ImplementationPackageAssembler extends GenericLinkAssembler<ImplementationPackageDto> {
 
-    private UUID id;
+    @Override
+    public void addLinks(EntityModel<ImplementationPackageDto> resource) {
+    }
 
-    private String name;
+    private UUID getID(EntityModel<ImplementationPackageDto> resource) {
+        return resource.getContent().getId();
+    }
 
-    private String mimeType;
-
-    private String fileURL;
 }

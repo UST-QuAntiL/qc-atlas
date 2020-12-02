@@ -19,59 +19,39 @@
 
 package org.planqk.atlas.web.dtos;
 
-import java.util.Set;
 import java.util.UUID;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
 
+import org.planqk.atlas.core.model.ImplementationPackageType;
 import org.planqk.atlas.web.utils.Identifyable;
 import org.planqk.atlas.web.utils.ValidationGroups;
 import org.springframework.hateoas.server.core.Relation;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-/**
- * Data transfer object for the model class Implementation ({@link org.planqk.atlas.core.model.Implementation}).
- */
-@EqualsAndHashCode
 @Data
 @NoArgsConstructor
-@Relation(itemRelation = "implementation", collectionRelation = "implementations")
-public class ImplementationDto implements Identifyable {
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "packageType", visible = true)
+@JsonSubTypes({@JsonSubTypes.Type(value = FileImplementationPackageDto.class, name = "FILE"),
+        @JsonSubTypes.Type(value = TOSCAImplementationPackageDto.class, name = "TOSCA"),
+        @JsonSubTypes.Type(value = FunctionImplementationPackageDto.class, name = "FUNCTION")})
+@Relation(itemRelation = "implementationPackage", collectionRelation = "implementationPackages")
+public class ImplementationPackageDto implements Identifyable {
 
     @NotNull(groups = {ValidationGroups.IDOnly.class}, message = "An id is required to perform an update")
-    @Null(groups = {ValidationGroups.Create.class}, message = "The id must be null for creating an implementation")
+    @Null(groups = {ValidationGroups.Create.class}, message = "The id must be null for creating an implementation package")
     private UUID id;
 
-    private UUID implementedAlgorithmId;
-
-    @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
-        message = "Implementation-Name must not be null!")
     private String name;
-
-    private String inputFormat;
-
-    private String outputFormat;
 
     private String description;
 
-    private String contributors;
-
-    private String assumptions;
-
-    private String parameter;
-
-    private String dependencies;
-
-    private String version;
-
-    private String license;
-
-    private String technology;
-
-    private String problemStatement;
-
-    private Set<SoftwarePlatformDto> softwarePlatforms;
+    @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
+            message = "PackageType must not be null!")
+    private ImplementationPackageType packageType;
 }

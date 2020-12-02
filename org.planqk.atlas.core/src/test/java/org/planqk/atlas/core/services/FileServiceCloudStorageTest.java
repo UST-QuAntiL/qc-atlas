@@ -1,3 +1,22 @@
+/*******************************************************************************
+ * Copyright (c) 2020 the qc-atlas contributors.
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *******************************************************************************/
+
 package org.planqk.atlas.core.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -5,6 +24,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.NoSuchElementException;
 import java.util.Random;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -12,13 +32,13 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.planqk.atlas.core.exceptions.CloudStorageException;
 import org.planqk.atlas.core.model.File;
-import org.planqk.atlas.core.model.Implementation;
+import org.planqk.atlas.core.model.FileImplementationPackage;
+import org.planqk.atlas.core.model.ImplementationPackage;
+import org.planqk.atlas.core.model.ImplementationPackageType;
 import org.planqk.atlas.core.repository.FileRepository;
-import org.planqk.atlas.core.repository.ImplementationRepository;
+import org.planqk.atlas.core.repository.ImplementationPackageRepository;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.multipart.MultipartFile;
@@ -45,18 +65,18 @@ public class FileServiceCloudStorageTest extends AtlasDatabaseTestBase {
     private FileRepository fileRepository;
 
     @Autowired
-    private ImplementationRepository implementationRepository;
+    private ImplementationPackageRepository implementationPackageRepository;
 
     @Test
     public void givenFileNotExists_WhenCreate_ThenShouldBeCreated() {
         // Given
         when(storage.create(Mockito.any(BlobInfo.class), Mockito.any(byte[].class))).thenReturn(mockBlob);
-        Implementation persistedImplementation = implementationRepository.save(getDummyImplementation());
+        ImplementationPackage persistedImplementationPackage = implementationPackageRepository.save(getDummyImplementationPackage());
         assertThat(fileRepository.findAll().size()).isEqualTo(0);
 
         //When
         File createdFile =
-            fileServiceCloudStorage.create(getMultipartFile());
+                fileServiceCloudStorage.create(getMultipartFile());
 
         //Then
         assertThat(fileRepository.findAll().size()).isEqualTo(1);
@@ -66,12 +86,12 @@ public class FileServiceCloudStorageTest extends AtlasDatabaseTestBase {
     @Test
     public void givenNone_WhenCreateAndStorageExceptionIsThrown_ThenCatchAndThrowCloudStorageException() {
         // Given
-        Implementation persistedImplementation = implementationRepository.save(getDummyImplementation());
+        ImplementationPackage persistedImplementationPackage = implementationPackageRepository.save(getDummyImplementationPackage());
         when(storage.create(Mockito.any(BlobInfo.class), Mockito.any(byte[].class))).thenThrow(StorageException.class);
 
         // When
         Assertions.assertThrows(CloudStorageException.class,
-            () -> fileServiceCloudStorage.create(getMultipartFile()));
+                () -> fileServiceCloudStorage.create(getMultipartFile()));
     }
 
     @Test
@@ -80,7 +100,7 @@ public class FileServiceCloudStorageTest extends AtlasDatabaseTestBase {
         File persistedFile = fileRepository.save(getDummyFile());
         // When Then
         assertThat(fileServiceCloudStorage.findById(persistedFile.getId()))
-            .isEqualToComparingFieldByField(persistedFile);
+                .isEqualToComparingFieldByField(persistedFile);
     }
 
     @Test
@@ -106,7 +126,7 @@ public class FileServiceCloudStorageTest extends AtlasDatabaseTestBase {
 
         // Call + Then
         Assertions.assertThrows(CloudStorageException.class,
-            () -> fileServiceCloudStorage.delete(persistedFile.getId()));
+                () -> fileServiceCloudStorage.delete(persistedFile.getId()));
     }
 
     @Test
@@ -129,7 +149,7 @@ public class FileServiceCloudStorageTest extends AtlasDatabaseTestBase {
 
         // Call + Then
         Assertions.assertThrows(NoSuchElementException.class,
-            () -> fileServiceCloudStorage.getFileContent(persistedFile.getId()));
+                () -> fileServiceCloudStorage.getFileContent(persistedFile.getId()));
     }
 
     @Test
@@ -142,7 +162,7 @@ public class FileServiceCloudStorageTest extends AtlasDatabaseTestBase {
 
         // Call + Then
         Assertions.assertThrows(CloudStorageException.class,
-            () -> fileServiceCloudStorage.getFileContent(persistedFile.getId()));
+                () -> fileServiceCloudStorage.getFileContent(persistedFile.getId()));
     }
 
     private File getDummyFile() {
@@ -158,13 +178,16 @@ public class FileServiceCloudStorageTest extends AtlasDatabaseTestBase {
         String contentType = "text/plain";
         byte[] content = generateRandomByteArray();
         return new MockMultipartFile(name,
-            originalFileName, contentType, content);
+                originalFileName, contentType, content);
     }
 
-    private Implementation getDummyImplementation() {
-        Implementation dummyImplementation = new Implementation();
-        dummyImplementation.setName("dummy Impl");
-        return dummyImplementation;
+    private ImplementationPackage getDummyImplementationPackage() {
+        ImplementationPackage dummyImplementationPackage = new FileImplementationPackage();
+        dummyImplementationPackage.setId(UUID.randomUUID());
+        dummyImplementationPackage.setName("dummy ImplPackage");
+        dummyImplementationPackage.setPackageType(ImplementationPackageType.FILE);
+        dummyImplementationPackage.setFile(null);
+        return dummyImplementationPackage;
     }
 
     private byte[] generateRandomByteArray() {

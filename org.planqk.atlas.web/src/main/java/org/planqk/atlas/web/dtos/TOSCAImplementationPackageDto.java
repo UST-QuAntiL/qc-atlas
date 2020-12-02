@@ -19,18 +19,25 @@
 
 package org.planqk.atlas.web.dtos;
 
-import java.util.UUID;
+import org.planqk.atlas.core.model.ImplementationPackageType;
+import org.springframework.hateoas.server.core.Relation;
 
+import com.fasterxml.jackson.annotation.JsonTypeName;
+
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 @Data
-public class FileDto {
-
-    private UUID id;
-
-    private String name;
-
-    private String mimeType;
-
-    private String fileURL;
+@JsonTypeName("TOSCA")
+@Relation(itemRelation = "implementationPackage", collectionRelation = "implementationPackages")
+public class TOSCAImplementationPackageDto extends ImplementationPackageDto {
+    @Override
+    @Schema(type = "string", allowableValues = {"TOSCA"})
+    public ImplementationPackageType getPackageType() {
+        return super.getPackageType();
+    }
 }
