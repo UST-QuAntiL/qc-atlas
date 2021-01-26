@@ -57,6 +57,7 @@ public class Algorithm extends KnowledgeArtifact {
         inverseJoinColumns = @JoinColumn(name = "publication_id")
     )
     @EqualsAndHashCode.Exclude
+    @NotAudited
     private Set<Publication> publications = new HashSet<>();
 
     @Column(columnDefinition = "text")
@@ -76,6 +77,7 @@ public class Algorithm extends KnowledgeArtifact {
         mappedBy = "sourceAlgorithm",
         orphanRemoval = true)
     @EqualsAndHashCode.Exclude
+    @NotAudited
     private Set<AlgorithmRelation> sourceAlgorithmRelations = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY,
@@ -83,6 +85,7 @@ public class Algorithm extends KnowledgeArtifact {
         mappedBy = "targetAlgorithm",
         orphanRemoval = true)
     @EqualsAndHashCode.Exclude
+    @NotAudited
     private Set<AlgorithmRelation> targetAlgorithmRelations = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY,
@@ -90,12 +93,14 @@ public class Algorithm extends KnowledgeArtifact {
         mappedBy = "algorithm",
         orphanRemoval = true)
     @EqualsAndHashCode.Exclude
+    @NotAudited
     private Set<ComputeResourceProperty> requiredComputeResourceProperties = new HashSet<>();
 
     @Column(columnDefinition = "text")
     private String algoParameter;
 
     @OneToMany(mappedBy = "algorithm", cascade = CascadeType.ALL, orphanRemoval = true)
+    @NotAudited
     private List<Sketch> sketches = new ArrayList<>();
 
     @Column(columnDefinition = "text")
@@ -103,6 +108,7 @@ public class Algorithm extends KnowledgeArtifact {
 
     private String assumptions;
 
+    @NotAudited
     private ComputationModel computationModel;
 
     @OneToMany(fetch = FetchType.LAZY,
@@ -117,6 +123,7 @@ public class Algorithm extends KnowledgeArtifact {
         joinColumns = @JoinColumn(name = "algorithm_id"),
         inverseJoinColumns = @JoinColumn(name = "problem_type_id"))
     @EqualsAndHashCode.Exclude
+    @NotAudited
     private Set<ProblemType> problemTypes = new HashSet<>();
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
@@ -124,6 +131,7 @@ public class Algorithm extends KnowledgeArtifact {
         joinColumns = @JoinColumn(name = "algorithm_id"),
         inverseJoinColumns = @JoinColumn(name = "application_area_id"))
     @EqualsAndHashCode.Exclude
+    @NotAudited
     private Set<ApplicationArea> applicationAreas = new HashSet<>();
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
@@ -132,6 +140,7 @@ public class Algorithm extends KnowledgeArtifact {
         inverseJoinColumns = @JoinColumn(name = "tag_value"))
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
+    @NotAudited
     private Set<Tag> tags = new HashSet<>();
 
     @OneToMany(mappedBy = "implementedAlgorithm",
@@ -140,6 +149,7 @@ public class Algorithm extends KnowledgeArtifact {
         orphanRemoval = true)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
+    @NotAudited
     private Set<Implementation> implementations = new HashSet<>();
 
     public void addTag(@NonNull Tag tag) {

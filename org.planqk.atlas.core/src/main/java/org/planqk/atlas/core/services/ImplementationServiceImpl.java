@@ -36,6 +36,7 @@ import org.planqk.atlas.core.util.CollectionUtils;
 import org.planqk.atlas.core.util.ServiceUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.history.Revision;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -157,5 +158,15 @@ public class ImplementationServiceImpl implements ImplementationService {
         ServiceUtils.throwIfNotExists(implementationId, Implementation.class, implementationRepository);
 
         return publicationRepository.findPublicationsByImplementationId(implementationId, pageable);
+    }
+
+    @Override
+    public Page<Revision<Integer, Implementation>> findAllImplementationVersions(UUID implementationId,@NonNull Pageable pageable) {
+        return implementationRepository.findRevisions(implementationId,pageable);
+    }
+
+    @Override
+    public Revision<Integer, Implementation> findImplementationVersion(UUID implementationId, Integer revisionNumber) {
+        return implementationRepository.findRevision(implementationId, revisionNumber).orElseThrow(NoSuchElementException::new);
     }
 }

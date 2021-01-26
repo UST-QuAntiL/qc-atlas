@@ -35,6 +35,9 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.ToString;
+import org.hibernate.envers.AuditTable;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 
 /**
  * Entity representing an implementation of a certain quantum {@link Algorithm}.
@@ -43,6 +46,8 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
+@AuditTable("implementation_versions")
+@Audited
 public class Implementation extends KnowledgeArtifact {
 
     private String name;
@@ -80,11 +85,13 @@ public class Implementation extends KnowledgeArtifact {
     )
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
+    @NotAudited
     private Set<Publication> publications = new HashSet<>();
 
     @ManyToOne
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
+    @NotAudited
     private Algorithm implementedAlgorithm;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
@@ -93,12 +100,14 @@ public class Implementation extends KnowledgeArtifact {
             inverseJoinColumns = @JoinColumn(name = "tag_value"))
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
+    @NotAudited
     private Set<Tag> tags = new HashSet<>();
 
     @EqualsAndHashCode.Exclude
     @OneToMany(cascade = CascadeType.ALL,
             mappedBy = "implementation",
             orphanRemoval = true)
+    @NotAudited
     private Set<ComputeResourceProperty> requiredComputeResourceProperties = new HashSet<>();
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
@@ -109,6 +118,7 @@ public class Implementation extends KnowledgeArtifact {
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
+    @NotAudited
     private Set<SoftwarePlatform> softwarePlatforms = new HashSet<>();
 
 
@@ -117,6 +127,7 @@ public class Implementation extends KnowledgeArtifact {
             orphanRemoval = true)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
+    @NotAudited
     private Set<ImplementationPackage> implementationPackages = new HashSet<>();
 
     public void addTag(@NonNull Tag tag) {

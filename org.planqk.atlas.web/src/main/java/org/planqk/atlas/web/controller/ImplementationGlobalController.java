@@ -21,6 +21,7 @@ package org.planqk.atlas.web.controller;
 
 import java.util.UUID;
 
+import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.annotation.ApiVersion;
@@ -28,6 +29,11 @@ import org.planqk.atlas.web.dtos.ImplementationDto;
 import org.planqk.atlas.web.linkassembler.ImplementationAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.history.Revision;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
@@ -60,6 +66,8 @@ public class ImplementationGlobalController {
 
     private final ImplementationAssembler implementationAssembler;
 
+    private final ObjectMapper objectMapper;
+
     @Operation(responses = {
         @ApiResponse(responseCode = "200"),
     }, description = "Retrieve all implementations unaffected by its implemented algorithm")
@@ -84,4 +92,37 @@ public class ImplementationGlobalController {
         return ResponseEntity.ok(implementationAssembler.toModel(implementation));
     }
 
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404",
+                    description = "Implementation with given ID and revisionNumber doesn't exist")
+    }, description = "Retrieve all versions of an implementation")
+    @ListParametersDoc
+    @GetMapping("/{implementationId}/versions")
+    public ResponseEntity<Page<Revision<Integer, Implementation>>> getImplementationVersions(
+            @PathVariable UUID implementationId, @Parameter(hidden = true) ListParameters listParameters) throws JsonProcessingException {
+
+        //TODO modify Assembler or DTO to work with Revision Objects
+
+        final var impl = this.implementationService.findAllImplementationVersions(implementationId, listParameters.getPageable());
+        return ResponseEntity.ok(impl);
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404",
+                    description = "Implementation with given ID and revisionNumber doesn't exist")
+    }, description = "Retrieve all versions of an implementation")
+    @ListParametersDoc
+    @GetMapping("/{implementationId}/version/{versionId}")
+    public ResponseEntity<Revision<Integer, Implementation>> getImplementationVersion(
+            @PathVariable UUID implementationId, @PathVariable Integer versionId) throws JsonProcessingException {
+
+        //TODO modify Assembler or DTO to work with Revision Objects
+
+        final var impl = this.implementationService.findImplementationVersion(implementationId, versionId);
+        return ResponseEntity.ok(impl);
+    }
 }

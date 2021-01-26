@@ -27,6 +27,7 @@ import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.model.SoftwarePlatform;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.history.Revision;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -163,5 +164,8 @@ public interface ImplementationService {
      */
     Page<Publication> findLinkedPublications(UUID implementationId, Pageable pageable);
 
+    Page<Revision<Integer, Implementation>> findAllImplementationVersions(UUID implementationId, Pageable pageable);
+
+    Revision<Integer, Implementation> findImplementationVersion(UUID implementationId, Integer revisionNumber);
 
 }
