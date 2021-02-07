@@ -51,6 +51,8 @@ public class AlgorithmDto implements Identifyable {
     @Null(groups = {ValidationGroups.Create.class}, message = "The id must be null for creating an algorithm")
     private UUID id;
 
+    private int versionNumber;
+
     private Date creationDate;
 
     private Date lastModifiedAt;

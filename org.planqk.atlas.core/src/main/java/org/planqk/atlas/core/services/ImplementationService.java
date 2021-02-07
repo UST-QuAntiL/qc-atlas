@@ -164,7 +164,7 @@ public interface ImplementationService {
      */
     Page<Publication> findLinkedPublications(UUID implementationId, Pageable pageable);
 
-    Page<Revision<Integer, Implementation>> findAllImplementationVersions(UUID implementationId, Pageable pageable);
+    Page<Implementation> findAllImplementationVersions(UUID implementationId, Pageable pageable);
 
     Revision<Integer, Implementation> findImplementationVersion(UUID implementationId, Integer revisionNumber);
 

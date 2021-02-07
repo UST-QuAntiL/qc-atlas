@@ -19,9 +19,12 @@
 
 package org.planqk.atlas.core.services;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
@@ -40,6 +43,7 @@ import org.planqk.atlas.core.repository.PublicationRepository;
 import org.planqk.atlas.core.util.CollectionUtils;
 import org.planqk.atlas.core.util.ServiceUtils;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.history.Revision;
 import org.springframework.stereotype.Service;
@@ -231,8 +235,17 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     }
 
     @Override
-    public Page<Revision<Integer, Algorithm>> findAlgorithmRevisions(UUID algorithmId, Pageable pageable) {
-        return algorithmRepository.findRevisions(algorithmId, pageable);
+    public Page<Algorithm> findAlgorithmVersions(UUID algorithmId, Pageable pageable) {
+
+        final List<Algorithm> algorithms = new ArrayList<>();
+
+        final Page<Revision<Integer, Algorithm>> versionedAlgorithms = algorithmRepository.findRevisions(algorithmId, pageable);
+        for (Revision<Integer, Algorithm> algorithmRevision : versionedAlgorithms) {
+            algorithmRevision.getEntity().setVersionNumber(algorithmRevision.getMetadata().getRevisionNumber().get());
+            algorithms.add(algorithmRevision.getEntity());
+        }
+
+        return new PageImpl<Algorithm>(algorithms, pageable, algorithms.size());
     }
 
     private Page<AlgorithmRelation> getAlgorithmRelations(@NonNull UUID algorithmId, @NonNull Pageable pageable) {

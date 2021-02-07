@@ -232,5 +232,5 @@ public interface AlgorithmService {
      * @param pageable The page information, namely page size and page number, of the page we want to retrieve
      * @return The page of queried {@link Algorithm} entries
      */
-    Page<Revision<Integer, Algorithm>> findAlgorithmRevisions(UUID algorithmId, Pageable pageable);
+    Page<Algorithm> findAlgorithmVersions(UUID algorithmId, Pageable pageable);
 }

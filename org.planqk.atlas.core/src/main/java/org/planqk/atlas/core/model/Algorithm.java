@@ -50,7 +50,7 @@ import org.hibernate.envers.NotAudited;
 @Entity
 @AuditTable("algorithm_versions")
 @Audited
-public class Algorithm extends KnowledgeArtifact {
+public class Algorithm extends VersionedKnowledgeArtifact {
 
     private String name;
 

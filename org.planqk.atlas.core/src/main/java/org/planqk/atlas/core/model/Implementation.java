@@ -35,6 +35,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.ToString;
+
 import org.hibernate.envers.AuditTable;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
@@ -48,7 +49,7 @@ import org.hibernate.envers.NotAudited;
 @Data
 @AuditTable("implementation_versions")
 @Audited
-public class Implementation extends KnowledgeArtifact {
+public class Implementation extends VersionedKnowledgeArtifact {
 
     private String name;
 

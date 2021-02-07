@@ -19,6 +19,8 @@
 
 package org.planqk.atlas.core.services;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
@@ -35,6 +37,7 @@ import org.planqk.atlas.core.repository.SoftwarePlatformRepository;
 import org.planqk.atlas.core.util.CollectionUtils;
 import org.planqk.atlas.core.util.ServiceUtils;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.history.Revision;
 import org.springframework.stereotype.Service;
@@ -161,8 +164,16 @@ public class ImplementationServiceImpl implements ImplementationService {
     }
 
     @Override
-    public Page<Revision<Integer, Implementation>> findAllImplementationVersions(UUID implementationId,@NonNull Pageable pageable) {
-        return implementationRepository.findRevisions(implementationId,pageable);
+    public Page<Implementation> findAllImplementationVersions(UUID implementationId,@NonNull Pageable pageable) {
+        final List<Implementation> implementations = new ArrayList<>();
+
+        final Page<Revision<Integer, Implementation>> versionedImplementation = implementationRepository.findRevisions(implementationId, pageable);
+        for (Revision<Integer, Implementation> implementationRevision : versionedImplementation) {
+            implementationRevision.getEntity().setVersionNumber(implementationRevision.getMetadata().getRevisionNumber().get());
+            implementations.add(implementationRevision.getEntity());
+        }
+
+        return new PageImpl<Implementation>(implementations, pageable, implementations.size());
     }
 
     @Override

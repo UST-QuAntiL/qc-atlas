@@ -896,15 +896,9 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Not Found. Algorithm with given ID doesn't exist.")
     }, description = "Retrieve a specific algorithm and its basic properties.")
-    @GetMapping("/{algorithmId}/revisions")
-    public ResponseEntity<EntityModel<AlgorithmDto>> getAlgorithmRevisions(
+    @GetMapping("/{algorithmId}/versions")
+    public ResponseEntity<PagedModel<EntityModel<AlgorithmDto>>> getAlgorithmVersions(
             @PathVariable UUID algorithmId, @Parameter(hidden = true) ListParameters listParameters) {
-
-        log.debug(algorithmService.findAlgorithmRevisions(algorithmId,listParameters.getPageable()).getContent().toString());
-        Algorithm algo = new Algorithm();
-        algo.setName("TESTING");
-        algorithmService.create(algo);
-
-        return null;
+        return ResponseEntity.ok(algorithmAssembler.toModel(algorithmService.findAlgorithmVersions(algorithmId, listParameters.getPageable())));
     }
 }
