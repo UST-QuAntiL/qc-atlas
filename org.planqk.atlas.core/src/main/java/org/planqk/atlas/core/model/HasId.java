@@ -30,12 +30,14 @@ import org.hibernate.annotations.GenericGenerator;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.envers.Audited;
 
 /**
  * Base class defining the Id property for all JPA entity classes.
  */
 @MappedSuperclass
 @EqualsAndHashCode
+@Audited
 public abstract class HasId {
 
     @Id

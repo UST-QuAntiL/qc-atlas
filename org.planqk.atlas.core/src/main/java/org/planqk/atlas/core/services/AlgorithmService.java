@@ -29,6 +29,7 @@ import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.model.Publication;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.history.Revision;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -72,6 +73,7 @@ public interface AlgorithmService {
      * @return The {@link Algorithm} with the given ID
      */
     Algorithm findById(UUID algorithmId);
+
 
     /**
      * Update an existing {@link Algorithm} database entry by saving the updated {@link Algorithm} object to the the database.
@@ -219,4 +221,16 @@ public interface AlgorithmService {
      * @param applicationAreaId The ID of the {@link ApplicationArea} we want to check
      */
     void checkIfApplicationAreaIsLinkedToAlgorithm(UUID algorithmId, UUID applicationAreaId);
+
+    /**
+     * Retrieve all {@link Algorithm} revisions from the database.
+     * <p>
+     * The amount of entries is based on the given {@link Pageable} parameter. If the {@link Pageable} is unpaged a {@link Page} with all entries is
+     * queried.
+     * <p>.
+     *
+     * @param pageable The page information, namely page size and page number, of the page we want to retrieve
+     * @return The page of queried {@link Algorithm} entries
+     */
+    Page<Revision<Integer, Algorithm>> findAlgorithmRevisions(UUID algorithmId, Pageable pageable);
 }

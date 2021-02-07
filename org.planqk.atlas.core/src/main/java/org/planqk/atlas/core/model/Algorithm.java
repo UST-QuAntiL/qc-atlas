@@ -37,6 +37,9 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.ToString;
+import org.hibernate.envers.AuditTable;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 
 /**
  * Entity representing a quantum algorithm, e.g., Shors factorization algorithm.
@@ -45,6 +48,8 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
+@AuditTable("algorithm_versions")
+@Audited
 public class Algorithm extends KnowledgeArtifact {
 
     private String name;
@@ -111,6 +116,7 @@ public class Algorithm extends KnowledgeArtifact {
     @NotAudited
     private ComputationModel computationModel;
 
+    @NotAudited
     @OneToMany(fetch = FetchType.LAZY,
         cascade = CascadeType.ALL,
         mappedBy = "algorithm",
