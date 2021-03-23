@@ -24,7 +24,6 @@ import java.util.UUID;
 import org.planqk.atlas.core.model.AlgorithmRelationType;
 import org.planqk.atlas.core.services.AlgorithmRelationTypeService;
 import org.planqk.atlas.web.Constants;
-import org.planqk.atlas.web.annotation.ApiVersion;
 import org.planqk.atlas.web.dtos.AlgorithmRelationTypeDto;
 import org.planqk.atlas.web.linkassembler.AlgorithmRelationTypeAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
@@ -57,7 +56,6 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/" + Constants.ALGORITHM_RELATION_TYPES)
-@ApiVersion("v1")
 @AllArgsConstructor
 @Slf4j
 public class AlgorithmRelationTypeController {
@@ -67,50 +65,50 @@ public class AlgorithmRelationTypeController {
     private final AlgorithmRelationTypeAssembler algorithmRelationTypeAssembler;
 
     @Operation(responses = {
-        @ApiResponse(responseCode = "200")
+            @ApiResponse(responseCode = "200")
     }, description = "Retrieve all algorithm relation types.")
     @ListParametersDoc
     @GetMapping
     public ResponseEntity<PagedModel<EntityModel<AlgorithmRelationTypeDto>>> getAlgorithmRelationTypes(
-        @Parameter(hidden = true) ListParameters params) {
+            @Parameter(hidden = true) ListParameters params) {
         final var algorithmRelationTypes = algorithmRelationTypeService.findAll(params.getPageable());
         return ResponseEntity.ok(algorithmRelationTypeAssembler.toModel(algorithmRelationTypes));
     }
 
     @Operation(responses = {
-        @ApiResponse(responseCode = "201"),
-        @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
+            @ApiResponse(responseCode = "201"),
+            @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
     }, description = "Define the basic properties of an algorithm relation type.")
     @PostMapping
     public ResponseEntity<EntityModel<AlgorithmRelationTypeDto>> createAlgorithmRelationType(
-        @Validated(ValidationGroups.Create.class) @RequestBody AlgorithmRelationTypeDto AlgorithmRelationTypeDto) {
+            @Validated(ValidationGroups.Create.class) @RequestBody AlgorithmRelationTypeDto AlgorithmRelationTypeDto) {
         final var savedAlgorithmRelationType = algorithmRelationTypeService.create(
-            ModelMapperUtils.convert(AlgorithmRelationTypeDto, AlgorithmRelationType.class));
+                ModelMapperUtils.convert(AlgorithmRelationTypeDto, AlgorithmRelationType.class));
         return new ResponseEntity<>(algorithmRelationTypeAssembler.toModel(savedAlgorithmRelationType), HttpStatus.CREATED);
     }
 
     @Operation(responses = {
-        @ApiResponse(responseCode = "200"),
-        @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
-        @ApiResponse(responseCode = "404",
-            description = "Not Found. Algorithm relation type with given ID doesn't exist")
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
+            @ApiResponse(responseCode = "404",
+                    description = "Not Found. Algorithm relation type with given ID doesn't exist")
     }, description = "Update the basic properties of an algorithm relation type (e.g. name).")
     @PutMapping("/{algorithmRelationTypeId}")
     public ResponseEntity<EntityModel<AlgorithmRelationTypeDto>> updateAlgorithmRelationType(
-        @PathVariable UUID algorithmRelationTypeId,
-        @Validated(ValidationGroups.Update.class) @RequestBody AlgorithmRelationTypeDto algorithmRelationTypeDto) {
+            @PathVariable UUID algorithmRelationTypeId,
+            @Validated(ValidationGroups.Update.class) @RequestBody AlgorithmRelationTypeDto algorithmRelationTypeDto) {
         algorithmRelationTypeDto.setId(algorithmRelationTypeId);
         final var savedAlgorithmRelationType = algorithmRelationTypeService.update(
-            ModelMapperUtils.convert(algorithmRelationTypeDto, AlgorithmRelationType.class));
+                ModelMapperUtils.convert(algorithmRelationTypeDto, AlgorithmRelationType.class));
         return ResponseEntity.ok(algorithmRelationTypeAssembler.toModel(savedAlgorithmRelationType));
     }
 
     @Operation(responses = {
-        @ApiResponse(responseCode = "204"),
-        @ApiResponse(responseCode = "400",
-            description = "Bad Request. Algorithm relation type is still in use by at least one algorithm relation"),
-        @ApiResponse(responseCode = "404",
-            description = "Not Found. Algorithm relation type with given ID doesn't exist")
+            @ApiResponse(responseCode = "204"),
+            @ApiResponse(responseCode = "400",
+                    description = "Bad Request. Algorithm relation type is still in use by at least one algorithm relation"),
+            @ApiResponse(responseCode = "404",
+                    description = "Not Found. Algorithm relation type with given ID doesn't exist")
     }, description = "Delete an algorithm relation type.")
     @DeleteMapping("/{algorithmRelationTypeId}")
     public ResponseEntity<Void> deleteAlgorithmRelationType(@PathVariable UUID algorithmRelationTypeId) {
@@ -119,14 +117,14 @@ public class AlgorithmRelationTypeController {
     }
 
     @Operation(responses = {
-        @ApiResponse(responseCode = "200"),
-        @ApiResponse(responseCode = "400"),
-        @ApiResponse(responseCode = "404",
-            description = "Not Found. Algorithm relation type with given ID doesn't exist")
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404",
+                    description = "Not Found. Algorithm relation type with given ID doesn't exist")
     }, description = "Retrieve a specific algorithm relation type and its basic properties.")
     @GetMapping("/{algorithmRelationTypeId}")
     public ResponseEntity<EntityModel<AlgorithmRelationTypeDto>> getAlgorithmRelationType(
-        @PathVariable UUID algorithmRelationTypeId) {
+            @PathVariable UUID algorithmRelationTypeId) {
         final var algorithmRelationType = algorithmRelationTypeService.findById(algorithmRelationTypeId);
         return ResponseEntity.ok(algorithmRelationTypeAssembler.toModel(algorithmRelationType));
     }

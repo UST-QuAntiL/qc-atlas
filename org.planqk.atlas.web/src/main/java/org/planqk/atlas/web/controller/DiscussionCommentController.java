@@ -27,7 +27,6 @@ import org.planqk.atlas.core.model.KnowledgeArtifact;
 import org.planqk.atlas.core.services.DiscussionCommentService;
 import org.planqk.atlas.core.services.DiscussionTopicService;
 import org.planqk.atlas.web.Constants;
-import org.planqk.atlas.web.annotation.ApiVersion;
 import org.planqk.atlas.web.dtos.DiscussionCommentDto;
 import org.planqk.atlas.web.linkassembler.DiscussionCommentAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
@@ -52,7 +51,6 @@ import lombok.extern.slf4j.Slf4j;
 @Tag(name = Constants.TAG_DISCUSSION_TOPIC)
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RestController("discussion-comment")
-@ApiVersion("v1")
 @AllArgsConstructor
 @Slf4j
 public class DiscussionCommentController {
@@ -64,28 +62,28 @@ public class DiscussionCommentController {
     private final DiscussionCommentAssembler discussionCommentAssembler;
 
     @Operation(responses = {
-        @ApiResponse(responseCode = "200")
+            @ApiResponse(responseCode = "200")
     }, description = "")
     @ListParametersDoc
     public ResponseEntity<PagedModel<EntityModel<DiscussionCommentDto>>> getDiscussionCommentsOfTopic(
-        @PathVariable("topicId") UUID topicId,
-        @Parameter(hidden = true) ListParameters listParameters) {
+            @PathVariable("topicId") UUID topicId,
+            @Parameter(hidden = true) ListParameters listParameters) {
         final var result = discussionCommentService.findAllByTopic(topicId, listParameters.getPageable());
         return ResponseEntity.ok(discussionCommentAssembler.toModel(result));
     }
 
     @Operation(responses = {
-        @ApiResponse(responseCode = "201")
+            @ApiResponse(responseCode = "201")
     }, description = "")
     public ResponseEntity<EntityModel<DiscussionCommentDto>> createDiscussionComment(
-        @Valid @RequestBody DiscussionCommentDto discussionCommentDto) {
+            @Valid @RequestBody DiscussionCommentDto discussionCommentDto) {
         final var comment = discussionCommentService.create(ModelMapperUtils.convert(discussionCommentDto, DiscussionComment.class));
         return new ResponseEntity<>(discussionCommentAssembler.toModel(comment), HttpStatus.CREATED);
     }
 
     public ResponseEntity<EntityModel<DiscussionCommentDto>> createDiscussionComment(
-        @Valid @RequestBody DiscussionCommentDto discussionCommentDto,
-        KnowledgeArtifact knowledgeArtifact) {
+            @Valid @RequestBody DiscussionCommentDto discussionCommentDto,
+            KnowledgeArtifact knowledgeArtifact) {
         final DiscussionComment convertedDiscussionComment = ModelMapperUtils.convert(discussionCommentDto, DiscussionComment.class);
         convertedDiscussionComment.getDiscussionTopic().setKnowledgeArtifact(knowledgeArtifact);
         final var comment = discussionCommentService.create(convertedDiscussionComment);
@@ -93,11 +91,11 @@ public class DiscussionCommentController {
     }
 
     @Operation(responses = {
-        @ApiResponse(responseCode = "200")
+            @ApiResponse(responseCode = "200")
     }, description = "")
     public ResponseEntity<EntityModel<DiscussionCommentDto>> updateDiscussionComment(
-        @PathVariable UUID commentId,
-        @Valid @RequestBody DiscussionCommentDto discussionCommentDto) {
+            @PathVariable UUID commentId,
+            @Valid @RequestBody DiscussionCommentDto discussionCommentDto) {
         final var discussionCommentObject = discussionCommentService.findById(commentId);
         final var discussionComment = ModelMapperUtils.convert(discussionCommentDto, DiscussionComment.class);
         final var discussionTopic = discussionCommentObject.getDiscussionTopic();
@@ -107,9 +105,9 @@ public class DiscussionCommentController {
     }
 
     @Operation(responses = {
-        @ApiResponse(responseCode = "200"),
-        @ApiResponse(responseCode = "400"),
-        @ApiResponse(responseCode = "404", description = "Discussion comment with given id doesn't exist")
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", description = "Discussion comment with given id doesn't exist")
     })
     public ResponseEntity<Void> deleteDiscussionComment(@PathVariable UUID commentId) {
         discussionCommentService.findById(commentId);
@@ -118,7 +116,7 @@ public class DiscussionCommentController {
     }
 
     @Operation(responses = {
-        @ApiResponse(responseCode = "200")
+            @ApiResponse(responseCode = "200")
     }, description = "")
     public ResponseEntity<EntityModel<DiscussionCommentDto>> getDiscussionComment(@PathVariable UUID commentId) {
         final var discussionComment = discussionCommentService.findById(commentId);
