@@ -49,7 +49,7 @@ import org.hibernate.envers.NotAudited;
 @Data
 @AuditTable("implementation_versions")
 @Audited
-public class Implementation extends VersionedKnowledgeArtifact {
+public class Implementation extends KnowledgeArtifact {
 
     private String name;
 
