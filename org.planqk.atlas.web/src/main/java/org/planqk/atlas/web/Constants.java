@@ -71,6 +71,8 @@ public final class Constants {
 
     public static final String TAGS = "tags";
 
+    public static final String VERSIONS = "versions";
+
     // default Pagination params that are exposed in HATEOAS links
     public static final Integer DEFAULT_PAGE_NUMBER = 0;
 

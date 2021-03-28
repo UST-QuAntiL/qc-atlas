@@ -53,9 +53,11 @@ import org.planqk.atlas.web.dtos.ImplementationDto;
 import org.planqk.atlas.web.dtos.PatternRelationDto;
 import org.planqk.atlas.web.dtos.ProblemTypeDto;
 import org.planqk.atlas.web.dtos.PublicationDto;
+import org.planqk.atlas.web.dtos.RevisionDto;
 import org.planqk.atlas.web.dtos.SketchDto;
 import org.planqk.atlas.web.dtos.TagDto;
 import org.planqk.atlas.web.linkassembler.AlgorithmAssembler;
+import org.planqk.atlas.web.linkassembler.AlgorithmRevisionAssembler;
 import org.planqk.atlas.web.linkassembler.ApplicationAreaAssembler;
 import org.planqk.atlas.web.linkassembler.ComputeResourcePropertyAssembler;
 import org.planqk.atlas.web.linkassembler.ImplementationAssembler;
@@ -112,6 +114,8 @@ public class AlgorithmController {
     private final AlgorithmService algorithmService;
 
     private final AlgorithmAssembler algorithmAssembler;
+
+    private final AlgorithmRevisionAssembler algorithmRevisionAssembler;
 
     private final SketchAssembler sketchAssembler;
 
@@ -895,10 +899,22 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Not Found. Algorithm with given ID doesn't exist.")
-    }, description = "Retrieve a specific algorithm and its basic properties.")
-    @GetMapping("/{algorithmId}/versions")
-    public ResponseEntity<PagedModel<EntityModel<AlgorithmDto>>> getAlgorithmVersions(
+    }, description = "Retrieve all algorithm versions")
+    @GetMapping("/{algorithmId}/" + Constants.VERSIONS)
+    public ResponseEntity<PagedModel<EntityModel<RevisionDto>>> getAlgorithmVersions(
             @PathVariable UUID algorithmId, @Parameter(hidden = true) ListParameters listParameters) {
-        return ResponseEntity.ok(algorithmAssembler.toModel(algorithmService.findAlgorithmVersions(algorithmId, listParameters.getPageable())));
+        return ResponseEntity.ok(algorithmRevisionAssembler
+            .toModel(algorithmService.findAlgorithmVersions(algorithmId, listParameters.getPageable())));
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", description = "Not Found. Algorithm Version with given ID doesn't exist.")
+    }, description = "Retrieve a specific version of an algorithm with its properties")
+    @GetMapping("/{algorithmId}/" + Constants.VERSIONS + "/{versionId}")
+    public ResponseEntity<EntityModel<RevisionDto>> getAlgorithmVersion(
+            @PathVariable UUID algorithmId, @PathVariable Integer versionId) {
+        return ResponseEntity.ok(algorithmRevisionAssembler.toModel(algorithmService.findAlgorithmVersion(algorithmId, versionId)));
     }
 }
