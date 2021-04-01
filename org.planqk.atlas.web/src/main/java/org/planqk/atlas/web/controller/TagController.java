@@ -22,7 +22,6 @@ package org.planqk.atlas.web.controller;
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.services.TagService;
 import org.planqk.atlas.web.Constants;
-import org.planqk.atlas.web.annotation.ApiVersion;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.ImplementationDto;
 import org.planqk.atlas.web.dtos.TagDto;
@@ -57,7 +56,6 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/" + Constants.TAGS)
-@ApiVersion("v1")
 @AllArgsConstructor
 @Slf4j
 public class TagController {
@@ -71,30 +69,30 @@ public class TagController {
     private final ImplementationAssembler implementationAssembler;
 
     @Operation(responses = {
-        @ApiResponse(responseCode = "200")
+            @ApiResponse(responseCode = "200")
     }, description = "Retrieve all created tags.")
     @ListParametersDoc
     @GetMapping
     public ResponseEntity<PagedModel<EntityModel<TagDto>>> getTags(
-        @Parameter(hidden = true) ListParameters listParameters) {
+            @Parameter(hidden = true) ListParameters listParameters) {
         return new ResponseEntity<>(tagAssembler.toModel(
-            this.tagService.findAllByContent(listParameters.getSearch(), listParameters.getPageable())), HttpStatus.OK);
+                this.tagService.findAllByContent(listParameters.getSearch(), listParameters.getPageable())), HttpStatus.OK);
     }
 
     @Operation(responses = {
-        @ApiResponse(responseCode = "201"),
-        @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body.")
+            @ApiResponse(responseCode = "201"),
+            @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body.")
     }, description = "Create a new tag with its value and category.")
     @PostMapping
     public ResponseEntity<EntityModel<TagDto>> createTag(
-        @Validated(ValidationGroups.Create.class) @RequestBody TagDto tagDto) {
+            @Validated(ValidationGroups.Create.class) @RequestBody TagDto tagDto) {
         final Tag savedTag = this.tagService.create(ModelMapperUtils.convert(tagDto, Tag.class));
         return new ResponseEntity<>(tagAssembler.toModel(savedTag), HttpStatus.CREATED);
     }
 
     @Operation(responses = {
-        @ApiResponse(responseCode = "200"),
-        @ApiResponse(responseCode = "404", description = "Tag with given value doesn't exist.")
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", description = "Tag with given value doesn't exist.")
     }, description = "Retrieve a specific tag.")
     @GetMapping("/{value}")
     public ResponseEntity<EntityModel<TagDto>> getTag(@PathVariable String value) {
@@ -104,7 +102,7 @@ public class TagController {
     }
 
     @Operation(responses = {
-        @ApiResponse(responseCode = "200")
+            @ApiResponse(responseCode = "200")
     }, description = "Retrieve all algorithms under a specific tag.")
     @GetMapping("/{value}/" + Constants.ALGORITHMS)
     public ResponseEntity<CollectionModel<EntityModel<AlgorithmDto>>> getAlgorithmsOfTag(@PathVariable String value) {
@@ -116,11 +114,11 @@ public class TagController {
     }
 
     @Operation(responses = {
-        @ApiResponse(responseCode = "200")
+            @ApiResponse(responseCode = "200")
     }, description = "Retrieve all implementations under a specific tag.")
     @GetMapping("/{value}/" + Constants.IMPLEMENTATIONS)
     public ResponseEntity<CollectionModel<EntityModel<ImplementationDto>>> getImplementationsOfTag(
-        @PathVariable String value) {
+            @PathVariable String value) {
         final Tag tag = this.tagService.findByValue(value);
         final CollectionModel<EntityModel<ImplementationDto>> implementations = implementationAssembler.toModel(tag.getImplementations());
         implementationAssembler.addLinks(implementations.getContent());

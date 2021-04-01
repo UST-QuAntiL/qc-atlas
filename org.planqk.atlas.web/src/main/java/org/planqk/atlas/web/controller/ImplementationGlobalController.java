@@ -23,7 +23,6 @@ import java.util.UUID;
 
 import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.web.Constants;
-import org.planqk.atlas.web.annotation.ApiVersion;
 import org.planqk.atlas.web.dtos.ImplementationDto;
 import org.planqk.atlas.web.linkassembler.ImplementationAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
@@ -51,7 +50,6 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/" + Constants.IMPLEMENTATIONS)
-@ApiVersion("v1")
 @AllArgsConstructor
 @Slf4j
 public class ImplementationGlobalController {
@@ -61,25 +59,25 @@ public class ImplementationGlobalController {
     private final ImplementationAssembler implementationAssembler;
 
     @Operation(responses = {
-        @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "200"),
     }, description = "Retrieve all implementations unaffected by its implemented algorithm")
     @ListParametersDoc
     @GetMapping
     public ResponseEntity<PagedModel<EntityModel<ImplementationDto>>> getImplementations(
-        @Parameter(hidden = true) ListParameters listParameters) {
+            @Parameter(hidden = true) ListParameters listParameters) {
         final var implementations = implementationService.findAll(listParameters.getPageable());
         return ResponseEntity.ok(implementationAssembler.toModel(implementations));
     }
 
     @Operation(responses = {
-        @ApiResponse(responseCode = "200"),
-        @ApiResponse(responseCode = "400"),
-        @ApiResponse(responseCode = "404",
-            description = "Implementation with given ID doesn't exist")
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404",
+                    description = "Implementation with given ID doesn't exist")
     }, description = "Retrieve a specific implementation and its basic properties.")
     @GetMapping("/{implementationId}")
     public ResponseEntity<EntityModel<ImplementationDto>> getImplementation(
-        @PathVariable UUID implementationId) {
+            @PathVariable UUID implementationId) {
         final var implementation = this.implementationService.findById(implementationId);
         return ResponseEntity.ok(implementationAssembler.toModel(implementation));
     }
