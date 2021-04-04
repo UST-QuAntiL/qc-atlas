@@ -104,7 +104,7 @@ public class ImplementationGlobalController {
     @ListParametersDoc
     @GetMapping("/{implementationId}/versions")
     public ResponseEntity<PagedModel<EntityModel<RevisionDto>>> getImplementationVersions(
-            @PathVariable UUID implementationId, @Parameter(hidden = true) ListParameters listParameters) throws JsonProcessingException {
+            @PathVariable UUID implementationId, @Parameter(hidden = true) ListParameters listParameters) {
             implementationRevisionAssembler.setImplementationId(implementationId);
             return ResponseEntity.ok(implementationRevisionAssembler.toModel(implementationService.findImplementationVersions(implementationId, listParameters.getPageable())));
     }
@@ -118,7 +118,7 @@ public class ImplementationGlobalController {
     @ListParametersDoc
     @GetMapping("/{implementationId}/" + Constants.VERSIONS + "/{versionId}")
     public ResponseEntity<EntityModel<ImplementationDto>>getImplementationVersion(
-            @PathVariable UUID implementationId, @PathVariable Integer versionId) throws JsonProcessingException {
+            @PathVariable UUID implementationId, @PathVariable Integer versionId) {
         return ResponseEntity.ok(implementationAssembler.toModel(implementationService.findImplementationVersion(implementationId, versionId).getEntity()));
     }
 }
