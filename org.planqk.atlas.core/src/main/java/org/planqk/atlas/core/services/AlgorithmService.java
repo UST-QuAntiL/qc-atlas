@@ -227,15 +227,18 @@ public interface AlgorithmService {
      * <p>
      * The amount of entries is based on the given {@link Pageable} parameter. If the {@link Pageable} is unpaged a {@link Page} with all entries is
      * queried.
-     * <p>.
-     *
+     * <p>
+     * The given {@link Algorithm} is identified through its ID given as a parameter. If no {@link Algorithm} with the given ID can be found a {@link
+     * java.util.NoSuchElementException} is thrown.
+     * 
+     * @param algorithmId The ID of the {@link Algorithm} we want to find
      * @param pageable The page information, namely page size and page number, of the page we want to retrieve
      * @return The page of queried {@link Revision} entries
      */
     Page<Revision<Integer, Algorithm>> findAlgorithmVersions(UUID algorithmId, Pageable pageable);
 
     /**
-     * Retrieve an {@link Algorithm} revisions from the database.
+     * Retrieve an {@link Algorithm} revision from the database.
      * <p>
      * If either the {@link Algorithm} or the {@link Revision} with given IDs could not be found or if a database entry for both could be found
      * a {@link java.util.NoSuchElementException} is thrown.
