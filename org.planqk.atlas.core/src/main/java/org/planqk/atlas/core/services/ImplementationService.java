@@ -164,8 +164,31 @@ public interface ImplementationService {
      */
     Page<Publication> findLinkedPublications(UUID implementationId, Pageable pageable);
 
-    Page<Implementation> findAllImplementationVersions(UUID implementationId, Pageable pageable);
+    /**
+     * Retrieve all {@link Implementation} revisions from the database
+     * <p>
+     * The amount of entries is based on the given {@link Pageable} parameter. If the {@link Pageable} is unpaged a {@link Page} with all entries is
+     * queried.
+     * <p>
+     * The given {@link Implementation} is identified through its ID given as a parameter. If no {@link Implementation} with the given ID can 
+     * be found a {@link java.util.NoSuchElementException} is thrown.
+     *
+     * @param implementationId The ID of the {@link Implementation} we want to find
+     * @param pageable The page information, namely page size and page number, of the page we want to retrieve
+     * @return The page of queried {@link Revision} entries
+     */
+    Page<Revision<Integer, Implementation>> findImplementationVersions(UUID implementationId, Pageable pageable);
 
+    /**
+     * Retrieve an {@link Implementation} revision from the database.
+     * <p>
+     * If either the {@link Implementation} or the {@link Revision} with given IDs could not be found or if a database entry for both could be found
+     * a {@link java.util.NoSuchElementException} is thrown.
+     *
+     * @param implementationId   The ID of the {@link Implementation}
+     * @param revisionId    The ID of the {@link Revision}
+     *
+     */
     Revision<Integer, Implementation> findImplementationVersion(UUID implementationId, Integer revisionNumber);
 
 }

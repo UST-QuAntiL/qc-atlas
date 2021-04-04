@@ -164,20 +164,14 @@ public class ImplementationServiceImpl implements ImplementationService {
     }
 
     @Override
-    public Page<Implementation> findAllImplementationVersions(UUID implementationId,@NonNull Pageable pageable) {
-        final List<Implementation> implementations = new ArrayList<>();
+    public Revision<Integer, Implementation> findImplementationVersion(UUID implementationId, Integer revisionNumber) {
 
-        final Page<Revision<Integer, Implementation>> versionedImplementation = implementationRepository.findRevisions(implementationId, pageable);
-        for (Revision<Integer, Implementation> implementationRevision : versionedImplementation) {
-            implementationRevision.getEntity().setVersionNumber(implementationRevision.getMetadata().getRevisionNumber().get());
-            implementations.add(implementationRevision.getEntity());
-        }
-
-        return new PageImpl<Implementation>(implementations, pageable, implementations.size());
+        return implementationRepository.findRevision(implementationId, revisionNumber).orElseThrow(NoSuchElementException::new);
     }
 
     @Override
-    public Revision<Integer, Implementation> findImplementationVersion(UUID implementationId, Integer revisionNumber) {
-        return implementationRepository.findRevision(implementationId, revisionNumber).orElseThrow(NoSuchElementException::new);
+    public Page<Revision<Integer, Implementation>> findImplementationVersions(UUID implementationId, Pageable pageable) {
+        
+        return implementationRepository.findRevisions(implementationId, pageable);
     }
 }
