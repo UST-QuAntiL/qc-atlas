@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Copyright (c) 2021 the qc-atlas contributors.
  *
- * See the NOTICE file(s) distributed with this work for additional 
+ * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
@@ -33,7 +33,7 @@ public class ImplementationRevisionAssembler extends GenericLinkAssembler<Revisi
     @Override
     public void addLinks(EntityModel<RevisionDto> resource) {
         resource.add(getLinks()
-                .linkTo(methodOn(ImplementationGlobalController.class).getImplementationVersion(this.implementationId, this.getId(resource)))
+                .linkTo(methodOn(ImplementationGlobalController.class).getImplementationRevision(this.implementationId, this.getId(resource)))
                 .withRel(Constants.IMPLEMENTATIONS));
     }
 

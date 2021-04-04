@@ -21,8 +21,6 @@ package org.planqk.atlas.web.controller;
 
 import java.util.UUID;
 
-import org.hibernate.tool.schema.spi.DelayedDropAction;
-import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.annotation.ApiVersion;
@@ -33,10 +31,7 @@ import org.planqk.atlas.web.linkassembler.ImplementationRevisionAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.data.domain.Page;
-import org.springframework.data.history.Revision;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
@@ -100,25 +95,27 @@ public class ImplementationGlobalController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404"),
+            @ApiResponse(responseCode = "404",
+                description = "Implementation with given ID doesn't exist")
+    }, description = "Retrieve all revisions of an implementation")
     @ListParametersDoc
-    @GetMapping("/{implementationId}/versions")
+    @GetMapping("/{implementationId}/" + Constants.REVISIONS)
     public ResponseEntity<PagedModel<EntityModel<RevisionDto>>> getImplementationVersions(
             @PathVariable UUID implementationId, @Parameter(hidden = true) ListParameters listParameters) {
             implementationRevisionAssembler.setImplementationId(implementationId);
-            return ResponseEntity.ok(implementationRevisionAssembler.toModel(implementationService.findImplementationVersions(implementationId, listParameters.getPageable())));
+            return ResponseEntity.ok(implementationRevisionAssembler.toModel(implementationService.findImplementationRevisions(implementationId, listParameters.getPageable())));
     }
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Implementation with given ID and revisionNumber doesn't exist")
-    }, description = "Retrieve all versions of an implementation")
+                    description = "Implementation with given ID and revision Number doesn't exist")
+    }, description = "Retrieve a specific revision of an implementation and its basic properties")
     @ListParametersDoc
-    @GetMapping("/{implementationId}/" + Constants.VERSIONS + "/{versionId}")
-    public ResponseEntity<EntityModel<ImplementationDto>>getImplementationVersion(
-            @PathVariable UUID implementationId, @PathVariable Integer versionId) {
-        return ResponseEntity.ok(implementationAssembler.toModel(implementationService.findImplementationVersion(implementationId, versionId).getEntity()));
+    @GetMapping("/{implementationId}/" + Constants.REVISIONS + "/{revisionId}")
+    public ResponseEntity<EntityModel<ImplementationDto>> getImplementationRevision(
+            @PathVariable UUID implementationId, @PathVariable Integer revisionId) {
+        return ResponseEntity.ok(implementationAssembler.toModel(implementationService.findImplementationRevision(implementationId, revisionId).getEntity()));
     }
 }

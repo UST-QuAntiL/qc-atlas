@@ -230,12 +230,12 @@ public interface AlgorithmService {
      * <p>
      * The given {@link Algorithm} is identified through its ID given as a parameter. If no {@link Algorithm} with the given ID can be found a {@link
      * java.util.NoSuchElementException} is thrown.
-     * 
+     *
      * @param algorithmId The ID of the {@link Algorithm} we want to find
      * @param pageable The page information, namely page size and page number, of the page we want to retrieve
      * @return The page of queried {@link Revision} entries
      */
-    Page<Revision<Integer, Algorithm>> findAlgorithmVersions(UUID algorithmId, Pageable pageable);
+    Page<Revision<Integer, Algorithm>> findAlgorithmRevisions(UUID algorithmId, Pageable pageable);
 
     /**
      * Retrieve an {@link Algorithm} revision from the database.
@@ -247,5 +247,5 @@ public interface AlgorithmService {
      * @param revisionId    The ID of the {@link Revision}
      *
      */
-    Revision<Integer, Algorithm> findAlgorithmVersion(UUID algorithmId, Integer revisionId);
+    Revision<Integer, Algorithm> findAlgorithmRevision(UUID algorithmId, Integer revisionId);
 }

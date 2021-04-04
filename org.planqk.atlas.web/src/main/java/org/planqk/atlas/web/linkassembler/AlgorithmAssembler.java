@@ -60,8 +60,8 @@ public class AlgorithmAssembler extends GenericLinkAssembler<AlgorithmDto> {
             .getSketches(getId(resource)))
             .withRel(Constants.PATTERN_RELATIONS));
         resource.add(getLinks().linkTo(methodOn(AlgorithmController.class)
-            .getAlgorithmVersions(getId(resource), ListParameters.getDefault()))
-            .withRel(Constants.VERSIONS));
+            .getAlgorithmRevisions(getId(resource), ListParameters.getDefault()))
+            .withRel(Constants.REVISIONS));
     }
 
     public void addProblemTypeLink(CollectionModel<EntityModel<ProblemTypeDto>> resources, UUID id) {

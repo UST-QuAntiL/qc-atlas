@@ -232,12 +232,12 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     }
 
     @Override
-    public Page<Revision<Integer, Algorithm>> findAlgorithmVersions(UUID algorithmId, Pageable pageable) {
+    public Page<Revision<Integer, Algorithm>> findAlgorithmRevisions(UUID algorithmId, Pageable pageable) {
         return algorithmRepository.findRevisions(algorithmId, pageable);
     }
 
     @Override
-    public Revision<Integer, Algorithm> findAlgorithmVersion(UUID algorithmId, Integer revisionId) {
+    public Revision<Integer, Algorithm> findAlgorithmRevision(UUID algorithmId, Integer revisionId) {
         return algorithmRepository.findRevision(algorithmId, revisionId).orElseThrow(NoSuchElementException::new);
     }
 

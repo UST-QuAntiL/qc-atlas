@@ -899,22 +899,23 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Not Found. Algorithm with given ID doesn't exist.")
-    }, description = "Retrieve all algorithm versions")
-    @GetMapping("/{algorithmId}/" + Constants.VERSIONS)
-    public ResponseEntity<PagedModel<EntityModel<RevisionDto>>> getAlgorithmVersions(
+    }, description = "Retrieve all algorithm revisions")
+    @GetMapping("/{algorithmId}/" + Constants.REVISIONS)
+    public ResponseEntity<PagedModel<EntityModel<RevisionDto>>> getAlgorithmRevisions(
             @PathVariable UUID algorithmId, @Parameter(hidden = true) ListParameters listParameters) {
+                algorithmRevisionAssembler.setAlgorithmId(algorithmId);
         return ResponseEntity.ok(algorithmRevisionAssembler
-            .toModel(algorithmService.findAlgorithmVersions(algorithmId, listParameters.getPageable())));
+            .toModel(algorithmService.findAlgorithmRevisions(algorithmId, listParameters.getPageable())));
     }
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Not Found. Algorithm Version with given ID doesn't exist.")
-    }, description = "Retrieve a specific version of an algorithm with its properties")
-    @GetMapping("/{algorithmId}/" + Constants.VERSIONS + "/{versionId}")
-    public ResponseEntity<EntityModel<RevisionDto>> getAlgorithmVersion(
-            @PathVariable UUID algorithmId, @PathVariable Integer versionId) {
-        return ResponseEntity.ok(algorithmRevisionAssembler.toModel(algorithmService.findAlgorithmVersion(algorithmId, versionId)));
+    }, description = "Retrieve a specific revision of an algorithm with its properties")
+    @GetMapping("/{algorithmId}/" + Constants.REVISIONS + "/{revisionId}")
+    public ResponseEntity<EntityModel<AlgorithmDto>> getAlgorithmRevision(
+            @PathVariable UUID algorithmId, @PathVariable Integer revisionId) {
+        return ResponseEntity.ok(algorithmAssembler.toModel(algorithmService.findAlgorithmRevision(algorithmId, revisionId).getEntity()));
     }
 }

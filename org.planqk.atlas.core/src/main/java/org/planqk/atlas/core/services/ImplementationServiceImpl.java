@@ -164,14 +164,14 @@ public class ImplementationServiceImpl implements ImplementationService {
     }
 
     @Override
-    public Revision<Integer, Implementation> findImplementationVersion(UUID implementationId, Integer revisionNumber) {
+    public Revision<Integer, Implementation> findImplementationRevision(UUID implementationId, Integer revisionNumber) {
 
         return implementationRepository.findRevision(implementationId, revisionNumber).orElseThrow(NoSuchElementException::new);
     }
 
     @Override
-    public Page<Revision<Integer, Implementation>> findImplementationVersions(UUID implementationId, Pageable pageable) {
-        
+    public Page<Revision<Integer, Implementation>> findImplementationRevisions(UUID implementationId, Pageable pageable) {
+
         return implementationRepository.findRevisions(implementationId, pageable);
     }
 }
