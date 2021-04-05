@@ -900,6 +900,7 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404", description = "Not Found. Algorithm with given ID doesn't exist.")
     }, description = "Retrieve all algorithm revisions")
+    @ListParametersDoc
     @GetMapping("/{algorithmId}/" + Constants.REVISIONS)
     public ResponseEntity<PagedModel<EntityModel<RevisionDto>>> getAlgorithmRevisions(
             @PathVariable UUID algorithmId, @Parameter(hidden = true) ListParameters listParameters) {

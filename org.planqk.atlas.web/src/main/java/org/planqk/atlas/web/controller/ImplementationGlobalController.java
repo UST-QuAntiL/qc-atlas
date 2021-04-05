@@ -100,7 +100,7 @@ public class ImplementationGlobalController {
     }, description = "Retrieve all revisions of an implementation")
     @ListParametersDoc
     @GetMapping("/{implementationId}/" + Constants.REVISIONS)
-    public ResponseEntity<PagedModel<EntityModel<RevisionDto>>> getImplementationVersions(
+    public ResponseEntity<PagedModel<EntityModel<RevisionDto>>> getImplementationRevisions(
             @PathVariable UUID implementationId, @Parameter(hidden = true) ListParameters listParameters) {
             implementationRevisionAssembler.setImplementationId(implementationId);
             return ResponseEntity.ok(implementationRevisionAssembler.toModel(implementationService.findImplementationRevisions(implementationId, listParameters.getPageable())));
@@ -112,7 +112,6 @@ public class ImplementationGlobalController {
             @ApiResponse(responseCode = "404",
                     description = "Implementation with given ID and revision Number doesn't exist")
     }, description = "Retrieve a specific revision of an implementation and its basic properties")
-    @ListParametersDoc
     @GetMapping("/{implementationId}/" + Constants.REVISIONS + "/{revisionId}")
     public ResponseEntity<EntityModel<ImplementationDto>> getImplementationRevision(
             @PathVariable UUID implementationId, @PathVariable Integer revisionId) {

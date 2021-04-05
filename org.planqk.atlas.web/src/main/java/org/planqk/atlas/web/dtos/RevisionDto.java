@@ -19,5 +19,5 @@ public class RevisionDto {
     private int revisionNumber;
 
     @JsonProperty("creationDate")
-    private Date revisionInstant;
+    private String revisionInstant;
 }
