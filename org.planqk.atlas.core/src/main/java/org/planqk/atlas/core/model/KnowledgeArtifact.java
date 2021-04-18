@@ -41,7 +41,7 @@ import org.hibernate.envers.NotAudited;
 @NoArgsConstructor
 @Data
 @Audited
-@AuditTable("knowledgeArtifact_versions")
+@AuditTable("knowledge_artifact_revisions")
 public class KnowledgeArtifact extends HasId {
 
     private Date creationDate;

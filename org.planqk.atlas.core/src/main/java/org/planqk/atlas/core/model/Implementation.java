@@ -47,7 +47,7 @@ import org.hibernate.envers.NotAudited;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
-@AuditTable("implementation_versions")
+@AuditTable("implementation_revisions")
 @Audited
 public class Implementation extends KnowledgeArtifact {
 
@@ -92,7 +92,6 @@ public class Implementation extends KnowledgeArtifact {
     @ManyToOne
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    @NotAudited
     private Algorithm implementedAlgorithm;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})

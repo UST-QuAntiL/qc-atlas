@@ -26,6 +26,7 @@ import java.util.UUID;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.model.ApplicationArea;
+import org.planqk.atlas.core.model.ClassicAlgorithm;
 import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.model.Publication;
@@ -38,11 +39,12 @@ import org.planqk.atlas.core.repository.PatternRelationRepository;
 import org.planqk.atlas.core.repository.ProblemTypeRepository;
 import org.planqk.atlas.core.repository.PublicationRepository;
 import org.planqk.atlas.core.util.CollectionUtils;
+import org.planqk.atlas.core.util.Constants;
 import org.planqk.atlas.core.util.ServiceUtils;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.history.Revision;
+import org.springframework.data.history.Revisions;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -95,6 +97,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     @Override
     @Transactional
     public Algorithm update(@NonNull Algorithm algorithm) {
+
         final Algorithm persistedAlgorithm = findById(algorithm.getId());
 
         persistedAlgorithm.setName(algorithm.getName());
@@ -107,6 +110,26 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         persistedAlgorithm.setSolution(algorithm.getSolution());
         persistedAlgorithm.setAssumptions(algorithm.getAssumptions());
         persistedAlgorithm.setComputationModel(algorithm.getComputationModel());
+
+        // drop older revisions if the amount of revisions is exceeded
+        final Revisions<Integer, Algorithm> revisions = algorithmRepository.findRevisions(persistedAlgorithm.getId());
+        if (revisions.getContent().size() == Constants.REVISIONS_SIZE) {
+
+            // get oldest revision (first table entry)
+            final Revision<Integer, Algorithm> oldestRevision = revisions.getContent().get(0);
+            final int revisionId = oldestRevision.getRevisionNumber().orElseThrow();
+            final UUID algorithmId = oldestRevision.getEntity().getId();
+
+            if (algorithm instanceof ClassicAlgorithm) {
+                algorithmRepository.deleteClassicAlgorithmRevision(revisionId, algorithmId);
+            }
+            if (algorithm instanceof QuantumAlgorithm) {
+                algorithmRepository.deleteQuantumAlgorithmRevision(revisionId, algorithmId);
+            }
+            algorithmRepository.deleteAlgorithmRevision(revisionId, algorithmId);
+            algorithmRepository.deleteKnowledgeArtifactRevision(revisionId, algorithmId);
+            algorithmRepository.deleteRevisionInfo(revisionId);
+        }
 
         if (algorithm instanceof QuantumAlgorithm) {
             final QuantumAlgorithm quantumAlgorithm = (QuantumAlgorithm) algorithm;
@@ -130,6 +153,16 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         removeReferences(algorithm);
 
         algorithmRepository.deleteById(algorithmId);
+
+        // delete all related revisions
+        algorithmRepository.deleteAllAlgorithmRevisions(algorithmId);
+        if (algorithm instanceof ClassicAlgorithm) {
+            algorithmRepository.deleteAllClassicAlgorithmRevisions(algorithmId);
+        }
+        if (algorithm instanceof QuantumAlgorithm) {
+            algorithmRepository.deleteAllQuantumAlgorithmRevisions(algorithmId);
+        }
+        algorithmRepository.deleteAllKnowledgeArtifactRevisions(algorithmId);
     }
 
     private void removeReferences(@NonNull Algorithm algorithm) {

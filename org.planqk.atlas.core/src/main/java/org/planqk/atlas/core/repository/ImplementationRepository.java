@@ -21,11 +21,11 @@ package org.planqk.atlas.core.repository;
 
 import java.util.UUID;
 
-import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Implementation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.history.RevisionRepository;
 import org.springframework.data.repository.query.Param;
@@ -53,4 +53,11 @@ public interface ImplementationRepository extends RevisionRepository<Implementat
         "WHERE sp.id = :spId")
     Page<Implementation> findImplementationsBySoftwarePlatformId(@Param("spId") UUID softwarePlatformId, Pageable pageable);
 
+    @Modifying()
+    @Query(value = "DELETE FROM implementation_revisions WHERE id = :implId", nativeQuery = true)
+    void deleteAllImplementationRevisions(@Param("implId") UUID implementationId);
+
+    @Modifying()
+    @Query(value = "DELETE FROM implementation_revisions WHERE rev = :revId AND id = :implId", nativeQuery = true)
+    void deleteImplementationRevision(@Param("revId") Integer revisionId, @Param("implId") UUID implementationId);
 }

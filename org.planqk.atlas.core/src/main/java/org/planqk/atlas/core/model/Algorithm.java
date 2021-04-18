@@ -48,7 +48,7 @@ import org.hibernate.envers.NotAudited;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
-@AuditTable("algorithm_versions")
+@AuditTable("algorithm_revisions")
 @Audited
 public class Algorithm extends KnowledgeArtifact{
 
@@ -113,7 +113,7 @@ public class Algorithm extends KnowledgeArtifact{
 
     private String assumptions;
 
-    @NotAudited
+    @Audited
     private ComputationModel computationModel;
 
     @NotAudited

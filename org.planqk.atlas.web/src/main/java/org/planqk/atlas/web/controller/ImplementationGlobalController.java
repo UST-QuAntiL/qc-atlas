@@ -31,7 +31,6 @@ import org.planqk.atlas.web.linkassembler.ImplementationRevisionAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
@@ -65,8 +64,6 @@ public class ImplementationGlobalController {
     private final ImplementationAssembler implementationAssembler;
 
     private final ImplementationRevisionAssembler implementationRevisionAssembler;
-
-    private final ObjectMapper objectMapper;
 
     @Operation(responses = {
         @ApiResponse(responseCode = "200"),

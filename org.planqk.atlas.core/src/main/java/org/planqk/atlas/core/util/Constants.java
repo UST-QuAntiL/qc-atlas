@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 the qc-atlas contributors.
+ * Copyright (c) 2021 University of Stuttgart
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -17,21 +17,16 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.planqk.atlas.core.model;
+package org.planqk.atlas.core.util;
 
-import javax.persistence.Entity;
+/**
+ * Constants for the QC-Atlas core classes.
+ */
+public final class Constants {
 
-import org.hibernate.envers.AuditTable;
-import org.hibernate.envers.Audited;
+    // size of revisions to be saved for each artifact
+    public static final int REVISIONS_SIZE = 3;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
-@EqualsAndHashCode(callSuper = true)
-@Data
-@Entity
-@AuditTable("classic_algorithm_revisions")
-@Audited
-public class ClassicAlgorithm extends Algorithm {
-
+    private Constants() {
+    }
 }
