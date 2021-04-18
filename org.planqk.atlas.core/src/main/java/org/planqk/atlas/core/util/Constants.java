@@ -24,8 +24,8 @@ package org.planqk.atlas.core.util;
  */
 public final class Constants {
 
-    // size of revisions to be saved for each artifact
-    public static final int REVISIONS_SIZE = 3;
+    // amount of revisions to be saved for each artifact
+    public static final int REVISIONS_COUNT = 20;
 
     private Constants() {
     }

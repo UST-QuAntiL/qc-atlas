@@ -113,7 +113,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 
         // drop older revisions if the amount of revisions is exceeded
         final Revisions<Integer, Algorithm> revisions = algorithmRepository.findRevisions(persistedAlgorithm.getId());
-        if (revisions.getContent().size() == Constants.REVISIONS_SIZE) {
+        if (revisions.getContent().size() == Constants.REVISIONS_COUNT) {
 
             // get oldest revision (first table entry)
             final Revision<Integer, Algorithm> oldestRevision = revisions.getContent().get(0);

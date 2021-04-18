@@ -92,7 +92,7 @@ public class ImplementationServiceImpl implements ImplementationService {
 
         // drop older revisions if the amount of revisions is exceeded
         final Revisions<Integer, Implementation> revisions = implementationRepository.findRevisions(persistedImplementation.getId());
-        if (revisions.getContent().size() == Constants.REVISIONS_SIZE) {
+        if (revisions.getContent().size() == Constants.REVISIONS_COUNT) {
 
             // get oldest revision (first table entry)
             final Revision<Integer, Implementation> oldestRevision = revisions.getContent().get(0);
