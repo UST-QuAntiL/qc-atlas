@@ -26,11 +26,11 @@ import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.envers.Audited;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.envers.Audited;
 
 /**
  * Base class defining the Id property for all JPA entity classes.

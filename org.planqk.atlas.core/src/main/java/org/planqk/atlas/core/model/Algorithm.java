@@ -32,14 +32,15 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 
+import org.hibernate.envers.AuditTable;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.ToString;
-import org.hibernate.envers.AuditTable;
-import org.hibernate.envers.Audited;
-import org.hibernate.envers.NotAudited;
 
 /**
  * Entity representing a quantum algorithm, e.g., Shors factorization algorithm.
@@ -50,7 +51,7 @@ import org.hibernate.envers.NotAudited;
 @Entity
 @AuditTable("algorithm_revisions")
 @Audited
-public class Algorithm extends KnowledgeArtifact{
+public class Algorithm extends KnowledgeArtifact {
 
     private String name;
 
