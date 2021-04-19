@@ -154,15 +154,23 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 
         algorithmRepository.deleteById(algorithmId);
 
-        // delete all related revisions
-        algorithmRepository.deleteAllAlgorithmRevisions(algorithmId);
-        if (algorithm instanceof ClassicAlgorithm) {
-            algorithmRepository.deleteAllClassicAlgorithmRevisions(algorithmId);
-        }
-        if (algorithm instanceof QuantumAlgorithm) {
-            algorithmRepository.deleteAllQuantumAlgorithmRevisions(algorithmId);
-        }
-        algorithmRepository.deleteAllKnowledgeArtifactRevisions(algorithmId);
+        removeRevisions(algorithm);
+    }
+
+    private void removeRevisions(@NonNull Algorithm algorithm) {
+
+            final Revisions<Integer, Algorithm> revisions = algorithmRepository.findRevisions(algorithm.getId());
+
+            // delete all related revisions
+            if (algorithm instanceof ClassicAlgorithm) {
+                algorithmRepository.deleteAllClassicAlgorithmRevisions(algorithm.getId());
+            }
+            if (algorithm instanceof QuantumAlgorithm) {
+                algorithmRepository.deleteAllQuantumAlgorithmRevisions(algorithm.getId());
+            }
+            algorithmRepository.deleteAllAlgorithmRevisions(algorithm.getId());
+            algorithmRepository.deleteAllKnowledgeArtifactRevisions(algorithm.getId());
+            revisions.forEach(revision -> algorithmRepository.deleteRevisionInfo(revision.getRevisionNumber().orElseThrow()));
     }
 
     private void removeReferences(@NonNull Algorithm algorithm) {
