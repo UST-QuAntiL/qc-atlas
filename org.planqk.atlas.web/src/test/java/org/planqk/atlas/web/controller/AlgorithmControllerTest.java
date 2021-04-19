@@ -601,10 +601,10 @@ public class AlgorithmControllerTest {
     @SneakyThrows
     void getAlgorithmRevision_returnNotFound() {
 
-        doThrow(NoSuchElementException.class).when(algorithmService).findById(any());
+        doThrow(NoSuchElementException.class).when(algorithmService).findAlgorithmRevision(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
-                .getAlgorithm(UUID.randomUUID()));
+                .getAlgorithmRevision(UUID.randomUUID(), new Random().nextInt()));
 
         mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());

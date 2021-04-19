@@ -19,16 +19,26 @@
 
 package org.planqk.atlas.web.controller;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Random;
 import java.util.UUID;
 
+import org.hibernate.envers.DefaultRevisionEntity;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -37,6 +47,8 @@ import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.services.FileService;
 import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
+import org.planqk.atlas.web.dtos.ImplementationDto;
+import org.planqk.atlas.web.dtos.RevisionDto;
 import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
 import org.planqk.atlas.web.linkassembler.LinkBuilderService;
 import org.planqk.atlas.web.utils.ListParameters;
@@ -44,12 +56,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.envers.repository.support.DefaultRevisionMetadata;
+import org.springframework.data.history.Revision;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.SneakyThrows;
@@ -132,6 +150,92 @@ public class ImplementationGlobalControllerTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.id").value(impl.getId().toString()))
             .andExpect(jsonPath("$.implementedAlgorithmId").value(algo.getId().toString()));
+    }
+
+    @Test
+    @SneakyThrows
+    void getImplementationRevisions_SingleElement_returnOk() {
+        var impl = new Implementation();
+        impl.setName("implementation for Shor");
+        impl.setId(UUID.randomUUID());
+
+        Instant instant = Instant.now();
+        DefaultRevisionEntity defaultRevisionEntity = new DefaultRevisionEntity();
+        defaultRevisionEntity.setId(new Random().nextInt());
+        defaultRevisionEntity.setTimestamp(instant.toEpochMilli());
+        DefaultRevisionMetadata defaultRevisionMetadata = new DefaultRevisionMetadata(defaultRevisionEntity);
+        Revision<Integer, Implementation> implementationRevision = Revision.of(defaultRevisionMetadata, impl);
+        Page<Revision<Integer, Implementation>> pageImplementationRevision = new PageImpl<>(List.of(implementationRevision));
+
+        doReturn(pageImplementationRevision).when(implementationService).findImplementationRevisions(any(),any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(ImplementationGlobalController.class)
+                .getImplementationRevisions(UUID.randomUUID() ,new ListParameters(pageable, null)));
+
+        MvcResult result = mockMvc.perform(get(url)
+                .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn();
+
+        var resultList = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(),
+                "revisions", RevisionDto.class);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+                .withZone(ZoneId.from(ZoneOffset.UTC));
+
+        assertEquals(resultList.get(0).getRevisionNumber(),defaultRevisionEntity.getId());
+        assertEquals(resultList.get(0).getRevisionInstant(), formatter.format(instant));
+    }
+
+    @Test
+    @SneakyThrows
+    void getImplementationRevisions_returnNotFound() {
+        doThrow(NoSuchElementException.class).when(implementationService).findImplementationRevisions(any(),any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(ImplementationGlobalController.class)
+                .getImplementationRevisions(UUID.randomUUID(), new ListParameters(pageable, null)));
+
+        mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @SneakyThrows
+    void getImplementationRevision_returnOk() {
+        var impl = new Implementation();
+        impl.setName("implementation for Shor");
+        impl.setId(UUID.randomUUID());
+
+        DefaultRevisionEntity defaultRevisionEntity = new DefaultRevisionEntity();
+        DefaultRevisionMetadata defaultRevisionMetadata = new DefaultRevisionMetadata(defaultRevisionEntity);
+        Revision<Integer, Implementation> implementationRevision = Revision.of(defaultRevisionMetadata, impl);
+
+        doReturn(implementationRevision).when(implementationService).findImplementationRevision(any(), any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(ImplementationGlobalController.class)
+                .getImplementationRevision(UUID.randomUUID(), new Random().nextInt()));
+        MvcResult result = mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
+
+        EntityModel<ImplementationDto> response = mapper.readValue(result.getResponse().getContentAsString(),
+                new TypeReference<>() {
+                });
+
+        assertEquals(response.getContent().getId(), impl.getId());
+    }
+
+    @Test
+    @SneakyThrows
+    void getImplementationRevision_returnNotFound() {
+
+        doThrow(NoSuchElementException.class).when(implementationService).findImplementationRevision(any(), any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(ImplementationGlobalController.class)
+                .getImplementationRevision(UUID.randomUUID(), new Random().nextInt()));
+
+        mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
     }
 
 }
