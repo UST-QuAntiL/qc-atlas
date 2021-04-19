@@ -85,6 +85,6 @@ public interface AlgorithmRepository extends RevisionRepository<Algorithm, UUID,
     void deleteAllKnowledgeArtifactRevisions(@Param("id") UUID id);
 
     @Modifying()
-    @Query(value = "DELETE FROM revinfo WHERE id = :id", nativeQuery = true)
+    @Query(value = "DELETE FROM revinfo WHERE rev = :id", nativeQuery = true)
     void deleteRevisionInfo(@Param("id") Integer id);
 }
