@@ -107,7 +107,7 @@ public class ImplementationGlobalController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Implementation with given ID and revision Number doesn't exist")
+                    description = "Not Found. Implementation with given ID and revision ID doesn't exist")
     }, description = "Retrieve a specific revision of an implementation and its basic properties")
     @GetMapping("/{implementationId}/" + Constants.REVISIONS + "/{revisionId}")
     public ResponseEntity<EntityModel<ImplementationDto>> getImplementationRevision(

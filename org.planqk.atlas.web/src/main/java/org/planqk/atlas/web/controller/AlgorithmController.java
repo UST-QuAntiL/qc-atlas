@@ -912,8 +912,8 @@ public class AlgorithmController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404", description = "Not Found. Algorithm Version with given ID doesn't exist.")
-    }, description = "Retrieve a specific revision of an algorithm with its properties")
+            @ApiResponse(responseCode = "404", description = "Not Found. Algorithm with given ID and revision ID doesn't exist.")
+    }, description = "Retrieve a specific revision of an algorithm with its basic properties")
     @GetMapping("/{algorithmId}/" + Constants.REVISIONS + "/{revisionId}")
     public ResponseEntity<EntityModel<AlgorithmDto>> getAlgorithmRevision(
             @PathVariable UUID algorithmId, @PathVariable Integer revisionId) {
