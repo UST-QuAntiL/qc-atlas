@@ -274,12 +274,14 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 
     @Override
     public Page<Revision<Integer, Algorithm>> findAlgorithmRevisions(UUID algorithmId, Pageable pageable) {
+        ServiceUtils.throwIfNotExists(algorithmId, Algorithm.class, algorithmRepository);
         return algorithmRepository.findRevisions(algorithmId, pageable);
     }
 
     @Override
     public Revision<Integer, Algorithm> findAlgorithmRevision(UUID algorithmId, Integer revisionId) {
-        return algorithmRepository.findRevision(algorithmId, revisionId).orElseThrow(NoSuchElementException::new);
+        return algorithmRepository.findRevision(algorithmId, revisionId).orElseThrow(()
+        -> new NoSuchElementException("Algorithm revision with Algorithm ID: " + algorithmId + "and Revision ID " + revisionId + "does not exist"));
     }
 
     private Page<AlgorithmRelation> getAlgorithmRelations(@NonNull UUID algorithmId, @NonNull Pageable pageable) {
