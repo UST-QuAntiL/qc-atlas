@@ -39,14 +39,20 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.net.URI;
+import java.time.Instant;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
+import org.hibernate.envers.DefaultRevisionEntity;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -97,6 +103,7 @@ import org.planqk.atlas.web.dtos.PatternRelationDto;
 import org.planqk.atlas.web.dtos.PatternRelationTypeDto;
 import org.planqk.atlas.web.dtos.ProblemTypeDto;
 import org.planqk.atlas.web.dtos.PublicationDto;
+import org.planqk.atlas.web.dtos.RevisionDto;
 import org.planqk.atlas.web.dtos.SketchDto;
 import org.planqk.atlas.web.dtos.TagDto;
 import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
@@ -111,6 +118,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.envers.repository.support.DefaultRevisionMetadata;
+import org.springframework.data.history.Revision;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
@@ -518,6 +527,89 @@ public class AlgorithmControllerTest {
                 });
         assertEquals(response.getContent().getId(), algorithm1Dto.getId());
     }
+
+    @Test
+    @SneakyThrows
+    void getAlgorithmRevisions_SingleElement_returnOk() {
+        initializeAlgorithms();
+
+        Instant instant = Instant.now();
+        DefaultRevisionEntity defaultRevisionEntity = new DefaultRevisionEntity();
+        defaultRevisionEntity.setId(new Random().nextInt());
+        defaultRevisionEntity.setTimestamp(instant.toEpochMilli());
+        DefaultRevisionMetadata defaultRevisionMetadata = new DefaultRevisionMetadata(defaultRevisionEntity);
+        Revision<Integer, Algorithm> algorithmRevision = Revision.of(defaultRevisionMetadata, algorithm1);
+        Page<Revision<Integer, Algorithm>> pageAlgorithmRevision = new PageImpl<>(List.of(algorithmRevision));
+
+        doReturn(pageAlgorithmRevision).when(algorithmService).findAlgorithmRevisions(any(),any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
+                .getAlgorithmRevisions(UUID.randomUUID() ,new ListParameters(pageable, null)));
+
+        MvcResult result = mockMvc.perform(get(url)
+                .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn();
+
+        var resultList = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(),
+                "revisions", RevisionDto.class);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+                .withZone(ZoneId.from(ZoneOffset.UTC));
+
+        assertEquals(resultList.get(0).getRevisionNumber(),defaultRevisionEntity.getId());
+        assertEquals(resultList.get(0).getRevisionInstant(), formatter.format(instant));
+    }
+
+    @Test
+    @SneakyThrows
+    void getAlgorithmRevisions_returnNotFound() {
+        doThrow(NoSuchElementException.class).when(algorithmService).findAlgorithmRevisions(any(),any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
+                .getAlgorithmRevisions(UUID.randomUUID(), new ListParameters(pageable, null)));
+
+        mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @SneakyThrows
+    void getAlgorithmRevision_returnOk() {
+        initializeAlgorithms();
+
+        DefaultRevisionEntity defaultRevisionEntity = new DefaultRevisionEntity();
+        DefaultRevisionMetadata defaultRevisionMetadata = new DefaultRevisionMetadata(defaultRevisionEntity);
+        Revision<Integer, Algorithm> algorithmRevision = Revision.of(defaultRevisionMetadata, algorithm1);
+
+        doReturn(algorithmRevision).when(algorithmService).findAlgorithmRevision(any(), any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
+                .getAlgorithmRevision(UUID.randomUUID(), new Random().nextInt()));
+        MvcResult result = mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
+
+        EntityModel<AlgorithmDto> response = mapper.readValue(result.getResponse().getContentAsString(),
+                new TypeReference<>() {
+                });
+
+        assertEquals(response.getContent().getId(), algorithm1Dto.getId());
+    }
+
+    @Test
+    @SneakyThrows
+    void getAlgorithmRevision_returnNotFound() {
+
+        doThrow(NoSuchElementException.class).when(algorithmService).findById(any());
+
+        var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
+                .getAlgorithm(UUID.randomUUID()));
+
+        mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
 
     @Test
     @SneakyThrows
