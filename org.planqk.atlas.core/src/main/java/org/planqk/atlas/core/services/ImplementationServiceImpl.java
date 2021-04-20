@@ -90,7 +90,7 @@ public class ImplementationServiceImpl implements ImplementationService {
     public Implementation update(@NonNull Implementation implementation) {
         final Implementation persistedImplementation = findById(implementation.getId());
 
-        // drop older revisions if the amount of revisions is exceeded
+        // drop older revisions if the amount of saved revisions is reached
         final Revisions<Integer, Implementation> revisions = implementationRepository.findRevisions(persistedImplementation.getId());
         if (revisions.getContent().size() == Constants.REVISIONS_COUNT) {
 
@@ -182,14 +182,14 @@ public class ImplementationServiceImpl implements ImplementationService {
     }
 
     @Override
-    public Revision<Integer, Implementation> findImplementationRevision(UUID implementationId, Integer revisionId) {
+    public Revision<Integer, Implementation> findImplementationRevision(@NonNull UUID implementationId, @NonNull Integer revisionId) {
         return implementationRepository.findRevision(implementationId, revisionId).orElseThrow(()
                 -> new NoSuchElementException("Implementation revision with Implementation ID: "
                 + implementationId + "and Revision ID " + revisionId + "does not exist"));
     }
 
     @Override
-    public Page<Revision<Integer, Implementation>> findImplementationRevisions(UUID implementationId, Pageable pageable) {
+    public Page<Revision<Integer, Implementation>> findImplementationRevisions(@NonNull UUID implementationId, @NonNull Pageable pageable) {
         ServiceUtils.throwIfNotExists(implementationId, Implementation.class, implementationRepository);
 
         return implementationRepository.findRevisions(implementationId, pageable);
