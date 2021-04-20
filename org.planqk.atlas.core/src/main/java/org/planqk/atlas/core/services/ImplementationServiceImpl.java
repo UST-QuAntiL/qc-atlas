@@ -182,13 +182,15 @@ public class ImplementationServiceImpl implements ImplementationService {
     }
 
     @Override
-    public Revision<Integer, Implementation> findImplementationRevision(UUID implementationId, Integer revisionNumber) {
-
-        return implementationRepository.findRevision(implementationId, revisionNumber).orElseThrow(NoSuchElementException::new);
+    public Revision<Integer, Implementation> findImplementationRevision(UUID implementationId, Integer revisionId) {
+        return implementationRepository.findRevision(implementationId, revisionId).orElseThrow(()
+                -> new NoSuchElementException("Implementation revision with Implementation ID: "
+                + implementationId + "and Revision ID " + revisionId + "does not exist"));
     }
 
     @Override
     public Page<Revision<Integer, Implementation>> findImplementationRevisions(UUID implementationId, Pageable pageable) {
+        ServiceUtils.throwIfNotExists(implementationId, Implementation.class, implementationRepository);
 
         return implementationRepository.findRevisions(implementationId, pageable);
     }
