@@ -111,7 +111,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         persistedAlgorithm.setAssumptions(algorithm.getAssumptions());
         persistedAlgorithm.setComputationModel(algorithm.getComputationModel());
 
-        // drop older revisions if the amount of revisions is exceeded
+        // drop older revisions if the amount of saved revisions is reached
         final Revisions<Integer, Algorithm> revisions = algorithmRepository.findRevisions(persistedAlgorithm.getId());
         if (revisions.getContent().size() == Constants.REVISIONS_COUNT) {
 
@@ -273,13 +273,13 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     }
 
     @Override
-    public Page<Revision<Integer, Algorithm>> findAlgorithmRevisions(UUID algorithmId, Pageable pageable) {
+    public Page<Revision<Integer, Algorithm>> findAlgorithmRevisions(@NonNull UUID algorithmId, @NonNull Pageable pageable) {
         ServiceUtils.throwIfNotExists(algorithmId, Algorithm.class, algorithmRepository);
         return algorithmRepository.findRevisions(algorithmId, pageable);
     }
 
     @Override
-    public Revision<Integer, Algorithm> findAlgorithmRevision(UUID algorithmId, Integer revisionId) {
+    public Revision<Integer, Algorithm> findAlgorithmRevision(@NonNull UUID algorithmId, @NonNull Integer revisionId) {
         return algorithmRepository.findRevision(algorithmId, revisionId).orElseThrow(()
         -> new NoSuchElementException("Algorithm revision with Algorithm ID: " + algorithmId + "and Revision ID " + revisionId + "does not exist"));
     }
