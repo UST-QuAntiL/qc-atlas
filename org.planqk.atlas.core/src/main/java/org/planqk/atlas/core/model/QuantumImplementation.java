@@ -23,6 +23,9 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 
+import org.hibernate.envers.AuditTable;
+import org.hibernate.envers.Audited;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -30,6 +33,8 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
+@AuditTable("quantum_implementation_revisions")
+@Audited
 public class QuantumImplementation extends Implementation {
 
     @ManyToOne(fetch = FetchType.LAZY)

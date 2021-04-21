@@ -60,4 +60,20 @@ public interface ImplementationRepository extends RevisionRepository<Implementat
     @Modifying()
     @Query(value = "DELETE FROM implementation_revisions WHERE rev = :revId AND id = :implId", nativeQuery = true)
     void deleteImplementationRevision(@Param("revId") Integer revisionId, @Param("implId") UUID implementationId);
+
+    @Modifying()
+    @Query(value = "DELETE FROM classic_implementation_revisions WHERE rev = :revId AND id = :implId", nativeQuery = true)
+    void deleteClassicImplementationRevision(@Param("revId") Integer revisionId, @Param("implId") UUID implementationId);
+
+    @Modifying()
+    @Query(value = "DELETE FROM classic_implementation_revisions WHERE id = :implId", nativeQuery = true)
+    void deleteAllClassicImplementationRevisions(@Param("implId") UUID implementationId);
+
+    @Modifying()
+    @Query(value = "DELETE FROM quantum_implementation_revisions WHERE rev = :revId AND id = :implId", nativeQuery = true)
+    void deleteQuantumImplementationRevision(@Param("revId") Integer revisionId, @Param("implId") UUID implementationId);
+
+    @Modifying()
+    @Query(value = "DELETE FROM quantum_implementation_revisions WHERE id = :implId", nativeQuery = true)
+    void deleteAllQuantumImplementationRevisions(@Param("implId") UUID implementationId);
 }
