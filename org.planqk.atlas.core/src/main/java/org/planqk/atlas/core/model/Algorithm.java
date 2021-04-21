@@ -114,15 +114,14 @@ public class Algorithm extends KnowledgeArtifact {
 
     private String assumptions;
 
-    @Audited
     private ComputationModel computationModel;
 
-    @NotAudited
     @OneToMany(fetch = FetchType.LAZY,
         cascade = CascadeType.ALL,
         mappedBy = "algorithm",
         orphanRemoval = true)
     @EqualsAndHashCode.Exclude
+    @NotAudited
     private Set<PatternRelation> relatedPatterns = new HashSet<>();
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})

@@ -111,25 +111,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         persistedAlgorithm.setAssumptions(algorithm.getAssumptions());
         persistedAlgorithm.setComputationModel(algorithm.getComputationModel());
 
-        // drop older revisions if the amount of saved revisions is reached
-        final Revisions<Integer, Algorithm> revisions = algorithmRepository.findRevisions(persistedAlgorithm.getId());
-        if (revisions.getContent().size() == Constants.REVISIONS_COUNT) {
-
-            // get oldest revision (first table entry)
-            final Revision<Integer, Algorithm> oldestRevision = revisions.getContent().get(0);
-            final int revisionId = oldestRevision.getRevisionNumber().orElseThrow();
-            final UUID algorithmId = oldestRevision.getEntity().getId();
-
-            if (algorithm instanceof ClassicAlgorithm) {
-                algorithmRepository.deleteClassicAlgorithmRevision(revisionId, algorithmId);
-            }
-            if (algorithm instanceof QuantumAlgorithm) {
-                algorithmRepository.deleteQuantumAlgorithmRevision(revisionId, algorithmId);
-            }
-            algorithmRepository.deleteAlgorithmRevision(revisionId, algorithmId);
-            algorithmRepository.deleteKnowledgeArtifactRevision(revisionId, algorithmId);
-            algorithmRepository.deleteRevisionInfo(revisionId);
-        }
+        updateRevisions(persistedAlgorithm);
 
         if (algorithm instanceof QuantumAlgorithm) {
             final QuantumAlgorithm quantumAlgorithm = (QuantumAlgorithm) algorithm;
@@ -155,6 +137,31 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         algorithmRepository.deleteById(algorithmId);
 
         removeRevisions(algorithm);
+    }
+
+    /*
+     * drop older revisions if the amount of saved revisions is reached
+     */
+    private void updateRevisions(@NonNull Algorithm algorithm) {
+        final Revisions<Integer, Algorithm> revisions = algorithmRepository.findRevisions(algorithm.getId());
+        if (revisions.getContent().size() == Constants.REVISIONS_COUNT) {
+
+            // get oldest revision (first table entry)
+            final Revision<Integer, Algorithm> oldestRevision = revisions.getContent().get(0);
+            final int revisionId = oldestRevision.getRevisionNumber().orElseThrow();
+            final UUID algorithmId = oldestRevision.getEntity().getId();
+
+            // delete oldest revision related to the algorithm
+            if (algorithm instanceof ClassicAlgorithm) {
+                algorithmRepository.deleteClassicAlgorithmRevision(revisionId, algorithmId);
+            }
+            if (algorithm instanceof QuantumAlgorithm) {
+                algorithmRepository.deleteQuantumAlgorithmRevision(revisionId, algorithmId);
+            }
+            algorithmRepository.deleteAlgorithmRevision(revisionId, algorithmId);
+            algorithmRepository.deleteKnowledgeArtifactRevision(revisionId, algorithmId);
+            algorithmRepository.deleteRevisionInfo(revisionId);
+        }
     }
 
     private void removeRevisions(@NonNull Algorithm algorithm) {
