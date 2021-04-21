@@ -117,6 +117,58 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
+    void createAlgorithm_Classic_DropOldestRevisionElement() {
+        Algorithm algorithm = getFullAlgorithm("Shor");
+        Algorithm storedAlgorithm = algorithmService.create(algorithm);
+
+        for(int i=1; i<Constants.REVISIONS_COUNT; i++) {
+            storedAlgorithm.setName("Shor " + i);
+            algorithmService.update(storedAlgorithm);
+        }
+
+        var oldestRevisionToBeDroped = algorithmService.findAlgorithmRevision(storedAlgorithm.getId(), 1);
+        var newOldestRevision = algorithmService.findAlgorithmRevision(storedAlgorithm.getId(), 2);
+
+        storedAlgorithm.setName("Shor");
+        algorithmService.update(storedAlgorithm);
+
+        var revisions = algorithmService.findAlgorithmRevisions(storedAlgorithm.getId(), PageRequest.of(0,10));
+        assertThat(revisions.getTotalElements()).isEqualTo(Constants.REVISIONS_COUNT);
+        assertThat(revisions.getContent()).doesNotContain(oldestRevisionToBeDroped);
+        assertThat(revisions.getContent().get(0).getRevisionInstant().get()).isAfter(oldestRevisionToBeDroped.getRevisionInstant().get());
+        assertThat(revisions.getContent().get(0)).isEqualTo(newOldestRevision);
+    }
+
+    @Test
+    void createAlgorithm_Quantum_DropOldestRevisionElement() {
+        QuantumAlgorithm algorithm = new QuantumAlgorithm();
+        algorithm.setName("Shor");
+        algorithm.setComputationModel(ComputationModel.QUANTUM);
+        algorithm.setNisqReady(false);
+        algorithm.setSpeedUp("2");
+        algorithm.setQuantumComputationModel(QuantumComputationModel.QUANTUM_ANNEALING);
+
+        Algorithm storedAlgorithm = algorithmService.create(algorithm);
+
+        for(int i=1; i<Constants.REVISIONS_COUNT; i++) {
+            storedAlgorithm.setName("Shor " + i);
+            algorithmService.update(storedAlgorithm);
+        }
+
+        var oldestRevisionToBeDroped = algorithmService.findAlgorithmRevision(storedAlgorithm.getId(), 1);
+        var newOldestRevision = algorithmService.findAlgorithmRevision(storedAlgorithm.getId(), 2);
+
+        storedAlgorithm.setName("Shor");
+        algorithmService.update(storedAlgorithm);
+
+        var revisions = algorithmService.findAlgorithmRevisions(storedAlgorithm.getId(), PageRequest.of(0,Constants.REVISIONS_COUNT + 1));
+        assertThat(revisions.getTotalElements()).isEqualTo(Constants.REVISIONS_COUNT);
+        assertThat(revisions.getContent()).doesNotContain(oldestRevisionToBeDroped);
+        assertThat(revisions.getContent().get(0).getRevisionInstant().get()).isAfter(oldestRevisionToBeDroped.getRevisionInstant().get());
+        assertThat(revisions.getContent().get(0)).isEqualTo(newOldestRevision);
+    }
+
+    @Test
     void findAllAlgorithms() {
         Algorithm algorithm1 = getFullAlgorithm("algorithmName1");
         algorithmService.create(algorithm1);
@@ -322,6 +374,16 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
     }
 
     @Test
+    void deleteAlgorithm_RevisionsNotFound() {
+        Algorithm algorithm = getFullAlgorithm("Shor");
+        Algorithm storedAlgorithm = algorithmService.create(algorithm);
+
+        algorithmService.delete(storedAlgorithm.getId());
+
+        assertThrows(NoSuchElementException.class, () -> algorithmService.findAlgorithmRevisions(storedAlgorithm.getId(), Pageable.unpaged()));
+    }
+
+    @Test
     void findAlgorithmRevision_ElementFound() {
         Algorithm algorithm = getFullAlgorithm("Shor");
         Algorithm storedAlgorithm = algorithmService.create(algorithm);
@@ -330,7 +392,6 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
 
         assertThat(algorithmRevision.getRevisionNumber().get()).isEqualTo(1);
         assertThat(algorithmRevision.getRevisionInstant()).isNotEmpty();
-        assertThat(algorithmRevision.getEntity().getId()).isNotNull();
         assertThat(algorithmRevision.getEntity().getId()).isEqualTo(storedAlgorithm.getId());
         assertThat(algorithmRevision.getEntity().getName()).isEqualTo(algorithm.getName());
         assertThat(algorithmRevision.getEntity().getAcronym()).isEqualTo(algorithm.getAcronym());
@@ -355,71 +416,15 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
         storedAlgorithm.setName("Shor_Updated");
         algorithmService.update(storedAlgorithm);
 
-        var algorithmRevisions = algorithmService.findAlgorithmRevisions(storedAlgorithm.getId(), PageRequest.of(0, 100));
+        var algorithmRevisions = algorithmService.findAlgorithmRevisions(storedAlgorithm.getId(), PageRequest.of(0, 10));
         assertThat(algorithmRevisions.getTotalElements()).isEqualTo(2);
-        assertThat(algorithmRevisions.getContent().get(0).getRevisionNumber().get()).isEqualTo(1);
+        assertThat(algorithmRevisions.getContent().get(0).getRevisionNumber().get()).isNotNull();
         assertThat(algorithmRevisions.getContent().get(0).getRevisionInstant()).isNotEmpty();
         assertThat(algorithmRevisions.getContent().get(0).getEntity().getId()).isNotNull();
-        assertThat(algorithmRevisions.getContent().get(0).getEntity().getId()).isEqualTo(storedAlgorithm.getId());
-        assertThat(algorithmRevisions.getContent().get(0).getEntity().getName()).isEqualTo("Shor");
 
-        assertThat(algorithmRevisions.getContent().get(1).getRevisionNumber().get()).isEqualTo(2);
+        assertThat(algorithmRevisions.getContent().get(1).getRevisionNumber().get()).isNotNull();
         assertThat(algorithmRevisions.getContent().get(1).getRevisionInstant()).isNotEmpty();
         assertThat(algorithmRevisions.getContent().get(1).getEntity().getId()).isNotNull();
-        assertThat(algorithmRevisions.getContent().get(1).getEntity().getId()).isEqualTo(storedAlgorithm.getId());
-        assertThat(algorithmRevisions.getContent().get(1).getEntity().getName()).isEqualTo("Shor_Updated");
-    }
-
-    @Test
-    void findClassicAlgorithmRevisions_DropOldestElement() {
-        Algorithm algorithm = getFullAlgorithm("Shor");
-        Algorithm storedAlgorithm = algorithmService.create(algorithm);
-
-        for(int i=1; i<Constants.REVISIONS_COUNT; i++) {
-            storedAlgorithm.setName("Shor " + i);
-            algorithmService.update(storedAlgorithm);
-        }
-
-        var oldestRevisionToBeDroped = algorithmService.findAlgorithmRevision(storedAlgorithm.getId(), 1);
-        var newOldestRevision = algorithmService.findAlgorithmRevision(storedAlgorithm.getId(), 2);
-
-        storedAlgorithm.setName("Shor");
-        algorithmService.update(storedAlgorithm);
-
-        var revisions = algorithmService.findAlgorithmRevisions(storedAlgorithm.getId(), PageRequest.of(0,100));
-        assertThat(revisions.getTotalElements()).isEqualTo(Constants.REVISIONS_COUNT);
-        assertThat(revisions.getContent()).doesNotContain(oldestRevisionToBeDroped);
-        assertThat(revisions.getContent().get(0).getRevisionInstant().get()).isAfter(oldestRevisionToBeDroped.getRevisionInstant().get());
-        assertThat(revisions.getContent().get(0)).isEqualTo(newOldestRevision);
-    }
-
-    @Test
-    void findQuantumAlgorithmRevisions_DropOldestElement() {
-        QuantumAlgorithm algorithm = new QuantumAlgorithm();
-        algorithm.setName("quantumAlgorithmName");
-        algorithm.setComputationModel(ComputationModel.QUANTUM);
-        algorithm.setNisqReady(false);
-        algorithm.setSpeedUp("2");
-        algorithm.setQuantumComputationModel(QuantumComputationModel.QUANTUM_ANNEALING);
-
-        Algorithm storedAlgorithm = algorithmService.create(algorithm);
-
-        for(int i=1; i<Constants.REVISIONS_COUNT; i++) {
-            storedAlgorithm.setName("Shor " + i);
-            algorithmService.update(storedAlgorithm);
-        }
-
-        var oldestRevisionToBeDroped = algorithmService.findAlgorithmRevision(storedAlgorithm.getId(), 1);
-        var newOldestRevision = algorithmService.findAlgorithmRevision(storedAlgorithm.getId(), 2);
-
-        storedAlgorithm.setName("Shor");
-        algorithmService.update(storedAlgorithm);
-
-        var revisions = algorithmService.findAlgorithmRevisions(storedAlgorithm.getId(), PageRequest.of(0,100));
-        assertThat(revisions.getTotalElements()).isEqualTo(Constants.REVISIONS_COUNT);
-        assertThat(revisions.getContent()).doesNotContain(oldestRevisionToBeDroped);
-        assertThat(revisions.getContent().get(0).getRevisionInstant().get()).isAfter(oldestRevisionToBeDroped.getRevisionInstant().get());
-        assertThat(revisions.getContent().get(0)).isEqualTo(newOldestRevision);
     }
 
     @Test

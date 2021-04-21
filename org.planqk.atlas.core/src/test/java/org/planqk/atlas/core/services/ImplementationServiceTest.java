@@ -34,6 +34,7 @@ import org.junit.jupiter.api.Test;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
 import org.planqk.atlas.core.model.ClassicImplementation;
+import org.planqk.atlas.core.model.ComputationModel;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.model.QuantumAlgorithm;
@@ -41,8 +42,10 @@ import org.planqk.atlas.core.model.QuantumComputationModel;
 import org.planqk.atlas.core.model.QuantumImplementation;
 import org.planqk.atlas.core.model.SoftwarePlatform;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
+import org.planqk.atlas.core.util.Constants;
 import org.planqk.atlas.core.util.ServiceTestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import lombok.extern.slf4j.Slf4j;
@@ -98,6 +101,63 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
         assertThat(storedImplementation.getId()).isNotNull();
         assertThat(storedImplementation).isInstanceOf(QuantumImplementation.class);
         ServiceTestUtils.assertImplementationEquality(storedImplementation, implementation);
+    }
+
+    @Test
+    void createImplementation_Classic_DropOldestRevisionElement() {
+        Algorithm algorithm = new ClassicAlgorithm();
+        algorithm.setName("algorithmName");
+        algorithm = algorithmService.create(algorithm);
+
+        var implementation = getFullImplementation("implementationName", algorithm);
+        implementation = implementationService.create(implementation, algorithm.getId());
+
+        for(int i=1; i<Constants.REVISIONS_COUNT; i++) {
+            implementation.setName("implementationName " + i);
+            implementationService.update(implementation);
+        }
+
+        var oldestRevisionToBeDroped = implementationService.findImplementationRevision(implementation.getId(), 2);
+        var newOldestRevision = implementationService.findImplementationRevision(implementation.getId(), 3);
+
+        implementation.setName("implementationName");
+        implementationService.update(implementation);
+
+        var revisions = implementationService.findImplementationRevisions(implementation.getId(), PageRequest.of(0,10));
+        assertThat(revisions.getTotalElements()).isEqualTo(Constants.REVISIONS_COUNT);
+        assertThat(revisions.getContent()).doesNotContain(oldestRevisionToBeDroped);
+        assertThat(revisions.getContent().get(0).getRevisionInstant().get()).isAfter(oldestRevisionToBeDroped.getRevisionInstant().get());
+        assertThat(revisions.getContent().get(0)).isEqualTo(newOldestRevision);
+    }
+
+    @Test
+    void createImplementation_Quantum_DropOldestRevisionElement() {
+        QuantumAlgorithm algorithm = new QuantumAlgorithm();
+        algorithm.setName("algorithmName");
+        algorithm.setQuantumComputationModel(QuantumComputationModel.MEASUREMENT_BASED);
+        algorithm = (QuantumAlgorithm) algorithmService.create(algorithm);
+
+        var implementation = new QuantumImplementation();
+        implementation.setName("implementationName");
+        implementation.setImplementedAlgorithm(algorithm);
+        implementation = (QuantumImplementation) implementationService.create(implementation, algorithm.getId());
+
+        for(int i=1; i<Constants.REVISIONS_COUNT; i++) {
+            implementation.setName("implementationName " + i);
+            implementationService.update(implementation);
+        }
+
+        var oldestRevisionToBeDroped = implementationService.findImplementationRevision(implementation.getId(), 2);
+        var newOldestRevision = implementationService.findImplementationRevision(implementation.getId(), 3);
+
+        implementation.setName("implementationName");
+        implementationService.update(implementation);
+
+        var revisions = implementationService.findImplementationRevisions(implementation.getId(), PageRequest.of(0,10));
+        assertThat(revisions.getTotalElements()).isEqualTo(Constants.REVISIONS_COUNT);
+        assertThat(revisions.getContent()).doesNotContain(oldestRevisionToBeDroped);
+        assertThat(revisions.getContent().get(0).getRevisionInstant().get()).isAfter(oldestRevisionToBeDroped.getRevisionInstant().get());
+        assertThat(revisions.getContent().get(0)).isEqualTo(newOldestRevision);
     }
 
     @Test
@@ -252,8 +312,76 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
         implementation.setName("implementationName");
         implementation.setImplementedAlgorithm(algorithm);
         implementation.setId(UUID.randomUUID());
+        implementationService.create(implementation, algorithm.getId());
 
         assertThrows(NoSuchElementException.class, () -> implementationService.delete(implementation.getId()));
+    }
+
+    @Test
+    void deleteImplementation_RevisionsNotFound() {
+        Algorithm algorithm = new ClassicAlgorithm();
+        algorithm.setName("algorithmName");
+        algorithm = algorithmService.create(algorithm);
+
+        var implementation = new ClassicImplementation();
+        implementation.setName("implementationName");
+        implementation.setImplementedAlgorithm(algorithm);
+
+        var storedImplementation = implementationService.create(implementation, algorithm.getId());
+        implementationService.delete(storedImplementation.getId());
+
+        assertThrows(NoSuchElementException.class, () -> algorithmService.findAlgorithmRevisions(storedImplementation.getId(), Pageable.unpaged()));
+    }
+
+    @Test
+    void findImplementationRevision_ElementFound() {
+        Algorithm algorithm = new ClassicAlgorithm();
+        algorithm.setName("algorithmName");
+        algorithm = algorithmService.create(algorithm);
+        var implementation = getFullImplementation("implementationName", algorithm);
+
+        var storedImplementation = implementationService.create(implementation, algorithm.getId());
+        var implementationRevision = implementationService.findImplementationRevision(storedImplementation.getId(), 2);
+
+        assertThat(implementationRevision.getRevisionNumber().get()).isEqualTo(2);
+        assertThat(implementationRevision.getRevisionInstant()).isNotEmpty();
+        assertThat(implementationRevision.getEntity().getId()).isEqualTo(implementation.getId());
+        assertThat(implementationRevision.getEntity().getName()).isEqualTo(implementation.getName());
+        assertThat(implementationRevision.getEntity().getDescription()).isEqualTo(implementation.getDescription());
+        assertThat(implementationRevision.getEntity().getContributors()).isEqualTo(implementation.getContributors());
+        assertThat(implementationRevision.getEntity().getAssumptions()).isEqualTo(implementation.getAssumptions());
+        assertThat(implementationRevision.getEntity().getParameter()).isEqualTo(implementation.getParameter());
+        assertThat(implementationRevision.getEntity().getDependencies()).isEqualTo(implementation.getDependencies());
+    }
+
+    @Test
+    void findImplementationRevisions_ElementNotFound() {
+        assertThrows(NoSuchElementException.class, () ->
+                implementationService.findImplementationRevisions(UUID.randomUUID(), Pageable.unpaged()));
+    }
+
+    @Test
+    void findImplementationRevisions_ElementsFound() {
+        Algorithm algorithm = new ClassicAlgorithm();
+        algorithm.setName("algorithmName");
+        algorithm = algorithmService.create(algorithm);
+
+        var implementation = getFullImplementation("implementationName", algorithm);
+        var storedImplementation = implementationService.create(implementation, algorithm.getId());
+
+        implementation.setName("newImplementationName");
+        implementationService.update(implementation);
+
+        var implementationRevisions = implementationService.findImplementationRevisions(storedImplementation.getId(), PageRequest.of(0,10));
+
+        assertThat(implementationRevisions.getTotalElements()).isEqualTo(2);
+        assertThat(implementationRevisions.getContent().get(0).getRevisionNumber()).isNotNull();
+        assertThat(implementationRevisions.getContent().get(0).getRevisionInstant()).isNotEmpty();
+        assertThat(implementationRevisions.getContent().get(0).getEntity().getId()).isNotNull();
+
+        assertThat(implementationRevisions.getContent().get(1).getRevisionNumber().get()).isNotNull();
+        assertThat(implementationRevisions.getContent().get(1).getRevisionInstant()).isNotEmpty();
+        assertThat(implementationRevisions.getContent().get(1).getEntity().getId()).isNotNull();
     }
 
     @Test
