@@ -36,7 +36,6 @@ import org.planqk.atlas.core.services.PublicationService;
 import org.planqk.atlas.core.services.SoftwarePlatformService;
 import org.planqk.atlas.core.services.TagService;
 import org.planqk.atlas.web.Constants;
-import org.planqk.atlas.web.annotation.ApiVersion;
 import org.planqk.atlas.web.dtos.ComputeResourcePropertyDto;
 import org.planqk.atlas.web.dtos.DiscussionCommentDto;
 import org.planqk.atlas.web.dtos.DiscussionTopicDto;
@@ -91,7 +90,6 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/" + Constants.ALGORITHMS + "/{algorithmId}/" + Constants.IMPLEMENTATIONS)
-@ApiVersion("v1")
 @AllArgsConstructor
 @Slf4j
 public class ImplementationController {
