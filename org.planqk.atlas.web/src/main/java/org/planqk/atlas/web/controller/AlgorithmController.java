@@ -57,7 +57,6 @@ import org.planqk.atlas.web.dtos.RevisionDto;
 import org.planqk.atlas.web.dtos.SketchDto;
 import org.planqk.atlas.web.dtos.TagDto;
 import org.planqk.atlas.web.linkassembler.AlgorithmAssembler;
-import org.planqk.atlas.web.linkassembler.AlgorithmRevisionAssembler;
 import org.planqk.atlas.web.linkassembler.ApplicationAreaAssembler;
 import org.planqk.atlas.web.linkassembler.ComputeResourcePropertyAssembler;
 import org.planqk.atlas.web.linkassembler.ImplementationAssembler;
@@ -72,6 +71,7 @@ import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.ValidationGroups;
 import org.springframework.data.domain.Page;
+import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
@@ -115,8 +115,6 @@ public class AlgorithmController {
 
     private final AlgorithmAssembler algorithmAssembler;
 
-    private final AlgorithmRevisionAssembler algorithmRevisionAssembler;
-
     private final SketchAssembler sketchAssembler;
 
     private final SketchService sketchService;
@@ -152,6 +150,8 @@ public class AlgorithmController {
     private final ComputeResourcePropertyAssembler computeResourcePropertyAssembler;
 
     private final LinkingService linkingService;
+
+    private final PagedResourcesAssembler<RevisionDto> pagedResourcesAssembler;
 
     @Operation(responses = {
         @ApiResponse(responseCode = "200")
@@ -904,9 +904,10 @@ public class AlgorithmController {
     @GetMapping("/{algorithmId}/" + Constants.REVISIONS)
     public ResponseEntity<PagedModel<EntityModel<RevisionDto>>> getAlgorithmRevisions(
             @PathVariable UUID algorithmId, @Parameter(hidden = true) ListParameters listParameters) {
-                algorithmRevisionAssembler.setAlgorithmId(algorithmId);
-        return ResponseEntity.ok(algorithmRevisionAssembler
-            .toModel(algorithmService.findAlgorithmRevisions(algorithmId, listParameters.getPageable())));
+        final var revisions = algorithmService.findAlgorithmRevisions(algorithmId, listParameters.getPageable());
+        final var revisionDtos = revisions.map(item -> ModelMapperUtils.convert(item, RevisionDto.class));
+        final var model = pagedResourcesAssembler.toModel(revisionDtos);
+        return ResponseEntity.ok(model);
     }
 
     @Operation(responses = {

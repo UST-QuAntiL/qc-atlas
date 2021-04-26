@@ -27,10 +27,11 @@ import org.planqk.atlas.web.annotation.ApiVersion;
 import org.planqk.atlas.web.dtos.ImplementationDto;
 import org.planqk.atlas.web.dtos.RevisionDto;
 import org.planqk.atlas.web.linkassembler.ImplementationAssembler;
-import org.planqk.atlas.web.linkassembler.ImplementationRevisionAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 
+import org.planqk.atlas.web.utils.ModelMapperUtils;
+import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
@@ -63,7 +64,8 @@ public class ImplementationGlobalController {
 
     private final ImplementationAssembler implementationAssembler;
 
-    private final ImplementationRevisionAssembler implementationRevisionAssembler;
+    private final PagedResourcesAssembler<RevisionDto> pagedResourcesAssembler;
+
 
     @Operation(responses = {
         @ApiResponse(responseCode = "200"),
@@ -99,8 +101,10 @@ public class ImplementationGlobalController {
     @GetMapping("/{implementationId}/" + Constants.REVISIONS)
     public ResponseEntity<PagedModel<EntityModel<RevisionDto>>> getImplementationRevisions(
             @PathVariable UUID implementationId, @Parameter(hidden = true) ListParameters listParameters) {
-            implementationRevisionAssembler.setImplementationId(implementationId);
-            return ResponseEntity.ok(implementationRevisionAssembler.toModel(implementationService.findImplementationRevisions(implementationId, listParameters.getPageable())));
+        final var revisions = implementationService.findImplementationRevisions(implementationId, listParameters.getPageable());
+        final var revisionDtos = revisions.map(item -> ModelMapperUtils.convert(item, RevisionDto.class));
+        final var model = pagedResourcesAssembler.toModel(revisionDtos);
+        return ResponseEntity.ok(model);
     }
 
     @Operation(responses = {
