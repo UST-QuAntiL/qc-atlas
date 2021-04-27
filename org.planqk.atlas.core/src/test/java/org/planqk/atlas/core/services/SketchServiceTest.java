@@ -25,7 +25,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -68,7 +67,7 @@ public class SketchServiceTest extends AtlasDatabaseTestBase {
         final MockMultipartFile file = new MockMultipartFile("image", testFile);
 
         final String description = "description";
-        final String baseURL = "http://localhost:8080/atlas/v1";
+        final String baseURL = "http://localhost:8080/atlas";
         // call
         final Sketch persistedSketch = sketchService.addSketchToAlgorithm(algorithm.getId(), file, description, baseURL);
 
@@ -114,7 +113,7 @@ public class SketchServiceTest extends AtlasDatabaseTestBase {
         final MockMultipartFile file = new MockMultipartFile("image", testFile);
 
         final String description = "description";
-        final String baseURL = "http://localhost:8080/atlas/v1";
+        final String baseURL = "http://localhost:8080/atlas";
         // call
         final Sketch persistedSketch = sketchService.addSketchToAlgorithm(algorithm.getId(), file, description, baseURL);
 

@@ -24,7 +24,6 @@ import java.util.UUID;
 import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.services.PatternRelationService;
 import org.planqk.atlas.web.Constants;
-import org.planqk.atlas.web.annotation.ApiVersion;
 import org.planqk.atlas.web.dtos.PatternRelationDto;
 import org.planqk.atlas.web.linkassembler.PatternRelationAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
@@ -57,7 +56,6 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/" + Constants.PATTERN_RELATIONS)
-@ApiVersion("v1")
 @AllArgsConstructor
 @Slf4j
 public class PatternRelationController {
@@ -67,58 +65,58 @@ public class PatternRelationController {
     private final PatternRelationAssembler patternRelationAssembler;
 
     @Operation(responses = {
-        @ApiResponse(responseCode = "200")
+            @ApiResponse(responseCode = "200")
     }, description = "Retrieve all relations between pattern and algorithms.")
     @ListParametersDoc
     @GetMapping
     public ResponseEntity<PagedModel<EntityModel<PatternRelationDto>>> getPatternRelations(
-        @Parameter(hidden = true) ListParameters listParameters) {
+            @Parameter(hidden = true) ListParameters listParameters) {
         final var patternRelations = patternRelationService.findAll(listParameters.getPageable());
         return ResponseEntity.ok(patternRelationAssembler.toModel(patternRelations));
     }
 
     @Operation(responses = {
-        @ApiResponse(responseCode = "201"),
-        @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
-        @ApiResponse(responseCode = "404",
-            description = "Not Found. Algorithm or Pattern relation type with given IDs don't exist.")
+            @ApiResponse(responseCode = "201"),
+            @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
+            @ApiResponse(responseCode = "404",
+                    description = "Not Found. Algorithm or Pattern relation type with given IDs don't exist.")
     }, description = "Create a relation between a pattern and an algorithm." +
-        "The pattern relation type has to be already created (e.g. via POST on /" + Constants.PATTERN_RELATION_TYPES + "). " +
-        "As a result only the ID is required for the pattern relation type, other attributes will be ignored not changed.")
+            "The pattern relation type has to be already created (e.g. via POST on /" + Constants.PATTERN_RELATION_TYPES + "). " +
+            "As a result only the ID is required for the pattern relation type, other attributes will be ignored not changed.")
     @PostMapping
     public ResponseEntity<EntityModel<PatternRelationDto>> createPatternRelation(
-        @Validated({ValidationGroups.Create.class}) @RequestBody PatternRelationDto patternRelationDto) {
+            @Validated({ValidationGroups.Create.class}) @RequestBody PatternRelationDto patternRelationDto) {
         final var savedPatternRelation = patternRelationService.create(
-            ModelMapperUtils.convert(patternRelationDto, PatternRelation.class));
+                ModelMapperUtils.convert(patternRelationDto, PatternRelation.class));
         return new ResponseEntity<>(patternRelationAssembler.toModel(savedPatternRelation), HttpStatus.CREATED);
     }
 
     @Operation(responses = {
-        @ApiResponse(responseCode = "200"),
-        @ApiResponse(responseCode = "400",
-            description = "Bad Request. Invalid request body or algorithm with given ID is not part of pattern relation."),
-        @ApiResponse(responseCode = "404",
-            description = "Not Found. Algorithm, pattern relation or pattern relation type with given IDs don't exist.")
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400",
+                    description = "Bad Request. Invalid request body or algorithm with given ID is not part of pattern relation."),
+            @ApiResponse(responseCode = "404",
+                    description = "Not Found. Algorithm, pattern relation or pattern relation type with given IDs don't exist.")
     }, description = "Update a relation between a pattern and an algorithm. " +
-        "For the pattern relation type only the ID is required," +
-        "other pattern relation type attributes will be ignored and not changed.")
+            "For the pattern relation type only the ID is required," +
+            "other pattern relation type attributes will be ignored and not changed.")
     @PutMapping("/{patternRelationId}")
     public ResponseEntity<EntityModel<PatternRelationDto>> updatePatternRelation(
-        @PathVariable UUID patternRelationId,
-        @Validated({ValidationGroups.Update.class}) @RequestBody PatternRelationDto patternRelationDto) {
+            @PathVariable UUID patternRelationId,
+            @Validated({ValidationGroups.Update.class}) @RequestBody PatternRelationDto patternRelationDto) {
         patternRelationDto.setId(patternRelationId);
         final var savedPatternRelation = patternRelationService.update(
-            ModelMapperUtils.convert(patternRelationDto, PatternRelation.class));
+                ModelMapperUtils.convert(patternRelationDto, PatternRelation.class));
         return ResponseEntity.ok(patternRelationAssembler.toModel(savedPatternRelation));
     }
 
     @Operation(responses = {
-        @ApiResponse(responseCode = "204"),
-        @ApiResponse(responseCode = "400"),
-        @ApiResponse(responseCode = "404",
-            description = "Not Found. Algorithm or pattern relation with given IDs don't exist.")
+            @ApiResponse(responseCode = "204"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404",
+                    description = "Not Found. Algorithm or pattern relation with given IDs don't exist.")
     }, description = "Delete a specific relation between a pattern and an algorithm. " +
-        "The pattern relation type is not affected by this.")
+            "The pattern relation type is not affected by this.")
     @DeleteMapping("/{patternRelationId}")
     public ResponseEntity<Void> deletePatternRelation(@PathVariable UUID patternRelationId) {
         patternRelationService.delete(patternRelationId);
@@ -126,10 +124,10 @@ public class PatternRelationController {
     }
 
     @Operation(responses = {
-        @ApiResponse(responseCode = "200"),
-        @ApiResponse(responseCode = "400"),
-        @ApiResponse(responseCode = "404",
-            description = "Not Found. Algorithm or pattern relation with given IDs don't exist.")
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404",
+                    description = "Not Found. Algorithm or pattern relation with given IDs don't exist.")
     }, description = "Retrieve a specific relation between a pattern and an algorithm.")
     @GetMapping("/{patternRelationId}")
     public ResponseEntity<EntityModel<PatternRelationDto>> getPatternRelation(@PathVariable UUID patternRelationId) {
