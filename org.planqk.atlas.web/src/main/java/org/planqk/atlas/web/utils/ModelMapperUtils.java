@@ -19,7 +19,10 @@
 
 package org.planqk.atlas.web.utils;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.planqk.atlas.core.model.Algorithm;
@@ -61,6 +64,10 @@ public final class ModelMapperUtils {
 
     public static <D, T> Page<D> convertPage(@NonNull Page<T> entities, @NonNull Class<D> dtoClass) {
         return entities.map(objectEntity -> convert(objectEntity, dtoClass));
+    }
+
+    public static <D, T> Collection<D> convertCollection(@NonNull Collection<T> entities, @NonNull Class<D> dtoClass) {
+        return entities.stream().map(objectEntity -> convert(objectEntity, dtoClass)).collect(Collectors.toCollection(ArrayList::new));
     }
 
     public static <D, T> D convert(final T entity, Class<D> outClass) {
