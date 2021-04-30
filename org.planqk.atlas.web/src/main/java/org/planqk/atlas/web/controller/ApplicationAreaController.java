@@ -25,13 +25,11 @@ import org.planqk.atlas.core.model.ApplicationArea;
 import org.planqk.atlas.core.services.ApplicationAreaService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.ApplicationAreaDto;
-import org.planqk.atlas.web.linkassembler.ApplicationAreaAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.ValidationGroups;
 import org.springframework.data.domain.Page;
-import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -61,8 +59,6 @@ import lombok.extern.slf4j.Slf4j;
 public class ApplicationAreaController {
 
     private final ApplicationAreaService applicationAreaService;
-
-    private final ApplicationAreaAssembler applicationAreaAssembler;
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200")
@@ -122,8 +118,8 @@ public class ApplicationAreaController {
                     description = "Not Found. Application area with given ID doesn't exist")
     }, description = "Retrieve a specific application area and its basic properties.")
     @GetMapping("/{applicationAreaId}")
-    public ResponseEntity<EntityModel<ApplicationAreaDto>> getApplicationArea(@PathVariable UUID applicationAreaId) {
+    public ResponseEntity<ApplicationAreaDto> getApplicationArea(@PathVariable UUID applicationAreaId) {
         final ApplicationArea applicationArea = applicationAreaService.findById(applicationAreaId);
-        return ResponseEntity.ok(applicationAreaAssembler.toModel(applicationArea));
+        return ResponseEntity.ok(ModelMapperUtils.convert(applicationArea, ApplicationAreaDto.class));
     }
 }

@@ -46,13 +46,7 @@ import org.planqk.atlas.web.dtos.ImplementationPackageDto;
 import org.planqk.atlas.web.dtos.PublicationDto;
 import org.planqk.atlas.web.dtos.SoftwarePlatformDto;
 import org.planqk.atlas.web.dtos.TagDto;
-import org.planqk.atlas.web.linkassembler.ComputeResourcePropertyAssembler;
-import org.planqk.atlas.web.linkassembler.FileAssembler;
-import org.planqk.atlas.web.linkassembler.ImplementationAssembler;
 import org.planqk.atlas.web.linkassembler.ImplementationPackageAssembler;
-import org.planqk.atlas.web.linkassembler.PublicationAssembler;
-import org.planqk.atlas.web.linkassembler.SoftwarePlatformAssembler;
-import org.planqk.atlas.web.linkassembler.TagAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
@@ -97,23 +91,13 @@ public class ImplementationController {
 
     private final ImplementationService implementationService;
 
-    private final ImplementationAssembler implementationAssembler;
-
     private final TagService tagService;
-
-    private final TagAssembler tagAssembler;
 
     private final ComputeResourcePropertyService computeResourcePropertyService;
 
-    private final ComputeResourcePropertyAssembler computeResourcePropertyAssembler;
-
     private final PublicationService publicationService;
 
-    private final PublicationAssembler publicationAssembler;
-
     private final SoftwarePlatformService softwarePlatformService;
-
-    private final SoftwarePlatformAssembler softwarePlatformAssembler;
 
     private final LinkingService linkingService;
 
@@ -122,8 +106,6 @@ public class ImplementationController {
     private final ImplementationPackageService implementationPackageService;
 
     private final FileService fileService;
-
-    private final FileAssembler fileAssembler;
 
     private final ImplementationPackageAssembler implementationPackageAssembler;
 

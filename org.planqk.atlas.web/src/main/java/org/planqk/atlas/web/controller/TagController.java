@@ -27,16 +27,11 @@ import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.ImplementationDto;
 import org.planqk.atlas.web.dtos.TagDto;
-import org.planqk.atlas.web.linkassembler.AlgorithmAssembler;
-import org.planqk.atlas.web.linkassembler.ImplementationAssembler;
-import org.planqk.atlas.web.linkassembler.TagAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.ValidationGroups;
 import org.springframework.data.domain.Page;
-import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -62,12 +57,6 @@ import lombok.extern.slf4j.Slf4j;
 public class TagController {
 
     private final TagService tagService;
-
-    private final TagAssembler tagAssembler;
-
-    private final AlgorithmAssembler algorithmAssembler;
-
-    private final ImplementationAssembler implementationAssembler;
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200")
@@ -98,7 +87,6 @@ public class TagController {
     @GetMapping("/{value}")
     public ResponseEntity<TagDto> getTag(@PathVariable String value) {
         final Tag tag = this.tagService.findByValue(value);
-        final var tagDto = tagAssembler.toModel(tag);
         return ResponseEntity.ok(ModelMapperUtils.convert(tag, TagDto.class));
     }
 
@@ -108,9 +96,6 @@ public class TagController {
     @GetMapping("/{value}/" + Constants.ALGORITHMS)
     public ResponseEntity<Collection<AlgorithmDto>> getAlgorithmsOfTag(@PathVariable String value) {
         final Tag tag = this.tagService.findByValue(value);
-        final CollectionModel<EntityModel<AlgorithmDto>> algorithms = algorithmAssembler.toModel(tag.getAlgorithms());
-        algorithmAssembler.addLinks(algorithms.getContent());
-        tagAssembler.addAlgorithmLink(algorithms, tag.getValue());
         return ResponseEntity.ok(ModelMapperUtils.convertCollection(tag.getAlgorithms(), AlgorithmDto.class));
     }
 
@@ -121,9 +106,6 @@ public class TagController {
     public ResponseEntity<Collection<ImplementationDto>> getImplementationsOfTag(
             @PathVariable String value) {
         final Tag tag = this.tagService.findByValue(value);
-        final CollectionModel<EntityModel<ImplementationDto>> implementations = implementationAssembler.toModel(tag.getImplementations());
-        implementationAssembler.addLinks(implementations.getContent());
-        tagAssembler.addImplementationLink(implementations, tag.getValue());
         return ResponseEntity.ok(ModelMapperUtils.convertCollection(tag.getImplementations(), ImplementationDto.class));
     }
 }

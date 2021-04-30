@@ -25,7 +25,6 @@ import org.planqk.atlas.core.model.AlgorithmRelationType;
 import org.planqk.atlas.core.services.AlgorithmRelationTypeService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.AlgorithmRelationTypeDto;
-import org.planqk.atlas.web.linkassembler.AlgorithmRelationTypeAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
@@ -60,8 +59,6 @@ import lombok.extern.slf4j.Slf4j;
 public class AlgorithmRelationTypeController {
 
     private final AlgorithmRelationTypeService algorithmRelationTypeService;
-
-    private final AlgorithmRelationTypeAssembler algorithmRelationTypeAssembler;
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200")

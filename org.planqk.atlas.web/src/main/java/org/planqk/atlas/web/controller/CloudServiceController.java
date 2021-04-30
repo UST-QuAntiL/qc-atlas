@@ -28,9 +28,6 @@ import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.CloudServiceDto;
 import org.planqk.atlas.web.dtos.ComputeResourceDto;
 import org.planqk.atlas.web.dtos.SoftwarePlatformDto;
-import org.planqk.atlas.web.linkassembler.CloudServiceAssembler;
-import org.planqk.atlas.web.linkassembler.ComputeResourceAssembler;
-import org.planqk.atlas.web.linkassembler.SoftwarePlatformAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
@@ -65,12 +62,6 @@ import lombok.extern.slf4j.Slf4j;
 public class CloudServiceController {
 
     private final CloudServiceService cloudServiceService;
-
-    private final CloudServiceAssembler cloudServiceAssembler;
-
-    private final ComputeResourceAssembler computeResourceAssembler;
-
-    private final SoftwarePlatformAssembler softwarePlatformAssembler;
 
     private final LinkingService linkingService;
 

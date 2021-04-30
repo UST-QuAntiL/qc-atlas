@@ -30,10 +30,6 @@ import org.planqk.atlas.web.dtos.CloudServiceDto;
 import org.planqk.atlas.web.dtos.ComputeResourceDto;
 import org.planqk.atlas.web.dtos.ComputeResourcePropertyDto;
 import org.planqk.atlas.web.dtos.SoftwarePlatformDto;
-import org.planqk.atlas.web.linkassembler.CloudServiceAssembler;
-import org.planqk.atlas.web.linkassembler.ComputeResourceAssembler;
-import org.planqk.atlas.web.linkassembler.ComputeResourcePropertyAssembler;
-import org.planqk.atlas.web.linkassembler.SoftwarePlatformAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
@@ -70,15 +66,7 @@ public class ComputeResourceController {
 
     private final ComputeResourcePropertyService computeResourcePropertyService;
 
-    private final ComputeResourcePropertyAssembler computeResourcePropertyAssembler;
-
     private final ComputeResourceService computeResourceService;
-
-    private final ComputeResourceAssembler computeResourceAssembler;
-
-    private final SoftwarePlatformAssembler softwarePlatformAssembler;
-
-    private final CloudServiceAssembler cloudServiceAssembler;
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200")

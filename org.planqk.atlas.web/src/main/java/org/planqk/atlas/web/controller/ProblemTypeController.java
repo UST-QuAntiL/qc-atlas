@@ -26,7 +26,6 @@ import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.services.ProblemTypeService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.ProblemTypeDto;
-import org.planqk.atlas.web.linkassembler.ProblemTypeAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
@@ -61,8 +60,6 @@ import lombok.extern.slf4j.Slf4j;
 public class ProblemTypeController {
 
     private final ProblemTypeService problemTypeService;
-
-    private final ProblemTypeAssembler problemTypeAssembler;
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200")

@@ -24,7 +24,6 @@ import java.util.UUID;
 import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.ImplementationDto;
-import org.planqk.atlas.web.linkassembler.ImplementationAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
@@ -55,8 +54,6 @@ import lombok.extern.slf4j.Slf4j;
 public class ImplementationGlobalController {
 
     private final ImplementationService implementationService;
-
-    private final ImplementationAssembler implementationAssembler;
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),

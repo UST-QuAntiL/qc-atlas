@@ -26,7 +26,6 @@ import org.planqk.atlas.core.services.AlgorithmRelationService;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
-import org.planqk.atlas.web.linkassembler.AlgorithmRelationAssembler;
 import org.planqk.atlas.web.utils.ControllerValidationUtils;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
@@ -62,8 +61,6 @@ import lombok.extern.slf4j.Slf4j;
 public class AlgorithmRelationController {
 
     private final AlgorithmRelationService algorithmRelationService;
-
-    private final AlgorithmRelationAssembler algorithmRelationAssembler;
 
     private final AlgorithmService algorithmService;
 

@@ -19,7 +19,6 @@
 
 package org.planqk.atlas.web.controller;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -55,15 +54,6 @@ import org.planqk.atlas.web.dtos.ProblemTypeDto;
 import org.planqk.atlas.web.dtos.PublicationDto;
 import org.planqk.atlas.web.dtos.SketchDto;
 import org.planqk.atlas.web.dtos.TagDto;
-import org.planqk.atlas.web.linkassembler.AlgorithmAssembler;
-import org.planqk.atlas.web.linkassembler.ApplicationAreaAssembler;
-import org.planqk.atlas.web.linkassembler.ComputeResourcePropertyAssembler;
-import org.planqk.atlas.web.linkassembler.ImplementationAssembler;
-import org.planqk.atlas.web.linkassembler.PatternRelationAssembler;
-import org.planqk.atlas.web.linkassembler.ProblemTypeAssembler;
-import org.planqk.atlas.web.linkassembler.PublicationAssembler;
-import org.planqk.atlas.web.linkassembler.SketchAssembler;
-import org.planqk.atlas.web.linkassembler.TagAssembler;
 import org.planqk.atlas.web.utils.ControllerValidationUtils;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
@@ -109,41 +99,24 @@ public class AlgorithmController {
 
     private final AlgorithmService algorithmService;
 
-    private final AlgorithmAssembler algorithmAssembler;
-
-    private final SketchAssembler sketchAssembler;
-
     private final SketchService sketchService;
 
     private final PatternRelationService patternRelationService;
 
-    private final PatternRelationAssembler patternRelationAssembler;
-
     private final ImplementationService implementationService;
-
-    private final ImplementationAssembler implementationAssembler;
 
     private final DiscussionTopicController discussionTopicController;
 
     private final ProblemTypeService problemTypeService;
 
-    private final ProblemTypeAssembler problemTypeAssembler;
-
     private final ApplicationAreaService applicationAreaService;
-
-    private final ApplicationAreaAssembler applicationAreaAssembler;
 
     private final TagService tagService;
 
-    private final TagAssembler tagAssembler;
-
     private final PublicationService publicationService;
-
-    private final PublicationAssembler publicationAssembler;
 
     private final ComputeResourcePropertyService computeResourcePropertyService;
 
-    private final ComputeResourcePropertyAssembler computeResourcePropertyAssembler;
 
     private final LinkingService linkingService;
 
@@ -152,10 +125,10 @@ public class AlgorithmController {
     }, description = "Retrieve all algorithms (quantum, hybrid and classic).")
     @ListParametersDoc
     @GetMapping
-    public ResponseEntity<PagedModel<EntityModel<AlgorithmDto>>> getAlgorithms(
+    public ResponseEntity<Page<AlgorithmDto>> getAlgorithms(
             @Parameter(hidden = true) ListParameters listParameters) {
-        return ResponseEntity.ok(algorithmAssembler.toModel(algorithmService.findAll(listParameters.getPageable(),
-                listParameters.getSearch())));
+        return ResponseEntity.ok(ModelMapperUtils.convertPage(algorithmService.findAll(listParameters.getPageable(),
+                listParameters.getSearch()), AlgorithmDto.class));
     }
 
     @Operation(responses = {
@@ -480,7 +453,6 @@ public class AlgorithmController {
     }, description = "Retrieve discussion topic of an algorithm."
     )
     @ListParametersDoc
-    // TODO: nochmal anschauen weil hier änderungen im code sind
     @GetMapping("/{algorithmId}/" + Constants.DISCUSSION_TOPICS + "/{topicId}")
     public HttpEntity<EntityModel<DiscussionTopicDto>> getDiscussionTopicOfAlgorithm(
             @PathVariable UUID algorithmId,
@@ -826,10 +798,6 @@ public class AlgorithmController {
     @GetMapping("/{algorithmId}/" + Constants.SKETCHES)
     public ResponseEntity<Collection<SketchDto>> getSketches(@PathVariable UUID algorithmId) {
         final List<Sketch> sketches = sketchService.findByAlgorithm(algorithmId);
-        final List<EntityModel<SketchDto>> sketchDtoList = new ArrayList<>();
-        sketches.forEach(s -> {
-            sketchDtoList.add(this.sketchAssembler.toModel(s));
-        });
 
         return ResponseEntity.ok(ModelMapperUtils.convertCollection(sketches, SketchDto.class));
     }

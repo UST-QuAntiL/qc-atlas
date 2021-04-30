@@ -30,17 +30,13 @@ import org.planqk.atlas.web.dtos.CloudServiceDto;
 import org.planqk.atlas.web.dtos.ComputeResourceDto;
 import org.planqk.atlas.web.dtos.ImplementationDto;
 import org.planqk.atlas.web.dtos.SoftwarePlatformDto;
-import org.planqk.atlas.web.linkassembler.CloudServiceAssembler;
-import org.planqk.atlas.web.linkassembler.ComputeResourceAssembler;
 import org.planqk.atlas.web.linkassembler.ImplementationAssembler;
-import org.planqk.atlas.web.linkassembler.SoftwarePlatformAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.ValidationGroups;
 import org.springframework.data.domain.Page;
 import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -71,15 +67,9 @@ public class SoftwarePlatformController {
 
     private final SoftwarePlatformService softwarePlatformService;
 
-    private final SoftwarePlatformAssembler softwarePlatformAssembler;
-
     private final ImplementationService implementationService;
 
     private final ImplementationAssembler implementationAssembler;
-
-    private final ComputeResourceAssembler computeResourceAssembler;
-
-    private final CloudServiceAssembler cloudServiceAssembler;
 
     private final LinkingService linkingService;
 
@@ -230,11 +220,11 @@ public class SoftwarePlatformController {
     }, description = "Retrieve referenced cloud services of a software platform. If none are found an empty list is returned.")
     @ListParametersDoc
     @GetMapping("/{softwarePlatformId}/" + Constants.CLOUD_SERVICES)
-    public ResponseEntity<PagedModel<EntityModel<CloudServiceDto>>> getCloudServicesOfSoftwarePlatform(
+    public ResponseEntity<Page<CloudServiceDto>> getCloudServicesOfSoftwarePlatform(
             @PathVariable UUID softwarePlatformId,
             @Parameter(hidden = true) ListParameters listParameters) {
         final var cloudServices = softwarePlatformService.findLinkedCloudServices(softwarePlatformId, listParameters.getPageable());
-        return ResponseEntity.ok(cloudServiceAssembler.toModel(cloudServices));
+        return ResponseEntity.ok(ModelMapperUtils.convertPage(cloudServices, CloudServiceDto.class));
     }
 
     @Operation(responses = {

@@ -23,7 +23,6 @@ import java.util.UUID;
 
 import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.services.AlgorithmService;
-import org.planqk.atlas.core.services.DiscussionTopicService;
 import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.core.services.LinkingService;
 import org.planqk.atlas.core.services.PublicationService;
@@ -33,10 +32,6 @@ import org.planqk.atlas.web.dtos.DiscussionCommentDto;
 import org.planqk.atlas.web.dtos.DiscussionTopicDto;
 import org.planqk.atlas.web.dtos.ImplementationDto;
 import org.planqk.atlas.web.dtos.PublicationDto;
-import org.planqk.atlas.web.linkassembler.AlgorithmAssembler;
-import org.planqk.atlas.web.linkassembler.DiscussionTopicAssembler;
-import org.planqk.atlas.web.linkassembler.ImplementationAssembler;
-import org.planqk.atlas.web.linkassembler.PublicationAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
@@ -77,21 +72,11 @@ public class PublicationController {
 
     private final PublicationService publicationService;
 
-    private final PublicationAssembler publicationAssembler;
-
     private final AlgorithmService algorithmService;
-
-    private final AlgorithmAssembler algorithmAssembler;
-
-    private final DiscussionTopicService discussionTopicService;
 
     private final DiscussionTopicController discussionTopicController;
 
-    private final DiscussionTopicAssembler discussionTopicAssembler;
-
     private final ImplementationService implementationService;
-
-    private final ImplementationAssembler implementationAssembler;
 
     private final LinkingService linkingService;
 

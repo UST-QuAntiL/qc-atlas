@@ -25,7 +25,6 @@ import org.planqk.atlas.core.model.PatternRelationType;
 import org.planqk.atlas.core.services.PatternRelationTypeService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.PatternRelationTypeDto;
-import org.planqk.atlas.web.linkassembler.PatternRelationTypeAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
@@ -60,8 +59,6 @@ import lombok.extern.slf4j.Slf4j;
 public class PatternRelationTypeController {
 
     private final PatternRelationTypeService patternRelationTypeService;
-
-    private final PatternRelationTypeAssembler patternRelationTypeAssembler;
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200")
