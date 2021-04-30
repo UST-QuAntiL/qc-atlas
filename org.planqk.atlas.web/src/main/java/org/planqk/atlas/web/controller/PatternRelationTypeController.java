@@ -30,8 +30,7 @@ import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.ValidationGroups;
-import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.PagedModel;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -69,10 +68,10 @@ public class PatternRelationTypeController {
     }, description = "Retrieve all pattern relation types.")
     @ListParametersDoc
     @GetMapping
-    public ResponseEntity<PagedModel<EntityModel<PatternRelationTypeDto>>> getPatternRelationTypes(
+    public ResponseEntity<Page<PatternRelationTypeDto>> getPatternRelationTypes(
             @Parameter(hidden = true) ListParameters listParameters) {
         final var patternRelationTypes = patternRelationTypeService.findAll(listParameters.getPageable());
-        return ResponseEntity.ok(patternRelationTypeAssembler.toModel(patternRelationTypes));
+        return ResponseEntity.ok(ModelMapperUtils.convertPage(patternRelationTypes, PatternRelationTypeDto.class));
     }
 
     @Operation(responses = {
@@ -80,11 +79,11 @@ public class PatternRelationTypeController {
             @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body.")
     }, description = "Define the basic properties of an pattern relation type.")
     @PostMapping
-    public ResponseEntity<EntityModel<PatternRelationTypeDto>> createPatternRelationType(
+    public ResponseEntity<PatternRelationTypeDto> createPatternRelationType(
             @Validated(ValidationGroups.Create.class) @RequestBody PatternRelationTypeDto patternRelationTypeDto) {
         final PatternRelationType savedRelationType = patternRelationTypeService
                 .create(ModelMapperUtils.convert(patternRelationTypeDto, PatternRelationType.class));
-        return new ResponseEntity<>(patternRelationTypeAssembler.toModel(savedRelationType), HttpStatus.CREATED);
+        return ResponseEntity.ok(ModelMapperUtils.convert(savedRelationType, PatternRelationTypeDto.class));
     }
 
     @Operation(responses = {
@@ -94,13 +93,13 @@ public class PatternRelationTypeController {
                     description = "Not Found. Pattern relation type with given ID doesn't exist.")
     }, description = "Update the basic properties of an pattern relation type (e.g. name).")
     @PutMapping("/{patternRelationTypeId}")
-    public ResponseEntity<EntityModel<PatternRelationTypeDto>> updatePatternRelationType(
+    public ResponseEntity<PatternRelationTypeDto> updatePatternRelationType(
             @PathVariable UUID patternRelationTypeId,
             @Validated(ValidationGroups.Update.class) @RequestBody PatternRelationTypeDto patternRelationTypeDto) {
         patternRelationTypeDto.setId(patternRelationTypeId);
         final var relationType = patternRelationTypeService.update(
                 ModelMapperUtils.convert(patternRelationTypeDto, PatternRelationType.class));
-        return ResponseEntity.ok(patternRelationTypeAssembler.toModel(relationType));
+        return ResponseEntity.ok(ModelMapperUtils.convert(relationType, PatternRelationTypeDto.class));
     }
 
     @Operation(responses = {
@@ -124,9 +123,9 @@ public class PatternRelationTypeController {
                     description = "Not Found. Pattern relation type with given ID doesn't exist.")
     }, description = "Retrieve a specific pattern relation type and its basic properties.")
     @GetMapping("/{patternRelationTypeId}")
-    public ResponseEntity<EntityModel<PatternRelationTypeDto>> getPatternRelationType(
+    public ResponseEntity<PatternRelationTypeDto> getPatternRelationType(
             @PathVariable UUID patternRelationTypeId) {
         final var patternRelationType = patternRelationTypeService.findById(patternRelationTypeId);
-        return ResponseEntity.ok(patternRelationTypeAssembler.toModel(patternRelationType));
+        return ResponseEntity.ok(ModelMapperUtils.convert(patternRelationType, PatternRelationTypeDto.class));
     }
 }

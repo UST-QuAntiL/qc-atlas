@@ -41,6 +41,7 @@ import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.ValidationGroups;
+import org.springframework.data.domain.Page;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpEntity;
@@ -99,10 +100,10 @@ public class PublicationController {
     }, description = "Retrieve all publications.")
     @ListParametersDoc
     @GetMapping
-    public ResponseEntity<PagedModel<EntityModel<PublicationDto>>> getPublications(
+    public ResponseEntity<Page<PublicationDto>> getPublications(
             @Parameter(hidden = true) ListParameters listParameters) {
         final var entities = publicationService.findAll(listParameters.getPageable(), listParameters.getSearch());
-        return ResponseEntity.ok(publicationAssembler.toModel(entities));
+        return ResponseEntity.ok(ModelMapperUtils.convertPage(entities, PublicationDto.class));
     }
 
     @Operation(responses = {
@@ -110,10 +111,10 @@ public class PublicationController {
             @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body.")
     }, description = "Define the basic properties of an publication.")
     @PostMapping
-    public ResponseEntity<EntityModel<PublicationDto>> createPublication(
+    public ResponseEntity<PublicationDto> createPublication(
             @Validated(ValidationGroups.Create.class) @RequestBody PublicationDto publicationDto) {
         final Publication publication = publicationService.create(ModelMapperUtils.convert(publicationDto, Publication.class));
-        return new ResponseEntity<>(publicationAssembler.toModel(publication), HttpStatus.CREATED);
+        return ResponseEntity.ok(ModelMapperUtils.convert(publication, PublicationDto.class));
     }
 
     @Operation(responses = {
@@ -123,13 +124,13 @@ public class PublicationController {
                     description = "Not Found. Publication with given ID doesn't exist.")
     }, description = "Update the basic properties of an publication (e.g. title).")
     @PutMapping("/{publicationId}")
-    public ResponseEntity<EntityModel<PublicationDto>> updatePublication(
+    public ResponseEntity<PublicationDto> updatePublication(
             @PathVariable UUID publicationId,
             @Validated(ValidationGroups.Update.class) @RequestBody PublicationDto publicationDto) {
         publicationDto.setId(publicationId);
         final Publication publication = publicationService.update(
                 ModelMapperUtils.convert(publicationDto, Publication.class));
-        return new ResponseEntity<>(publicationAssembler.toModel(publication), HttpStatus.OK);
+        return ResponseEntity.ok(ModelMapperUtils.convert(publication, PublicationDto.class));
     }
 
     @Operation(responses = {
@@ -139,9 +140,9 @@ public class PublicationController {
                     description = "Not Found. Publication with given ID doesn't exist.")
     }, description = "Retrieve a specific publication and its basic properties.")
     @GetMapping("/{publicationId}")
-    public ResponseEntity<EntityModel<PublicationDto>> getPublication(@PathVariable UUID publicationId) {
+    public ResponseEntity<PublicationDto> getPublication(@PathVariable UUID publicationId) {
         final Publication publication = publicationService.findById(publicationId);
-        return new ResponseEntity<>(publicationAssembler.toModel(publication), HttpStatus.OK);
+        return ResponseEntity.ok(ModelMapperUtils.convert(publication, PublicationDto.class));
     }
 
     @Operation(responses = {
@@ -164,11 +165,11 @@ public class PublicationController {
     }, description = "Retrieve referenced algorithms of an publication. If none are found an empty list is returned.")
     @ListParametersDoc
     @GetMapping("/{publicationId}/" + Constants.ALGORITHMS)
-    public ResponseEntity<PagedModel<EntityModel<AlgorithmDto>>> getAlgorithmsOfPublication(
+    public ResponseEntity<Page<AlgorithmDto>> getAlgorithmsOfPublication(
             @PathVariable UUID publicationId,
             @Parameter(hidden = true) ListParameters params) {
         final var publications = publicationService.findLinkedAlgorithms(publicationId, params.getPageable());
-        return ResponseEntity.ok(algorithmAssembler.toModel(publications));
+        return ResponseEntity.ok(ModelMapperUtils.convertPage(publications, AlgorithmDto.class));
     }
 
     @Operation(responses = {
@@ -211,13 +212,13 @@ public class PublicationController {
                     description = "Not Found. Algorithm or publication with given IDs don't exist.")
     }, description = "Retrieve a specific algorithm of a publication.")
     @GetMapping("/{publicationId}/" + Constants.ALGORITHMS + "/{algorithmId}")
-    public ResponseEntity<EntityModel<AlgorithmDto>> getAlgorithmOfPublication(
+    public ResponseEntity<AlgorithmDto> getAlgorithmOfPublication(
             @PathVariable UUID publicationId,
             @PathVariable UUID algorithmId) {
         publicationService.checkIfAlgorithmIsLinkedToPublication(publicationId, algorithmId);
 
         final var algorithm = algorithmService.findById(algorithmId);
-        return ResponseEntity.ok(algorithmAssembler.toModel(algorithm));
+        return ResponseEntity.ok(ModelMapperUtils.convert(algorithm, AlgorithmDto.class));
     }
 
     @Operation(responses = {
@@ -395,11 +396,11 @@ public class PublicationController {
     }, description = "Retrieve referenced implementations of an publication. If none are found an empty list is returned.")
     @ListParametersDoc
     @GetMapping("/{publicationId}/" + Constants.IMPLEMENTATIONS)
-    public ResponseEntity<PagedModel<EntityModel<ImplementationDto>>> getImplementationsOfPublication(
+    public ResponseEntity<Page<ImplementationDto>> getImplementationsOfPublication(
             @PathVariable UUID publicationId,
             @Parameter(hidden = true) ListParameters params) {
         final var implementations = publicationService.findLinkedImplementations(publicationId, params.getPageable());
-        return ResponseEntity.ok(implementationAssembler.toModel(implementations));
+        return ResponseEntity.ok(ModelMapperUtils.convertPage(implementations, ImplementationDto.class));
     }
 
     @Operation(responses = {
@@ -409,13 +410,13 @@ public class PublicationController {
                     description = "Not Found. Implementation or publication with given IDs don't exist.")
     }, description = "Retrieve a specific implementation of a publication.")
     @GetMapping("/{publicationId}/" + Constants.IMPLEMENTATIONS + "/{implementationId}")
-    public ResponseEntity<EntityModel<ImplementationDto>> getImplementationOfPublication(
+    public ResponseEntity<ImplementationDto> getImplementationOfPublication(
             @PathVariable UUID publicationId,
             @PathVariable UUID implementationId) {
         publicationService.checkIfImplementationIsLinkedToPublication(publicationId, implementationId);
 
         final var implementation = implementationService.findById(implementationId);
-        return ResponseEntity.ok(implementationAssembler.toModel(implementation));
+        return ResponseEntity.ok(ModelMapperUtils.convert(implementation, ImplementationDto.class));
     }
 }
 

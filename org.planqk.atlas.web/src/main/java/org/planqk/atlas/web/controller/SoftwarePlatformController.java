@@ -88,7 +88,7 @@ public class SoftwarePlatformController {
     }, description = "Retrieve all software platforms.")
     @ListParametersDoc
     @GetMapping
-    public ResponseEntity<PagedModel<EntityModel<SoftwarePlatformDto>>> getSoftwarePlatforms(
+    public ResponseEntity<Page<SoftwarePlatformDto>> getSoftwarePlatforms(
             @Parameter(hidden = true) ListParameters listParameters) {
         final Page<SoftwarePlatform> entities;
         if (listParameters.getSearch() == null || listParameters.getSearch().isEmpty()) {
@@ -96,7 +96,7 @@ public class SoftwarePlatformController {
         } else {
             entities = softwarePlatformService.searchAllByName(listParameters.getSearch(), listParameters.getPageable());
         }
-        return ResponseEntity.ok(softwarePlatformAssembler.toModel(entities));
+        return ResponseEntity.ok(ModelMapperUtils.convertPage(entities, SoftwarePlatformDto.class));
     }
 
     @Operation(responses = {
@@ -106,10 +106,10 @@ public class SoftwarePlatformController {
             "References to sub-objects (e.g. a compute resource) " +
             "can be added via sub-routes (e.g. via POST on /" + Constants.COMPUTE_RESOURCES + ").")
     @PostMapping
-    public ResponseEntity<EntityModel<SoftwarePlatformDto>> createSoftwarePlatform(
+    public ResponseEntity<SoftwarePlatformDto> createSoftwarePlatform(
             @Validated({ValidationGroups.Create.class}) @RequestBody SoftwarePlatformDto softwarePlatformDto) {
         final var savedPlatform = softwarePlatformService.create(ModelMapperUtils.convert(softwarePlatformDto, SoftwarePlatform.class));
-        return new ResponseEntity<>(softwarePlatformAssembler.toModel(savedPlatform), HttpStatus.CREATED);
+        return ResponseEntity.ok(ModelMapperUtils.convert(savedPlatform, SoftwarePlatformDto.class));
     }
 
     @Operation(responses = {
@@ -121,14 +121,14 @@ public class SoftwarePlatformController {
             "References to sub-objects (e.g. a compute resource) are not updated via this operation - " +
             "use the corresponding sub-route for updating them (e.g. via PUT on /" + Constants.COMPUTE_RESOURCES + "/{computeResourceId}).")
     @PutMapping("/{softwarePlatformId}")
-    public ResponseEntity<EntityModel<SoftwarePlatformDto>> updateSoftwarePlatform(
+    public ResponseEntity<SoftwarePlatformDto> updateSoftwarePlatform(
             @PathVariable UUID softwarePlatformId,
             @Validated({ValidationGroups.Update.class}) @RequestBody SoftwarePlatformDto softwarePlatformDto) {
         softwarePlatformDto.setId(softwarePlatformId);
         final var softwarePlatform = softwarePlatformService
                 .update(
                         ModelMapperUtils.convert(softwarePlatformDto, SoftwarePlatform.class));
-        return ResponseEntity.ok(softwarePlatformAssembler.toModel(softwarePlatform));
+        return ResponseEntity.ok(ModelMapperUtils.convert(softwarePlatform, SoftwarePlatformDto.class));
     }
 
     @Operation(responses = {
@@ -151,10 +151,10 @@ public class SoftwarePlatformController {
                     description = "Not Found. Software Platform with given ID doesn't exist."),
     }, description = "Retrieve a specific software platform and its basic properties.")
     @GetMapping("/{softwarePlatformId}")
-    public ResponseEntity<EntityModel<SoftwarePlatformDto>> getSoftwarePlatform(
+    public ResponseEntity<SoftwarePlatformDto> getSoftwarePlatform(
             @PathVariable UUID softwarePlatformId) {
         final var softwarePlatform = softwarePlatformService.findById(softwarePlatformId);
-        return ResponseEntity.ok(softwarePlatformAssembler.toModel(softwarePlatform));
+        return ResponseEntity.ok(ModelMapperUtils.convert(softwarePlatform, SoftwarePlatformDto.class));
     }
 
     @Operation(responses = {
@@ -165,11 +165,11 @@ public class SoftwarePlatformController {
     }, description = "Get a specific implementations of a software platform. If none are found an empty list is returned.")
     @ListParametersDoc
     @GetMapping("/{softwarePlatformId}/" + Constants.IMPLEMENTATIONS)
-    public ResponseEntity<PagedModel<EntityModel<ImplementationDto>>> getImplementationsOfSoftwarePlatform(
+    public ResponseEntity<Page<ImplementationDto>> getImplementationsOfSoftwarePlatform(
             @PathVariable UUID softwarePlatformId,
             @Parameter(hidden = true) ListParameters listParameters) {
         final var implementations = softwarePlatformService.findLinkedImplementations(softwarePlatformId, listParameters.getPageable());
-        return ResponseEntity.ok(implementationAssembler.toModel(implementations));
+        return ResponseEntity.ok(ModelMapperUtils.convertPage(implementations, ImplementationDto.class));
     }
 
     @Operation(responses = {
@@ -279,11 +279,11 @@ public class SoftwarePlatformController {
     }, description = "Retrieve referenced compute resources for a software platform. If none are found an empty list is returned.")
     @ListParametersDoc
     @GetMapping("/{softwarePlatformId}/" + Constants.COMPUTE_RESOURCES)
-    public ResponseEntity<PagedModel<EntityModel<ComputeResourceDto>>> getComputeResourcesOfSoftwarePlatform(
+    public ResponseEntity<Page<ComputeResourceDto>> getComputeResourcesOfSoftwarePlatform(
             @PathVariable UUID softwarePlatformId,
             @Parameter(hidden = true) ListParameters listParameters) {
         final var computeResources = softwarePlatformService.findLinkedComputeResources(softwarePlatformId, listParameters.getPageable());
-        return ResponseEntity.ok(computeResourceAssembler.toModel(computeResources));
+        return ResponseEntity.ok(ModelMapperUtils.convertPage(computeResources, ComputeResourceDto.class));
     }
 
     @Operation(responses = {

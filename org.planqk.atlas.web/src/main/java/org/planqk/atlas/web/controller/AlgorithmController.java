@@ -480,6 +480,7 @@ public class AlgorithmController {
     }, description = "Retrieve discussion topic of an algorithm."
     )
     @ListParametersDoc
+    // TODO: nochmal anschauen weil hier änderungen im code sind
     @GetMapping("/{algorithmId}/" + Constants.DISCUSSION_TOPICS + "/{topicId}")
     public HttpEntity<EntityModel<DiscussionTopicDto>> getDiscussionTopicOfAlgorithm(
             @PathVariable UUID algorithmId,

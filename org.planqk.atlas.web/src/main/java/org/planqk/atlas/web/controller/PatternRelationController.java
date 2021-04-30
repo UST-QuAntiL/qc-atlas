@@ -30,8 +30,7 @@ import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.ValidationGroups;
-import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.PagedModel;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -69,10 +68,10 @@ public class PatternRelationController {
     }, description = "Retrieve all relations between pattern and algorithms.")
     @ListParametersDoc
     @GetMapping
-    public ResponseEntity<PagedModel<EntityModel<PatternRelationDto>>> getPatternRelations(
+    public ResponseEntity<Page<PatternRelationDto>> getPatternRelations(
             @Parameter(hidden = true) ListParameters listParameters) {
         final var patternRelations = patternRelationService.findAll(listParameters.getPageable());
-        return ResponseEntity.ok(patternRelationAssembler.toModel(patternRelations));
+        return ResponseEntity.ok(ModelMapperUtils.convertPage(patternRelations, PatternRelationDto.class));
     }
 
     @Operation(responses = {
@@ -84,11 +83,11 @@ public class PatternRelationController {
             "The pattern relation type has to be already created (e.g. via POST on /" + Constants.PATTERN_RELATION_TYPES + "). " +
             "As a result only the ID is required for the pattern relation type, other attributes will be ignored not changed.")
     @PostMapping
-    public ResponseEntity<EntityModel<PatternRelationDto>> createPatternRelation(
+    public ResponseEntity<PatternRelationDto> createPatternRelation(
             @Validated({ValidationGroups.Create.class}) @RequestBody PatternRelationDto patternRelationDto) {
         final var savedPatternRelation = patternRelationService.create(
                 ModelMapperUtils.convert(patternRelationDto, PatternRelation.class));
-        return new ResponseEntity<>(patternRelationAssembler.toModel(savedPatternRelation), HttpStatus.CREATED);
+        return ResponseEntity.ok(ModelMapperUtils.convert(savedPatternRelation, PatternRelationDto.class));
     }
 
     @Operation(responses = {
@@ -101,13 +100,13 @@ public class PatternRelationController {
             "For the pattern relation type only the ID is required," +
             "other pattern relation type attributes will be ignored and not changed.")
     @PutMapping("/{patternRelationId}")
-    public ResponseEntity<EntityModel<PatternRelationDto>> updatePatternRelation(
+    public ResponseEntity<PatternRelationDto> updatePatternRelation(
             @PathVariable UUID patternRelationId,
             @Validated({ValidationGroups.Update.class}) @RequestBody PatternRelationDto patternRelationDto) {
         patternRelationDto.setId(patternRelationId);
         final var savedPatternRelation = patternRelationService.update(
                 ModelMapperUtils.convert(patternRelationDto, PatternRelation.class));
-        return ResponseEntity.ok(patternRelationAssembler.toModel(savedPatternRelation));
+        return ResponseEntity.ok(ModelMapperUtils.convert(savedPatternRelation, PatternRelationDto.class));
     }
 
     @Operation(responses = {
@@ -130,8 +129,8 @@ public class PatternRelationController {
                     description = "Not Found. Algorithm or pattern relation with given IDs don't exist.")
     }, description = "Retrieve a specific relation between a pattern and an algorithm.")
     @GetMapping("/{patternRelationId}")
-    public ResponseEntity<EntityModel<PatternRelationDto>> getPatternRelation(@PathVariable UUID patternRelationId) {
+    public ResponseEntity<PatternRelationDto> getPatternRelation(@PathVariable UUID patternRelationId) {
         final var patternRelation = patternRelationService.findById(patternRelationId);
-        return ResponseEntity.ok(patternRelationAssembler.toModel(patternRelation));
+        return ResponseEntity.ok(ModelMapperUtils.convert(patternRelation, PatternRelationDto.class));
     }
 }

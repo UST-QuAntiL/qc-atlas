@@ -30,8 +30,8 @@ import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.ValidationGroups;
+import org.springframework.data.domain.Page;
 import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -69,10 +69,10 @@ public class ApplicationAreaController {
     }, description = "Retrieve all application areas")
     @ListParametersDoc
     @GetMapping
-    public ResponseEntity<PagedModel<EntityModel<ApplicationAreaDto>>> getApplicationAreas(
+    public ResponseEntity<Page<ApplicationAreaDto>> getApplicationAreas(
             @Parameter(hidden = true) ListParameters listParameters) {
-        return ResponseEntity.ok(applicationAreaAssembler
-                .toModel(applicationAreaService.findAll(listParameters.getPageable(), listParameters.getSearch())));
+        return ResponseEntity.ok(ModelMapperUtils
+                .convertPage(applicationAreaService.findAll(listParameters.getPageable(), listParameters.getSearch()), ApplicationAreaDto.class));
     }
 
     @Operation(responses = {
@@ -80,11 +80,11 @@ public class ApplicationAreaController {
             @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
     }, description = "Define the basic properties of an application area.")
     @PostMapping
-    public ResponseEntity<EntityModel<ApplicationAreaDto>> createApplicationArea(
+    public ResponseEntity<ApplicationAreaDto> createApplicationArea(
             @Validated(ValidationGroups.Create.class) @RequestBody ApplicationAreaDto applicationAreaDto) {
         final var savedApplicationArea = applicationAreaService.create(
                 ModelMapperUtils.convert(applicationAreaDto, ApplicationArea.class));
-        return new ResponseEntity<>(applicationAreaAssembler.toModel(savedApplicationArea), HttpStatus.CREATED);
+        return new ResponseEntity<>(ModelMapperUtils.convert(savedApplicationArea, ApplicationAreaDto.class), HttpStatus.CREATED);
     }
 
     @Operation(responses = {
@@ -94,13 +94,13 @@ public class ApplicationAreaController {
                     description = "Not Found. Application area with given ID does not exist"),
     }, description = "Update the basic properties of an application area (e.g. name).")
     @PutMapping("/{applicationAreaId}")
-    public ResponseEntity<EntityModel<ApplicationAreaDto>> updateApplicationArea(
+    public ResponseEntity<ApplicationAreaDto> updateApplicationArea(
             @PathVariable UUID applicationAreaId,
             @Validated(ValidationGroups.Update.class) @RequestBody ApplicationAreaDto applicationAreaDto) {
         applicationAreaDto.setId(applicationAreaId);
         final var updatedApplicationArea = applicationAreaService.update(
                 ModelMapperUtils.convert(applicationAreaDto, ApplicationArea.class));
-        return ResponseEntity.ok(applicationAreaAssembler.toModel(updatedApplicationArea));
+        return ResponseEntity.ok(ModelMapperUtils.convert(updatedApplicationArea, ApplicationAreaDto.class));
     }
 
     @Operation(responses = {

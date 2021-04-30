@@ -27,8 +27,8 @@ import org.planqk.atlas.web.dtos.ImplementationDto;
 import org.planqk.atlas.web.linkassembler.ImplementationAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
-import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.PagedModel;
+import org.planqk.atlas.web.utils.ModelMapperUtils;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -63,10 +63,9 @@ public class ImplementationGlobalController {
     }, description = "Retrieve all implementations unaffected by its implemented algorithm")
     @ListParametersDoc
     @GetMapping
-    public ResponseEntity<PagedModel<EntityModel<ImplementationDto>>> getImplementations(
-            @Parameter(hidden = true) ListParameters listParameters) {
+    public ResponseEntity<Page<ImplementationDto>> getImplementations(@Parameter(hidden = true) ListParameters listParameters) {
         final var implementations = implementationService.findAll(listParameters.getPageable());
-        return ResponseEntity.ok(implementationAssembler.toModel(implementations));
+        return ResponseEntity.ok(ModelMapperUtils.convertPage(implementations, ImplementationDto.class));
     }
 
     @Operation(responses = {
@@ -76,10 +75,9 @@ public class ImplementationGlobalController {
                     description = "Implementation with given ID doesn't exist")
     }, description = "Retrieve a specific implementation and its basic properties.")
     @GetMapping("/{implementationId}")
-    public ResponseEntity<EntityModel<ImplementationDto>> getImplementation(
-            @PathVariable UUID implementationId) {
+    public ResponseEntity<ImplementationDto> getImplementation(@PathVariable UUID implementationId) {
         final var implementation = this.implementationService.findById(implementationId);
-        return ResponseEntity.ok(implementationAssembler.toModel(implementation));
+        return ResponseEntity.ok(ModelMapperUtils.convert(implementation, ImplementationDto.class));
     }
 
 }
