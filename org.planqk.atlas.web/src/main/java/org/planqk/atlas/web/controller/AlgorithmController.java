@@ -27,6 +27,7 @@ import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.ApplicationArea;
 import org.planqk.atlas.core.model.ComputeResourceProperty;
 import org.planqk.atlas.core.model.Image;
+import org.planqk.atlas.core.model.LearningMethod;
 import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.model.Publication;
@@ -49,6 +50,7 @@ import org.planqk.atlas.web.dtos.ComputeResourcePropertyDto;
 import org.planqk.atlas.web.dtos.DiscussionCommentDto;
 import org.planqk.atlas.web.dtos.DiscussionTopicDto;
 import org.planqk.atlas.web.dtos.ImplementationDto;
+import org.planqk.atlas.web.dtos.LearningMethodDto;
 import org.planqk.atlas.web.dtos.PatternRelationDto;
 import org.planqk.atlas.web.dtos.ProblemTypeDto;
 import org.planqk.atlas.web.dtos.PublicationDto;
@@ -852,5 +854,75 @@ public class AlgorithmController {
                 .contentType(MediaType.parseMediaType(image.getMimeType()))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "inline")
                 .body(image.getImage());
+    }
+
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200", description = "The request has succeeded. " +
+                    "The learning method has been fetched and is transmitted in the message body"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+            @ApiResponse(responseCode = "404",
+                    description = "Not Found. Algorithm or learning method with given IDs don't exist.")
+    }, description = "Retrieve learning method of an algorithm. If none are found an empty list is returned.")
+    @ListParametersDoc
+    @GetMapping("/{algorithmId}/" + Constants.LEARNING_METHODS)
+    public ResponseEntity<Page<LearningMethodDto>> getLearningMethodsOfAlgorithm(
+            @PathVariable UUID algorithmId,
+            @Parameter(hidden = true) ListParameters listParameters) {
+        final Page<LearningMethod> learningMethods = algorithmService.findLinkedLearningMethods(algorithmId, listParameters.getPageable());
+        return ResponseEntity.ok(ModelMapperUtils.convertPage(learningMethods, LearningMethodDto.class));
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200", description = "The request has succeeded. " +
+                    "The learning method has been fetched and is transmitted in the message body"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+            @ApiResponse(responseCode = "404",
+                    description = "Not Found. Algorithm or learning method with given IDs don't exist.")
+    }, description = "Retrieve a specific learning method of an algorithm.")
+    @GetMapping("/{algorithmId}/" + Constants.LEARNING_METHODS + "/{learningMethodId}")
+    public ResponseEntity<LearningMethodDto> getLearningMethodOfAlgorithm(
+            @PathVariable UUID algorithmId,
+            @PathVariable UUID learningMethodId) {
+        final LearningMethod learningMethod = algorithmService.getLearningMethodOfAlgorithm(algorithmId, learningMethodId);
+        return ResponseEntity.ok(ModelMapperUtils.convert(learningMethod, LearningMethodDto.class));
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "204", description = "There is no content to send for this request."),
+            @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+            @ApiResponse(responseCode = "404",
+                    description = "Not Found. Algorithm or learning method with given IDs don't exist or " +
+                            "reference was already added.")
+    }, description = "Add a reference to an existing learning method " +
+            "(that was previously created via a POST on e.g. /" + Constants.LEARNING_METHODS + "). " +
+            "Only the ID is required in the request body, other attributes will be ignored and not changed.")
+    @PostMapping("/{algorithmId}/" + Constants.LEARNING_METHODS)
+    public ResponseEntity<Void> linkAlgorithmAndLearningMethod(
+            @PathVariable UUID algorithmId,
+            @Validated({ValidationGroups.IDOnly.class}) @RequestBody LearningMethodDto learningMethodDto) {
+        linkingService.linkAlgorithmAndLearningMethod(algorithmId, learningMethodDto.getId());
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "204", description = "There is no content to send for this request."),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+            @ApiResponse(responseCode = "404",
+                    description = "Not Found. Algorithm or learning method with given IDs don't exist or " +
+                            "no reference exists.")
+    }, description = "Delete a reference to a learning method of an algorithm.")
+    @DeleteMapping("/{algorithmId}/" + Constants.LEARNING_METHODS + "/{learningMethodId}")
+    public ResponseEntity<Void> unlinkAlgorithmAndLearningMethod(
+            @PathVariable UUID algorithmId,
+            @PathVariable UUID learningMethodId) {
+        linkingService.unlinkAlgorithmAndLearningMethod(algorithmId, learningMethodId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

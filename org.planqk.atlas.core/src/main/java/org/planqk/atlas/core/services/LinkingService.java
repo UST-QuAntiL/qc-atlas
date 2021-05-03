@@ -21,6 +21,9 @@ package org.planqk.atlas.core.services;
 
 import java.util.UUID;
 
+import org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException;
+import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.LearningMethod;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -82,10 +85,10 @@ public interface LinkingService {
      * found a {@link java.util.NoSuchElementException} is thrown.
      * <p>
      * If both entities exist but they are not linked beforehand this method will throw an {
-     * @link org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException}.
      *
      * @param algorithmId   The ID of the {@link org.planqk.atlas.core.model.Algorithm} we want to unlink
      * @param problemTypeId The ID of the {@link org.planqk.atlas.core.model.ProblemType} we want to unlink
+     * @link org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException}.
      */
     @Transactional
     void unlinkAlgorithmAndProblemType(UUID algorithmId, UUID problemTypeId);
@@ -275,4 +278,38 @@ public interface LinkingService {
      */
     @Transactional
     void unlinkCloudServiceAndComputeResource(UUID cloudServiceId, UUID computeResourceId);
+
+    /**
+     * Links an existing {@link Algorithm} and an existing
+     * {@link LearningMethod}.
+     * <p>
+     * If either the {@link Algorithm} or the {@link LearningMethod}
+     * with given IDs could not be
+     * found a {@link java.util.NoSuchElementException} is thrown.
+     * <p>
+     * If both entities exist but they are already linked this method will throw an
+     * {@link EntityReferenceConstraintViolationException}.
+     *
+     * @param algorithmId      The ID of the {@link Algorithm} we want to link
+     * @param learningMethodId The ID of the {@link LearningMethod} we want to link
+     */
+    @Transactional
+    void linkAlgorithmAndLearningMethod(UUID algorithmId, UUID learningMethodId);
+
+    /**
+     * Links an existing {@link Algorithm} and an existing
+     * {@link LearningMethod} that have been linked before.
+     * <p>
+     * If either the {@link Algorithm} or the {@link LearningMethod} with given
+     * IDs could not be
+     * found a {@link java.util.NoSuchElementException} is thrown.
+     * <p>
+     * If both entities exist but they are not linked beforehand this method will throw an {
+     *
+     * @param algorithmId      The ID of the {@link Algorithm} we want to unlink
+     * @param learningMethodId The ID of the {@link LearningMethod} we want to unlink
+     * @link de.stoneone.planqk.qccatalog.exception.EntityReferenceConstraintViolationException}.
+     */
+    @Transactional
+    void unlinkAlgorithmAndLearningMethod(UUID algorithmId, UUID learningMethodId);
 }

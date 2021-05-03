@@ -24,6 +24,7 @@ import java.util.UUID;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.model.ApplicationArea;
+import org.planqk.atlas.core.model.LearningMethod;
 import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.model.Publication;
@@ -188,6 +189,23 @@ public interface AlgorithmService {
     Page<ApplicationArea> findLinkedApplicationAreas(UUID algorithmId, Pageable pageable);
 
     /**
+     * Retrieve multiple {@link LearningMethod}s entries from the database where
+     * {@link LearningMethod}s that are linked to the given {@link Algorithm}.
+     * If no entries are found an empty page is returned.
+     * <p>
+     * The amount of entries is based on the given {@link Pageable} parameter. If the {@link Pageable} is unpaged a {@link Page} with all entries is
+     * queried.
+     * <p>
+     * The given {@link Algorithm} is identified through its ID given as a parameter. If no {@link Algorithm} with the given ID can be found a {@link
+     * java.util.NoSuchElementException} is thrown.
+     *
+     * @param algorithmId The ID of the {@link Algorithm} we want find linked {@link LearningMethod}s for
+     * @param pageable    The page information, namely page size and page number, of the page we want to retrieve
+     * @return The page of queried {@link LearningMethod} entries which are linked to the {@link Algorithm}
+     */
+    Page<LearningMethod> findLinkedLearningMethods(UUID algorithmId, Pageable pageable);
+
+    /**
      * Checks if a given {@link Publication} is linked to a given {@link Algorithm}.
      * <p>
      * If either the {@link Publication} or the {@link Algorithm} with given IDs could not be found or if a database entry for both could be found but
@@ -219,4 +237,16 @@ public interface AlgorithmService {
      * @param applicationAreaId The ID of the {@link ApplicationArea} we want to check
      */
     void checkIfApplicationAreaIsLinkedToAlgorithm(UUID algorithmId, UUID applicationAreaId);
+
+    /**
+     * Checks if a given {@link LearningMethod} is linked to a given {@link Algorithm}.
+     * <p>
+     * If either the {@link LearningMethod} or the {@link Algorithm} with given IDs could not be found or if
+     * a database entry for both could be found but they are not linked a {@link java.util.NoSuchElementException} is thrown.
+     *
+     * @param algorithmId      The ID of the {@link Algorithm} we want to check
+     * @param learningMethodId The ID of the {@link LearningMethod} we want to check
+     * @return {@link LearningMethod} with the provided Id that is linked to the algorithm with the given Id
+     */
+    LearningMethod getLearningMethodOfAlgorithm(UUID algorithmId, UUID learningMethodId);
 }

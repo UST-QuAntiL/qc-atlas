@@ -112,6 +112,8 @@ public final class Constants {
 
     public static final String TAG_TAG = "tag";
 
+    public static final String LEARNING_METHODS = "learning-methods";
+
 
     private Constants() {
     }
