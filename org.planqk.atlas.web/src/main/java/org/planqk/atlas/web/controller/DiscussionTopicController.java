@@ -29,13 +29,11 @@ import org.planqk.atlas.core.services.DiscussionTopicService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.DiscussionCommentDto;
 import org.planqk.atlas.web.dtos.DiscussionTopicDto;
-import org.planqk.atlas.web.linkassembler.DiscussionTopicAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.ValidationGroups;
-import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.PagedModel;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -68,8 +66,6 @@ public class DiscussionTopicController {
 
     private final DiscussionTopicService discussionTopicService;
 
-    private final DiscussionTopicAssembler discussionTopicAssembler;
-
     private final DiscussionCommentService discussionCommentService;
 
     private final DiscussionCommentController discussionCommentController;
@@ -79,17 +75,17 @@ public class DiscussionTopicController {
     }, description = "")
     @ListParametersDoc
     @GetMapping
-    public HttpEntity<PagedModel<EntityModel<DiscussionTopicDto>>> getDiscussionTopics(
+    public ResponseEntity<Page<DiscussionTopicDto>> getDiscussionTopics(
             @Parameter(hidden = true) ListParameters listParameters) {
         final var topics = discussionTopicService.findAll(listParameters.getPageable());
-        return ResponseEntity.ok(discussionTopicAssembler.toModel(topics));
+        return ResponseEntity.ok(ModelMapperUtils.convertPage(topics, DiscussionTopicDto.class));
     }
 
-    public HttpEntity<PagedModel<EntityModel<DiscussionTopicDto>>> getDiscussionTopics(
+    public ResponseEntity<Page<DiscussionTopicDto>> getDiscussionTopics(
             UUID knowledgeArtifactId,
             @Parameter(hidden = true) ListParameters listParameters) {
         final var topics = discussionTopicService.findByKnowledgeArtifactId(knowledgeArtifactId, listParameters.getPageable());
-        return ResponseEntity.ok(discussionTopicAssembler.toModel(topics));
+        return ResponseEntity.ok(ModelMapperUtils.convertPage(topics, DiscussionTopicDto.class));
     }
 
     @Operation(responses = {
@@ -98,15 +94,15 @@ public class DiscussionTopicController {
             @ApiResponse(responseCode = "404")
     }, description = "")
     @GetMapping("/{topicId}")
-    public HttpEntity<EntityModel<DiscussionTopicDto>> getDiscussionTopic(@PathVariable UUID topicId) {
+    public ResponseEntity<DiscussionTopicDto> getDiscussionTopic(@PathVariable UUID topicId) {
         final DiscussionTopic discussionTopic = discussionTopicService.findById(topicId);
-        return ResponseEntity.ok(discussionTopicAssembler.toModel(discussionTopic));
+        return ResponseEntity.ok(ModelMapperUtils.convert(discussionTopic, DiscussionTopicDto.class));
     }
 
-    public HttpEntity<EntityModel<DiscussionTopicDto>> getDiscussionTopic(UUID knowledgeArtifactId, UUID topicId) {
+    public ResponseEntity<DiscussionTopicDto> getDiscussionTopic(UUID knowledgeArtifactId, UUID topicId) {
         discussionTopicService.checkIfDiscussionTopicIsLinkedToKnowledgeArtifact(topicId, knowledgeArtifactId);
         final DiscussionTopic discussionTopic = discussionTopicService.findById(topicId);
-        return ResponseEntity.ok(discussionTopicAssembler.toModel(discussionTopic));
+        return ResponseEntity.ok(ModelMapperUtils.convert(discussionTopic, DiscussionTopicDto.class));
     }
 
     @Operation(responses = {
@@ -132,13 +128,13 @@ public class DiscussionTopicController {
             @ApiResponse(responseCode = "404")
     }, description = "")
     @PostMapping()
-    public HttpEntity<EntityModel<DiscussionTopicDto>> createDiscussionTopic(
+    public ResponseEntity<DiscussionTopicDto> createDiscussionTopic(
             @Validated(ValidationGroups.Create.class) @RequestBody DiscussionTopicDto discussionTopicDto) {
         final var discussionTopic = discussionTopicService.create(ModelMapperUtils.convert(discussionTopicDto, DiscussionTopic.class));
-        return new ResponseEntity<>(discussionTopicAssembler.toModel(discussionTopic), HttpStatus.CREATED);
+        return new ResponseEntity<>(ModelMapperUtils.convert(discussionTopic, DiscussionTopicDto.class), HttpStatus.CREATED);
     }
 
-    public HttpEntity<EntityModel<DiscussionTopicDto>> createDiscussionTopic(
+    public ResponseEntity<DiscussionTopicDto> createDiscussionTopic(
             KnowledgeArtifact knowledgeArtifact,
             @Validated(ValidationGroups.Create.class) @RequestBody DiscussionTopicDto discussionTopicDto) {
         final DiscussionTopic convertedDiscussionTopic = ModelMapperUtils.convert(discussionTopicDto, DiscussionTopic.class);
@@ -147,7 +143,7 @@ public class DiscussionTopicController {
         final Set<DiscussionTopic> discussionTopics = knowledgeArtifact.getDiscussionTopics();
         discussionTopics.add(discussionTopic);
         knowledgeArtifact.setDiscussionTopics(discussionTopics);
-        return new ResponseEntity<>(discussionTopicAssembler.toModel(discussionTopic), HttpStatus.CREATED);
+        return new ResponseEntity<>(ModelMapperUtils.convert(discussionTopic, DiscussionTopicDto.class), HttpStatus.CREATED);
     }
 
     @Operation(responses = {
@@ -157,13 +153,13 @@ public class DiscussionTopicController {
     }, description = "")
     @ListParametersDoc
     @GetMapping("/{topicId}/" + Constants.DISCUSSION_COMMENTS)
-    public HttpEntity<PagedModel<EntityModel<DiscussionCommentDto>>> getDiscussionComments(
+    public ResponseEntity<Page<DiscussionCommentDto>> getDiscussionComments(
             @PathVariable UUID topicId,
             @Parameter(hidden = true) ListParameters listParameters) {
         return discussionCommentController.getDiscussionCommentsOfTopic(topicId, listParameters);
     }
 
-    public HttpEntity<PagedModel<EntityModel<DiscussionCommentDto>>> getDiscussionComments(
+    public ResponseEntity<Page<DiscussionCommentDto>> getDiscussionComments(
             UUID knowledgeArtifactId,
             UUID topicId,
             @Parameter(hidden = true) ListParameters listParameters) {
@@ -177,14 +173,14 @@ public class DiscussionTopicController {
             @ApiResponse(responseCode = "404")
     }, description = "")
     @GetMapping("/{topicId}/" + Constants.DISCUSSION_COMMENTS + "/{commentId}")
-    public HttpEntity<EntityModel<DiscussionCommentDto>> getDiscussionComment(
+    public ResponseEntity<DiscussionCommentDto> getDiscussionComment(
             @PathVariable UUID topicId,
             @PathVariable UUID commentId) {
         discussionCommentService.checkIfDiscussionCommentIsInDiscussionTopic(commentId, topicId);
         return discussionCommentController.getDiscussionComment(commentId);
     }
 
-    public HttpEntity<EntityModel<DiscussionCommentDto>> getDiscussionComment(
+    public ResponseEntity<DiscussionCommentDto> getDiscussionComment(
             UUID knowledgeArtifactId,
             UUID topicId,
             UUID commentId) {
@@ -216,7 +212,7 @@ public class DiscussionTopicController {
             @ApiResponse(responseCode = "404")
     }, description = "")
     @PutMapping("/{topicId}/" + Constants.DISCUSSION_COMMENTS + "/{commentId}")
-    public HttpEntity<EntityModel<DiscussionCommentDto>> updateDiscussionComment(
+    public ResponseEntity<DiscussionCommentDto> updateDiscussionComment(
             @PathVariable UUID topicId,
             @PathVariable UUID commentId,
             @Validated(ValidationGroups.Update.class) @RequestBody DiscussionCommentDto discussionCommentDto) {
@@ -225,7 +221,7 @@ public class DiscussionTopicController {
         return discussionCommentController.updateDiscussionComment(commentId, discussionCommentDto);
     }
 
-    public HttpEntity<EntityModel<DiscussionCommentDto>> updateDiscussionComment(
+    public ResponseEntity<DiscussionCommentDto> updateDiscussionComment(
             UUID knowledgeArtifactId,
             UUID topicId,
             UUID commentId,
@@ -242,7 +238,7 @@ public class DiscussionTopicController {
             @ApiResponse(responseCode = "404")
     }, description = "")
     @PostMapping("/{topicId}/" + Constants.DISCUSSION_COMMENTS)
-    public HttpEntity<EntityModel<DiscussionCommentDto>> createDiscussionComment(
+    public ResponseEntity<DiscussionCommentDto> createDiscussionComment(
             @PathVariable UUID topicId,
             @Validated(ValidationGroups.Create.class) @RequestBody DiscussionCommentDto discussionCommentDto) {
         final DiscussionTopic discussionTopic = discussionTopicService.findById(topicId);
@@ -250,7 +246,7 @@ public class DiscussionTopicController {
         return discussionCommentController.createDiscussionComment(discussionCommentDto);
     }
 
-    public HttpEntity<EntityModel<DiscussionCommentDto>> createDiscussionComment(
+    public ResponseEntity<DiscussionCommentDto> createDiscussionComment(
             UUID knowledgeArtifactId,
             UUID topicId,
             @Validated(ValidationGroups.Create.class) @RequestBody DiscussionCommentDto discussionCommentDto) {
@@ -266,15 +262,15 @@ public class DiscussionTopicController {
             @ApiResponse(responseCode = "404")
     }, description = "")
     @PutMapping("/{topicId}")
-    public HttpEntity<EntityModel<DiscussionTopicDto>> updateDiscussionTopic(
+    public ResponseEntity<DiscussionTopicDto> updateDiscussionTopic(
             @PathVariable UUID topicId,
             @Validated(ValidationGroups.Update.class) @RequestBody DiscussionTopicDto discussionTopicDto) {
         discussionTopicDto.setId(topicId);
         final DiscussionTopic discussionTopic = discussionTopicService.update(ModelMapperUtils.convert(discussionTopicDto, DiscussionTopic.class));
-        return ResponseEntity.ok(discussionTopicAssembler.toModel(discussionTopic));
+        return ResponseEntity.ok(ModelMapperUtils.convert(discussionTopic, DiscussionTopicDto.class));
     }
 
-    public HttpEntity<EntityModel<DiscussionTopicDto>> updateDiscussionTopic(
+    public ResponseEntity<DiscussionTopicDto> updateDiscussionTopic(
             KnowledgeArtifact knowledgeArtifact,
             UUID topicId,
             @Validated(ValidationGroups.Update.class) @RequestBody DiscussionTopicDto discussionTopicDto) {
@@ -283,6 +279,6 @@ public class DiscussionTopicController {
         final DiscussionTopic convertedDiscussionTopic = ModelMapperUtils.convert(discussionTopicDto, DiscussionTopic.class);
         convertedDiscussionTopic.setKnowledgeArtifact(knowledgeArtifact);
         final DiscussionTopic discussionTopic = discussionTopicService.update(convertedDiscussionTopic);
-        return ResponseEntity.ok(discussionTopicAssembler.toModel(discussionTopic));
+        return ResponseEntity.ok(ModelMapperUtils.convert(discussionTopic, DiscussionTopicDto.class));
     }
 }

@@ -46,14 +46,11 @@ import org.planqk.atlas.web.dtos.ImplementationPackageDto;
 import org.planqk.atlas.web.dtos.PublicationDto;
 import org.planqk.atlas.web.dtos.SoftwarePlatformDto;
 import org.planqk.atlas.web.dtos.TagDto;
-import org.planqk.atlas.web.linkassembler.ImplementationPackageAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.ValidationGroups;
 import org.springframework.data.domain.Page;
-import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -106,8 +103,6 @@ public class ImplementationController {
     private final ImplementationPackageService implementationPackageService;
 
     private final FileService fileService;
-
-    private final ImplementationPackageAssembler implementationPackageAssembler;
 
     @Operation(responses = {
             @ApiResponse(responseCode = "201"),
@@ -175,7 +170,7 @@ public class ImplementationController {
                     description = "Not Found. Algorithm or implementation with given IDs don't exist.")
     }, description = "Retrieve a specific implementation and its basic properties of an algorithm.")
     @GetMapping("/{implementationId}")
-    public ResponseEntity<ImplementationDto> getImplementationOfAlgorithm(
+    public ResponseEntity<ImplementationDto> getImplementation(
             @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId) {
         implementationService.checkIfImplementationIsOfAlgorithm(implementationId, algorithmId);
@@ -490,7 +485,7 @@ public class ImplementationController {
                     description = "Not Found. Algorithm, implementation or compute resource property with given IDs don't exist."),
     }, description = "Retrieve a specific compute resource property of an implementation.")
     @GetMapping("/{implementationId}/" + Constants.COMPUTE_RESOURCE_PROPERTIES + "/{computeResourcePropertyId}")
-    public HttpEntity<ComputeResourcePropertyDto> getComputeResourcePropertyOfImplementation(
+    public ResponseEntity<ComputeResourcePropertyDto> getComputeResourcePropertyOfImplementation(
             @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId,
             @PathVariable UUID computeResourcePropertyId) {
@@ -510,7 +505,7 @@ public class ImplementationController {
     )
     @ListParametersDoc
     @GetMapping("/{implementationId}/" + Constants.DISCUSSION_TOPICS)
-    public HttpEntity<PagedModel<EntityModel<DiscussionTopicDto>>> getDiscussionTopicsOfImplementation(
+    public ResponseEntity<Page<DiscussionTopicDto>> getDiscussionTopicsOfImplementation(
             @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId,
             @Parameter(hidden = true) ListParameters listParameters) {
@@ -527,7 +522,7 @@ public class ImplementationController {
     )
     @ListParametersDoc
     @GetMapping("/{implementationId}/" + Constants.DISCUSSION_TOPICS + "/{topicId}")
-    public HttpEntity<EntityModel<DiscussionTopicDto>> getDiscussionTopicOfImplementation(
+    public ResponseEntity<DiscussionTopicDto> getDiscussionTopicOfImplementation(
             @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId,
             @PathVariable UUID topicId,
@@ -563,7 +558,7 @@ public class ImplementationController {
     )
     @ListParametersDoc
     @PostMapping("/{implementationId}/" + Constants.DISCUSSION_TOPICS)
-    public HttpEntity<EntityModel<DiscussionTopicDto>> createDiscussionTopicOfImplementation(
+    public ResponseEntity<DiscussionTopicDto> createDiscussionTopicOfImplementation(
             @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId,
             @Validated(ValidationGroups.Create.class) @RequestBody DiscussionTopicDto discussionTopicDto,
@@ -582,7 +577,7 @@ public class ImplementationController {
     )
     @ListParametersDoc
     @PutMapping("/{implementationId}/" + Constants.DISCUSSION_TOPICS + "/{topicId}")
-    public HttpEntity<EntityModel<DiscussionTopicDto>> updateDiscussionTopicOfImplementation(
+    public ResponseEntity<DiscussionTopicDto> updateDiscussionTopicOfImplementation(
             @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId,
             @PathVariable UUID topicId,
@@ -604,7 +599,7 @@ public class ImplementationController {
     @ListParametersDoc
     @GetMapping("/{implementationId}/" +
             Constants.DISCUSSION_TOPICS + "/{topicId}/" + Constants.DISCUSSION_COMMENTS)
-    public HttpEntity<PagedModel<EntityModel<DiscussionCommentDto>>> getDiscussionCommentsOfDiscussionTopicOfImplementation(
+    public ResponseEntity<Page<DiscussionCommentDto>> getDiscussionCommentsOfDiscussionTopicOfImplementation(
             @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId,
             @PathVariable UUID topicId,
@@ -623,7 +618,7 @@ public class ImplementationController {
     @ListParametersDoc
     @GetMapping("/{implementationId}/" + Constants.DISCUSSION_TOPICS + "/{topicId}/" +
             Constants.DISCUSSION_COMMENTS + "/{commentId}")
-    public HttpEntity<EntityModel<DiscussionCommentDto>> getDiscussionCommentOfDiscussionTopicOfImplementation(
+    public ResponseEntity<DiscussionCommentDto> getDiscussionCommentOfDiscussionTopicOfImplementation(
             @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId,
             @PathVariable UUID topicId,
@@ -663,7 +658,7 @@ public class ImplementationController {
     @ListParametersDoc
     @PostMapping("/{implementationId}/" + Constants.DISCUSSION_TOPICS + "/{topicId}/" +
             Constants.DISCUSSION_COMMENTS)
-    public HttpEntity<EntityModel<DiscussionCommentDto>> createDiscussionCommentOfDiscussionTopicOfImplementation(
+    public ResponseEntity<DiscussionCommentDto> createDiscussionCommentOfDiscussionTopicOfImplementation(
             @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId,
             @PathVariable UUID topicId,
@@ -683,7 +678,7 @@ public class ImplementationController {
     @ListParametersDoc
     @PutMapping("/{implementationId}/" + Constants.DISCUSSION_TOPICS + "/{topicId}/" +
             Constants.DISCUSSION_COMMENTS + "/{commentId}")
-    public HttpEntity<EntityModel<DiscussionCommentDto>> updateDiscussionCommentOfDiscussionTopicOfImplementation(
+    public ResponseEntity<DiscussionCommentDto> updateDiscussionCommentOfDiscussionTopicOfImplementation(
             @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId,
             @PathVariable UUID topicId,
@@ -703,14 +698,72 @@ public class ImplementationController {
     )
     @ListParametersDoc
     @GetMapping("/{implementationId}/" + Constants.IMPLEMENTATION_PACKAGES)
-    public ResponseEntity<PagedModel<EntityModel<ImplementationPackageDto>>> getImplementationPackagesOfImplementation(
+    public ResponseEntity<Page<ImplementationPackageDto>> getImplementationPackagesOfImplementation(
             @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId,
             @Parameter(hidden = true) ListParameters listParameters) {
         implementationService.checkIfImplementationIsOfAlgorithm(implementationId, algorithmId);
         final var packages =
                 implementationPackageService.findImplementationPackagesByImplementationId(implementationId, listParameters.getPageable());
-        return ResponseEntity.ok(implementationPackageAssembler.toModel(packages));
+        return ResponseEntity.ok(ModelMapperUtils.convertPage(packages, ImplementationPackageDto.class));
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "201"),
+            @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
+    }, description = "Uploads and adds a file to a given implementation")
+    @PostMapping(value = "/{implementationId}/" + Constants.IMPLEMENTATION_PACKAGES + "/{implementationPackageId}/" +
+            Constants.FILE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<FileDto> createFileForImplementationPackage(
+            @PathVariable UUID algorithmId,
+            @PathVariable UUID implementationId,
+            @PathVariable UUID implementationPackageId,
+            @RequestParam("file") MultipartFile multipartFile) {
+        implementationService.checkIfImplementationIsOfAlgorithm(implementationId, algorithmId);
+        implementationPackageService.checkIfImplementationPackageIsLinkedToImplementation(implementationPackageId, implementationId);
+        final File file = implementationPackageService.addFileToImplementationPackage(implementationPackageId, multipartFile);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ModelMapperUtils.convert(file, FileDto.class));
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+    }, description = "Retrieve the file of an implementation package")
+    @GetMapping("/{implementationId}/" + Constants.IMPLEMENTATION_PACKAGES + "/{implementationPackageId}/" + Constants.FILE)
+    public ResponseEntity<FileDto> getFileOfImplementationPackage(
+            @PathVariable UUID algorithmId,
+            @PathVariable UUID implementationId,
+            @PathVariable UUID implementationPackageId
+    ) {
+        implementationService.checkIfImplementationIsOfAlgorithm(implementationId, algorithmId);
+        implementationPackageService.checkIfImplementationPackageIsLinkedToImplementation(implementationPackageId, implementationId);
+        final File file =
+                implementationPackageService.findLinkedFile(implementationPackageId);
+        return ResponseEntity.ok(ModelMapperUtils.convert(file, FileDto.class));
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404",
+                    description = "File of Implementation with given ID doesn't exist")
+    }, description = "Downloads a specific file content of an Implementation")
+    @GetMapping("/{implementationId}/" + Constants.IMPLEMENTATION_PACKAGES + "/{implementationPackageId}/" + Constants.FILE + "/content")
+    public ResponseEntity<byte[]> downloadFileContent(
+            @PathVariable UUID algorithmId,
+            @PathVariable UUID implementationId,
+            @PathVariable UUID implementationPackageId
+    ) {
+        implementationService.checkIfImplementationIsOfAlgorithm(implementationId, algorithmId);
+        implementationPackageService.checkIfImplementationPackageIsLinkedToImplementation(implementationPackageId, implementationId);
+        final File file =
+                implementationPackageService.findLinkedFile(implementationPackageId);
+        if (file == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return ResponseEntity
+                .ok()
+                .contentType(MediaType.parseMediaType(file.getMimeType()))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + file.getName())
+                .body(fileService.getFileContent(file.getId()));
     }
 
     @Operation(responses = {
@@ -721,7 +774,7 @@ public class ImplementationController {
     }, description = "Retrieve implementation package of an implementation of an algorithm."
     )
     @GetMapping("/{implementationId}/" + Constants.IMPLEMENTATION_PACKAGES + "/{implementationPackageId}")
-    public ResponseEntity<EntityModel<ImplementationPackageDto>> getImplementationPackageOfImplementation(
+    public ResponseEntity<ImplementationPackageDto> getImplementationPackageOfImplementation(
             @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId,
             @PathVariable UUID implementationPackageId) {
@@ -729,7 +782,7 @@ public class ImplementationController {
         implementationPackageService.checkIfImplementationPackageIsLinkedToImplementation(implementationPackageId, implementationId);
         final var implementationPackage =
                 implementationPackageService.findById(implementationPackageId);
-        return ResponseEntity.ok(implementationPackageAssembler.toModel(implementationPackage));
+        return ResponseEntity.ok(ModelMapperUtils.convert(implementationPackage, ImplementationPackageDto.class));
     }
 
     @Operation(responses = {
@@ -740,7 +793,7 @@ public class ImplementationController {
     }, description = "Create a implementation package of an implementation of an algorithm."
     )
     @PostMapping("/{implementationId}/" + Constants.IMPLEMENTATION_PACKAGES)
-    public HttpEntity<EntityModel<ImplementationPackageDto>> createImplementationPackageOfImplementation(
+    public ResponseEntity<ImplementationPackageDto> createImplementationPackageOfImplementation(
             @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId,
             @Validated(ValidationGroups.Create.class) @RequestBody ImplementationPackageDto implementationPackageDto) {
@@ -748,7 +801,7 @@ public class ImplementationController {
         final ImplementationPackage implementationP = ModelMapperUtils.convert(implementationPackageDto, ImplementationPackage.class);
         final ImplementationPackage implementationPackageToSave =
                 implementationPackageService.create(implementationP, implementationId);
-        return new ResponseEntity<>(implementationPackageAssembler.toModel(implementationPackageToSave), HttpStatus.CREATED);
+        return new ResponseEntity<>(ModelMapperUtils.convert(implementationPackageToSave, ImplementationPackageDto.class), HttpStatus.CREATED);
     }
 
     @Operation(responses = {
@@ -768,22 +821,6 @@ public class ImplementationController {
         return ResponseEntity.ok(ModelMapperUtils.convert(file, FileDto.class));
     }
 
-    @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized"),
-            @ApiResponse(responseCode = "403", description = "Forbidden"),
-            @ApiResponse(responseCode = "404"),
-    }, description = "Retrieve all files of an implementation")
-    @GetMapping("/{implementationId}/" + Constants.FILES)
-    public ResponseEntity<Page<FileDto>> getAllFilesOfImplementation(
-            @PathVariable UUID algorithmId,
-            @PathVariable UUID implementationId,
-            @Parameter(hidden = true) ListParameters listParameters) {
-        implementationService.checkIfImplementationIsOfAlgorithm(implementationId, algorithmId);
-        final Page<File> files =
-                implementationService.findLinkedFiles(implementationId, listParameters.getPageable());
-        return ResponseEntity.ok(ModelMapperUtils.convertPage(files, FileDto.class));
-    }
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
@@ -859,7 +896,7 @@ public class ImplementationController {
     }, description = "Update implementation package of an implementation of an algorithm."
     )
     @PutMapping("/{implementationId}/" + Constants.IMPLEMENTATION_PACKAGES + "/{implementationPackageId}")
-    public HttpEntity<EntityModel<ImplementationPackageDto>> updateImplementationPackageOfImplementation(
+    public ResponseEntity<ImplementationPackageDto> updateImplementationPackageOfImplementation(
             @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId,
             @PathVariable UUID implementationPackageId,
@@ -869,7 +906,7 @@ public class ImplementationController {
         final ImplementationPackage implementationP = ModelMapperUtils.convert(implementationPackageDto, ImplementationPackage.class);
         final ImplementationPackage implementationPackageToUpdate =
                 implementationPackageService.update(implementationP);
-        return new ResponseEntity<>(implementationPackageAssembler.toModel(implementationPackageToUpdate), HttpStatus.OK);
+        return new ResponseEntity<>(ModelMapperUtils.convert(implementationPackageToUpdate, ImplementationPackageDto.class), HttpStatus.OK);
     }
 
     @Operation(responses = {

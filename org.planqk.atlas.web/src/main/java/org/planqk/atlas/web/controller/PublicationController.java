@@ -37,8 +37,6 @@ import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.ValidationGroups;
 import org.springframework.data.domain.Page;
-import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -215,7 +213,7 @@ public class PublicationController {
     )
     @ListParametersDoc
     @GetMapping("/{publicationId}/" + Constants.DISCUSSION_TOPICS)
-    public HttpEntity<PagedModel<EntityModel<DiscussionTopicDto>>> getDiscussionTopicsOfPublication(
+    public ResponseEntity<Page<DiscussionTopicDto>> getDiscussionTopicsOfPublication(
             @PathVariable UUID publicationId,
             @Parameter(hidden = true) ListParameters listParameters) {
         return discussionTopicController.getDiscussionTopics(publicationId, listParameters);
@@ -230,7 +228,7 @@ public class PublicationController {
     )
     @ListParametersDoc
     @GetMapping("/{publicationId}/" + Constants.DISCUSSION_TOPICS + "/{topicId}")
-    public HttpEntity<EntityModel<DiscussionTopicDto>> getDiscussionTopicOfPublication(
+    public ResponseEntity<DiscussionTopicDto> getDiscussionTopicOfPublication(
             @PathVariable UUID publicationId,
             @PathVariable UUID topicId,
             @Parameter(hidden = true) ListParameters listParameters) {
@@ -262,7 +260,7 @@ public class PublicationController {
     )
     @ListParametersDoc
     @PostMapping("/{publicationId}/" + Constants.DISCUSSION_TOPICS)
-    public HttpEntity<EntityModel<DiscussionTopicDto>> createDiscussionTopicOfPublication(
+    public ResponseEntity<DiscussionTopicDto> createDiscussionTopicOfPublication(
             @PathVariable UUID publicationId,
             @Validated(ValidationGroups.Create.class) @RequestBody DiscussionTopicDto discussionTopicDto,
             @Parameter(hidden = true) ListParameters listParameters) {
@@ -279,7 +277,7 @@ public class PublicationController {
     )
     @ListParametersDoc
     @PutMapping("/{publicationId}/" + Constants.DISCUSSION_TOPICS + "/{topicId}")
-    public HttpEntity<EntityModel<DiscussionTopicDto>> updateDiscussionTopicOfPublication(
+    public ResponseEntity<DiscussionTopicDto> updateDiscussionTopicOfPublication(
             @PathVariable UUID publicationId,
             @PathVariable UUID topicId,
             @Validated(ValidationGroups.Update.class) @RequestBody DiscussionTopicDto discussionTopicDto,
@@ -297,7 +295,7 @@ public class PublicationController {
     )
     @ListParametersDoc
     @GetMapping("/{publicationId}/" + Constants.DISCUSSION_TOPICS + "/{topicId}/" + Constants.DISCUSSION_COMMENTS)
-    public HttpEntity<PagedModel<EntityModel<DiscussionCommentDto>>> getDiscussionCommentsOfDiscussionTopicOfPublication(
+    public ResponseEntity<Page<DiscussionCommentDto>> getDiscussionCommentsOfDiscussionTopicOfPublication(
             @PathVariable UUID publicationId,
             @PathVariable UUID topicId,
             @Parameter(hidden = true) ListParameters listParameters) {
@@ -313,7 +311,7 @@ public class PublicationController {
     )
     @ListParametersDoc
     @GetMapping("/{publicationId}/" + Constants.DISCUSSION_TOPICS + "/{topicId}/" + Constants.DISCUSSION_COMMENTS + "/{commentId}")
-    public HttpEntity<EntityModel<DiscussionCommentDto>> getDiscussionCommentOfDiscussionTopicOfPublication(
+    public ResponseEntity<DiscussionCommentDto> getDiscussionCommentOfDiscussionTopicOfPublication(
             @PathVariable UUID publicationId,
             @PathVariable UUID topicId,
             @PathVariable UUID commentId,
@@ -347,7 +345,7 @@ public class PublicationController {
     )
     @ListParametersDoc
     @PostMapping("/{publicationId}/" + Constants.DISCUSSION_TOPICS + "/{topicId}/" + Constants.DISCUSSION_COMMENTS)
-    public HttpEntity<EntityModel<DiscussionCommentDto>> createDiscussionCommentOfDiscussionTopicOfPublication(
+    public ResponseEntity<DiscussionCommentDto> createDiscussionCommentOfDiscussionTopicOfPublication(
             @PathVariable UUID publicationId,
             @PathVariable UUID topicId,
             @Validated(ValidationGroups.Create.class) @RequestBody DiscussionCommentDto discussionCommentDto,
@@ -364,7 +362,7 @@ public class PublicationController {
     )
     @ListParametersDoc
     @PutMapping("/{publicationId}/" + Constants.DISCUSSION_TOPICS + "/{topicId}/" + Constants.DISCUSSION_COMMENTS + "/{commentId}")
-    public HttpEntity<EntityModel<DiscussionCommentDto>> updateDiscussionCommentOfDiscussionTopicOfPublication(
+    public ResponseEntity<DiscussionCommentDto> updateDiscussionCommentOfDiscussionTopicOfPublication(
             @PathVariable UUID publicationId,
             @PathVariable UUID topicId,
             @PathVariable UUID commentId,

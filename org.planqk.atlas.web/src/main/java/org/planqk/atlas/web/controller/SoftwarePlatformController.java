@@ -30,13 +30,11 @@ import org.planqk.atlas.web.dtos.CloudServiceDto;
 import org.planqk.atlas.web.dtos.ComputeResourceDto;
 import org.planqk.atlas.web.dtos.ImplementationDto;
 import org.planqk.atlas.web.dtos.SoftwarePlatformDto;
-import org.planqk.atlas.web.linkassembler.ImplementationAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.ValidationGroups;
 import org.springframework.data.domain.Page;
-import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -68,8 +66,6 @@ public class SoftwarePlatformController {
     private final SoftwarePlatformService softwarePlatformService;
 
     private final ImplementationService implementationService;
-
-    private final ImplementationAssembler implementationAssembler;
 
     private final LinkingService linkingService;
 
@@ -203,13 +199,13 @@ public class SoftwarePlatformController {
                     description = "Not Found. Software platform or implementation with given IDs don't exist.")
     }, description = "Retrieve a specific implementation of a software platform. If none are found an empty list is returned.")
     @GetMapping("/{softwarePlatformId}/" + Constants.IMPLEMENTATIONS + "/{implementationId}")
-    public ResponseEntity<EntityModel<ImplementationDto>> getImplementationOfSoftwarePlatform(
+    public ResponseEntity<ImplementationDto> getImplementationOfSoftwarePlatform(
             @PathVariable UUID softwarePlatformId,
             @PathVariable UUID implementationId) {
         softwarePlatformService.checkIfImplementationIsLinkedToSoftwarePlatform(softwarePlatformId, implementationId);
 
         final var implementation = implementationService.findById(implementationId);
-        return ResponseEntity.ok(implementationAssembler.toModel(implementation));
+        return ResponseEntity.ok(ModelMapperUtils.convert(implementation, ImplementationDto.class));
     }
 
     @Operation(responses = {

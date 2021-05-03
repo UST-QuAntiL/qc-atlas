@@ -28,12 +28,10 @@ import org.planqk.atlas.core.services.DiscussionCommentService;
 import org.planqk.atlas.core.services.DiscussionTopicService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.DiscussionCommentDto;
-import org.planqk.atlas.web.linkassembler.DiscussionCommentAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
-import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.PagedModel;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -59,41 +57,39 @@ public class DiscussionCommentController {
 
     private final DiscussionTopicService discussionTopicService;
 
-    private final DiscussionCommentAssembler discussionCommentAssembler;
-
     @Operation(responses = {
             @ApiResponse(responseCode = "200")
     }, description = "")
     @ListParametersDoc
-    public ResponseEntity<PagedModel<EntityModel<DiscussionCommentDto>>> getDiscussionCommentsOfTopic(
+    public ResponseEntity<Page<DiscussionCommentDto>> getDiscussionCommentsOfTopic(
             @PathVariable("topicId") UUID topicId,
             @Parameter(hidden = true) ListParameters listParameters) {
         final var result = discussionCommentService.findAllByTopic(topicId, listParameters.getPageable());
-        return ResponseEntity.ok(discussionCommentAssembler.toModel(result));
+        return ResponseEntity.ok(ModelMapperUtils.convertPage(result, DiscussionCommentDto.class));
     }
 
     @Operation(responses = {
             @ApiResponse(responseCode = "201")
     }, description = "")
-    public ResponseEntity<EntityModel<DiscussionCommentDto>> createDiscussionComment(
+    public ResponseEntity<DiscussionCommentDto> createDiscussionComment(
             @Valid @RequestBody DiscussionCommentDto discussionCommentDto) {
         final var comment = discussionCommentService.create(ModelMapperUtils.convert(discussionCommentDto, DiscussionComment.class));
-        return new ResponseEntity<>(discussionCommentAssembler.toModel(comment), HttpStatus.CREATED);
+        return new ResponseEntity<>(ModelMapperUtils.convert(comment, DiscussionCommentDto.class), HttpStatus.CREATED);
     }
 
-    public ResponseEntity<EntityModel<DiscussionCommentDto>> createDiscussionComment(
+    public ResponseEntity<DiscussionCommentDto> createDiscussionComment(
             @Valid @RequestBody DiscussionCommentDto discussionCommentDto,
             KnowledgeArtifact knowledgeArtifact) {
         final DiscussionComment convertedDiscussionComment = ModelMapperUtils.convert(discussionCommentDto, DiscussionComment.class);
         convertedDiscussionComment.getDiscussionTopic().setKnowledgeArtifact(knowledgeArtifact);
         final var comment = discussionCommentService.create(convertedDiscussionComment);
-        return new ResponseEntity<>(discussionCommentAssembler.toModel(comment), HttpStatus.CREATED);
+        return new ResponseEntity<>(ModelMapperUtils.convert(comment, DiscussionCommentDto.class), HttpStatus.CREATED);
     }
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200")
     }, description = "")
-    public ResponseEntity<EntityModel<DiscussionCommentDto>> updateDiscussionComment(
+    public ResponseEntity<DiscussionCommentDto> updateDiscussionComment(
             @PathVariable UUID commentId,
             @Valid @RequestBody DiscussionCommentDto discussionCommentDto) {
         final var discussionCommentObject = discussionCommentService.findById(commentId);
@@ -101,7 +97,7 @@ public class DiscussionCommentController {
         final var discussionTopic = discussionCommentObject.getDiscussionTopic();
         discussionComment.setDiscussionTopic(discussionTopic);
         discussionCommentService.update(discussionComment);
-        return ResponseEntity.ok(discussionCommentAssembler.toModel(discussionComment));
+        return ResponseEntity.ok(ModelMapperUtils.convert(discussionComment, DiscussionCommentDto.class));
     }
 
     @Operation(responses = {
@@ -118,8 +114,8 @@ public class DiscussionCommentController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200")
     }, description = "")
-    public ResponseEntity<EntityModel<DiscussionCommentDto>> getDiscussionComment(@PathVariable UUID commentId) {
+    public ResponseEntity<DiscussionCommentDto> getDiscussionComment(@PathVariable UUID commentId) {
         final var discussionComment = discussionCommentService.findById(commentId);
-        return ResponseEntity.ok(discussionCommentAssembler.toModel(discussionComment));
+        return ResponseEntity.ok(ModelMapperUtils.convert(discussionComment, DiscussionCommentDto.class));
     }
 }

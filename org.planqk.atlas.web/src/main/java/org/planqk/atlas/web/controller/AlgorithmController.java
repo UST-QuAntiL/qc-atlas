@@ -60,8 +60,6 @@ import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.ValidationGroups;
 import org.springframework.data.domain.Page;
-import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -439,9 +437,8 @@ public class AlgorithmController {
     )
     @ListParametersDoc
     @GetMapping("/{algorithmId}/" + Constants.DISCUSSION_TOPICS)
-    public HttpEntity<PagedModel<EntityModel<DiscussionTopicDto>>> getDiscussionTopicsOfAlgorithm(
-            @PathVariable UUID algorithmId,
-            @Parameter(hidden = true) ListParameters listParameters) {
+    public ResponseEntity<Page<DiscussionTopicDto>> getDiscussionTopicsOfAlgorithm(@PathVariable UUID algorithmId,
+                                                                                   @Parameter(hidden = true) ListParameters listParameters) {
         return discussionTopicController.getDiscussionTopics(algorithmId, listParameters);
     }
 
@@ -454,7 +451,7 @@ public class AlgorithmController {
     )
     @ListParametersDoc
     @GetMapping("/{algorithmId}/" + Constants.DISCUSSION_TOPICS + "/{topicId}")
-    public HttpEntity<EntityModel<DiscussionTopicDto>> getDiscussionTopicOfAlgorithm(
+    public ResponseEntity<DiscussionTopicDto> getDiscussionTopicOfAlgorithm(
             @PathVariable UUID algorithmId,
             @PathVariable UUID topicId,
             @Parameter(hidden = true) ListParameters listParameters) {
@@ -486,7 +483,7 @@ public class AlgorithmController {
     )
     @ListParametersDoc
     @PostMapping("/{algorithmId}/" + Constants.DISCUSSION_TOPICS)
-    public HttpEntity<EntityModel<DiscussionTopicDto>> createDiscussionTopicOfAlgorithm(
+    public ResponseEntity<DiscussionTopicDto> createDiscussionTopicOfAlgorithm(
             @PathVariable UUID algorithmId,
             @Validated(ValidationGroups.Create.class) @RequestBody DiscussionTopicDto discussionTopicDto,
             @Parameter(hidden = true) ListParameters listParameters) {
@@ -503,7 +500,7 @@ public class AlgorithmController {
     )
     @ListParametersDoc
     @PutMapping("/{algorithmId}/" + Constants.DISCUSSION_TOPICS + "/{topicId}")
-    public HttpEntity<EntityModel<DiscussionTopicDto>> updateDiscussionTopicOfAlgorithm(
+    public ResponseEntity<DiscussionTopicDto> updateDiscussionTopicOfAlgorithm(
             @PathVariable UUID algorithmId,
             @PathVariable UUID topicId,
             @Validated(ValidationGroups.Update.class) @RequestBody DiscussionTopicDto discussionTopicDto,
@@ -521,7 +518,7 @@ public class AlgorithmController {
     )
     @ListParametersDoc
     @GetMapping("/{algorithmId}/" + Constants.DISCUSSION_TOPICS + "/{topicId}/" + Constants.DISCUSSION_COMMENTS)
-    public HttpEntity<PagedModel<EntityModel<DiscussionCommentDto>>> getDiscussionCommentsOfDiscussionTopicOfAlgorithm(
+    public ResponseEntity<Page<DiscussionCommentDto>> getDiscussionCommentsOfDiscussionTopicOfAlgorithm(
             @PathVariable UUID algorithmId,
             @PathVariable UUID topicId,
             @Parameter(hidden = true) ListParameters listParameters) {
@@ -537,7 +534,7 @@ public class AlgorithmController {
     )
     @ListParametersDoc
     @GetMapping("/{algorithmId}/" + Constants.DISCUSSION_TOPICS + "/{topicId}/" + Constants.DISCUSSION_COMMENTS + "/{commentId}")
-    public HttpEntity<EntityModel<DiscussionCommentDto>> getDiscussionCommentOfDiscussionTopicOfAlgorithm(
+    public ResponseEntity<DiscussionCommentDto> getDiscussionCommentOfDiscussionTopicOfAlgorithm(
             @PathVariable UUID algorithmId,
             @PathVariable UUID topicId,
             @PathVariable UUID commentId,
@@ -571,7 +568,7 @@ public class AlgorithmController {
     )
     @ListParametersDoc
     @PostMapping("/{algorithmId}/" + Constants.DISCUSSION_TOPICS + "/{topicId}/" + Constants.DISCUSSION_COMMENTS)
-    public HttpEntity<EntityModel<DiscussionCommentDto>> createDiscussionCommentOfDiscussionTopicOfAlgorithm(
+    public ResponseEntity<DiscussionCommentDto> createDiscussionCommentOfDiscussionTopicOfAlgorithm(
             @PathVariable UUID algorithmId,
             @PathVariable UUID topicId,
             @Validated(ValidationGroups.Create.class) @RequestBody DiscussionCommentDto discussionCommentDto,
@@ -588,7 +585,7 @@ public class AlgorithmController {
     )
     @ListParametersDoc
     @PutMapping("/{algorithmId}/" + Constants.DISCUSSION_TOPICS + "/{topicId}/" + Constants.DISCUSSION_COMMENTS + "/{commentId}")
-    public HttpEntity<EntityModel<DiscussionCommentDto>> updateDiscussionCommentOfDiscussionTopicOfAlgorithm(
+    public ResponseEntity<DiscussionCommentDto> updateDiscussionCommentOfDiscussionTopicOfAlgorithm(
             @PathVariable UUID algorithmId,
             @PathVariable UUID topicId,
             @PathVariable UUID commentId,
