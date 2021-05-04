@@ -80,7 +80,7 @@ public class ProblemTypeController {
     public ResponseEntity<ProblemTypeDto> createProblemType(
             @Validated(ValidationGroups.Create.class) @RequestBody ProblemTypeDto problemTypeDto) {
         final var savedProblemType = problemTypeService.create(ModelMapperUtils.convert(problemTypeDto, ProblemType.class));
-        return ResponseEntity.ok(ModelMapperUtils.convert(savedProblemType, ProblemTypeDto.class));
+        return new ResponseEntity<>(ModelMapperUtils.convert(savedProblemType, ProblemTypeDto.class), HttpStatus.CREATED);
     }
 
     @Operation(responses = {

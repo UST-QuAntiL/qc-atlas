@@ -21,6 +21,7 @@ package org.planqk.atlas.web.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -351,8 +352,7 @@ public class AlgorithmControllerTest {
                 .accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk()).andReturn();
 
-        var resultList = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(),
-                "algorithms", AlgorithmDto.class);
+        var resultList = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(), AlgorithmDto.class);
         assertEquals(0, resultList.size());
     }
 
@@ -377,10 +377,8 @@ public class AlgorithmControllerTest {
         ).andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andReturn();
-
-        var resultList = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(),
-                "algorithms", AlgorithmDto.class);
-        assertEquals(2, resultList.size());
+        var array = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(), Algorithm.class);
+        assertEquals(array.size(), 2);
     }
 
     @Test
@@ -676,11 +674,12 @@ public class AlgorithmControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
                 .getPublicationsOfAlgorithm(UUID.randomUUID(), ListParameters.getDefault()));
-        mockMvc.perform(get(url).accept(APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$._embedded.publications").isArray())
-                .andExpect(jsonPath("$._embedded.publications[0].id").value(pub.getId().toString()))
-        ;
+        MvcResult result = mockMvc.perform(get(url).accept(APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
+
+        List<PublicationDto> publicationDtos = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(), PublicationDto.class);
+        assertEquals(1, publicationDtos.size());
+        assertNotNull(publicationDtos.get(0).getId());
     }
 
     @Test
@@ -835,18 +834,19 @@ public class AlgorithmControllerTest {
     @SneakyThrows
     void getProblemTypesOfAlgorithm_SingleElement_returnOk() {
         var problemType = new ProblemType();
-        problemType.setName("test");
+        String problemTypeName = "test";
+        problemType.setName(problemTypeName);
         problemType.setId(UUID.randomUUID());
 
         doReturn(new PageImpl<>(List.of(problemType))).when(algorithmService).findLinkedProblemTypes(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
                 .getProblemTypesOfAlgorithm(UUID.randomUUID(), ListParameters.getDefault()));
-        mockMvc.perform(get(url).accept(APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$._embedded.problemTypes").isArray())
-                .andExpect(jsonPath("$._embedded.problemTypes[0].id").value(problemType.getId().toString()))
-        ;
+        MvcResult result = mockMvc.perform(get(url).accept(APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
+        List<ProblemTypeDto> problemTypeDtos = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(), ProblemTypeDto.class);
+        assertEquals(1, problemTypeDtos.size());
+        assertEquals(problemTypeDtos.get(0).getName(), problemTypeName);
     }
 
     @Test
@@ -1005,11 +1005,11 @@ public class AlgorithmControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
                 .getApplicationAreasOfAlgorithm(UUID.randomUUID(), ListParameters.getDefault()));
-        mockMvc.perform(get(url).accept(APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$._embedded.applicationAreas").isArray())
-                .andExpect(jsonPath("$._embedded.applicationAreas[0].id").value(applicationArea.getId().toString()))
-        ;
+        MvcResult mvcResult = mockMvc.perform(get(url).accept(APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
+
+        List<ApplicationAreaDto> applicationAreaDtos = ObjectMapperUtils.mapResponseToList(mvcResult, ApplicationAreaDto.class);
+        assertNotNull(applicationAreaDtos.get(0).getId());
     }
 
     @Test
@@ -1177,8 +1177,7 @@ public class AlgorithmControllerTest {
         ).andExpect(status().isOk()).andReturn();
 
         var dtoElements = ObjectMapperUtils.mapResponseToList(
-                mvcResult.getResponse().getContentAsString(),
-                "implementations",
+                mvcResult,
                 Implementation.class
         );
         assertThat(dtoElements.size()).isEqualTo(inputList.size());
@@ -1218,10 +1217,12 @@ public class AlgorithmControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
                 .getComputeResourcePropertiesOfAlgorithm(UUID.randomUUID(), ListParameters.getDefault()));
-        mockMvc.perform(get(url).accept(APPLICATION_JSON))
-                .andExpect(jsonPath("$._embedded.computeResourceProperties[0].id").value(res.getId().toString()))
-                .andExpect(jsonPath("$._embedded.computeResourceProperties[0].type.id").value(type.getId().toString()))
-                .andExpect(status().isOk());
+        MvcResult mvcResult = mockMvc.perform(get(url).accept(APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
+
+        List<ComputeResourcePropertyDto> computeResourcePropertyDtos =
+                ObjectMapperUtils.mapResponseToList(mvcResult, ComputeResourcePropertyDto.class);
+        assertNotNull(computeResourcePropertyDtos.get(0).getId());
+        assertNotNull(computeResourcePropertyDtos.get(0).getType().getId());
     }
 
     @Test
@@ -1445,8 +1446,7 @@ public class AlgorithmControllerTest {
                 get(url).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
-        var resultList = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(),
-                "patternRelations", PatternRelationDto.class);
+        var resultList = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(), PatternRelationDto.class);
         assertEquals(2, resultList.size());
     }
 
@@ -2097,7 +2097,7 @@ public class AlgorithmControllerTest {
         Mockito.verify(discussionCommentService, times(1)).findAllByTopic(discussionTopic1.getId(), pageable);
 
         var resultList = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(),
-                "discussionComments", DiscussionCommentDto.class);
+                DiscussionCommentDto.class);
 
         assertEquals(resultList.size(), 1);
         assertEquals(resultList.get(0).getText(), discussionComment1Dto.getText());

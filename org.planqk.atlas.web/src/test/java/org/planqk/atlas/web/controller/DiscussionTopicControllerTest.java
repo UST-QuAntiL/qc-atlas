@@ -124,16 +124,16 @@ public class DiscussionTopicControllerTest {
         discussionTopicDto.setId(null);
 
         var url = linkBuilderService.urlStringTo(methodOn(DiscussionTopicController.class)
-            .createDiscussionTopic(discussionTopicDto));
+                .createDiscussionTopic(discussionTopicDto));
         MvcResult result = mockMvc
-            .perform(post(url)
-                .content(mapper.writeValueAsString(discussionTopicDto))
-                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isCreated()).andReturn();
+                .perform(post(url)
+                        .content(mapper.writeValueAsString(discussionTopicDto))
+                        .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated()).andReturn();
 
         EntityModel<DiscussionTopicDto> response = mapper.readValue(result.getResponse().getContentAsString(),
-            new TypeReference<>() {
-            });
+                new TypeReference<>() {
+                });
 
         assertEquals(response.getContent().getDate(), discussionTopicDto.getDate());
         assertEquals(response.getContent().getTitle(), discussionTopicDto.getTitle());
@@ -145,24 +145,24 @@ public class DiscussionTopicControllerTest {
         // Missing required attribute
         discussionTopicDto.setDate(null);
         var url = linkBuilderService.urlStringTo(methodOn(DiscussionTopicController.class)
-            .createDiscussionTopic(discussionTopicDto));
+                .createDiscussionTopic(discussionTopicDto));
         mockMvc.perform(post(url)
-            .content(mapper.writeValueAsString(discussionTopicDto)).contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
+                .content(mapper.writeValueAsString(discussionTopicDto)).contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
     }
 
     @Test
     public void getDiscussionTopics_returnDiscussionTopics() throws Exception {
         when(discussionTopicService.findAll(pageable)).thenReturn(discussionTopicPage);
         var url = linkBuilderService.urlStringTo(methodOn(DiscussionTopicController.class)
-            .getDiscussionTopics(new ListParameters(pageable, null)));
+                .getDiscussionTopics(new ListParameters(pageable, null)));
         MvcResult result = mockMvc
-            .perform(get(url).accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk()).andReturn();
+                .perform(get(url).accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
 
         JSONObject rootObject = new JSONObject(result.getResponse().getContentAsString());
-        var embeddedJSONObjects = rootObject.getJSONObject("_embedded").getJSONArray("discussionTopics");
+        var embeddedJSONObjects = rootObject.getJSONArray("content");
         var resultObject = mapper.readValue(embeddedJSONObjects.getJSONObject(0).toString(), DiscussionTopicDto.class);
 
         assertEquals(1, embeddedJSONObjects.length());
@@ -176,14 +176,14 @@ public class DiscussionTopicControllerTest {
         when(discussionTopicService.findById(discussionTopic.getId())).thenReturn(discussionTopic);
 
         var url = linkBuilderService.urlStringTo(methodOn(DiscussionTopicController.class)
-            .getDiscussionTopic(discussionTopic.getId()));
+                .getDiscussionTopic(discussionTopic.getId()));
         MvcResult result = mockMvc.perform(
-            get(url).accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk()).andReturn();
+                get(url).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
 
         EntityModel<DiscussionTopicDto> response = mapper.readValue(
-            result.getResponse().getContentAsString(), new TypeReference<>() {
-            });
+                result.getResponse().getContentAsString(), new TypeReference<>() {
+                });
 
         assertEquals(response.getContent().getId(), discussionTopicDto.getId());
         assertEquals(response.getContent().getTitle(), discussionTopicDto.getTitle());
@@ -196,17 +196,17 @@ public class DiscussionTopicControllerTest {
         when(discussionTopicService.findById(any(UUID.class))).thenThrow(new NoSuchElementException());
 
         var url = linkBuilderService.urlStringTo(methodOn(DiscussionTopicController.class)
-            .getDiscussionTopic(discussionTopic.getId()));
+                .getDiscussionTopic(discussionTopic.getId()));
         mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound());
     }
 
     @Test
     public void deleteDiscussionTopic_returnOK() throws Exception {
         var url = linkBuilderService.urlStringTo(methodOn(DiscussionTopicController.class)
-            .deleteDiscussionTopic(discussionTopic.getId()));
+                .deleteDiscussionTopic(discussionTopic.getId()));
         mockMvc.perform(delete(url))
-            .andExpect(status().isOk()).andReturn();
+                .andExpect(status().isOk()).andReturn();
     }
 
     @Test
@@ -214,7 +214,7 @@ public class DiscussionTopicControllerTest {
         UUID id = UUID.randomUUID();
         doThrow(new NoSuchElementException()).when(discussionTopicService).delete(id);
         var url = linkBuilderService.urlStringTo(methodOn(DiscussionTopicController.class)
-            .deleteDiscussionTopic(id));
+                .deleteDiscussionTopic(id));
         mockMvc.perform(delete(url).accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
     }
 
@@ -222,14 +222,14 @@ public class DiscussionTopicControllerTest {
     public void updateDiscussionTopic_returnDiscussionTopic() throws Exception {
         when(discussionTopicService.update(discussionTopic)).thenReturn(discussionTopic);
         var url = linkBuilderService.urlStringTo(methodOn(DiscussionTopicController.class)
-            .updateDiscussionTopic(discussionTopic.getId(), discussionTopicDto));
+                .updateDiscussionTopic(discussionTopic.getId(), discussionTopicDto));
         MvcResult result = mockMvc.perform(put(url)
-            .content(mapper.writeValueAsString(discussionTopicDto)).contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
+                .content(mapper.writeValueAsString(discussionTopicDto)).contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
 
         EntityModel<DiscussionTopicDto> response = mapper.readValue(result.getResponse().getContentAsString(),
-            new TypeReference<>() {
-            });
+                new TypeReference<>() {
+                });
 
         assertEquals(discussionTopicDto.getId(), response.getContent().getId());
         assertEquals(discussionTopicDto.getTitle(), response.getContent().getTitle());
@@ -245,9 +245,9 @@ public class DiscussionTopicControllerTest {
         when(discussionTopicService.update(discussionTopic)).thenReturn(discussionTopic);
 
         var url = linkBuilderService.urlStringTo(methodOn(DiscussionTopicController.class)
-            .updateDiscussionTopic(discussionTopic.getId(), discussionTopicDto));
+                .updateDiscussionTopic(discussionTopic.getId(), discussionTopicDto));
         mockMvc.perform(put(url)
-            .content(mapper.writeValueAsString(discussionTopic)).contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
+                .content(mapper.writeValueAsString(discussionTopic)).contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
     }
 }

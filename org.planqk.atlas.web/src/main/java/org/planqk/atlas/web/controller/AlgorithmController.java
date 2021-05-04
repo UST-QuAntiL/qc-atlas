@@ -141,7 +141,7 @@ public class AlgorithmController {
     public ResponseEntity<AlgorithmDto> createAlgorithm(
             @Validated(ValidationGroups.Create.class) @RequestBody AlgorithmDto algorithmDto) {
         final Algorithm savedAlgorithm = algorithmService.create(ModelMapperUtils.convert(algorithmDto, Algorithm.class));
-        return ResponseEntity.ok(ModelMapperUtils.convert(savedAlgorithm, AlgorithmDto.class));
+        return new ResponseEntity<>(ModelMapperUtils.convert(savedAlgorithm, AlgorithmDto.class), HttpStatus.CREATED);
     }
 
     @Operation(responses = {

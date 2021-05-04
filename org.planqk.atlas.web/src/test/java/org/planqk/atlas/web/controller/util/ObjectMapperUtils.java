@@ -23,7 +23,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.test.web.servlet.MvcResult;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -32,6 +34,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import lombok.SneakyThrows;
 
 public class ObjectMapperUtils {
 
@@ -58,6 +61,12 @@ public class ObjectMapperUtils {
         }
         var objects = rootObject.getJSONObject(EMBEDDED_RESOURCES_JSON_KEY).getJSONArray(key);
 
+        return mapJSONArrayToList(objects, className, mapper);
+
+    }
+
+    @SneakyThrows
+    private static <T> List<T> mapJSONArrayToList(JSONArray objects, Class<? extends T> className, @NonNull ObjectMapper mapper) {
         var contents = new ArrayList<T>();
 
         for (int i = 0; i < objects.length(); i++) {
@@ -68,6 +77,14 @@ public class ObjectMapperUtils {
         }
 
         return contents;
+    }
+
+
+    public static <T> List<T> mapResponseToList(String response, Class<? extends T> className,
+                                                @NonNull ObjectMapper mapper) throws Exception {
+        var rootObject = new JSONObject(response).getJSONArray("content");
+
+        return mapJSONArrayToList(rootObject, className, mapper);
     }
 
     /**
@@ -81,8 +98,23 @@ public class ObjectMapperUtils {
      * @throws Exception generic errors may occur since this method does not handle errors . It is only intended to be used in tests.
      */
     public static <T> List<T> mapResponseToList(String response, String key, Class<? extends T> className)
-        throws Exception {
+            throws Exception {
         return mapResponseToList(response, key, className, newTestMapper());
+    }
+
+    /**
+     * Returns all Unmarshalled objects of a Paged Model Response
+     *
+     * @param response  the application/json+hal response body returned from the request
+     * @param key       the key for the resources within the '_embedded' child object
+     * @param className the Class object of the elements to unmarshall e.g. AlgorithmDto.class. Must be a child o <T>
+     * @param <T>       Generic type that the unmarshalled objects will be returned as
+     * @return an (array) list of all objects in the response under the given key. The ordering shuld remain identical to before
+     * @throws Exception generic errors may occur since this method does not handle errors . It is only intended to be used in tests.
+     */
+    public static <T> List<T> mapResponseToList(String response, Class<? extends T> className)
+            throws Exception {
+        return mapResponseToList(response, className, newTestMapper());
     }
 
     /**
@@ -93,7 +125,7 @@ public class ObjectMapperUtils {
      * @throws Exception generic errors may occur since this method does not handle errors . It is only intended to be * used in tests.
      */
     public static PageInfo getPageInfo(String response) throws Exception {
-        var pageContent = new JSONObject(response).getJSONObject(PAGED_MODEL_PAGE_INFO_JSON_KEY).toString();
+        var pageContent = new JSONObject(response).toString();
         return newTestMapper().readValue(pageContent, PageInfo.class);
     }
 
@@ -105,6 +137,11 @@ public class ObjectMapperUtils {
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         mapper.configure(DeserializationFeature.READ_UNKNOWN_ENUM_VALUES_AS_NULL, true);
         return mapper;
+    }
+
+    @SneakyThrows
+    public static <T> List<T> mapResponseToList(MvcResult mvcResult, Class<? extends T> className) {
+        return mapResponseToList(mvcResult.getResponse().getContentAsString(), className);
     }
 
     @Data

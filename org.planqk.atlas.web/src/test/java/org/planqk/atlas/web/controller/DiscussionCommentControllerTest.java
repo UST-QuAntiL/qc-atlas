@@ -171,7 +171,7 @@ public class DiscussionCommentControllerTest {
                 .andExpect(status().isOk()).andReturn();
 
         var resultList = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(),
-                "discussionComments", DiscussionCommentDto.class);
+                DiscussionCommentDto.class);
 
         assertEquals(resultList.size(), 1);
         assertEquals(resultList.get(0).getText(), discussionCommentDto.getText());

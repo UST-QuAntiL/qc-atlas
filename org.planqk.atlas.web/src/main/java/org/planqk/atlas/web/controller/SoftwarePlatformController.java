@@ -95,7 +95,7 @@ public class SoftwarePlatformController {
     public ResponseEntity<SoftwarePlatformDto> createSoftwarePlatform(
             @Validated({ValidationGroups.Create.class}) @RequestBody SoftwarePlatformDto softwarePlatformDto) {
         final var savedPlatform = softwarePlatformService.create(ModelMapperUtils.convert(softwarePlatformDto, SoftwarePlatform.class));
-        return ResponseEntity.ok(ModelMapperUtils.convert(savedPlatform, SoftwarePlatformDto.class));
+        return new ResponseEntity<>(ModelMapperUtils.convert(savedPlatform, SoftwarePlatformDto.class), HttpStatus.CREATED);
     }
 
     @Operation(responses = {

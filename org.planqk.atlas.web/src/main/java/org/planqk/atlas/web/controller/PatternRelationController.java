@@ -84,7 +84,7 @@ public class PatternRelationController {
             @Validated({ValidationGroups.Create.class}) @RequestBody PatternRelationDto patternRelationDto) {
         final var savedPatternRelation = patternRelationService.create(
                 ModelMapperUtils.convert(patternRelationDto, PatternRelation.class));
-        return ResponseEntity.ok(ModelMapperUtils.convert(savedPatternRelation, PatternRelationDto.class));
+        return new ResponseEntity<>(ModelMapperUtils.convert(savedPatternRelation, PatternRelationDto.class), HttpStatus.CREATED);
     }
 
     @Operation(responses = {

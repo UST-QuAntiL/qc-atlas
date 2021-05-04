@@ -109,12 +109,12 @@ public class AlgorithmRelationTypeControllerTest {
         algorithmRelationTypeDto.setId(UUID.randomUUID());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmRelationTypeController.class)
-            .createAlgorithmRelationType(null));
+                .createAlgorithmRelationType(null));
 
         mockMvc.perform(post(url)
-            .content(mapper.writeValueAsString(algorithmRelationTypeDto))
-            .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isBadRequest());
+                .content(mapper.writeValueAsString(algorithmRelationTypeDto))
+                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -126,16 +126,16 @@ public class AlgorithmRelationTypeControllerTest {
         doReturn(algorithmRelationType1).when(algorithmRelationTypeService).create(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmRelationTypeController.class)
-            .createAlgorithmRelationType(null));
+                .createAlgorithmRelationType(null));
 
         MvcResult result = mockMvc.perform(post(url)
-            .content(mapper.writeValueAsString(algoRelationType1Dto))
-            .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isCreated()).andReturn();
+                .content(mapper.writeValueAsString(algoRelationType1Dto))
+                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated()).andReturn();
 
         EntityModel<AlgorithmRelationDto> type = mapper.readValue(result.getResponse().getContentAsString(),
-            new TypeReference<>() {
-            });
+                new TypeReference<>() {
+                });
         assertEquals(type.getContent().getId(), id);
     }
 
@@ -146,11 +146,11 @@ public class AlgorithmRelationTypeControllerTest {
         algorithmRelationTypeDto.setId(UUID.randomUUID());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmRelationTypeController.class)
-            .updateAlgorithmRelationType(UUID.randomUUID(), null));
+                .updateAlgorithmRelationType(UUID.randomUUID(), null));
 
         mockMvc.perform(put(url)
-            .content(mapper.writeValueAsString(algorithmRelationTypeDto)).contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
+                .content(mapper.writeValueAsString(algorithmRelationTypeDto)).contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
     }
 
     @Test
@@ -159,17 +159,17 @@ public class AlgorithmRelationTypeControllerTest {
         doReturn(algorithmRelationType1).when(algorithmRelationTypeService).update(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmRelationTypeController.class)
-            .updateAlgorithmRelationType(UUID.randomUUID(), null));
+                .updateAlgorithmRelationType(UUID.randomUUID(), null));
 
         MvcResult result = mockMvc
-            .perform(put(url)
-                .content(mapper.writeValueAsString(algoRelationType1Dto))
-                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk()).andReturn();
+                .perform(put(url)
+                        .content(mapper.writeValueAsString(algoRelationType1Dto))
+                        .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
 
         EntityModel<AlgorithmRelationDto> type = mapper.readValue(result.getResponse().getContentAsString(),
-            new TypeReference<>() {
-            });
+                new TypeReference<>() {
+                });
         assertEquals(type.getContent().getId(), algoRelationType1Dto.getId());
     }
 
@@ -179,13 +179,13 @@ public class AlgorithmRelationTypeControllerTest {
         doReturn(Page.empty()).when(algorithmRelationTypeService).findAll(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmRelationTypeController.class)
-            .getAlgorithmRelationTypes(ListParameters.getDefault()));
+                .getAlgorithmRelationTypes(ListParameters.getDefault()));
 
         MvcResult result = mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk()).andReturn();
+                .andExpect(status().isOk()).andReturn();
 
         var providers = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(),
-            "algoRelationTypes", AlgorithmRelationDto.class);
+                "algoRelationTypes", AlgorithmRelationDto.class);
         assertEquals(providers.size(), 0);
     }
 
@@ -198,18 +198,17 @@ public class AlgorithmRelationTypeControllerTest {
 
         Page<AlgorithmRelationType> algoRelationPage = new PageImpl<>(algoRelationList);
         Page<AlgorithmRelationTypeDto> algoRelationDtoPage = ModelMapperUtils.convertPage(algoRelationPage,
-            AlgorithmRelationTypeDto.class);
+                AlgorithmRelationTypeDto.class);
 
         doReturn(algoRelationPage).when(algorithmRelationTypeService).findAll(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmRelationTypeController.class)
-            .getAlgorithmRelationTypes(ListParameters.getDefault()));
+                .getAlgorithmRelationTypes(ListParameters.getDefault()));
 
         MvcResult result = mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk()).andReturn();
+                .andExpect(status().isOk()).andReturn();
 
-        var providers = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(),
-            "algoRelationTypes", AlgorithmRelationDto.class);
+        var providers = ObjectMapperUtils.mapResponseToList(result, AlgorithmRelationDto.class);
         assertEquals(providers.size(), 2);
     }
 
@@ -219,9 +218,9 @@ public class AlgorithmRelationTypeControllerTest {
         doThrow(new NoSuchElementException()).when(algorithmRelationTypeService).findById(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmRelationTypeController.class)
-            .getAlgorithmRelationType(algorithmRelationType1.getId()));
+                .getAlgorithmRelationType(algorithmRelationType1.getId()));
         mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -230,14 +229,14 @@ public class AlgorithmRelationTypeControllerTest {
         doReturn(algorithmRelationType1).when(algorithmRelationTypeService).findById(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmRelationTypeController.class)
-            .getAlgorithmRelationType(algorithmRelationType1.getId()));
+                .getAlgorithmRelationType(algorithmRelationType1.getId()));
 
         MvcResult result = mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk()).andReturn();
+                .andExpect(status().isOk()).andReturn();
 
         EntityModel<AlgorithmRelationDto> algoRelationTypeDto = mapper.readValue(result.getResponse().getContentAsString(),
-            new TypeReference<>() {
-            });
+                new TypeReference<>() {
+                });
         assertEquals(algoRelationTypeDto.getContent().getId(), algorithmRelationType1.getId());
     }
 
@@ -247,10 +246,10 @@ public class AlgorithmRelationTypeControllerTest {
         doThrow(NoSuchElementException.class).when(algorithmRelationTypeService).delete(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmRelationTypeController.class)
-            .deleteAlgorithmRelationType(algorithmRelationType1.getId()));
+                .deleteAlgorithmRelationType(algorithmRelationType1.getId()));
 
         mockMvc.perform(delete(url).accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -259,8 +258,8 @@ public class AlgorithmRelationTypeControllerTest {
         doNothing().when(algorithmRelationTypeService).delete(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmRelationTypeController.class)
-            .deleteAlgorithmRelationType(algorithmRelationType1.getId()));
+                .deleteAlgorithmRelationType(algorithmRelationType1.getId()));
         mockMvc.perform(delete(url).accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isNoContent());
+                .andExpect(status().isNoContent());
     }
 }

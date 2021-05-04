@@ -97,7 +97,7 @@ public class PublicationController {
     public ResponseEntity<PublicationDto> createPublication(
             @Validated(ValidationGroups.Create.class) @RequestBody PublicationDto publicationDto) {
         final Publication publication = publicationService.create(ModelMapperUtils.convert(publicationDto, Publication.class));
-        return ResponseEntity.ok(ModelMapperUtils.convert(publication, PublicationDto.class));
+        return new ResponseEntity<>(ModelMapperUtils.convert(publication, PublicationDto.class), HttpStatus.CREATED);
     }
 
     @Operation(responses = {

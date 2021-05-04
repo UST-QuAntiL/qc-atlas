@@ -200,7 +200,7 @@ public class ComputeResourceController {
 
         final var createdComputeResourceProperty = computeResourcePropertyService
                 .addComputeResourcePropertyToComputeResource(computeResourceId, computeResourceProperty);
-        return ResponseEntity.ok(ModelMapperUtils.convert(createdComputeResourceProperty, ComputeResourcePropertyDto.class));
+        return new ResponseEntity<>(ModelMapperUtils.convert(createdComputeResourceProperty, ComputeResourcePropertyDto.class), HttpStatus.CREATED);
     }
 
     @Operation(responses = {

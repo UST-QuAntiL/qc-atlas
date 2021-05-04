@@ -32,6 +32,7 @@ import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.ValidationGroups;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -77,7 +78,7 @@ public class TagController {
     public ResponseEntity<TagDto> createTag(
             @Validated(ValidationGroups.Create.class) @RequestBody TagDto tagDto) {
         final Tag savedTag = this.tagService.create(ModelMapperUtils.convert(tagDto, Tag.class));
-        return ResponseEntity.ok(ModelMapperUtils.convert(savedTag, TagDto.class));
+        return new ResponseEntity<>(ModelMapperUtils.convert(savedTag, TagDto.class), HttpStatus.CREATED);
     }
 
     @Operation(responses = {
