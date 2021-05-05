@@ -44,7 +44,7 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.UUID;
 
-import org.json.JSONObject;
+import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -427,11 +427,12 @@ public class ImplementationControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
                 .getTagsOfImplementation(UUID.randomUUID(), UUID.randomUUID()));
-        mockMvc.perform(get(url).accept(APPLICATION_JSON))
-                .andExpect(jsonPath("$._embedded.tags").isArray())
-                .andExpect(jsonPath("$._embedded.tags[0].value").value(tag.getValue()))
-                .andExpect(jsonPath("$._embedded.tags[0].category").value(tag.getCategory()))
-                .andExpect(status().isOk());
+        MvcResult mvcResult = mockMvc.perform(get(url).accept(APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
+        List<TagDto> tagDtos = ObjectMapperUtils.mapResponseToList(mvcResult, TagDto.class);
+        assertEquals(tagDtos.size(), 1);
+        assertEquals(tagDtos.get(0).getValue(), tag.getValue());
+        assertEquals(tagDtos.get(0).getCategory(), tag.getCategory());
     }
 
     @Test
@@ -604,10 +605,9 @@ public class ImplementationControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
                 .getPublicationsOfImplementation(UUID.randomUUID(), UUID.randomUUID(), ListParameters.getDefault()));
-        mockMvc.perform(get(url).accept(APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$._embedded.publications").doesNotExist())
-        ;
+        MvcResult mvcResult = mockMvc.perform(get(url).accept(APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
+        Assert.assertEquals(ObjectMapperUtils.mapResponseToList(mvcResult, PublicationDto.class).size(), 0);
     }
 
     @Test
@@ -623,11 +623,11 @@ public class ImplementationControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
                 .getPublicationsOfImplementation(UUID.randomUUID(), UUID.randomUUID(), ListParameters.getDefault()));
-        mockMvc.perform(get(url).accept(APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$._embedded.publications").isArray())
-                .andExpect(jsonPath("$._embedded.publications[0].id").value(pub.getId().toString()))
-        ;
+        MvcResult mvcResult = mockMvc.perform(get(url).accept(APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
+        List<PublicationDto> publicationDtos = ObjectMapperUtils.mapResponseToList(mvcResult, PublicationDto.class);
+        assertEquals(publicationDtos.size(), 1);
+        assertEquals(publicationDtos.get(0).getId(), pub.getId());
     }
 
     @Test
@@ -777,10 +777,9 @@ public class ImplementationControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
                 .getSoftwarePlatformsOfImplementation(UUID.randomUUID(), UUID.randomUUID(), ListParameters.getDefault()));
-        mockMvc.perform(get(url).accept(APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$._embedded.SoftwarePlatforms").doesNotExist())
-        ;
+        MvcResult mvcResult = mockMvc.perform(get(url).accept(APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
+        Assert.assertEquals(ObjectMapperUtils.mapResponseToList(mvcResult, ImplementationDto.class).size(), 0);
     }
 
     @Test
@@ -795,11 +794,12 @@ public class ImplementationControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
                 .getSoftwarePlatformsOfImplementation(UUID.randomUUID(), UUID.randomUUID(), ListParameters.getDefault()));
-        mockMvc.perform(get(url).accept(APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$._embedded.softwarePlatforms").isArray())
-                .andExpect(jsonPath("$._embedded.softwarePlatforms[0].id").value(softwarePlatform.getId().toString()))
-        ;
+        MvcResult mvcResult = mockMvc.perform(get(url).accept(APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
+
+        List<SoftwarePlatformDto> softwarePlatformDtos = ObjectMapperUtils.mapResponseToList(mvcResult, SoftwarePlatformDto.class);
+        assertEquals(softwarePlatformDtos.size(), 1);
+        assertEquals(softwarePlatformDtos.get(0).getId(), softwarePlatform.getId());
     }
 
     @Test
@@ -947,9 +947,9 @@ public class ImplementationControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
                 .getComputeResourcePropertiesOfImplementation(UUID.randomUUID(), UUID.randomUUID(), ListParameters.getDefault()));
-        mockMvc.perform(get(url).accept(APPLICATION_JSON))
-                .andExpect(jsonPath("$._embedded.computeResourceProperties").doesNotExist())
-                .andExpect(status().isOk());
+        MvcResult mvcResult = mockMvc.perform(get(url).accept(APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
+        assertEquals(ObjectMapperUtils.mapResponseToList(mvcResult, ComputeResourcePropertyDto.class), 0);
     }
 
     @Test
@@ -971,10 +971,14 @@ public class ImplementationControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
                 .getComputeResourcePropertiesOfImplementation(UUID.randomUUID(), UUID.randomUUID(), ListParameters.getDefault()));
-        mockMvc.perform(get(url).accept(APPLICATION_JSON))
-                .andExpect(jsonPath("$._embedded.computeResourceProperties[0].id").value(res.getId().toString()))
-                .andExpect(jsonPath("$._embedded.computeResourceProperties[0].type.id").value(type.getId().toString()))
-                .andExpect(status().isOk());
+        MvcResult mvcResult = mockMvc.perform(get(url).accept(APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
+
+        List<ComputeResourcePropertyDto> computeResourcePropertyDtos =
+                ObjectMapperUtils.mapResponseToList(mvcResult, ComputeResourcePropertyDto.class);
+
+        assertEquals(computeResourcePropertyDtos.get(0).getId(), res.getId());
+        assertEquals(computeResourcePropertyDtos.get(0).getType().getId(), res.getComputeResourcePropertyType().getId());
     }
 
     @Test
@@ -1260,14 +1264,12 @@ public class ImplementationControllerTest {
         // test
         Mockito.verify(discussionTopicService, times(1)).findByKnowledgeArtifactId(implementation1.getId(), pageable);
 
-        JSONObject rootObject = new JSONObject(result.getResponse().getContentAsString());
-        var embeddedJSONObjects = rootObject.getJSONObject("_embedded").getJSONArray("discussionTopics");
-        var resultObject = mapper.readValue(embeddedJSONObjects.getJSONObject(0).toString(), DiscussionTopicDto.class);
+        List<DiscussionTopicDto> discussionTopicDtos = ObjectMapperUtils.mapResponseToList(result, DiscussionTopicDto.class);
 
-        assertEquals(1, embeddedJSONObjects.length());
-        assertEquals(resultObject.getTitle(), discussionTopic1.getTitle());
-        assertEquals(resultObject.getId(), discussionTopic1.getId());
-        assertEquals(resultObject.getDate(), discussionTopic1.getDate());
+        assertEquals(1, discussionTopicDtos.size());
+        assertEquals(discussionTopicDtos.get(0).getTitle(), discussionTopic1.getTitle());
+        assertEquals(discussionTopicDtos.get(0).getId(), discussionTopic1.getId());
+        assertEquals(discussionTopicDtos.get(0).getDate(), discussionTopic1.getDate());
     }
 
     @Test
@@ -1456,7 +1458,7 @@ public class ImplementationControllerTest {
 
 
         var resultList = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(),
-                "discussionComments", DiscussionCommentDto.class);
+                DiscussionCommentDto.class);
 
         assertEquals(resultList.size(), 1);
         assertEquals(resultList.get(0).getText(), discussionComment1Dto.getText());
@@ -1659,7 +1661,7 @@ public class ImplementationControllerTest {
         result.andExpect(status().isOk()).andReturn();
 
         var resultList = ObjectMapperUtils.mapResponseToList(result.andReturn().getResponse().getContentAsString(),
-                "implementationPackages", ImplementationPackageDto.class);
+                ImplementationPackageDto.class);
         assertEquals(1, resultList.size());
 
         Mockito.verify(implementationPackageService, times(1))

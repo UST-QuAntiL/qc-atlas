@@ -90,9 +90,9 @@ public class ImplementationGlobalControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationGlobalController.class)
                 .getImplementations(ListParameters.getDefault()));
-        mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON)
-        ).andExpect(jsonPath("$._embedded.implementations").doesNotExist())
-                .andExpect(status().isOk());
+        MvcResult mvcResult = mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isOk()).andReturn();
+        assertEquals(ObjectMapperUtils.mapResponseToList(mvcResult, ImplementationDto.class).size(), 0);
     }
 
     @Test

@@ -85,10 +85,10 @@ public class ProblemTypeControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(ProblemTypeController.class)
                 .getProblemTypes(ListParameters.getDefault()));
-        mockMvc
+        MvcResult mvcResult = mockMvc
                 .perform(get(url).accept(APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$._embedded.problemTypes").doesNotExist());
+                .andExpect(status().isOk()).andReturn();
+        assertEquals(ObjectMapperUtils.mapResponseToList(mvcResult, ProblemTypeDto.class).size(), 0);
     }
 
     @Test

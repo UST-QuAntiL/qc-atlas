@@ -19,6 +19,7 @@
 
 package org.planqk.atlas.web.controller;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
@@ -95,9 +96,9 @@ public class AlgorithmRelationControllerTest {
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmRelationController.class)
                 .getAlgorithmRelationsOfAlgorithm(UUID.randomUUID(), ListParameters.getDefault()));
 
-        mockMvc.perform(get(url).accept(APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$._embedded.algorithmRelations").doesNotExist());
+        MvcResult mvcResult = mockMvc.perform(get(url).accept(APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
+        assertEquals(ObjectMapperUtils.mapResponseToList(mvcResult, AlgorithmRelationDto.class).size(), 0);
     }
 
     @Test

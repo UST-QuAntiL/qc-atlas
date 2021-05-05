@@ -28,7 +28,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.ArrayList;
@@ -37,10 +36,12 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.UUID;
 
+import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.ComputationModel;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.services.AlgorithmService;
@@ -214,8 +215,7 @@ public class TagControllerTest {
         var url = linkBuilderService.urlStringTo(methodOn(TagController.class)
                 .getImplementationsOfTag("test"));
         mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$._embedded.implementations").doesNotExist())
-                .andExpect(status().isOk());
+                .andExpect(status().isOk()).andReturn();
     }
 
     @Test
@@ -250,6 +250,7 @@ public class TagControllerTest {
         var algo = new Algorithm();
         algo.setId(UUID.randomUUID());
         algo.setName("test-algo");
+        algo.setComputationModel(ComputationModel.CLASSIC);
         algo.setTags(Set.of(tag));
         tag.setAlgorithms(Set.of(algo));
 
@@ -268,9 +269,10 @@ public class TagControllerTest {
         doReturn(tag).when(tagService).findByValue(any());
         var url = linkBuilderService.urlStringTo(methodOn(TagController.class)
                 .getAlgorithmsOfTag("test"));
-        mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$._embedded.algorithms").doesNotExist());
+        MvcResult mvcResult = mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
+
+        Assert.assertEquals(ObjectMapperUtils.mapResponseToList(mvcResult, AlgorithmDto.class).size(), 0);
     }
 
     @Test

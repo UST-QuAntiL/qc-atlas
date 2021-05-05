@@ -118,7 +118,7 @@ public class ImplementationController {
             @Validated(ValidationGroups.Create.class) @RequestBody ImplementationDto implementationDto) {
         final Implementation savedImplementation = implementationService.create(
                 ModelMapperUtils.convert(implementationDto, Implementation.class), algorithmId);
-        return new ResponseEntity<>(ModelMapperUtils.convert(savedImplementation, ImplementationDto.class), HttpStatus.OK);
+        return new ResponseEntity<>(ModelMapperUtils.convert(savedImplementation, ImplementationDto.class), HttpStatus.CREATED);
     }
 
     @Operation(responses = {
@@ -429,7 +429,7 @@ public class ImplementationController {
 
         final var createdComputeResourceProperty = computeResourcePropertyService
                 .addComputeResourcePropertyToImplementation(implementationId, computeResourceProperty);
-        return ResponseEntity.ok(ModelMapperUtils.convert(createdComputeResourceProperty, ComputeResourcePropertyDto.class));
+        return new ResponseEntity<>(ModelMapperUtils.convert(createdComputeResourceProperty, ComputeResourcePropertyDto.class), HttpStatus.CREATED);
     }
 
     @Operation(responses = {

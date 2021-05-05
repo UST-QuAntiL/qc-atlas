@@ -20,6 +20,7 @@
 package org.planqk.atlas.web.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
@@ -482,9 +483,10 @@ public class ComputeResourceControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(ComputeResourceController.class)
                 .getComputeResourcePropertiesOfComputeResource(UUID.randomUUID(), ListParameters.getDefault()));
-        mockMvc.perform(get(url).accept(APPLICATION_JSON))
-                .andExpect(jsonPath("$._embedded.computeResourceProperties").doesNotExist())
-                .andExpect(status().isOk());
+        MvcResult mvcResult = mockMvc.perform(get(url).accept(APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
+
+        assertEquals(ObjectMapperUtils.mapResponseToList(mvcResult, ComputeResourcePropertyDto.class).size(), 0);
     }
 
     @Test

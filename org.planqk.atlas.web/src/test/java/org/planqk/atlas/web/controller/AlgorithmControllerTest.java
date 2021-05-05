@@ -49,6 +49,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.json.JSONObject;
+import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -354,6 +355,7 @@ public class AlgorithmControllerTest {
 
         var resultList = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(), AlgorithmDto.class);
         assertEquals(0, resultList.size());
+
     }
 
     @Test
@@ -656,10 +658,9 @@ public class AlgorithmControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
                 .getPublicationsOfAlgorithm(UUID.randomUUID(), ListParameters.getDefault()));
-        mockMvc.perform(get(url).accept(APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$._embedded.publications").doesNotExist())
-        ;
+        MvcResult mvcResult = mockMvc.perform(get(url).accept(APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
+        Assert.assertEquals(ObjectMapperUtils.mapResponseToList(mvcResult, PublicationDto.class).size(), 0);
     }
 
     @Test
@@ -824,10 +825,9 @@ public class AlgorithmControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
                 .getProblemTypesOfAlgorithm(UUID.randomUUID(), ListParameters.getDefault()));
-        mockMvc.perform(get(url).accept(APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$._embedded.ProblemTypes").doesNotExist())
-        ;
+        MvcResult mvcResult = mockMvc.perform(get(url).accept(APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
+        Assert.assertEquals(ObjectMapperUtils.mapResponseToList(mvcResult, ProblemTypeDto.class).size(), 0);
     }
 
     @Test
@@ -988,10 +988,9 @@ public class AlgorithmControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
                 .getApplicationAreasOfAlgorithm(UUID.randomUUID(), ListParameters.getDefault()));
-        mockMvc.perform(get(url).accept(APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$._embedded.applicationAreas").doesNotExist())
-        ;
+        MvcResult mvcResult = mockMvc.perform(get(url).accept(APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
+        assertEquals(ObjectMapperUtils.mapResponseToList(mvcResult, ApplicationAreaDto.class).size(), 0);
     }
 
     @Test
@@ -1195,9 +1194,10 @@ public class AlgorithmControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
                 .getComputeResourcePropertiesOfAlgorithm(UUID.randomUUID(), ListParameters.getDefault()));
-        mockMvc.perform(get(url).accept(APPLICATION_JSON))
-                .andExpect(jsonPath("$._embedded.computeResourceProperties").doesNotExist())
-                .andExpect(status().isOk());
+        MvcResult mvcResult = mockMvc.perform(get(url).accept(APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
+        assertEquals(ObjectMapperUtils.mapResponseToList(mvcResult, ComputeResourcePropertyDto.class).size(), 0);
+
     }
 
     @Test
@@ -1910,7 +1910,8 @@ public class AlgorithmControllerTest {
         Mockito.verify(discussionTopicService, times(1)).findByKnowledgeArtifactId(algorithm1.getId(), pageable);
 
         JSONObject rootObject = new JSONObject(result.getResponse().getContentAsString());
-        var embeddedJSONObjects = rootObject.getJSONObject("_embedded").getJSONArray("discussionTopics");
+        System.out.println(rootObject);
+        var embeddedJSONObjects = rootObject.getJSONArray("content");
         var resultObject = mapper.readValue(embeddedJSONObjects.getJSONObject(0).toString(), DiscussionTopicDto.class);
 
         assertEquals(1, embeddedJSONObjects.length());

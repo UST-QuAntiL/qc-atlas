@@ -43,6 +43,7 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.UUID;
 
+import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -66,6 +67,7 @@ import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.ClassicAlgorithmDto;
 import org.planqk.atlas.web.dtos.DiscussionCommentDto;
 import org.planqk.atlas.web.dtos.DiscussionTopicDto;
+import org.planqk.atlas.web.dtos.ProblemTypeDto;
 import org.planqk.atlas.web.dtos.PublicationDto;
 import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
 import org.planqk.atlas.web.linkassembler.LinkBuilderService;
@@ -208,10 +210,10 @@ public class PublicationControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
                 .getPublications(ListParameters.getDefault()));
-        mockMvc
+        MvcResult mvcResult = mockMvc
                 .perform(get(url).accept(APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$._embedded.publications").doesNotExist());
+                .andExpect(status().isOk()).andReturn();
+        Assert.assertEquals(ObjectMapperUtils.mapResponseToList(mvcResult, ProblemTypeDto.class).size(), 0);
     }
 
     @Test
@@ -395,6 +397,7 @@ public class PublicationControllerTest {
         var algo = new ClassicAlgorithm();
         algo.setName("algo");
         algo.setId(UUID.randomUUID());
+        algo.setComputationModel(ComputationModel.CLASSIC);
 
         doReturn(new PageImpl<>(List.of(algo))).when(publicationService).findLinkedAlgorithms(any(), any());
 
@@ -403,7 +406,7 @@ public class PublicationControllerTest {
 
         MvcResult mvcResult = mockMvc.perform(get(url).accept(APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
-        assertEquals(ObjectMapperUtils.mapResponseToList(mvcResult, ClassicAlgorithmDto.class), algo.getId());
+        assertEquals(ObjectMapperUtils.mapResponseToList(mvcResult, ClassicAlgorithmDto.class).get(0).getId(), algo.getId());
     }
 
     @Test
@@ -414,9 +417,9 @@ public class PublicationControllerTest {
         var url = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
                 .getAlgorithmsOfPublication(UUID.randomUUID(), ListParameters.getDefault()));
 
-        mockMvc.perform(get(url).accept(APPLICATION_JSON))
-                .andExpect(jsonPath("$._embedded.algorithms").doesNotExist())
-                .andExpect(status().isOk());
+        MvcResult mvcResult = mockMvc.perform(get(url).accept(APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
+        Assert.assertEquals(ObjectMapperUtils.mapResponseToList(mvcResult, PublicationDto.class).size(), 0);
     }
 
     @Test
@@ -552,9 +555,10 @@ public class PublicationControllerTest {
         var url = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
                 .getImplementationsOfPublication(UUID.randomUUID(), ListParameters.getDefault()));
 
-        mockMvc.perform(get(url).accept(APPLICATION_JSON))
-                .andExpect(jsonPath("$._embedded.implementations").doesNotExist())
-                .andExpect(status().isOk());
+        MvcResult mvcResult = mockMvc.perform(get(url).accept(APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
+
+        Assert.assertEquals(ObjectMapperUtils.mapResponseToList(mvcResult, PublicationDto.class).size(), 0);
     }
 
     @Test

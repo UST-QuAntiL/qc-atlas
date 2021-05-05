@@ -82,7 +82,12 @@ public class ObjectMapperUtils {
 
     public static <T> List<T> mapResponseToList(String response, Class<? extends T> className,
                                                 @NonNull ObjectMapper mapper) throws Exception {
-        var rootObject = new JSONObject(response).getJSONArray("content");
+        JSONArray rootObject = null;
+        try {
+            rootObject = new JSONObject(response).getJSONArray("content");
+        } catch (Exception e) {
+            rootObject = new JSONArray(response);
+        }
 
         return mapJSONArrayToList(rootObject, className, mapper);
     }
