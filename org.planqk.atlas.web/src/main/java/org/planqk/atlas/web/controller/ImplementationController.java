@@ -804,65 +804,6 @@ public class ImplementationController {
         return new ResponseEntity<>(ModelMapperUtils.convert(implementationPackageToSave, ImplementationPackageDto.class), HttpStatus.CREATED);
     }
 
-    @Operation(responses = {
-            @ApiResponse(responseCode = "201"),
-            @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
-    }, description = "Uploads and adds a file to a given implementation")
-    @PostMapping(value = "/{implementationId}/" + Constants.IMPLEMENTATION_PACKAGES + "/{implementationPackageId}/" +
-            Constants.FILE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<FileDto> createFileForImplementation(
-            @PathVariable UUID algorithmId,
-            @PathVariable UUID implementationId,
-            @PathVariable UUID implementationPackageId,
-            @RequestParam("file") MultipartFile multipartFile) {
-        implementationService.checkIfImplementationIsOfAlgorithm(implementationId, algorithmId);
-        implementationPackageService.checkIfImplementationPackageIsLinkedToImplementation(implementationPackageId, implementationId);
-        final File file = implementationPackageService.addFileToImplementationPackage(implementationPackageId, multipartFile);
-        return ResponseEntity.ok(ModelMapperUtils.convert(file, FileDto.class));
-    }
-
-
-    @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-    }, description = "Retrieve the file of an implementation package")
-    @GetMapping("/{implementationId}/" + Constants.IMPLEMENTATION_PACKAGES + "/{implementationPackageId}/" + Constants.FILE)
-    public ResponseEntity<FileDto> getFileOfImplementation(
-            @PathVariable UUID algorithmId,
-            @PathVariable UUID implementationId,
-            @PathVariable UUID implementationPackageId
-    ) {
-        implementationService.checkIfImplementationIsOfAlgorithm(implementationId, algorithmId);
-        implementationPackageService.checkIfImplementationPackageIsLinkedToImplementation(implementationPackageId, implementationId);
-        final File file =
-                implementationPackageService.findLinkedFile(implementationPackageId);
-        return ResponseEntity.ok(ModelMapperUtils.convert(file, FileDto.class));
-    }
-
-
-    @Operation(responses = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "404",
-                    description = "File of Implementation with given ID doesn't exist")
-    }, description = "Downloads a specific file content of an Implementation")
-    @GetMapping("/{implementationId}/" + Constants.IMPLEMENTATION_PACKAGES + "/{implementationPackageId}/" + Constants.FILE + "/content")
-    public ResponseEntity<byte[]> downloadFileContentFromImplementation(
-            @PathVariable UUID algorithmId,
-            @PathVariable UUID implementationId,
-            @PathVariable UUID implementationPackageId
-    ) {
-        implementationService.checkIfImplementationIsOfAlgorithm(implementationId, algorithmId);
-        implementationPackageService.checkIfImplementationPackageIsLinkedToImplementation(implementationPackageId, implementationId);
-        final File file =
-                implementationPackageService.findLinkedFile(implementationPackageId);
-        if (file == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        return ResponseEntity
-                .ok()
-                .contentType(MediaType.parseMediaType(file.getMimeType()))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + file.getName())
-                .body(fileService.getFileContent(file.getId()));
-    }
 
     @Operation(responses = {
             @ApiResponse(responseCode = "204"),
