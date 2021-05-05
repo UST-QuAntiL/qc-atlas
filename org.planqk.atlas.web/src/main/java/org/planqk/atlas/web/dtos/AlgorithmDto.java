@@ -22,19 +22,19 @@ package org.planqk.atlas.web.dtos;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
 
 import org.planqk.atlas.core.model.ComputationModel;
 import org.planqk.atlas.web.utils.Identifyable;
 import org.planqk.atlas.web.utils.ValidationGroups;
-import org.springframework.hateoas.server.core.Relation;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.hateoas.server.core.Relation;
 
 /**
  * Data transfer object for Algorithms ({@link org.planqk.atlas.core.model.Algorithm}).
@@ -42,9 +42,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "computationModel", visible = true)
-@JsonSubTypes({@JsonSubTypes.Type(value = QuantumAlgorithmDto.class, name = "QUANTUM"),
-    @JsonSubTypes.Type(value = ClassicAlgorithmDto.class, name = "CLASSIC"),
-    @JsonSubTypes.Type(value = QuantumAlgorithmDto.class, name = "HYBRID")})
+@JsonSubTypes( {@JsonSubTypes.Type(value = QuantumAlgorithmDto.class, name = "QUANTUM"),
+        @JsonSubTypes.Type(value = ClassicAlgorithmDto.class, name = "CLASSIC"),
+        @JsonSubTypes.Type(value = QuantumAlgorithmDto.class, name = "HYBRID")})
 @Relation(itemRelation = "algorithm", collectionRelation = "algorithms")
 public class AlgorithmDto implements Identifyable {
     @NotNull(groups = {ValidationGroups.IDOnly.class}, message = "An id is required to perform an update")
@@ -56,7 +56,7 @@ public class AlgorithmDto implements Identifyable {
     private Date lastModifiedAt;
 
     @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
-        message = "Algorithm-Name must not be null!")
+            message = "Algorithm-Name must not be null!")
     @NotNull(message = "Algorithm-Name must not be null!")
     private String name;
 
@@ -79,6 +79,6 @@ public class AlgorithmDto implements Identifyable {
     private String assumptions;
 
     @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
-        message = "Computational-Model must not be null!")
+            message = "Computational-Model must not be null!")
     private ComputationModel computationModel;
 }

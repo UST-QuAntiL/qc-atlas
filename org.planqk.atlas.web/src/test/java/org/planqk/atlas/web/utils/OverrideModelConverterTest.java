@@ -19,18 +19,18 @@
 
 package org.planqk.atlas.web.utils;
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.List;
 import java.util.Map;
-import javax.validation.constraints.NotNull;
 
-import org.junit.jupiter.api.Test;
+import javax.validation.constraints.NotNull;
 
 import io.swagger.v3.core.converter.AnnotatedType;
 import io.swagger.v3.core.converter.ModelConverters;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.Assert.assertEquals;
 
 public class OverrideModelConverterTest {
     @Test
@@ -39,7 +39,7 @@ public class OverrideModelConverterTest {
         converters.addConverter(new OverrideModelConverter(Map.of(SimpleDto.class, SimpleDtoOverride.class)));
 
         final var wrapped = converters.resolveAsResolvedSchema(new AnnotatedType().type(SimpleDto.class)
-            .resolveAsRef(false));
+                .resolveAsRef(false));
         assertEquals(List.of("otherField"), wrapped.schema.getRequired());
         assertEquals(1, wrapped.schema.getProperties().size());
     }

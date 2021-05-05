@@ -114,7 +114,6 @@ public final class Constants {
 
     public static final String LEARNING_METHODS = "learning-methods";
 
-
     private Constants() {
     }
 }

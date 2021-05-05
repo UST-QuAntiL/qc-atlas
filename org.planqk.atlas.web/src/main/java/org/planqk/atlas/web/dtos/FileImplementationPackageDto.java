@@ -20,14 +20,13 @@
 package org.planqk.atlas.web.dtos;
 
 import org.planqk.atlas.core.model.ImplementationPackageType;
-import org.springframework.hateoas.server.core.Relation;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import org.springframework.hateoas.server.core.Relation;
 
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)

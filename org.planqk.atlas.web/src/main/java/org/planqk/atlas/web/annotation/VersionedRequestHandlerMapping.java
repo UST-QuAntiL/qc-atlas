@@ -33,5 +33,4 @@ public class VersionedRequestHandlerMapping extends RequestMappingHandlerMapping
     public void populateFromHandler(Object handler) {
         detectHandlerMethods(handler);
     }
-
 }

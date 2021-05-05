@@ -19,23 +19,6 @@
 
 package org.planqk.atlas.web.controller;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.when;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
-import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -44,11 +27,6 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.UUID;
 
-import org.junit.Assert;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
 import org.planqk.atlas.core.model.ComputationModel;
@@ -91,6 +69,15 @@ import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
 import org.planqk.atlas.web.linkassembler.LinkBuilderService;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.SneakyThrows;
+import org.junit.Assert;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -106,10 +93,22 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import lombok.SneakyThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.when;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = {ImplementationController.class, DiscussionCommentController.class, DiscussionTopicController.class})
 @ExtendWith(MockitoExtension.class)
@@ -130,7 +129,6 @@ public class ImplementationControllerTest {
 
     @MockBean
     private ImplementationPackageService implementationPackageService;
-
 
     @MockBean
     private ComputeResourcePropertyService computeResourcePropertyService;
@@ -1456,7 +1454,6 @@ public class ImplementationControllerTest {
         // test
         Mockito.verify(discussionCommentService, times(1)).findAllByTopic(discussionTopic1.getId(), pageable);
 
-
         var resultList = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(),
                 DiscussionCommentDto.class);
 
@@ -1954,7 +1951,6 @@ public class ImplementationControllerTest {
                 .getFileOfImplementationPackage(algo.getId(), impl.getId(), implementationPackage.getId()));
         ResultActions result = mockMvc.perform(get(path).accept(MediaType.APPLICATION_JSON));
 
-
         // Then
         result.andExpect(status().isOk());
         Mockito.verify(implementationPackageService, times(1)).findLinkedFile(implementationPackage.getId());
@@ -1968,7 +1964,6 @@ public class ImplementationControllerTest {
         implementationPackage.setName("implementation for Shor");
         implementationPackage.setId(UUID.randomUUID());
 
-
         var impl = new Implementation();
         impl.setName("implementation for Shor");
         impl.setId(UUID.randomUUID());
@@ -1980,7 +1975,6 @@ public class ImplementationControllerTest {
         file.setId(UUID.randomUUID());
         file.setMimeType("img/png");
         implementationPackage.setFile(file);
-
 
         when(implementationPackageService.findLinkedFile(implementationPackage.getId())).thenReturn(file);
 
@@ -2055,7 +2049,6 @@ public class ImplementationControllerTest {
                 .deleteFileOfImplementation(algo.getId(), impl.getId(), implementationPackage.getId()));
         mockMvc.perform(delete(url))
                 .andExpect(status().isNotFound()).andReturn();
-
     }
 
     @Test
@@ -2084,7 +2077,5 @@ public class ImplementationControllerTest {
                 .deleteFileOfImplementation(algo.getId(), impl.getId(), implementationPackage.getId()));
         mockMvc.perform(delete(url))
                 .andExpect(status().isNoContent()).andReturn();
-
     }
-
 }

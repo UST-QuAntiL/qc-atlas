@@ -20,24 +20,24 @@
 package org.planqk.atlas.web.dtos;
 
 import java.util.UUID;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
 
 import org.planqk.atlas.core.model.ImplementationPackageType;
 import org.planqk.atlas.web.utils.Identifyable;
 import org.planqk.atlas.web.utils.ValidationGroups;
-import org.springframework.hateoas.server.core.Relation;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.hateoas.server.core.Relation;
 
 @Data
 @NoArgsConstructor
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "packageType", visible = true)
-@JsonSubTypes({@JsonSubTypes.Type(value = FileImplementationPackageDto.class, name = "FILE"),
+@JsonSubTypes( {@JsonSubTypes.Type(value = FileImplementationPackageDto.class, name = "FILE"),
         @JsonSubTypes.Type(value = TOSCAImplementationPackageDto.class, name = "TOSCA"),
         @JsonSubTypes.Type(value = FunctionImplementationPackageDto.class, name = "FUNCTION")})
 @Relation(itemRelation = "implementationPackage", collectionRelation = "implementationPackages")

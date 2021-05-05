@@ -22,6 +22,8 @@ package org.planqk.atlas.web.utils;
 import java.util.Map;
 
 import org.planqk.atlas.web.Constants;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.PageRequest;
@@ -37,11 +39,9 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import org.springframework.web.method.support.UriComponentsContributor;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import lombok.extern.slf4j.Slf4j;
-
 @Slf4j
 public class ListParametersMethodArgumentResolver extends PageableHandlerMethodArgumentResolverSupport
-    implements HandlerMethodArgumentResolver, UriComponentsContributor {
+        implements HandlerMethodArgumentResolver, UriComponentsContributor {
     private final HateoasSortHandlerMethodArgumentResolver sortResolver = new HateoasSortHandlerMethodArgumentResolver();
 
     @Override
@@ -81,7 +81,7 @@ public class ListParametersMethodArgumentResolver extends PageableHandlerMethodA
             final var pageNumber = pageable.getPageNumber();
             builder.replaceQueryParam(pagePropertyName, isOneIndexedParameters() ? pageNumber + 1 : pageNumber);
             builder.replaceQueryParam(sizePropertyName,
-                pageable.getPageSize() <= getMaxPageSize() ? pageable.getPageSize() : getMaxPageSize());
+                    pageable.getPageSize() <= getMaxPageSize() ? pageable.getPageSize() : getMaxPageSize());
         } else {
             builder.replaceQueryParam(pagePropertyName, "-1");
             builder.replaceQueryParam(sizePropertyName, "-1");

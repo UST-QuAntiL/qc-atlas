@@ -34,6 +34,13 @@ import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.ValidationGroups;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -47,13 +54,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @Tag(name = Constants.TAG_EXECUTION_ENVIRONMENTS)
 @RestController
@@ -93,7 +93,7 @@ public class SoftwarePlatformController {
             "can be added via sub-routes (e.g. via POST on /" + Constants.COMPUTE_RESOURCES + ").")
     @PostMapping
     public ResponseEntity<SoftwarePlatformDto> createSoftwarePlatform(
-            @Validated({ValidationGroups.Create.class}) @RequestBody SoftwarePlatformDto softwarePlatformDto) {
+            @Validated( {ValidationGroups.Create.class}) @RequestBody SoftwarePlatformDto softwarePlatformDto) {
         final var savedPlatform = softwarePlatformService.create(ModelMapperUtils.convert(softwarePlatformDto, SoftwarePlatform.class));
         return new ResponseEntity<>(ModelMapperUtils.convert(savedPlatform, SoftwarePlatformDto.class), HttpStatus.CREATED);
     }
@@ -109,7 +109,7 @@ public class SoftwarePlatformController {
     @PutMapping("/{softwarePlatformId}")
     public ResponseEntity<SoftwarePlatformDto> updateSoftwarePlatform(
             @PathVariable UUID softwarePlatformId,
-            @Validated({ValidationGroups.Update.class}) @RequestBody SoftwarePlatformDto softwarePlatformDto) {
+            @Validated( {ValidationGroups.Update.class}) @RequestBody SoftwarePlatformDto softwarePlatformDto) {
         softwarePlatformDto.setId(softwarePlatformId);
         final var softwarePlatform = softwarePlatformService
                 .update(
@@ -170,7 +170,7 @@ public class SoftwarePlatformController {
     @PostMapping("/{softwarePlatformId}/" + Constants.IMPLEMENTATIONS)
     public ResponseEntity<Void> linkSoftwarePlatformAndImplementation(
             @PathVariable UUID softwarePlatformId,
-            @Validated({ValidationGroups.IDOnly.class}) @RequestBody ImplementationDto implementationDto) {
+            @Validated( {ValidationGroups.IDOnly.class}) @RequestBody ImplementationDto implementationDto) {
         linkingService.linkImplementationAndSoftwarePlatform(implementationDto.getId(), softwarePlatformId);
         return ResponseEntity.noContent().build();
     }
@@ -235,7 +235,7 @@ public class SoftwarePlatformController {
     @PostMapping("/{softwarePlatformId}/" + Constants.CLOUD_SERVICES)
     public ResponseEntity<Void> linkSoftwarePlatformAndCloudService(
             @PathVariable UUID softwarePlatformId,
-            @Validated({ValidationGroups.IDOnly.class}) @RequestBody CloudServiceDto cloudServiceDto) {
+            @Validated( {ValidationGroups.IDOnly.class}) @RequestBody CloudServiceDto cloudServiceDto) {
         linkingService.linkSoftwarePlatformAndCloudService(softwarePlatformId, cloudServiceDto.getId());
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -284,7 +284,7 @@ public class SoftwarePlatformController {
     @PostMapping("/{softwarePlatformId}/" + Constants.COMPUTE_RESOURCES)
     public ResponseEntity<Void> linkSoftwarePlatformAndComputeResource(
             @PathVariable UUID softwarePlatformId,
-            @Validated({ValidationGroups.IDOnly.class}) @RequestBody ComputeResourceDto computeResourceDto) {
+            @Validated( {ValidationGroups.IDOnly.class}) @RequestBody ComputeResourceDto computeResourceDto) {
         linkingService.linkSoftwarePlatformAndComputeResource(softwarePlatformId, computeResourceDto.getId());
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

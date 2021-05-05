@@ -19,19 +19,19 @@
 
 package org.planqk.atlas.web.utils;
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.List;
-import javax.validation.constraints.NotNull;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.hateoas.EntityModel;
+import javax.validation.constraints.NotNull;
 
 import io.swagger.v3.core.converter.AnnotatedType;
 import io.swagger.v3.core.converter.ModelConverters;
 import io.swagger.v3.core.util.Json;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.junit.jupiter.api.Test;
+import org.springframework.hateoas.EntityModel;
+
+import static org.junit.Assert.assertEquals;
 
 public class EntityModelConverterTest {
     @Test
@@ -44,8 +44,8 @@ public class EntityModelConverterTest {
         assertEquals(2, normal.schema.getProperties().size());
 
         final var wrapped = converters.resolveAsResolvedSchema(new AnnotatedType().type(
-            Json.mapper().getTypeFactory().constructParametricType(EntityModel.class, SimpleDto.class))
-            .resolveAsRef(false));
+                Json.mapper().getTypeFactory().constructParametricType(EntityModel.class, SimpleDto.class))
+                .resolveAsRef(false));
         assertEquals(List.of("notNull"), wrapped.schema.getRequired());
         assertEquals(3, wrapped.schema.getProperties().size());
     }

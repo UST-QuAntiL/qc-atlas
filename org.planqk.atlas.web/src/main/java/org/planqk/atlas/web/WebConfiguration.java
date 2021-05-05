@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.planqk.atlas.web.annotation.VersionedRequestHandlerMapping;
 import org.planqk.atlas.web.utils.ListParametersMethodArgumentResolver;
+
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcRegistrations;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

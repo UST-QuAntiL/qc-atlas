@@ -28,7 +28,7 @@ import java.lang.annotation.Target;
 
 import org.springframework.context.annotation.ComponentScan;
 
-@Target({ElementType.TYPE})
+@Target( {ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited

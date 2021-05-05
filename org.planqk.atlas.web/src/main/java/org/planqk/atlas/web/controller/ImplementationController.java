@@ -50,6 +50,12 @@ import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.ValidationGroups;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -68,12 +74,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * Controller to access and manipulate implementations of quantum algorithms.
@@ -264,7 +264,7 @@ public class ImplementationController {
     public ResponseEntity<Void> linkImplementationAndPublication(
             @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId,
-            @Validated({ValidationGroups.IDOnly.class}) @RequestBody PublicationDto publicationDto) {
+            @Validated( {ValidationGroups.IDOnly.class}) @RequestBody PublicationDto publicationDto) {
         implementationService.checkIfImplementationIsOfAlgorithm(implementationId, algorithmId);
 
         linkingService.linkImplementationAndPublication(implementationId, publicationDto.getId());
@@ -343,7 +343,7 @@ public class ImplementationController {
     public ResponseEntity<Void> linkImplementationAndSoftwarePlatform(
             @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId,
-            @Validated({ValidationGroups.IDOnly.class}) @RequestBody SoftwarePlatformDto softwarePlatformDto) {
+            @Validated( {ValidationGroups.IDOnly.class}) @RequestBody SoftwarePlatformDto softwarePlatformDto) {
         implementationService.checkIfImplementationIsOfAlgorithm(implementationId, algorithmId);
 
         linkingService.linkImplementationAndSoftwarePlatform(implementationId, softwarePlatformDto.getId());
@@ -803,7 +803,6 @@ public class ImplementationController {
                 implementationPackageService.create(implementationP, implementationId);
         return new ResponseEntity<>(ModelMapperUtils.convert(implementationPackageToSave, ImplementationPackageDto.class), HttpStatus.CREATED);
     }
-
 
     @Operation(responses = {
             @ApiResponse(responseCode = "204"),

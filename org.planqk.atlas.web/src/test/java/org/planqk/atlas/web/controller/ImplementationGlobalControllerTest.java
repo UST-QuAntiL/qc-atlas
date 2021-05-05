@@ -19,20 +19,9 @@
 
 package org.planqk.atlas.web.controller;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import java.util.List;
 import java.util.UUID;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.services.FileService;
@@ -42,6 +31,12 @@ import org.planqk.atlas.web.dtos.ImplementationDto;
 import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
 import org.planqk.atlas.web.linkassembler.LinkBuilderService;
 import org.planqk.atlas.web.utils.ListParameters;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.SneakyThrows;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -53,9 +48,13 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import lombok.SneakyThrows;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = ImplementationGlobalController.class)
 @ExtendWith(MockitoExtension.class)
@@ -81,7 +80,7 @@ public class ImplementationGlobalControllerTest {
     @Autowired
     private LinkBuilderService linkBuilderService;
 
-    private ObjectMapper mapper = ObjectMapperUtils.newTestMapper();
+    private final ObjectMapper mapper = ObjectMapperUtils.newTestMapper();
 
     @Test
     @SneakyThrows
@@ -115,7 +114,6 @@ public class ImplementationGlobalControllerTest {
         assertEquals(implementationDto.getName(), impl.getName());
         assertEquals(implementationDto.getId(), impl.getId());
         assertEquals(implementationDto.getImplementedAlgorithmId(), algo.getId());
-
     }
 
     @Test
@@ -138,5 +136,4 @@ public class ImplementationGlobalControllerTest {
                 .andExpect(jsonPath("$.id").value(impl.getId().toString()))
                 .andExpect(jsonPath("$.implementedAlgorithmId").value(algo.getId().toString()));
     }
-
 }
