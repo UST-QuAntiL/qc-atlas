@@ -19,18 +19,18 @@
 
 package org.planqk.atlas.web.utils;
 
+import static org.junit.Assert.assertEquals;
+
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Map;
 
-import javax.validation.constraints.NotNull;
+import org.junit.jupiter.api.Test;
 
 import io.swagger.v3.core.converter.AnnotatedType;
 import io.swagger.v3.core.converter.ModelConverters;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.junit.jupiter.api.Test;
-
-import static org.junit.Assert.assertEquals;
 
 public class OverrideModelConverterTest {
     @Test

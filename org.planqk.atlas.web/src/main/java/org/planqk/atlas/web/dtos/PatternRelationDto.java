@@ -19,20 +19,19 @@
 
 package org.planqk.atlas.web.dtos;
 
-import java.net.URI;
-import java.util.UUID;
-
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
+import java.net.URI;
+import java.util.UUID;
 
 import org.planqk.atlas.web.utils.Identifyable;
 import org.planqk.atlas.web.utils.RequiresID;
 import org.planqk.atlas.web.utils.ValidationGroups;
+import org.springframework.hateoas.server.core.Relation;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.springframework.hateoas.server.core.Relation;
 
 /**
  * Data transfer object for PatternRelation ({@link org.planqk.atlas.core.model.PatternRelation}).

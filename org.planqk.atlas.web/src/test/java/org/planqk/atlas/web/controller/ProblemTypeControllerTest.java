@@ -19,33 +19,6 @@
 
 package org.planqk.atlas.web.controller;
 
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.UUID;
-
-import org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException;
-import org.planqk.atlas.core.model.ProblemType;
-import org.planqk.atlas.core.services.ProblemTypeService;
-import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
-import org.planqk.atlas.web.dtos.ProblemTypeDto;
-import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
-import org.planqk.atlas.web.linkassembler.LinkBuilderService;
-import org.planqk.atlas.web.utils.ListParameters;
-import org.planqk.atlas.web.utils.ModelMapperUtils;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.SneakyThrows;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
@@ -60,8 +33,36 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.UUID;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException;
+import org.planqk.atlas.core.model.ProblemType;
+import org.planqk.atlas.core.services.ProblemTypeService;
+import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
+import org.planqk.atlas.web.dtos.ProblemTypeDto;
+import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
+import org.planqk.atlas.web.linkassembler.LinkBuilderService;
+import org.planqk.atlas.web.utils.ListParameters;
+import org.planqk.atlas.web.utils.ModelMapperUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import lombok.SneakyThrows;
+
 @WebMvcTest(value = ProblemTypeController.class)
-@ExtendWith( {MockitoExtension.class})
+@ExtendWith({MockitoExtension.class})
 @AutoConfigureMockMvc
 @EnableLinkAssemblers
 public class ProblemTypeControllerTest {

@@ -21,23 +21,24 @@ package org.planqk.atlas.web.utils;
 
 import java.util.Iterator;
 
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Links;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
+
 import io.swagger.v3.core.converter.AnnotatedType;
 import io.swagger.v3.core.converter.ModelConverter;
 import io.swagger.v3.core.converter.ModelConverterContext;
 import io.swagger.v3.core.util.Json;
 import io.swagger.v3.oas.models.media.Schema;
-import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.Links;
 
 /**
  * Custom converter for EntityModel classes.
  * <p>
- * Spring HATEOAS' EntityModel class is special because it uses Jackson's @JsonWrapped to "copy" the actual DTO's
- * properties into the EntityModel instance. Unfortunately, information on whether properties are required or not is
- * lost in the process. This wrapper aims to fix that by copying the DTO's schema and then manually adding the
- * EntityModel-specific fields (for now, just _links).
+ * Spring HATEOAS' EntityModel class is special because it uses Jackson's @JsonWrapped to "copy" the actual DTO's properties into the EntityModel
+ * instance. Unfortunately, information on whether properties are required or not is lost in the process. This wrapper aims to fix that by copying the
+ * DTO's schema and then manually adding the EntityModel-specific fields (for now, just _links).
  */
 public class EntityModelConverter implements ModelConverter {
     @Override

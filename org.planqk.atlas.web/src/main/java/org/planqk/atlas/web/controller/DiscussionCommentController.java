@@ -19,9 +19,8 @@
 
 package org.planqk.atlas.web.controller;
 
-import java.util.UUID;
-
 import javax.validation.Valid;
+import java.util.UUID;
 
 import org.planqk.atlas.core.model.DiscussionComment;
 import org.planqk.atlas.core.model.KnowledgeArtifact;
@@ -32,13 +31,6 @@ import org.planqk.atlas.web.dtos.DiscussionCommentDto;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
-
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,6 +38,13 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Tag(name = Constants.TAG_DISCUSSION_TOPIC)
 @CrossOrigin(allowedHeaders = "*", origins = "*")

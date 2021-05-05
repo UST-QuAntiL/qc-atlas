@@ -30,14 +30,14 @@ import org.planqk.atlas.web.dtos.QuantumImplementationDto;
 import org.planqk.atlas.web.utils.EntityModelConverter;
 import org.planqk.atlas.web.utils.LinkRemoverModelConverter;
 import org.planqk.atlas.web.utils.OverrideModelConverter;
-
-import io.swagger.v3.core.converter.ModelConverters;
-import io.swagger.v3.oas.annotations.media.DiscriminatorMapping;
-import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Lazy;
+
+import io.swagger.v3.core.converter.ModelConverters;
+import io.swagger.v3.oas.annotations.media.DiscriminatorMapping;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
  * This configuration contains the Swagger / SpringDoc configurations we need.

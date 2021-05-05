@@ -20,8 +20,8 @@
 package org.planqk.atlas.web.controller.exceptions;
 
 /**
- * Exception that will be thrown when a request has invalid configuration that spring does not deem invalid, e.g.
- * inconsistencies between request path and request body
+ * Exception that will be thrown when a request has invalid configuration that spring does not deem invalid, e.g. inconsistencies between request path
+ * and request body
  */
 public class InvalidRequestException extends RuntimeException {
 

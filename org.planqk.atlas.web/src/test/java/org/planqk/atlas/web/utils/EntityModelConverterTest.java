@@ -19,19 +19,19 @@
 
 package org.planqk.atlas.web.utils;
 
-import java.util.List;
+import static org.junit.Assert.assertEquals;
 
 import javax.validation.constraints.NotNull;
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.hateoas.EntityModel;
 
 import io.swagger.v3.core.converter.AnnotatedType;
 import io.swagger.v3.core.converter.ModelConverters;
 import io.swagger.v3.core.util.Json;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.junit.jupiter.api.Test;
-import org.springframework.hateoas.EntityModel;
-
-import static org.junit.Assert.assertEquals;
 
 public class EntityModelConverterTest {
     @Test
