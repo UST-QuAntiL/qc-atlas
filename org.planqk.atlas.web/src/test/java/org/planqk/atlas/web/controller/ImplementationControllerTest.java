@@ -949,7 +949,7 @@ public class ImplementationControllerTest {
                 .getComputeResourcePropertiesOfImplementation(UUID.randomUUID(), UUID.randomUUID(), ListParameters.getDefault()));
         MvcResult mvcResult = mockMvc.perform(get(url).accept(APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
-        assertEquals(ObjectMapperUtils.mapResponseToList(mvcResult, ComputeResourcePropertyDto.class), 0);
+        assertEquals(ObjectMapperUtils.mapResponseToList(mvcResult, ComputeResourcePropertyDto.class).size(), 0);
     }
 
     @Test
