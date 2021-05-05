@@ -19,8 +19,8 @@
 
 package org.planqk.atlas.web.controller;
 
-import javax.validation.Valid;
 import java.util.UUID;
+import javax.validation.Valid;
 
 import org.planqk.atlas.core.model.DiscussionComment;
 import org.planqk.atlas.core.model.KnowledgeArtifact;

@@ -21,17 +21,16 @@ package org.planqk.atlas.web.dtos;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
-
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
 
 import org.planqk.atlas.core.model.Status;
 import org.planqk.atlas.web.utils.Identifyable;
 import org.planqk.atlas.web.utils.ValidationGroups;
+import org.springframework.hateoas.server.core.Relation;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.hateoas.server.core.Relation;
 
 /**
  * Data transfer object for DiscussionTopic ({@link org.planqk.atlas.core.model.DiscussionTopic}).

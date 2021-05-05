@@ -19,16 +19,15 @@
 
 package org.planqk.atlas.web.utils.modelmapper;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.UUID;
 
+import org.junit.jupiter.api.Test;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.web.dtos.ImplementationDto;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
-
-import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class ImplementationDtoMapperTest {
 

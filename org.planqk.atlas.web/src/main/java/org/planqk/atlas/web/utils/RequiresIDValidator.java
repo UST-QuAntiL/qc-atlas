@@ -20,7 +20,6 @@
 package org.planqk.atlas.web.utils;
 
 import java.util.UUID;
-
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 

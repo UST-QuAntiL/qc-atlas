@@ -19,10 +19,10 @@
 
 package org.planqk.atlas.web.dtos;
 
+import java.util.UUID;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
-import java.util.UUID;
 
 import org.planqk.atlas.core.model.ComputeResourcePropertyDataType;
 import org.planqk.atlas.web.utils.Identifyable;

@@ -19,11 +19,11 @@
 
 package org.planqk.atlas.web.dtos;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Null;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 
 import org.planqk.atlas.core.model.ComputationModel;
 import org.planqk.atlas.web.utils.Identifyable;

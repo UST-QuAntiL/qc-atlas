@@ -21,9 +21,9 @@ package org.planqk.atlas.web.utils;
 
 import static org.junit.Assert.assertEquals;
 
-import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Map;
+import javax.validation.constraints.NotNull;
 
 import org.junit.jupiter.api.Test;
 

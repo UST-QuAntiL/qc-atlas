@@ -19,10 +19,10 @@
 
 package org.planqk.atlas.web.dtos;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Null;
 import java.time.OffsetDateTime;
 import java.util.UUID;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 
 import org.planqk.atlas.web.utils.Identifyable;
 import org.planqk.atlas.web.utils.ValidationGroups;

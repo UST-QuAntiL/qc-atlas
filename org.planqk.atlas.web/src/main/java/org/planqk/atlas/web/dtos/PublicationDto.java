@@ -19,11 +19,11 @@
 
 package org.planqk.atlas.web.dtos;
 
+import java.util.List;
+import java.util.UUID;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
-import java.util.List;
-import java.util.UUID;
 
 import org.hibernate.validator.constraints.URL;
 import org.planqk.atlas.web.utils.Identifyable;
