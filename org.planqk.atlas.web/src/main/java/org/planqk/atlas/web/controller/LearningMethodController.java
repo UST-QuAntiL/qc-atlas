@@ -14,7 +14,6 @@ import org.planqk.atlas.web.utils.ValidationGroups;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +33,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = Constants.LEARNING_METHODS)
 @RestController
-@SecurityRequirement(name = "bearerAuth")
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/" + Constants.LEARNING_METHODS)
 @AllArgsConstructor
