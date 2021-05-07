@@ -24,7 +24,6 @@ import java.util.Collection;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.modelmapper.ModelMapper;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
@@ -51,9 +50,10 @@ import org.planqk.atlas.web.dtos.QPUDto;
 import org.planqk.atlas.web.dtos.QuantumAlgorithmDto;
 import org.planqk.atlas.web.dtos.SimulatorDto;
 import org.planqk.atlas.web.dtos.TOSCAImplementationPackageDto;
-import org.springframework.data.domain.Page;
 
 import lombok.NonNull;
+import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
 
 public final class ModelMapperUtils {
 

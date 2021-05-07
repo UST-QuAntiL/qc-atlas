@@ -23,18 +23,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.springframework.test.web.servlet.MvcResult;
-
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.SneakyThrows;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.springframework.test.web.servlet.MvcResult;
 
 public class ObjectMapperUtils {
 
@@ -50,8 +48,10 @@ public class ObjectMapperUtils {
      * @param mapper    The object mapper used to perform the mapping operations. Must not be null.
      * @param className the Class object of the elements to unmarshall e.g. AlgorithmDto.class. Must be a child o <T>
      * @param <T>       Generic type that the unmarshalled objects will be returned as
-     * @return an (array) list of all objects in the response under the given key. The ordering shuld remain identical to before
-     * @throws Exception generic errors may occur since this method does not handle errors . It is only intended to be used in tests.
+     * @return an (array) list of all objects in the response under the given key. The ordering shuld remain identical
+     * to before
+     * @throws Exception generic errors may occur since this method does not handle errors . It is only intended to be
+     *                   used in tests.
      */
     public static <T> List<T> mapResponseToList(String response, String key, Class<? extends T> className,
                                                 @NonNull ObjectMapper mapper) throws Exception {
@@ -78,6 +78,18 @@ public class ObjectMapperUtils {
         return contents;
     }
 
+    @SneakyThrows
+    private static <T> T mapMvcResultToDto(JSONObject object, Class<? extends T> className, @NonNull ObjectMapper mapper) {
+
+        return mapper.readValue(object.toString(), className);
+    }
+
+    @SneakyThrows
+    public static <T> T mapMvcResultToDto(MvcResult mvcResult, Class<? extends T> className) {
+
+        return mapMvcResultToDto(new JSONObject(mvcResult.getResponse().getContentAsString()), className, newTestMapper());
+    }
+
     public static <T> List<T> mapResponseToList(String response, Class<? extends T> className,
                                                 @NonNull ObjectMapper mapper) throws Exception {
         JSONArray rootObject = null;
@@ -97,8 +109,10 @@ public class ObjectMapperUtils {
      * @param key       the key for the resources within the '_embedded' child object
      * @param className the Class object of the elements to unmarshall e.g. AlgorithmDto.class. Must be a child o <T>
      * @param <T>       Generic type that the unmarshalled objects will be returned as
-     * @return an (array) list of all objects in the response under the given key. The ordering shuld remain identical to before
-     * @throws Exception generic errors may occur since this method does not handle errors . It is only intended to be used in tests.
+     * @return an (array) list of all objects in the response under the given key. The ordering shuld remain identical
+     * to before
+     * @throws Exception generic errors may occur since this method does not handle errors . It is only intended to be
+     *                   used in tests.
      */
     public static <T> List<T> mapResponseToList(String response, String key, Class<? extends T> className)
             throws Exception {
@@ -112,8 +126,10 @@ public class ObjectMapperUtils {
      * @param key       the key for the resources within the '_embedded' child object
      * @param className the Class object of the elements to unmarshall e.g. AlgorithmDto.class. Must be a child o <T>
      * @param <T>       Generic type that the unmarshalled objects will be returned as
-     * @return an (array) list of all objects in the response under the given key. The ordering shuld remain identical to before
-     * @throws Exception generic errors may occur since this method does not handle errors . It is only intended to be used in tests.
+     * @return an (array) list of all objects in the response under the given key. The ordering shuld remain identical
+     * to before
+     * @throws Exception generic errors may occur since this method does not handle errors . It is only intended to be
+     *                   used in tests.
      */
     public static <T> List<T> mapResponseToList(String response, Class<? extends T> className)
             throws Exception {
@@ -125,7 +141,8 @@ public class ObjectMapperUtils {
      *
      * @param response the json+hal response as string
      * @return the Unmarshalled page information
-     * @throws Exception generic errors may occur since this method does not handle errors . It is only intended to be * used in tests.
+     * @throws Exception generic errors may occur since this method does not handle errors . It is only intended to be *
+     *                   used in tests.
      */
     public static PageInfo getPageInfo(String response) throws Exception {
         var pageContent = new JSONObject(response).toString();

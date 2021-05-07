@@ -114,6 +114,8 @@ public final class Constants {
 
     public static final String LEARNING_METHODS = "learning-methods";
 
+    public static final String TAG_LEARNING_METHOD = "learning_method";
+
     private Constants() {
     }
 }

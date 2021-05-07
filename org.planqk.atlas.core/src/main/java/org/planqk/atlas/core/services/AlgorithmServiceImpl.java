@@ -41,14 +41,14 @@ import org.planqk.atlas.core.repository.ProblemTypeRepository;
 import org.planqk.atlas.core.repository.PublicationRepository;
 import org.planqk.atlas.core.util.CollectionUtils;
 import org.planqk.atlas.core.util.ServiceUtils;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -202,7 +202,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 
     @Override
     public Page<LearningMethod> findLinkedLearningMethods(UUID algorithmId, Pageable pageable) {
-        ServiceUtils.throwIfNotExists(algorithmId, Algorithm.class, algorithmRepository);
+        // ServiceUtils.throwIfNotExists(algorithmId, Algorithm.class, algorithmRepository);
 
         return learningMethodRepository.findLearningMethodByAlgorithmId(algorithmId, pageable);
     }
@@ -250,7 +250,6 @@ public class AlgorithmServiceImpl implements AlgorithmService {
                 .orElseThrow(() -> new NoSuchElementException("Learning Method with ID \""
                         + "\" is not linked to Algorithm with ID \"" + algorithmId + "\""));
     }
-
 
     private Page<AlgorithmRelation> getAlgorithmRelations(@NonNull UUID algorithmId, @NonNull Pageable pageable) {
         return algorithmRelationRepository.findBySourceAlgorithmIdOrTargetAlgorithmId(algorithmId, algorithmId, pageable);
