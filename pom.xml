@@ -41,7 +41,6 @@
         <!-- depdendency versions -->
         <!-- spring.version must match parent.version -->
         <spring.version>2.2.4.RELEASE</spring.version>
-        <org.liquibase.version>4.1.0</org.liquibase.version>
 
         <!--
         The database specified here is used for the following:
@@ -192,11 +191,6 @@
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
         </dependency>
-        <!--        <dependency>
-                    <groupId>org.liquibase</groupId>
-                    <artifactId>liquibase-core</artifactId>
-                    <version>${org.liquibase.version}</version>
-                </dependency>-->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
