@@ -67,6 +67,7 @@ import org.planqk.atlas.core.model.DiscussionComment;
 import org.planqk.atlas.core.model.DiscussionTopic;
 import org.planqk.atlas.core.model.Image;
 import org.planqk.atlas.core.model.Implementation;
+import org.planqk.atlas.core.model.LearningMethod;
 import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.model.PatternRelationType;
 import org.planqk.atlas.core.model.ProblemType;
@@ -81,6 +82,7 @@ import org.planqk.atlas.core.services.ComputeResourcePropertyTypeService;
 import org.planqk.atlas.core.services.DiscussionCommentService;
 import org.planqk.atlas.core.services.DiscussionTopicService;
 import org.planqk.atlas.core.services.ImplementationService;
+import org.planqk.atlas.core.services.LearningMethodService;
 import org.planqk.atlas.core.services.LinkingService;
 import org.planqk.atlas.core.services.PatternRelationService;
 import org.planqk.atlas.core.services.ProblemTypeService;
@@ -154,6 +156,8 @@ public class AlgorithmControllerTest {
 
     @MockBean
     private ImplementationService implementationService;
+    @MockBean
+    private LearningMethodService learningMethodService;
 
     @MockBean
     private TagService tagService;
@@ -1733,6 +1737,24 @@ public class AlgorithmControllerTest {
                 .getPatternRelationOfAlgorithm(algorithm.getId(), patternRelation.getId()));
 
         mockMvc.perform(get(url).accept(APPLICATION_JSON)).andExpect(status().isNotFound());
+    }
+
+
+    @Test
+    public void getLearningMethodsForAlgorithm_SingleElement_returnOk() throws Exception {
+        List<LearningMethod> methods = new ArrayList<>();
+        LearningMethod learningMethod = new LearningMethod();
+        learningMethod.setId(UUID.randomUUID());
+        learningMethod.setName("supervised");
+        methods.add(learningMethod);
+        Page<LearningMethod> learningMethods = new PageImpl<>(methods);
+        when(algorithmService.findLinkedLearningMethods(any(), any())).thenReturn(learningMethods);
+
+        var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class).
+                getLearningMethodsOfAlgorithm(UUID.randomUUID(), new ListParameters(pageable, null)));
+        MvcResult mvcResult = mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON)).andReturn();
+
+        assertEquals(mvcResult.getResponse().getStatus(), 200);
     }
 
     //////////////////////////////////// Fixed up to this point /////////////////////////////////////////////////////

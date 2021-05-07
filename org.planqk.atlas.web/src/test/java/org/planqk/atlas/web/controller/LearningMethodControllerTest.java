@@ -200,25 +200,6 @@ public class LearningMethodControllerTest {
     }
 
     @Test
-    public void getLearningMethodsForAlgorithm_SingleElement_returnOk() throws Exception {
-        List<LearningMethod> methods = new ArrayList<>();
-        LearningMethod testLearningMethod = getTestLearningMethod();
-        methods.add(testLearningMethod);
-        Page<LearningMethod> learningMethods = new PageImpl<>(methods);
-        var algorithm = getTestAlgorithm();
-        algorithm.addLearningMethod(testLearningMethod);
-        when(algorithmService.findLinkedLearningMethods(any(), any())).thenReturn(learningMethods);
-        when(algorithmService.findById(any())).thenReturn(algorithm);
-        when(learningMethodService.findById(any())).thenReturn(testLearningMethod);
-        when(learningMethodService.findAll(any(), any())).thenReturn(learningMethods);
-
-        var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class).
-                getLearningMethodsOfAlgorithm(algorithm.getId(), new ListParameters(pageable, null)));
-        MvcResult mvcResult = mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON)).andReturn();
-        ;
-    }
-
-    @Test
     public void getLearningMethodsForAlgorithm_Empty() throws Exception {
         var algorithm = getTestAlgorithm();
 

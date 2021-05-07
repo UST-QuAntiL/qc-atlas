@@ -61,6 +61,12 @@ import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.ValidationGroups;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -79,12 +85,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * Controller to access and manipulate classic, hybrid and quantum algorithms.
@@ -249,7 +249,7 @@ public class AlgorithmController {
     @PostMapping("/{algorithmId}/" + Constants.PUBLICATIONS)
     public ResponseEntity<Void> linkAlgorithmAndPublication(
             @PathVariable UUID algorithmId,
-            @Validated({ValidationGroups.IDOnly.class}) @RequestBody PublicationDto publicationDto) {
+            @Validated( {ValidationGroups.IDOnly.class}) @RequestBody PublicationDto publicationDto) {
         linkingService.linkAlgorithmAndPublication(algorithmId, publicationDto.getId());
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -301,17 +301,17 @@ public class AlgorithmController {
     @Operation(responses = {
             @ApiResponse(responseCode = "204"),
             @ApiResponse(responseCode = "400",
-                    description = "Bad Request. Invalid request body."),
+                         description = "Bad Request. Invalid request body."),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or problem type with given IDs don't exist or " +
-                            "reference was already added.")
+                         description = "Not Found. Algorithm or problem type with given IDs don't exist or " +
+                                 "reference was already added.")
     }, description = "Add a reference to an existing ProblemType " +
             "(that was previously created via a POST on /" + Constants.PROBLEM_TYPES + "). " +
             "Only the ID is required in the request body, other attributes will be ignored and not changed.")
     @PostMapping("/{algorithmId}/" + Constants.PROBLEM_TYPES)
     public ResponseEntity<Void> linkAlgorithmAndProblemType(
             @PathVariable UUID algorithmId,
-            @Validated({ValidationGroups.IDOnly.class}) @RequestBody ProblemTypeDto problemTypeDto) {
+            @Validated( {ValidationGroups.IDOnly.class}) @RequestBody ProblemTypeDto problemTypeDto) {
         linkingService.linkAlgorithmAndProblemType(algorithmId, problemTypeDto.getId());
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -319,10 +319,10 @@ public class AlgorithmController {
     @Operation(responses = {
             @ApiResponse(responseCode = "204"),
             @ApiResponse(responseCode = "400",
-                    description = "Bad Request. Invalid request body."),
+                         description = "Bad Request. Invalid request body."),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or problem type with given IDs don't exist or " +
-                            "no reference exists.")
+                         description = "Not Found. Algorithm or problem type with given IDs don't exist or " +
+                                 "no reference exists.")
     }, description = "Delete a reference to a problem types of an algorithm. The reference has to be previously created " +
             "via a POST on e.g. /" + Constants.ALGORITHMS + "/{algorithmId}/" + Constants.PROBLEM_TYPES + ").")
     @DeleteMapping("/{algorithmId}/" + Constants.PROBLEM_TYPES + "/{problemTypeId}")
@@ -337,7 +337,7 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or problem type with given IDs don't exist.")
+                         description = "Not Found. Algorithm or problem type with given IDs don't exist.")
     }, description = "Retrieve a specific problem type of an algorithm.")
     @GetMapping("/{algorithmId}/" + Constants.PROBLEM_TYPES + "/{problemTypeId}")
     public ResponseEntity<ProblemTypeDto> getProblemTypeOfAlgorithm(
@@ -353,7 +353,7 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or application area with given IDs don't exist.")
+                         description = "Not Found. Algorithm or application area with given IDs don't exist.")
     }, description = "Retrieve application areas of an algorithm. If none are found an empty list is returned.")
     @ListParametersDoc
     @GetMapping("/{algorithmId}/" + Constants.APPLICATION_AREAS)
@@ -368,15 +368,15 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "204"),
             @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or application area with given IDs don't exist or " +
-                            "reference was already added.")
+                         description = "Not Found. Algorithm or application area with given IDs don't exist or " +
+                                 "reference was already added.")
     }, description = "Add a reference to an existing application area " +
             "(that was previously created via a POST on e.g. /" + Constants.APPLICATION_AREAS + "). " +
             "Only the ID is required in the request body, other attributes will be ignored and not changed.")
     @PostMapping("/{algorithmId}/" + Constants.APPLICATION_AREAS)
     public ResponseEntity<Void> linkAlgorithmAndApplicationArea(
             @PathVariable UUID algorithmId,
-            @Validated({ValidationGroups.IDOnly.class}) @RequestBody ApplicationAreaDto applicationAreaDto) {
+            @Validated( {ValidationGroups.IDOnly.class}) @RequestBody ApplicationAreaDto applicationAreaDto) {
         linkingService.linkAlgorithmAndApplicationArea(algorithmId, applicationAreaDto.getId());
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -385,8 +385,8 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "204"),
             @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or application area with given IDs don't exist or " +
-                            "no reference exists.")
+                         description = "Not Found. Algorithm or application area with given IDs don't exist or " +
+                                 "no reference exists.")
     }, description = "Delete a reference to an application area of an algorithm. The reference has to be previously " +
             "created via a POST on /" + Constants.ALGORITHMS + "/{algorithmId}/" + Constants.APPLICATION_AREAS + ").")
     @DeleteMapping("/{algorithmId}/" + Constants.APPLICATION_AREAS + "/{applicationAreaId}")
@@ -401,7 +401,7 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or application area with given IDs don't exist.")
+                         description = "Not Found. Algorithm or application area with given IDs don't exist.")
     }, description = "Retrieve a specific application area of an algorithm.")
     @GetMapping("/{algorithmId}/" + Constants.APPLICATION_AREAS + "/{applicationAreaId}")
     public ResponseEntity<ApplicationAreaDto> getApplicationAreaOfAlgorithm(
@@ -417,7 +417,7 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm with given ID doesn't exist.")
+                         description = "Not Found. Algorithm with given ID doesn't exist.")
     }, description = "Retrieve implementations of an algorithm. If none are found an empty list is returned."
     )
     @ListParametersDoc
@@ -433,7 +433,7 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm with given ID doesn't exist.")
+                         description = "Not Found. Algorithm with given ID doesn't exist.")
     }, description = "Retrieve discussion topics of an algorithm. If none are found an empty list is returned."
     )
     @ListParametersDoc
@@ -447,7 +447,7 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or discussion topic with given ID doesn't exist.")
+                         description = "Not Found. Algorithm or discussion topic with given ID doesn't exist.")
     }, description = "Retrieve discussion topic of an algorithm."
     )
     @ListParametersDoc
@@ -463,7 +463,7 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or discussion topic with given ID doesn't exist.")
+                         description = "Not Found. Algorithm or discussion topic with given ID doesn't exist.")
     }, description = "Delete discussion topic of an algorithm."
     )
     @ListParametersDoc
@@ -479,7 +479,7 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "201"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or discussion topic with given ID doesn't exist.")
+                         description = "Not Found. Algorithm or discussion topic with given ID doesn't exist.")
     }, description = "Create a discussion topic of an algorithm."
     )
     @ListParametersDoc
@@ -496,7 +496,7 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "201"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or discussion topic with given ID doesn't exist.")
+                         description = "Not Found. Algorithm or discussion topic with given ID doesn't exist.")
     }, description = "Update discussion topic of an algorithm."
     )
     @ListParametersDoc
@@ -514,7 +514,7 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or discussion topic with given ID doesn't exist.")
+                         description = "Not Found. Algorithm or discussion topic with given ID doesn't exist.")
     }, description = "Retrieve discussion comments of a discussion topic of an algorithm. If none are found an empty list is returned."
     )
     @ListParametersDoc
@@ -530,7 +530,7 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm, discussion topic or discussion comment with given ID doesn't exist.")
+                         description = "Not Found. Algorithm, discussion topic or discussion comment with given ID doesn't exist.")
     }, description = "Retrieve discussion comment of a discussion topic of an algorithm."
     )
     @ListParametersDoc
@@ -547,7 +547,7 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm, discussion topic or discussion comment with given ID doesn't exist.")
+                         description = "Not Found. Algorithm, discussion topic or discussion comment with given ID doesn't exist.")
     }, description = "Delete discussion comment of a discussion topic of an algorithm."
     )
     @ListParametersDoc
@@ -564,7 +564,7 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "201"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or discussion topic with given ID doesn't exist.")
+                         description = "Not Found. Algorithm or discussion topic with given ID doesn't exist.")
     }, description = "Create discussion comment of a discussion topic of an algorithm."
     )
     @ListParametersDoc
@@ -581,7 +581,7 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "201"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or discussion topic with given ID doesn't exist.")
+                         description = "Not Found. Algorithm or discussion topic with given ID doesn't exist.")
     }, description = "Update discussion comment of a discussion topic of an algorithm."
     )
     @ListParametersDoc
@@ -599,7 +599,7 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm with given ID doesn't exist.")
+                         description = "Not Found. Algorithm with given ID doesn't exist.")
     }, description = "Retrieve the required compute resource properties of an algorithm. If none are found an empty list is returned.")
     @ListParametersDoc
     @GetMapping("/{algorithmId}/" + Constants.COMPUTE_RESOURCE_PROPERTIES)
@@ -613,9 +613,9 @@ public class AlgorithmController {
     @Operation(responses = {
             @ApiResponse(responseCode = "201"),
             @ApiResponse(responseCode = "400",
-                    description = "Bad Request. Invalid request body."),
+                         description = "Bad Request. Invalid request body."),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or compute resource property type with given IDs don't exist.")
+                         description = "Not Found. Algorithm or compute resource property type with given IDs don't exist.")
     }, description = "Add a compute resource property (e.g. a certain number of qubits) that is required by an algorithm. " +
             "The compute resource property type has to be already created (e.g. via POST on /" + Constants.COMPUTE_RESOURCE_PROPERTY_TYPES + "). " +
             "As a result only the ID is required for the compute resource property type, other attributes will be ignored not changed.")
@@ -632,9 +632,9 @@ public class AlgorithmController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400",
-                    description = "Bad Request. Invalid request body."),
+                         description = "Bad Request. Invalid request body."),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm, compute resource property or compute resource type with given IDs don't exist.")
+                         description = "Not Found. Algorithm, compute resource property or compute resource type with given IDs don't exist.")
     }, description = "Update a Compute resource property of an algorithm. " +
             "For the compute resource property type only the ID is required, " +
             "other compute resource property type attributes will be ignored and not changed.")
@@ -655,7 +655,7 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or compute resource property with given IDs don't exist."),
+                         description = "Not Found. Algorithm or compute resource property with given IDs don't exist."),
     }, description = "Delete a Compute resource property of an algorithm. " +
             "The compute resource property type is not affected by this.")
     @DeleteMapping("/{algorithmId}/" + Constants.COMPUTE_RESOURCE_PROPERTIES + "/{computeResourcePropertyId}")
@@ -672,7 +672,7 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or compute resource property with given IDs don't exist."),
+                         description = "Not Found. Algorithm or compute resource property with given IDs don't exist."),
     }, description = "Retrieve a specific compute resource property of an algorithm.")
     @GetMapping("/{algorithmId}/" + Constants.COMPUTE_RESOURCE_PROPERTIES + "/{computeResourcePropertyId}")
     public ResponseEntity<ComputeResourcePropertyDto> getComputeResourcePropertyOfAlgorithm(
@@ -688,7 +688,7 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm with given ID doesn't exist.")
+                         description = "Not Found. Algorithm with given ID doesn't exist.")
     }, description = "Retrieve pattern relations of an algorithms. If none are found an empty list is returned.")
     @ListParametersDoc
     @GetMapping("/{algorithmId}/" + Constants.PATTERN_RELATIONS)
@@ -703,14 +703,14 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "201"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or pattern relation type with given IDs don't exist.")
+                         description = "Not Found. Algorithm or pattern relation type with given IDs don't exist.")
     }, description = "Create a relation between a pattern and an algorithm." +
             "The pattern relation type has to be already created (e.g. via POST on /" + Constants.PATTERN_RELATION_TYPES + "). " +
             "As a result only the ID is required for the pattern relation type, other attributes will be ignored not changed.")
     @PostMapping("/{algorithmId}/" + Constants.PATTERN_RELATIONS)
     public ResponseEntity<PatternRelationDto> createPatternRelationForAlgorithm(
             @PathVariable UUID algorithmId,
-            @Validated({ValidationGroups.Create.class}) @RequestBody PatternRelationDto patternRelationDto) {
+            @Validated( {ValidationGroups.Create.class}) @RequestBody PatternRelationDto patternRelationDto) {
         ControllerValidationUtils.checkIfAlgorithmIsInPatternRelationDTO(algorithmId, patternRelationDto);
 
         final var savedPatternRelation = patternRelationService.create(
@@ -721,9 +721,9 @@ public class AlgorithmController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400",
-                    description = "Bad Request. Invalid request body or Pattern relation doesn't belong to this algorithm"),
+                         description = "Bad Request. Invalid request body or Pattern relation doesn't belong to this algorithm"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm, pattern relation or pattern relation type with given IDs don't exist.")
+                         description = "Not Found. Algorithm, pattern relation or pattern relation type with given IDs don't exist.")
     }, description = "Update a relation between a pattern and an algorithm. " +
             "For the pattern relation type only the ID is required," +
             "other pattern relation type attributes will be ignored and not changed.")
@@ -731,7 +731,7 @@ public class AlgorithmController {
     public ResponseEntity<PatternRelationDto> updatePatternRelationOfAlgorithm(
             @PathVariable UUID algorithmId,
             @PathVariable UUID patternRelationId,
-            @Validated({ValidationGroups.Update.class}) @RequestBody PatternRelationDto patternRelationDto) {
+            @Validated( {ValidationGroups.Update.class}) @RequestBody PatternRelationDto patternRelationDto) {
         ControllerValidationUtils.checkIfAlgorithmIsInPatternRelationDTO(algorithmId, patternRelationDto);
         patternRelationService.checkIfAlgorithmIsInPatternRelation(algorithmId, patternRelationId);
 
@@ -745,7 +745,7 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "204"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or pattern relation with given IDs don't exist.")
+                         description = "Not Found. Algorithm or pattern relation with given IDs don't exist.")
     }, description = "Delete a specific relation between a pattern and an algorithm. " +
             "The pattern relation type is not affected by this.")
     @DeleteMapping("/{algorithmId}/" + Constants.PATTERN_RELATIONS + "/{patternRelationId}")
@@ -762,7 +762,7 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or pattern relation with given IDs don't exist.")
+                         description = "Not Found. Algorithm or pattern relation with given IDs don't exist.")
     }, description = "Retrieve a specific relation between a pattern and an algorithm.")
     @GetMapping("/{algorithmId}/" + Constants.PATTERN_RELATIONS + "/{patternRelationId}")
     public ResponseEntity<PatternRelationDto> getPatternRelationOfAlgorithm(
@@ -856,13 +856,14 @@ public class AlgorithmController {
     }
 
     @Operation(responses = {
-            @ApiResponse(responseCode = "200", description = "The request has succeeded. " +
-                    "The learning method has been fetched and is transmitted in the message body"),
+            @ApiResponse(responseCode = "200",
+                         description = "The request has succeeded. " +
+                                 "The learning method has been fetched and is transmitted in the message body"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
             @ApiResponse(responseCode = "403", description = "Forbidden"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or learning method with given IDs don't exist.")
+                         description = "Not Found. Algorithm or learning method with given IDs don't exist.")
     }, description = "Retrieve learning method of an algorithm. If none are found an empty list is returned.")
     @ListParametersDoc
     @GetMapping("/{algorithmId}/" + Constants.LEARNING_METHODS)
@@ -879,7 +880,7 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
             @ApiResponse(responseCode = "403", description = "Forbidden"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or learning method with given IDs don't exist.")
+                         description = "Not Found. Algorithm or learning method with given IDs don't exist.")
     }, description = "Retrieve a specific learning method of an algorithm.")
     @GetMapping("/{algorithmId}/" + Constants.LEARNING_METHODS + "/{learningMethodId}")
     public ResponseEntity<LearningMethodDto> getLearningMethodOfAlgorithm(
@@ -895,15 +896,15 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
             @ApiResponse(responseCode = "403", description = "Forbidden"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or learning method with given IDs don't exist or " +
-                            "reference was already added.")
+                         description = "Not Found. Algorithm or learning method with given IDs don't exist or " +
+                                 "reference was already added.")
     }, description = "Add a reference to an existing learning method " +
             "(that was previously created via a POST on e.g. /" + Constants.LEARNING_METHODS + "). " +
             "Only the ID is required in the request body, other attributes will be ignored and not changed.")
     @PostMapping("/{algorithmId}/" + Constants.LEARNING_METHODS)
     public ResponseEntity<Void> linkAlgorithmAndLearningMethod(
             @PathVariable UUID algorithmId,
-            @Validated({ValidationGroups.IDOnly.class}) @RequestBody LearningMethodDto learningMethodDto) {
+            @Validated( {ValidationGroups.IDOnly.class}) @RequestBody LearningMethodDto learningMethodDto) {
         linkingService.linkAlgorithmAndLearningMethod(algorithmId, learningMethodDto.getId());
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -913,8 +914,8 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
             @ApiResponse(responseCode = "403", description = "Forbidden"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or learning method with given IDs don't exist or " +
-                            "no reference exists.")
+                         description = "Not Found. Algorithm or learning method with given IDs don't exist or " +
+                                 "no reference exists.")
     }, description = "Delete a reference to a learning method of an algorithm.")
     @DeleteMapping("/{algorithmId}/" + Constants.LEARNING_METHODS + "/{learningMethodId}")
     public ResponseEntity<Void> unlinkAlgorithmAndLearningMethod(
