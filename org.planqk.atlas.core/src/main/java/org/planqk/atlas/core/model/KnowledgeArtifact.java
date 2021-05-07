@@ -32,6 +32,18 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+/**
+ * Base class for all knowledge artifacts.
+ * <p>
+ *     This base class implements the id column and generation and
+ *     the relation to the discussion topics (see {@link DiscussionTopic}).
+ * </p>
+ * <p>
+ *     The joined table inheritance strategy is used for this class.
+ *     See ADR 0009-joined-table-for-knowledge-artifact.md for background
+ *     information.
+ * </p>
+ */
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)

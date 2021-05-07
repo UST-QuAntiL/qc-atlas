@@ -13,6 +13,7 @@ This lists the architectural decisions for the QC-Atlas.
 - [ADR-0006](0006-model-assemblers.md) - Use model assemblers for HATEOAS responses
 - [ADR-0007](0007-junit-for-testing.md) - Use JUnit 5
 - [ADR-0008](0008-testcontainers.md) - Use Testcontainers
+- [ADR-0009](0009-joined-table-for-knowledge-artifact.md) - Use a Joined Database Table for KnowledgeArtefacts
 <!-- adrlogstop -->
 
 [template.md](template.md) contains the template.
