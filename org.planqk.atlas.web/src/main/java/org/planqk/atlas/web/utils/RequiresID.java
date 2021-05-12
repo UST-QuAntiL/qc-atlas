@@ -33,7 +33,7 @@ import javax.validation.Payload;
  * <p>
  * This validator does not implement a null check on the
  */
-@Target( {ElementType.FIELD})
+@Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = RequiresIDValidator.class)
 @Documented

@@ -48,7 +48,7 @@ public class ImplementationDto implements Identifyable {
     private UUID implementedAlgorithmId;
 
     @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
-            message = "Implementation-Name must not be null!")
+             message = "Implementation-Name must not be null!")
     private String name;
 
     private String inputFormat;

@@ -264,7 +264,7 @@ public class ImplementationController {
     public ResponseEntity<Void> linkImplementationAndPublication(
             @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId,
-            @Validated( {ValidationGroups.IDOnly.class}) @RequestBody PublicationDto publicationDto) {
+            @Validated({ValidationGroups.IDOnly.class}) @RequestBody PublicationDto publicationDto) {
         implementationService.checkIfImplementationIsOfAlgorithm(implementationId, algorithmId);
 
         linkingService.linkImplementationAndPublication(implementationId, publicationDto.getId());
@@ -343,7 +343,7 @@ public class ImplementationController {
     public ResponseEntity<Void> linkImplementationAndSoftwarePlatform(
             @PathVariable UUID algorithmId,
             @PathVariable UUID implementationId,
-            @Validated( {ValidationGroups.IDOnly.class}) @RequestBody SoftwarePlatformDto softwarePlatformDto) {
+            @Validated({ValidationGroups.IDOnly.class}) @RequestBody SoftwarePlatformDto softwarePlatformDto) {
         implementationService.checkIfImplementationIsOfAlgorithm(implementationId, algorithmId);
 
         linkingService.linkImplementationAndSoftwarePlatform(implementationId, softwarePlatformDto.getId());

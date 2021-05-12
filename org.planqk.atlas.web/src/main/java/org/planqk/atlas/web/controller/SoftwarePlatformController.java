@@ -93,7 +93,7 @@ public class SoftwarePlatformController {
             "can be added via sub-routes (e.g. via POST on /" + Constants.COMPUTE_RESOURCES + ").")
     @PostMapping
     public ResponseEntity<SoftwarePlatformDto> createSoftwarePlatform(
-            @Validated( {ValidationGroups.Create.class}) @RequestBody SoftwarePlatformDto softwarePlatformDto) {
+            @Validated({ValidationGroups.Create.class}) @RequestBody SoftwarePlatformDto softwarePlatformDto) {
         final var savedPlatform = softwarePlatformService.create(ModelMapperUtils.convert(softwarePlatformDto, SoftwarePlatform.class));
         return new ResponseEntity<>(ModelMapperUtils.convert(savedPlatform, SoftwarePlatformDto.class), HttpStatus.CREATED);
     }
@@ -109,7 +109,7 @@ public class SoftwarePlatformController {
     @PutMapping("/{softwarePlatformId}")
     public ResponseEntity<SoftwarePlatformDto> updateSoftwarePlatform(
             @PathVariable UUID softwarePlatformId,
-            @Validated( {ValidationGroups.Update.class}) @RequestBody SoftwarePlatformDto softwarePlatformDto) {
+            @Validated({ValidationGroups.Update.class}) @RequestBody SoftwarePlatformDto softwarePlatformDto) {
         softwarePlatformDto.setId(softwarePlatformId);
         final var softwarePlatform = softwarePlatformService
                 .update(
@@ -170,7 +170,7 @@ public class SoftwarePlatformController {
     @PostMapping("/{softwarePlatformId}/" + Constants.IMPLEMENTATIONS)
     public ResponseEntity<Void> linkSoftwarePlatformAndImplementation(
             @PathVariable UUID softwarePlatformId,
-            @Validated( {ValidationGroups.IDOnly.class}) @RequestBody ImplementationDto implementationDto) {
+            @Validated({ValidationGroups.IDOnly.class}) @RequestBody ImplementationDto implementationDto) {
         linkingService.linkImplementationAndSoftwarePlatform(implementationDto.getId(), softwarePlatformId);
         return ResponseEntity.noContent().build();
     }
@@ -235,7 +235,7 @@ public class SoftwarePlatformController {
     @PostMapping("/{softwarePlatformId}/" + Constants.CLOUD_SERVICES)
     public ResponseEntity<Void> linkSoftwarePlatformAndCloudService(
             @PathVariable UUID softwarePlatformId,
-            @Validated( {ValidationGroups.IDOnly.class}) @RequestBody CloudServiceDto cloudServiceDto) {
+            @Validated({ValidationGroups.IDOnly.class}) @RequestBody CloudServiceDto cloudServiceDto) {
         linkingService.linkSoftwarePlatformAndCloudService(softwarePlatformId, cloudServiceDto.getId());
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -284,7 +284,7 @@ public class SoftwarePlatformController {
     @PostMapping("/{softwarePlatformId}/" + Constants.COMPUTE_RESOURCES)
     public ResponseEntity<Void> linkSoftwarePlatformAndComputeResource(
             @PathVariable UUID softwarePlatformId,
-            @Validated( {ValidationGroups.IDOnly.class}) @RequestBody ComputeResourceDto computeResourceDto) {
+            @Validated({ValidationGroups.IDOnly.class}) @RequestBody ComputeResourceDto computeResourceDto) {
         linkingService.linkSoftwarePlatformAndComputeResource(softwarePlatformId, computeResourceDto.getId());
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

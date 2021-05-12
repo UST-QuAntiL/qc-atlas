@@ -40,8 +40,8 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @Data
 @NoArgsConstructor
-@JsonSubTypes( {@JsonSubTypes.Type(value = QPUDto.class),
-                       @JsonSubTypes.Type(value = SimulatorDto.class)})
+@JsonSubTypes({@JsonSubTypes.Type(value = QPUDto.class),
+                      @JsonSubTypes.Type(value = SimulatorDto.class)})
 @Relation(itemRelation = "computeResource", collectionRelation = "computeResources")
 public class ComputeResourceDto implements Identifyable {
 

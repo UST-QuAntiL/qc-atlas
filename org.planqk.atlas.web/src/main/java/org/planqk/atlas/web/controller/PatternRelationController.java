@@ -81,7 +81,7 @@ public class PatternRelationController {
             "As a result only the ID is required for the pattern relation type, other attributes will be ignored not changed.")
     @PostMapping
     public ResponseEntity<PatternRelationDto> createPatternRelation(
-            @Validated( {ValidationGroups.Create.class}) @RequestBody PatternRelationDto patternRelationDto) {
+            @Validated({ValidationGroups.Create.class}) @RequestBody PatternRelationDto patternRelationDto) {
         final var savedPatternRelation = patternRelationService.create(
                 ModelMapperUtils.convert(patternRelationDto, PatternRelation.class));
         return new ResponseEntity<>(ModelMapperUtils.convert(savedPatternRelation, PatternRelationDto.class), HttpStatus.CREATED);
@@ -99,7 +99,7 @@ public class PatternRelationController {
     @PutMapping("/{patternRelationId}")
     public ResponseEntity<PatternRelationDto> updatePatternRelation(
             @PathVariable UUID patternRelationId,
-            @Validated( {ValidationGroups.Update.class}) @RequestBody PatternRelationDto patternRelationDto) {
+            @Validated({ValidationGroups.Update.class}) @RequestBody PatternRelationDto patternRelationDto) {
         patternRelationDto.setId(patternRelationId);
         final var savedPatternRelation = patternRelationService.update(
                 ModelMapperUtils.convert(patternRelationDto, PatternRelation.class));

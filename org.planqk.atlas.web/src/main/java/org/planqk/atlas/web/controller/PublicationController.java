@@ -167,7 +167,7 @@ public class PublicationController {
     @PostMapping("/{publicationId}/" + Constants.ALGORITHMS)
     public ResponseEntity<Void> linkPublicationAndAlgorithm(
             @PathVariable UUID publicationId,
-            @Validated( {ValidationGroups.IDOnly.class}) @RequestBody AlgorithmDto algorithmDto) {
+            @Validated({ValidationGroups.IDOnly.class}) @RequestBody AlgorithmDto algorithmDto) {
         linkingService.linkAlgorithmAndPublication(algorithmDto.getId(), publicationId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

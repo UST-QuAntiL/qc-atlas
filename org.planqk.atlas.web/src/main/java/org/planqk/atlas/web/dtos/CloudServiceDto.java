@@ -47,7 +47,7 @@ public class CloudServiceDto implements Identifyable {
     private UUID id;
 
     @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
-            message = "CloudService name must not be null!")
+             message = "CloudService name must not be null!")
     private String name;
 
     private String provider;

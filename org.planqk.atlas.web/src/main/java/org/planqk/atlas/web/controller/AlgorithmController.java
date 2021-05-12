@@ -249,7 +249,7 @@ public class AlgorithmController {
     @PostMapping("/{algorithmId}/" + Constants.PUBLICATIONS)
     public ResponseEntity<Void> linkAlgorithmAndPublication(
             @PathVariable UUID algorithmId,
-            @Validated( {ValidationGroups.IDOnly.class}) @RequestBody PublicationDto publicationDto) {
+            @Validated({ValidationGroups.IDOnly.class}) @RequestBody PublicationDto publicationDto) {
         linkingService.linkAlgorithmAndPublication(algorithmId, publicationDto.getId());
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -311,7 +311,7 @@ public class AlgorithmController {
     @PostMapping("/{algorithmId}/" + Constants.PROBLEM_TYPES)
     public ResponseEntity<Void> linkAlgorithmAndProblemType(
             @PathVariable UUID algorithmId,
-            @Validated( {ValidationGroups.IDOnly.class}) @RequestBody ProblemTypeDto problemTypeDto) {
+            @Validated({ValidationGroups.IDOnly.class}) @RequestBody ProblemTypeDto problemTypeDto) {
         linkingService.linkAlgorithmAndProblemType(algorithmId, problemTypeDto.getId());
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -376,7 +376,7 @@ public class AlgorithmController {
     @PostMapping("/{algorithmId}/" + Constants.APPLICATION_AREAS)
     public ResponseEntity<Void> linkAlgorithmAndApplicationArea(
             @PathVariable UUID algorithmId,
-            @Validated( {ValidationGroups.IDOnly.class}) @RequestBody ApplicationAreaDto applicationAreaDto) {
+            @Validated({ValidationGroups.IDOnly.class}) @RequestBody ApplicationAreaDto applicationAreaDto) {
         linkingService.linkAlgorithmAndApplicationArea(algorithmId, applicationAreaDto.getId());
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -710,7 +710,7 @@ public class AlgorithmController {
     @PostMapping("/{algorithmId}/" + Constants.PATTERN_RELATIONS)
     public ResponseEntity<PatternRelationDto> createPatternRelationForAlgorithm(
             @PathVariable UUID algorithmId,
-            @Validated( {ValidationGroups.Create.class}) @RequestBody PatternRelationDto patternRelationDto) {
+            @Validated({ValidationGroups.Create.class}) @RequestBody PatternRelationDto patternRelationDto) {
         ControllerValidationUtils.checkIfAlgorithmIsInPatternRelationDTO(algorithmId, patternRelationDto);
 
         final var savedPatternRelation = patternRelationService.create(
@@ -731,7 +731,7 @@ public class AlgorithmController {
     public ResponseEntity<PatternRelationDto> updatePatternRelationOfAlgorithm(
             @PathVariable UUID algorithmId,
             @PathVariable UUID patternRelationId,
-            @Validated( {ValidationGroups.Update.class}) @RequestBody PatternRelationDto patternRelationDto) {
+            @Validated({ValidationGroups.Update.class}) @RequestBody PatternRelationDto patternRelationDto) {
         ControllerValidationUtils.checkIfAlgorithmIsInPatternRelationDTO(algorithmId, patternRelationDto);
         patternRelationService.checkIfAlgorithmIsInPatternRelation(algorithmId, patternRelationId);
 
@@ -904,7 +904,7 @@ public class AlgorithmController {
     @PostMapping("/{algorithmId}/" + Constants.LEARNING_METHODS)
     public ResponseEntity<Void> linkAlgorithmAndLearningMethod(
             @PathVariable UUID algorithmId,
-            @Validated( {ValidationGroups.IDOnly.class}) @RequestBody LearningMethodDto learningMethodDto) {
+            @Validated({ValidationGroups.IDOnly.class}) @RequestBody LearningMethodDto learningMethodDto) {
         linkingService.linkAlgorithmAndLearningMethod(algorithmId, learningMethodDto.getId());
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

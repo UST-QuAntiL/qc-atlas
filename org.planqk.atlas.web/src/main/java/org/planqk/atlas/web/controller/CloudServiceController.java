@@ -179,7 +179,7 @@ public class CloudServiceController {
     @PostMapping("/{cloudServiceId}/" + Constants.COMPUTE_RESOURCES)
     public ResponseEntity<Void> linkCloudServiceAndComputeResource(
             @PathVariable UUID cloudServiceId,
-            @Validated( {ValidationGroups.IDOnly.class}) @RequestBody ComputeResourceDto computeResourceDto) {
+            @Validated({ValidationGroups.IDOnly.class}) @RequestBody ComputeResourceDto computeResourceDto) {
         linkingService.linkCloudServiceAndComputeResource(cloudServiceId, computeResourceDto.getId());
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

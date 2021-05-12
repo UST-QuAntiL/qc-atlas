@@ -42,6 +42,6 @@ public class ApplicationAreaDto implements Identifyable {
     private UUID id;
 
     @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
-            message = "ApplicationArea-Name must not be null!")
+             message = "ApplicationArea-Name must not be null!")
     private String name;
 }

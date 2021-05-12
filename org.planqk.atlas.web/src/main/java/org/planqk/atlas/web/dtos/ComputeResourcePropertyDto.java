@@ -49,7 +49,7 @@ public class ComputeResourcePropertyDto implements Identifyable {
     private String value;
 
     @RequiresID(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
-            message = "ComputeResourceProperties must have a type with an ID!")
+                message = "ComputeResourceProperties must have a type with an ID!")
     @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class})
     private ComputeResourcePropertyTypeDto type;
 }

@@ -45,6 +45,6 @@ public class PatternRelationTypeDto implements Identifyable {
     private UUID id;
 
     @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
-            message = "Pattern-Relations-Type must have a name!")
+             message = "Pattern-Relations-Type must have a name!")
     private String name;
 }

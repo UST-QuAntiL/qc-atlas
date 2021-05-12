@@ -43,6 +43,6 @@ public class AlgorithmRelationTypeDto implements Identifyable {
     private UUID id;
 
     @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
-            message = "RelationType-Name must not be null!")
+             message = "RelationType-Name must not be null!")
     private String name;
 }

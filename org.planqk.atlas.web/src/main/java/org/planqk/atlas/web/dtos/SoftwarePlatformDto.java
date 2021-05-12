@@ -47,7 +47,7 @@ public class SoftwarePlatformDto implements Identifyable {
     private UUID id;
 
     @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
-            message = "SoftwarePlatform name must not be null!")
+             message = "SoftwarePlatform name must not be null!")
     private String name;
 
     @Schema(description = "URL", example = "https://qiskit.org/")

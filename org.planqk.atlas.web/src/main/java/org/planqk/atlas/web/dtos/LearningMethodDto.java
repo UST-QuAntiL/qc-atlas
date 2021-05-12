@@ -43,6 +43,6 @@ public class LearningMethodDto implements Identifyable {
     private UUID id;
 
     @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
-            message = "The name of a learning method must not be null!")
+             message = "The name of a learning method must not be null!")
     private String name;
 }
