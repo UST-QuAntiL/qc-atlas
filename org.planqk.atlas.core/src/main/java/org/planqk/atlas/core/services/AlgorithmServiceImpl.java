@@ -247,7 +247,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
                 .stream()
                 .filter(learningMethod -> learningMethod.getId().equals(learningMethodId))
                 .findFirst()
-                .orElseThrow(() -> new NoSuchElementException("Learning Method with ID \""
+                .orElseThrow(() -> new NoSuchElementException("Learning Method with ID \"" + learningMethodId
                         + "\" is not linked to Algorithm with ID \"" + algorithmId + "\""));
     }
 
