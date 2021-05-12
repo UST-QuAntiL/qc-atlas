@@ -34,8 +34,9 @@ public interface TagService {
     /**
      * Creates a new database entry for a given {@link Tag} and save it to the database.
      * <p>
-     * The value of the {@link Tag} parameter should be set and will function as the unique ID of the {@link Tag}. The validation for this is done by
-     * the Controller layer, which will reject {@link Tag}s without a given value in its create path.
+     * The value of the {@link Tag} parameter should be set and will function as the unique ID of the {@link Tag}. The
+     * validation for this is done by the Controller layer, which will reject {@link Tag}s without a given value in its
+     * create path.
      *
      * @param tag The {@link Tag} that should be saved to the database
      * @return The {@link Tag} object that represents the saved status from the database
@@ -46,8 +47,8 @@ public interface TagService {
     /**
      * Retrieve multiple {@link Tag} entries from the database.
      * <p>
-     * The amount of entries is based on the given {@link Pageable} parameter. If the {@link Pageable} is unpaged a {@link Page} with all entries is
-     * queried.
+     * The amount of entries is based on the given {@link Pageable} parameter. If the {@link Pageable} is unpaged a
+     * {@link Page} with all entries is queried.
      *
      * @param pageable The page information, namely page size and page number, of the page we want to retrieve
      * @return The page of queried {@link Tag} entries
@@ -57,8 +58,8 @@ public interface TagService {
     /**
      * Retrieve multiple {@link Tag} entries from the database based on if they match the search string parameter.
      * <p>
-     * The amount of entries is based on the given {@link Pageable} parameter. If the {@link Pageable} is unpaged a {@link Page} with all entries is
-     * queried.
+     * The amount of entries is based on the given {@link Pageable} parameter. If the {@link Pageable} is unpaged a
+     * {@link Page} with all entries is queried.
      *
      * @param pageable The page information, namely page size and page number, of the page we want to retrieve
      * @param search   The string based on which a search will be executed
@@ -69,8 +70,8 @@ public interface TagService {
     /**
      * Retrieve multiple {@link Tag} entries from the database of a given category.
      * <p>
-     * The amount of entries is based on the given {@link Pageable} parameter. If the {@link Pageable} is unpaged a {@link Page} with all entries is
-     * queried.
+     * The amount of entries is based on the given {@link Pageable} parameter. If the {@link Pageable} is unpaged a
+     * {@link Page} with all entries is queried.
      *
      * @param pageable The page information, namely page size and page number, of the page we want to retrieve
      * @param pageable The category we want to find {@link Tags}s for
@@ -79,8 +80,8 @@ public interface TagService {
     Page<Tag> findAllByCategory(String category, Pageable pageable);
 
     /**
-     * Find a database entry of a {@link Tag} that is already saved in the database. This search is based on the ID which is the value of the {@link
-     * Tag} that was set and first saved to the database at its creation.
+     * Find a database entry of a {@link Tag} that is already saved in the database. This search is based on the ID
+     * which is the value of the {@link Tag} that was set and first saved to the database at its creation.
      * <p>
      * If there is no entry found in the database this method will throw a {@link java.util.NoSuchElementException}.
      *
@@ -92,11 +93,13 @@ public interface TagService {
     /**
      * Add a {@link Tag} to an existing {@link org.planqk.atlas.core.model.Algorithm}.
      * <p>
-     * The Tag we want to add does not have to exist before adding it. If the Tag does not exist it will first be created and a database entry for it
-     * will be saved, otherwise the existing tag will be added to the given {@link org.planqk.atlas.core.model.Algorithm}.
+     * The Tag we want to add does not have to exist before adding it. If the Tag does not exist it will first be
+     * created and a database entry for it will be saved, otherwise the existing tag will be added to the given {@link
+     * org.planqk.atlas.core.model.Algorithm}.
      * <p>
-     * The given {@link org.planqk.atlas.core.model.Algorithm} is identified through its ID given as a parameter. If no {@link
-     * org.planqk.atlas.core.model.Algorithm} with the given ID can be found a {@link java.util.NoSuchElementException} is thrown.
+     * The given {@link org.planqk.atlas.core.model.Algorithm} is identified through its ID given as a parameter. If no
+     * {@link org.planqk.atlas.core.model.Algorithm} with the given ID can be found a {@link
+     * java.util.NoSuchElementException} is thrown.
      *
      * @param algorithmId The ID of the {@link org.planqk.atlas.core.model.Algorithm} we want to add a {@link Tag} to
      * @param tag         The {@link Tag} object we want to add to the {@link org.planqk.atlas.core.model.Algorithm}
@@ -107,12 +110,15 @@ public interface TagService {
     /**
      * Remove an existing {@link Tag} from an existing {@link org.planqk.atlas.core.model.Algorithm}.
      * <p>
-     * If the {@link Tag} that should be removed does not already exist this method will throw a {@link java.util.NoSuchElementException}.
+     * If the {@link Tag} that should be removed does not already exist this method will throw a {@link
+     * java.util.NoSuchElementException}.
      * <p>
-     * The given {@link org.planqk.atlas.core.model.Algorithm} is identified through its ID given as a parameter. If no {@link
-     * org.planqk.atlas.core.model.Algorithm} with the given ID can be found a {@link java.util.NoSuchElementException} is thrown.
+     * The given {@link org.planqk.atlas.core.model.Algorithm} is identified through its ID given as a parameter. If no
+     * {@link org.planqk.atlas.core.model.Algorithm} with the given ID can be found a {@link
+     * java.util.NoSuchElementException} is thrown.
      *
-     * @param algorithmId The ID of the {@link org.planqk.atlas.core.model.Algorithm} we want to remove a {@link Tag} from
+     * @param algorithmId The ID of the {@link org.planqk.atlas.core.model.Algorithm} we want to remove a {@link Tag}
+     *                    from
      * @param tag         The {@link Tag} object we want to remove from the {@link org.planqk.atlas.core.model.Algorithm}
      */
     @Transactional
@@ -121,13 +127,16 @@ public interface TagService {
     /**
      * Add a {@link Tag} to an existing {@link org.planqk.atlas.core.model.Implementation}.
      * <p>
-     * The Tag we want to add does not have to exist before adding it. If the Tag does not exist it will first be created and a database entry for it
-     * will be saved, otherwise the existing tag will be added to the given {@link org.planqk.atlas.core.model.Implementation}.
+     * The Tag we want to add does not have to exist before adding it. If the Tag does not exist it will first be
+     * created and a database entry for it will be saved, otherwise the existing tag will be added to the given {@link
+     * org.planqk.atlas.core.model.Implementation}.
      * <p>
-     * The given {@link org.planqk.atlas.core.model.Implementation} is identified through its ID given as a parameter. If no {@link
-     * org.planqk.atlas.core.model.Implementation} with the given ID can be found a {@link java.util.NoSuchElementException} is thrown.
+     * The given {@link org.planqk.atlas.core.model.Implementation} is identified through its ID given as a parameter.
+     * If no {@link org.planqk.atlas.core.model.Implementation} with the given ID can be found a {@link
+     * java.util.NoSuchElementException} is thrown.
      *
-     * @param implementationId The ID of the {@link org.planqk.atlas.core.model.Implementation} we want to add a {@link Tag} to
+     * @param implementationId The ID of the {@link org.planqk.atlas.core.model.Implementation} we want to add a {@link
+     *                         Tag} to
      * @param tag              The {@link Tag} object we want to add to the {@link org.planqk.atlas.core.model.Implementation}
      */
     @Transactional
@@ -136,13 +145,16 @@ public interface TagService {
     /**
      * Remove an existing {@link Tag} from an existing {@link org.planqk.atlas.core.model.Implementation}.
      * <p>
-     * If the {@link Tag} that should be removed does not already exist this method will throw a {@link java.util.NoSuchElementException}.
+     * If the {@link Tag} that should be removed does not already exist this method will throw a {@link
+     * java.util.NoSuchElementException}.
      * <p>
      * <p>
-     * The given {@link org.planqk.atlas.core.model.Implementation} is identified through its ID given as a parameter. If no {@link
-     * org.planqk.atlas.core.model.Implementation} with the given ID can be found a {@link java.util.NoSuchElementException} is thrown.
+     * The given {@link org.planqk.atlas.core.model.Implementation} is identified through its ID given as a parameter.
+     * If no {@link org.planqk.atlas.core.model.Implementation} with the given ID can be found a {@link
+     * java.util.NoSuchElementException} is thrown.
      *
-     * @param implementationId The ID of the {@link org.planqk.atlas.core.model.Implementation} we want to remove a {@link Tag} from
+     * @param implementationId The ID of the {@link org.planqk.atlas.core.model.Implementation} we want to remove a
+     *                         {@link Tag} from
      * @param tag              The {@link Tag} object we want to remove from the {@link org.planqk.atlas.core.model.Implementation}
      */
     @Transactional

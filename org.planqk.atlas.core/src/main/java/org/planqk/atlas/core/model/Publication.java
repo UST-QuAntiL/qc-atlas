@@ -52,12 +52,12 @@ public class Publication extends KnowledgeArtifact {
     private List<String> authors = new ArrayList<>();
 
     @ManyToMany(mappedBy = "publications",
-        cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+                cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @EqualsAndHashCode.Exclude
     private Set<Algorithm> algorithms = new HashSet<>();
 
     @ManyToMany(mappedBy = "publications",
-        cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+                cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @EqualsAndHashCode.Exclude
     private Set<Implementation> implementations = new HashSet<>();
 

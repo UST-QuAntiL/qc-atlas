@@ -30,7 +30,7 @@ public final class ValidationUtils {
     public static void validateComputeResourceProperty(ComputeResourceProperty resource) {
         if (!resource.getComputeResourcePropertyType().getDatatype().isValid(resource.getValue())) {
             throw new InvalidResourceTypeValueException("The value \"" + resource.getValue() +
-                "\" is not valid for the Type " + resource.getComputeResourcePropertyType().getDatatype().name());
+                    "\" is not valid for the Type " + resource.getComputeResourcePropertyType().getDatatype().name());
         }
     }
 }

@@ -92,7 +92,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 
 @WebMvcTest(controllers = {PublicationController.class, DiscussionCommentController.class, DiscussionTopicController.class})
-@ExtendWith( {MockitoExtension.class})
+@ExtendWith({MockitoExtension.class})
 @AutoConfigureMockMvc
 @EnableLinkAssemblers
 public class PublicationControllerTest {

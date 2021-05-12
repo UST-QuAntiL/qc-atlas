@@ -49,7 +49,7 @@ import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageException;
 
-@ActiveProfiles( {"test", "google-cloud"})
+@ActiveProfiles({"test", "google-cloud"})
 public class FileServiceCloudStorageTest extends AtlasDatabaseTestBase {
 
     @Autowired
