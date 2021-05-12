@@ -44,8 +44,8 @@ public interface ApplicationAreaRepository extends JpaRepository<ApplicationArea
     Page<ApplicationArea> findByNameContainingIgnoreCase(String name, Pageable pageable);
 
     @Query("SELECT aa " +
-        "FROM ApplicationArea aa " +
-        "JOIN aa.algorithms algos " +
-        "WHERE algos.id = :algoId")
+                   "FROM ApplicationArea aa " +
+                   "JOIN aa.algorithms algos " +
+                   "WHERE algos.id = :algoId")
     Page<ApplicationArea> findApplicationAreasByAlgorithmId(@Param("algoId") UUID algorithmId, Pageable pageable);
 }

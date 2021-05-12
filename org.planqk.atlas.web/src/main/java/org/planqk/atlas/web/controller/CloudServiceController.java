@@ -98,7 +98,7 @@ public class CloudServiceController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Cloud service with given ID doesn't exist.")
+                         description = "Not Found. Cloud service with given ID doesn't exist.")
     }, description = "Update the basic properties of a cloud service (e.g. name). " +
             "References to sub-objects (e.g. a compute resource) are not updated via this operation - " +
             "use the corresponding sub-route for updating them (e.g. PUT on " + "/" + Constants.COMPUTE_RESOURCES + "/{computeResourceId}).")
@@ -116,7 +116,7 @@ public class CloudServiceController {
             @ApiResponse(responseCode = "204"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Cloud service with given ID doesn't exist."),
+                         description = "Not Found. Cloud service with given ID doesn't exist."),
     }, description = "Delete a cloud service. " +
             "This also removes all references to other entities (e.g. compute resource).")
     @DeleteMapping("/{cloudServiceId}")
@@ -130,7 +130,7 @@ public class CloudServiceController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Cloud service with given ID doesn't exist."),
+                         description = "Not Found. Cloud service with given ID doesn't exist."),
     }, description = "Retrieve a specific cloud service and its basic properties.")
     @GetMapping("/{cloudServiceId}")
     public ResponseEntity<CloudServiceDto> getCloudService(
@@ -143,7 +143,7 @@ public class CloudServiceController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Cloud service with given ID doesn't exist.")
+                         description = "Not Found. Cloud service with given ID doesn't exist.")
     }, description = "Retrieve referenced software platforms of an cloud service. If none are found an empty list is returned.")
     @ListParametersDoc
     @GetMapping("/{cloudServiceId}/" + Constants.SOFTWARE_PLATFORMS)
@@ -179,7 +179,7 @@ public class CloudServiceController {
     @PostMapping("/{cloudServiceId}/" + Constants.COMPUTE_RESOURCES)
     public ResponseEntity<Void> linkCloudServiceAndComputeResource(
             @PathVariable UUID cloudServiceId,
-            @Validated({ValidationGroups.IDOnly.class}) @RequestBody ComputeResourceDto computeResourceDto) {
+            @Validated( {ValidationGroups.IDOnly.class}) @RequestBody ComputeResourceDto computeResourceDto) {
         linkingService.linkCloudServiceAndComputeResource(cloudServiceId, computeResourceDto.getId());
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

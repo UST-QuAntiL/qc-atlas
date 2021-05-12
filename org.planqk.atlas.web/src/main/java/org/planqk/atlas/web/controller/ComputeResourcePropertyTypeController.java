@@ -88,7 +88,7 @@ public class ComputeResourcePropertyTypeController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Compute resource property type with given ID doesn't exist")
+                         description = "Not Found. Compute resource property type with given ID doesn't exist")
     }, description = "Update the basic properties of an compute resource property type (e.g. name).")
     @PutMapping("/{computeResourcePropertyTypeId}")
     public ResponseEntity<ComputeResourcePropertyTypeDto> updateComputingResourcePropertyType(
@@ -104,9 +104,9 @@ public class ComputeResourcePropertyTypeController {
     @Operation(responses = {
             @ApiResponse(responseCode = "204"),
             @ApiResponse(responseCode = "400",
-                    description = "Bad Request. Compute resource property type is still in use by at least one compute resource property"),
+                         description = "Bad Request. Compute resource property type is still in use by at least one compute resource property"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Compute resource property type with given ID doesn't exist")
+                         description = "Not Found. Compute resource property type with given ID doesn't exist")
     }, description = "Delete an compute resource property type.")
     @DeleteMapping("/{computeResourcePropertyTypeId}")
     public ResponseEntity<Void> deleteComputingResourcePropertyType(
@@ -119,7 +119,7 @@ public class ComputeResourcePropertyTypeController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Compute resource property type with given ID doesn't exist")
+                         description = "Not Found. Compute resource property type with given ID doesn't exist")
     }, description = "Retrieve a specific compute resource property type and its basic properties.")
     @GetMapping("/{computeResourcePropertyTypeId}")
     public ResponseEntity<ComputeResourcePropertyTypeDto> getComputingResourcePropertyType(

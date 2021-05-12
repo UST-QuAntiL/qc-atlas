@@ -90,7 +90,7 @@ public class TagServiceTest extends AtlasDatabaseTestBase {
         }
 
         var filteredTags = tags.stream().filter(e -> e.getCategory().contains("1") || e.getValue().contains("1"))
-            .collect(Collectors.toSet());
+                .collect(Collectors.toSet());
         var searchedTags = tagService.findAllByContent("1", Pageable.unpaged()).getContent();
 
         assertThat(searchedTags.size()).isEqualTo(1);

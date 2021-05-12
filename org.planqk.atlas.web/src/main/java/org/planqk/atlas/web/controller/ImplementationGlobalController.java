@@ -69,7 +69,7 @@ public class ImplementationGlobalController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Implementation with given ID doesn't exist")
+                         description = "Implementation with given ID doesn't exist")
     }, description = "Retrieve a specific implementation and its basic properties.")
     @GetMapping("/{implementationId}")
     public ResponseEntity<ImplementationDto> getImplementation(@PathVariable UUID implementationId) {

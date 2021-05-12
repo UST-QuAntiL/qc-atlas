@@ -92,10 +92,10 @@ public class ComputeResourceServiceImpl implements ComputeResourceService {
         ServiceUtils.throwIfNotExists(computeResourceId, ComputeResource.class, computeResourceRepository);
 
         if ((cloudServiceRepository.countCloudServiceByComputeResource(computeResourceId) +
-            softwarePlatformRepository.countSoftwarePlatformByComputeResource(computeResourceId)) > 0) {
+                softwarePlatformRepository.countSoftwarePlatformByComputeResource(computeResourceId)) > 0) {
             throw new EntityReferenceConstraintViolationException(
-                "ComputeResource with ID \"" + computeResourceId + "\" cannot be deleted, " +
-                    "because it is still in linked to existing software platforms or cloud services");
+                    "ComputeResource with ID \"" + computeResourceId + "\" cannot be deleted, " +
+                            "because it is still in linked to existing software platforms or cloud services");
         }
 
         final ComputeResource computeResource = findById(computeResourceId);
@@ -107,7 +107,7 @@ public class ComputeResourceServiceImpl implements ComputeResourceService {
 
     private void removeReferences(@NonNull ComputeResource computeResource) {
         CollectionUtils.forEachOnCopy(computeResource.getProvidedComputingResourceProperties(),
-            property -> computeResourcePropertyService.delete(property.getId()));
+                property -> computeResourcePropertyService.delete(property.getId()));
     }
 
     @Override

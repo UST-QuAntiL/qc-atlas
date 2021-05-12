@@ -87,7 +87,7 @@ public class AlgorithmRelationTypeController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm relation type with given ID doesn't exist")
+                         description = "Not Found. Algorithm relation type with given ID doesn't exist")
     }, description = "Update the basic properties of an algorithm relation type (e.g. name).")
     @PutMapping("/{algorithmRelationTypeId}")
     public ResponseEntity<AlgorithmRelationTypeDto> updateAlgorithmRelationType(
@@ -102,9 +102,9 @@ public class AlgorithmRelationTypeController {
     @Operation(responses = {
             @ApiResponse(responseCode = "204"),
             @ApiResponse(responseCode = "400",
-                    description = "Bad Request. Algorithm relation type is still in use by at least one algorithm relation"),
+                         description = "Bad Request. Algorithm relation type is still in use by at least one algorithm relation"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm relation type with given ID doesn't exist")
+                         description = "Not Found. Algorithm relation type with given ID doesn't exist")
     }, description = "Delete an algorithm relation type.")
     @DeleteMapping("/{algorithmRelationTypeId}")
     public ResponseEntity<Void> deleteAlgorithmRelationType(@PathVariable UUID algorithmRelationTypeId) {
@@ -116,7 +116,7 @@ public class AlgorithmRelationTypeController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm relation type with given ID doesn't exist")
+                         description = "Not Found. Algorithm relation type with given ID doesn't exist")
     }, description = "Retrieve a specific algorithm relation type and its basic properties.")
     @GetMapping("/{algorithmRelationTypeId}")
     public ResponseEntity<AlgorithmRelationTypeDto> getAlgorithmRelationType(

@@ -104,7 +104,7 @@ public class PublicationController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Publication with given ID doesn't exist.")
+                         description = "Not Found. Publication with given ID doesn't exist.")
     }, description = "Update the basic properties of an publication (e.g. title).")
     @PutMapping("/{publicationId}")
     public ResponseEntity<PublicationDto> updatePublication(
@@ -120,7 +120,7 @@ public class PublicationController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Publication with given ID doesn't exist.")
+                         description = "Not Found. Publication with given ID doesn't exist.")
     }, description = "Retrieve a specific publication and its basic properties.")
     @GetMapping("/{publicationId}")
     public ResponseEntity<PublicationDto> getPublication(@PathVariable UUID publicationId) {
@@ -132,7 +132,7 @@ public class PublicationController {
             @ApiResponse(responseCode = "204"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Publication with given ID doesn't exist.")
+                         description = "Not Found. Publication with given ID doesn't exist.")
     }, description = "Delete an publication. This also removes all references to other entities (e.g. algorithm).")
     @DeleteMapping("/{publicationId}")
     public ResponseEntity<Void> deletePublication(@PathVariable UUID publicationId) {
@@ -144,7 +144,7 @@ public class PublicationController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Publication with given ID doesn't exist.")
+                         description = "Not Found. Publication with given ID doesn't exist.")
     }, description = "Retrieve referenced algorithms of an publication. If none are found an empty list is returned.")
     @ListParametersDoc
     @GetMapping("/{publicationId}/" + Constants.ALGORITHMS)
@@ -159,15 +159,15 @@ public class PublicationController {
             @ApiResponse(responseCode = "204"),
             @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or publication with given IDs don't exist or " +
-                            "reference was already added.")
+                         description = "Not Found. Algorithm or publication with given IDs don't exist or " +
+                                 "reference was already added.")
     }, description = "Add a reference to an existing algorithm " +
             "(that was previously created via a POST on e.g. /" + Constants.ALGORITHMS + "). " +
             "Only the ID is required in the request body, other attributes will be ignored and not changed.")
     @PostMapping("/{publicationId}/" + Constants.ALGORITHMS)
     public ResponseEntity<Void> linkPublicationAndAlgorithm(
             @PathVariable UUID publicationId,
-            @Validated({ValidationGroups.IDOnly.class}) @RequestBody AlgorithmDto algorithmDto) {
+            @Validated( {ValidationGroups.IDOnly.class}) @RequestBody AlgorithmDto algorithmDto) {
         linkingService.linkAlgorithmAndPublication(algorithmDto.getId(), publicationId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -176,8 +176,8 @@ public class PublicationController {
             @ApiResponse(responseCode = "204"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or publication with given IDs don't exist or " +
-                            "no reference exists.")
+                         description = "Not Found. Algorithm or publication with given IDs don't exist or " +
+                                 "no reference exists.")
     }, description = "Delete a reference to a publication of an algorithm. The reference has to be previously created " +
             "via a POST on /" + Constants.ALGORITHMS + "/{algorithmId}/" + Constants.PUBLICATIONS + "/{publicationId}).")
     @DeleteMapping("/{publicationId}/" + Constants.ALGORITHMS + "/{algorithmId}")
@@ -192,7 +192,7 @@ public class PublicationController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or publication with given IDs don't exist.")
+                         description = "Not Found. Algorithm or publication with given IDs don't exist.")
     }, description = "Retrieve a specific algorithm of a publication.")
     @GetMapping("/{publicationId}/" + Constants.ALGORITHMS + "/{algorithmId}")
     public ResponseEntity<AlgorithmDto> getAlgorithmOfPublication(
@@ -208,7 +208,7 @@ public class PublicationController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Publication with given ID doesn't exist.")
+                         description = "Not Found. Publication with given ID doesn't exist.")
     }, description = "Retrieve discussion topics of a publication. If none are found an empty list is returned."
     )
     @ListParametersDoc
@@ -223,7 +223,7 @@ public class PublicationController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Publication or discussion topic with given ID doesn't exist.")
+                         description = "Not Found. Publication or discussion topic with given ID doesn't exist.")
     }, description = "Retrieve discussion topic of a publication."
     )
     @ListParametersDoc
@@ -239,7 +239,7 @@ public class PublicationController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Publication or discussion topic with given ID doesn't exist.")
+                         description = "Not Found. Publication or discussion topic with given ID doesn't exist.")
     }, description = "Delete discussion topic of a publication."
     )
     @ListParametersDoc
@@ -255,7 +255,7 @@ public class PublicationController {
             @ApiResponse(responseCode = "201"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Publication or discussion topic with given ID doesn't exist.")
+                         description = "Not Found. Publication or discussion topic with given ID doesn't exist.")
     }, description = "Create a discussion topic of a publication."
     )
     @ListParametersDoc
@@ -272,7 +272,7 @@ public class PublicationController {
             @ApiResponse(responseCode = "201"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Publication or discussion topic with given ID doesn't exist.")
+                         description = "Not Found. Publication or discussion topic with given ID doesn't exist.")
     }, description = "Update discussion topic of a publication."
     )
     @ListParametersDoc
@@ -290,7 +290,7 @@ public class PublicationController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Publication or discussion topic with given ID doesn't exist.")
+                         description = "Not Found. Publication or discussion topic with given ID doesn't exist.")
     }, description = "Retrieve discussion comments of a discussion topic of a publication. If none are found an empty list is returned."
     )
     @ListParametersDoc
@@ -306,7 +306,7 @@ public class PublicationController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Publication, discussion topic or discussion comment with given ID doesn't exist.")
+                         description = "Not Found. Publication, discussion topic or discussion comment with given ID doesn't exist.")
     }, description = "Retrieve discussion comment of a discussion topic of a publication."
     )
     @ListParametersDoc
@@ -323,7 +323,7 @@ public class PublicationController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Publication, discussion topic or discussion comment with given ID doesn't exist.")
+                         description = "Not Found. Publication, discussion topic or discussion comment with given ID doesn't exist.")
     }, description = "Delete discussion comment of a discussion topic of a publication."
     )
     @ListParametersDoc
@@ -340,7 +340,7 @@ public class PublicationController {
             @ApiResponse(responseCode = "201"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Publication or discussion topic with given ID doesn't exist.")
+                         description = "Not Found. Publication or discussion topic with given ID doesn't exist.")
     }, description = "Create discussion comment of a discussion topic of a publication."
     )
     @ListParametersDoc
@@ -357,7 +357,7 @@ public class PublicationController {
             @ApiResponse(responseCode = "201"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Publication or discussion topic with given ID doesn't exist.")
+                         description = "Not Found. Publication or discussion topic with given ID doesn't exist.")
     }, description = "Update discussion comment of a discussion topic of a publication."
     )
     @ListParametersDoc
@@ -375,7 +375,7 @@ public class PublicationController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Implementation or publication with given IDs don't exist.")
+                         description = "Not Found. Implementation or publication with given IDs don't exist.")
     }, description = "Retrieve referenced implementations of an publication. If none are found an empty list is returned.")
     @ListParametersDoc
     @GetMapping("/{publicationId}/" + Constants.IMPLEMENTATIONS)
@@ -390,7 +390,7 @@ public class PublicationController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Implementation or publication with given IDs don't exist.")
+                         description = "Not Found. Implementation or publication with given IDs don't exist.")
     }, description = "Retrieve a specific implementation of a publication.")
     @GetMapping("/{publicationId}/" + Constants.IMPLEMENTATIONS + "/{implementationId}")
     public ResponseEntity<ImplementationDto> getImplementationOfPublication(

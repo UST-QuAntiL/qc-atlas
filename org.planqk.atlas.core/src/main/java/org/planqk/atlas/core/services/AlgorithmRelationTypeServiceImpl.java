@@ -77,7 +77,7 @@ public class AlgorithmRelationTypeServiceImpl implements AlgorithmRelationTypeSe
 
         if (algorithmRelationRepository.countByAlgorithmRelationTypeId(algorithmRelationTypeId) > 0) {
             throw new EntityReferenceConstraintViolationException("AlgorithmRelationType with ID \""
-                + algorithmRelationTypeId + "\" cannot be deleted, because it is still in use");
+                    + algorithmRelationTypeId + "\" cannot be deleted, because it is still in use");
         }
 
         algorithmRelationTypeRepository.deleteById(algorithmRelationTypeId);

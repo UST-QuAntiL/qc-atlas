@@ -168,7 +168,7 @@ public class PatternRelationTypeServiceTest extends AtlasDatabaseTestBase {
         PatternRelation storedRelation = patternRelationService.create(relation);
 
         assertThrows(EntityReferenceConstraintViolationException.class, () ->
-            patternRelationTypeService.delete(storedType1.getId()));
+                patternRelationTypeService.delete(storedType1.getId()));
     }
 
     @Test
@@ -185,6 +185,6 @@ public class PatternRelationTypeServiceTest extends AtlasDatabaseTestBase {
     @Test
     void deletePatternRelationType_ElementNotFound() {
         assertThrows(NoSuchElementException.class, () ->
-            patternRelationTypeService.delete(UUID.randomUUID()));
+                patternRelationTypeService.delete(UUID.randomUUID()));
     }
 }

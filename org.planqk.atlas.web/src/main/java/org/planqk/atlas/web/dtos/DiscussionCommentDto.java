@@ -47,7 +47,7 @@ public class DiscussionCommentDto implements Identifyable {
     private UUID id;
 
     @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
-            message = "Text must not be null!")
+             message = "Text must not be null!")
     private String text;
 
     @NotNull(

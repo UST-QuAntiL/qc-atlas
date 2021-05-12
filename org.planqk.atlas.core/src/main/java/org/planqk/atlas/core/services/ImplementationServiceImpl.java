@@ -121,11 +121,11 @@ public class ImplementationServiceImpl implements ImplementationService {
 
         // Remove links to publications
         CollectionUtils.forEachOnCopy(implementation.getPublications(),
-            publication -> publication.removeImplementation(implementation));
+                publication -> publication.removeImplementation(implementation));
 
         // Remove links to software platforms
         CollectionUtils.forEachOnCopy(implementation.getSoftwarePlatforms(),
-            softwarePlatform -> softwarePlatform.removeImplementation(implementation));
+                softwarePlatform -> softwarePlatform.removeImplementation(implementation));
     }
 
     @Override
@@ -134,7 +134,7 @@ public class ImplementationServiceImpl implements ImplementationService {
 
         if (!implementation.getImplementedAlgorithm().getId().equals(algorithmId)) {
             throw new NoSuchElementException("Implementation with ID \"" + implementationId
-                + "\" of Algorithm with ID \"" + algorithmId + "\" does not exist");
+                    + "\" of Algorithm with ID \"" + algorithmId + "\" does not exist");
         }
     }
 

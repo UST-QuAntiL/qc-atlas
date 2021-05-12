@@ -77,7 +77,7 @@ public class PatternRelationTypeServiceImpl implements PatternRelationTypeServic
 
         if (patternRelationRepository.countByPatternRelationTypeId(patternRelationTypeId) > 0) {
             throw new EntityReferenceConstraintViolationException("PatternRelationType with ID \""
-                + patternRelationTypeId + "\" cannot be deleted, because it is still in use");
+                    + patternRelationTypeId + "\" cannot be deleted, because it is still in use");
         }
 
         patternRelationTypeRepository.deleteById(patternRelationTypeId);

@@ -77,7 +77,7 @@ public class AlgorithmRelationTypeServiceTest extends AtlasDatabaseTestBase {
     @Test
     void findAlgorithmRelationTypeById_ElementNotFound() {
         assertThrows(NoSuchElementException.class, () ->
-            algorithmRelationTypeService.findById(UUID.randomUUID()));
+                algorithmRelationTypeService.findById(UUID.randomUUID()));
     }
 
     @Test
@@ -97,7 +97,7 @@ public class AlgorithmRelationTypeServiceTest extends AtlasDatabaseTestBase {
         AlgorithmRelationType relationType = getFullAlgorithmRelationType("relationTypeName");
         relationType.setId(UUID.randomUUID());
         assertThrows(NoSuchElementException.class, () ->
-            algorithmRelationTypeService.update(relationType));
+                algorithmRelationTypeService.update(relationType));
     }
 
     @Test
@@ -155,7 +155,7 @@ public class AlgorithmRelationTypeServiceTest extends AtlasDatabaseTestBase {
         algorithmRelationTypeService.delete(storedRelationType.getId());
 
         assertThrows(NoSuchElementException.class, () ->
-            algorithmRelationTypeService.findById(storedRelationType.getId()));
+                algorithmRelationTypeService.findById(storedRelationType.getId()));
     }
 
     private AlgorithmRelationType getFullAlgorithmRelationType(String typeName) {

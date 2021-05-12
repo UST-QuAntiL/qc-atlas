@@ -123,13 +123,13 @@ public class ComputeResourcePropertyTypeServiceTest extends AtlasDatabaseTestBas
         computeResourcePropertyTypeService.delete(storedType.getId());
 
         assertThrows(NoSuchElementException.class, () ->
-            computeResourcePropertyTypeService.findById(storedType.getId()));
+                computeResourcePropertyTypeService.findById(storedType.getId()));
     }
 
     @Test
     void deleteComputeResourcePropertyType_ElementNotFound() {
         assertThrows(NoSuchElementException.class, () ->
-            computeResourcePropertyTypeService.delete(UUID.randomUUID()));
+                computeResourcePropertyTypeService.delete(UUID.randomUUID()));
     }
 
     @Test

@@ -66,8 +66,8 @@ import org.springframework.test.web.servlet.MvcResult;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@WebMvcTest({DiscussionCommentController.class, DiscussionTopicController.class})
-@ExtendWith({MockitoExtension.class})
+@WebMvcTest( {DiscussionCommentController.class, DiscussionTopicController.class})
+@ExtendWith( {MockitoExtension.class})
 @AutoConfigureMockMvc
 @EnableLinkAssemblers
 public class DiscussionCommentControllerTest {

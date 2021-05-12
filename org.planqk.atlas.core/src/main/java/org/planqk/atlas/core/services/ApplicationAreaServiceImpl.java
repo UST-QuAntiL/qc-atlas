@@ -79,7 +79,7 @@ public class ApplicationAreaServiceImpl implements ApplicationAreaService {
 
         if (applicationArea.getAlgorithms().size() > 0) {
             throw new EntityReferenceConstraintViolationException("ApplicationArea with ID \""
-                + applicationAreaId + "\" cannot be deleted, because it is still in use");
+                    + applicationAreaId + "\" cannot be deleted, because it is still in use");
         }
 
         // removeReferences(applicationArea);
@@ -89,6 +89,6 @@ public class ApplicationAreaServiceImpl implements ApplicationAreaService {
 
     private void removeReferences(ApplicationArea applicationArea) {
         CollectionUtils.forEachOnCopy(applicationArea.getAlgorithms(),
-            algorithm -> algorithm.removeApplicationArea(applicationArea));
+                algorithm -> algorithm.removeApplicationArea(applicationArea));
     }
 }

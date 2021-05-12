@@ -45,16 +45,16 @@ public class DiscussionTopicDto implements Identifyable {
     private UUID id;
 
     @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
-            message = "Title must not be null!")
+             message = "Title must not be null!")
     private String title;
 
     private String description;
 
     @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
-            message = "Status must not be null!")
+             message = "Status must not be null!")
     private Status status;
 
     @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
-            message = "Date must not be null!")
+             message = "Date must not be null!")
     private OffsetDateTime date;
 }

@@ -188,7 +188,7 @@ public class ComputeResourceController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Compute resource or compute resource property type with given IDs don't exist.")
+                         description = "Not Found. Compute resource or compute resource property type with given IDs don't exist.")
     }, description = "Add a compute resource property (e.g. a certain number of qubits) that is provided by an compute resource. " +
             "The compute resource property type has to be already created (e.g. via POST on /" + Constants.COMPUTE_RESOURCE_PROPERTY_TYPES + "). " +
             "As a result only the ID is required for the compute resource property type, other attributes will be ignored not changed.")
@@ -207,7 +207,7 @@ public class ComputeResourceController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Compute resource, compute resource property or compute resource type with given IDs don't exist.")
+                         description = "Not Found. Compute resource, compute resource property or compute resource type with given IDs don't exist.")
     }, description = "Update a Compute resource property of an compute resource. " +
             "For the compute resource property type only the ID is required, " +
             "other compute resource property type attributes will be ignored and not changed.")
@@ -228,7 +228,7 @@ public class ComputeResourceController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Compute resource or compute resource property with given IDs don't exist."),
+                         description = "Not Found. Compute resource or compute resource property with given IDs don't exist."),
     }, description = "Delete a Compute resource property of an compute resource. " +
             "The compute resource property type is not affected by this.")
     @DeleteMapping("/{computeResourceId}/" + Constants.COMPUTE_RESOURCE_PROPERTIES + "/{computeResourcePropertyId}")
@@ -245,7 +245,7 @@ public class ComputeResourceController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Compute resource or compute resource property with given IDs don't exist."),
+                         description = "Not Found. Compute resource or compute resource property with given IDs don't exist."),
     }, description = "Retrieve a specific compute resource property of an compute resource.")
     @GetMapping("/{computeResourceId}/" + Constants.COMPUTE_RESOURCE_PROPERTIES + "/{computeResourcePropertyId}")
     public ResponseEntity<ComputeResourcePropertyDto> getComputeResourcePropertyOfComputeResource(

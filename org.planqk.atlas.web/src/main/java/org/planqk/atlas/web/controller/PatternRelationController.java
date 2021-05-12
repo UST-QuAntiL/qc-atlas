@@ -75,13 +75,13 @@ public class PatternRelationController {
             @ApiResponse(responseCode = "201"),
             @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or Pattern relation type with given IDs don't exist.")
+                         description = "Not Found. Algorithm or Pattern relation type with given IDs don't exist.")
     }, description = "Create a relation between a pattern and an algorithm." +
             "The pattern relation type has to be already created (e.g. via POST on /" + Constants.PATTERN_RELATION_TYPES + "). " +
             "As a result only the ID is required for the pattern relation type, other attributes will be ignored not changed.")
     @PostMapping
     public ResponseEntity<PatternRelationDto> createPatternRelation(
-            @Validated({ValidationGroups.Create.class}) @RequestBody PatternRelationDto patternRelationDto) {
+            @Validated( {ValidationGroups.Create.class}) @RequestBody PatternRelationDto patternRelationDto) {
         final var savedPatternRelation = patternRelationService.create(
                 ModelMapperUtils.convert(patternRelationDto, PatternRelation.class));
         return new ResponseEntity<>(ModelMapperUtils.convert(savedPatternRelation, PatternRelationDto.class), HttpStatus.CREATED);
@@ -90,16 +90,16 @@ public class PatternRelationController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400",
-                    description = "Bad Request. Invalid request body or algorithm with given ID is not part of pattern relation."),
+                         description = "Bad Request. Invalid request body or algorithm with given ID is not part of pattern relation."),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm, pattern relation or pattern relation type with given IDs don't exist.")
+                         description = "Not Found. Algorithm, pattern relation or pattern relation type with given IDs don't exist.")
     }, description = "Update a relation between a pattern and an algorithm. " +
             "For the pattern relation type only the ID is required," +
             "other pattern relation type attributes will be ignored and not changed.")
     @PutMapping("/{patternRelationId}")
     public ResponseEntity<PatternRelationDto> updatePatternRelation(
             @PathVariable UUID patternRelationId,
-            @Validated({ValidationGroups.Update.class}) @RequestBody PatternRelationDto patternRelationDto) {
+            @Validated( {ValidationGroups.Update.class}) @RequestBody PatternRelationDto patternRelationDto) {
         patternRelationDto.setId(patternRelationId);
         final var savedPatternRelation = patternRelationService.update(
                 ModelMapperUtils.convert(patternRelationDto, PatternRelation.class));
@@ -110,7 +110,7 @@ public class PatternRelationController {
             @ApiResponse(responseCode = "204"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or pattern relation with given IDs don't exist.")
+                         description = "Not Found. Algorithm or pattern relation with given IDs don't exist.")
     }, description = "Delete a specific relation between a pattern and an algorithm. " +
             "The pattern relation type is not affected by this.")
     @DeleteMapping("/{patternRelationId}")
@@ -123,7 +123,7 @@ public class PatternRelationController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or pattern relation with given IDs don't exist.")
+                         description = "Not Found. Algorithm or pattern relation with given IDs don't exist.")
     }, description = "Retrieve a specific relation between a pattern and an algorithm.")
     @GetMapping("/{patternRelationId}")
     public ResponseEntity<PatternRelationDto> getPatternRelation(@PathVariable UUID patternRelationId) {

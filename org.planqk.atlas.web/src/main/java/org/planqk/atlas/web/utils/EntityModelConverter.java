@@ -36,9 +36,10 @@ import io.swagger.v3.oas.models.media.Schema;
 /**
  * Custom converter for EntityModel classes.
  * <p>
- * Spring HATEOAS' EntityModel class is special because it uses Jackson's @JsonWrapped to "copy" the actual DTO's properties into the EntityModel
- * instance. Unfortunately, information on whether properties are required or not is lost in the process. This wrapper aims to fix that by copying the
- * DTO's schema and then manually adding the EntityModel-specific fields (for now, just _links).
+ * Spring HATEOAS' EntityModel class is special because it uses Jackson's @JsonWrapped to "copy" the actual DTO's
+ * properties into the EntityModel instance. Unfortunately, information on whether properties are required or not is
+ * lost in the process. This wrapper aims to fix that by copying the DTO's schema and then manually adding the
+ * EntityModel-specific fields (for now, just _links).
  */
 public class EntityModelConverter implements ModelConverter {
     @Override

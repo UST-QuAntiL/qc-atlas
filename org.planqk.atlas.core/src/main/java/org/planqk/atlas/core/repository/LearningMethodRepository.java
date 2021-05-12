@@ -21,8 +21,8 @@ public interface LearningMethodRepository extends JpaRepository<LearningMethod, 
     Page<LearningMethod> findByNameContainingIgnoreCase(String name, Pageable pageable);
 
     @Query("SELECT lm " +
-            "FROM LearningMethod lm " +
-            "JOIN lm.algorithms algos " +
-            "WHERE algos.id = :algoId")
+                   "FROM LearningMethod lm " +
+                   "JOIN lm.algorithms algos " +
+                   "WHERE algos.id = :algoId")
     Page<LearningMethod> findLearningMethodByAlgorithmId(@Param("algoId") UUID algorithmId, Pageable pageable);
 }

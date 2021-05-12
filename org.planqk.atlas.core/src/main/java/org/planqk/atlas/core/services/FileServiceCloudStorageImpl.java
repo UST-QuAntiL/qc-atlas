@@ -96,7 +96,6 @@ public class FileServiceCloudStorageImpl implements FileService {
         }
     }
 
-
     @Override
     public void delete(UUID id) {
         final File storedEntity = this.findById(id);

@@ -81,9 +81,9 @@ public class AlgorithmRelationController {
     @Operation(responses = {
             @ApiResponse(responseCode = "201"),
             @ApiResponse(responseCode = "400",
-                    description = "Bad Request. Invalid request body or algorithm resource is not part of relation."),
+                         description = "Bad Request. Invalid request body or algorithm resource is not part of relation."),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or algorithm relation type with given IDs don't exist.")
+                         description = "Not Found. Algorithm or algorithm relation type with given IDs don't exist.")
     }, description = "Create a relation between two algorithms." +
             "The algorithm relation type has to be already created (e.g. via POST on /" + Constants.ALGORITHM_RELATION_TYPES + "). " +
             "As a result only the ID is required for the algorithm relation type, other attributes will be ignored not changed.")
@@ -103,7 +103,7 @@ public class AlgorithmRelationController {
             @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body, algorithm resource is not part of relation " +
                     "or specified target and source algorithms are not correct."),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm, algorithm relation or algorithm relation type with given IDs don't exist.")
+                         description = "Not Found. Algorithm, algorithm relation or algorithm relation type with given IDs don't exist.")
     }, description = "Update a relation between two algorithms. " +
             "For the algorithm relation type only the ID is required," +
             "other algorithm relation type attributes will be ignored and not changed.")
@@ -125,7 +125,7 @@ public class AlgorithmRelationController {
             @ApiResponse(responseCode = "204"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or algorithm relation with given IDs don't exist.")
+                         description = "Not Found. Algorithm or algorithm relation with given IDs don't exist.")
     }, description = "Delete a specific relation between a two algorithms. " +
             "The algorithm relation type is not affected by this.")
     @DeleteMapping("/{algorithmRelationId}")
@@ -142,7 +142,7 @@ public class AlgorithmRelationController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or algorithm relation with given IDs don't exist.")
+                         description = "Not Found. Algorithm or algorithm relation with given IDs don't exist.")
     }, description = "Retrieve a specific relation between two algorithms.")
     @GetMapping("/{algorithmRelationId}")
     public ResponseEntity<AlgorithmRelationDto> getAlgorithmRelation(
