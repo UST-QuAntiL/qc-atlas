@@ -36,7 +36,7 @@ import lombok.extern.slf4j.Slf4j;
 @SpringBootApplication(scanBasePackages = "org.planqk.atlas.*")
 @EntityScan("org.planqk.atlas.*")
 @OpenAPIDefinition(info = @Info(title = "atlas",
-                                version = "2.1",
+                                version = "3.0.0",
                                 description = "Platform for Sharing Quantum Software",
                                 license = @License(name = "Apache 2.0", url = "http://www.apache.org/licenses/LICENSE-2.0.html"),
                                 contact = @Contact(url = "https://github.com/UST-QuAntiL/qc-atlas", name = "GitHub Repository")))
