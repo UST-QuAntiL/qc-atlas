@@ -25,11 +25,16 @@ API-Root: /atlas
 
 Swagger-Documentation: /atlas/swagger-ui
 
-Hal-Browser: /atlas/browser 
+## Releases
+To update the version for a release, change the version number in the followings files: 
+- [Application.java](../../org.planqk.atlas.web/src/main/java/org/planqk/atlas/web/Application.java): version in @OpenApiDefinition
+- [pom.xml](../../pom.xml): <version>{version}-SNAPSHOT</version>
+- [pom.xml](../../org.planqk.atlas.core/pom.xml): <version>{version}-SNAPSHOT</version> of <parent>
+- [pom.xml](../../org.planqk.atlas.web/pom.xml): <version>{version}-SNAPSHOT</version> of <parent>
 
 ## License
 
-Copyright (c) 2013-2018 Contributors to the Eclipse Foundation
+Copyright (c) 2020-2021 the qc-atlas contributors
 
 See the NOTICE file(s) distributed with this work for additional
 information regarding copyright ownership.
