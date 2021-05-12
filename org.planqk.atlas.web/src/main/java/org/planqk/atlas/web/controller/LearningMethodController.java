@@ -63,7 +63,6 @@ public class LearningMethodController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized"),
     }, description = "Retrieve all learning method")
     @ListParametersDoc
     @GetMapping
@@ -76,7 +75,6 @@ public class LearningMethodController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200", description = "The request has succeeded. " +
                     "The resource has been fetched and is transmitted in the message body"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized"),
             @ApiResponse(responseCode = "404",
                          description = "Not Found. Learning method with given ID doesn't exist")
     }, description = "Retrieve a specific learning method and its basic properties.")
@@ -89,7 +87,6 @@ public class LearningMethodController {
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
-            @ApiResponse(responseCode = "401", description = "Unauthorized"),
     }, description = "Define the basic properties of a learning method.")
     @PostMapping
     public ResponseEntity<LearningMethodDto> createLearningMethod(
@@ -103,7 +100,6 @@ public class LearningMethodController {
             @ApiResponse(responseCode = "200", description = "The request has succeeded. " +
                     "The resource has been fetched and is transmitted in the message body"),
             @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
-            @ApiResponse(responseCode = "401", description = "Unauthorized"),
             @ApiResponse(responseCode = "404",
                          description = "Not Found. Learning method with given ID does not exist"),
     }, description = "Update the basic properties of an learning method (e.g. name).")
@@ -119,7 +115,6 @@ public class LearningMethodController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "204", description = "There is no content to send for this request."),
-            @ApiResponse(responseCode = "401", description = "Unauthorized"),
             @ApiResponse(responseCode = "404", description = "Not Found. Learning method with given ID doesn't exist")
     }, description = "Delete a learning method. This removes the learning method from all algorithms it is references in.")
     @DeleteMapping("/{learningMethodId}")

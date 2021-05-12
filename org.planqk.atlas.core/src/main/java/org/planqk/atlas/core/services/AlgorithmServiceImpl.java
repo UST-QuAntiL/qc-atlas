@@ -202,7 +202,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 
     @Override
     public Page<LearningMethod> findLinkedLearningMethods(UUID algorithmId, Pageable pageable) {
-        // ServiceUtils.throwIfNotExists(algorithmId, Algorithm.class, algorithmRepository);
+        ServiceUtils.throwIfNotExists(algorithmId, Algorithm.class, algorithmRepository);
 
         return learningMethodRepository.findLearningMethodByAlgorithmId(algorithmId, pageable);
     }
