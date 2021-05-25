@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 the qc-atlas contributors.
+ * Copyright (c) 2020-2021 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -55,8 +55,8 @@ public class ImplementationDtoMapperTest {
         var mappedImplementation = ModelMapperUtils.convert(implementationDto, Implementation.class);
 
         assertThat(mappedImplementation.getId())
-            .isEqualTo(implementationDto.getId());
+                .isEqualTo(implementationDto.getId());
         assertThat(mappedImplementation.getImplementedAlgorithm().getId())
-            .isEqualTo(implementationDto.getImplementedAlgorithmId());
+                .isEqualTo(implementationDto.getImplementedAlgorithmId());
     }
 }

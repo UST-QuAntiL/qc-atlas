@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 the qc-atlas contributors.
+ * Copyright (c) 2020-2021 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -43,8 +43,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "computationModel", visible = true)
 @JsonSubTypes({@JsonSubTypes.Type(value = QuantumAlgorithmDto.class, name = "QUANTUM"),
-    @JsonSubTypes.Type(value = ClassicAlgorithmDto.class, name = "CLASSIC"),
-    @JsonSubTypes.Type(value = QuantumAlgorithmDto.class, name = "HYBRID")})
+                      @JsonSubTypes.Type(value = ClassicAlgorithmDto.class, name = "CLASSIC"),
+                      @JsonSubTypes.Type(value = QuantumAlgorithmDto.class, name = "HYBRID")})
 @Relation(itemRelation = "algorithm", collectionRelation = "algorithms")
 public class AlgorithmDto implements Identifyable {
     @NotNull(groups = {ValidationGroups.IDOnly.class}, message = "An id is required to perform an update")
@@ -56,7 +56,7 @@ public class AlgorithmDto implements Identifyable {
     private Date lastModifiedAt;
 
     @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
-        message = "Algorithm-Name must not be null!")
+             message = "Algorithm-Name must not be null!")
     @NotNull(message = "Algorithm-Name must not be null!")
     private String name;
 
@@ -79,6 +79,6 @@ public class AlgorithmDto implements Identifyable {
     private String assumptions;
 
     @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
-        message = "Computational-Model must not be null!")
+             message = "Computational-Model must not be null!")
     private ComputationModel computationModel;
 }

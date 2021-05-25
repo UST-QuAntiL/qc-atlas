@@ -28,17 +28,13 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.planqk.atlas.core.model.Algorithm;
-import org.planqk.atlas.core.model.ClassicAlgorithm;
-import org.planqk.atlas.core.model.DiscussionTopic;
 import org.planqk.atlas.core.model.File;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.ImplementationPackage;
 import org.planqk.atlas.core.model.ImplementationPackageType;
-import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.repository.FileRepository;
 import org.planqk.atlas.core.repository.ImplementationPackageRepository;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
-import org.planqk.atlas.core.util.ServiceTestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -94,7 +90,7 @@ public class ImplementationPackageServiceTest extends AtlasDatabaseTestBase {
 
         var algo = new Algorithm();
         algo.setName("TestAlgo");
-        algo  = algorithmService.create(algo);
+        algo = algorithmService.create(algo);
 
         var impl = new Implementation();
         impl.setName("TestImpl");
@@ -123,7 +119,8 @@ public class ImplementationPackageServiceTest extends AtlasDatabaseTestBase {
         implementationPackageService.create(implementationPackage, implementation.getId());
         implementationPackageService.create(implementationPackage1, implementation.getId());
 
-        Page<ImplementationPackage> implementationPackages = implementationPackageService.findImplementationPackagesByImplementationId(implementation.getId(), pageable);
+        Page<ImplementationPackage> implementationPackages =
+                implementationPackageService.findImplementationPackagesByImplementationId(implementation.getId(), pageable);
         assertThat(implementationPackages.getTotalElements()).isEqualTo(2);
     }
 
@@ -176,7 +173,7 @@ public class ImplementationPackageServiceTest extends AtlasDatabaseTestBase {
     void checkIfImplementationPackageIsLinkedToImplementation() {
         var algo = new Algorithm();
         algo.setName("TestAlgo");
-        algo  = algorithmService.create(algo);
+        algo = algorithmService.create(algo);
 
         var impl = new Implementation();
         impl.setName("Impl");

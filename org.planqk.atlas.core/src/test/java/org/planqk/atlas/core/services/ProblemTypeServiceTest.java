@@ -146,7 +146,7 @@ public class ProblemTypeServiceTest extends AtlasDatabaseTestBase {
 
         assertThat(problemTypeService.findById(problemType.getId()).getParentProblemType()).isNotNull();
         assertThat(problemTypeService.findById(problemType.getId()).getParentProblemType())
-            .isEqualTo(persistedProblemTypeParent.getId());
+                .isEqualTo(persistedProblemTypeParent.getId());
 
         problemTypeService.delete(problemTypeParent.getId());
 

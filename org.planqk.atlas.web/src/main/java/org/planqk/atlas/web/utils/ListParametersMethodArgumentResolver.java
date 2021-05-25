@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 the qc-atlas contributors.
+ * Copyright (c) 2020-2021 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -41,7 +41,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class ListParametersMethodArgumentResolver extends PageableHandlerMethodArgumentResolverSupport
-    implements HandlerMethodArgumentResolver, UriComponentsContributor {
+        implements HandlerMethodArgumentResolver, UriComponentsContributor {
     private final HateoasSortHandlerMethodArgumentResolver sortResolver = new HateoasSortHandlerMethodArgumentResolver();
 
     @Override
@@ -81,7 +81,7 @@ public class ListParametersMethodArgumentResolver extends PageableHandlerMethodA
             final var pageNumber = pageable.getPageNumber();
             builder.replaceQueryParam(pagePropertyName, isOneIndexedParameters() ? pageNumber + 1 : pageNumber);
             builder.replaceQueryParam(sizePropertyName,
-                pageable.getPageSize() <= getMaxPageSize() ? pageable.getPageSize() : getMaxPageSize());
+                    pageable.getPageSize() <= getMaxPageSize() ? pageable.getPageSize() : getMaxPageSize());
         } else {
             builder.replaceQueryParam(pagePropertyName, "-1");
             builder.replaceQueryParam(sizePropertyName, "-1");

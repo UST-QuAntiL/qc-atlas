@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 the qc-atlas contributors.
+ * Copyright (c) 2020-2021 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -35,12 +35,11 @@ import lombok.extern.slf4j.Slf4j;
 @EnableAsync
 @SpringBootApplication(scanBasePackages = "org.planqk.atlas.*")
 @EntityScan("org.planqk.atlas.*")
-@OpenAPIDefinition(info = @Info(
-    title = "atlas",
-    version = "1.0",
-    description = "Platform for Sharing Quantum Software",
-    license = @License(name = "Apache 2.0", url = "http://www.apache.org/licenses/LICENSE-2.0.html"),
-    contact = @Contact(url = "https://github.com/UST-QuAntiL/qc-atlas", name = "GitHub Repository")))
+@OpenAPIDefinition(info = @Info(title = "atlas",
+                                version = "3.0.0",
+                                description = "Platform for Sharing Quantum Software",
+                                license = @License(name = "Apache 2.0", url = "http://www.apache.org/licenses/LICENSE-2.0.html"),
+                                contact = @Contact(url = "https://github.com/UST-QuAntiL/qc-atlas", name = "GitHub Repository")))
 public class Application extends SpringBootServletInitializer {
 
     /**

@@ -45,8 +45,8 @@ public interface AlgorithmRepository extends JpaRepository<Algorithm, UUID> {
                                                                                                              String problem, Pageable pageable);
 
     @Query("SELECT algo " +
-        "FROM Algorithm algo " +
-        "JOIN algo.publications pub " +
-        "WHERE  pub.id = :pubId")
+                   "FROM Algorithm algo " +
+                   "JOIN algo.publications pub " +
+                   "WHERE  pub.id = :pubId")
     Page<Algorithm> findAlgorithmsByPublicationId(@Param("pubId") UUID publicationId, Pageable pageable);
 }

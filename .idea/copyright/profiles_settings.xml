@@ -1,0 +1,13 @@
+<component name="CopyrightManager">
+  <settings>
+    <module2copyright>
+      <element module="Open Files" copyright="Altered 2020" />
+      <element module="All" copyright="QC" />
+    </module2copyright>
+    <LanguageOptions name="__TEMPLATE__">
+      <option name="separateBefore" value="true" />
+      <option name="separateAfter" value="true" />
+      <option name="lenAfter" value="81" />
+    </LanguageOptions>
+  </settings>
+</component>

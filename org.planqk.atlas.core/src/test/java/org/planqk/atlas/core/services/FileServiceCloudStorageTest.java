@@ -196,5 +196,4 @@ public class FileServiceCloudStorageTest extends AtlasDatabaseTestBase {
         rd.nextBytes(arr);
         return arr;
     }
-
 }

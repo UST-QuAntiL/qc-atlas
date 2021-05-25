@@ -172,7 +172,7 @@ public class PatternRelationServiceTest extends AtlasDatabaseTestBase {
     @Test
     void findPatternRelationById_ElementNotFound() {
         assertThrows(NoSuchElementException.class, () ->
-            patternRelationService.findById(UUID.randomUUID()));
+                patternRelationService.findById(UUID.randomUUID()));
     }
 
     @Test
@@ -180,7 +180,7 @@ public class PatternRelationServiceTest extends AtlasDatabaseTestBase {
         relation1.setId(UUID.randomUUID());
 
         assertThrows(NoSuchElementException.class, () ->
-            patternRelationService.update(relation1));
+                patternRelationService.update(relation1));
     }
 
     @Test
@@ -210,7 +210,7 @@ public class PatternRelationServiceTest extends AtlasDatabaseTestBase {
     @Test
     void deletePatternRelation_ElementNotFound() {
         assertThrows(NoSuchElementException.class, () ->
-            patternRelationService.delete(UUID.randomUUID()));
+                patternRelationService.delete(UUID.randomUUID()));
     }
 
     @Test
@@ -241,7 +241,7 @@ public class PatternRelationServiceTest extends AtlasDatabaseTestBase {
         PatternRelation savedRelation = patternRelationService.create(relation1);
 
         assertDoesNotThrow(() -> patternRelationService
-            .checkIfAlgorithmIsInPatternRelation(savedAlgorithm.getId(), savedRelation.getId()));
+                .checkIfAlgorithmIsInPatternRelation(savedAlgorithm.getId(), savedRelation.getId()));
     }
 
     @Test
@@ -260,7 +260,7 @@ public class PatternRelationServiceTest extends AtlasDatabaseTestBase {
         PatternRelation savedRelation = patternRelationService.create(relation1);
 
         assertThrows(NoSuchElementException.class, () -> patternRelationService
-            .checkIfAlgorithmIsInPatternRelation(persistedRelationAlgorithm.getId(), relation1.getId()));
+                .checkIfAlgorithmIsInPatternRelation(persistedRelationAlgorithm.getId(), relation1.getId()));
     }
 
     private PatternRelation getFullPatternRelation(String description) {

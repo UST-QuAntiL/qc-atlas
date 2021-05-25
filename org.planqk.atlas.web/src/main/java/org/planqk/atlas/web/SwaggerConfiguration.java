@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 the qc-atlas contributors.
+ * Copyright (c) 2020-2021 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -68,8 +68,8 @@ public class SwaggerConfiguration {
     @DependsOn("entityModelConverter")
     public OverrideModelConverter overrideModelConverter() {
         final var converter = new OverrideModelConverter(Map.of(
-            AlgorithmDto.class, AlgorithmSchema.class,
-            ImplementationDto.class, ImplementationSchema.class
+                AlgorithmDto.class, AlgorithmSchema.class,
+                ImplementationDto.class, ImplementationSchema.class
         ));
         ModelConverters.getInstance().addConverter(converter);
         return converter;
@@ -82,25 +82,25 @@ public class SwaggerConfiguration {
     // AlgorithmDto -- (via oneOf) --> ClassicAlgorithmDto -- (extends) --> AlgorithmDto
 
     @Schema(
-        name = "AlgorithmDto",
-        description = "Either a quantum or a classic algorithm",
-        oneOf = {ClassicAlgorithmDto.class, QuantumAlgorithmDto.class},
-        discriminatorMapping = {
-            @DiscriminatorMapping(value = "CLASSIC", schema = ClassicAlgorithmDto.class),
-            @DiscriminatorMapping(value = "QUANTUM", schema = QuantumAlgorithmDto.class),
-        }
+            name = "AlgorithmDto",
+            description = "Either a quantum or a classic algorithm",
+            oneOf = {ClassicAlgorithmDto.class, QuantumAlgorithmDto.class},
+            discriminatorMapping = {
+                    @DiscriminatorMapping(value = "CLASSIC", schema = ClassicAlgorithmDto.class),
+                    @DiscriminatorMapping(value = "QUANTUM", schema = QuantumAlgorithmDto.class),
+            }
     )
     private static class AlgorithmSchema {
     }
 
     @Schema(
-        name = "ImplementationDto",
-        description = "Either a quantum or a classic implementation",
-        oneOf = {ClassicImplementationDto.class, QuantumImplementationDto.class},
-        discriminatorMapping = {
-            @DiscriminatorMapping(value = "CLASSIC", schema = ClassicImplementationDto.class),
-            @DiscriminatorMapping(value = "QUANTUM", schema = QuantumImplementationDto.class),
-        }
+            name = "ImplementationDto",
+            description = "Either a quantum or a classic implementation",
+            oneOf = {ClassicImplementationDto.class, QuantumImplementationDto.class},
+            discriminatorMapping = {
+                    @DiscriminatorMapping(value = "CLASSIC", schema = ClassicImplementationDto.class),
+                    @DiscriminatorMapping(value = "QUANTUM", schema = QuantumImplementationDto.class),
+            }
     )
     private static class ImplementationSchema {
     }

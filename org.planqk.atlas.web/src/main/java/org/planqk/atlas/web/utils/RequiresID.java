@@ -28,7 +28,8 @@ import javax.validation.Constraint;
 import javax.validation.Payload;
 
 /**
- * This validator can be used to check if a child object (dto) has a valid UUID meaning, the id is not null, and does not equal the all zero uuid
+ * This validator can be used to check if a child object (dto) has a valid UUID meaning, the id is not null, and does
+ * not equal the all zero uuid
  * <p>
  * This validator does not implement a null check on the
  */

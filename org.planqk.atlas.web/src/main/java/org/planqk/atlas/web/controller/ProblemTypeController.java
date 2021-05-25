@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 the qc-atlas contributors.
+ * Copyright (c) 2020-2021 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -19,20 +19,18 @@
 
 package org.planqk.atlas.web.controller;
 
+import java.util.Collection;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.services.ProblemTypeService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.ProblemTypeDto;
-import org.planqk.atlas.web.linkassembler.ProblemTypeAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.ValidationGroups;
-import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.PagedModel;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -63,16 +61,15 @@ public class ProblemTypeController {
 
     private final ProblemTypeService problemTypeService;
 
-    private final ProblemTypeAssembler problemTypeAssembler;
-
     @Operation(responses = {
             @ApiResponse(responseCode = "200")
     }, description = "Retrieve all problem types.")
     @ListParametersDoc
     @GetMapping
-    public ResponseEntity<PagedModel<EntityModel<ProblemTypeDto>>> getProblemTypes(
+    public ResponseEntity<Page<ProblemTypeDto>> getProblemTypes(
             @Parameter(hidden = true) ListParameters listParameters) {
-        return ResponseEntity.ok(problemTypeAssembler.toModel(problemTypeService.findAll(listParameters.getPageable(), listParameters.getSearch())));
+        return ResponseEntity.ok(ModelMapperUtils
+                .convertPage(problemTypeService.findAll(listParameters.getPageable(), listParameters.getSearch()), ProblemTypeDto.class));
     }
 
     @Operation(responses = {
@@ -80,10 +77,10 @@ public class ProblemTypeController {
             @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
     }, description = "Define the basic properties of an problem type.")
     @PostMapping
-    public ResponseEntity<EntityModel<ProblemTypeDto>> createProblemType(
+    public ResponseEntity<ProblemTypeDto> createProblemType(
             @Validated(ValidationGroups.Create.class) @RequestBody ProblemTypeDto problemTypeDto) {
         final var savedProblemType = problemTypeService.create(ModelMapperUtils.convert(problemTypeDto, ProblemType.class));
-        return new ResponseEntity<>(problemTypeAssembler.toModel(savedProblemType), HttpStatus.CREATED);
+        return new ResponseEntity<>(ModelMapperUtils.convert(savedProblemType, ProblemTypeDto.class), HttpStatus.CREATED);
     }
 
     @Operation(responses = {
@@ -92,13 +89,13 @@ public class ProblemTypeController {
             @ApiResponse(responseCode = "404", description = "Not Found. Problem type with given ID doesn't exist.")
     }, description = "Update the basic properties of an problem type (e.g. name).")
     @PutMapping("/{problemTypeId}")
-    public ResponseEntity<EntityModel<ProblemTypeDto>> updateProblemType(
+    public ResponseEntity<ProblemTypeDto> updateProblemType(
             @PathVariable UUID problemTypeId,
             @Validated(ValidationGroups.Update.class) @RequestBody ProblemTypeDto problemTypeDto) {
         problemTypeDto.setId(problemTypeId);
         final var updatedProblemType = problemTypeService.update(
                 ModelMapperUtils.convert(problemTypeDto, ProblemType.class));
-        return ResponseEntity.ok(problemTypeAssembler.toModel(updatedProblemType));
+        return ResponseEntity.ok(ModelMapperUtils.convert(updatedProblemType, ProblemTypeDto.class));
     }
 
     @Operation(responses = {
@@ -119,9 +116,9 @@ public class ProblemTypeController {
             @ApiResponse(responseCode = "404", description = "Not Found. Problem type with given ID doesn't exist.")
     }, description = "Retrieve a specific problem type and its basic properties.")
     @GetMapping("/{problemTypeId}")
-    public ResponseEntity<EntityModel<ProblemTypeDto>> getProblemType(@PathVariable UUID problemTypeId) {
+    public ResponseEntity<ProblemTypeDto> getProblemType(@PathVariable UUID problemTypeId) {
         final ProblemType problemType = problemTypeService.findById(problemTypeId);
-        return ResponseEntity.ok(problemTypeAssembler.toModel(problemType));
+        return ResponseEntity.ok(ModelMapperUtils.convert(problemType, ProblemTypeDto.class));
     }
 
     @Operation(responses = {
@@ -132,9 +129,9 @@ public class ProblemTypeController {
             "If a problem type has not parent an empty list is returned")
     @ListParametersDoc
     @GetMapping("/{problemTypeId}/" + Constants.PROBLEM_TYPE_PARENTS)
-    public ResponseEntity<CollectionModel<EntityModel<ProblemTypeDto>>> getProblemTypeParentList(
+    public ResponseEntity<Collection<ProblemTypeDto>> getProblemTypeParentList(
             @PathVariable UUID problemTypeId) {
         final var problemTypeParentList = problemTypeService.getParentList(problemTypeId);
-        return ResponseEntity.ok(problemTypeAssembler.toModel(problemTypeParentList));
+        return ResponseEntity.ok(ModelMapperUtils.convertCollection(problemTypeParentList, ProblemTypeDto.class));
     }
 }

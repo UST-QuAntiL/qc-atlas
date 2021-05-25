@@ -39,7 +39,7 @@ import lombok.EqualsAndHashCode;
 public class ComputeResourceProperty extends HasId {
 
     @ManyToOne(fetch = FetchType.LAZY,
-            cascade = CascadeType.MERGE)
+               cascade = CascadeType.MERGE)
     private ComputeResourcePropertyType computeResourcePropertyType;
 
     private String value;
@@ -58,5 +58,4 @@ public class ComputeResourceProperty extends HasId {
     @JoinColumn(name = "compute_resource_id")
     @EqualsAndHashCode.Exclude
     private ComputeResource computeResource;
-
 }

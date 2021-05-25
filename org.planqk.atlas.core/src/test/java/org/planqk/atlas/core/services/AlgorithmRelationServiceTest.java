@@ -57,7 +57,7 @@ public class AlgorithmRelationServiceTest extends AtlasDatabaseTestBase {
         var algorithmRelationType = getCreatedAlgorithmRelationType("algorithmRelationTypeName");
 
         AlgorithmRelation algorithmRelation = buildAlgorithmRelation(
-            sourceAlgorithm, targetAlgorithm, algorithmRelationType, "description");
+                sourceAlgorithm, targetAlgorithm, algorithmRelationType, "description");
 
         var persistedAlgorithmRelation = algorithmRelationService.create(algorithmRelation);
 
@@ -77,7 +77,7 @@ public class AlgorithmRelationServiceTest extends AtlasDatabaseTestBase {
         var algorithmRelationType = getCreatedAlgorithmRelationType("algorithmRelationTypeName");
 
         AlgorithmRelation algorithmRelation = buildAlgorithmRelation(
-            sourceAlgorithm, targetAlgorithm, algorithmRelationType, "description");
+                sourceAlgorithm, targetAlgorithm, algorithmRelationType, "description");
 
         assertThrows(NoSuchElementException.class, () -> algorithmRelationService.create(algorithmRelation));
     }
@@ -90,7 +90,7 @@ public class AlgorithmRelationServiceTest extends AtlasDatabaseTestBase {
         var algorithmRelationType = getCreatedAlgorithmRelationType("algorithmRelationTypeName");
 
         AlgorithmRelation algorithmRelation = buildAlgorithmRelation(
-            sourceAlgorithm, targetAlgorithm, algorithmRelationType, "description");
+                sourceAlgorithm, targetAlgorithm, algorithmRelationType, "description");
 
         var persistedAlgorithmRelation = algorithmRelationService.create(algorithmRelation);
 
@@ -113,9 +113,9 @@ public class AlgorithmRelationServiceTest extends AtlasDatabaseTestBase {
         var algorithmRelationType = getCreatedAlgorithmRelationType("algorithmRelationTypeName");
 
         AlgorithmRelation algorithmRelation = buildAlgorithmRelation(
-            sourceAlgorithm, targetAlgorithm, algorithmRelationType, "description");
+                sourceAlgorithm, targetAlgorithm, algorithmRelationType, "description");
         AlgorithmRelation compareAlgorithmRelation = buildAlgorithmRelation(
-            sourceAlgorithm, targetAlgorithm, algorithmRelationType, "description");
+                sourceAlgorithm, targetAlgorithm, algorithmRelationType, "description");
 
         var persistedAlgorithmRelation = algorithmRelationService.create(algorithmRelation);
         compareAlgorithmRelation.setId(persistedAlgorithmRelation.getId());
@@ -132,23 +132,23 @@ public class AlgorithmRelationServiceTest extends AtlasDatabaseTestBase {
         assertThat(updatedAlgorithmRelation.getDescription()).isNotEqualTo(compareAlgorithmRelation.getDescription());
         assertThat(updatedAlgorithmRelation.getDescription()).isEqualTo(editDescription);
         assertThat(updatedAlgorithmRelation.getAlgorithmRelationType().getId())
-            .isNotEqualTo(compareAlgorithmRelation.getAlgorithmRelationType().getId());
+                .isNotEqualTo(compareAlgorithmRelation.getAlgorithmRelationType().getId());
         assertThat(updatedAlgorithmRelation.getAlgorithmRelationType().getId())
-            .isEqualTo(editedType.getId());
+                .isEqualTo(editedType.getId());
         assertThat(updatedAlgorithmRelation.getAlgorithmRelationType().getName())
-            .isNotEqualTo(compareAlgorithmRelation.getAlgorithmRelationType().getName());
+                .isNotEqualTo(compareAlgorithmRelation.getAlgorithmRelationType().getName());
         assertThat(updatedAlgorithmRelation.getAlgorithmRelationType().getName())
-            .isEqualTo(editedType.getName());
+                .isEqualTo(editedType.getName());
         assertThat(updatedAlgorithmRelation.getSourceAlgorithm().getId())
-            .isEqualTo(compareAlgorithmRelation.getSourceAlgorithm().getId());
+                .isEqualTo(compareAlgorithmRelation.getSourceAlgorithm().getId());
         assertThat(updatedAlgorithmRelation.getTargetAlgorithm().getId())
-            .isEqualTo(compareAlgorithmRelation.getTargetAlgorithm().getId());
+                .isEqualTo(compareAlgorithmRelation.getTargetAlgorithm().getId());
     }
 
     @Test
     void updateAlgorithmRelation_ElementNotFound() {
         AlgorithmRelation algorithmRelation = buildAlgorithmRelation(
-            null, null, null, "description");
+                null, null, null, "description");
         algorithmRelation.setId(UUID.randomUUID());
         assertThrows(NoSuchElementException.class, () -> algorithmRelationService.update(algorithmRelation));
     }
@@ -161,7 +161,7 @@ public class AlgorithmRelationServiceTest extends AtlasDatabaseTestBase {
         var algorithmRelationType = getCreatedAlgorithmRelationType("algorithmRelationTypeName");
 
         AlgorithmRelation algorithmRelation = buildAlgorithmRelation(
-            sourceAlgorithm, targetAlgorithm, algorithmRelationType, "description");
+                sourceAlgorithm, targetAlgorithm, algorithmRelationType, "description");
 
         var persistedAlgorithmRelation = algorithmRelationService.create(algorithmRelation);
 
@@ -170,13 +170,13 @@ public class AlgorithmRelationServiceTest extends AtlasDatabaseTestBase {
         algorithmRelationService.delete(persistedAlgorithmRelation.getId());
 
         assertThrows(NoSuchElementException.class, () ->
-            algorithmRelationService.findById(persistedAlgorithmRelation.getId()));
+                algorithmRelationService.findById(persistedAlgorithmRelation.getId()));
     }
 
     @Test
     void deleteAlgorithmRelation_ElementNotFound() {
         assertThrows(NoSuchElementException.class, () ->
-            algorithmRelationService.delete(UUID.randomUUID()));
+                algorithmRelationService.delete(UUID.randomUUID()));
     }
 
     @Test
@@ -187,14 +187,14 @@ public class AlgorithmRelationServiceTest extends AtlasDatabaseTestBase {
         var algorithmRelationType = getCreatedAlgorithmRelationType("algorithmRelationTypeName");
 
         AlgorithmRelation algorithmRelation = buildAlgorithmRelation(
-            sourceAlgorithm, targetAlgorithm, algorithmRelationType, "description");
+                sourceAlgorithm, targetAlgorithm, algorithmRelationType, "description");
 
         var persistedAlgorithmRelation = algorithmRelationService.create(algorithmRelation);
 
         assertDoesNotThrow(() -> algorithmRelationService
-            .checkIfAlgorithmIsInAlgorithmRelation(sourceAlgorithm.getId(), algorithmRelation.getId()));
+                .checkIfAlgorithmIsInAlgorithmRelation(sourceAlgorithm.getId(), algorithmRelation.getId()));
         assertDoesNotThrow(() -> algorithmRelationService
-            .checkIfAlgorithmIsInAlgorithmRelation(targetAlgorithm.getId(), algorithmRelation.getId()));
+                .checkIfAlgorithmIsInAlgorithmRelation(targetAlgorithm.getId(), algorithmRelation.getId()));
     }
 
     @Test
@@ -206,16 +206,16 @@ public class AlgorithmRelationServiceTest extends AtlasDatabaseTestBase {
         var algorithmRelationType = getCreatedAlgorithmRelationType("algorithmRelationTypeName");
 
         AlgorithmRelation algorithmRelation = buildAlgorithmRelation(
-            sourceAlgorithm, targetAlgorithm, algorithmRelationType, "description");
+                sourceAlgorithm, targetAlgorithm, algorithmRelationType, "description");
 
         var persistedAlgorithmRelation = algorithmRelationService.create(algorithmRelation);
 
         assertThrows(NoSuchElementException.class, () -> algorithmRelationService
-            .checkIfAlgorithmIsInAlgorithmRelation(checkAlgorithm.getId(), algorithmRelation.getId()));
+                .checkIfAlgorithmIsInAlgorithmRelation(checkAlgorithm.getId(), algorithmRelation.getId()));
     }
 
     private AlgorithmRelation buildAlgorithmRelation(
-        Algorithm source, Algorithm target, AlgorithmRelationType type, String description) {
+            Algorithm source, Algorithm target, AlgorithmRelationType type, String description) {
         AlgorithmRelation algorithmRelation = new AlgorithmRelation();
         algorithmRelation.setDescription(description);
         algorithmRelation.setSourceAlgorithm(source);

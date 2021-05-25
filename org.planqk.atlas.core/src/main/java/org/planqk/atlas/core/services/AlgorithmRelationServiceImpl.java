@@ -49,7 +49,7 @@ public class AlgorithmRelationServiceImpl implements AlgorithmRelationService {
     @Transactional
     public AlgorithmRelation create(@NonNull AlgorithmRelation algorithmRelation) {
         algorithmRelation.setAlgorithmRelationType(
-            algorithmRelationTypeService.findById(algorithmRelation.getAlgorithmRelationType().getId()));
+                algorithmRelationTypeService.findById(algorithmRelation.getAlgorithmRelationType().getId()));
 
         algorithmRelation.setSourceAlgorithm(findAlgorithmById(algorithmRelation.getSourceAlgorithm().getId()));
         algorithmRelation.setTargetAlgorithm(findAlgorithmById(algorithmRelation.getTargetAlgorithm().getId()));
@@ -68,7 +68,7 @@ public class AlgorithmRelationServiceImpl implements AlgorithmRelationService {
         final AlgorithmRelation persistedAlgorithmRelation = findById(algorithmRelation.getId());
 
         persistedAlgorithmRelation.setAlgorithmRelationType(
-            algorithmRelationTypeService.findById(algorithmRelation.getAlgorithmRelationType().getId()));
+                algorithmRelationTypeService.findById(algorithmRelation.getAlgorithmRelationType().getId()));
         persistedAlgorithmRelation.setDescription(algorithmRelation.getDescription());
 
         return algorithmRelationRepository.save(persistedAlgorithmRelation);
@@ -86,9 +86,9 @@ public class AlgorithmRelationServiceImpl implements AlgorithmRelationService {
         final AlgorithmRelation algorithmRelation = findById(algorithmRelationId);
 
         if (!algorithmRelation.getSourceAlgorithm().getId().equals(algorithmId)
-            && !algorithmRelation.getTargetAlgorithm().getId().equals(algorithmId)) {
+                && !algorithmRelation.getTargetAlgorithm().getId().equals(algorithmId)) {
             throw new NoSuchElementException("Algorithm with ID \"" + algorithmId
-                + "\" is not part of AlgorithmRelation with ID \"" + algorithmRelationId + "\"");
+                    + "\" is not part of AlgorithmRelation with ID \"" + algorithmRelationId + "\"");
         }
     }
 

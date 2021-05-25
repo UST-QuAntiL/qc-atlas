@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 the qc-atlas contributors.
+ * Copyright (c) 2020-2021 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -48,7 +48,7 @@ public class ImplementationDto implements Identifyable {
     private UUID implementedAlgorithmId;
 
     @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
-        message = "Implementation-Name must not be null!")
+             message = "Implementation-Name must not be null!")
     private String name;
 
     private String inputFormat;

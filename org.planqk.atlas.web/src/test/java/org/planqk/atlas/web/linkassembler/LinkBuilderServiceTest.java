@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 the qc-atlas contributors.
+ * Copyright (c) 2020-2021 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -31,11 +31,11 @@ import org.springframework.http.HttpEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 public class LinkBuilderServiceTest {
-    private VersionedRequestHandlerMapping mappings = new VersionedRequestHandlerMapping();
+    private final VersionedRequestHandlerMapping mappings = new VersionedRequestHandlerMapping();
 
-    private ListParametersMethodArgumentResolver listParamResolver = new ListParametersMethodArgumentResolver();
+    private final ListParametersMethodArgumentResolver listParamResolver = new ListParametersMethodArgumentResolver();
 
-    private LinkBuilderService service = new LinkBuilderService(listParamResolver, mappings);
+    private final LinkBuilderService service = new LinkBuilderService(listParamResolver, mappings);
 
     @BeforeEach
     public void setupMappings() {

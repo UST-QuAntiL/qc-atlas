@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 the qc-atlas contributors.
+ * Copyright (c) 2020-2021 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -47,18 +47,18 @@ public class PatternRelationDto implements Identifyable {
     private UUID id;
 
     @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
-        message = "Algorithm must not be null!")
+             message = "Algorithm must not be null!")
     @EqualsAndHashCode.Exclude
     private UUID algorithmId;
 
     @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
-        message = "Pattern-Relations must have a URI!")
+             message = "Pattern-Relations must have a URI!")
     private URI pattern;
 
     @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
-        message = "Pattern-Relations must have a type!")
+             message = "Pattern-Relations must have a type!")
     @RequiresID(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
-        message = "Pattern-Relations must have a type with an ID!")
+                message = "Pattern-Relations must have a type with an ID!")
     private PatternRelationTypeDto patternRelationType;
 
     private String description;

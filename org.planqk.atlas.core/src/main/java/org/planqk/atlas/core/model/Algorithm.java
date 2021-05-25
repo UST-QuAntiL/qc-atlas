@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 the qc-atlas contributors.
+ * Copyright (c) 2020-2021 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -53,8 +53,8 @@ public class Algorithm extends KnowledgeArtifact {
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "algorithm_publication",
-        joinColumns = @JoinColumn(name = "algorithm_id"),
-        inverseJoinColumns = @JoinColumn(name = "publication_id")
+               joinColumns = @JoinColumn(name = "algorithm_id"),
+               inverseJoinColumns = @JoinColumn(name = "publication_id")
     )
     @EqualsAndHashCode.Exclude
     private Set<Publication> publications = new HashSet<>();
@@ -72,23 +72,23 @@ public class Algorithm extends KnowledgeArtifact {
     private String outputFormat;
 
     @OneToMany(fetch = FetchType.LAZY,
-        cascade = {CascadeType.ALL},
-        mappedBy = "sourceAlgorithm",
-        orphanRemoval = true)
+               cascade = {CascadeType.ALL},
+               mappedBy = "sourceAlgorithm",
+               orphanRemoval = true)
     @EqualsAndHashCode.Exclude
     private Set<AlgorithmRelation> sourceAlgorithmRelations = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY,
-        cascade = {CascadeType.ALL},
-        mappedBy = "targetAlgorithm",
-        orphanRemoval = true)
+               cascade = {CascadeType.ALL},
+               mappedBy = "targetAlgorithm",
+               orphanRemoval = true)
     @EqualsAndHashCode.Exclude
     private Set<AlgorithmRelation> targetAlgorithmRelations = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY,
-        cascade = CascadeType.ALL,
-        mappedBy = "algorithm",
-        orphanRemoval = true)
+               cascade = CascadeType.ALL,
+               mappedBy = "algorithm",
+               orphanRemoval = true)
     @EqualsAndHashCode.Exclude
     private Set<ComputeResourceProperty> requiredComputeResourceProperties = new HashSet<>();
 
@@ -106,41 +106,48 @@ public class Algorithm extends KnowledgeArtifact {
     private ComputationModel computationModel;
 
     @OneToMany(fetch = FetchType.LAZY,
-        cascade = CascadeType.ALL,
-        mappedBy = "algorithm",
-        orphanRemoval = true)
+               cascade = CascadeType.ALL,
+               mappedBy = "algorithm",
+               orphanRemoval = true)
     @EqualsAndHashCode.Exclude
     private Set<PatternRelation> relatedPatterns = new HashSet<>();
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "algorithm_problem_type",
-        joinColumns = @JoinColumn(name = "algorithm_id"),
-        inverseJoinColumns = @JoinColumn(name = "problem_type_id"))
+               joinColumns = @JoinColumn(name = "algorithm_id"),
+               inverseJoinColumns = @JoinColumn(name = "problem_type_id"))
     @EqualsAndHashCode.Exclude
     private Set<ProblemType> problemTypes = new HashSet<>();
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "algorithm_application_area",
-        joinColumns = @JoinColumn(name = "algorithm_id"),
-        inverseJoinColumns = @JoinColumn(name = "application_area_id"))
+               joinColumns = @JoinColumn(name = "algorithm_id"),
+               inverseJoinColumns = @JoinColumn(name = "application_area_id"))
     @EqualsAndHashCode.Exclude
     private Set<ApplicationArea> applicationAreas = new HashSet<>();
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "algorithm_tag",
-        joinColumns = @JoinColumn(name = "algorithm_id"),
-        inverseJoinColumns = @JoinColumn(name = "tag_value"))
+               joinColumns = @JoinColumn(name = "algorithm_id"),
+               inverseJoinColumns = @JoinColumn(name = "tag_value"))
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Set<Tag> tags = new HashSet<>();
 
     @OneToMany(mappedBy = "implementedAlgorithm",
-        fetch = FetchType.LAZY,
-        cascade = CascadeType.ALL,
-        orphanRemoval = true)
+               fetch = FetchType.LAZY,
+               cascade = CascadeType.ALL,
+               orphanRemoval = true)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Set<Implementation> implementations = new HashSet<>();
+
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "algorithm_learning_method",
+               joinColumns = @JoinColumn(name = "algorithm_id"),
+               inverseJoinColumns = @JoinColumn(name = "learning_method_id"))
+    @EqualsAndHashCode.Exclude
+    private Set<LearningMethod> learningMethods = new HashSet<>();
 
     public void addTag(@NonNull Tag tag) {
         if (tags.contains(tag)) {
@@ -256,5 +263,21 @@ public class Algorithm extends KnowledgeArtifact {
         sketches.remove(sketch);
         sketch.setAlgorithm(null);
         return this;
+    }
+
+    public void addLearningMethod(@NonNull LearningMethod learningMethod) {
+        if (learningMethods.contains(learningMethod)) {
+            return;
+        }
+        learningMethods.add(learningMethod);
+        learningMethod.getAlgorithms().add(this);
+    }
+
+    public void removeLearningMethod(@NonNull LearningMethod learningMethod) {
+        if (!learningMethods.contains(learningMethod)) {
+            return;
+        }
+        learningMethods.remove(learningMethod);
+        learningMethod.getAlgorithms().remove(this);
     }
 }

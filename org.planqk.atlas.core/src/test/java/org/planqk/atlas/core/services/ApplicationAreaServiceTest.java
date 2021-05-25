@@ -135,7 +135,7 @@ public class ApplicationAreaServiceTest extends AtlasDatabaseTestBase {
         linkingService.linkAlgorithmAndApplicationArea(algorithm.getId(), area.getId());
 
         assertThrows(EntityReferenceConstraintViolationException.class, () ->
-            applicationAreaService.delete(area.getId()));
+                applicationAreaService.delete(area.getId()));
     }
 
     @Test

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 the qc-atlas contributors.
+ * Copyright (c) 2020-2021 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -150,15 +150,15 @@ public class PatternRelationTypeControllerTest {
         type1Dto.setId(null);
 
         var url = linkBuilderService.urlStringTo(methodOn(PatternRelationTypeController.class)
-            .createPatternRelationType(type1Dto));
+                .createPatternRelationType(type1Dto));
         MvcResult result = mockMvc
-            .perform(post(url).content(mapper.writeValueAsString(type1Dto))
-                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isCreated()).andReturn();
+                .perform(post(url).content(mapper.writeValueAsString(type1Dto))
+                        .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated()).andReturn();
 
         EntityModel<PatternRelationTypeDto> response = mapper.readValue(result.getResponse().getContentAsString(),
-            new TypeReference<EntityModel<PatternRelationTypeDto>>() {
-            });
+                new TypeReference<EntityModel<PatternRelationTypeDto>>() {
+                });
 
         assertEquals(Objects.requireNonNull(response.getContent()).getName(), type1Dto.getName());
     }
@@ -168,11 +168,11 @@ public class PatternRelationTypeControllerTest {
         when(patternRelationTypeService.create(type1)).thenReturn(type1);
 
         var url = linkBuilderService.urlStringTo(methodOn(PatternRelationTypeController.class)
-            .createPatternRelationType(noReqParamDto));
+                .createPatternRelationType(noReqParamDto));
         mockMvc.perform(
-            post(url).content(mapper.writeValueAsString(noReqParamDto))
-                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isBadRequest());
+                post(url).content(mapper.writeValueAsString(noReqParamDto))
+                        .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -180,14 +180,13 @@ public class PatternRelationTypeControllerTest {
         when(patternRelationTypeService.findAll(pageable)).thenReturn(typePage);
 
         var url = linkBuilderService.urlStringTo(methodOn(PatternRelationTypeController.class)
-            .getPatternRelationTypes(new ListParameters(pageable, null)));
+                .getPatternRelationTypes(new ListParameters(pageable, null)));
         MvcResult result = mockMvc
-            .perform(get(url).accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk()).andReturn();
+                .perform(get(url).accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
 
-        var resultList = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(),
-            "patternRelationTypes", PatternRelationTypeDto.class);
+        var resultList = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(), PatternRelationTypeDto.class);
 
         assertEquals(resultList.size(), 2);
         assertTrue(resultList.contains(type1Dto));
@@ -199,14 +198,14 @@ public class PatternRelationTypeControllerTest {
         when(patternRelationTypeService.findById(type1.getId())).thenReturn(type1);
 
         var url = linkBuilderService.urlStringTo(methodOn(PatternRelationTypeController.class)
-            .getPatternRelationType(type1.getId()));
+                .getPatternRelationType(type1.getId()));
         MvcResult result = mockMvc.perform(
-            get(url).accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk()).andReturn();
+                get(url).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
 
         EntityModel<PatternRelationTypeDto> response = new ObjectMapper().readValue(
-            result.getResponse().getContentAsString(), new TypeReference<EntityModel<PatternRelationTypeDto>>() {
-            });
+                result.getResponse().getContentAsString(), new TypeReference<EntityModel<PatternRelationTypeDto>>() {
+                });
         assertEquals(response.getContent(), type1Dto);
     }
 
@@ -215,10 +214,10 @@ public class PatternRelationTypeControllerTest {
         when(patternRelationTypeService.findById(any())).thenThrow(NoSuchElementException.class);
 
         var url = linkBuilderService.urlStringTo(methodOn(PatternRelationTypeController.class)
-            .getPatternRelationType(type1.getId()));
+                .getPatternRelationType(type1.getId()));
         mockMvc.perform(
-            get(url).accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isNotFound());
+                get(url).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -226,14 +225,14 @@ public class PatternRelationTypeControllerTest {
         when(patternRelationTypeService.update(type1)).thenReturn(type1Updated);
 
         var url = linkBuilderService.urlStringTo(methodOn(PatternRelationTypeController.class)
-            .updatePatternRelationType(type1.getId(), type1Dto));
+                .updatePatternRelationType(type1.getId(), type1Dto));
         MvcResult result = mockMvc.perform(put(url)
-            .content(mapper.writeValueAsString(type1Dto)).contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
+                .content(mapper.writeValueAsString(type1Dto)).contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
 
         EntityModel<PatternRelationTypeDto> response = mapper.readValue(result.getResponse().getContentAsString(),
-            new TypeReference<EntityModel<PatternRelationTypeDto>>() {
-            });
+                new TypeReference<EntityModel<PatternRelationTypeDto>>() {
+                });
 
         assertEquals(response.getContent(), type1DtoUpdated);
     }
@@ -243,10 +242,10 @@ public class PatternRelationTypeControllerTest {
         when(patternRelationTypeService.update(type1)).thenReturn(type1Updated);
 
         var url = linkBuilderService.urlStringTo(methodOn(PatternRelationTypeController.class)
-            .updatePatternRelationType(type1.getId(), type1Dto));
+                .updatePatternRelationType(type1.getId(), type1Dto));
         mockMvc.perform(put(url)
-            .content(mapper.writeValueAsString(noReqParamDto)).contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
+                .content(mapper.writeValueAsString(noReqParamDto)).contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
     }
 
     @Test
@@ -254,10 +253,10 @@ public class PatternRelationTypeControllerTest {
         when(patternRelationTypeService.update(any())).thenThrow(NoSuchElementException.class);
 
         var url = linkBuilderService.urlStringTo(methodOn(PatternRelationTypeController.class)
-            .updatePatternRelationType(type1.getId(), type1Dto));
+                .updatePatternRelationType(type1.getId(), type1Dto));
         mockMvc.perform(put(url)
-            .content(mapper.writeValueAsString(type1Dto)).contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
+                .content(mapper.writeValueAsString(type1Dto)).contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
     }
 
     @Test
@@ -265,9 +264,9 @@ public class PatternRelationTypeControllerTest {
         doNothing().when(patternRelationTypeService).delete(type1.getId());
 
         var url = linkBuilderService.urlStringTo(methodOn(PatternRelationTypeController.class)
-            .deletePatternRelationType(type1.getId()));
+                .deletePatternRelationType(type1.getId()));
         mockMvc.perform(delete(url)
-            .accept(MediaType.APPLICATION_JSON)).andExpect(status().isNoContent());
+                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isNoContent());
     }
 
     @Test
@@ -275,8 +274,8 @@ public class PatternRelationTypeControllerTest {
         doThrow(NoSuchElementException.class).when(patternRelationTypeService).delete(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(PatternRelationTypeController.class)
-            .deletePatternRelationType(type1.getId()));
+                .deletePatternRelationType(type1.getId()));
         mockMvc.perform(delete(url)
-            .accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
+                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
     }
 }

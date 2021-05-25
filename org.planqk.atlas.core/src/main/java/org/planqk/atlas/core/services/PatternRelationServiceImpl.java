@@ -51,10 +51,10 @@ public class PatternRelationServiceImpl implements PatternRelationService {
     @Transactional
     public PatternRelation create(@NonNull PatternRelation patternRelation) {
         patternRelation.setAlgorithm(
-            ServiceUtils.findById(patternRelation.getAlgorithm().getId(), Algorithm.class, algorithmRepository));
+                ServiceUtils.findById(patternRelation.getAlgorithm().getId(), Algorithm.class, algorithmRepository));
 
         patternRelation.setPatternRelationType(
-            patternRelationTypeService.findById(patternRelation.getPatternRelationType().getId()));
+                patternRelationTypeService.findById(patternRelation.getPatternRelationType().getId()));
 
         return patternRelationRepository.save(patternRelation);
     }
@@ -75,7 +75,7 @@ public class PatternRelationServiceImpl implements PatternRelationService {
         final PatternRelation persistedPatternRelation = findById(patternRelation.getId());
 
         persistedPatternRelation.setPatternRelationType(
-            patternRelationTypeService.findById(patternRelation.getPatternRelationType().getId()));
+                patternRelationTypeService.findById(patternRelation.getPatternRelationType().getId()));
         persistedPatternRelation.setPattern(patternRelation.getPattern());
         persistedPatternRelation.setDescription(patternRelation.getDescription());
 
@@ -96,7 +96,7 @@ public class PatternRelationServiceImpl implements PatternRelationService {
 
         if (!patternRelation.getAlgorithm().getId().equals(algorithmId)) {
             throw new NoSuchElementException("Algorithm with ID \"" + algorithmId
-                + "\" is not part of PatternRelation with ID \"" + patternRelationId + "\"");
+                    + "\" is not part of PatternRelation with ID \"" + patternRelationId + "\"");
         }
     }
 }

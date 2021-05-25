@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 the qc-atlas contributors.
+ * Copyright (c) 2020-2021 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -112,6 +112,9 @@ public final class Constants {
 
     public static final String TAG_TAG = "tag";
 
+    public static final String LEARNING_METHODS = "learning-methods";
+
+    public static final String TAG_LEARNING_METHOD = "learning_method";
 
     private Constants() {
     }

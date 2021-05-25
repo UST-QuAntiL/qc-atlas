@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 the qc-atlas contributors.
+ * Copyright (c) 2020-2021 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -46,18 +46,18 @@ public class AlgorithmRelationDto implements Identifyable {
     private UUID id;
 
     @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
-        message = "Source Algorithm id must not be null!")
+             message = "Source Algorithm id must not be null!")
     private UUID sourceAlgorithmId;
 
     @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
-        message = "Target Algorithm id must not be null!")
+             message = "Target Algorithm id must not be null!")
     private UUID targetAlgorithmId;
 
     @JsonProperty("algoRelationType")
     @RequiresID(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
-        message = "AlgorithmRelationType must have a type with an ID!")
+                message = "AlgorithmRelationType must have a type with an ID!")
     @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
-        message = "AlgorithmRelationType must not be null!")
+             message = "AlgorithmRelationType must not be null!")
     private AlgorithmRelationTypeDto algorithmRelationType;
 
     private String description;

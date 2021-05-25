@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 the qc-atlas contributors.
+ * Copyright (c) 2020-2021 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -43,22 +43,17 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.UUID;
 
-import org.json.JSONObject;
+import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.planqk.atlas.core.model.Algorithm;
-import org.planqk.atlas.core.model.AlgorithmRelation;
-import org.planqk.atlas.core.model.AlgorithmRelationType;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
 import org.planqk.atlas.core.model.ComputationModel;
 import org.planqk.atlas.core.model.DiscussionComment;
 import org.planqk.atlas.core.model.DiscussionTopic;
 import org.planqk.atlas.core.model.Implementation;
-import org.planqk.atlas.core.model.PatternRelation;
-import org.planqk.atlas.core.model.PatternRelationType;
-import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.model.Status;
 import org.planqk.atlas.core.services.AlgorithmService;
@@ -69,9 +64,10 @@ import org.planqk.atlas.core.services.LinkingService;
 import org.planqk.atlas.core.services.PublicationService;
 import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
-import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
+import org.planqk.atlas.web.dtos.ClassicAlgorithmDto;
 import org.planqk.atlas.web.dtos.DiscussionCommentDto;
 import org.planqk.atlas.web.dtos.DiscussionTopicDto;
+import org.planqk.atlas.web.dtos.ProblemTypeDto;
 import org.planqk.atlas.web.dtos.PublicationDto;
 import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
 import org.planqk.atlas.web.linkassembler.LinkBuilderService;
@@ -132,7 +128,7 @@ public class PublicationControllerTest {
 
     @Autowired
     private LinkBuilderService linkBuilderService;
-    
+
     private DiscussionTopic discussionTopic1;
 
     private DiscussionTopicDto discussionTopic1Dto;
@@ -150,7 +146,7 @@ public class PublicationControllerTest {
     private DiscussionCommentDto discussionComment2Dto;
 
     private Set<DiscussionTopic> discussionTopics;
-    
+
     private Publication publication1;
 
     private Publication publication2;
@@ -206,18 +202,18 @@ public class PublicationControllerTest {
         when(publicationService.findById(publication1.getId())).thenReturn(publication1);
         when(publicationService.findById(publication2.getId())).thenReturn(publication2);
     }
-    
+
     @Test
     @SneakyThrows
     void getPublications_EmptyList_returnOk() {
         doReturn(new PageImpl<Publication>(List.of())).when(publicationService).findAll(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
-            .getPublications(ListParameters.getDefault()));
-        mockMvc
-            .perform(get(url).accept(APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$._embedded.publications").doesNotExist());
+                .getPublications(ListParameters.getDefault()));
+        MvcResult mvcResult = mockMvc
+                .perform(get(url).accept(APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
+        Assert.assertEquals(ObjectMapperUtils.mapResponseToList(mvcResult, ProblemTypeDto.class).size(), 0);
     }
 
     @Test
@@ -231,12 +227,13 @@ public class PublicationControllerTest {
         doReturn(new PageImpl<Publication>(List.of(publ))).when(publicationService).findAll(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
-            .getPublications(ListParameters.getDefault()));
-        mockMvc.perform(get(url).accept(APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$._embedded.publications[0].id").value(publ.getId().toString()))
-            .andExpect(jsonPath("$._embedded.publications[0].title").value(publ.getTitle()))
-            .andExpect(jsonPath("$._embedded.publications[0].authors").isArray());
+                .getPublications(ListParameters.getDefault()));
+        MvcResult mvcResult = mockMvc.perform(get(url).accept(APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
+        PublicationDto publicationDto = ObjectMapperUtils.mapResponseToList(mvcResult, PublicationDto.class).get(0);
+        assertEquals(publicationDto.getId(), publ.getId());
+        assertEquals(publicationDto.getTitle(), publ.getTitle());
+        assertEquals(publicationDto.getAuthors(), publ.getAuthors());
     }
 
     @Test
@@ -250,13 +247,13 @@ public class PublicationControllerTest {
         doReturn(publ).when(publicationService).findById(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
-            .getPublication(publ.getId()));
+                .getPublication(publ.getId()));
 
         mockMvc.perform(get(url).accept(APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.id").value(publ.getId().toString()))
-            .andExpect(jsonPath("$.title").value(publ.getTitle()))
-            .andExpect(jsonPath("$.authors").isArray());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(publ.getId().toString()))
+                .andExpect(jsonPath("$.title").value(publ.getTitle()))
+                .andExpect(jsonPath("$.authors").isArray());
     }
 
     @Test
@@ -265,9 +262,9 @@ public class PublicationControllerTest {
         doThrow(new NoSuchElementException()).when(publicationService).findById(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
-            .getPublication(UUID.randomUUID()));
+                .getPublication(UUID.randomUUID()));
         mockMvc.perform(get(url).accept(APPLICATION_JSON))
-            .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -281,14 +278,14 @@ public class PublicationControllerTest {
         doReturn(publ).when(publicationService).create(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
-            .createPublication(null));
+                .createPublication(null));
         mockMvc.perform(
-            post(url)
-                .accept(APPLICATION_JSON)
-                .content(mapper.writeValueAsString(publDto))
-                .contentType(APPLICATION_JSON)
+                post(url)
+                        .accept(APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(publDto))
+                        .contentType(APPLICATION_JSON)
         ).andExpect(status().isCreated())
-            .andExpect(jsonPath("$.id").value(publ.getId().toString()));
+                .andExpect(jsonPath("$.id").value(publ.getId().toString()));
     }
 
     @Test
@@ -301,12 +298,12 @@ public class PublicationControllerTest {
         publ.setId(UUID.randomUUID());
 
         var url = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
-            .createPublication(null));
+                .createPublication(null));
         mockMvc.perform(
-            post(url)
-                .accept(APPLICATION_JSON)
-                .content(mapper.writeValueAsString(publDto))
-                .contentType(APPLICATION_JSON)
+                post(url)
+                        .accept(APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(publDto))
+                        .contentType(APPLICATION_JSON)
         ).andExpect(status().isBadRequest());
     }
 
@@ -321,14 +318,14 @@ public class PublicationControllerTest {
         doReturn(publ).when(publicationService).update(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
-            .updatePublication(publ.getId(), null));
+                .updatePublication(publ.getId(), null));
         mockMvc.perform(
-            put(url)
-                .accept(APPLICATION_JSON)
-                .content(mapper.writeValueAsString(publDto))
-                .contentType(APPLICATION_JSON)
+                put(url)
+                        .accept(APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(publDto))
+                        .contentType(APPLICATION_JSON)
         ).andExpect(status().isOk())
-            .andExpect(jsonPath("$.id").value(publ.getId().toString()));
+                .andExpect(jsonPath("$.id").value(publ.getId().toString()));
     }
 
     @Test
@@ -341,12 +338,12 @@ public class PublicationControllerTest {
         var publDto = ModelMapperUtils.convert(publ, PublicationDto.class);
 
         var url = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
-            .updatePublication(publ.getId(), null));
+                .updatePublication(publ.getId(), null));
         mockMvc.perform(
-            put(url)
-                .accept(APPLICATION_JSON)
-                .content(mapper.writeValueAsString(publDto))
-                .contentType(APPLICATION_JSON)
+                put(url)
+                        .accept(APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(publDto))
+                        .contentType(APPLICATION_JSON)
         ).andExpect(status().isBadRequest());
     }
 
@@ -361,12 +358,12 @@ public class PublicationControllerTest {
         doThrow(new NoSuchElementException()).when(publicationService).update(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
-            .updatePublication(publ.getId(), null));
+                .updatePublication(publ.getId(), null));
         mockMvc.perform(
-            put(url)
-                .accept(APPLICATION_JSON)
-                .content(mapper.writeValueAsString(publDto))
-                .contentType(APPLICATION_JSON)
+                put(url)
+                        .accept(APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(publDto))
+                        .contentType(APPLICATION_JSON)
         ).andExpect(status().isNotFound());
     }
 
@@ -376,10 +373,10 @@ public class PublicationControllerTest {
         doNothing().when(publicationService).delete(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
-            .deletePublication(UUID.randomUUID()));
+                .deletePublication(UUID.randomUUID()));
 
         mockMvc.perform(delete(url).accept(APPLICATION_JSON))
-            .andExpect(status().isNoContent());
+                .andExpect(status().isNoContent());
     }
 
     @Test
@@ -388,27 +385,28 @@ public class PublicationControllerTest {
         doThrow(new NoSuchElementException()).when(publicationService).delete(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
-            .deletePublication(UUID.randomUUID()));
+                .deletePublication(UUID.randomUUID()));
 
         mockMvc.perform(delete(url).accept(APPLICATION_JSON))
-            .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound());
     }
 
     @Test
     @SneakyThrows
     void getAlgorithmsOfPublication_SingleElement_returnOk() {
-        var algo = new Algorithm();
+        var algo = new ClassicAlgorithm();
         algo.setName("algo");
         algo.setId(UUID.randomUUID());
+        algo.setComputationModel(ComputationModel.CLASSIC);
 
         doReturn(new PageImpl<>(List.of(algo))).when(publicationService).findLinkedAlgorithms(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
-            .getAlgorithmsOfPublication(UUID.randomUUID(), ListParameters.getDefault()));
+                .getAlgorithmsOfPublication(UUID.randomUUID(), ListParameters.getDefault()));
 
-        mockMvc.perform(get(url).accept(APPLICATION_JSON))
-            .andExpect(jsonPath("$._embedded.algorithms[0].id").value(algo.getId().toString()))
-            .andExpect(status().isOk());
+        MvcResult mvcResult = mockMvc.perform(get(url).accept(APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
+        assertEquals(ObjectMapperUtils.mapResponseToList(mvcResult, ClassicAlgorithmDto.class).get(0).getId(), algo.getId());
     }
 
     @Test
@@ -417,11 +415,11 @@ public class PublicationControllerTest {
         doReturn(new PageImpl<>(List.of())).when(publicationService).findLinkedAlgorithms(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
-            .getAlgorithmsOfPublication(UUID.randomUUID(), ListParameters.getDefault()));
+                .getAlgorithmsOfPublication(UUID.randomUUID(), ListParameters.getDefault()));
 
-        mockMvc.perform(get(url).accept(APPLICATION_JSON))
-            .andExpect(jsonPath("$._embedded.algorithms").doesNotExist())
-            .andExpect(status().isOk());
+        MvcResult mvcResult = mockMvc.perform(get(url).accept(APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
+        Assert.assertEquals(ObjectMapperUtils.mapResponseToList(mvcResult, PublicationDto.class).size(), 0);
     }
 
     @Test
@@ -431,10 +429,10 @@ public class PublicationControllerTest {
         doThrow(new NoSuchElementException()).when(publicationService).findLinkedAlgorithms(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
-            .getAlgorithmsOfPublication(UUID.randomUUID(), ListParameters.getDefault()));
+                .getAlgorithmsOfPublication(UUID.randomUUID(), ListParameters.getDefault()));
 
         mockMvc.perform(get(url).accept(APPLICATION_JSON))
-            .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -448,11 +446,11 @@ public class PublicationControllerTest {
         doReturn(algo).when(algorithmService).findById(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
-            .getAlgorithmOfPublication(UUID.randomUUID(), UUID.randomUUID()));
+                .getAlgorithmOfPublication(UUID.randomUUID(), UUID.randomUUID()));
 
         mockMvc.perform(get(url).accept(APPLICATION_JSON))
-            .andExpect(jsonPath("$.id").value(algo.getId().toString()))
-            .andExpect(status().isOk());
+                .andExpect(jsonPath("$.id").value(algo.getId().toString()))
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -461,29 +459,28 @@ public class PublicationControllerTest {
         doThrow(new NoSuchElementException()).when(publicationService).checkIfAlgorithmIsLinkedToPublication(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
-            .getAlgorithmOfPublication(UUID.randomUUID(), UUID.randomUUID()));
+                .getAlgorithmOfPublication(UUID.randomUUID(), UUID.randomUUID()));
 
         mockMvc.perform(get(url).accept(APPLICATION_JSON))
-            .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound());
     }
 
     @Test
     @SneakyThrows
     void linkPublicationAndAlgorithm_returnNoContent() {
         doNothing().when(linkingService).linkAlgorithmAndPublication(any(), any());
-        ;
         var algoDto = new AlgorithmDto();
         algoDto.setId(UUID.randomUUID());
         algoDto.setComputationModel(ComputationModel.QUANTUM);
 
         var url = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
-            .linkPublicationAndAlgorithm(UUID.randomUUID(), null));
+                .linkPublicationAndAlgorithm(UUID.randomUUID(), null));
 
         mockMvc.perform(
-            post(url)
-                .accept(APPLICATION_JSON)
-                .contentType(APPLICATION_JSON)
-                .content(mapper.writeValueAsString(algoDto))
+                post(url)
+                        .accept(APPLICATION_JSON)
+                        .contentType(APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(algoDto))
         ).andExpect(status().isNoContent());
     }
 
@@ -495,13 +492,13 @@ public class PublicationControllerTest {
         algoDto.setComputationModel(ComputationModel.QUANTUM);
 
         var url = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
-            .linkPublicationAndAlgorithm(UUID.randomUUID(), null));
+                .linkPublicationAndAlgorithm(UUID.randomUUID(), null));
 
         mockMvc.perform(
-            post(url)
-                .accept(APPLICATION_JSON)
-                .contentType(APPLICATION_JSON)
-                .content(mapper.writeValueAsString(algoDto))
+                post(url)
+                        .accept(APPLICATION_JSON)
+                        .contentType(APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(algoDto))
         ).andExpect(status().isBadRequest());
     }
 
@@ -514,13 +511,13 @@ public class PublicationControllerTest {
         algoDto.setComputationModel(ComputationModel.QUANTUM);
 
         var url = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
-            .linkPublicationAndAlgorithm(UUID.randomUUID(), null));
+                .linkPublicationAndAlgorithm(UUID.randomUUID(), null));
 
         mockMvc.perform(
-            post(url)
-                .accept(APPLICATION_JSON)
-                .contentType(APPLICATION_JSON)
-                .content(mapper.writeValueAsString(algoDto))
+                post(url)
+                        .accept(APPLICATION_JSON)
+                        .contentType(APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(algoDto))
         ).andExpect(status().isNotFound());
     }
 
@@ -528,13 +525,12 @@ public class PublicationControllerTest {
     @SneakyThrows
     void unlinkPublicationAndAlgorithm_returnNoContent() {
         doNothing().when(linkingService).unlinkImplementationAndPublication(any(), any());
-        ;
 
         var url = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
-            .unlinkPublicationAndAlgorithm(UUID.randomUUID(), UUID.randomUUID()));
+                .unlinkPublicationAndAlgorithm(UUID.randomUUID(), UUID.randomUUID()));
 
         mockMvc.perform(delete(url).accept(APPLICATION_JSON))
-            .andExpect(status().isNoContent());
+                .andExpect(status().isNoContent());
     }
 
     @Test
@@ -543,10 +539,10 @@ public class PublicationControllerTest {
         doThrow(new NoSuchElementException()).when(linkingService).unlinkAlgorithmAndPublication(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
-            .unlinkPublicationAndAlgorithm(UUID.randomUUID(), UUID.randomUUID()));
+                .unlinkPublicationAndAlgorithm(UUID.randomUUID(), UUID.randomUUID()));
 
         mockMvc.perform(delete(url).accept(APPLICATION_JSON))
-            .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -555,11 +551,12 @@ public class PublicationControllerTest {
         doReturn(new PageImpl<>(List.of())).when(publicationService).findLinkedImplementations(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
-            .getImplementationsOfPublication(UUID.randomUUID(), ListParameters.getDefault()));
+                .getImplementationsOfPublication(UUID.randomUUID(), ListParameters.getDefault()));
 
-        mockMvc.perform(get(url).accept(APPLICATION_JSON))
-            .andExpect(jsonPath("$._embedded.implementations").doesNotExist())
-            .andExpect(status().isOk());
+        MvcResult mvcResult = mockMvc.perform(get(url).accept(APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
+
+        Assert.assertEquals(ObjectMapperUtils.mapResponseToList(mvcResult, PublicationDto.class).size(), 0);
     }
 
     @Test
@@ -569,10 +566,10 @@ public class PublicationControllerTest {
         doThrow(new NoSuchElementException()).when(publicationService).findLinkedImplementations(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
-            .getImplementationsOfPublication(UUID.randomUUID(), ListParameters.getDefault()));
+                .getImplementationsOfPublication(UUID.randomUUID(), ListParameters.getDefault()));
 
         mockMvc.perform(get(url).accept(APPLICATION_JSON))
-            .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -586,11 +583,11 @@ public class PublicationControllerTest {
         doReturn(algo).when(implementationService).findById(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
-            .getImplementationOfPublication(UUID.randomUUID(), UUID.randomUUID()));
+                .getImplementationOfPublication(UUID.randomUUID(), UUID.randomUUID()));
 
         mockMvc.perform(get(url).accept(APPLICATION_JSON))
-            .andExpect(jsonPath("$.id").value(algo.getId().toString()))
-            .andExpect(status().isOk());
+                .andExpect(jsonPath("$.id").value(algo.getId().toString()))
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -599,10 +596,10 @@ public class PublicationControllerTest {
         doThrow(new NoSuchElementException()).when(publicationService).checkIfImplementationIsLinkedToPublication(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
-            .getImplementationOfPublication(UUID.randomUUID(), UUID.randomUUID()));
+                .getImplementationOfPublication(UUID.randomUUID(), UUID.randomUUID()));
 
         mockMvc.perform(get(url).accept(APPLICATION_JSON))
-            .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -616,7 +613,7 @@ public class PublicationControllerTest {
         when(discussionTopicService.findByKnowledgeArtifactId(publication1.getId(), pageable)).thenReturn(discussionTopics);
 
         final String path = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
-            .getDiscussionTopicsOfPublication(publication1.getId(), new ListParameters(pageable, null)));
+                .getDiscussionTopicsOfPublication(publication1.getId(), new ListParameters(pageable, null)));
 
         // call
         final MvcResult result = mockMvc.perform(get(path)).andExpect(status().isOk()).andReturn();
@@ -624,14 +621,12 @@ public class PublicationControllerTest {
         // test
         Mockito.verify(discussionTopicService, times(1)).findByKnowledgeArtifactId(publication1.getId(), pageable);
 
-        JSONObject rootObject = new JSONObject(result.getResponse().getContentAsString());
-        var embeddedJSONObjects = rootObject.getJSONObject("_embedded").getJSONArray("discussionTopics");
-        var resultObject = mapper.readValue(embeddedJSONObjects.getJSONObject(0).toString(), DiscussionTopicDto.class);
+        DiscussionTopicDto discussionTopicDto =
+                ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(), DiscussionTopicDto.class).get(0);
 
-        assertEquals(1, embeddedJSONObjects.length());
-        assertEquals(resultObject.getTitle(), discussionTopic1.getTitle());
-        assertEquals(resultObject.getId(), discussionTopic1.getId());
-        assertEquals(resultObject.getDate(), discussionTopic1.getDate());
+        assertEquals(discussionTopicDto.getTitle(), discussionTopic1.getTitle());
+        assertEquals(discussionTopicDto.getId(), discussionTopic1.getId());
+        assertEquals(discussionTopicDto.getDate(), discussionTopic1.getDate());
     }
 
     @Test
@@ -642,7 +637,7 @@ public class PublicationControllerTest {
         when(discussionTopicService.findById(discussionTopic1.getId())).thenReturn(discussionTopic1);
 
         final String path = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
-            .getDiscussionTopicOfPublication(publication1.getId(), discussionTopic1.getId(), new ListParameters(pageable, null)));
+                .getDiscussionTopicOfPublication(publication1.getId(), discussionTopic1.getId(), new ListParameters(pageable, null)));
 
         // call
         final MvcResult result = mockMvc.perform(get(path)).andExpect(status().isOk()).andReturn();
@@ -651,8 +646,8 @@ public class PublicationControllerTest {
         Mockito.verify(discussionTopicService, times(1)).findById(discussionTopic1.getId());
 
         EntityModel<DiscussionTopicDto> response = mapper.readValue(result.getResponse().getContentAsString(),
-            new TypeReference<>() {
-            });
+                new TypeReference<>() {
+                });
 
         assertEquals(response.getContent().getDate(), discussionTopic1.getDate());
         assertEquals(response.getContent().getTitle(), discussionTopic1.getTitle());
@@ -665,10 +660,10 @@ public class PublicationControllerTest {
         initializeDiscussions();
 
         doThrow(new NoSuchElementException()).when(discussionTopicService)
-            .checkIfDiscussionTopicIsLinkedToKnowledgeArtifact(discussionTopic2.getId(), publication1.getId());
+                .checkIfDiscussionTopicIsLinkedToKnowledgeArtifact(discussionTopic2.getId(), publication1.getId());
 
         final String path = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
-            .getDiscussionTopicOfPublication(publication1.getId(), discussionTopic2.getId(), new ListParameters(pageable, null)));
+                .getDiscussionTopicOfPublication(publication1.getId(), discussionTopic2.getId(), new ListParameters(pageable, null)));
 
         // call
         mockMvc.perform(get(path)).andExpect(status().isNotFound());
@@ -684,18 +679,18 @@ public class PublicationControllerTest {
         discussionTopic2Dto.setId(null);
 
         final String path = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
-            .createDiscussionTopicOfPublication(publication2.getId(), discussionTopic2Dto, new ListParameters(pageable, null)));
+                .createDiscussionTopicOfPublication(publication2.getId(), discussionTopic2Dto, new ListParameters(pageable, null)));
 
         // call
         final MvcResult result = mockMvc.perform(post(path).content(mapper.writeValueAsString(discussionTopic2Dto))
-            .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andExpect(status().isCreated()).andReturn();
+                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andExpect(status().isCreated()).andReturn();
 
         // test
         Mockito.verify(discussionTopicService, times(1)).create(any());
 
         EntityModel<DiscussionTopicDto> response = mapper.readValue(result.getResponse().getContentAsString(),
-            new TypeReference<>() {
-            });
+                new TypeReference<>() {
+                });
 
         assertEquals(response.getContent().getDate(), discussionTopic2.getDate());
         assertEquals(response.getContent().getTitle(), discussionTopic2.getTitle());
@@ -709,11 +704,11 @@ public class PublicationControllerTest {
 
         discussionTopic2Dto.setDate(null);
         final String path = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
-            .createDiscussionTopicOfPublication(publication2.getId(), discussionTopic2Dto, new ListParameters(pageable, null)));
+                .createDiscussionTopicOfPublication(publication2.getId(), discussionTopic2Dto, new ListParameters(pageable, null)));
 
         // call
         mockMvc.perform(post(path).content(mapper.writeValueAsString(discussionTopic2Dto))
-            .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
+                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
     }
 
     @Test
@@ -725,18 +720,19 @@ public class PublicationControllerTest {
         when(discussionTopicService.update(any())).thenReturn(discussionTopic1);
 
         final String path = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
-            .updateDiscussionTopicOfPublication(publication1.getId(), discussionTopic1.getId(), discussionTopic1Dto, new ListParameters(pageable, null)));
+                .updateDiscussionTopicOfPublication(publication1.getId(), discussionTopic1.getId(), discussionTopic1Dto,
+                        new ListParameters(pageable, null)));
 
         // call
         final MvcResult result = mockMvc.perform(put(path).content(mapper.writeValueAsString(discussionTopic1Dto))
-            .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
+                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
 
         // test
         Mockito.verify(discussionTopicService, times(1)).update(any());
 
         EntityModel<DiscussionTopicDto> response = mapper.readValue(result.getResponse().getContentAsString(),
-            new TypeReference<>() {
-            });
+                new TypeReference<>() {
+                });
 
         assertEquals(discussionTopic1Dto.getId(), response.getContent().getId());
         assertEquals(discussionTopic1Dto.getTitle(), response.getContent().getTitle());
@@ -754,12 +750,13 @@ public class PublicationControllerTest {
         when(discussionTopicService.update(any())).thenReturn(discussionTopic1);
 
         final String path = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
-            .updateDiscussionTopicOfPublication(publication1.getId(), discussionTopic1.getId(), discussionTopic1Dto, new ListParameters(pageable, null)));
+                .updateDiscussionTopicOfPublication(publication1.getId(), discussionTopic1.getId(), discussionTopic1Dto,
+                        new ListParameters(pageable, null)));
 
         // call
         mockMvc.perform(put(path).content(mapper.writeValueAsString(discussionTopic1Dto))
-            .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).characterEncoding("utf-8"))
-            .andExpect(status().isBadRequest());
+                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).characterEncoding("utf-8"))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -768,7 +765,7 @@ public class PublicationControllerTest {
         initializeDiscussions();
 
         final String path = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
-            .deleteDiscussionTopicOfPublication(publication1.getId(), discussionTopic1.getId(), new ListParameters(pageable, null)));
+                .deleteDiscussionTopicOfPublication(publication1.getId(), discussionTopic1.getId(), new ListParameters(pageable, null)));
 
         // call
         final MvcResult result = mockMvc.perform(delete(path)).andExpect(status().isOk()).andReturn();
@@ -780,10 +777,10 @@ public class PublicationControllerTest {
         initializeDiscussions();
 
         doThrow(new NoSuchElementException()).when(discussionTopicService)
-            .checkIfDiscussionTopicIsLinkedToKnowledgeArtifact(discussionTopic2.getId(), publication1.getId());
+                .checkIfDiscussionTopicIsLinkedToKnowledgeArtifact(discussionTopic2.getId(), publication1.getId());
 
         final String path = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
-            .deleteDiscussionTopicOfPublication(publication1.getId(), discussionTopic2.getId(), new ListParameters(pageable, null)));
+                .deleteDiscussionTopicOfPublication(publication1.getId(), discussionTopic2.getId(), new ListParameters(pageable, null)));
 
         // call
         mockMvc.perform(delete(path)).andExpect(status().isNotFound());
@@ -801,7 +798,8 @@ public class PublicationControllerTest {
         when(discussionCommentService.findAllByTopic(discussionTopic1.getId(), pageable)).thenReturn(discussionCommentPage);
 
         final String path = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
-            .getDiscussionCommentsOfDiscussionTopicOfPublication(publication1.getId(), discussionTopic1.getId(), new ListParameters(pageable, null)));
+                .getDiscussionCommentsOfDiscussionTopicOfPublication(publication1.getId(), discussionTopic1.getId(),
+                        new ListParameters(pageable, null)));
 
         // call
         final MvcResult result = mockMvc.perform(get(path)).andExpect(status().isOk()).andReturn();
@@ -809,9 +807,8 @@ public class PublicationControllerTest {
         // test
         Mockito.verify(discussionCommentService, times(1)).findAllByTopic(discussionTopic1.getId(), pageable);
 
-
         var resultList = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(),
-            "discussionComments", DiscussionCommentDto.class);
+                DiscussionCommentDto.class);
 
         assertEquals(resultList.size(), 1);
         assertEquals(resultList.get(0).getText(), discussionComment1Dto.getText());
@@ -826,7 +823,8 @@ public class PublicationControllerTest {
         when(discussionCommentService.findById(discussionComment1.getId())).thenReturn(discussionComment1);
 
         final String path = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
-            .getDiscussionCommentOfDiscussionTopicOfPublication(publication1.getId(), discussionTopic1.getId(), discussionComment1.getId(), new ListParameters(pageable, null)));
+                .getDiscussionCommentOfDiscussionTopicOfPublication(publication1.getId(), discussionTopic1.getId(), discussionComment1.getId(),
+                        new ListParameters(pageable, null)));
 
         // call
         final MvcResult result = mockMvc.perform(get(path)).andExpect(status().isOk()).andReturn();
@@ -835,8 +833,8 @@ public class PublicationControllerTest {
         Mockito.verify(discussionCommentService, times(1)).findById(discussionComment1.getId());
 
         EntityModel<DiscussionCommentDto> response = mapper.readValue(result.getResponse().getContentAsString(),
-            new TypeReference<>() {
-            });
+                new TypeReference<>() {
+                });
 
         assertEquals(response.getContent().getId(), discussionComment1Dto.getId());
         assertEquals(response.getContent().getText(), discussionComment1Dto.getText());
@@ -849,10 +847,11 @@ public class PublicationControllerTest {
         initializeDiscussions();
 
         doThrow(new NoSuchElementException()).when(discussionCommentService)
-            .checkIfDiscussionCommentIsInDiscussionTopic(discussionComment2.getId(), discussionTopic1.getId());
+                .checkIfDiscussionCommentIsInDiscussionTopic(discussionComment2.getId(), discussionTopic1.getId());
 
         final String path = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
-            .getDiscussionCommentOfDiscussionTopicOfPublication(publication1.getId(), discussionTopic1.getId(), discussionComment2.getId(), new ListParameters(pageable, null)));
+                .getDiscussionCommentOfDiscussionTopicOfPublication(publication1.getId(), discussionTopic1.getId(), discussionComment2.getId(),
+                        new ListParameters(pageable, null)));
 
         // call
         mockMvc.perform(get(path)).andExpect(status().isNotFound());
@@ -868,19 +867,21 @@ public class PublicationControllerTest {
         when(discussionTopicService.findById(discussionTopic1.getId())).thenReturn(discussionTopic1);
 
         final String path = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
-            .createDiscussionCommentOfDiscussionTopicOfPublication(publication1.getId(), discussionTopic1.getId(), discussionComment2Dto, new ListParameters(pageable, null)));
+                .createDiscussionCommentOfDiscussionTopicOfPublication(publication1.getId(), discussionTopic1.getId(), discussionComment2Dto,
+                        new ListParameters(pageable, null)));
 
         // call
         final MvcResult result = mockMvc.perform(post(path).content(mapper.writeValueAsString(discussionComment2Dto))
-            .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).characterEncoding("utf-8")).andExpect(status().isCreated()).andReturn();
+                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).characterEncoding("utf-8"))
+                .andExpect(status().isCreated()).andReturn();
 
         // test
         Mockito.verify(discussionCommentService, times(1)).create(any());
         Mockito.verify(discussionTopicService, times(1)).findById(discussionTopic1.getId());
 
         EntityModel<DiscussionCommentDto> response = mapper.readValue(result.getResponse().getContentAsString(),
-            new TypeReference<>() {
-            });
+                new TypeReference<>() {
+                });
 
         assertEquals(response.getContent().getText(), discussionComment2Dto.getText());
     }
@@ -892,11 +893,12 @@ public class PublicationControllerTest {
 
         discussionComment2Dto.setDate(null);
         final String path = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
-            .createDiscussionCommentOfDiscussionTopicOfPublication(publication1.getId(), discussionTopic1.getId(), discussionComment2Dto, new ListParameters(pageable, null)));
+                .createDiscussionCommentOfDiscussionTopicOfPublication(publication1.getId(), discussionTopic1.getId(), discussionComment2Dto,
+                        new ListParameters(pageable, null)));
 
         // call
         mockMvc.perform(post(path).content(mapper.writeValueAsString(discussionComment2Dto))
-            .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
+                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
     }
 
     @Test
@@ -909,19 +911,20 @@ public class PublicationControllerTest {
         when(discussionCommentService.findById(discussionComment1.getId())).thenReturn(discussionComment1);
 
         final String path = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
-            .updateDiscussionCommentOfDiscussionTopicOfPublication(publication1.getId(), discussionTopic1.getId(), discussionComment1.getId(), discussionComment1Dto, new ListParameters(pageable, null)));
+                .updateDiscussionCommentOfDiscussionTopicOfPublication(publication1.getId(), discussionTopic1.getId(), discussionComment1.getId(),
+                        discussionComment1Dto, new ListParameters(pageable, null)));
 
         // call
         final MvcResult result = mockMvc.perform(put(path).content(mapper.writeValueAsString(discussionComment1Dto))
-            .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
+                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
 
         // test
         Mockito.verify(discussionCommentService, times(1)).update(any());
         Mockito.verify(discussionCommentService, times(1)).findById(discussionComment1.getId());
 
         EntityModel<DiscussionCommentDto> response = mapper.readValue(result.getResponse().getContentAsString(),
-            new TypeReference<>() {
-            });
+                new TypeReference<>() {
+                });
 
         assertEquals(response.getContent().getText(), discussionComment1Dto.getText());
         assertEquals(response.getContent().getId(), discussionComment1Dto.getId());
@@ -939,12 +942,13 @@ public class PublicationControllerTest {
         when(discussionCommentService.findById(discussionComment1.getId())).thenReturn(discussionComment1);
 
         final String path = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
-            .updateDiscussionCommentOfDiscussionTopicOfPublication(publication1.getId(), discussionTopic1.getId(), discussionComment1.getId(), discussionComment1Dto, new ListParameters(pageable, null)));
+                .updateDiscussionCommentOfDiscussionTopicOfPublication(publication1.getId(), discussionTopic1.getId(), discussionComment1.getId(),
+                        discussionComment1Dto, new ListParameters(pageable, null)));
 
         // call
         mockMvc.perform(put(path).content(mapper.writeValueAsString(discussionComment1Dto))
-            .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).characterEncoding("utf-8"))
-            .andExpect(status().isBadRequest());
+                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).characterEncoding("utf-8"))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -953,7 +957,8 @@ public class PublicationControllerTest {
         initializeDiscussions();
 
         final String path = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
-            .deleteDiscussionCommentOfDiscussionTopicOfPublication(publication1.getId(), discussionTopic1.getId(), discussionComment1.getId(), new ListParameters(pageable, null)));
+                .deleteDiscussionCommentOfDiscussionTopicOfPublication(publication1.getId(), discussionTopic1.getId(), discussionComment1.getId(),
+                        new ListParameters(pageable, null)));
 
         // call
         final MvcResult result = mockMvc.perform(delete(path)).andExpect(status().isOk()).andReturn();
@@ -965,10 +970,11 @@ public class PublicationControllerTest {
         initializeDiscussions();
 
         doThrow(new NoSuchElementException()).when(discussionCommentService)
-            .checkIfDiscussionCommentIsInDiscussionTopic(discussionComment1.getId(), discussionTopic2.getId());
+                .checkIfDiscussionCommentIsInDiscussionTopic(discussionComment1.getId(), discussionTopic2.getId());
 
         final String path = linkBuilderService.urlStringTo(methodOn(PublicationController.class)
-            .deleteDiscussionCommentOfDiscussionTopicOfPublication(publication1.getId(), discussionTopic2.getId(), discussionComment1.getId(), new ListParameters(pageable, null)));
+                .deleteDiscussionCommentOfDiscussionTopicOfPublication(publication1.getId(), discussionTopic2.getId(), discussionComment1.getId(),
+                        new ListParameters(pageable, null)));
 
         // call
         mockMvc.perform(delete(path)).andExpect(status().isNotFound());

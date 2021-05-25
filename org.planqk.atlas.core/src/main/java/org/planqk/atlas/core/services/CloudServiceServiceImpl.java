@@ -96,9 +96,9 @@ public class CloudServiceServiceImpl implements CloudServiceService {
 
     private void removeReferences(@NonNull CloudService cloudService) {
         CollectionUtils.forEachOnCopy(cloudService.getSoftwarePlatforms(),
-            softwarePlatform -> softwarePlatform.removeCloudService(cloudService));
+                softwarePlatform -> softwarePlatform.removeCloudService(cloudService));
         CollectionUtils.forEachOnCopy(cloudService.getProvidedComputeResources(),
-            computeResource -> computeResource.removeCloudService(cloudService));
+                computeResource -> computeResource.removeCloudService(cloudService));
     }
 
     @Override

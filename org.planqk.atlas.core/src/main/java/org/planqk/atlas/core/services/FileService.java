@@ -33,5 +33,4 @@ public interface FileService {
     void delete(UUID id);
 
     byte[] getFileContent(UUID id);
-
 }

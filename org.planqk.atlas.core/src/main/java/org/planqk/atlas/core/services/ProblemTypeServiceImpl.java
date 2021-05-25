@@ -82,7 +82,7 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
 
         if (problemType.getAlgorithms().size() > 0) {
             throw new EntityReferenceConstraintViolationException("Cannot delete ProblemType with ID \"" + problemTypeId +
-                "\". It is used by existing algorithms!");
+                    "\". It is used by existing algorithms!");
         }
 
         removeReferences(problemType);

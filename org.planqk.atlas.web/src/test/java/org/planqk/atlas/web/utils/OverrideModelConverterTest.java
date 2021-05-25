@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 the qc-atlas contributors.
+ * Copyright (c) 2020-2021 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -39,7 +39,7 @@ public class OverrideModelConverterTest {
         converters.addConverter(new OverrideModelConverter(Map.of(SimpleDto.class, SimpleDtoOverride.class)));
 
         final var wrapped = converters.resolveAsResolvedSchema(new AnnotatedType().type(SimpleDto.class)
-            .resolveAsRef(false));
+                .resolveAsRef(false));
         assertEquals(List.of("otherField"), wrapped.schema.getRequired());
         assertEquals(1, wrapped.schema.getProperties().size());
     }

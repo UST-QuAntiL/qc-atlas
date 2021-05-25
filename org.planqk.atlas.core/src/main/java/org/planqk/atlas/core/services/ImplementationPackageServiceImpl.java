@@ -56,7 +56,7 @@ public class ImplementationPackageServiceImpl implements ImplementationPackageSe
     @Override
     @Transactional
     public ImplementationPackage create(
-        @NonNull ImplementationPackage implementationPackage, UUID implementationId) {
+            @NonNull ImplementationPackage implementationPackage, UUID implementationId) {
         final Implementation implementation = ServiceUtils.findById(implementationId, Implementation.class, implementationRepository);
         implementationPackage.setImplementation(implementation);
         // reset file to null because the ModelMapper sometimes instanciates the file object
@@ -102,7 +102,7 @@ public class ImplementationPackageServiceImpl implements ImplementationPackageSe
 
         if (!implementationPackage.getImplementation().getId().equals(implementationId)) {
             throw new NoSuchElementException("ImplementationPackage with ID \"" + packageId
-                + "\" of Implementation with ID \"" + implementationId + "\" does not exist");
+                    + "\" of Implementation with ID \"" + implementationId + "\" does not exist");
         }
     }
 
@@ -110,14 +110,14 @@ public class ImplementationPackageServiceImpl implements ImplementationPackageSe
     public File findLinkedFile(UUID implementationPackageId) {
         ServiceUtils.throwIfNotExists(implementationPackageId, ImplementationPackage.class, implementationPackageRepository);
         return fileRepository.findByImplementationPackage_Id(implementationPackageId)
-            .orElseThrow(
-                () -> new NoSuchElementException("File of ImplementationPackage with ID \"" + implementationPackageId + "\" does not exist"));
+                .orElseThrow(
+                        () -> new NoSuchElementException("File of ImplementationPackage with ID \"" + implementationPackageId + "\" does not exist"));
     }
 
     @Override
     public File addFileToImplementationPackage(UUID implementationPackageId, MultipartFile multipartFile) {
         final ImplementationPackage implementationPackage =
-            ServiceUtils.findById(implementationPackageId, ImplementationPackage.class, implementationPackageRepository);
+                ServiceUtils.findById(implementationPackageId, ImplementationPackage.class, implementationPackageRepository);
         final File file = fileService.create(multipartFile);
         implementationPackage.setFile(file);
         implementationPackageRepository.save(implementationPackage);
