@@ -33,5 +33,4 @@ import org.springframework.stereotype.Repository;
 public interface ImplementationPackageRepository extends JpaRepository<ImplementationPackage, UUID> {
 
     Page<ImplementationPackage> findImplementationPackagesByImplementationId(UUID implementation, Pageable pageable);
-
 }

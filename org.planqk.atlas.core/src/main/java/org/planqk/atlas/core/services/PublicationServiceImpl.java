@@ -95,16 +95,16 @@ public class PublicationServiceImpl implements PublicationService {
 
     private void removeReferences(@NonNull Publication publication) {
         CollectionUtils.forEachOnCopy(publication.getAlgorithms(),
-            algorithm -> algorithm.removePublication(publication));
+                algorithm -> algorithm.removePublication(publication));
         CollectionUtils.forEachOnCopy(publication.getImplementations(),
-            implementation -> implementation.removePublication(publication));
+                implementation -> implementation.removePublication(publication));
     }
 
     @Override
     @Transactional
     public void deletePublications(@NonNull Set<UUID> publicationIds) {
         publicationIds.forEach(publicationId ->
-            ServiceUtils.throwIfNotExists(publicationId, Publication.class, publicationRepository));
+                ServiceUtils.throwIfNotExists(publicationId, Publication.class, publicationRepository));
         publicationRepository.deleteByIdIn(publicationIds);
     }
 
@@ -127,7 +127,7 @@ public class PublicationServiceImpl implements PublicationService {
 
         if (!ServiceUtils.containsElementWithId(algorithm.getPublications(), publicationId)) {
             throw new NoSuchElementException("Algorithm with ID \"" + algorithmId
-                + "\" is not linked to Publication with ID \"" + publicationId + "\"");
+                    + "\" is not linked to Publication with ID \"" + publicationId + "\"");
         }
     }
 
@@ -138,7 +138,7 @@ public class PublicationServiceImpl implements PublicationService {
 
         if (!ServiceUtils.containsElementWithId(implementation.getPublications(), publicationId)) {
             throw new NoSuchElementException("Implementation with ID \"" + implementationId
-                + "\" is not linked to Publication with ID \"" + publicationId + "\"");
+                    + "\" is not linked to Publication with ID \"" + publicationId + "\"");
         }
     }
 }

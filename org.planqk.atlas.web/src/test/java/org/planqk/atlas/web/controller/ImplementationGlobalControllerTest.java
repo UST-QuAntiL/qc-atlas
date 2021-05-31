@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 the qc-atlas contributors.
+ * Copyright (c) 2020-2021 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -19,13 +19,12 @@
 
 package org.planqk.atlas.web.controller;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -48,6 +47,7 @@ import org.planqk.atlas.core.services.FileService;
 import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
 import org.planqk.atlas.web.dtos.ImplementationDto;
+import org.planqk.atlas.web.dtos.ImplementationDto;
 import org.planqk.atlas.web.dtos.RevisionDto;
 import org.planqk.atlas.web.linkassembler.EnableLinkAssemblers;
 import org.planqk.atlas.web.linkassembler.LinkBuilderService;
@@ -56,18 +56,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.envers.repository.support.DefaultRevisionMetadata;
 import org.springframework.data.history.Revision;
-import org.springframework.hateoas.EntityModel;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.SneakyThrows;
@@ -96,7 +93,7 @@ public class ImplementationGlobalControllerTest {
     @Autowired
     private LinkBuilderService linkBuilderService;
 
-    private ObjectMapper mapper = ObjectMapperUtils.newTestMapper();
+    private final ObjectMapper mapper = ObjectMapperUtils.newTestMapper();
 
     @Test
     @SneakyThrows
@@ -104,10 +101,10 @@ public class ImplementationGlobalControllerTest {
         doReturn(new PageImpl<>(List.of())).when(implementationService).findAll(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationGlobalController.class)
-            .getImplementations(ListParameters.getDefault()));
-        mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON)
-        ).andExpect(jsonPath("$._embedded.implementations").doesNotExist())
-            .andExpect(status().isOk());
+                .getImplementations(ListParameters.getDefault()));
+        MvcResult mvcResult = mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isOk()).andReturn();
+        assertEquals(ObjectMapperUtils.mapResponseToList(mvcResult, ImplementationDto.class).size(), 0);
     }
 
     @Test
@@ -123,12 +120,13 @@ public class ImplementationGlobalControllerTest {
         doReturn(new PageImpl<>(List.of(impl))).when(implementationService).findAll(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationGlobalController.class)
-            .getImplementations(ListParameters.getDefault()));
-        mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON)
-        ).andExpect(jsonPath("$._embedded.implementations[0].name").value(impl.getName()))
-            .andExpect(jsonPath("$._embedded.implementations[0].implementedAlgorithmId").value(algo.getId().toString()))
-            .andExpect(jsonPath("$._embedded.implementations[0].id").value(impl.getId().toString()))
-            .andExpect(status().isOk());
+                .getImplementations(ListParameters.getDefault()));
+        MvcResult mvcResult = mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isOk()).andReturn();
+        ImplementationDto implementationDto = ObjectMapperUtils.mapResponseToList(mvcResult, ImplementationDto.class).get(0);
+        assertEquals(implementationDto.getName(), impl.getName());
+        assertEquals(implementationDto.getId(), impl.getId());
+        assertEquals(implementationDto.getImplementedAlgorithmId(), algo.getId());
     }
 
     @Test
@@ -145,11 +143,11 @@ public class ImplementationGlobalControllerTest {
         doReturn(impl).when(implementationService).findById(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationGlobalController.class)
-            .getImplementation(impl.getId()));
+                .getImplementation(impl.getId()));
         mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.id").value(impl.getId().toString()))
-            .andExpect(jsonPath("$.implementedAlgorithmId").value(algo.getId().toString()));
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(impl.getId().toString()))
+                .andExpect(jsonPath("$.implementedAlgorithmId").value(algo.getId().toString()));
     }
 
     @Test

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 the qc-atlas contributors.
+ * Copyright (c) 2020-2021 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -19,6 +19,7 @@
 
 package org.planqk.atlas.web.controller;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -54,6 +55,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -82,11 +84,11 @@ public class ProblemTypeControllerTest {
         doReturn(new PageImpl<ProblemType>(List.of())).when(problemTypeService).findAll(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(ProblemTypeController.class)
-            .getProblemTypes(ListParameters.getDefault()));
-        mockMvc
-            .perform(get(url).accept(APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$._embedded.problemTypes").doesNotExist());
+                .getProblemTypes(ListParameters.getDefault()));
+        MvcResult mvcResult = mockMvc
+                .perform(get(url).accept(APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
+        assertEquals(ObjectMapperUtils.mapResponseToList(mvcResult, ProblemTypeDto.class).size(), 0);
     }
 
     @Test
@@ -99,12 +101,13 @@ public class ProblemTypeControllerTest {
         doReturn(new PageImpl<>(List.of(probType))).when(problemTypeService).findAll(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(ProblemTypeController.class)
-            .getProblemTypes(ListParameters.getDefault()));
-        mockMvc
-            .perform(get(url).accept(APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$._embedded.problemTypes[0].id").value(probType.getId().toString()))
-            .andExpect(jsonPath("$._embedded.problemTypes[0].name").value(probType.getName()));
+                .getProblemTypes(ListParameters.getDefault()));
+        MvcResult mvcResult = mockMvc
+                .perform(get(url).accept(APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
+        ProblemTypeDto problemTypeDto = ObjectMapperUtils.mapResponseToList(mvcResult, ProblemTypeDto.class).get(0);
+        assertEquals(problemTypeDto.getId(), probType.getId());
+        assertEquals(problemTypeDto.getName(), probType.getName());
     }
 
     @Test
@@ -118,16 +121,16 @@ public class ProblemTypeControllerTest {
 
         doReturn(probType).when(problemTypeService).create(any());
         var url = linkBuilderService.urlStringTo(methodOn(ProblemTypeController.class)
-            .createProblemType(null));
+                .createProblemType(null));
         mockMvc
-            .perform(
-                post(url)
-                    .accept(APPLICATION_JSON)
-                    .content(mapper.writeValueAsString(problemTypeDto))
-                    .contentType(APPLICATION_JSON)
-            ).andExpect(status().isCreated())
-            .andExpect(jsonPath("$.id").value(probType.getId().toString()))
-            .andExpect(jsonPath("$.name").value(probType.getName()));
+                .perform(
+                        post(url)
+                                .accept(APPLICATION_JSON)
+                                .content(mapper.writeValueAsString(problemTypeDto))
+                                .contentType(APPLICATION_JSON)
+                ).andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(probType.getId().toString()))
+                .andExpect(jsonPath("$.name").value(probType.getName()));
     }
 
     @Test
@@ -138,14 +141,14 @@ public class ProblemTypeControllerTest {
         problemTypeDto.setName(null);
 
         var url = linkBuilderService.urlStringTo(methodOn(ProblemTypeController.class)
-            .createProblemType(null));
+                .createProblemType(null));
         mockMvc
-            .perform(
-                post(url)
-                    .accept(APPLICATION_JSON)
-                    .content(mapper.writeValueAsString(problemTypeDto))
-                    .contentType(APPLICATION_JSON)
-            ).andExpect(status().isBadRequest());
+                .perform(
+                        post(url)
+                                .accept(APPLICATION_JSON)
+                                .content(mapper.writeValueAsString(problemTypeDto))
+                                .contentType(APPLICATION_JSON)
+                ).andExpect(status().isBadRequest());
     }
 
     @Test
@@ -158,16 +161,16 @@ public class ProblemTypeControllerTest {
 
         doReturn(probType).when(problemTypeService).update(any());
         var url = linkBuilderService.urlStringTo(methodOn(ProblemTypeController.class)
-            .updateProblemType(problemTypeDto.getId(), null));
+                .updateProblemType(problemTypeDto.getId(), null));
         mockMvc
-            .perform(
-                put(url)
-                    .accept(APPLICATION_JSON)
-                    .content(mapper.writeValueAsString(problemTypeDto))
-                    .contentType(APPLICATION_JSON)
-            ).andExpect(status().isOk())
-            .andExpect(jsonPath("$.id").value(probType.getId().toString()))
-            .andExpect(jsonPath("$.name").value(probType.getName()));
+                .perform(
+                        put(url)
+                                .accept(APPLICATION_JSON)
+                                .content(mapper.writeValueAsString(problemTypeDto))
+                                .contentType(APPLICATION_JSON)
+                ).andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(probType.getId().toString()))
+                .andExpect(jsonPath("$.name").value(probType.getName()));
     }
 
     @Test
@@ -178,14 +181,14 @@ public class ProblemTypeControllerTest {
         problemTypeDto.setName(null);
 
         var url = linkBuilderService.urlStringTo(methodOn(ProblemTypeController.class)
-            .updateProblemType(UUID.randomUUID(), null));
+                .updateProblemType(UUID.randomUUID(), null));
         mockMvc
-            .perform(
-                put(url)
-                    .accept(APPLICATION_JSON)
-                    .content(mapper.writeValueAsString(problemTypeDto))
-                    .contentType(APPLICATION_JSON)
-            ).andExpect(status().isBadRequest());
+                .perform(
+                        put(url)
+                                .accept(APPLICATION_JSON)
+                                .content(mapper.writeValueAsString(problemTypeDto))
+                                .contentType(APPLICATION_JSON)
+                ).andExpect(status().isBadRequest());
     }
 
     @Test
@@ -198,12 +201,12 @@ public class ProblemTypeControllerTest {
         doThrow(new NoSuchElementException()).when(problemTypeService).update(any());
 
         var url = linkBuilderService.urlStringTo(methodOn(ProblemTypeController.class)
-            .updateProblemType(problemTypeDto.getId(), null));
+                .updateProblemType(problemTypeDto.getId(), null));
         mockMvc.perform(
-            put(url)
-                .accept(APPLICATION_JSON)
-                .content(mapper.writeValueAsString(problemTypeDto))
-                .contentType(APPLICATION_JSON)
+                put(url)
+                        .accept(APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(problemTypeDto))
+                        .contentType(APPLICATION_JSON)
         ).andExpect(status().isNotFound());
     }
 
@@ -212,10 +215,10 @@ public class ProblemTypeControllerTest {
     void deleteProblemType_returnNoContent() {
         doNothing().when(problemTypeService).delete(any());
         var url = linkBuilderService.urlStringTo(methodOn(ProblemTypeController.class)
-            .deleteProblemType(UUID.randomUUID()));
+                .deleteProblemType(UUID.randomUUID()));
         mockMvc.perform(
-            delete(url)
-                .accept(APPLICATION_JSON)
+                delete(url)
+                        .accept(APPLICATION_JSON)
         ).andExpect(status().isNoContent());
     }
 
@@ -224,10 +227,10 @@ public class ProblemTypeControllerTest {
     void deleteProblemType_returnBadRequest() {
         doThrow(new EntityReferenceConstraintViolationException("")).when(problemTypeService).delete(any());
         var url = linkBuilderService.urlStringTo(methodOn(ProblemTypeController.class)
-            .deleteProblemType(UUID.randomUUID()));
+                .deleteProblemType(UUID.randomUUID()));
         mockMvc.perform(
-            delete(url)
-                .accept(APPLICATION_JSON)
+                delete(url)
+                        .accept(APPLICATION_JSON)
         ).andExpect(status().isBadRequest());
     }
 
@@ -236,10 +239,10 @@ public class ProblemTypeControllerTest {
     void deleteProblemType_returnNotFound() {
         doThrow(new NoSuchElementException()).when(problemTypeService).delete(any());
         var url = linkBuilderService.urlStringTo(methodOn(ProblemTypeController.class)
-            .deleteProblemType(UUID.randomUUID()));
+                .deleteProblemType(UUID.randomUUID()));
         mockMvc.perform(
-            delete(url)
-                .accept(APPLICATION_JSON)
+                delete(url)
+                        .accept(APPLICATION_JSON)
         ).andExpect(status().isNotFound());
     }
 
@@ -252,14 +255,14 @@ public class ProblemTypeControllerTest {
 
         doReturn(problemType).when(problemTypeService).findById(any());
         var url = linkBuilderService.urlStringTo(methodOn(ProblemTypeController.class)
-            .getProblemType(problemType.getId()));
+                .getProblemType(problemType.getId()));
         mockMvc
-            .perform(
-                get(url)
-                    .accept(APPLICATION_JSON)
-            ).andExpect(status().isOk())
-            .andExpect(jsonPath("$.id").value(problemType.getId().toString()))
-            .andExpect(jsonPath("$.name").value(problemType.getName()));
+                .perform(
+                        get(url)
+                                .accept(APPLICATION_JSON)
+                ).andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(problemType.getId().toString()))
+                .andExpect(jsonPath("$.name").value(problemType.getName()));
     }
 
     @Test
@@ -267,10 +270,10 @@ public class ProblemTypeControllerTest {
     void getProblemType_returnNotFound() {
         doThrow(new NoSuchElementException()).when(problemTypeService).findById(any());
         var url = linkBuilderService.urlStringTo(methodOn(ProblemTypeController.class)
-            .getProblemType(UUID.randomUUID()));
+                .getProblemType(UUID.randomUUID()));
         mockMvc.perform(
-            get(url)
-                .accept(APPLICATION_JSON)
+                get(url)
+                        .accept(APPLICATION_JSON)
         ).andExpect(status().isNotFound());
     }
 
@@ -283,13 +286,12 @@ public class ProblemTypeControllerTest {
 
         doReturn(List.of(probType)).when(problemTypeService).getParentList(any());
         var url = linkBuilderService.urlStringTo(methodOn(ProblemTypeController.class)
-            .getProblemTypeParentList(UUID.randomUUID()));
-        mockMvc.perform(
-            get(url)
-                .accept(APPLICATION_JSON)
-        ).andExpect(status().isOk())
-            .andExpect(jsonPath("$._embedded.problemTypes[0].id").value(probType.getId().toString()))
-        ;
+                .getProblemTypeParentList(UUID.randomUUID()));
+        MvcResult mvcResult = mockMvc.perform(
+                get(url)
+                        .accept(APPLICATION_JSON)
+        ).andExpect(status().isOk()).andReturn();
+        assertEquals(ObjectMapperUtils.mapResponseToList(mvcResult, ProblemTypeDto.class).get(0).getId(), probType.getId());
     }
 
     @Test
@@ -297,10 +299,10 @@ public class ProblemTypeControllerTest {
     void getProblemTypeParentList_returnNotFound() {
         doThrow(new NoSuchElementException()).when(problemTypeService).getParentList(any());
         var url = linkBuilderService.urlStringTo(methodOn(ProblemTypeController.class)
-            .getProblemTypeParentList(UUID.randomUUID()));
+                .getProblemTypeParentList(UUID.randomUUID()));
         mockMvc.perform(
-            get(url)
-                .accept(APPLICATION_JSON)
+                get(url)
+                        .accept(APPLICATION_JSON)
         ).andExpect(status().isNotFound());
     }
 }

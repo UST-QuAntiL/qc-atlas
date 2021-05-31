@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 the qc-atlas contributors.
+ * Copyright (c) 2020-2021 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -57,14 +57,14 @@ public class AtlasExceptionHandler {
 
     @ExceptionHandler(CloudStorageException.class)
     public ResponseEntity<CloudStorageException> handleCloudStorageException(
-        CloudStorageException e) {
+            CloudStorageException e) {
         log.error(e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
     }
 
     @ExceptionHandler(EntityReferenceConstraintViolationException.class)
     public ResponseEntity<EntityReferenceConstraintViolationException> handleEntityReferenceConstraintViolationException(
-        EntityReferenceConstraintViolationException e) {
+            EntityReferenceConstraintViolationException e) {
         log.warn(e.getMessage(), e);
         return ResponseEntity.badRequest().body(e);
     }
@@ -83,7 +83,7 @@ public class AtlasExceptionHandler {
 
     @ExceptionHandler(InvalidResourceTypeValueException.class)
     public ResponseEntity<InvalidResourceTypeValueException> handleInvalidResourceTypeValueException(
-        InvalidResourceTypeValueException e) {
+            InvalidResourceTypeValueException e) {
         log.warn(e.getMessage(), e);
         return ResponseEntity.badRequest().body(e);
     }

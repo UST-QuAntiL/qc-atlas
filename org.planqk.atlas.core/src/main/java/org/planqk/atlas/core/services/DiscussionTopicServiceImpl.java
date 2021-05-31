@@ -55,13 +55,13 @@ public class DiscussionTopicServiceImpl implements DiscussionTopicService {
 
     @Override
     public Page<DiscussionTopic> findByKnowledgeArtifact(
-        @NonNull KnowledgeArtifact knowledgeArtifact, @NonNull Pageable pageable) {
+            @NonNull KnowledgeArtifact knowledgeArtifact, @NonNull Pageable pageable) {
         return discussionTopicRepository.findByKnowledgeArtifact(knowledgeArtifact, pageable);
     }
 
     @Override
     public Page<DiscussionTopic> findByKnowledgeArtifactId(
-        @NonNull UUID knowledgeArtifactId, @NonNull Pageable pageable) {
+            @NonNull UUID knowledgeArtifactId, @NonNull Pageable pageable) {
         return discussionTopicRepository.findByKnowledgeArtifactId(knowledgeArtifactId, pageable);
     }
 
@@ -89,7 +89,7 @@ public class DiscussionTopicServiceImpl implements DiscussionTopicService {
     public void checkIfDiscussionTopicIsLinkedToKnowledgeArtifact(@NonNull UUID topicId, @NonNull UUID knowledgeArtifactId) {
         if (!discussionTopicRepository.existsByIdAndKnowledgeArtifact_Id(topicId, knowledgeArtifactId)) {
             throw new NoSuchElementException(String.format("A DiscussionTopic with the ID \"%s\" does not " +
-                "exist in the DiscussionTopics of KnowledgeArtifact with ID \"%s\"", topicId.toString(), knowledgeArtifactId.toString()));
+                    "exist in the DiscussionTopics of KnowledgeArtifact with ID \"%s\"", topicId.toString(), knowledgeArtifactId.toString()));
         }
     }
 }

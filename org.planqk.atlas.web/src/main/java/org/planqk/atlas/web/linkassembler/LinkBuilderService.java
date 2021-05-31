@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 the qc-atlas contributors.
+ * Copyright (c) 2020-2021 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -45,8 +45,8 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 /**
- * Custom HATEOAS {@link org.springframework.hateoas.server.LinkBuilder} that resolves path mappings using the container's {@link
- * RequestMappingInfoHandlerMapping} instance.
+ * Custom HATEOAS {@link org.springframework.hateoas.server.LinkBuilder} that resolves path mappings using the
+ * container's {@link RequestMappingInfoHandlerMapping} instance.
  */
 @Component
 public class LinkBuilderService {
@@ -58,8 +58,8 @@ public class LinkBuilderService {
 
     public LinkBuilderService(ListParametersMethodArgumentResolver listResolver, RequestMappingHandlerMapping mappings) {
         contributor = new CompositeUriComponentsContributor(
-            new PathVariableMethodArgumentResolver(), new RequestParamMethodArgumentResolver(false),
-            listResolver);
+                new PathVariableMethodArgumentResolver(), new RequestParamMethodArgumentResolver(false),
+                listResolver);
         this.mappings = mappings;
     }
 
@@ -93,7 +93,8 @@ public class LinkBuilderService {
     }
 
     /**
-     * Special version of {@link WebMvcLinkBuilder#linkTo(Object)} that resolves paths via {@link RequestMappingInfoHandlerMapping}.
+     * Special version of {@link WebMvcLinkBuilder#linkTo(Object)} that resolves paths via {@link
+     * RequestMappingInfoHandlerMapping}.
      * <p>
      * If that is impossible, the class- and method-annotations are considered.
      */
@@ -125,7 +126,7 @@ public class LinkBuilderService {
         final var argCount = invocation.getArguments().length;
         if (paramCount != argCount) {
             throw new IllegalArgumentException("Number of method parameters " + paramCount +
-                " does not match number of argument values " + argCount);
+                    " does not match number of argument values " + argCount);
         }
 
         final Map<String, Object> uriVars = new HashMap<>();

@@ -45,7 +45,7 @@ public final class ServiceUtils {
     public static <T, ID> void throwIfNotExists(ID id, Class<? extends T> resourceClass, CrudRepository<T, ID> repository) {
         if (!repository.existsById(id)) {
             throw new NoSuchElementException(resourceClass.getName() +
-                " with ID \"" + id.toString() + "\" does not exist");
+                    " with ID \"" + id.toString() + "\" does not exist");
         }
     }
 
@@ -61,7 +61,7 @@ public final class ServiceUtils {
      */
     public static <T, ID> T findById(ID id, Class<? extends T> resourceClass, CrudRepository<T, ID> repository) {
         return repository.findById(id).orElseThrow(() -> new NoSuchElementException(resourceClass.getName() +
-            " with ID \"" + id.toString() + "\" does not exist"));
+                " with ID \"" + id.toString() + "\" does not exist"));
     }
 
     /**

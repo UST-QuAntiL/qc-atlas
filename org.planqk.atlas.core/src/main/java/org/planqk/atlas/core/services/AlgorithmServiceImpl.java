@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 the qc-atlas contributors.
+ * Copyright (c) 2020-2021 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -26,6 +26,7 @@ import java.util.UUID;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.model.ApplicationArea;
+import org.planqk.atlas.core.model.LearningMethod;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
 import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.model.ProblemType;
@@ -35,6 +36,7 @@ import org.planqk.atlas.core.repository.AlgorithmRelationRepository;
 import org.planqk.atlas.core.repository.AlgorithmRepository;
 import org.planqk.atlas.core.repository.ApplicationAreaRepository;
 import org.planqk.atlas.core.repository.ComputeResourcePropertyRepository;
+import org.planqk.atlas.core.repository.LearningMethodRepository;
 import org.planqk.atlas.core.repository.PatternRelationRepository;
 import org.planqk.atlas.core.repository.ProblemTypeRepository;
 import org.planqk.atlas.core.repository.PublicationRepository;
@@ -69,6 +71,8 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 
     private final ApplicationAreaRepository applicationAreaRepository;
 
+    private final LearningMethodRepository learningMethodRepository;
+
     private final ComputeResourcePropertyRepository computeResourcePropertyRepository;
 
     private final PatternRelationService patternRelationService;
@@ -97,7 +101,6 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     @Override
     @Transactional
     public Algorithm update(@NonNull Algorithm algorithm) {
-
         final Algorithm persistedAlgorithm = findById(algorithm.getId());
 
         persistedAlgorithm.setName(algorithm.getName());
@@ -183,7 +186,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     private void removeReferences(@NonNull Algorithm algorithm) {
         // delete related implementations
         algorithm.getImplementations().forEach(
-            implementation -> implementationService.delete(implementation.getId()));
+                implementation -> implementationService.delete(implementation.getId()));
 
         // delete compute resource property
         algorithm.getRequiredComputeResourceProperties().forEach(computeResourcePropertyRepository::delete);
@@ -193,19 +196,19 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 
         // delete related pattern relations
         algorithm.getRelatedPatterns().forEach(
-            patternRelation -> patternRelationService.delete(patternRelation.getId()));
+                patternRelation -> patternRelationService.delete(patternRelation.getId()));
 
         // remove links to publications
         CollectionUtils.forEachOnCopy(algorithm.getPublications(),
-            publication -> publication.removeAlgorithm(algorithm));
+                publication -> publication.removeAlgorithm(algorithm));
 
         // remove links to application areas
         CollectionUtils.forEachOnCopy(algorithm.getApplicationAreas(),
-            applicationArea -> applicationArea.removeAlgorithm(algorithm));
+                applicationArea -> applicationArea.removeAlgorithm(algorithm));
 
         // remove links to problem types
         CollectionUtils.forEachOnCopy(algorithm.getProblemTypes(),
-            problemType -> problemType.removeAlgorithm(algorithm));
+                problemType -> problemType.removeAlgorithm(algorithm));
 
         // remove link to tag
         CollectionUtils.forEachOnCopy(algorithm.getTags(), tag -> tag.removeAlgorithm(algorithm));
@@ -247,13 +250,20 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     }
 
     @Override
+    public Page<LearningMethod> findLinkedLearningMethods(UUID algorithmId, Pageable pageable) {
+        ServiceUtils.throwIfNotExists(algorithmId, Algorithm.class, algorithmRepository);
+
+        return learningMethodRepository.findLearningMethodByAlgorithmId(algorithmId, pageable);
+    }
+
+    @Override
     public void checkIfPublicationIsLinkedToAlgorithm(UUID algorithmId, UUID publicationId) {
         ServiceUtils.throwIfNotExists(publicationId, Publication.class, publicationRepository);
         final Algorithm algorithm = findById(algorithmId);
 
         if (!ServiceUtils.containsElementWithId(algorithm.getPublications(), publicationId)) {
             throw new NoSuchElementException("Publication with ID \"" + publicationId
-                + "\" is not linked to Algorithm with ID \"" + algorithmId + "\"");
+                    + "\" is not linked to Algorithm with ID \"" + algorithmId + "\"");
         }
     }
 
@@ -264,7 +274,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 
         if (!ServiceUtils.containsElementWithId(algorithm.getProblemTypes(), problemTypeId)) {
             throw new NoSuchElementException("ProblemType with ID \"" + problemTypeId
-                + "\" is not linked to Algorithm with ID \"" + algorithmId + "\"");
+                    + "\" is not linked to Algorithm with ID \"" + algorithmId + "\"");
         }
     }
 
@@ -275,8 +285,19 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 
         if (!ServiceUtils.containsElementWithId(algorithm.getApplicationAreas(), applicationAreaId)) {
             throw new NoSuchElementException("ApplicationArea with ID \"" + applicationAreaId
-                + "\" is not linked to Algorithm with ID \"" + algorithmId + "\"");
+                    + "\" is not linked to Algorithm with ID \"" + algorithmId + "\"");
         }
+    }
+
+    @Override
+    public LearningMethod getLearningMethodOfAlgorithm(UUID algorithmId, UUID learningMethodId) {
+        final Algorithm algorithm = findById(algorithmId);
+        return algorithm.getLearningMethods()
+                .stream()
+                .filter(learningMethod -> learningMethod.getId().equals(learningMethodId))
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException("Learning Method with ID \"" + learningMethodId
+                        + "\" is not linked to Algorithm with ID \"" + algorithmId + "\""));
     }
 
     @Override

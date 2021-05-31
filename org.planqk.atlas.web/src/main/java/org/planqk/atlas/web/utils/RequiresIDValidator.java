@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 the qc-atlas contributors.
+ * Copyright (c) 2020-2021 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -27,7 +27,7 @@ public class RequiresIDValidator implements ConstraintValidator<RequiresID, Iden
     @Override
     public boolean isValid(Identifyable identifyable, ConstraintValidatorContext constraintValidatorContext) {
         return identifyable != null &&
-            identifyable.getId() != null &&
-            !identifyable.getId().equals(new UUID(0, 0));
+                identifyable.getId() != null &&
+                !identifyable.getId().equals(new UUID(0, 0));
     }
 }

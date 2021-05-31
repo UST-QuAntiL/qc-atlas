@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 the qc-atlas contributors.
+ * Copyright (c) 2020-2021 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -36,9 +36,10 @@ import io.swagger.v3.oas.models.media.Schema;
 /**
  * Custom converter for EntityModel classes.
  * <p>
- * Spring HATEOAS' EntityModel class is special because it uses Jackson's @JsonWrapped to "copy" the actual DTO's properties into the EntityModel
- * instance. Unfortunately, information on whether properties are required or not is lost in the process. This wrapper aims to fix that by copying the
- * DTO's schema and then manually adding the EntityModel-specific fields (for now, just _links).
+ * Spring HATEOAS' EntityModel class is special because it uses Jackson's @JsonWrapped to "copy" the actual DTO's
+ * properties into the EntityModel instance. Unfortunately, information on whether properties are required or not is
+ * lost in the process. This wrapper aims to fix that by copying the DTO's schema and then manually adding the
+ * EntityModel-specific fields (for now, just _links).
  */
 public class EntityModelConverter implements ModelConverter {
     @Override
@@ -72,8 +73,8 @@ public class EntityModelConverter implements ModelConverter {
             final Schema wrapper = clone(resolved);
             wrapper.name(String.format("EntityModel%s", wrapper.getName()));
             wrapper.addProperties("_links", context.resolve(new AnnotatedType()
-                .type(Links.class)
-                .resolveAsRef(true)));
+                    .type(Links.class)
+                    .resolveAsRef(true)));
             return wrapper;
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);

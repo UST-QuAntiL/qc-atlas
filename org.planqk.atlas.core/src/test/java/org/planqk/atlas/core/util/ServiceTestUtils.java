@@ -54,12 +54,12 @@ public class ServiceTestUtils {
         assertThat(algorithm1.getComputationModel()).isEqualTo(algorithm2.getComputationModel());
 
         if (algorithm1.getComputationModel() == ComputationModel.QUANTUM
-            || algorithm1.getComputationModel() == ComputationModel.HYBRID) {
+                || algorithm1.getComputationModel() == ComputationModel.HYBRID) {
             var quantumAlgorithm1 = (QuantumAlgorithm) algorithm1;
             var quantumAlgorithm2 = (QuantumAlgorithm) algorithm2;
 
             assertThat(quantumAlgorithm1.getQuantumComputationModel())
-                .isEqualTo(quantumAlgorithm2.getQuantumComputationModel());
+                    .isEqualTo(quantumAlgorithm2.getQuantumComputationModel());
             assertThat(quantumAlgorithm1.getSpeedUp()).isEqualTo(quantumAlgorithm2.getSpeedUp());
             assertThat(quantumAlgorithm1.isNisqReady()).isEqualTo(quantumAlgorithm2.isNisqReady());
         }
@@ -68,12 +68,12 @@ public class ServiceTestUtils {
     }
 
     public static void assertAlgorithmRelationEquality(
-        AlgorithmRelation algorithmRelation1, AlgorithmRelation algorithmRelation2) {
+            AlgorithmRelation algorithmRelation1, AlgorithmRelation algorithmRelation2) {
         assertThat(algorithmRelation1.getDescription()).isEqualTo(algorithmRelation2.getDescription());
         assertThat(algorithmRelation1.getAlgorithmRelationType().getId())
-            .isEqualTo(algorithmRelation2.getAlgorithmRelationType().getId());
+                .isEqualTo(algorithmRelation2.getAlgorithmRelationType().getId());
         assertThat(algorithmRelation1.getAlgorithmRelationType().getName())
-            .isEqualTo(algorithmRelation2.getAlgorithmRelationType().getName());
+                .isEqualTo(algorithmRelation2.getAlgorithmRelationType().getName());
         assertThat(algorithmRelation1.getSourceAlgorithm().getId()).isEqualTo(algorithmRelation2.getSourceAlgorithm().getId());
         assertThat(algorithmRelation1.getTargetAlgorithm().getId()).isEqualTo(algorithmRelation2.getTargetAlgorithm().getId());
     }
@@ -86,7 +86,7 @@ public class ServiceTestUtils {
         assertThat(implementation1.getParameter()).isEqualTo(implementation2.getParameter());
         assertThat(implementation1.getDependencies()).isEqualTo(implementation2.getDependencies());
         assertThat(implementation1.getImplementedAlgorithm().getId())
-            .isEqualTo(implementation2.getImplementedAlgorithm().getId());
+                .isEqualTo(implementation2.getImplementedAlgorithm().getId());
         assertAlgorithmEquality(implementation1.getImplementedAlgorithm(), implementation2.getImplementedAlgorithm());
     }
 
@@ -120,15 +120,15 @@ public class ServiceTestUtils {
     }
 
     public static void assertComputeResourcePropertyEquality(
-        ComputeResourceProperty computeResourceProperty1, ComputeResourceProperty computeResourceProperty2) {
+            ComputeResourceProperty computeResourceProperty1, ComputeResourceProperty computeResourceProperty2) {
         assertThat(computeResourceProperty1.getValue()).isEqualTo(computeResourceProperty2.getValue());
         assertThat(computeResourceProperty1.getComputeResourcePropertyType().getId())
-            .isEqualTo(computeResourceProperty2.getComputeResourcePropertyType().getId());
+                .isEqualTo(computeResourceProperty2.getComputeResourcePropertyType().getId());
         assertThat(computeResourceProperty1.getComputeResourcePropertyType().getName())
-            .isEqualTo(computeResourceProperty2.getComputeResourcePropertyType().getName());
+                .isEqualTo(computeResourceProperty2.getComputeResourcePropertyType().getName());
         assertThat(computeResourceProperty1.getComputeResourcePropertyType().getDescription())
-            .isEqualTo(computeResourceProperty2.getComputeResourcePropertyType().getDescription());
+                .isEqualTo(computeResourceProperty2.getComputeResourcePropertyType().getDescription());
         assertThat(computeResourceProperty1.getComputeResourcePropertyType().getDatatype())
-            .isEqualTo(computeResourceProperty2.getComputeResourcePropertyType().getDatatype());
+                .isEqualTo(computeResourceProperty2.getComputeResourcePropertyType().getDatatype());
     }
 }

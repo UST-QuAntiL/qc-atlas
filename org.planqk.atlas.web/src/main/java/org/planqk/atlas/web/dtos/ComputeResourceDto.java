@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 the qc-atlas contributors.
+ * Copyright (c) 2020-2021 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -41,7 +41,7 @@ import lombok.ToString;
 @Data
 @NoArgsConstructor
 @JsonSubTypes({@JsonSubTypes.Type(value = QPUDto.class),
-    @JsonSubTypes.Type(value = SimulatorDto.class)})
+                      @JsonSubTypes.Type(value = SimulatorDto.class)})
 @Relation(itemRelation = "computeResource", collectionRelation = "computeResources")
 public class ComputeResourceDto implements Identifyable {
 
@@ -50,7 +50,7 @@ public class ComputeResourceDto implements Identifyable {
     private UUID id;
 
     @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
-        message = "Compute Resource Name must not be null!")
+             message = "Compute Resource Name must not be null!")
     private String name;
 
     private String vendor;

@@ -32,10 +32,10 @@ public interface FileRepository extends JpaRepository<File, UUID> {
     Optional<File> findByFileURL(String fileURL);
 
     @Query(value = "SELECT * " +
-        "FROM file " +
-        "INNER JOIN implementation_package_file on file.id = implementation_package_file.file_id " +
-        "INNER JOIN knowledge_artifact ka on file.id = ka.id " +
-        "WHERE implementation_package_file.implementation_package_id = :implementationPackageId",
-        nativeQuery = true)
+            "FROM file " +
+            "INNER JOIN implementation_package_file on file.id = implementation_package_file.file_id " +
+            "INNER JOIN knowledge_artifact ka on file.id = ka.id " +
+            "WHERE implementation_package_file.implementation_package_id = :implementationPackageId",
+           nativeQuery = true)
     Optional<File> findByImplementationPackage_Id(@Param("implementationPackageId") UUID implementationPackageId);
 }

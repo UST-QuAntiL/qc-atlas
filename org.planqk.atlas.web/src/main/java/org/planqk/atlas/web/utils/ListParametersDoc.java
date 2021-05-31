@@ -35,6 +35,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Retention(RetentionPolicy.RUNTIME)
 @PageableAsQueryParam
 @Parameter(in = ParameterIn.QUERY, description = "Filter criteria for this query ", name = "search",
-    content = @Content(schema = @Schema(type = "string")))
+           content = @Content(schema = @Schema(type = "string")))
 public @interface ListParametersDoc {
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 the qc-atlas contributors.
+ * Copyright (c) 2020-2021 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -44,8 +44,8 @@ public class EntityModelConverterTest {
         assertEquals(2, normal.schema.getProperties().size());
 
         final var wrapped = converters.resolveAsResolvedSchema(new AnnotatedType().type(
-            Json.mapper().getTypeFactory().constructParametricType(EntityModel.class, SimpleDto.class))
-            .resolveAsRef(false));
+                Json.mapper().getTypeFactory().constructParametricType(EntityModel.class, SimpleDto.class))
+                .resolveAsRef(false));
         assertEquals(List.of("notNull"), wrapped.schema.getRequired());
         assertEquals(3, wrapped.schema.getProperties().size());
     }

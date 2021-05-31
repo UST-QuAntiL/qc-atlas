@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 the qc-atlas contributors.
+ * Copyright (c) 2020-2021 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -55,8 +55,8 @@ public class PatternRelationDtoMapperTest {
         var mappedPatternRelation = ModelMapperUtils.convert(patternRelationDto, PatternRelationDto.class);
 
         assertThat(mappedPatternRelation.getId())
-            .isEqualTo(patternRelationDto.getId());
+                .isEqualTo(patternRelationDto.getId());
         assertThat(mappedPatternRelation.getAlgorithmId())
-            .isEqualTo(patternRelationDto.getAlgorithmId());
+                .isEqualTo(patternRelationDto.getAlgorithmId());
     }
 }

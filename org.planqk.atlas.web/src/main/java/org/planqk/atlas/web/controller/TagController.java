@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 the qc-atlas contributors.
+ * Copyright (c) 2020-2021 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -19,22 +19,19 @@
 
 package org.planqk.atlas.web.controller;
 
+import java.util.Collection;
+
 import org.planqk.atlas.core.model.Tag;
 import org.planqk.atlas.core.services.TagService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.ImplementationDto;
 import org.planqk.atlas.web.dtos.TagDto;
-import org.planqk.atlas.web.linkassembler.AlgorithmAssembler;
-import org.planqk.atlas.web.linkassembler.ImplementationAssembler;
-import org.planqk.atlas.web.linkassembler.TagAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.ValidationGroups;
-import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.PagedModel;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -62,21 +59,15 @@ public class TagController {
 
     private final TagService tagService;
 
-    private final TagAssembler tagAssembler;
-
-    private final AlgorithmAssembler algorithmAssembler;
-
-    private final ImplementationAssembler implementationAssembler;
-
     @Operation(responses = {
             @ApiResponse(responseCode = "200")
     }, description = "Retrieve all created tags.")
     @ListParametersDoc
     @GetMapping
-    public ResponseEntity<PagedModel<EntityModel<TagDto>>> getTags(
+    public ResponseEntity<Page<TagDto>> getTags(
             @Parameter(hidden = true) ListParameters listParameters) {
-        return new ResponseEntity<>(tagAssembler.toModel(
-                this.tagService.findAllByContent(listParameters.getSearch(), listParameters.getPageable())), HttpStatus.OK);
+        return ResponseEntity.ok(ModelMapperUtils.convertPage(
+                this.tagService.findAllByContent(listParameters.getSearch(), listParameters.getPageable()), TagDto.class));
     }
 
     @Operation(responses = {
@@ -84,10 +75,10 @@ public class TagController {
             @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body.")
     }, description = "Create a new tag with its value and category.")
     @PostMapping
-    public ResponseEntity<EntityModel<TagDto>> createTag(
+    public ResponseEntity<TagDto> createTag(
             @Validated(ValidationGroups.Create.class) @RequestBody TagDto tagDto) {
         final Tag savedTag = this.tagService.create(ModelMapperUtils.convert(tagDto, Tag.class));
-        return new ResponseEntity<>(tagAssembler.toModel(savedTag), HttpStatus.CREATED);
+        return new ResponseEntity<>(ModelMapperUtils.convert(savedTag, TagDto.class), HttpStatus.CREATED);
     }
 
     @Operation(responses = {
@@ -95,34 +86,27 @@ public class TagController {
             @ApiResponse(responseCode = "404", description = "Tag with given value doesn't exist.")
     }, description = "Retrieve a specific tag.")
     @GetMapping("/{value}")
-    public ResponseEntity<EntityModel<TagDto>> getTag(@PathVariable String value) {
+    public ResponseEntity<TagDto> getTag(@PathVariable String value) {
         final Tag tag = this.tagService.findByValue(value);
-        final var tagDto = tagAssembler.toModel(tag);
-        return ResponseEntity.ok(tagDto);
+        return ResponseEntity.ok(ModelMapperUtils.convert(tag, TagDto.class));
     }
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200")
     }, description = "Retrieve all algorithms under a specific tag.")
     @GetMapping("/{value}/" + Constants.ALGORITHMS)
-    public ResponseEntity<CollectionModel<EntityModel<AlgorithmDto>>> getAlgorithmsOfTag(@PathVariable String value) {
+    public ResponseEntity<Collection<AlgorithmDto>> getAlgorithmsOfTag(@PathVariable String value) {
         final Tag tag = this.tagService.findByValue(value);
-        final CollectionModel<EntityModel<AlgorithmDto>> algorithms = algorithmAssembler.toModel(tag.getAlgorithms());
-        algorithmAssembler.addLinks(algorithms.getContent());
-        tagAssembler.addAlgorithmLink(algorithms, tag.getValue());
-        return new ResponseEntity<>(algorithms, HttpStatus.OK);
+        return ResponseEntity.ok(ModelMapperUtils.convertCollection(tag.getAlgorithms(), AlgorithmDto.class));
     }
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200")
     }, description = "Retrieve all implementations under a specific tag.")
     @GetMapping("/{value}/" + Constants.IMPLEMENTATIONS)
-    public ResponseEntity<CollectionModel<EntityModel<ImplementationDto>>> getImplementationsOfTag(
+    public ResponseEntity<Collection<ImplementationDto>> getImplementationsOfTag(
             @PathVariable String value) {
         final Tag tag = this.tagService.findByValue(value);
-        final CollectionModel<EntityModel<ImplementationDto>> implementations = implementationAssembler.toModel(tag.getImplementations());
-        implementationAssembler.addLinks(implementations.getContent());
-        tagAssembler.addImplementationLink(implementations, tag.getValue());
-        return new ResponseEntity<>(implementations, HttpStatus.OK);
+        return ResponseEntity.ok(ModelMapperUtils.convertCollection(tag.getImplementations(), ImplementationDto.class));
     }
 }

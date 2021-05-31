@@ -104,11 +104,11 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
 
     private void removeReferences(@NonNull SoftwarePlatform softwarePlatform) {
         CollectionUtils.forEachOnCopy(softwarePlatform.getImplementations(),
-            implementation -> implementation.removeSoftwarePlatform(softwarePlatform));
+                implementation -> implementation.removeSoftwarePlatform(softwarePlatform));
         CollectionUtils.forEachOnCopy(softwarePlatform.getSupportedCloudServices(),
-            cloudService -> cloudService.removeSoftwarePlatform(softwarePlatform));
+                cloudService -> cloudService.removeSoftwarePlatform(softwarePlatform));
         CollectionUtils.forEachOnCopy(softwarePlatform.getSupportedComputeResources(),
-            computeResource -> computeResource.removeSoftwarePlatform(softwarePlatform));
+                computeResource -> computeResource.removeSoftwarePlatform(softwarePlatform));
     }
 
     @Override
@@ -139,7 +139,7 @@ public class SoftwarePlatformServiceImpl implements SoftwarePlatformService {
 
         if (!ServiceUtils.containsElementWithId(implementation.getSoftwarePlatforms(), softwarePlatformId)) {
             throw new NoSuchElementException("Implementation with ID \"" + implementationId
-                + "\" is not linked to SoftwarePlatform with ID \"" + softwarePlatformId + "\"");
+                    + "\" is not linked to SoftwarePlatform with ID \"" + softwarePlatformId + "\"");
         }
     }
 }

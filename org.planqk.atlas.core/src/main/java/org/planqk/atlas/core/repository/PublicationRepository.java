@@ -40,29 +40,29 @@ public interface PublicationRepository extends JpaRepository<Publication, UUID> 
 
     default Page<Publication> findAll(String search, Pageable pageable) {
         return findByTitleContainingIgnoreCaseOrDoiContainingIgnoreCaseOrUrlContainingIgnoreCaseOrAuthorsContainingIgnoreCase(search, search, search,
-            search, pageable);
+                search, pageable);
     }
 
     Page<Publication> findByTitleContainingIgnoreCaseOrDoiContainingIgnoreCaseOrUrlContainingIgnoreCaseOrAuthorsContainingIgnoreCase(
-        String title,
-        String doi,
-        String url,
-        String author,
-        Pageable pageable);
+            String title,
+            String doi,
+            String url,
+            String author,
+            Pageable pageable);
 
     boolean existsById(UUID id);
 
     void deleteByIdIn(Set<UUID> ids);
 
     @Query("SELECT pub " +
-        "FROM Publication pub " +
-        "JOIN pub.algorithms algos " +
-        "WHERE :algoId = algos.id")
+                   "FROM Publication pub " +
+                   "JOIN pub.algorithms algos " +
+                   "WHERE :algoId = algos.id")
     Page<Publication> findPublicationsByAlgorithmId(@Param("algoId") UUID algorithmId, Pageable pageable);
 
     @Query("SELECT pub " +
-        "FROM Publication pub " +
-        "JOIN pub.implementations impls " +
-        "WHERE :implId = impls.id")
+                   "FROM Publication pub " +
+                   "JOIN pub.implementations impls " +
+                   "WHERE :implId = impls.id")
     Page<Publication> findPublicationsByImplementationId(@Param("implId") UUID implementationId, Pageable pageable);
 }

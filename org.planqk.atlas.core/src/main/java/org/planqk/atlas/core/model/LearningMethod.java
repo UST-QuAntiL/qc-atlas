@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 the qc-atlas contributors.
+ * Copyright (c) 2021 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -17,22 +17,30 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.planqk.atlas.web.linkassembler;
+package org.planqk.atlas.core.model;
 
-import java.util.UUID;
+import java.util.HashSet;
+import java.util.Set;
+import javax.persistence.Entity;
+import javax.persistence.ManyToMany;
 
-import org.planqk.atlas.web.dtos.PublicationDto;
-import org.springframework.hateoas.EntityModel;
-import org.springframework.stereotype.Component;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-@Component
-public class PublicationAssembler extends GenericLinkAssembler<PublicationDto> {
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
-    @Override
-    public void addLinks(EntityModel<PublicationDto> resource) {
-    }
+@Getter
+@Setter
+@Entity
+public class LearningMethod extends HasId {
 
-    private UUID getId(EntityModel<PublicationDto> resource) {
-        return resource.getContent().getId();
-    }
+    private String name;
+
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @ManyToMany(mappedBy = "learningMethods")
+    @EqualsAndHashCode.Exclude
+    private Set<Algorithm> algorithms = new HashSet<>();
 }

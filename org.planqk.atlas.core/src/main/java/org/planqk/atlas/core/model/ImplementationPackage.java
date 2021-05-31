@@ -49,9 +49,9 @@ public class ImplementationPackage extends HasId {
     @OneToOne(fetch = FetchType.LAZY, orphanRemoval = true)
     @EqualsAndHashCode.Exclude
     @JoinTable(
-        name = "ImplementationPackageFile",
-        joinColumns = @JoinColumn(name = "implementation_package_id"),
-        inverseJoinColumns = @JoinColumn(name = "file_id")
+            name = "ImplementationPackageFile",
+            joinColumns = @JoinColumn(name = "implementation_package_id"),
+            inverseJoinColumns = @JoinColumn(name = "file_id")
     )
     private File file;
 }

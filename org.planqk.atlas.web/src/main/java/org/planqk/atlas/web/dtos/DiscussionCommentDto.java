@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 the qc-atlas contributors.
+ * Copyright (c) 2020-2021 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -47,11 +47,11 @@ public class DiscussionCommentDto implements Identifyable {
     private UUID id;
 
     @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
-        message = "Text must not be null!")
+             message = "Text must not be null!")
     private String text;
 
     @NotNull(
-        groups = {ValidationGroups.Update.class, ValidationGroups.Create.class}, message = "Date must not be null!")
+            groups = {ValidationGroups.Update.class, ValidationGroups.Create.class}, message = "Date must not be null!")
     private OffsetDateTime date;
 
     private DiscussionCommentDto replyTo;

@@ -91,7 +91,7 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
         computeResourceProperty.setValue("value");
 
         var storedProperty = computeResourcePropertyService.addComputeResourcePropertyToComputeResource(
-            storedComputeResource.getId(), computeResourceProperty);
+                storedComputeResource.getId(), computeResourceProperty);
 
         var storedComputeResourceWithReference = computeResourceService.findById(storedComputeResource.getId());
 
@@ -118,7 +118,7 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
         computeResourceService.create(computeResource2);
 
         List<ComputeResource> storedComputeResources = computeResourceService
-            .searchAllByName("1", Pageable.unpaged()).getContent();
+                .searchAllByName("1", Pageable.unpaged()).getContent();
 
         assertThat(storedComputeResources.size()).isEqualTo(1);
     }
@@ -126,7 +126,7 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
     @Test
     void findComputeResourceById_ElementNotFound() {
         assertThrows(NoSuchElementException.class, () ->
-            computeResourceService.findById(UUID.randomUUID()));
+                computeResourceService.findById(UUID.randomUUID()));
     }
 
     @Test
@@ -146,7 +146,7 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
         ComputeResource computeResource = getFullComputeResource("computeResourceName");
         computeResource.setId(UUID.randomUUID());
         assertThrows(NoSuchElementException.class, () ->
-            computeResourceService.update(computeResource));
+                computeResourceService.update(computeResource));
     }
 
     @Test
@@ -181,7 +181,7 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
         computeResourceService.delete(storedComputeResource.getId());
 
         assertThrows(NoSuchElementException.class, () ->
-            computeResourceService.findById(storedComputeResource.getId()));
+                computeResourceService.findById(storedComputeResource.getId()));
     }
 
     @Test
@@ -208,17 +208,17 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
         computeResourceProperty.setValue("value");
 
         var storedProperty = computeResourcePropertyService.addComputeResourcePropertyToComputeResource(
-            storedComputeResource.getId(), computeResourceProperty);
+                storedComputeResource.getId(), computeResourceProperty);
 
         // Delete
         computeResourceService.delete(storedComputeResource.getId());
 
         assertThrows(NoSuchElementException.class, () ->
-            computeResourceService.findById(storedComputeResource.getId()));
+                computeResourceService.findById(storedComputeResource.getId()));
 
         // Test if references are removed
         assertThrows(NoSuchElementException.class, () ->
-            computeResourcePropertyService.findById(storedProperty.getId()));
+                computeResourcePropertyService.findById(storedProperty.getId()));
     }
 
     @Test
@@ -236,7 +236,7 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
         linkingService.linkSoftwarePlatformAndComputeResource(softwarePlatform2.getId(), computeResource.getId());
 
         var softwarePlatforms = computeResourceService
-            .findLinkedSoftwarePlatforms(computeResource.getId(), Pageable.unpaged());
+                .findLinkedSoftwarePlatforms(computeResource.getId(), Pageable.unpaged());
 
         assertThat(softwarePlatforms.getTotalElements()).isEqualTo(2);
     }
@@ -256,7 +256,7 @@ public class ComputeResourceServiceTest extends AtlasDatabaseTestBase {
         linkingService.linkCloudServiceAndComputeResource(cloudService2.getId(), computeResource.getId());
 
         var cloudServices = computeResourceService
-            .findLinkedCloudServices(computeResource.getId(), Pageable.unpaged());
+                .findLinkedCloudServices(computeResource.getId(), Pageable.unpaged());
 
         assertThat(cloudServices.getTotalElements()).isEqualTo(2);
     }

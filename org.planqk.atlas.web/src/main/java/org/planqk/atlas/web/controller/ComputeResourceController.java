@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 the qc-atlas contributors.
+ * Copyright (c) 2020-2021 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -30,18 +30,11 @@ import org.planqk.atlas.web.dtos.CloudServiceDto;
 import org.planqk.atlas.web.dtos.ComputeResourceDto;
 import org.planqk.atlas.web.dtos.ComputeResourcePropertyDto;
 import org.planqk.atlas.web.dtos.SoftwarePlatformDto;
-import org.planqk.atlas.web.linkassembler.CloudServiceAssembler;
-import org.planqk.atlas.web.linkassembler.ComputeResourceAssembler;
-import org.planqk.atlas.web.linkassembler.ComputeResourcePropertyAssembler;
-import org.planqk.atlas.web.linkassembler.SoftwarePlatformAssembler;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.ValidationGroups;
 import org.springframework.data.domain.Page;
-import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -73,22 +66,14 @@ public class ComputeResourceController {
 
     private final ComputeResourcePropertyService computeResourcePropertyService;
 
-    private final ComputeResourcePropertyAssembler computeResourcePropertyAssembler;
-
     private final ComputeResourceService computeResourceService;
-
-    private final ComputeResourceAssembler computeResourceAssembler;
-
-    private final SoftwarePlatformAssembler softwarePlatformAssembler;
-
-    private final CloudServiceAssembler cloudServiceAssembler;
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200")
     }, description = "Retrieve all compute resources.")
     @ListParametersDoc
     @GetMapping
-    public ResponseEntity<PagedModel<EntityModel<ComputeResourceDto>>> getComputeResources(
+    public ResponseEntity<Page<ComputeResourceDto>> getComputeResources(
             @Parameter(hidden = true) ListParameters listParameters) {
         final Page<ComputeResource> entities;
         if (listParameters.getSearch() == null || listParameters.getSearch().isEmpty()) {
@@ -96,7 +81,7 @@ public class ComputeResourceController {
         } else {
             entities = computeResourceService.searchAllByName(listParameters.getSearch(), listParameters.getPageable());
         }
-        return ResponseEntity.ok(computeResourceAssembler.toModel(entities));
+        return ResponseEntity.ok(ModelMapperUtils.convertPage(entities, ComputeResourceDto.class));
     }
 
     @Operation(responses = {
@@ -106,11 +91,11 @@ public class ComputeResourceController {
             "References to sub-objects (e.g. a compute resource property) can be added via sub-routes " +
             "(e.g. POST on /" + Constants.COMPUTE_RESOURCES + "/{computeResourceId}/" + Constants.COMPUTE_RESOURCE_PROPERTIES + ").")
     @PostMapping
-    public ResponseEntity<EntityModel<ComputeResourceDto>> createComputeResource(
+    public ResponseEntity<ComputeResourceDto> createComputeResource(
             @Validated(ValidationGroups.Create.class) @RequestBody ComputeResourceDto computeResourceDto) {
         final ComputeResource computeResource = computeResourceService.create(
                 ModelMapperUtils.convert(computeResourceDto, ComputeResource.class));
-        return ResponseEntity.status(HttpStatus.CREATED).body(computeResourceAssembler.toModel(computeResource));
+        return ResponseEntity.status(HttpStatus.CREATED).body(ModelMapperUtils.convert(computeResource, ComputeResourceDto.class));
     }
 
     @Operation(responses = {
@@ -122,13 +107,13 @@ public class ComputeResourceController {
             "use the corresponding sub-route for updating them (e.g. PUT on /" +
             Constants.COMPUTE_RESOURCES + "/{computeResourceId}/" + Constants.COMPUTE_RESOURCE_PROPERTIES + "/{computeResourcePropertyId}).")
     @PutMapping("/{computeResourceId}")
-    public ResponseEntity<EntityModel<ComputeResourceDto>> updateComputeResource(
+    public ResponseEntity<ComputeResourceDto> updateComputeResource(
             @PathVariable UUID computeResourceId,
             @Validated(ValidationGroups.Update.class) @RequestBody ComputeResourceDto computeResourceDto) {
         computeResourceDto.setId(computeResourceId);
         final ComputeResource computeResource = computeResourceService.update(
                 ModelMapperUtils.convert(computeResourceDto, ComputeResource.class));
-        return ResponseEntity.ok(computeResourceAssembler.toModel(computeResource));
+        return ResponseEntity.ok(ModelMapperUtils.convert(computeResource, ComputeResourceDto.class));
     }
 
     @Operation(responses = {
@@ -150,10 +135,10 @@ public class ComputeResourceController {
             @ApiResponse(responseCode = "404", description = "Not Found. Compute Resource with given ID doesn't exist.")
     }, description = "Retrieve a specific compute resource and its basic properties.")
     @GetMapping("/{computeResourceId}")
-    public ResponseEntity<EntityModel<ComputeResourceDto>> getComputeResource(
+    public ResponseEntity<ComputeResourceDto> getComputeResource(
             @PathVariable UUID computeResourceId) {
         final ComputeResource computeResource = computeResourceService.findById(computeResourceId);
-        return ResponseEntity.ok(computeResourceAssembler.toModel(computeResource));
+        return ResponseEntity.ok(ModelMapperUtils.convert(computeResource, ComputeResourceDto.class));
     }
 
     @Operation(responses = {
@@ -163,11 +148,11 @@ public class ComputeResourceController {
     }, description = "Retrieve referenced software platform of a compute resource. If none are found an empty list is returned.")
     @ListParametersDoc
     @GetMapping("/{computeResourceId}/" + Constants.SOFTWARE_PLATFORMS)
-    public ResponseEntity<CollectionModel<EntityModel<SoftwarePlatformDto>>> getSoftwarePlatformsOfComputeResource(
+    public ResponseEntity<Page<SoftwarePlatformDto>> getSoftwarePlatformsOfComputeResource(
             @PathVariable UUID computeResourceId,
             @Parameter(hidden = true) ListParameters listParameters) {
         final var softwarePlatforms = computeResourceService.findLinkedSoftwarePlatforms(computeResourceId, listParameters.getPageable());
-        return ResponseEntity.ok(softwarePlatformAssembler.toModel(softwarePlatforms));
+        return ResponseEntity.ok(ModelMapperUtils.convertPage(softwarePlatforms, SoftwarePlatformDto.class));
     }
 
     @Operation(responses = {
@@ -177,11 +162,11 @@ public class ComputeResourceController {
     }, description = "Retrieve referenced cloud services of a compute resource. If none are found an empty list is returned.")
     @ListParametersDoc
     @GetMapping("/{computeResourceId}/" + Constants.CLOUD_SERVICES)
-    public ResponseEntity<CollectionModel<EntityModel<CloudServiceDto>>> getCloudServicesOfComputeResource(
+    public ResponseEntity<Page<CloudServiceDto>> getCloudServicesOfComputeResource(
             @PathVariable UUID computeResourceId,
             @Parameter(hidden = true) ListParameters listParameters) {
         final var cloudServices = computeResourceService.findLinkedCloudServices(computeResourceId, listParameters.getPageable());
-        return ResponseEntity.ok(cloudServiceAssembler.toModel(cloudServices));
+        return ResponseEntity.ok(ModelMapperUtils.convertPage(cloudServices, CloudServiceDto.class));
     }
 
     @Operation(responses = {
@@ -191,43 +176,43 @@ public class ComputeResourceController {
     }, description = "Retrieve referenced compute resource properties of a compute resource. If none are found an empty list is returned.")
     @ListParametersDoc
     @GetMapping("/{computeResourceId}/" + Constants.COMPUTE_RESOURCE_PROPERTIES)
-    public ResponseEntity<PagedModel<EntityModel<ComputeResourcePropertyDto>>> getComputeResourcePropertiesOfComputeResource(
+    public ResponseEntity<Page<ComputeResourcePropertyDto>> getComputeResourcePropertiesOfComputeResource(
             @PathVariable UUID computeResourceId,
             @Parameter(hidden = true) ListParameters listParameters) {
         final var resources = computeResourcePropertyService.findComputeResourcePropertiesOfComputeResource(computeResourceId,
                 listParameters.getPageable());
-        return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(resources));
+        return ResponseEntity.ok(ModelMapperUtils.convertPage(resources, ComputeResourcePropertyDto.class));
     }
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Compute resource or compute resource property type with given IDs don't exist.")
+                         description = "Not Found. Compute resource or compute resource property type with given IDs don't exist.")
     }, description = "Add a compute resource property (e.g. a certain number of qubits) that is provided by an compute resource. " +
             "The compute resource property type has to be already created (e.g. via POST on /" + Constants.COMPUTE_RESOURCE_PROPERTY_TYPES + "). " +
             "As a result only the ID is required for the compute resource property type, other attributes will be ignored not changed.")
     @PostMapping("/{computeResourceId}/" + Constants.COMPUTE_RESOURCE_PROPERTIES)
-    public ResponseEntity<EntityModel<ComputeResourcePropertyDto>> createComputeResourcePropertyForComputeResource(
+    public ResponseEntity<ComputeResourcePropertyDto> createComputeResourcePropertyForComputeResource(
             @PathVariable UUID computeResourceId,
             @Validated(ValidationGroups.Create.class) @RequestBody ComputeResourcePropertyDto computeResourcePropertyDto) {
         final var computeResourceProperty = ModelMapperUtils.convert(computeResourcePropertyDto, ComputeResourceProperty.class);
 
         final var createdComputeResourceProperty = computeResourcePropertyService
                 .addComputeResourcePropertyToComputeResource(computeResourceId, computeResourceProperty);
-        return ResponseEntity.status(HttpStatus.CREATED).body(computeResourcePropertyAssembler.toModel(createdComputeResourceProperty));
+        return new ResponseEntity<>(ModelMapperUtils.convert(createdComputeResourceProperty, ComputeResourcePropertyDto.class), HttpStatus.CREATED);
     }
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Compute resource, compute resource property or compute resource type with given IDs don't exist.")
+                         description = "Not Found. Compute resource, compute resource property or compute resource type with given IDs don't exist.")
     }, description = "Update a Compute resource property of an compute resource. " +
             "For the compute resource property type only the ID is required, " +
             "other compute resource property type attributes will be ignored and not changed.")
     @PutMapping("/{computeResourceId}/" + Constants.COMPUTE_RESOURCE_PROPERTIES + "/{computeResourcePropertyId}")
-    public ResponseEntity<EntityModel<ComputeResourcePropertyDto>> updateComputeResourcePropertyOfComputeResource(
+    public ResponseEntity<ComputeResourcePropertyDto> updateComputeResourcePropertyOfComputeResource(
             @PathVariable UUID computeResourceId,
             @PathVariable UUID computeResourcePropertyId,
             @Validated(ValidationGroups.Update.class) @RequestBody ComputeResourcePropertyDto computeResourcePropertyDto) {
@@ -236,14 +221,14 @@ public class ComputeResourceController {
         computeResourcePropertyDto.setId(computeResourcePropertyId);
         final var resource = ModelMapperUtils.convert(computeResourcePropertyDto, ComputeResourceProperty.class);
         final var updatedResource = computeResourcePropertyService.update(resource);
-        return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(updatedResource));
+        return ResponseEntity.ok(ModelMapperUtils.convert(updatedResource, ComputeResourcePropertyDto.class));
     }
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Compute resource or compute resource property with given IDs don't exist."),
+                         description = "Not Found. Compute resource or compute resource property with given IDs don't exist."),
     }, description = "Delete a Compute resource property of an compute resource. " +
             "The compute resource property type is not affected by this.")
     @DeleteMapping("/{computeResourceId}/" + Constants.COMPUTE_RESOURCE_PROPERTIES + "/{computeResourcePropertyId}")
@@ -260,15 +245,15 @@ public class ComputeResourceController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Compute resource or compute resource property with given IDs don't exist."),
+                         description = "Not Found. Compute resource or compute resource property with given IDs don't exist."),
     }, description = "Retrieve a specific compute resource property of an compute resource.")
     @GetMapping("/{computeResourceId}/" + Constants.COMPUTE_RESOURCE_PROPERTIES + "/{computeResourcePropertyId}")
-    public HttpEntity<EntityModel<ComputeResourcePropertyDto>> getComputeResourcePropertyOfComputeResource(
+    public ResponseEntity<ComputeResourcePropertyDto> getComputeResourcePropertyOfComputeResource(
             @PathVariable UUID computeResourceId,
             @PathVariable UUID computeResourcePropertyId) {
         computeResourcePropertyService.checkIfComputeResourcePropertyIsOfComputeResource(computeResourceId, computeResourcePropertyId);
 
         final var resource = computeResourcePropertyService.findById(computeResourcePropertyId);
-        return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(resource));
+        return ResponseEntity.ok(ModelMapperUtils.convert(resource, ComputeResourcePropertyDto.class));
     }
 }

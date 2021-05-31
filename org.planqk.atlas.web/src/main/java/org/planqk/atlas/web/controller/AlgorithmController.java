@@ -19,7 +19,7 @@
 
 package org.planqk.atlas.web.controller;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -27,6 +27,7 @@ import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.ApplicationArea;
 import org.planqk.atlas.core.model.ComputeResourceProperty;
 import org.planqk.atlas.core.model.Image;
+import org.planqk.atlas.core.model.LearningMethod;
 import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.model.Publication;
@@ -49,31 +50,19 @@ import org.planqk.atlas.web.dtos.ComputeResourcePropertyDto;
 import org.planqk.atlas.web.dtos.DiscussionCommentDto;
 import org.planqk.atlas.web.dtos.DiscussionTopicDto;
 import org.planqk.atlas.web.dtos.ImplementationDto;
+import org.planqk.atlas.web.dtos.LearningMethodDto;
 import org.planqk.atlas.web.dtos.PatternRelationDto;
 import org.planqk.atlas.web.dtos.ProblemTypeDto;
 import org.planqk.atlas.web.dtos.PublicationDto;
 import org.planqk.atlas.web.dtos.RevisionDto;
 import org.planqk.atlas.web.dtos.SketchDto;
 import org.planqk.atlas.web.dtos.TagDto;
-import org.planqk.atlas.web.linkassembler.AlgorithmAssembler;
-import org.planqk.atlas.web.linkassembler.ApplicationAreaAssembler;
-import org.planqk.atlas.web.linkassembler.ComputeResourcePropertyAssembler;
-import org.planqk.atlas.web.linkassembler.ImplementationAssembler;
-import org.planqk.atlas.web.linkassembler.PatternRelationAssembler;
-import org.planqk.atlas.web.linkassembler.ProblemTypeAssembler;
-import org.planqk.atlas.web.linkassembler.PublicationAssembler;
-import org.planqk.atlas.web.linkassembler.SketchAssembler;
-import org.planqk.atlas.web.linkassembler.TagAssembler;
 import org.planqk.atlas.web.utils.ControllerValidationUtils;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.ValidationGroups;
 import org.springframework.data.domain.Page;
-import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -111,55 +100,35 @@ public class AlgorithmController {
 
     private final AlgorithmService algorithmService;
 
-    private final AlgorithmAssembler algorithmAssembler;
-
-    private final SketchAssembler sketchAssembler;
-
     private final SketchService sketchService;
 
     private final PatternRelationService patternRelationService;
 
-    private final PatternRelationAssembler patternRelationAssembler;
-
     private final ImplementationService implementationService;
-
-    private final ImplementationAssembler implementationAssembler;
 
     private final DiscussionTopicController discussionTopicController;
 
     private final ProblemTypeService problemTypeService;
 
-    private final ProblemTypeAssembler problemTypeAssembler;
-
     private final ApplicationAreaService applicationAreaService;
-
-    private final ApplicationAreaAssembler applicationAreaAssembler;
 
     private final TagService tagService;
 
-    private final TagAssembler tagAssembler;
-
     private final PublicationService publicationService;
-
-    private final PublicationAssembler publicationAssembler;
 
     private final ComputeResourcePropertyService computeResourcePropertyService;
 
-    private final ComputeResourcePropertyAssembler computeResourcePropertyAssembler;
-
     private final LinkingService linkingService;
-
-    private final PagedResourcesAssembler<RevisionDto> pagedResourcesAssembler;
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200")
     }, description = "Retrieve all algorithms (quantum, hybrid and classic).")
     @ListParametersDoc
     @GetMapping
-    public ResponseEntity<PagedModel<EntityModel<AlgorithmDto>>> getAlgorithms(
+    public ResponseEntity<Page<AlgorithmDto>> getAlgorithms(
             @Parameter(hidden = true) ListParameters listParameters) {
-        return ResponseEntity.ok(algorithmAssembler.toModel(algorithmService.findAll(listParameters.getPageable(),
-                listParameters.getSearch())));
+        return ResponseEntity.ok(ModelMapperUtils.convertPage(algorithmService.findAll(listParameters.getPageable(),
+                listParameters.getSearch()), AlgorithmDto.class));
     }
 
     @Operation(responses = {
@@ -169,10 +138,10 @@ public class AlgorithmController {
             "References to sub-objects (e.g. a ProblemType) can be added via " +
             "sub-routes (e.g. POST on /" + Constants.ALGORITHMS + "/{algorithmId}/" + Constants.PROBLEM_TYPES + ").")
     @PostMapping
-    public ResponseEntity<EntityModel<AlgorithmDto>> createAlgorithm(
+    public ResponseEntity<AlgorithmDto> createAlgorithm(
             @Validated(ValidationGroups.Create.class) @RequestBody AlgorithmDto algorithmDto) {
         final Algorithm savedAlgorithm = algorithmService.create(ModelMapperUtils.convert(algorithmDto, Algorithm.class));
-        return new ResponseEntity<>(algorithmAssembler.toModel(savedAlgorithm), HttpStatus.CREATED);
+        return new ResponseEntity<>(ModelMapperUtils.convert(savedAlgorithm, AlgorithmDto.class), HttpStatus.CREATED);
     }
 
     @Operation(responses = {
@@ -185,13 +154,13 @@ public class AlgorithmController {
             "/" + Constants.PROBLEM_TYPES + "/{problemTypeId})."
     )
     @PutMapping("/{algorithmId}")
-    public ResponseEntity<EntityModel<AlgorithmDto>> updateAlgorithm(
+    public ResponseEntity<AlgorithmDto> updateAlgorithm(
             @PathVariable UUID algorithmId,
             @Validated(ValidationGroups.Update.class) @RequestBody AlgorithmDto algorithmDto) {
         algorithmDto.setId(algorithmId);
         final Algorithm updatedAlgorithm = algorithmService.update(
                 ModelMapperUtils.convert(algorithmDto, Algorithm.class));
-        return ResponseEntity.ok(algorithmAssembler.toModel(updatedAlgorithm));
+        return ResponseEntity.ok(ModelMapperUtils.convert(updatedAlgorithm, AlgorithmDto.class));
     }
 
     @Operation(responses = {
@@ -213,10 +182,10 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "404", description = "Not Found. Algorithm with given ID doesn't exist.")
     }, description = "Retrieve a specific algorithm and its basic properties.")
     @GetMapping("/{algorithmId}")
-    public ResponseEntity<EntityModel<AlgorithmDto>> getAlgorithm(
+    public ResponseEntity<AlgorithmDto> getAlgorithm(
             @PathVariable UUID algorithmId) {
         final var algorithm = algorithmService.findById(algorithmId);
-        return ResponseEntity.ok(algorithmAssembler.toModel(algorithm));
+        return ResponseEntity.ok(ModelMapperUtils.convert(algorithm, AlgorithmDto.class));
     }
 
     @Operation(responses = {
@@ -225,10 +194,9 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "404", description = "Not Found. Algorithm with given ID doesn't exist.")
     }, description = "Retrieve all tags associated with a specific algorithm.")
     @GetMapping("/{algorithmId}/" + Constants.TAGS)
-    public ResponseEntity<CollectionModel<EntityModel<TagDto>>> getTagsOfAlgorithm(
-            @PathVariable UUID algorithmId) {
+    public ResponseEntity<Collection<TagDto>> getTagsOfAlgorithm(@PathVariable UUID algorithmId) {
         final Algorithm algorithm = algorithmService.findById(algorithmId);
-        return ResponseEntity.ok(tagAssembler.toModel(algorithm.getTags()));
+        return ResponseEntity.ok(ModelMapperUtils.convertCollection(algorithm.getTags(), TagDto.class));
     }
 
     @Operation(responses = {
@@ -264,11 +232,11 @@ public class AlgorithmController {
     }, description = "Retrieve referenced publications of an algorithm. If none are found an empty list is returned.")
     @ListParametersDoc
     @GetMapping("/{algorithmId}/" + Constants.PUBLICATIONS)
-    public ResponseEntity<PagedModel<EntityModel<PublicationDto>>> getPublicationsOfAlgorithm(
+    public ResponseEntity<Page<PublicationDto>> getPublicationsOfAlgorithm(
             @PathVariable UUID algorithmId,
             @Parameter(hidden = true) ListParameters listParameters) {
         final Page<Publication> publications = algorithmService.findLinkedPublications(algorithmId, listParameters.getPageable());
-        return ResponseEntity.ok(publicationAssembler.toModel(publications));
+        return ResponseEntity.ok(ModelMapperUtils.convertPage(publications, PublicationDto.class));
     }
 
     @Operation(responses = {
@@ -308,13 +276,13 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "404", description = "Not Found. Algorithm or publication with given IDs don't exist.")
     }, description = "Retrieve a specific publication and its basic properties of an algorithm.")
     @GetMapping("/{algorithmId}/" + Constants.PUBLICATIONS + "/{publicationId}")
-    public ResponseEntity<EntityModel<PublicationDto>> getPublicationOfAlgorithm(
+    public ResponseEntity<PublicationDto> getPublicationOfAlgorithm(
             @PathVariable UUID algorithmId,
             @PathVariable UUID publicationId) {
         algorithmService.checkIfPublicationIsLinkedToAlgorithm(algorithmId, publicationId);
 
         final Publication publication = publicationService.findById(publicationId);
-        return new ResponseEntity<>(publicationAssembler.toModel(publication), HttpStatus.OK);
+        return new ResponseEntity<>(ModelMapperUtils.convert(publication, PublicationDto.class), HttpStatus.OK);
     }
 
     @Operation(responses = {
@@ -324,20 +292,20 @@ public class AlgorithmController {
     }, description = "Retrieve problem types of an algorithm. If none are found an empty list is returned.")
     @ListParametersDoc
     @GetMapping("/{algorithmId}/" + Constants.PROBLEM_TYPES)
-    public ResponseEntity<PagedModel<EntityModel<ProblemTypeDto>>> getProblemTypesOfAlgorithm(
+    public ResponseEntity<Page<ProblemTypeDto>> getProblemTypesOfAlgorithm(
             @PathVariable UUID algorithmId,
             @Parameter(hidden = true) ListParameters listParameters) {
         final Page<ProblemType> problemTypes = algorithmService.findLinkedProblemTypes(algorithmId, listParameters.getPageable());
-        return ResponseEntity.ok(problemTypeAssembler.toModel(problemTypes));
+        return ResponseEntity.ok(ModelMapperUtils.convertPage(problemTypes, ProblemTypeDto.class));
     }
 
     @Operation(responses = {
             @ApiResponse(responseCode = "204"),
             @ApiResponse(responseCode = "400",
-                    description = "Bad Request. Invalid request body."),
+                         description = "Bad Request. Invalid request body."),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or problem type with given IDs don't exist or " +
-                            "reference was already added.")
+                         description = "Not Found. Algorithm or problem type with given IDs don't exist or " +
+                                 "reference was already added.")
     }, description = "Add a reference to an existing ProblemType " +
             "(that was previously created via a POST on /" + Constants.PROBLEM_TYPES + "). " +
             "Only the ID is required in the request body, other attributes will be ignored and not changed.")
@@ -352,10 +320,10 @@ public class AlgorithmController {
     @Operation(responses = {
             @ApiResponse(responseCode = "204"),
             @ApiResponse(responseCode = "400",
-                    description = "Bad Request. Invalid request body."),
+                         description = "Bad Request. Invalid request body."),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or problem type with given IDs don't exist or " +
-                            "no reference exists.")
+                         description = "Not Found. Algorithm or problem type with given IDs don't exist or " +
+                                 "no reference exists.")
     }, description = "Delete a reference to a problem types of an algorithm. The reference has to be previously created " +
             "via a POST on e.g. /" + Constants.ALGORITHMS + "/{algorithmId}/" + Constants.PROBLEM_TYPES + ").")
     @DeleteMapping("/{algorithmId}/" + Constants.PROBLEM_TYPES + "/{problemTypeId}")
@@ -370,39 +338,39 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or problem type with given IDs don't exist.")
+                         description = "Not Found. Algorithm or problem type with given IDs don't exist.")
     }, description = "Retrieve a specific problem type of an algorithm.")
     @GetMapping("/{algorithmId}/" + Constants.PROBLEM_TYPES + "/{problemTypeId}")
-    public ResponseEntity<EntityModel<ProblemTypeDto>> getProblemTypeOfAlgorithm(
+    public ResponseEntity<ProblemTypeDto> getProblemTypeOfAlgorithm(
             @PathVariable UUID algorithmId,
             @PathVariable UUID problemTypeId) {
         algorithmService.checkIfProblemTypeIsLinkedToAlgorithm(algorithmId, problemTypeId);
 
         final ProblemType problemType = problemTypeService.findById(problemTypeId);
-        return ResponseEntity.ok(problemTypeAssembler.toModel(problemType));
+        return ResponseEntity.ok(ModelMapperUtils.convert(problemType, ProblemTypeDto.class));
     }
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or application area with given IDs don't exist.")
+                         description = "Not Found. Algorithm or application area with given IDs don't exist.")
     }, description = "Retrieve application areas of an algorithm. If none are found an empty list is returned.")
     @ListParametersDoc
     @GetMapping("/{algorithmId}/" + Constants.APPLICATION_AREAS)
-    public ResponseEntity<PagedModel<EntityModel<ApplicationAreaDto>>> getApplicationAreasOfAlgorithm(
+    public ResponseEntity<Page<ApplicationAreaDto>> getApplicationAreasOfAlgorithm(
             @PathVariable UUID algorithmId,
             @Parameter(hidden = true) ListParameters listParameters) {
         final Page<ApplicationArea> applicationAreas = algorithmService.findLinkedApplicationAreas(algorithmId, listParameters.getPageable());
-        return ResponseEntity.ok(applicationAreaAssembler.toModel(applicationAreas));
+        return ResponseEntity.ok(ModelMapperUtils.convertPage(applicationAreas, ApplicationAreaDto.class));
     }
 
     @Operation(responses = {
             @ApiResponse(responseCode = "204"),
             @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or application area with given IDs don't exist or " +
-                            "reference was already added.")
+                         description = "Not Found. Algorithm or application area with given IDs don't exist or " +
+                                 "reference was already added.")
     }, description = "Add a reference to an existing application area " +
             "(that was previously created via a POST on e.g. /" + Constants.APPLICATION_AREAS + "). " +
             "Only the ID is required in the request body, other attributes will be ignored and not changed.")
@@ -418,8 +386,8 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "204"),
             @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or application area with given IDs don't exist or " +
-                            "no reference exists.")
+                         description = "Not Found. Algorithm or application area with given IDs don't exist or " +
+                                 "no reference exists.")
     }, description = "Delete a reference to an application area of an algorithm. The reference has to be previously " +
             "created via a POST on /" + Constants.ALGORITHMS + "/{algorithmId}/" + Constants.APPLICATION_AREAS + ").")
     @DeleteMapping("/{algorithmId}/" + Constants.APPLICATION_AREAS + "/{applicationAreaId}")
@@ -434,46 +402,45 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or application area with given IDs don't exist.")
+                         description = "Not Found. Algorithm or application area with given IDs don't exist.")
     }, description = "Retrieve a specific application area of an algorithm.")
     @GetMapping("/{algorithmId}/" + Constants.APPLICATION_AREAS + "/{applicationAreaId}")
-    public ResponseEntity<EntityModel<ApplicationAreaDto>> getApplicationAreaOfAlgorithm(
+    public ResponseEntity<ApplicationAreaDto> getApplicationAreaOfAlgorithm(
             @PathVariable UUID algorithmId,
             @PathVariable UUID applicationAreaId) {
         algorithmService.checkIfApplicationAreaIsLinkedToAlgorithm(algorithmId, applicationAreaId);
 
         final ApplicationArea applicationArea = applicationAreaService.findById(applicationAreaId);
-        return ResponseEntity.ok(applicationAreaAssembler.toModel(applicationArea));
+        return ResponseEntity.ok(ModelMapperUtils.convert(applicationArea, ApplicationAreaDto.class));
     }
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm with given ID doesn't exist.")
+                         description = "Not Found. Algorithm with given ID doesn't exist.")
     }, description = "Retrieve implementations of an algorithm. If none are found an empty list is returned."
     )
     @ListParametersDoc
     @GetMapping("/{algorithmId}/" + Constants.IMPLEMENTATIONS)
-    public ResponseEntity<PagedModel<EntityModel<ImplementationDto>>> getImplementationsOfAlgorithm(
+    public ResponseEntity<Page<ImplementationDto>> getImplementationsOfAlgorithm(
             @PathVariable UUID algorithmId,
             @Parameter(hidden = true) ListParameters listParameters) {
         final var implementations = implementationService.findByImplementedAlgorithm(algorithmId, listParameters.getPageable());
-        return ResponseEntity.ok(implementationAssembler.toModel(implementations));
+        return ResponseEntity.ok(ModelMapperUtils.convertPage(implementations, ImplementationDto.class));
     }
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm with given ID doesn't exist.")
+                         description = "Not Found. Algorithm with given ID doesn't exist.")
     }, description = "Retrieve discussion topics of an algorithm. If none are found an empty list is returned."
     )
     @ListParametersDoc
     @GetMapping("/{algorithmId}/" + Constants.DISCUSSION_TOPICS)
-    public HttpEntity<PagedModel<EntityModel<DiscussionTopicDto>>> getDiscussionTopicsOfAlgorithm(
-            @PathVariable UUID algorithmId,
-            @Parameter(hidden = true) ListParameters listParameters) {
+    public ResponseEntity<Page<DiscussionTopicDto>> getDiscussionTopicsOfAlgorithm(@PathVariable UUID algorithmId,
+                                                                                   @Parameter(hidden = true) ListParameters listParameters) {
         return discussionTopicController.getDiscussionTopics(algorithmId, listParameters);
     }
 
@@ -481,12 +448,12 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or discussion topic with given ID doesn't exist.")
+                         description = "Not Found. Algorithm or discussion topic with given ID doesn't exist.")
     }, description = "Retrieve discussion topic of an algorithm."
     )
     @ListParametersDoc
     @GetMapping("/{algorithmId}/" + Constants.DISCUSSION_TOPICS + "/{topicId}")
-    public HttpEntity<EntityModel<DiscussionTopicDto>> getDiscussionTopicOfAlgorithm(
+    public ResponseEntity<DiscussionTopicDto> getDiscussionTopicOfAlgorithm(
             @PathVariable UUID algorithmId,
             @PathVariable UUID topicId,
             @Parameter(hidden = true) ListParameters listParameters) {
@@ -497,7 +464,7 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or discussion topic with given ID doesn't exist.")
+                         description = "Not Found. Algorithm or discussion topic with given ID doesn't exist.")
     }, description = "Delete discussion topic of an algorithm."
     )
     @ListParametersDoc
@@ -513,12 +480,12 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "201"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or discussion topic with given ID doesn't exist.")
+                         description = "Not Found. Algorithm or discussion topic with given ID doesn't exist.")
     }, description = "Create a discussion topic of an algorithm."
     )
     @ListParametersDoc
     @PostMapping("/{algorithmId}/" + Constants.DISCUSSION_TOPICS)
-    public HttpEntity<EntityModel<DiscussionTopicDto>> createDiscussionTopicOfAlgorithm(
+    public ResponseEntity<DiscussionTopicDto> createDiscussionTopicOfAlgorithm(
             @PathVariable UUID algorithmId,
             @Validated(ValidationGroups.Create.class) @RequestBody DiscussionTopicDto discussionTopicDto,
             @Parameter(hidden = true) ListParameters listParameters) {
@@ -530,12 +497,12 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "201"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or discussion topic with given ID doesn't exist.")
+                         description = "Not Found. Algorithm or discussion topic with given ID doesn't exist.")
     }, description = "Update discussion topic of an algorithm."
     )
     @ListParametersDoc
     @PutMapping("/{algorithmId}/" + Constants.DISCUSSION_TOPICS + "/{topicId}")
-    public HttpEntity<EntityModel<DiscussionTopicDto>> updateDiscussionTopicOfAlgorithm(
+    public ResponseEntity<DiscussionTopicDto> updateDiscussionTopicOfAlgorithm(
             @PathVariable UUID algorithmId,
             @PathVariable UUID topicId,
             @Validated(ValidationGroups.Update.class) @RequestBody DiscussionTopicDto discussionTopicDto,
@@ -548,12 +515,12 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or discussion topic with given ID doesn't exist.")
+                         description = "Not Found. Algorithm or discussion topic with given ID doesn't exist.")
     }, description = "Retrieve discussion comments of a discussion topic of an algorithm. If none are found an empty list is returned."
     )
     @ListParametersDoc
     @GetMapping("/{algorithmId}/" + Constants.DISCUSSION_TOPICS + "/{topicId}/" + Constants.DISCUSSION_COMMENTS)
-    public HttpEntity<PagedModel<EntityModel<DiscussionCommentDto>>> getDiscussionCommentsOfDiscussionTopicOfAlgorithm(
+    public ResponseEntity<Page<DiscussionCommentDto>> getDiscussionCommentsOfDiscussionTopicOfAlgorithm(
             @PathVariable UUID algorithmId,
             @PathVariable UUID topicId,
             @Parameter(hidden = true) ListParameters listParameters) {
@@ -564,12 +531,12 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm, discussion topic or discussion comment with given ID doesn't exist.")
+                         description = "Not Found. Algorithm, discussion topic or discussion comment with given ID doesn't exist.")
     }, description = "Retrieve discussion comment of a discussion topic of an algorithm."
     )
     @ListParametersDoc
     @GetMapping("/{algorithmId}/" + Constants.DISCUSSION_TOPICS + "/{topicId}/" + Constants.DISCUSSION_COMMENTS + "/{commentId}")
-    public HttpEntity<EntityModel<DiscussionCommentDto>> getDiscussionCommentOfDiscussionTopicOfAlgorithm(
+    public ResponseEntity<DiscussionCommentDto> getDiscussionCommentOfDiscussionTopicOfAlgorithm(
             @PathVariable UUID algorithmId,
             @PathVariable UUID topicId,
             @PathVariable UUID commentId,
@@ -581,7 +548,7 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm, discussion topic or discussion comment with given ID doesn't exist.")
+                         description = "Not Found. Algorithm, discussion topic or discussion comment with given ID doesn't exist.")
     }, description = "Delete discussion comment of a discussion topic of an algorithm."
     )
     @ListParametersDoc
@@ -598,12 +565,12 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "201"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or discussion topic with given ID doesn't exist.")
+                         description = "Not Found. Algorithm or discussion topic with given ID doesn't exist.")
     }, description = "Create discussion comment of a discussion topic of an algorithm."
     )
     @ListParametersDoc
     @PostMapping("/{algorithmId}/" + Constants.DISCUSSION_TOPICS + "/{topicId}/" + Constants.DISCUSSION_COMMENTS)
-    public HttpEntity<EntityModel<DiscussionCommentDto>> createDiscussionCommentOfDiscussionTopicOfAlgorithm(
+    public ResponseEntity<DiscussionCommentDto> createDiscussionCommentOfDiscussionTopicOfAlgorithm(
             @PathVariable UUID algorithmId,
             @PathVariable UUID topicId,
             @Validated(ValidationGroups.Create.class) @RequestBody DiscussionCommentDto discussionCommentDto,
@@ -615,12 +582,12 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "201"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or discussion topic with given ID doesn't exist.")
+                         description = "Not Found. Algorithm or discussion topic with given ID doesn't exist.")
     }, description = "Update discussion comment of a discussion topic of an algorithm."
     )
     @ListParametersDoc
     @PutMapping("/{algorithmId}/" + Constants.DISCUSSION_TOPICS + "/{topicId}/" + Constants.DISCUSSION_COMMENTS + "/{commentId}")
-    public HttpEntity<EntityModel<DiscussionCommentDto>> updateDiscussionCommentOfDiscussionTopicOfAlgorithm(
+    public ResponseEntity<DiscussionCommentDto> updateDiscussionCommentOfDiscussionTopicOfAlgorithm(
             @PathVariable UUID algorithmId,
             @PathVariable UUID topicId,
             @PathVariable UUID commentId,
@@ -633,47 +600,47 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm with given ID doesn't exist.")
+                         description = "Not Found. Algorithm with given ID doesn't exist.")
     }, description = "Retrieve the required compute resource properties of an algorithm. If none are found an empty list is returned.")
     @ListParametersDoc
     @GetMapping("/{algorithmId}/" + Constants.COMPUTE_RESOURCE_PROPERTIES)
-    public ResponseEntity<PagedModel<EntityModel<ComputeResourcePropertyDto>>> getComputeResourcePropertiesOfAlgorithm(
+    public ResponseEntity<Page<ComputeResourcePropertyDto>> getComputeResourcePropertiesOfAlgorithm(
             @PathVariable UUID algorithmId,
             @Parameter(hidden = true) ListParameters listParameters) {
         final var resources = computeResourcePropertyService.findComputeResourcePropertiesOfAlgorithm(algorithmId, listParameters.getPageable());
-        return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(resources));
+        return ResponseEntity.ok(ModelMapperUtils.convertPage(resources, ComputeResourcePropertyDto.class));
     }
 
     @Operation(responses = {
             @ApiResponse(responseCode = "201"),
             @ApiResponse(responseCode = "400",
-                    description = "Bad Request. Invalid request body."),
+                         description = "Bad Request. Invalid request body."),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or compute resource property type with given IDs don't exist.")
+                         description = "Not Found. Algorithm or compute resource property type with given IDs don't exist.")
     }, description = "Add a compute resource property (e.g. a certain number of qubits) that is required by an algorithm. " +
             "The compute resource property type has to be already created (e.g. via POST on /" + Constants.COMPUTE_RESOURCE_PROPERTY_TYPES + "). " +
             "As a result only the ID is required for the compute resource property type, other attributes will be ignored not changed.")
     @PostMapping("/{algorithmId}/" + Constants.COMPUTE_RESOURCE_PROPERTIES)
-    public ResponseEntity<EntityModel<ComputeResourcePropertyDto>> createComputeResourcePropertyForAlgorithm(
+    public ResponseEntity<ComputeResourcePropertyDto> createComputeResourcePropertyForAlgorithm(
             @PathVariable UUID algorithmId,
             @Validated(ValidationGroups.Create.class) @RequestBody ComputeResourcePropertyDto computeResourcePropertyDto) {
         final var computeResourceProperty = ModelMapperUtils.convert(computeResourcePropertyDto, ComputeResourceProperty.class);
         final var createdComputeResourceProperty = computeResourcePropertyService
                 .addComputeResourcePropertyToAlgorithm(algorithmId, computeResourceProperty);
-        return new ResponseEntity<>(computeResourcePropertyAssembler.toModel(createdComputeResourceProperty), HttpStatus.CREATED);
+        return new ResponseEntity<>(ModelMapperUtils.convert(createdComputeResourceProperty, ComputeResourcePropertyDto.class), HttpStatus.CREATED);
     }
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400",
-                    description = "Bad Request. Invalid request body."),
+                         description = "Bad Request. Invalid request body."),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm, compute resource property or compute resource type with given IDs don't exist.")
+                         description = "Not Found. Algorithm, compute resource property or compute resource type with given IDs don't exist.")
     }, description = "Update a Compute resource property of an algorithm. " +
             "For the compute resource property type only the ID is required, " +
             "other compute resource property type attributes will be ignored and not changed.")
     @PutMapping("/{algorithmId}/" + Constants.COMPUTE_RESOURCE_PROPERTIES + "/{computeResourcePropertyId}")
-    public ResponseEntity<EntityModel<ComputeResourcePropertyDto>> updateComputeResourcePropertyOfAlgorithm(
+    public ResponseEntity<ComputeResourcePropertyDto> updateComputeResourcePropertyOfAlgorithm(
             @PathVariable UUID algorithmId,
             @PathVariable UUID computeResourcePropertyId,
             @Validated(ValidationGroups.Update.class) @RequestBody ComputeResourcePropertyDto computeResourcePropertyDto) {
@@ -682,18 +649,18 @@ public class AlgorithmController {
         computeResourcePropertyDto.setId(computeResourcePropertyId);
         final var resource = ModelMapperUtils.convert(computeResourcePropertyDto, ComputeResourceProperty.class);
         final var updatedResource = computeResourcePropertyService.update(resource);
-        return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(updatedResource));
+        return ResponseEntity.ok(ModelMapperUtils.convert(updatedResource, ComputeResourcePropertyDto.class));
     }
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or compute resource property with given IDs don't exist."),
+                         description = "Not Found. Algorithm or compute resource property with given IDs don't exist."),
     }, description = "Delete a Compute resource property of an algorithm. " +
             "The compute resource property type is not affected by this.")
     @DeleteMapping("/{algorithmId}/" + Constants.COMPUTE_RESOURCE_PROPERTIES + "/{computeResourcePropertyId}")
-    public HttpEntity<Void> deleteComputeResourcePropertyOfAlgorithm(
+    public ResponseEntity<Void> deleteComputeResourcePropertyOfAlgorithm(
             @PathVariable UUID algorithmId,
             @PathVariable UUID computeResourcePropertyId) {
         computeResourcePropertyService.checkIfComputeResourcePropertyIsOfAlgorithm(algorithmId, computeResourcePropertyId);
@@ -706,63 +673,63 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or compute resource property with given IDs don't exist."),
+                         description = "Not Found. Algorithm or compute resource property with given IDs don't exist."),
     }, description = "Retrieve a specific compute resource property of an algorithm.")
     @GetMapping("/{algorithmId}/" + Constants.COMPUTE_RESOURCE_PROPERTIES + "/{computeResourcePropertyId}")
-    public HttpEntity<EntityModel<ComputeResourcePropertyDto>> getComputeResourcePropertyOfAlgorithm(
+    public ResponseEntity<ComputeResourcePropertyDto> getComputeResourcePropertyOfAlgorithm(
             @PathVariable UUID algorithmId,
             @PathVariable UUID computeResourcePropertyId) {
         computeResourcePropertyService.checkIfComputeResourcePropertyIsOfAlgorithm(algorithmId, computeResourcePropertyId);
 
         final var resource = computeResourcePropertyService.findById(computeResourcePropertyId);
-        return ResponseEntity.ok(computeResourcePropertyAssembler.toModel(resource));
+        return ResponseEntity.ok(ModelMapperUtils.convert(resource, ComputeResourcePropertyDto.class));
     }
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm with given ID doesn't exist.")
+                         description = "Not Found. Algorithm with given ID doesn't exist.")
     }, description = "Retrieve pattern relations of an algorithms. If none are found an empty list is returned.")
     @ListParametersDoc
     @GetMapping("/{algorithmId}/" + Constants.PATTERN_RELATIONS)
-    public ResponseEntity<PagedModel<EntityModel<PatternRelationDto>>> getPatternRelationsOfAlgorithm(
+    public ResponseEntity<Page<PatternRelationDto>> getPatternRelationsOfAlgorithm(
             @PathVariable UUID algorithmId,
             @Parameter(hidden = true) ListParameters listParameters) {
         final Page<PatternRelation> patternRelations = algorithmService.findLinkedPatternRelations(algorithmId, listParameters.getPageable());
-        return ResponseEntity.ok(patternRelationAssembler.toModel(patternRelations));
+        return ResponseEntity.ok(ModelMapperUtils.convertPage(patternRelations, PatternRelationDto.class));
     }
 
     @Operation(responses = {
             @ApiResponse(responseCode = "201"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or pattern relation type with given IDs don't exist.")
+                         description = "Not Found. Algorithm or pattern relation type with given IDs don't exist.")
     }, description = "Create a relation between a pattern and an algorithm." +
             "The pattern relation type has to be already created (e.g. via POST on /" + Constants.PATTERN_RELATION_TYPES + "). " +
             "As a result only the ID is required for the pattern relation type, other attributes will be ignored not changed.")
     @PostMapping("/{algorithmId}/" + Constants.PATTERN_RELATIONS)
-    public ResponseEntity<EntityModel<PatternRelationDto>> createPatternRelationForAlgorithm(
+    public ResponseEntity<PatternRelationDto> createPatternRelationForAlgorithm(
             @PathVariable UUID algorithmId,
             @Validated({ValidationGroups.Create.class}) @RequestBody PatternRelationDto patternRelationDto) {
         ControllerValidationUtils.checkIfAlgorithmIsInPatternRelationDTO(algorithmId, patternRelationDto);
 
         final var savedPatternRelation = patternRelationService.create(
                 ModelMapperUtils.convert(patternRelationDto, PatternRelation.class));
-        return new ResponseEntity<>(patternRelationAssembler.toModel(savedPatternRelation), HttpStatus.CREATED);
+        return new ResponseEntity<>(ModelMapperUtils.convert(savedPatternRelation, PatternRelationDto.class), HttpStatus.CREATED);
     }
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400",
-                    description = "Bad Request. Invalid request body or Pattern relation doesn't belong to this algorithm"),
+                         description = "Bad Request. Invalid request body or Pattern relation doesn't belong to this algorithm"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm, pattern relation or pattern relation type with given IDs don't exist.")
+                         description = "Not Found. Algorithm, pattern relation or pattern relation type with given IDs don't exist.")
     }, description = "Update a relation between a pattern and an algorithm. " +
             "For the pattern relation type only the ID is required," +
             "other pattern relation type attributes will be ignored and not changed.")
     @PutMapping("/{algorithmId}/" + Constants.PATTERN_RELATIONS + "/{patternRelationId}")
-    public ResponseEntity<EntityModel<PatternRelationDto>> updatePatternRelationOfAlgorithm(
+    public ResponseEntity<PatternRelationDto> updatePatternRelationOfAlgorithm(
             @PathVariable UUID algorithmId,
             @PathVariable UUID patternRelationId,
             @Validated({ValidationGroups.Update.class}) @RequestBody PatternRelationDto patternRelationDto) {
@@ -772,14 +739,14 @@ public class AlgorithmController {
         patternRelationDto.setId(patternRelationId);
         final var savedPatternRelation = patternRelationService.update(
                 ModelMapperUtils.convert(patternRelationDto, PatternRelation.class));
-        return ResponseEntity.ok(patternRelationAssembler.toModel(savedPatternRelation));
+        return ResponseEntity.ok(ModelMapperUtils.convert(savedPatternRelation, PatternRelationDto.class));
     }
 
     @Operation(responses = {
             @ApiResponse(responseCode = "204"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or pattern relation with given IDs don't exist.")
+                         description = "Not Found. Algorithm or pattern relation with given IDs don't exist.")
     }, description = "Delete a specific relation between a pattern and an algorithm. " +
             "The pattern relation type is not affected by this.")
     @DeleteMapping("/{algorithmId}/" + Constants.PATTERN_RELATIONS + "/{patternRelationId}")
@@ -796,16 +763,16 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                    description = "Not Found. Algorithm or pattern relation with given IDs don't exist.")
+                         description = "Not Found. Algorithm or pattern relation with given IDs don't exist.")
     }, description = "Retrieve a specific relation between a pattern and an algorithm.")
     @GetMapping("/{algorithmId}/" + Constants.PATTERN_RELATIONS + "/{patternRelationId}")
-    public ResponseEntity<EntityModel<PatternRelationDto>> getPatternRelationOfAlgorithm(
+    public ResponseEntity<PatternRelationDto> getPatternRelationOfAlgorithm(
             @PathVariable UUID algorithmId,
             @PathVariable UUID patternRelationId) {
         patternRelationService.checkIfAlgorithmIsInPatternRelation(algorithmId, patternRelationId);
 
         final var patternRelation = patternRelationService.findById(patternRelationId);
-        return ResponseEntity.ok(patternRelationAssembler.toModel(patternRelation));
+        return ResponseEntity.ok(ModelMapperUtils.convert(patternRelation, PatternRelationDto.class));
     }
 
     @Operation(responses = {
@@ -815,27 +782,23 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "404", description = "Not Found. Algorithm with the given ID doesn't exist")
     }, description = "Add a Sketch to the algorithm.")
     @PostMapping("/{algorithmId}/" + Constants.SKETCHES)
-    public ResponseEntity<EntityModel<SketchDto>> uploadSketch(
+    public ResponseEntity<SketchDto> uploadSketch(
             @PathVariable UUID algorithmId,
             @RequestParam("file") MultipartFile file,
             @RequestParam("description") String description,
             @RequestParam("baseURL") String baseURL) {
         final Sketch sketch = sketchService.addSketchToAlgorithm(algorithmId, file, description, baseURL);
-        return ResponseEntity.ok(this.sketchAssembler.toModel(sketch));
+        return ResponseEntity.ok(ModelMapperUtils.convert(sketch, SketchDto.class));
     }
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200")
     }, description = "Retrieve all sketches for a specific algorithm.")
     @GetMapping("/{algorithmId}/" + Constants.SKETCHES)
-    public ResponseEntity<List<EntityModel<SketchDto>>> getSketches(@PathVariable UUID algorithmId) {
+    public ResponseEntity<Collection<SketchDto>> getSketches(@PathVariable UUID algorithmId) {
         final List<Sketch> sketches = sketchService.findByAlgorithm(algorithmId);
-        final List<EntityModel<SketchDto>> sketchDtoList = new ArrayList<>();
-        sketches.forEach(s -> {
-            sketchDtoList.add(this.sketchAssembler.toModel(s));
-        });
 
-        return ResponseEntity.ok(sketchDtoList);
+        return ResponseEntity.ok(ModelMapperUtils.convertCollection(sketches, SketchDto.class));
     }
 
     @Operation(responses = {
@@ -855,9 +818,9 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "404", description = "Not Found. Sketch with given ID doesn't exist")
     }, description = "Retrieve a specific Sketch and its basic properties.")
     @GetMapping("/{algorithmId}/" + Constants.SKETCHES + "/{sketchId}")
-    public ResponseEntity<EntityModel<SketchDto>> getSketch(@PathVariable UUID algorithmId, @PathVariable UUID sketchId) {
-        return ResponseEntity
-                .ok(this.sketchAssembler.toModel(this.sketchService.findById(sketchId)));
+    public ResponseEntity<SketchDto> getSketch(@PathVariable UUID algorithmId, @PathVariable UUID sketchId) {
+        final Sketch sketch = this.sketchService.findById(sketchId);
+        return ResponseEntity.ok(ModelMapperUtils.convert(sketch, SketchDto.class));
     }
 
     @Operation(responses = {
@@ -866,7 +829,7 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "404", description = "Not Found. Sketch with given ID doesn't exist")
     }, description = "Update the properties of a sketch.")
     @PutMapping("/{algorithmId}/" + Constants.SKETCHES + "/{sketchId}")
-    public ResponseEntity<EntityModel<SketchDto>> updateSketch(
+    public ResponseEntity<SketchDto> updateSketch(
             @PathVariable UUID algorithmId,
             @PathVariable UUID sketchId,
             @Validated @RequestBody SketchDto sketchDto) {
@@ -875,7 +838,7 @@ public class AlgorithmController {
         final Sketch updatedSketch = sketchService.update(
                 ModelMapperUtils.convert(sketchDto, Sketch.class));
 
-        return ResponseEntity.ok(this.sketchAssembler.toModel(updatedSketch));
+        return ResponseEntity.ok(ModelMapperUtils.convert(updatedSketch, SketchDto.class));
     }
 
     @Operation(responses = {
@@ -891,6 +854,76 @@ public class AlgorithmController {
                 .contentType(MediaType.parseMediaType(image.getMimeType()))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "inline")
                 .body(image.getImage());
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200",
+                         description = "The request has succeeded. " +
+                                 "The learning method has been fetched and is transmitted in the message body"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+            @ApiResponse(responseCode = "404",
+                         description = "Not Found. Algorithm or learning method with given IDs don't exist.")
+    }, description = "Retrieve learning method of an algorithm. If none are found an empty list is returned.")
+    @ListParametersDoc
+    @GetMapping("/{algorithmId}/" + Constants.LEARNING_METHODS)
+    public ResponseEntity<Page<LearningMethodDto>> getLearningMethodsOfAlgorithm(
+            @PathVariable UUID algorithmId,
+            @Parameter(hidden = true) ListParameters listParameters) {
+        final Page<LearningMethod> learningMethods = algorithmService.findLinkedLearningMethods(algorithmId, listParameters.getPageable());
+        return ResponseEntity.ok(ModelMapperUtils.convertPage(learningMethods, LearningMethodDto.class));
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200", description = "The request has succeeded. " +
+                    "The learning method has been fetched and is transmitted in the message body"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+            @ApiResponse(responseCode = "404",
+                         description = "Not Found. Algorithm or learning method with given IDs don't exist.")
+    }, description = "Retrieve a specific learning method of an algorithm.")
+    @GetMapping("/{algorithmId}/" + Constants.LEARNING_METHODS + "/{learningMethodId}")
+    public ResponseEntity<LearningMethodDto> getLearningMethodOfAlgorithm(
+            @PathVariable UUID algorithmId,
+            @PathVariable UUID learningMethodId) {
+        final LearningMethod learningMethod = algorithmService.getLearningMethodOfAlgorithm(algorithmId, learningMethodId);
+        return ResponseEntity.ok(ModelMapperUtils.convert(learningMethod, LearningMethodDto.class));
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "204", description = "There is no content to send for this request."),
+            @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+            @ApiResponse(responseCode = "404",
+                         description = "Not Found. Algorithm or learning method with given IDs don't exist or " +
+                                 "reference was already added.")
+    }, description = "Add a reference to an existing learning method " +
+            "(that was previously created via a POST on e.g. /" + Constants.LEARNING_METHODS + "). " +
+            "Only the ID is required in the request body, other attributes will be ignored and not changed.")
+    @PostMapping("/{algorithmId}/" + Constants.LEARNING_METHODS)
+    public ResponseEntity<Void> linkAlgorithmAndLearningMethod(
+            @PathVariable UUID algorithmId,
+            @Validated({ValidationGroups.IDOnly.class}) @RequestBody LearningMethodDto learningMethodDto) {
+        linkingService.linkAlgorithmAndLearningMethod(algorithmId, learningMethodDto.getId());
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "204", description = "There is no content to send for this request."),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+            @ApiResponse(responseCode = "404",
+                         description = "Not Found. Algorithm or learning method with given IDs don't exist or " +
+                                 "no reference exists.")
+    }, description = "Delete a reference to a learning method of an algorithm.")
+    @DeleteMapping("/{algorithmId}/" + Constants.LEARNING_METHODS + "/{learningMethodId}")
+    public ResponseEntity<Void> unlinkAlgorithmAndLearningMethod(
+            @PathVariable UUID algorithmId,
+            @PathVariable UUID learningMethodId) {
+        linkingService.unlinkAlgorithmAndLearningMethod(algorithmId, learningMethodId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @Operation(responses = {

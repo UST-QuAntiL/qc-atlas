@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 the qc-atlas contributors.
+ * Copyright (c) 2020-2021 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -20,7 +20,10 @@
 package org.planqk.atlas.web.utils;
 
 import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.hibernate.envers.DefaultRevisionEntity;
 import org.modelmapper.ModelMapper;
@@ -68,6 +71,10 @@ public final class ModelMapperUtils {
         return entities.map(objectEntity -> convert(objectEntity, dtoClass));
     }
 
+    public static <D, T> Collection<D> convertCollection(@NonNull Collection<T> entities, @NonNull Class<D> dtoClass) {
+        return entities.stream().map(objectEntity -> convert(objectEntity, dtoClass)).collect(Collectors.toCollection(ArrayList::new));
+    }
+
     public static <D, T> D convert(final T entity, Class<D> outClass) {
         return mapper.map(entity, outClass);
     }
@@ -85,7 +92,6 @@ public final class ModelMapperUtils {
 
         return mapper;
     }
-
 
     private static void initializeConverters(ModelMapper mapper) {
         mapper.createTypeMap(ClassicAlgorithm.class, AlgorithmDto.class)

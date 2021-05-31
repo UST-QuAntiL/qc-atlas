@@ -58,9 +58,9 @@ public class ComputeResourcePropertyTypeServiceImpl implements ComputeResourcePr
     @Override
     public ComputeResourcePropertyType findById(@NonNull UUID computeResourcePropertyTypeId) {
         return ServiceUtils.findById(
-            computeResourcePropertyTypeId,
-            ComputeResourcePropertyType.class,
-            computeResourcePropertyTypeRepository);
+                computeResourcePropertyTypeId,
+                ComputeResourcePropertyType.class,
+                computeResourcePropertyTypeRepository);
     }
 
     @Override
@@ -79,13 +79,13 @@ public class ComputeResourcePropertyTypeServiceImpl implements ComputeResourcePr
     @Transactional
     public void delete(@NonNull UUID computeResourcePropertyTypeId) {
         ServiceUtils.throwIfNotExists(
-            computeResourcePropertyTypeId,
-            ComputeResourcePropertyType.class,
-            computeResourcePropertyTypeRepository);
+                computeResourcePropertyTypeId,
+                ComputeResourcePropertyType.class,
+                computeResourcePropertyTypeRepository);
 
         if (computeResourcePropertyRepository.countByComputeResourcePropertyTypeId(computeResourcePropertyTypeId) > 0) {
             throw new EntityReferenceConstraintViolationException("ComputeResourcePropertyType with ID \""
-                + computeResourcePropertyTypeId + "\" cannot be deleted, because it is still in use");
+                    + computeResourcePropertyTypeId + "\" cannot be deleted, because it is still in use");
         }
 
         this.computeResourcePropertyTypeRepository.deleteById(computeResourcePropertyTypeId);

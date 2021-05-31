@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 the qc-atlas contributors.
+ * Copyright (c) 2020-2021 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -21,6 +21,7 @@ package org.planqk.atlas.web.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -54,6 +55,7 @@ import java.util.UUID;
 
 import org.hibernate.envers.DefaultRevisionEntity;
 import org.json.JSONObject;
+import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -71,6 +73,7 @@ import org.planqk.atlas.core.model.DiscussionComment;
 import org.planqk.atlas.core.model.DiscussionTopic;
 import org.planqk.atlas.core.model.Image;
 import org.planqk.atlas.core.model.Implementation;
+import org.planqk.atlas.core.model.LearningMethod;
 import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.model.PatternRelationType;
 import org.planqk.atlas.core.model.ProblemType;
@@ -85,6 +88,7 @@ import org.planqk.atlas.core.services.ComputeResourcePropertyTypeService;
 import org.planqk.atlas.core.services.DiscussionCommentService;
 import org.planqk.atlas.core.services.DiscussionTopicService;
 import org.planqk.atlas.core.services.ImplementationService;
+import org.planqk.atlas.core.services.LearningMethodService;
 import org.planqk.atlas.core.services.LinkingService;
 import org.planqk.atlas.core.services.PatternRelationService;
 import org.planqk.atlas.core.services.ProblemTypeService;
@@ -161,6 +165,8 @@ public class AlgorithmControllerTest {
 
     @MockBean
     private ImplementationService implementationService;
+    @MockBean
+    private LearningMethodService learningMethodService;
 
     @MockBean
     private TagService tagService;
@@ -360,8 +366,7 @@ public class AlgorithmControllerTest {
                 .accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk()).andReturn();
 
-        var resultList = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(),
-                "algorithms", AlgorithmDto.class);
+        var resultList = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(), AlgorithmDto.class);
         assertEquals(0, resultList.size());
     }
 
@@ -386,10 +391,8 @@ public class AlgorithmControllerTest {
         ).andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andReturn();
-
-        var resultList = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(),
-                "algorithms", AlgorithmDto.class);
-        assertEquals(2, resultList.size());
+        var array = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(), AlgorithmDto.class);
+        assertEquals(array.size(), 2);
     }
 
     @Test
@@ -750,10 +753,9 @@ public class AlgorithmControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
                 .getPublicationsOfAlgorithm(UUID.randomUUID(), ListParameters.getDefault()));
-        mockMvc.perform(get(url).accept(APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$._embedded.publications").doesNotExist())
-        ;
+        MvcResult mvcResult = mockMvc.perform(get(url).accept(APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
+        Assert.assertEquals(ObjectMapperUtils.mapResponseToList(mvcResult, PublicationDto.class).size(), 0);
     }
 
     @Test
@@ -768,11 +770,12 @@ public class AlgorithmControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
                 .getPublicationsOfAlgorithm(UUID.randomUUID(), ListParameters.getDefault()));
-        mockMvc.perform(get(url).accept(APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$._embedded.publications").isArray())
-                .andExpect(jsonPath("$._embedded.publications[0].id").value(pub.getId().toString()))
-        ;
+        MvcResult result = mockMvc.perform(get(url).accept(APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
+
+        List<PublicationDto> publicationDtos = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(), PublicationDto.class);
+        assertEquals(1, publicationDtos.size());
+        assertNotNull(publicationDtos.get(0).getId());
     }
 
     @Test
@@ -917,28 +920,28 @@ public class AlgorithmControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
                 .getProblemTypesOfAlgorithm(UUID.randomUUID(), ListParameters.getDefault()));
-        mockMvc.perform(get(url).accept(APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$._embedded.ProblemTypes").doesNotExist())
-        ;
+        MvcResult mvcResult = mockMvc.perform(get(url).accept(APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
+        Assert.assertEquals(ObjectMapperUtils.mapResponseToList(mvcResult, ProblemTypeDto.class).size(), 0);
     }
 
     @Test
     @SneakyThrows
     void getProblemTypesOfAlgorithm_SingleElement_returnOk() {
         var problemType = new ProblemType();
-        problemType.setName("test");
+        String problemTypeName = "test";
+        problemType.setName(problemTypeName);
         problemType.setId(UUID.randomUUID());
 
         doReturn(new PageImpl<>(List.of(problemType))).when(algorithmService).findLinkedProblemTypes(any(), any());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
                 .getProblemTypesOfAlgorithm(UUID.randomUUID(), ListParameters.getDefault()));
-        mockMvc.perform(get(url).accept(APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$._embedded.problemTypes").isArray())
-                .andExpect(jsonPath("$._embedded.problemTypes[0].id").value(problemType.getId().toString()))
-        ;
+        MvcResult result = mockMvc.perform(get(url).accept(APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
+        List<ProblemTypeDto> problemTypeDtos = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(), ProblemTypeDto.class);
+        assertEquals(1, problemTypeDtos.size());
+        assertEquals(problemTypeDtos.get(0).getName(), problemTypeName);
     }
 
     @Test
@@ -1080,10 +1083,9 @@ public class AlgorithmControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
                 .getApplicationAreasOfAlgorithm(UUID.randomUUID(), ListParameters.getDefault()));
-        mockMvc.perform(get(url).accept(APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$._embedded.applicationAreas").doesNotExist())
-        ;
+        MvcResult mvcResult = mockMvc.perform(get(url).accept(APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
+        assertEquals(ObjectMapperUtils.mapResponseToList(mvcResult, ApplicationAreaDto.class).size(), 0);
     }
 
     @Test
@@ -1097,11 +1099,11 @@ public class AlgorithmControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
                 .getApplicationAreasOfAlgorithm(UUID.randomUUID(), ListParameters.getDefault()));
-        mockMvc.perform(get(url).accept(APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$._embedded.applicationAreas").isArray())
-                .andExpect(jsonPath("$._embedded.applicationAreas[0].id").value(applicationArea.getId().toString()))
-        ;
+        MvcResult mvcResult = mockMvc.perform(get(url).accept(APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
+
+        List<ApplicationAreaDto> applicationAreaDtos = ObjectMapperUtils.mapResponseToList(mvcResult, ApplicationAreaDto.class);
+        assertNotNull(applicationAreaDtos.get(0).getId());
     }
 
     @Test
@@ -1269,8 +1271,7 @@ public class AlgorithmControllerTest {
         ).andExpect(status().isOk()).andReturn();
 
         var dtoElements = ObjectMapperUtils.mapResponseToList(
-                mvcResult.getResponse().getContentAsString(),
-                "implementations",
+                mvcResult,
                 Implementation.class
         );
         assertThat(dtoElements.size()).isEqualTo(inputList.size());
@@ -1288,9 +1289,9 @@ public class AlgorithmControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
                 .getComputeResourcePropertiesOfAlgorithm(UUID.randomUUID(), ListParameters.getDefault()));
-        mockMvc.perform(get(url).accept(APPLICATION_JSON))
-                .andExpect(jsonPath("$._embedded.computeResourceProperties").doesNotExist())
-                .andExpect(status().isOk());
+        MvcResult mvcResult = mockMvc.perform(get(url).accept(APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
+        assertEquals(ObjectMapperUtils.mapResponseToList(mvcResult, ComputeResourcePropertyDto.class).size(), 0);
     }
 
     @Test
@@ -1310,10 +1311,12 @@ public class AlgorithmControllerTest {
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
                 .getComputeResourcePropertiesOfAlgorithm(UUID.randomUUID(), ListParameters.getDefault()));
-        mockMvc.perform(get(url).accept(APPLICATION_JSON))
-                .andExpect(jsonPath("$._embedded.computeResourceProperties[0].id").value(res.getId().toString()))
-                .andExpect(jsonPath("$._embedded.computeResourceProperties[0].type.id").value(type.getId().toString()))
-                .andExpect(status().isOk());
+        MvcResult mvcResult = mockMvc.perform(get(url).accept(APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
+
+        List<ComputeResourcePropertyDto> computeResourcePropertyDtos =
+                ObjectMapperUtils.mapResponseToList(mvcResult, ComputeResourcePropertyDto.class);
+        assertNotNull(computeResourcePropertyDtos.get(0).getId());
+        assertNotNull(computeResourcePropertyDtos.get(0).getType().getId());
     }
 
     @Test
@@ -1537,8 +1540,7 @@ public class AlgorithmControllerTest {
                 get(url).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
-        var resultList = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(),
-                "patternRelations", PatternRelationDto.class);
+        var resultList = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(), PatternRelationDto.class);
         assertEquals(2, resultList.size());
     }
 
@@ -1829,6 +1831,23 @@ public class AlgorithmControllerTest {
         mockMvc.perform(get(url).accept(APPLICATION_JSON)).andExpect(status().isNotFound());
     }
 
+    @Test
+    public void getLearningMethodsForAlgorithm_SingleElement_returnOk() throws Exception {
+        List<LearningMethod> methods = new ArrayList<>();
+        LearningMethod learningMethod = new LearningMethod();
+        learningMethod.setId(UUID.randomUUID());
+        learningMethod.setName("supervised");
+        methods.add(learningMethod);
+        Page<LearningMethod> learningMethods = new PageImpl<>(methods);
+        when(algorithmService.findLinkedLearningMethods(any(), any())).thenReturn(learningMethods);
+
+        var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class).
+                getLearningMethodsOfAlgorithm(UUID.randomUUID(), new ListParameters(pageable, null)));
+        MvcResult mvcResult = mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON)).andReturn();
+
+        assertEquals(mvcResult.getResponse().getStatus(), 200);
+    }
+
     //////////////////////////////////// Fixed up to this point /////////////////////////////////////////////////////
 
     @Test
@@ -2002,7 +2021,8 @@ public class AlgorithmControllerTest {
         Mockito.verify(discussionTopicService, times(1)).findByKnowledgeArtifactId(algorithm1.getId(), pageable);
 
         JSONObject rootObject = new JSONObject(result.getResponse().getContentAsString());
-        var embeddedJSONObjects = rootObject.getJSONObject("_embedded").getJSONArray("discussionTopics");
+        System.out.println(rootObject);
+        var embeddedJSONObjects = rootObject.getJSONArray("content");
         var resultObject = mapper.readValue(embeddedJSONObjects.getJSONObject(0).toString(), DiscussionTopicDto.class);
 
         assertEquals(1, embeddedJSONObjects.length());
@@ -2189,7 +2209,7 @@ public class AlgorithmControllerTest {
         Mockito.verify(discussionCommentService, times(1)).findAllByTopic(discussionTopic1.getId(), pageable);
 
         var resultList = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(),
-                "discussionComments", DiscussionCommentDto.class);
+                DiscussionCommentDto.class);
 
         assertEquals(resultList.size(), 1);
         assertEquals(resultList.get(0).getText(), discussionComment1Dto.getText());

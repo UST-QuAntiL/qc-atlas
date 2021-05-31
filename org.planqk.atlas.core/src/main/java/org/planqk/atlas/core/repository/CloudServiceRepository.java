@@ -41,20 +41,20 @@ public interface CloudServiceRepository extends JpaRepository<CloudService, UUID
     boolean existsCloudServiceById(UUID id);
 
     @Query("SELECT cs " +
-        "FROM CloudService cs " +
-        "JOIN cs.softwarePlatforms sp " +
-        "WHERE sp.id = :spId")
+                   "FROM CloudService cs " +
+                   "JOIN cs.softwarePlatforms sp " +
+                   "WHERE sp.id = :spId")
     Page<CloudService> findCloudServicesBySoftwarePlatformId(@Param("spId") UUID softwarePlatformId, Pageable pageable);
 
     @Query("SELECT cs " +
-        "FROM CloudService cs " +
-        "JOIN cs.providedComputeResources cr " +
-        "WHERE cr.id = :crId")
+                   "FROM CloudService cs " +
+                   "JOIN cs.providedComputeResources cr " +
+                   "WHERE cr.id = :crId")
     Page<CloudService> findCloudServicesByComputeResourceId(@Param("crId") UUID computeResourceId, Pageable pageable);
 
     @Query("SELECT COUNT(cs) " +
-        "FROM CloudService cs " +
-        "JOIN cs.providedComputeResources cr " +
-        "WHERE cr.id = :crId")
+                   "FROM CloudService cs " +
+                   "JOIN cs.providedComputeResources cr " +
+                   "WHERE cr.id = :crId")
     long countCloudServiceByComputeResource(@Param("crId") UUID computeResourceId);
 }

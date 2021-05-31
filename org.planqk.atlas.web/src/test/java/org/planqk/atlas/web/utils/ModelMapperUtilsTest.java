@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 the qc-atlas contributors.
+ * Copyright (c) 2020-2021 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -53,7 +53,7 @@ public class ModelMapperUtilsTest {
 
     private Set<ProblemTypeDto> problemTypesDto;
 
-    private Pageable pageable = PageRequest.of(0, 2);
+    private final Pageable pageable = PageRequest.of(0, 2);
 
     private Page<ProblemType> pagedProblemTypes;
 
@@ -113,7 +113,7 @@ public class ModelMapperUtilsTest {
         // Generate Page objects
         pagedProblemTypes = new PageImpl<ProblemType>(new ArrayList<>(problemTypes), pageable, problemTypes.size());
         pagedProblemTypesDto = new PageImpl<ProblemTypeDto>(new ArrayList<>(problemTypesDto), pageable,
-            problemTypesDto.size());
+                problemTypesDto.size());
     }
 
     @Test
