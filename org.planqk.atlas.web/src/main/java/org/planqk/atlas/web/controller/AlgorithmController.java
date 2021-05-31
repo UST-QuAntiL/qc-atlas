@@ -933,12 +933,10 @@ public class AlgorithmController {
     }, description = "Retrieve all algorithm revisions")
     @ListParametersDoc
     @GetMapping("/{algorithmId}/" + Constants.REVISIONS)
-    public ResponseEntity<PagedModel<EntityModel<RevisionDto>>> getAlgorithmRevisions(
+    public ResponseEntity<Page<RevisionDto>> getAlgorithmRevisions(
             @PathVariable UUID algorithmId, @Parameter(hidden = true) ListParameters listParameters) {
-        final var revisions = algorithmService.findAlgorithmRevisions(algorithmId, listParameters.getPageable());
-        final var revisionDtos = revisions.map(item -> ModelMapperUtils.convert(item, RevisionDto.class));
-        final var model = pagedResourcesAssembler.toModel(revisionDtos);
-        return ResponseEntity.ok(model);
+        final var algorithmRevisions = algorithmService.findAlgorithmRevisions(algorithmId, listParameters.getPageable());
+        return ResponseEntity.ok(ModelMapperUtils.convertPage(algorithmRevisions, RevisionDto.class));
     }
 
     @Operation(responses = {
@@ -947,8 +945,9 @@ public class AlgorithmController {
             @ApiResponse(responseCode = "404", description = "Not Found. Algorithm with given ID and revision ID doesn't exist.")
     }, description = "Retrieve a specific revision of an algorithm with its basic properties")
     @GetMapping("/{algorithmId}/" + Constants.REVISIONS + "/{revisionId}")
-    public ResponseEntity<EntityModel<AlgorithmDto>> getAlgorithmRevision(
+    public ResponseEntity<AlgorithmDto> getAlgorithmRevision(
             @PathVariable UUID algorithmId, @PathVariable Integer revisionId) {
-        return ResponseEntity.ok(algorithmAssembler.toModel(algorithmService.findAlgorithmRevision(algorithmId, revisionId).getEntity()));
+        final Algorithm algorithmRevision = algorithmService.findAlgorithmRevision(algorithmId, revisionId).getEntity();
+        return ResponseEntity.ok(ModelMapperUtils.convert(algorithmRevision, AlgorithmDto.class));
     }
 }

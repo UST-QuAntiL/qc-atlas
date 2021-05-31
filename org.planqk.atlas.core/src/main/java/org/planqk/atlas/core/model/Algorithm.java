@@ -163,6 +163,7 @@ public class Algorithm extends KnowledgeArtifact {
                joinColumns = @JoinColumn(name = "algorithm_id"),
                inverseJoinColumns = @JoinColumn(name = "learning_method_id"))
     @EqualsAndHashCode.Exclude
+    @NotAudited
     private Set<LearningMethod> learningMethods = new HashSet<>();
 
     public void addTag(@NonNull Tag tag) {
