@@ -25,8 +25,8 @@ import java.util.Collection;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.hibernate.envers.DefaultRevisionEntity;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.module.jsr310.Jsr310Module;
 import org.modelmapper.module.jsr310.Jsr310ModuleConfig;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
@@ -52,10 +52,8 @@ import org.planqk.atlas.web.dtos.ImplementationPackageDto;
 import org.planqk.atlas.web.dtos.PatternRelationDto;
 import org.planqk.atlas.web.dtos.QPUDto;
 import org.planqk.atlas.web.dtos.QuantumAlgorithmDto;
-import org.planqk.atlas.web.dtos.RevisionDto;
 import org.planqk.atlas.web.dtos.SimulatorDto;
 import org.planqk.atlas.web.dtos.TOSCAImplementationPackageDto;
-import org.modelmapper.module.jsr310.Jsr310Module;
 import org.springframework.data.domain.Page;
 
 import lombok.NonNull;
@@ -83,7 +81,7 @@ public final class ModelMapperUtils {
         final ModelMapper mapper = new ModelMapper();
         initializeConverters(mapper);
         initializeUUIDMappings(mapper);
-        Jsr310ModuleConfig config = Jsr310ModuleConfig.builder()
+        final Jsr310ModuleConfig config = Jsr310ModuleConfig.builder()
                 .dateTimePattern("yyyy-MM-dd HH:mm:ss")
                 .datePattern("yyyy-MM-dd HH:mm:ss")
                 .zoneId(ZoneOffset.UTC)
@@ -122,8 +120,6 @@ public final class ModelMapperUtils {
                 .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), Qpu.class));
         mapper.createTypeMap(SimulatorDto.class, ComputeResource.class)
                 .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), Simulator.class));
-        mapper.createTypeMap(RevisionDto.class, DefaultRevisionEntity.class)
-                .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), DefaultRevisionEntity.class));
     }
 
     private static void initializeUUIDMappings(ModelMapper mapper) {

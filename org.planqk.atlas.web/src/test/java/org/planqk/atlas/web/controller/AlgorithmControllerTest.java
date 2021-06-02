@@ -555,8 +555,7 @@ public class AlgorithmControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andReturn();
 
-        var resultList = ObjectMapperUtils.mapResponseToList(result.getResponse().getContentAsString(),
-                "revisions", RevisionDto.class);
+        var resultList = ObjectMapperUtils.mapResponseToList(result, RevisionDto.class);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
                 .withZone(ZoneId.from(ZoneOffset.UTC));
