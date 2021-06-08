@@ -23,7 +23,6 @@ import javax.validation.constraints.NotNull;
 
 import org.planqk.atlas.core.model.ComputationModel;
 import org.planqk.atlas.core.model.QuantumComputationModel;
-import org.springframework.hateoas.server.core.Relation;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
@@ -39,7 +38,6 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @Data
 @JsonTypeName("QUANTUM")
-@Relation(itemRelation = "algorithm", collectionRelation = "algorithms")
 public class QuantumAlgorithmDto extends AlgorithmDto {
 
     private boolean nisqReady;

@@ -27,7 +27,6 @@ import javax.validation.constraints.Null;
 import org.planqk.atlas.core.model.Status;
 import org.planqk.atlas.web.utils.Identifyable;
 import org.planqk.atlas.web.utils.ValidationGroups;
-import org.springframework.hateoas.server.core.Relation;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -37,7 +36,6 @@ import lombok.NoArgsConstructor;
  */
 @Data
 @NoArgsConstructor
-@Relation(itemRelation = "discussionTopic", collectionRelation = "discussionTopics")
 public class DiscussionTopicDto implements Identifyable {
 
     @NotNull(groups = {ValidationGroups.IDOnly.class}, message = "An id is required to perform an update")

@@ -26,7 +26,6 @@ import javax.validation.constraints.Null;
 import org.planqk.atlas.core.model.ImplementationPackageType;
 import org.planqk.atlas.web.utils.Identifyable;
 import org.planqk.atlas.web.utils.ValidationGroups;
-import org.springframework.hateoas.server.core.Relation;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -40,7 +39,6 @@ import lombok.NoArgsConstructor;
 @JsonSubTypes({@JsonSubTypes.Type(value = FileImplementationPackageDto.class, name = "FILE"),
                       @JsonSubTypes.Type(value = TOSCAImplementationPackageDto.class, name = "TOSCA"),
                       @JsonSubTypes.Type(value = FunctionImplementationPackageDto.class, name = "FUNCTION")})
-@Relation(itemRelation = "implementationPackage", collectionRelation = "implementationPackages")
 public class ImplementationPackageDto implements Identifyable {
 
     @NotNull(groups = {ValidationGroups.IDOnly.class}, message = "An id is required to perform an update")

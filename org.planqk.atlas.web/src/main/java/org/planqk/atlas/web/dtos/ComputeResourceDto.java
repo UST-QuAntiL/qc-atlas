@@ -26,7 +26,6 @@ import javax.validation.constraints.Null;
 import org.planqk.atlas.core.model.QuantumComputationModel;
 import org.planqk.atlas.web.utils.Identifyable;
 import org.planqk.atlas.web.utils.ValidationGroups;
-import org.springframework.hateoas.server.core.Relation;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 
@@ -42,7 +41,6 @@ import lombok.ToString;
 @NoArgsConstructor
 @JsonSubTypes({@JsonSubTypes.Type(value = QPUDto.class),
                       @JsonSubTypes.Type(value = SimulatorDto.class)})
-@Relation(itemRelation = "computeResource", collectionRelation = "computeResources")
 public class ComputeResourceDto implements Identifyable {
 
     @NotNull(groups = {ValidationGroups.IDOnly.class}, message = "An id is required to perform an update")

@@ -29,7 +29,6 @@ import org.hibernate.validator.constraints.URL;
 import org.planqk.atlas.web.utils.Identifyable;
 import org.planqk.atlas.web.utils.ValidationGroups;
 import org.planqk.atlas.web.utils.ValidationGroups.Create;
-import org.springframework.hateoas.server.core.Relation;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -42,7 +41,6 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode
 @Data
 @NoArgsConstructor
-@Relation(itemRelation = "publication", collectionRelation = "publications")
 public class PublicationDto implements Identifyable {
 
     @NotNull(groups = {ValidationGroups.IDOnly.class}, message = "The id must not be null to perform an update")

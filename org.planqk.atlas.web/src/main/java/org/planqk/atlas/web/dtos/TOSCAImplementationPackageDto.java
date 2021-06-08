@@ -20,7 +20,6 @@
 package org.planqk.atlas.web.dtos;
 
 import org.planqk.atlas.core.model.ImplementationPackageType;
-import org.springframework.hateoas.server.core.Relation;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
@@ -33,7 +32,6 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @Data
 @JsonTypeName("TOSCA")
-@Relation(itemRelation = "implementationPackage", collectionRelation = "implementationPackages")
 public class TOSCAImplementationPackageDto extends ImplementationPackageDto {
     @Override
     @Schema(type = "string", allowableValues = {"TOSCA"})
