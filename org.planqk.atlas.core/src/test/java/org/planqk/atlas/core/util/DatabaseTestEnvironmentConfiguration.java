@@ -25,11 +25,12 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.data.envers.repository.support.EnversRevisionRepositoryFactoryBean;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootConfiguration
 @PropertySource("classpath:/db-test.properties")
-@EnableJpaRepositories("org.planqk.atlas.*")
+@EnableJpaRepositories(basePackages = "org.planqk.atlas.*", repositoryFactoryBeanClass = EnversRevisionRepositoryFactoryBean.class)
 @EntityScan("org.planqk.atlas.*")
 @ComponentScan("org.planqk.atlas.*")
 @AutoConfigureDataJpa

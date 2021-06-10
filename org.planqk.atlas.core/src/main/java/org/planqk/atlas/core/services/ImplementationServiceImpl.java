@@ -23,8 +23,10 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.ClassicImplementation;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Publication;
+import org.planqk.atlas.core.model.QuantumImplementation;
 import org.planqk.atlas.core.model.SoftwarePlatform;
 import org.planqk.atlas.core.repository.AlgorithmRepository;
 import org.planqk.atlas.core.repository.ComputeResourcePropertyRepository;
@@ -33,9 +35,12 @@ import org.planqk.atlas.core.repository.ImplementationRepository;
 import org.planqk.atlas.core.repository.PublicationRepository;
 import org.planqk.atlas.core.repository.SoftwarePlatformRepository;
 import org.planqk.atlas.core.util.CollectionUtils;
+import org.planqk.atlas.core.util.Constants;
 import org.planqk.atlas.core.util.ServiceUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.history.Revision;
+import org.springframework.data.history.Revisions;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -99,6 +104,9 @@ public class ImplementationServiceImpl implements ImplementationService {
         persistedImplementation.setLicense(implementation.getLicense());
         persistedImplementation.setProblemStatement(implementation.getProblemStatement());
         persistedImplementation.setTechnology(implementation.getTechnology());
+
+        updateRevisions(persistedImplementation);
+
         return implementationRepository.save(persistedImplementation);
     }
 
@@ -110,6 +118,51 @@ public class ImplementationServiceImpl implements ImplementationService {
         removeReferences(implementation);
 
         implementationRepository.deleteById(implementationId);
+
+        removeRevisions(implementation);
+    }
+
+    /*
+     * drop older revisions if the amount of saved revisions is reached
+     */
+    private void updateRevisions(@NonNull Implementation implementation) {
+        final Revisions<Integer, Implementation> revisions = implementationRepository.findRevisions(implementation.getId());
+        if (revisions.getContent().size() == Constants.REVISIONS_COUNT) {
+
+            // get oldest revision (first table entry)
+            final Revision<Integer, Implementation> oldestRevision = revisions.getContent().get(0);
+            final int revisionId = oldestRevision.getRevisionNumber().orElseThrow();
+            final UUID implementationId = oldestRevision.getEntity().getId();
+
+            // delete oldest revision related to the implementation
+            if (implementation instanceof ClassicImplementation) {
+                implementationRepository.deleteClassicImplementationRevision(revisionId, implementationId);
+            }
+            if (implementation instanceof QuantumImplementation) {
+                implementationRepository.deleteQuantumImplementationRevision(revisionId, implementationId);
+            }
+            implementationRepository.deleteImplementationRevision(revisionId, implementationId);
+            algorithmRepository.deleteKnowledgeArtifactRevision(revisionId, implementationId);
+            algorithmRepository.deleteRevisionInfo(revisionId);
+        }
+    }
+
+    private void removeRevisions(@NonNull Implementation implementation) {
+
+        final Revisions<Integer, Implementation> revisions = implementationRepository.findRevisions(implementation.getId());
+
+        // delete all related revisions
+        if (implementation instanceof ClassicImplementation) {
+            implementationRepository.deleteAllClassicImplementationRevisions(implementation.getId());
+        }
+        if (implementation instanceof QuantumImplementation) {
+            implementationRepository.deleteAllQuantumImplementationRevisions(implementation.getId());
+        }
+
+        // delete all related revisions
+        implementationRepository.deleteAllImplementationRevisions(implementation.getId());
+        algorithmRepository.deleteAllKnowledgeArtifactRevisions(implementation.getId());
+        revisions.forEach(revision -> algorithmRepository.deleteRevisionInfo(revision.getRevisionNumber().orElseThrow()));
     }
 
     private void removeReferences(@NonNull Implementation implementation) {
@@ -157,5 +210,19 @@ public class ImplementationServiceImpl implements ImplementationService {
         ServiceUtils.throwIfNotExists(implementationId, Implementation.class, implementationRepository);
 
         return publicationRepository.findPublicationsByImplementationId(implementationId, pageable);
+    }
+
+    @Override
+    public Revision<Integer, Implementation> findImplementationRevision(@NonNull UUID implementationId, @NonNull Integer revisionId) {
+        return implementationRepository.findRevision(implementationId, revisionId).orElseThrow(()
+                -> new NoSuchElementException("Implementation revision with Implementation ID: "
+                + implementationId + "and Revision ID " + revisionId + "does not exist"));
+    }
+
+    @Override
+    public Page<Revision<Integer, Implementation>> findImplementationRevisions(@NonNull UUID implementationId, @NonNull Pageable pageable) {
+        ServiceUtils.throwIfNotExists(implementationId, Implementation.class, implementationRepository);
+
+        return implementationRepository.findRevisions(implementationId, pageable);
     }
 }

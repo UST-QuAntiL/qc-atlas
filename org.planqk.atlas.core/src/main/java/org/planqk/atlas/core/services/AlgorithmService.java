@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020-2021 the qc-atlas contributors.
+ * Copyright (c) 2020 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -30,6 +30,7 @@ import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.model.Publication;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.history.Revision;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -253,4 +254,31 @@ public interface AlgorithmService {
      * @return {@link LearningMethod} with the provided Id that is linked to the algorithm with the given Id
      */
     LearningMethod getLearningMethodOfAlgorithm(UUID algorithmId, UUID learningMethodId);
+
+    /**
+     * Retrieve all {@link Algorithm} revisions from the database.
+     * <p>
+     * The amount of entries is based on the given {@link Pageable} parameter. If the {@link Pageable} is unpaged a {@link Page} with all entries is
+     * queried.
+     * <p>
+     * The given {@link Algorithm} is identified through its ID given as a parameter. If no {@link Algorithm} with the given ID can be found a {@link
+     * java.util.NoSuchElementException} is thrown.
+     *
+     * @param algorithmId The ID of the {@link Algorithm} we want to find
+     * @param pageable The page information, namely page size and page number, of the page we want to retrieve
+     * @return The page of queried {@link Revision} entries
+     */
+    Page<Revision<Integer, Algorithm>> findAlgorithmRevisions(UUID algorithmId, Pageable pageable);
+
+    /**
+     * Retrieve an {@link Algorithm} revision from the database.
+     * <p>
+     * If either the {@link Algorithm} or the {@link Revision} with given IDs could not be found or if a database entry for both could be found
+     * a {@link java.util.NoSuchElementException} is thrown.
+     *
+     * @param algorithmId   The ID of the {@link Algorithm}
+     * @param revisionId    The ID of the {@link Revision}
+     *
+     */
+    Revision<Integer, Algorithm> findAlgorithmRevision(UUID algorithmId, Integer revisionId);
 }

@@ -28,6 +28,10 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.OneToMany;
 
+import org.hibernate.envers.AuditTable;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -49,12 +53,15 @@ import lombok.NoArgsConstructor;
 @Inheritance(strategy = InheritanceType.JOINED)
 @NoArgsConstructor
 @Data
+@Audited
+@AuditTable("knowledge_artifact_revisions")
 public class KnowledgeArtifact extends HasId {
 
     private Date creationDate;
 
     private Date lastModifiedAt;
 
+    @NotAudited
     @OneToMany(cascade = CascadeType.ALL,
                mappedBy = "knowledgeArtifact",
                orphanRemoval = true)

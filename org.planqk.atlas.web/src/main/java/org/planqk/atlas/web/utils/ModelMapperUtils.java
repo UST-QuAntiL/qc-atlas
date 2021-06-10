@@ -19,12 +19,15 @@
 
 package org.planqk.atlas.web.utils;
 
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
+import org.modelmapper.module.jsr310.Jsr310Module;
+import org.modelmapper.module.jsr310.Jsr310ModuleConfig;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
@@ -78,6 +81,12 @@ public final class ModelMapperUtils {
         final ModelMapper mapper = new ModelMapper();
         initializeConverters(mapper);
         initializeUUIDMappings(mapper);
+        final Jsr310ModuleConfig config = Jsr310ModuleConfig.builder()
+                .dateTimePattern("yyyy-MM-dd HH:mm:ss")
+                .datePattern("yyyy-MM-dd HH:mm:ss")
+                .zoneId(ZoneOffset.UTC)
+                .build();
+        mapper.registerModule(new Jsr310Module(config));
 
         return mapper;
     }

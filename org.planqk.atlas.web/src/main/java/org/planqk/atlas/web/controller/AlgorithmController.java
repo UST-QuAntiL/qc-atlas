@@ -54,6 +54,7 @@ import org.planqk.atlas.web.dtos.LearningMethodDto;
 import org.planqk.atlas.web.dtos.PatternRelationDto;
 import org.planqk.atlas.web.dtos.ProblemTypeDto;
 import org.planqk.atlas.web.dtos.PublicationDto;
+import org.planqk.atlas.web.dtos.RevisionDto;
 import org.planqk.atlas.web.dtos.SketchDto;
 import org.planqk.atlas.web.dtos.TagDto;
 import org.planqk.atlas.web.utils.ControllerValidationUtils;
@@ -923,5 +924,30 @@ public class AlgorithmController {
             @PathVariable UUID learningMethodId) {
         linkingService.unlinkAlgorithmAndLearningMethod(algorithmId, learningMethodId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", description = "Not Found. Algorithm with given ID doesn't exist.")
+    }, description = "Retrieve all algorithm revisions")
+    @ListParametersDoc
+    @GetMapping("/{algorithmId}/" + Constants.REVISIONS)
+    public ResponseEntity<Page<RevisionDto>> getAlgorithmRevisions(
+            @PathVariable UUID algorithmId, @Parameter(hidden = true) ListParameters listParameters) {
+        final var algorithmRevisions = algorithmService.findAlgorithmRevisions(algorithmId, listParameters.getPageable());
+        return ResponseEntity.ok(ModelMapperUtils.convertPage(algorithmRevisions, RevisionDto.class));
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", description = "Not Found. Algorithm with given ID and revision ID doesn't exist.")
+    }, description = "Retrieve a specific revision of an algorithm with its basic properties")
+    @GetMapping("/{algorithmId}/" + Constants.REVISIONS + "/{revisionId}")
+    public ResponseEntity<AlgorithmDto> getAlgorithmRevision(
+            @PathVariable UUID algorithmId, @PathVariable Integer revisionId) {
+        final Algorithm algorithmRevision = algorithmService.findAlgorithmRevision(algorithmId, revisionId).getEntity();
+        return ResponseEntity.ok(ModelMapperUtils.convert(algorithmRevision, AlgorithmDto.class));
     }
 }

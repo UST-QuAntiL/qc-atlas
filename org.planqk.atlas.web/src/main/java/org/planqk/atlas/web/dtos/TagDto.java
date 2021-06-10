@@ -22,7 +22,6 @@ package org.planqk.atlas.web.dtos;
 import javax.validation.constraints.NotNull;
 
 import org.planqk.atlas.web.utils.ValidationGroups;
-import org.springframework.hateoas.server.core.Relation;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -32,7 +31,6 @@ import lombok.EqualsAndHashCode;
  */
 @EqualsAndHashCode
 @Data
-@Relation(itemRelation = "tag", collectionRelation = "tags")
 public class TagDto {
 
     private String category;

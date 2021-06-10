@@ -20,7 +20,6 @@
 package org.planqk.atlas.web.dtos;
 
 import org.planqk.atlas.core.model.ComputationModel;
-import org.springframework.hateoas.server.core.Relation;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
@@ -36,7 +35,6 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @Data
 @JsonTypeName("CLASSIC")
-@Relation(itemRelation = "algorithm", collectionRelation = "algorithms")
 public class ClassicAlgorithmDto extends AlgorithmDto {
     @Override
     @Schema(type = "string", allowableValues = {"CLASSIC"})

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 the qc-atlas contributors.
+ * Copyright (c) 2020-2021 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -19,28 +19,19 @@
 
 package org.planqk.atlas.web.dtos;
 
-import java.util.UUID;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Null;
-
-import org.planqk.atlas.web.utils.Identifyable;
-import org.planqk.atlas.web.utils.ValidationGroups;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
- * Data transfer object for ProblemType ({@link org.planqk.atlas.core.model.ProblemType}).
+ * Data transfer object for Revision {@link org.hibernate.envers.DefaultRevisionEntity})
  */
-@EqualsAndHashCode
 @Data
-public class ProblemTypeDto implements Identifyable {
-    @NotNull(groups = {ValidationGroups.IDOnly.class}, message = "An id is required to perform an update")
-    @Null(groups = {ValidationGroups.Create.class}, message = "The id must be null for creating a problem type")
-    private UUID id;
+public class RevisionDto {
 
-    @NotNull(message = "ProblemType-Name must not be null!")
-    private String name;
+    @JsonProperty("id")
+    private int revisionNumber;
 
-    private UUID parentProblemType;
+    @JsonProperty("creationDate")
+    private String revisionInstant;
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 the qc-atlas contributors.
+ * Copyright (c) 2021 University of Stuttgart
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -17,26 +17,16 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.planqk.atlas.web.dtos;
+package org.planqk.atlas.core.util;
 
-import org.planqk.atlas.core.model.ImplementationPackageType;
+/**
+ * Constants for the QC-Atlas core classes.
+ */
+public final class Constants {
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
+    // amount of revisions to be saved for each artifact
+    public static final int REVISIONS_COUNT = 20;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-
-@EqualsAndHashCode(callSuper = true)
-@ToString(callSuper = true)
-@Data
-@JsonTypeName("FILE")
-public class FileImplementationPackageDto extends ImplementationPackageDto {
-
-    @Override
-    @Schema(type = "string", allowableValues = {"FILE"})
-    public ImplementationPackageType getPackageType() {
-        return super.getPackageType();
+    private Constants() {
     }
 }

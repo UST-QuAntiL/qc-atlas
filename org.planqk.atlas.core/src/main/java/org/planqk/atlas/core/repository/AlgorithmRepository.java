@@ -25,7 +25,9 @@ import org.planqk.atlas.core.model.Algorithm;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.history.RevisionRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.stereotype.Repository;
@@ -35,7 +37,7 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 @RepositoryRestResource(exported = false)
-public interface AlgorithmRepository extends JpaRepository<Algorithm, UUID> {
+public interface AlgorithmRepository extends RevisionRepository<Algorithm, UUID, Integer>, JpaRepository<Algorithm, UUID> {
 
     default Page<Algorithm> findAll(String search, Pageable pageable) {
         return findByNameContainingIgnoreCaseOrAcronymContainingIgnoreCaseOrProblemContainingIgnoreCase(search, search, search, pageable);
@@ -49,4 +51,40 @@ public interface AlgorithmRepository extends JpaRepository<Algorithm, UUID> {
                    "JOIN algo.publications pub " +
                    "WHERE  pub.id = :pubId")
     Page<Algorithm> findAlgorithmsByPublicationId(@Param("pubId") UUID publicationId, Pageable pageable);
+
+    @Modifying()
+    @Query(value = "DELETE FROM algorithm_revisions WHERE rev = :revId AND id = :algoId", nativeQuery = true)
+    void deleteAlgorithmRevision(@Param("revId") Integer revisionId, @Param("algoId") UUID algorithmId);
+
+    @Modifying()
+    @Query(value = "DELETE FROM algorithm_revisions WHERE id = :algoId", nativeQuery = true)
+    void deleteAllAlgorithmRevisions(@Param("algoId") UUID algorithmId);
+
+    @Modifying()
+    @Query(value = "DELETE FROM classic_algorithm_revisions WHERE rev = :revId AND id = :algoId", nativeQuery = true)
+    void deleteClassicAlgorithmRevision(@Param("revId") Integer revisionId, @Param("algoId") UUID algorithmId);
+
+    @Modifying()
+    @Query(value = "DELETE FROM classic_algorithm_revisions WHERE id = :algoId", nativeQuery = true)
+    void deleteAllClassicAlgorithmRevisions(@Param("algoId") UUID algorithmId);
+
+    @Modifying()
+    @Query(value = "DELETE FROM quantum_algorithm_revisions WHERE rev = :revId AND id = :algoId", nativeQuery = true)
+    void deleteQuantumAlgorithmRevision(@Param("revId") Integer revisionId, @Param("algoId") UUID algorithmId);
+
+    @Modifying()
+    @Query(value = "DELETE FROM quantum_algorithm_revisions WHERE id = :algoId", nativeQuery = true)
+    void deleteAllQuantumAlgorithmRevisions(@Param("algoId") UUID algorithmId);
+
+    @Modifying()
+    @Query(value = "DELETE FROM knowledge_artifact_revisions WHERE rev = :revId AND id = :id", nativeQuery = true)
+    void deleteKnowledgeArtifactRevision(@Param("revId") Integer revisionId, @Param("id") UUID id);
+
+    @Modifying()
+    @Query(value = "DELETE FROM knowledge_artifact_revisions WHERE id = :id", nativeQuery = true)
+    void deleteAllKnowledgeArtifactRevisions(@Param("id") UUID id);
+
+    @Modifying()
+    @Query(value = "DELETE FROM revinfo WHERE rev = :id", nativeQuery = true)
+    void deleteRevisionInfo(@Param("id") Integer id);
 }

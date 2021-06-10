@@ -20,9 +20,10 @@
 package org.planqk.atlas.web;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.envers.repository.support.EnversRevisionRepositoryFactoryBean;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @Configuration
-@EnableJpaRepositories("org.planqk.atlas.*")
+@EnableJpaRepositories(basePackages = "org.planqk.atlas.*", repositoryFactoryBeanClass = EnversRevisionRepositoryFactoryBean.class)
 public class DatabaseConfiguration {
 }

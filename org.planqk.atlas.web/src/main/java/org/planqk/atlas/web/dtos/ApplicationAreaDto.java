@@ -25,7 +25,6 @@ import javax.validation.constraints.Null;
 
 import org.planqk.atlas.web.utils.Identifyable;
 import org.planqk.atlas.web.utils.ValidationGroups;
-import org.springframework.hateoas.server.core.Relation;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -35,7 +34,6 @@ import lombok.EqualsAndHashCode;
  */
 @EqualsAndHashCode
 @Data
-@Relation(itemRelation = "applicationArea", collectionRelation = "applicationAreas")
 public class ApplicationAreaDto implements Identifyable {
     @NotNull(groups = {ValidationGroups.IDOnly.class}, message = "An id is required to perform an update")
     @Null(groups = {ValidationGroups.Create.class}, message = "The id must be null for creating an application area")

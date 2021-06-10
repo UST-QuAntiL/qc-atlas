@@ -41,7 +41,6 @@
         <!-- depdendency versions -->
         <!-- spring.version must match parent.version -->
         <spring.version>2.2.4.RELEASE</spring.version>
-        <org.liquibase.version>4.1.0</org.liquibase.version>
 
         <!--
         The database specified here is used for the following:
@@ -136,13 +135,19 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-envers</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
             <groupId>org.modelmapper</groupId>
             <artifactId>modelmapper</artifactId>
             <version>2.3.5</version>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-hateoas</artifactId>
+            <groupId>org.modelmapper</groupId>
+            <artifactId>modelmapper-module-jsr310</artifactId>
+            <version>1.2.2</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -152,10 +157,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.data</groupId>
-            <artifactId>spring-data-rest-hal-explorer</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springdoc</groupId>
@@ -181,11 +182,6 @@
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
         </dependency>
-        <!--        <dependency>
-                    <groupId>org.liquibase</groupId>
-                    <artifactId>liquibase-core</artifactId>
-                    <version>${org.liquibase.version}</version>
-                </dependency>-->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

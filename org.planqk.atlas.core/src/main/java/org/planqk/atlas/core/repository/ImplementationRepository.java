@@ -25,7 +25,9 @@ import org.planqk.atlas.core.model.Implementation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.history.RevisionRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.stereotype.Repository;
@@ -35,7 +37,7 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 @RepositoryRestResource(exported = false)
-public interface ImplementationRepository extends JpaRepository<Implementation, UUID> {
+public interface ImplementationRepository extends RevisionRepository<Implementation, UUID, Integer>, JpaRepository<Implementation, UUID> {
 
     Page<Implementation> findByImplementedAlgorithmId(UUID implementedAlgorithmId, Pageable pageable);
 
@@ -50,4 +52,28 @@ public interface ImplementationRepository extends JpaRepository<Implementation, 
                    "JOIN i.softwarePlatforms sp " +
                    "WHERE sp.id = :spId")
     Page<Implementation> findImplementationsBySoftwarePlatformId(@Param("spId") UUID softwarePlatformId, Pageable pageable);
+
+    @Modifying()
+    @Query(value = "DELETE FROM implementation_revisions WHERE id = :implId", nativeQuery = true)
+    void deleteAllImplementationRevisions(@Param("implId") UUID implementationId);
+
+    @Modifying()
+    @Query(value = "DELETE FROM implementation_revisions WHERE rev = :revId AND id = :implId", nativeQuery = true)
+    void deleteImplementationRevision(@Param("revId") Integer revisionId, @Param("implId") UUID implementationId);
+
+    @Modifying()
+    @Query(value = "DELETE FROM classic_implementation_revisions WHERE rev = :revId AND id = :implId", nativeQuery = true)
+    void deleteClassicImplementationRevision(@Param("revId") Integer revisionId, @Param("implId") UUID implementationId);
+
+    @Modifying()
+    @Query(value = "DELETE FROM classic_implementation_revisions WHERE id = :implId", nativeQuery = true)
+    void deleteAllClassicImplementationRevisions(@Param("implId") UUID implementationId);
+
+    @Modifying()
+    @Query(value = "DELETE FROM quantum_implementation_revisions WHERE rev = :revId AND id = :implId", nativeQuery = true)
+    void deleteQuantumImplementationRevision(@Param("revId") Integer revisionId, @Param("implId") UUID implementationId);
+
+    @Modifying()
+    @Query(value = "DELETE FROM quantum_implementation_revisions WHERE id = :implId", nativeQuery = true)
+    void deleteAllQuantumImplementationRevisions(@Param("implId") UUID implementationId);
 }

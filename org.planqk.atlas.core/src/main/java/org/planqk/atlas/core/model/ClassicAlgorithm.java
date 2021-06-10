@@ -21,12 +21,17 @@ package org.planqk.atlas.core.model;
 
 import javax.persistence.Entity;
 
+import org.hibernate.envers.AuditTable;
+import org.hibernate.envers.Audited;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
+@AuditTable("classic_algorithm_revisions")
+@Audited
 public class ClassicAlgorithm extends Algorithm {
 
 }

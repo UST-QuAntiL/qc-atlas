@@ -21,9 +21,11 @@ package org.planqk.atlas.web.controller;
 
 import java.util.UUID;
 
+import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.ImplementationDto;
+import org.planqk.atlas.web.dtos.RevisionDto;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
@@ -75,5 +77,32 @@ public class ImplementationGlobalController {
     public ResponseEntity<ImplementationDto> getImplementation(@PathVariable UUID implementationId) {
         final var implementation = this.implementationService.findById(implementationId);
         return ResponseEntity.ok(ModelMapperUtils.convert(implementation, ImplementationDto.class));
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404",
+                description = "Implementation with given ID doesn't exist")
+    }, description = "Retrieve all revisions of an implementation")
+    @ListParametersDoc
+    @GetMapping("/{implementationId}/" + Constants.REVISIONS)
+    public ResponseEntity<Page<RevisionDto>> getImplementationRevisions(
+            @PathVariable UUID implementationId, @Parameter(hidden = true) ListParameters listParameters) {
+        final var implementationRevisions = implementationService.findImplementationRevisions(implementationId, listParameters.getPageable());
+        return ResponseEntity.ok(ModelMapperUtils.convertPage(implementationRevisions, RevisionDto.class));
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404",
+                    description = "Not Found. Implementation with given ID and revision ID doesn't exist")
+    }, description = "Retrieve a specific revision of an implementation and its basic properties")
+    @GetMapping("/{implementationId}/" + Constants.REVISIONS + "/{revisionId}")
+    public ResponseEntity<ImplementationDto> getImplementationRevision(
+            @PathVariable UUID implementationId, @PathVariable Integer revisionId) {
+        final Implementation implementationRevision = implementationService.findImplementationRevision(implementationId, revisionId).getEntity();
+        return ResponseEntity.ok(ModelMapperUtils.convert(implementationRevision, ImplementationDto.class));
     }
 }
