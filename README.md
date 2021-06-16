@@ -6,7 +6,7 @@
 
 ## Git Workflow
 
-We use the Git-flow-Workflow as our Git-Workflow. A detailed description about the workflow can be
+We use the Gitflow-Workflow as our Git-Workflow. A detailed description about the workflow can be
 found [here](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow).
 
 ## Build
