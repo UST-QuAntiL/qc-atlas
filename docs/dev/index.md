@@ -2,7 +2,7 @@
 
 This document provides an index to all development guidelines and background information of the PlanQK Atlas.
 
-- [ADR](../adr) - list of [architectural decision records](https://adr.github.io) showing which design decisions were taken during development of Winery
+- [ADR](../adr) - list of [architectural decision records](https://adr.github.io) showing which design decisions were taken during development of the PlanQK Atlas.
 
 ## Quick Develop
 
