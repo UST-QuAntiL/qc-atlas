@@ -16,7 +16,7 @@ found [here](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow
 
 ## Running via Docker
 
-The easiest way to get started is using Docker-Compose: [planqk-docker](https://github.com/PlanQK/planqk-docker)
+The easiest way to get started is using Docker-Compose: [quantil-docker](https://github.com/UST-QuAntiL/quantil-docker)
 
 Alternatively you can build and run the QC-Atlas Docker image by your own:
 
