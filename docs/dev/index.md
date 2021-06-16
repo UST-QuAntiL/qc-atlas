@@ -2,7 +2,7 @@
 
 This document provides an index to all development guidelines and background information of the PlanQK Atlas.
 
-- [ADR](../adr) - list of [architectural decision records](https://adr.github.io) showing which design decisions were taken during development of Winery
+- [ADR](../adr) - list of [architectural decision records](https://adr.github.io) showing which design decisions were taken during development of the PlanQK Atlas.
 
 ## Quick Develop
 
@@ -10,13 +10,12 @@ This document provides an index to all development guidelines and background inf
 2. Build the repository `mvn package -DskipTests` (skiping the tests for a faster build), Java 8 required.
 3. Continue your IDE setup:
     - [IntelliJ Ultimate](config/IntelliJ%20IDEA/)
-    - [Eclipse](config/Eclipse/)
 4. Start Postgres Database:
-    - Clone the repository `git clone https://github.com/PlanQK/planqk-docker.git`.
-    - Startup in this directory via the [Compose Dev File](https://github.com/PlanQK/planqk-docker/blob/master/docker-compose.dev.yml):
+    - Clone the repository `git clone https://github.com/UST-QuAntiL/qc-atlas`.
+    - Startup in this directory via the [Compose Dev File](../../docker-compose.yml):
         ```
-        $ docker-compose -f docker-compose.dev.yml pull
-        $ docker-compose -f docker-compose.dev.yml up
+        $ docker-compose -f docker-compose.yml pull
+        $ docker-compose -f docker-compose.yml up
         ``` 
 5. Start the application (via the runconfig that you configured in step 3) 
 

@@ -67,7 +67,7 @@ public class SketchServiceTest extends AtlasDatabaseTestBase {
         final MockMultipartFile file = new MockMultipartFile("image", testFile);
 
         final String description = "description";
-        final String baseURL = "http://localhost:8080/atlas";
+        final String baseURL = "http://localhost:6626/atlas";
         // call
         final Sketch persistedSketch = sketchService.addSketchToAlgorithm(algorithm.getId(), file, description, baseURL);
 
@@ -113,7 +113,7 @@ public class SketchServiceTest extends AtlasDatabaseTestBase {
         final MockMultipartFile file = new MockMultipartFile("image", testFile);
 
         final String description = "description";
-        final String baseURL = "http://localhost:8080/atlas";
+        final String baseURL = "http://localhost:6626/atlas";
         // call
         final Sketch persistedSketch = sketchService.addSketchToAlgorithm(algorithm.getId(), file, description, baseURL);
 
