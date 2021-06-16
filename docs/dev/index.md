@@ -11,7 +11,7 @@ This document provides an index to all development guidelines and background inf
 3. Continue your IDE setup:
     - [IntelliJ Ultimate](config/IntelliJ%20IDEA/)
 4. Start Postgres Database:
-    - Clone the repository `git clone https://github.com/PlanQK/planqk-docker.git`.
+    - Clone the repository `git clone https://github.com/UST-QuAntiL/qc-atlas`.
     - Startup in this directory via the [Compose Dev File](../../docker-compose.yml):
         ```
         $ docker-compose -f docker-compose.yml pull
