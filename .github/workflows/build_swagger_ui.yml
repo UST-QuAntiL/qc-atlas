@@ -28,7 +28,7 @@ jobs:
         java -jar org.planqk.atlas.web/target/org.planqk.atlas.web.war &
         # Wait for atlas to start
         sleep 30
-        curl http://localhost:8080/atlas/v3/api-docs > openapi.json
+        curl http://localhost:6626/atlas/v3/api-docs > openapi.json
     - name: Generate Swagger UI
       uses: Legion2/swagger-ui-action@v1
       with:
