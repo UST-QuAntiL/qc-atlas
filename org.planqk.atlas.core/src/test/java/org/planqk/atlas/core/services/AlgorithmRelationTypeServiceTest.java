@@ -54,19 +54,20 @@ public class AlgorithmRelationTypeServiceTest extends AtlasDatabaseTestBase {
 
     @Test
     void createAlgorithmRelationType() {
-        AlgorithmRelationType relationType = getFullAlgorithmRelationType("relationTypeName");
+        AlgorithmRelationType relationType = getFullAlgorithmRelationType("relationTypeName", "inverseAlgorithmRelationTypeName");
 
         AlgorithmRelationType storedRelationType = algorithmRelationTypeService.create(relationType);
 
         assertThat(storedRelationType.getId()).isNotNull();
         assertThat(storedRelationType.getName()).isEqualTo(relationType.getName());
+        assertThat(storedRelationType.getInverseTypeName()).isEqualTo(relationType.getInverseTypeName());
     }
 
     @Test
     void findAllAlgorithmRelationTypes() {
-        AlgorithmRelationType relationType1 = getFullAlgorithmRelationType("relationTypeName1");
+        AlgorithmRelationType relationType1 = getFullAlgorithmRelationType("relationTypeName1", "inverseAlgorithmRelationTypeName1");
         algorithmRelationTypeService.create(relationType1);
-        AlgorithmRelationType relationType2 = getFullAlgorithmRelationType("relationTypeName2");
+        AlgorithmRelationType relationType2 = getFullAlgorithmRelationType("relationTypeName2", "inverseAlgorithmRelationTypeName2");
         algorithmRelationTypeService.create(relationType2);
 
         List<AlgorithmRelationType> algorithmRelationTypes = algorithmRelationTypeService.findAll(Pageable.unpaged()).getContent();
@@ -82,7 +83,7 @@ public class AlgorithmRelationTypeServiceTest extends AtlasDatabaseTestBase {
 
     @Test
     void findAlgorithmRelationTypeById_ElementFound() {
-        AlgorithmRelationType relationType = getFullAlgorithmRelationType("relationTypeName");
+        AlgorithmRelationType relationType = getFullAlgorithmRelationType("relationTypeName", "inverseAlgorithmRelationTypeName");
 
         AlgorithmRelationType storedRelationType = algorithmRelationTypeService.create(relationType);
 
@@ -90,11 +91,12 @@ public class AlgorithmRelationTypeServiceTest extends AtlasDatabaseTestBase {
 
         assertThat(storedRelationType.getId()).isNotNull();
         assertThat(storedRelationType.getName()).isEqualTo(relationType.getName());
+        assertThat(storedRelationType.getInverseTypeName()).isEqualTo(relationType.getInverseTypeName());
     }
 
     @Test
     void UpdateAlgorithmRelationType_ElementNotFound() {
-        AlgorithmRelationType relationType = getFullAlgorithmRelationType("relationTypeName");
+        AlgorithmRelationType relationType = getFullAlgorithmRelationType("relationTypeName", "inverseAlgorithmRelationTypeName");
         relationType.setId(UUID.randomUUID());
         assertThrows(NoSuchElementException.class, () ->
                 algorithmRelationTypeService.update(relationType));
@@ -102,19 +104,23 @@ public class AlgorithmRelationTypeServiceTest extends AtlasDatabaseTestBase {
 
     @Test
     void updateAlgorithmRelationType_ElementFound() {
-        AlgorithmRelationType relationType = getFullAlgorithmRelationType("relationTypeName");
-        AlgorithmRelationType compareRelationType = getFullAlgorithmRelationType("relationTypeName");
+        AlgorithmRelationType relationType = getFullAlgorithmRelationType("relationTypeName", "inverseAlgorithmRelationTypeName");
+        AlgorithmRelationType compareRelationType = getFullAlgorithmRelationType("relationTypeName", "inverseAlgorithmRelationTypeName");
 
         AlgorithmRelationType storedRelationType = algorithmRelationTypeService.create(relationType);
         compareRelationType.setId(storedRelationType.getId());
         String editName = "editedRelationTypeName";
+        String editInverseName = "editedinverseAlgorithmRelationTypeName";
         storedRelationType.setName(editName);
+        storedRelationType.setInverseTypeName(editInverseName);
         storedRelationType = algorithmRelationTypeService.update(storedRelationType);
 
         assertThat(storedRelationType.getId()).isNotNull();
         assertThat(storedRelationType.getId()).isEqualTo(compareRelationType.getId());
         assertThat(storedRelationType.getName()).isNotEqualTo(compareRelationType.getName());
         assertThat(storedRelationType.getName()).isEqualTo(editName);
+        assertThat(storedRelationType.getInverseTypeName()).isNotEqualTo(compareRelationType.getInverseTypeName());
+        assertThat(storedRelationType.getInverseTypeName()).isEqualTo(editInverseName);
     }
 
     @Test
@@ -129,7 +135,7 @@ public class AlgorithmRelationTypeServiceTest extends AtlasDatabaseTestBase {
         targetAlgorithm.setComputationModel(ComputationModel.CLASSIC);
         Algorithm storedTargetAlgorithm = algorithmService.create(targetAlgorithm);
 
-        AlgorithmRelationType relationType = getFullAlgorithmRelationType("relationTypeName");
+        AlgorithmRelationType relationType = getFullAlgorithmRelationType("relationTypeName", "inverseAlgorithmRelationTypeName");
         AlgorithmRelationType storedRelationType = algorithmRelationTypeService.create(relationType);
 
         AlgorithmRelation algorithmRelation = new AlgorithmRelation();
@@ -147,7 +153,7 @@ public class AlgorithmRelationTypeServiceTest extends AtlasDatabaseTestBase {
 
     @Test
     void deleteAlgorithmRelationType_Unused() {
-        AlgorithmRelationType relationType = getFullAlgorithmRelationType("relationTypeName");
+        AlgorithmRelationType relationType = getFullAlgorithmRelationType("relationTypeName", "inverseAlgorithmRelationTypeName");
         AlgorithmRelationType storedRelationType = algorithmRelationTypeService.create(relationType);
 
         assertDoesNotThrow(() -> algorithmRelationTypeService.findById(storedRelationType.getId()));
@@ -158,9 +164,10 @@ public class AlgorithmRelationTypeServiceTest extends AtlasDatabaseTestBase {
                 algorithmRelationTypeService.findById(storedRelationType.getId()));
     }
 
-    private AlgorithmRelationType getFullAlgorithmRelationType(String typeName) {
+    private AlgorithmRelationType getFullAlgorithmRelationType(String typeName, String inverseTypeName) {
         AlgorithmRelationType algorithmRelationType = new AlgorithmRelationType();
         algorithmRelationType.setName(typeName);
+        algorithmRelationType.setInverseTypeName(inverseTypeName);
         return algorithmRelationType;
     }
 }
