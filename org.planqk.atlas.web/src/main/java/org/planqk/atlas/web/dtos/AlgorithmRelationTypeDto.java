@@ -43,4 +43,6 @@ public class AlgorithmRelationTypeDto implements Identifyable {
     @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
              message = "RelationType-Name must not be null!")
     private String name;
+
+    private String inverseTypeName;
 }

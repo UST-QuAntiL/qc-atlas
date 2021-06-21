@@ -47,7 +47,7 @@
         * Default database in non-Docker development environments
         * Target database for Liquibase operations, such as diff or update
         -->
-        <db.url>jdbc:postgresql://localhost:5432/planqk</db.url>
+        <db.url>jdbc:postgresql://localhost:5060/planqk</db.url>
         <db.username>planqk</db.username>
         <db.password>planqk</db.password>
         <checkstyle.config.location>checkstyle.xml</checkstyle.config.location>

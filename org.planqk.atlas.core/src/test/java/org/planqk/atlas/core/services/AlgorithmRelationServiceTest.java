@@ -54,7 +54,7 @@ public class AlgorithmRelationServiceTest extends AtlasDatabaseTestBase {
         Algorithm sourceAlgorithm = getCreatedAlgorithm("sourceAlgorithmName");
         Algorithm targetAlgorithm = getCreatedAlgorithm("targetAlgorithmName");
 
-        var algorithmRelationType = getCreatedAlgorithmRelationType("algorithmRelationTypeName");
+        var algorithmRelationType = getCreatedAlgorithmRelationType("algorithmRelationTypeName", "inverseAlgorithmRelationTypeName");
 
         AlgorithmRelation algorithmRelation = buildAlgorithmRelation(
                 sourceAlgorithm, targetAlgorithm, algorithmRelationType, "description");
@@ -74,7 +74,7 @@ public class AlgorithmRelationServiceTest extends AtlasDatabaseTestBase {
         targetAlgorithm.setName("targetAlgorithmName");
         targetAlgorithm.setId(UUID.randomUUID());
 
-        var algorithmRelationType = getCreatedAlgorithmRelationType("algorithmRelationTypeName");
+        var algorithmRelationType = getCreatedAlgorithmRelationType("algorithmRelationTypeName", "inverseAlgorithmRelationTypeName");
 
         AlgorithmRelation algorithmRelation = buildAlgorithmRelation(
                 sourceAlgorithm, targetAlgorithm, algorithmRelationType, "description");
@@ -87,7 +87,7 @@ public class AlgorithmRelationServiceTest extends AtlasDatabaseTestBase {
         Algorithm sourceAlgorithm = getCreatedAlgorithm("sourceAlgorithmName");
         Algorithm targetAlgorithm = getCreatedAlgorithm("targetAlgorithmName");
 
-        var algorithmRelationType = getCreatedAlgorithmRelationType("algorithmRelationTypeName");
+        var algorithmRelationType = getCreatedAlgorithmRelationType("algorithmRelationTypeName", "inverseAlgorithmRelationTypeName");
 
         AlgorithmRelation algorithmRelation = buildAlgorithmRelation(
                 sourceAlgorithm, targetAlgorithm, algorithmRelationType, "description");
@@ -110,7 +110,7 @@ public class AlgorithmRelationServiceTest extends AtlasDatabaseTestBase {
         Algorithm sourceAlgorithm = getCreatedAlgorithm("sourceAlgorithmName");
         Algorithm targetAlgorithm = getCreatedAlgorithm("targetAlgorithmName");
 
-        var algorithmRelationType = getCreatedAlgorithmRelationType("algorithmRelationTypeName");
+        var algorithmRelationType = getCreatedAlgorithmRelationType("algorithmRelationTypeName", "inverseAlgorithmRelationTypeName");
 
         AlgorithmRelation algorithmRelation = buildAlgorithmRelation(
                 sourceAlgorithm, targetAlgorithm, algorithmRelationType, "description");
@@ -121,7 +121,7 @@ public class AlgorithmRelationServiceTest extends AtlasDatabaseTestBase {
         compareAlgorithmRelation.setId(persistedAlgorithmRelation.getId());
 
         String editDescription = "editedDescription";
-        var editedType = getCreatedAlgorithmRelationType("editedAlgorithmRelationTypeName");
+        var editedType = getCreatedAlgorithmRelationType("editedAlgorithmRelationTypeName", "editedInverseAlgorithmRelationTypeName");
         persistedAlgorithmRelation.setDescription(editDescription);
         persistedAlgorithmRelation.setAlgorithmRelationType(editedType);
 
@@ -139,6 +139,10 @@ public class AlgorithmRelationServiceTest extends AtlasDatabaseTestBase {
                 .isNotEqualTo(compareAlgorithmRelation.getAlgorithmRelationType().getName());
         assertThat(updatedAlgorithmRelation.getAlgorithmRelationType().getName())
                 .isEqualTo(editedType.getName());
+        assertThat(updatedAlgorithmRelation.getAlgorithmRelationType().getInverseTypeName())
+            .isNotEqualTo(compareAlgorithmRelation.getAlgorithmRelationType().getInverseTypeName());
+        assertThat(updatedAlgorithmRelation.getAlgorithmRelationType().getInverseTypeName())
+            .isEqualTo(editedType.getInverseTypeName());
         assertThat(updatedAlgorithmRelation.getSourceAlgorithm().getId())
                 .isEqualTo(compareAlgorithmRelation.getSourceAlgorithm().getId());
         assertThat(updatedAlgorithmRelation.getTargetAlgorithm().getId())
@@ -158,7 +162,7 @@ public class AlgorithmRelationServiceTest extends AtlasDatabaseTestBase {
         Algorithm sourceAlgorithm = getCreatedAlgorithm("sourceAlgorithmName");
         Algorithm targetAlgorithm = getCreatedAlgorithm("targetAlgorithmName");
 
-        var algorithmRelationType = getCreatedAlgorithmRelationType("algorithmRelationTypeName");
+        var algorithmRelationType = getCreatedAlgorithmRelationType("algorithmRelationTypeName", "inverseAlgorithmRelationTypeName");
 
         AlgorithmRelation algorithmRelation = buildAlgorithmRelation(
                 sourceAlgorithm, targetAlgorithm, algorithmRelationType, "description");
@@ -184,7 +188,7 @@ public class AlgorithmRelationServiceTest extends AtlasDatabaseTestBase {
         Algorithm sourceAlgorithm = getCreatedAlgorithm("sourceAlgorithmName");
         Algorithm targetAlgorithm = getCreatedAlgorithm("targetAlgorithmName");
 
-        var algorithmRelationType = getCreatedAlgorithmRelationType("algorithmRelationTypeName");
+        var algorithmRelationType = getCreatedAlgorithmRelationType("algorithmRelationTypeName", "inverseAlgorithmRelationTypeName");
 
         AlgorithmRelation algorithmRelation = buildAlgorithmRelation(
                 sourceAlgorithm, targetAlgorithm, algorithmRelationType, "description");
@@ -203,7 +207,7 @@ public class AlgorithmRelationServiceTest extends AtlasDatabaseTestBase {
         Algorithm targetAlgorithm = getCreatedAlgorithm("targetAlgorithmName");
         Algorithm checkAlgorithm = getCreatedAlgorithm("checkAlgorithmName");
 
-        var algorithmRelationType = getCreatedAlgorithmRelationType("algorithmRelationTypeName");
+        var algorithmRelationType = getCreatedAlgorithmRelationType("algorithmRelationTypeName", "inverseAlgorithmRelationTypeName");
 
         AlgorithmRelation algorithmRelation = buildAlgorithmRelation(
                 sourceAlgorithm, targetAlgorithm, algorithmRelationType, "description");
@@ -230,9 +234,10 @@ public class AlgorithmRelationServiceTest extends AtlasDatabaseTestBase {
         return algorithmService.create(algorithm);
     }
 
-    private AlgorithmRelationType getCreatedAlgorithmRelationType(String name) {
+    private AlgorithmRelationType getCreatedAlgorithmRelationType(String name, String inverseTypeName) {
         AlgorithmRelationType algorithmRelationType = new AlgorithmRelationType();
         algorithmRelationType.setName(name);
+        algorithmRelationType.setInverseTypeName(inverseTypeName);
         return algorithmRelationTypeService.create(algorithmRelationType);
     }
 }

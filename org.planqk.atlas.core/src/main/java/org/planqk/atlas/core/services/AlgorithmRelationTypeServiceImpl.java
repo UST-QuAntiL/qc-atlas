@@ -66,6 +66,7 @@ public class AlgorithmRelationTypeServiceImpl implements AlgorithmRelationTypeSe
         final var persistedAlgorithmRelationType = findById(algorithmRelationType.getId());
 
         persistedAlgorithmRelationType.setName(algorithmRelationType.getName());
+        persistedAlgorithmRelationType.setInverseTypeName(algorithmRelationType.getInverseTypeName());
 
         return algorithmRelationTypeRepository.save(persistedAlgorithmRelationType);
     }
