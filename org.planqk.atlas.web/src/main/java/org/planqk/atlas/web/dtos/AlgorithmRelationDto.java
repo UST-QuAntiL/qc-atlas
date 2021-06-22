@@ -51,7 +51,7 @@ public class AlgorithmRelationDto implements Identifyable {
              message = "Target Algorithm id must not be null!")
     private UUID targetAlgorithmId;
 
-    @JsonProperty("algoRelationType")
+    @JsonProperty("algorithmRelationType")
     @RequiresID(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
                 message = "AlgorithmRelationType must have a type with an ID!")
     @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},

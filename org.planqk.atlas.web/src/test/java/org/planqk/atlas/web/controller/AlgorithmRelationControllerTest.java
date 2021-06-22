@@ -185,7 +185,7 @@ public class AlgorithmRelationControllerTest {
         ).andExpect(jsonPath("$.id").isEmpty())
                 .andExpect(jsonPath("$.sourceAlgorithmId").value(sourceAlgorithm.getId().toString()))
                 .andExpect(jsonPath("$.targetAlgorithmId").value(targetAlgorithm.getId().toString()))
-                .andExpect(jsonPath("$.algoRelationType.id").value(type.getId().toString()))
+                .andExpect(jsonPath("$.algorithmRelationType.id").value(type.getId().toString()))
                 .andExpect(status().isCreated());
     }
 
@@ -263,7 +263,7 @@ public class AlgorithmRelationControllerTest {
         ).andExpect(jsonPath("$.id").value(algorithmRelation.getId().toString()))
                 .andExpect(jsonPath("$.sourceAlgorithmId").value(sourceAlgorithm.getId().toString()))
                 .andExpect(jsonPath("$.targetAlgorithmId").value(targetAlgorithm.getId().toString()))
-                .andExpect(jsonPath("$.algoRelationType.id").value(type.getId().toString()))
+                .andExpect(jsonPath("$.algorithmRelationType.id").value(type.getId().toString()))
                 .andExpect(status().isOk());
     }
 
@@ -365,7 +365,7 @@ public class AlgorithmRelationControllerTest {
                 .andExpect(jsonPath("$.id").value(algorithmRelation.getId().toString()))
                 .andExpect(jsonPath("$.sourceAlgorithmId").value(sourceAlgorithm.getId().toString()))
                 .andExpect(jsonPath("$.targetAlgorithmId").value(targetAlgorithm.getId().toString()))
-                .andExpect(jsonPath("$.algoRelationType.id").value(type.getId().toString()))
+                .andExpect(jsonPath("$.algorithmRelationType.id").value(type.getId().toString()))
                 .andExpect(status().isOk());
     }
 
