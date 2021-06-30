@@ -201,12 +201,12 @@ public class ImplementationControllerTest {
         implementation1 = new Implementation();
         implementation1.setId(UUID.randomUUID());
         implementation1.setName("Impl1");
-        implementation1.setImplementedAlgorithm(algorithm1);
+        implementation1.addAlgorithm(algorithm1);
 
         implementation2 = new Implementation();
         implementation2.setId(UUID.randomUUID());
         implementation2.setName("Impl2");
-        implementation2.setImplementedAlgorithm(algorithm2);
+        implementation2.addAlgorithm(algorithm2);
 
         discussionTopic1 = new DiscussionTopic();
         discussionTopic1.setId(UUID.randomUUID());
@@ -259,8 +259,7 @@ public class ImplementationControllerTest {
         var algo = new Algorithm();
         algo.setId(UUID.randomUUID());
         algo.setName("test-algo");
-        impl.setImplementedAlgorithm(algo);
-        implDto.setImplementedAlgorithmId(algo.getId());
+        impl.addAlgorithm(algo);
 
         doReturn(impl).when(implementationService).create(any(), any());
 
@@ -317,8 +316,7 @@ public class ImplementationControllerTest {
         var algo = new Algorithm();
         algo.setId(UUID.randomUUID());
         algo.setName("test-algo");
-        impl.setImplementedAlgorithm(algo);
-        implDto.setImplementedAlgorithmId(algo.getId());
+        impl.addAlgorithm(algo);
 
         doReturn(impl).when(implementationService).update(any());
 
@@ -394,7 +392,7 @@ public class ImplementationControllerTest {
         var algo = new Algorithm();
         algo.setId(UUID.randomUUID());
         algo.setName("test-algo");
-        impl.setImplementedAlgorithm(algo);
+        impl.addAlgorithm(algo);
 
         doNothing().when(implementationService).checkIfImplementationIsOfAlgorithm(any(), any());
         doReturn(impl).when(implementationService).findById(any());
@@ -419,7 +417,7 @@ public class ImplementationControllerTest {
         var algo = new Algorithm();
         algo.setId(UUID.randomUUID());
         algo.setName("test-algo");
-        impl.setImplementedAlgorithm(algo);
+        impl.addAlgorithm(algo);
 
         doNothing().when(implementationService).checkIfImplementationIsOfAlgorithm(any(), any());
         doReturn(impl).when(implementationService).findById(any());
@@ -571,7 +569,7 @@ public class ImplementationControllerTest {
         var algo = new Algorithm();
         algo.setId(UUID.randomUUID());
         algo.setName("test-algo");
-        impl.setImplementedAlgorithm(algo);
+        impl.addAlgorithm(algo);
 
         doNothing().when(implementationService).checkIfImplementationIsOfAlgorithm(any(), any());
         doReturn(impl).when(implementationService).findById(any());

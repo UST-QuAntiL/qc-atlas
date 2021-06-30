@@ -116,7 +116,7 @@ public class ImplementationGlobalControllerTest {
         impl.setId(UUID.randomUUID());
         var algo = new Algorithm();
         algo.setId(UUID.randomUUID());
-        impl.setImplementedAlgorithm(algo);
+        impl.addAlgorithm(algo);
 
         doReturn(new PageImpl<>(List.of(impl))).when(implementationService).findAll(any());
 
@@ -127,7 +127,6 @@ public class ImplementationGlobalControllerTest {
         ImplementationDto implementationDto = ObjectMapperUtils.mapResponseToList(mvcResult, ImplementationDto.class).get(0);
         assertEquals(implementationDto.getName(), impl.getName());
         assertEquals(implementationDto.getId(), impl.getId());
-        assertEquals(implementationDto.getImplementedAlgorithmId(), algo.getId());
     }
 
     @Test
@@ -139,7 +138,7 @@ public class ImplementationGlobalControllerTest {
         var impl = new Implementation();
         impl.setName("implementation for Shor");
         impl.setId(UUID.randomUUID());
-        impl.setImplementedAlgorithm(algo);
+        impl.addAlgorithm(algo);
 
         doReturn(impl).when(implementationService).findById(any());
 
