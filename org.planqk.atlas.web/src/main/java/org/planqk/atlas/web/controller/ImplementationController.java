@@ -138,7 +138,6 @@ public class ImplementationController {
         implementationService.checkIfImplementationIsOfAlgorithm(implementationId, algorithmId);
 
         implementationDto.setId(implementationId);
-        implementationDto.setImplementedAlgorithmId(algorithmId);
         final Implementation updatedImplementation = implementationService.update(
                 ModelMapperUtils.convert(implementationDto, Implementation.class));
         return ResponseEntity.ok(ModelMapperUtils.convert(updatedImplementation, ImplementationDto.class));
