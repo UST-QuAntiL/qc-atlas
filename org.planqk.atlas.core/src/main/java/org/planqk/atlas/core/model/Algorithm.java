@@ -149,10 +149,10 @@ public class Algorithm extends KnowledgeArtifact {
     @NotAudited
     private Set<Tag> tags = new HashSet<>();
 
-    @OneToMany(mappedBy = "implementedAlgorithm",
-               fetch = FetchType.LAZY,
-               cascade = CascadeType.ALL,
-               orphanRemoval = true)
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "algorithm_implementation",
+            joinColumns = @JoinColumn(name = "algorithm_id"),
+            inverseJoinColumns = @JoinColumn(name = "implementation_id"))
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @NotAudited
@@ -296,5 +296,21 @@ public class Algorithm extends KnowledgeArtifact {
         }
         learningMethods.remove(learningMethod);
         learningMethod.getAlgorithms().remove(this);
+    }
+
+    public void addImplementation(@NonNull Implementation implementation) {
+        if (implementations.contains(implementation)) {
+            return;
+        }
+        implementations.add(implementation);
+        implementation.getImplementedAlgorithms().add(this);
+    }
+
+    public void removeImplementation(@NonNull Implementation implementation) {
+        if (!implementations.contains(implementation)) {
+            return;
+        }
+        implementations.remove(implementation);
+        implementation.getImplementedAlgorithms().remove(this);
     }
 }

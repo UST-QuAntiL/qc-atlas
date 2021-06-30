@@ -27,7 +27,6 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import org.hibernate.envers.AuditTable;
@@ -89,10 +88,11 @@ public class Implementation extends KnowledgeArtifact {
     @NotAudited
     private Set<Publication> publications = new HashSet<>();
 
-    @ManyToOne
+    @ManyToMany(mappedBy = "implementations", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    private Algorithm implementedAlgorithm;
+    @NotAudited
+    private Set<Algorithm> implementedAlgorithms = new HashSet<>();
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "implementation_tag",
@@ -191,5 +191,21 @@ public class Implementation extends KnowledgeArtifact {
         }
         this.implementationPackages.remove(implementationPackage);
         implementationPackage.setImplementation(null);
+    }
+
+    public void addAlgorithm(@NonNull Algorithm algorithm) {
+        if (implementedAlgorithms.contains(algorithm)) {
+            return;
+        }
+        implementedAlgorithms.add(algorithm);
+        algorithm.getImplementations().add(this);
+    }
+
+    public void removeAlgorithm(@NonNull Algorithm algorithm) {
+        if (!implementedAlgorithms.contains(algorithm)) {
+            return;
+        }
+        implementedAlgorithms.remove(algorithm);
+        algorithm.getImplementations().remove(this);
     }
 }
