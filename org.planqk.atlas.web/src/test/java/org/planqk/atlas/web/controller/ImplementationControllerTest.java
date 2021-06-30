@@ -270,7 +270,6 @@ public class ImplementationControllerTest {
                 .content(mapper.writeValueAsString(implDto))
         ).andExpect(jsonPath("$.id").value(impl.getId().toString()))
                 .andExpect(jsonPath("$.name").value(impl.getName()))
-                .andExpect(jsonPath("$.implementedAlgorithmId").value(algo.getId().toString()))
                 .andExpect(status().isCreated());
     }
 
@@ -327,7 +326,6 @@ public class ImplementationControllerTest {
                 .content(mapper.writeValueAsString(implDto))
         ).andExpect(jsonPath("$.id").value(impl.getId().toString()))
                 .andExpect(jsonPath("$.name").value(impl.getName()))
-                .andExpect(jsonPath("$.implementedAlgorithmId").value(algo.getId().toString()))
                 .andExpect(status().isOk());
     }
 
@@ -579,7 +577,6 @@ public class ImplementationControllerTest {
         mockMvc.perform(get(url).accept(APPLICATION_JSON))
                 .andExpect(jsonPath("$.id").value(impl.getId().toString()))
                 .andExpect(jsonPath("$.name").value(impl.getName()))
-                .andExpect(jsonPath("$.implementedAlgorithmId").value(algo.getId().toString()))
                 .andExpect(status().isOk());
     }
 

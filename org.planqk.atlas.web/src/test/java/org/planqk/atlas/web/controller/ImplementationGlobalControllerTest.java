@@ -46,6 +46,7 @@ import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.services.FileService;
 import org.planqk.atlas.core.services.ImplementationService;
+import org.planqk.atlas.core.services.LinkingService;
 import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
 import org.planqk.atlas.web.dtos.ImplementationDto;
 import org.planqk.atlas.web.dtos.RevisionDto;
@@ -87,6 +88,9 @@ public class ImplementationGlobalControllerTest {
 
     @MockBean
     private FileService fileService;
+
+    @MockBean
+    private LinkingService linkingService;
 
     @Autowired
     private MockMvc mockMvc;
@@ -147,7 +151,7 @@ public class ImplementationGlobalControllerTest {
         mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(impl.getId().toString()))
-                .andExpect(jsonPath("$.implementedAlgorithmId").value(algo.getId().toString()));
+                .andExpect(jsonPath("$.name").value(impl.getName()));
     }
 
     @Test
