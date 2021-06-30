@@ -20,10 +20,13 @@
 package org.planqk.atlas.core.services;
 
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.ClassicImplementation;
+import org.planqk.atlas.core.model.HasId;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.model.QuantumImplementation;
@@ -71,10 +74,8 @@ public class ImplementationServiceImpl implements ImplementationService {
     @Transactional
     public Implementation create(@NonNull Implementation implementation, @NonNull UUID implementedAlgorithmId) {
         final Algorithm implementedAlgorithm = ServiceUtils.findById(implementedAlgorithmId, Algorithm.class, algorithmRepository);
-        implementation.setImplementedAlgorithm(implementedAlgorithm);
-        final Implementation savedImplementation = implementationRepository.save(implementation);
-        implementedAlgorithm.getImplementations().add(savedImplementation);
-        return savedImplementation;
+        implementation.addAlgorithm(implementedAlgorithm);
+        return implementationRepository.save(implementation);
     }
 
     @Override
@@ -166,8 +167,9 @@ public class ImplementationServiceImpl implements ImplementationService {
     }
 
     private void removeReferences(@NonNull Implementation implementation) {
-        // Remove reference from algorithm
-        implementation.setImplementedAlgorithm(null);
+        // Remove references from algorithms
+        CollectionUtils.forEachOnCopy(implementation.getImplementedAlgorithms(),
+                algorithm -> algorithm.removeImplementation(implementation));
 
         // Delete compute resource property
         implementation.getRequiredComputeResourceProperties().forEach(computeResourcePropertyRepository::delete);
@@ -183,9 +185,10 @@ public class ImplementationServiceImpl implements ImplementationService {
 
     @Override
     public void checkIfImplementationIsOfAlgorithm(@NonNull UUID implementationId, @NonNull UUID algorithmId) {
-        final Implementation implementation = findById(implementationId);
+        final Set<UUID> implementedAlgorithmUUIDs = findById(implementationId).getImplementedAlgorithms().stream().map(HasId::getId).collect(
+                Collectors.toSet());
 
-        if (!implementation.getImplementedAlgorithm().getId().equals(algorithmId)) {
+        if (!implementedAlgorithmUUIDs.contains(algorithmId)) {
             throw new NoSuchElementException("Implementation with ID \"" + implementationId
                     + "\" of Algorithm with ID \"" + algorithmId + "\" does not exist");
         }
