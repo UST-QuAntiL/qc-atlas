@@ -43,8 +43,6 @@ public class ImplementationDto implements Identifyable {
     @Null(groups = {ValidationGroups.Create.class}, message = "The id must be null for creating an implementation")
     private UUID id;
 
-    private UUID implementedAlgorithmId;
-
     @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
              message = "Implementation-Name must not be null!")
     private String name;
