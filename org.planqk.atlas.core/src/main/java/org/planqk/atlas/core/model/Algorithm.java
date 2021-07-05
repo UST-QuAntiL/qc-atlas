@@ -299,18 +299,16 @@ public class Algorithm extends KnowledgeArtifact {
     }
 
     public void addImplementation(@NonNull Implementation implementation) {
-        if (implementations.contains(implementation)) {
-            return;
+        if (!implementations.contains(implementation)) {
+            implementations.add(implementation);
+            implementation.getImplementedAlgorithms().add(this);
         }
-        implementations.add(implementation);
-        implementation.getImplementedAlgorithms().add(this);
     }
 
     public void removeImplementation(@NonNull Implementation implementation) {
-        if (!implementations.contains(implementation)) {
-            return;
+        if (implementations.contains(implementation)) {
+            implementations.remove(implementation);
+            implementation.getImplementedAlgorithms().remove(this);
         }
-        implementations.remove(implementation);
-        implementation.getImplementedAlgorithms().remove(this);
     }
 }
