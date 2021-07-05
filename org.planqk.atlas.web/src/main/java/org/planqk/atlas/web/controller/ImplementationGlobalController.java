@@ -87,8 +87,6 @@ public class ImplementationGlobalController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "204", description = "There is no content to send for this request."),
-            @ApiResponse(responseCode = "401", description = "Unauthorized"),
-            @ApiResponse(responseCode = "403", description = "Forbidden"),
             @ApiResponse(responseCode = "404",
                     description = "Not Found. Algorithm or implementation with given IDs don't exist or " +
                             "no reference exists.")
