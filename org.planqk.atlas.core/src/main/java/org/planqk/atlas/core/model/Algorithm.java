@@ -106,6 +106,7 @@ public class Algorithm extends KnowledgeArtifact {
     private String algoParameter;
 
     @OneToMany(mappedBy = "algorithm", cascade = CascadeType.ALL, orphanRemoval = true)
+    @EqualsAndHashCode.Exclude
     @NotAudited
     private List<Sketch> sketches = new ArrayList<>();
 
