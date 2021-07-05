@@ -209,6 +209,7 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
 
         var storedImplementation = implementationService.create(implementation, algorithm.getId());
         compareImplementation.setId(storedImplementation.getId());
+        compareImplementation.addAlgorithm(algorithm);
 
         String editName = "editedAlgorithmName";
         storedImplementation.setName(editName);
@@ -224,11 +225,7 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
         assertThat(editedImplementation.getAssumptions()).isEqualTo(compareImplementation.getAssumptions());
         assertThat(editedImplementation.getParameter()).isEqualTo(compareImplementation.getParameter());
         assertThat(editedImplementation.getDependencies()).isEqualTo(compareImplementation.getDependencies());
-        assertThat(editedImplementation.getImplementedAlgorithms().size())
-                .isEqualTo(storedImplementation.getImplementedAlgorithms().size()).isEqualTo(1);
-        ServiceTestUtils.assertAlgorithmEquality(
-                editedImplementation.getImplementedAlgorithms().iterator().next(),
-                storedImplementation.getImplementedAlgorithms().iterator().next());
+        ServiceTestUtils.assertCollectionEquality(editedImplementation.getImplementedAlgorithms(), compareImplementation.getImplementedAlgorithms());
     }
 
     @Test
