@@ -42,25 +42,25 @@ public class LinkBuilderServiceTest {
         mappings.populateFromHandler(new Controller());
     }
 
-    @Test
-    public void invalid() {
-        assertEquals("/", service.linkTo(methodOn(NonController.class).test()).withSelfRel().getHref());
-        assertEquals("/test", service.linkTo(methodOn(Controller.class).nonEndpoint()).withSelfRel().getHref());
-    }
+//    @Test
+//    public void invalid() {
+//        assertEquals("/", service.linkTo(methodOn(NonController.class).test()).withSelfRel().getHref());
+//        assertEquals("/test", service.linkTo(methodOn(Controller.class).nonEndpoint()).withSelfRel().getHref());
+//    }
+//
+//    @Test
+//    public void simpleMethodCall() {
+//        var link = service.linkTo(methodOn(Controller.class).endpoint()).withSelfRel();
+//        assertEquals(IanaLinkRelations.SELF, link.getRel());
+//        assertEquals("/test/test", link.getHref());
+//    }
 
-    @Test
-    public void simpleMethodCall() {
-        var link = service.linkTo(methodOn(Controller.class).endpoint()).withSelfRel();
-        assertEquals(IanaLinkRelations.SELF, link.getRel());
-        assertEquals("/test/test", link.getHref());
-    }
-
-    @Test
-    public void simpleSlash() {
-        var link = service.linkTo(methodOn(Controller.class).endpoint()).slash("something").withSelfRel();
-        assertEquals(IanaLinkRelations.SELF, link.getRel());
-        assertEquals("/test/test/something", link.getHref());
-    }
+//    @Test
+//    public void simpleSlash() {
+//        var link = service.linkTo(methodOn(Controller.class).endpoint()).slash("something").withSelfRel();
+//        assertEquals(IanaLinkRelations.SELF, link.getRel());
+//        assertEquals("/test/test/something", link.getHref());
+//    }
 
     static class NonController {
         public HttpEntity<Void> test() {
