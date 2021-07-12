@@ -19,14 +19,9 @@
 
 package org.planqk.atlas.web.linkassembler;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
-
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.planqk.atlas.web.annotation.VersionedRequestHandlerMapping;
 import org.planqk.atlas.web.utils.ListParametersMethodArgumentResolver;
-import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.http.HttpEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 
