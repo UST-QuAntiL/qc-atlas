@@ -47,6 +47,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 /**
  * Custom HATEOAS {@link org.springframework.hateoas.server.LinkBuilder} that resolves path mappings using the
  * container's {@link RequestMappingInfoHandlerMapping} instance.
+ * This class is now used in test classes of controllers to build api instead of hardcoding the url
  */
 @Component
 public class LinkBuilderService {
