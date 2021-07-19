@@ -39,7 +39,11 @@ import org.springframework.stereotype.Repository;
 @RepositoryRestResource(exported = false)
 public interface ImplementationRepository extends RevisionRepository<Implementation, UUID, Integer>, JpaRepository<Implementation, UUID> {
 
-    Page<Implementation> findByImplementedAlgorithmId(UUID implementedAlgorithmId, Pageable pageable);
+    @Query("SELECT impl " +
+                   "FROM Implementation impl " +
+                   "JOIN impl.implementedAlgorithms alg " +
+                   "WHERE  alg.id = :algId")
+    Page<Implementation> findByImplementedAlgorithmId(@Param("algId") UUID implementedAlgorithmId, Pageable pageable);
 
     @Query("SELECT impl " +
                    "FROM Implementation impl " +

@@ -289,7 +289,6 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
         // add Implementation
         Implementation implementation = new Implementation();
         implementation.setName("implementationName");
-        implementation.setImplementedAlgorithm(algorithm);
         implementationService.create(implementation, algorithm.getId());
 
         // add pattern Relation

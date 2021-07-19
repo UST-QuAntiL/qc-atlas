@@ -680,7 +680,6 @@ public class ComputeResourcePropertyServiceTest extends AtlasDatabaseTestBase {
         QuantumImplementation implementation = new QuantumImplementation();
 
         implementation.setName(name);
-        implementation.setImplementedAlgorithm(algorithm);
 
         return (QuantumImplementation) implementationService.create(implementation, algorithm.getId());
     }

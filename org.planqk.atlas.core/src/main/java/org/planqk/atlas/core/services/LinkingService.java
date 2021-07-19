@@ -33,6 +33,40 @@ public interface LinkingService {
 
     /**
      * Links an existing {@link org.planqk.atlas.core.model.Algorithm} and an existing {@link
+     * org.planqk.atlas.core.model.Implementation}.
+     * <p>
+     * If either the {@link org.planqk.atlas.core.model.Algorithm} or the {@link org.planqk.atlas.core.model.Implementation}
+     * with given IDs could not be found a {@link java.util.NoSuchElementException} is thrown.
+     * <p>
+     * If both entities exist but they are already linked this method will throw an {@link
+     * org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException}.
+     *
+     * @param implementationId The ID of the {@link org.planqk.atlas.core.model.Implementation} we want to link
+     * @param algorithmId   The ID of the {@link org.planqk.atlas.core.model.Algorithm} we want to link
+     */
+    @Transactional
+    void linkImplementationAndAlgorithm(UUID implementationId, UUID algorithmId);
+
+    /**
+     * Unlinks an existing {@link org.planqk.atlas.core.model.Algorithm} and an existing {@link
+     * org.planqk.atlas.core.model.Implementation}.
+     * If an {@link org.planqk.atlas.core.model.Implementation} has no reference to an other
+     * {@link org.planqk.atlas.core.model.Algorithm} after unlinking (orphaned), it will be completely deleted.
+     * <p>
+     * If either the {@link org.planqk.atlas.core.model.Algorithm} or the {@link org.planqk.atlas.core.model.Implementation}
+     * with given IDs could not be found a {@link java.util.NoSuchElementException} is thrown.
+     * <p>
+     * If both entities exist but they are already linked this method will throw an {@link
+     * org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException}.
+     *
+     * @param implementationId The ID of the {@link org.planqk.atlas.core.model.Implementation} we want to link
+     * @param algorithmId   The ID of the {@link org.planqk.atlas.core.model.Algorithm} we want to link
+     */
+    @Transactional
+    void unlinkImplementationAndAlgorithm(UUID implementationId, UUID algorithmId);
+
+    /**
+     * Links an existing {@link org.planqk.atlas.core.model.Algorithm} and an existing {@link
      * org.planqk.atlas.core.model.Publication}.
      * <p>
      * If either the {@link org.planqk.atlas.core.model.Algorithm} or the {@link org.planqk.atlas.core.model.Publication}

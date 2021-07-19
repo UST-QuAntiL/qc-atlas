@@ -32,7 +32,6 @@ import org.junit.jupiter.api.Test;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
 import org.planqk.atlas.core.model.ClassicImplementation;
-import org.planqk.atlas.core.model.ComputationModel;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.model.QuantumAlgorithm;
@@ -74,12 +73,13 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
 
         var implementation = new ClassicImplementation();
         implementation.setName("implementationName");
-        implementation.setImplementedAlgorithm(algorithm);
 
         var storedImplementation = implementationService.create(implementation, algorithm.getId());
 
         assertThat(storedImplementation.getId()).isNotNull();
         assertThat(storedImplementation).isInstanceOf(ClassicImplementation.class);
+        assertThat(storedImplementation.getImplementedAlgorithms().size()).isEqualTo(1);
+        ServiceTestUtils.assertAlgorithmEquality(storedImplementation.getImplementedAlgorithms().iterator().next(), algorithm);
         ServiceTestUtils.assertImplementationEquality(storedImplementation, implementation);
     }
 
@@ -92,12 +92,13 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
 
         var implementation = new QuantumImplementation();
         implementation.setName("implementationName");
-        implementation.setImplementedAlgorithm(algorithm);
 
         var storedImplementation = (QuantumImplementation) implementationService.create(implementation, algorithm.getId());
 
         assertThat(storedImplementation.getId()).isNotNull();
         assertThat(storedImplementation).isInstanceOf(QuantumImplementation.class);
+        assertThat(storedImplementation.getImplementedAlgorithms().size()).isEqualTo(1);
+        ServiceTestUtils.assertAlgorithmEquality(storedImplementation.getImplementedAlgorithms().iterator().next(), algorithm);
         ServiceTestUtils.assertImplementationEquality(storedImplementation, implementation);
     }
 
@@ -137,7 +138,6 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
 
         var implementation = new QuantumImplementation();
         implementation.setName("implementationName");
-        implementation.setImplementedAlgorithm(algorithm);
         implementation = (QuantumImplementation) implementationService.create(implementation, algorithm.getId());
 
         for(int i=1; i<Constants.REVISIONS_COUNT; i++) {
@@ -166,11 +166,9 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
 
         Implementation implementation1 = new Implementation();
         implementation1.setName("implementationName1");
-        implementation1.setImplementedAlgorithm(algorithm);
         implementationService.create(implementation1, algorithm.getId());
         Implementation implementation2 = new Implementation();
         implementation2.setName("implementationName2");
-        implementation2.setImplementedAlgorithm(algorithm);
         implementationService.create(implementation2, algorithm.getId());
 
         List<Implementation> implementations = implementationService.findAll(Pageable.unpaged()).getContent();
@@ -186,7 +184,6 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
 
         var implementation = new ClassicImplementation();
         implementation.setName("implementationName");
-        implementation.setImplementedAlgorithm(algorithm);
 
         var storedImplementation = implementationService.create(implementation, algorithm.getId());
 
@@ -212,6 +209,7 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
 
         var storedImplementation = implementationService.create(implementation, algorithm.getId());
         compareImplementation.setId(storedImplementation.getId());
+        compareImplementation.addAlgorithm(algorithm);
 
         String editName = "editedAlgorithmName";
         storedImplementation.setName(editName);
@@ -227,10 +225,7 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
         assertThat(editedImplementation.getAssumptions()).isEqualTo(compareImplementation.getAssumptions());
         assertThat(editedImplementation.getParameter()).isEqualTo(compareImplementation.getParameter());
         assertThat(editedImplementation.getDependencies()).isEqualTo(compareImplementation.getDependencies());
-        assertThat(editedImplementation.getImplementedAlgorithm().getId())
-                .isEqualTo(compareImplementation.getImplementedAlgorithm().getId());
-        ServiceTestUtils.assertAlgorithmEquality(
-                editedImplementation.getImplementedAlgorithm(), compareImplementation.getImplementedAlgorithm());
+        ServiceTestUtils.assertCollectionEquality(editedImplementation.getImplementedAlgorithms(), compareImplementation.getImplementedAlgorithms());
     }
 
     @Test
@@ -241,7 +236,6 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
 
         var implementation = new ClassicImplementation();
         implementation.setName("implementationName");
-        implementation.setImplementedAlgorithm(algorithm);
 
         var storedImplementation = implementationService.create(implementation, algorithm.getId());
 
@@ -250,6 +244,8 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
         implementationService.delete(storedImplementation.getId());
 
         assertThrows(NoSuchElementException.class, () -> implementationService.findById(storedImplementation.getId()));
+        storedImplementation.getImplementedAlgorithms().forEach(alg ->
+                assertThat(algorithmService.findById(alg.getId()).getImplementations().size()).isEqualTo(0));
     }
 
     @Test
@@ -260,7 +256,6 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
 
         var implementation = new Implementation();
         implementation.setName("implementationName");
-        implementation.setImplementedAlgorithm(algorithm);
 
         implementation = implementationService.create(implementation, algorithm.getId());
 
@@ -298,6 +293,8 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
                 assertThat(publicationService.findById(pub.getId()).getImplementations().size()).isEqualTo(0));
         finalImplementation.getSoftwarePlatforms().forEach(sp ->
                 assertThat(softwarePlatformService.findById(sp.getId()).getImplementations().size()).isEqualTo(0));
+        finalImplementation.getImplementedAlgorithms().forEach(alg ->
+                assertThat(algorithmService.findById(alg.getId()).getImplementations().size()).isEqualTo(0));
     }
 
     @Test
@@ -308,7 +305,6 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
 
         var implementation = new ClassicImplementation();
         implementation.setName("implementationName");
-        implementation.setImplementedAlgorithm(algorithm);
         implementation.setId(UUID.randomUUID());
         implementationService.create(implementation, algorithm.getId());
 
@@ -323,7 +319,6 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
 
         var implementation = new ClassicImplementation();
         implementation.setName("implementationName");
-        implementation.setImplementedAlgorithm(algorithm);
 
         var storedImplementation = implementationService.create(implementation, algorithm.getId());
         implementationService.delete(storedImplementation.getId());
@@ -390,7 +385,6 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
 
         Implementation implementation = new Implementation();
         implementation.setName("implementationName");
-        implementation.setImplementedAlgorithm(persistedAlgorithm);
         implementationService.create(implementation, algorithm.getId());
 
         assertDoesNotThrow(() -> implementationService
@@ -408,7 +402,6 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
 
         Implementation implementation = new Implementation();
         implementation.setName("implementationName");
-        implementation.setImplementedAlgorithm(persistedAlgorithm1);
         implementationService.create(implementation, algorithm1.getId());
 
         assertThrows(NoSuchElementException.class, () -> implementationService
@@ -423,11 +416,9 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
 
         Implementation implementation1 = new Implementation();
         implementation1.setName("implementationName1");
-        implementation1.setImplementedAlgorithm(algorithm);
         implementationService.create(implementation1, algorithm.getId());
         Implementation implementation2 = new Implementation();
         implementation2.setName("implementationName2");
-        implementation2.setImplementedAlgorithm(algorithm);
         implementationService.create(implementation2, algorithm.getId());
 
         List<Implementation> implementations = implementationService
@@ -444,7 +435,6 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
 
         var implementation = new ClassicImplementation();
         implementation.setName("implementationName");
-        implementation.setImplementedAlgorithm(algorithm);
 
         var storedImplementation = implementationService.create(implementation, algorithm.getId());
 
@@ -471,7 +461,6 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
 
         var implementation = new ClassicImplementation();
         implementation.setName("implementationName");
-        implementation.setImplementedAlgorithm(algorithm);
 
         var storedImplementation = implementationService.create(implementation, algorithm.getId());
 
@@ -494,7 +483,6 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
         Implementation implementation = new ClassicImplementation();
 
         implementation.setName(name);
-        implementation.setImplementedAlgorithm(implementedAlgorithm);
         implementation.setDescription("description");
         implementation.setContributors("contributors");
         implementation.setAssumptions("assumptions");

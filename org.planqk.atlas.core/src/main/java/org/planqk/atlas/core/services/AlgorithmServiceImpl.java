@@ -26,8 +26,8 @@ import java.util.UUID;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.model.ApplicationArea;
-import org.planqk.atlas.core.model.LearningMethod;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
+import org.planqk.atlas.core.model.LearningMethod;
 import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.model.Publication;
@@ -184,9 +184,14 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     }
 
     private void removeReferences(@NonNull Algorithm algorithm) {
-        // delete related implementations
-        algorithm.getImplementations().forEach(
-                implementation -> implementationService.delete(implementation.getId()));
+
+        // remove links to implementations and remove orphans
+        CollectionUtils.forEachOnCopy(algorithm.getImplementations(),
+                implementation -> { implementation.removeAlgorithm(algorithm);
+                if (implementation.getImplementedAlgorithms().size() == 0) {
+                    implementationService.delete(implementation.getId());
+                }
+        });
 
         // delete compute resource property
         algorithm.getRequiredComputeResourceProperties().forEach(computeResourcePropertyRepository::delete);

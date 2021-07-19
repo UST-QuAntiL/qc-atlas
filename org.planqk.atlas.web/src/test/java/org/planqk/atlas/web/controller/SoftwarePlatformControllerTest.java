@@ -490,7 +490,7 @@ public class SoftwarePlatformControllerTest {
         algo.setId(UUID.randomUUID());
         for (int i = 0; i < 50; i++) {
             var element = new Implementation();
-            element.setImplementedAlgorithm(algo);
+            element.addAlgorithm(algo);
             element.setName("Test Element " + i);
             element.setId(UUID.randomUUID());
             inputList.add(element);

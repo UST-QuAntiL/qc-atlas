@@ -63,6 +63,38 @@ public class LinkingServiceImpl implements LinkingService {
 
     @Override
     @Transactional
+    public void linkImplementationAndAlgorithm(UUID implementationId, UUID algorithmId) {
+        final Algorithm algorithm = algorithmService.findById(algorithmId);
+        final Implementation implementation = implementationService.findById(implementationId);
+
+        if (algorithm.getImplementations().contains(implementation)) {
+            throw new EntityReferenceConstraintViolationException("Algorithm with ID \"" + algorithmId +
+                    "\" and Implementation with ID \"" + implementationId + "\" are already linked");
+        }
+
+        algorithm.addImplementation(implementation);
+    }
+
+    @Override
+    @Transactional
+    public void unlinkImplementationAndAlgorithm(UUID implementationId, UUID algorithmId) {
+        final Algorithm algorithm = algorithmService.findById(algorithmId);
+        final Implementation implementation = implementationService.findById(implementationId);
+
+        if (!algorithm.getImplementations().contains(implementation)) {
+            throw new EntityReferenceConstraintViolationException("Algorithm with ID \"" + algorithmId +
+                    "\" and Implementation with ID \"" + implementationId + "\" are not linked");
+        }
+
+        algorithm.removeImplementation(implementation);
+
+        if (implementation.getImplementedAlgorithms().size() == 0) {
+            implementationService.delete(implementationId);
+        }
+    }
+
+    @Override
+    @Transactional
     public void linkAlgorithmAndPublication(@NonNull UUID algorithmId, @NonNull UUID publicationId) {
         final Algorithm algorithm = algorithmService.findById(algorithmId);
         final Publication publication = publicationService.findById(publicationId);

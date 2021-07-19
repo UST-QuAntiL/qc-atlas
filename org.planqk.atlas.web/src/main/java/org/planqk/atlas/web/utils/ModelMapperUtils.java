@@ -34,7 +34,6 @@ import org.planqk.atlas.core.model.ClassicAlgorithm;
 import org.planqk.atlas.core.model.ComputeResource;
 import org.planqk.atlas.core.model.FileImplementationPackage;
 import org.planqk.atlas.core.model.FunctionImplementationPackage;
-import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.ImplementationPackage;
 import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.model.Qpu;
@@ -47,7 +46,6 @@ import org.planqk.atlas.web.dtos.ClassicAlgorithmDto;
 import org.planqk.atlas.web.dtos.ComputeResourceDto;
 import org.planqk.atlas.web.dtos.FileImplementationPackageDto;
 import org.planqk.atlas.web.dtos.FunctionImplementationPackageDto;
-import org.planqk.atlas.web.dtos.ImplementationDto;
 import org.planqk.atlas.web.dtos.ImplementationPackageDto;
 import org.planqk.atlas.web.dtos.PatternRelationDto;
 import org.planqk.atlas.web.dtos.QPUDto;
@@ -130,12 +128,6 @@ public final class ModelMapperUtils {
         mapper.createTypeMap(AlgorithmRelationDto.class, AlgorithmRelation.class)
                 .addMapping(e -> newAlgorithmWithId(e.getSourceAlgorithmId()), AlgorithmRelation::setSourceAlgorithm)
                 .addMapping(e -> newAlgorithmWithId(e.getTargetAlgorithmId()), AlgorithmRelation::setTargetAlgorithm);
-
-        // Implementations
-        mapper.createTypeMap(Implementation.class, ImplementationDto.class)
-                .addMapping(e -> e.getImplementedAlgorithm().getId(), ImplementationDto::setImplementedAlgorithmId);
-        mapper.createTypeMap(ImplementationDto.class, Implementation.class)
-                .addMapping(e -> newAlgorithmWithId(e.getImplementedAlgorithmId()), Implementation::setImplementedAlgorithm);
 
         // Pattern Relations
         mapper.createTypeMap(PatternRelation.class, PatternRelationDto.class)

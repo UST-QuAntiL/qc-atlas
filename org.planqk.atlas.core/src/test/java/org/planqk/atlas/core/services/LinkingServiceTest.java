@@ -78,6 +78,36 @@ public class LinkingServiceTest extends AtlasDatabaseTestBase {
     private ComputeResourceService computeResourceService;
 
     @Test
+    void linkImplementationAndAlgorithm() {
+        Algorithm algorithm = getCreatedAlgorithm();
+        Implementation implementation = getCreatedImplementation();
+
+        linkingService.linkImplementationAndAlgorithm(implementation.getId(), algorithm.getId());
+
+        var implementations = implementationService.findByImplementedAlgorithm(algorithm.getId(),Pageable.unpaged()).toSet();
+
+        assertThat(implementations.size()).isEqualTo(1);
+    }
+
+    @Test
+    void unlinkImplementationAndAlgorithm() {
+        Algorithm algorithm = getCreatedAlgorithm();
+        Implementation implementation = getCreatedImplementation();
+
+        linkingService.linkImplementationAndAlgorithm(implementation.getId(), algorithm.getId());
+
+        var implementations = implementationService.findByImplementedAlgorithm(algorithm.getId(),Pageable.unpaged()).toSet();
+
+        assertThat(implementations.size()).isEqualTo(1);
+
+        linkingService.unlinkImplementationAndAlgorithm(implementation.getId(), algorithm.getId());
+
+        implementations = implementationService.findByImplementedAlgorithm(algorithm.getId(),Pageable.unpaged()).toSet();
+
+        assertThat(implementations.size()).isEqualTo(0);
+    }
+
+    @Test
     void linkAlgorithmAndPublication() {
         Algorithm algorithm = getCreatedAlgorithm();
         Publication publication = getCreatedPublication();
@@ -513,7 +543,6 @@ public class LinkingServiceTest extends AtlasDatabaseTestBase {
         Implementation implementation = new ClassicImplementation();
         Algorithm implementedAlgorithm = getCreatedAlgorithm();
         implementation.setName("implementationName");
-        implementation.setImplementedAlgorithm(implementedAlgorithm);
         return implementationService.create(implementation, implementedAlgorithm.getId());
     }
 
