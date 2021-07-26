@@ -26,7 +26,7 @@ public final class Constants {
 
     // amount of revisions to be saved for each artifact
     public static final int REVISIONS_COUNT = 20;
-
+    public static final String PROPERTY_SORT = "parentProblemTypeName";
     private Constants() {
     }
 }

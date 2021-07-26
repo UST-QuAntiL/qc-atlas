@@ -20,10 +20,8 @@
 package org.planqk.atlas.core.services;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -35,6 +33,7 @@ import javax.transaction.Transactional;
 import org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException;
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.repository.ProblemTypeRepository;
+import org.planqk.atlas.core.util.Constants;
 import org.planqk.atlas.core.util.ServiceUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -64,33 +63,46 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
         if (!Objects.isNull(search) && !search.isEmpty()) {
             return problemTypeRepository.findAll(search, pageable);
         }
+        String propertyOfSort = null;
+        Boolean orderOfSort = null;
         for (Sort.Order order : pageable.getSort()) {
-            if (order.getProperty().equals("parentProblemTypeName")) {
-                final List<ProblemType> temp = problemTypeRepository.findAll();
-                final Map<String, List<ProblemType>> nameMap = new HashMap<>();
-                for (ProblemType each : temp) {
-                    String name = null;
-                    if (getParent(each) != null)
-                        name = getParent(each).getName();
-                    if (nameMap.containsKey(name))
-                        nameMap.get(name).add(each);
-                    else if (!nameMap.containsKey(name))
-                        nameMap.put(name, new ArrayList<>(
-                                Arrays.asList(each)));
-                }
-                final Map<String, List<ProblemType>> treeMap =
-                        new TreeMap<String, List<ProblemType>>(Comparator.nullsFirst(Comparator.naturalOrder()));
-                treeMap.putAll(nameMap);
-                final List<ProblemType> listToReturn = new ArrayList<>();
-                for (Map.Entry<String, List<ProblemType>> entry : treeMap.entrySet()) {
-                    listToReturn.addAll(entry.getValue());
-                }
-                if (order.isDescending())
-                    Collections.reverse(listToReturn);
-                return new PageImpl<ProblemType>(listToReturn, pageable, listToReturn.size());
+            propertyOfSort = order.getProperty();
+            orderOfSort = order.isAscending();
+        }
+        if (propertyOfSort != null && propertyOfSort.equals(Constants.PROPERTY_SORT)) {
+            final List<ProblemType> sortedlistOfProblemTypes = getParentSortedProblemTypes();
+            if (!orderOfSort)
+                Collections.reverse(sortedlistOfProblemTypes);
+            return new PageImpl<ProblemType>(sortedlistOfProblemTypes, pageable,
+                    sortedlistOfProblemTypes.size());
+        }
+
+        return problemTypeRepository.findAll(pageable);
+    }
+
+    public List<ProblemType> getParentSortedProblemTypes() {
+        final List<ProblemType> unSortedlistOfProblemTypes = problemTypeRepository.findAll();
+        final Map<String, List<ProblemType>> parentProblemTypeMap =
+                new TreeMap<String, List<ProblemType>>(
+                        Comparator.nullsFirst(Comparator.naturalOrder()));
+        for (ProblemType eachProblemType : unSortedlistOfProblemTypes) {
+            String name = null;
+            if (getParent(eachProblemType) != null) {
+                name = getParent(eachProblemType).getName();
+            }
+            if (parentProblemTypeMap.containsKey(name)) {
+                parentProblemTypeMap.get(name).add(eachProblemType);
+            }
+            else if (!parentProblemTypeMap.containsKey(name)) {
+                parentProblemTypeMap.put(name, new ArrayList<>(
+                        Collections.singletonList(eachProblemType)));
             }
         }
-        return problemTypeRepository.findAll(pageable);
+        final List<ProblemType> sortedlistOfProblemTypes = new ArrayList<>();
+        for (Map.Entry<String, List<ProblemType>> entry : parentProblemTypeMap.entrySet()) {
+            sortedlistOfProblemTypes.addAll(entry.getValue());
+        }
+        return sortedlistOfProblemTypes;
     }
 
     @Override
