@@ -20,9 +20,15 @@
 package org.planqk.atlas.core.services;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.TreeMap;
 import java.util.UUID;
 import javax.transaction.Transactional;
 
@@ -31,7 +37,9 @@ import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.repository.ProblemTypeRepository;
 import org.planqk.atlas.core.util.ServiceUtils;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import lombok.AllArgsConstructor;
@@ -55,6 +63,32 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
     public Page<ProblemType> findAll(@NonNull Pageable pageable, String search) {
         if (!Objects.isNull(search) && !search.isEmpty()) {
             return problemTypeRepository.findAll(search, pageable);
+        }
+        for (Sort.Order order : pageable.getSort()) {
+            if (order.getProperty().equals("parentProblemTypeName")) {
+                final List<ProblemType> temp = problemTypeRepository.findAll();
+                final Map<String, List<ProblemType>> nameMap = new HashMap<>();
+                for (ProblemType each : temp) {
+                    String name = null;
+                    if (getParent(each) != null)
+                        name = getParent(each).getName();
+                    if (nameMap.containsKey(name))
+                        nameMap.get(name).add(each);
+                    else if (!nameMap.containsKey(name))
+                        nameMap.put(name, new ArrayList<>(
+                                Arrays.asList(each)));
+                }
+                final Map<String, List<ProblemType>> treeMap =
+                        new TreeMap<String, List<ProblemType>>(Comparator.nullsFirst(Comparator.naturalOrder()));
+                treeMap.putAll(nameMap);
+                final List<ProblemType> listToReturn = new ArrayList<>();
+                for (Map.Entry<String, List<ProblemType>> entry : treeMap.entrySet()) {
+                    listToReturn.addAll(entry.getValue());
+                }
+                if (order.isDescending())
+                    Collections.reverse(listToReturn);
+                return new PageImpl<ProblemType>(listToReturn, pageable, listToReturn.size());
+            }
         }
         return problemTypeRepository.findAll(pageable);
     }
