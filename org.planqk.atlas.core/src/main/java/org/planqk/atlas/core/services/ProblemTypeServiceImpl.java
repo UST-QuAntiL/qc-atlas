@@ -73,14 +73,8 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
             final List<ProblemType> sortedlistOfProblemTypes = getParentSortedProblemTypes();
             if (!orderOfSort)
                 Collections.reverse(sortedlistOfProblemTypes);
-            final int start = (pageable.getPageNumber()) * pageable.getPageSize();
-            final int end = (start + pageable.getPageSize()) >
-                    sortedlistOfProblemTypes.size() ? sortedlistOfProblemTypes.size() : (pageable.getPageSize() * (pageable.getPageNumber() + 1));
-            System.out.println(start + " , " + end);
-            return new PageImpl<ProblemType>(sortedlistOfProblemTypes.subList(start, end), pageable,
-                    sortedlistOfProblemTypes.size());
+            return convertListToPage(pageable, sortedlistOfProblemTypes);
         }
-
         return problemTypeRepository.findAll(pageable);
     }
 
@@ -107,6 +101,14 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
             sortedlistOfProblemTypes.addAll(entry.getValue());
         }
         return sortedlistOfProblemTypes;
+    }
+
+    public Page<ProblemType> convertListToPage(Pageable pageable, List<ProblemType> sortedlistOfProblemTypes) {
+        final int start = (pageable.getPageNumber()) * pageable.getPageSize();
+        final int end = (start + pageable.getPageSize()) >
+                sortedlistOfProblemTypes.size() ? sortedlistOfProblemTypes.size() : (pageable.getPageSize() * (pageable.getPageNumber() + 1));
+        return new PageImpl<ProblemType>(sortedlistOfProblemTypes.subList(start, end), pageable,
+                sortedlistOfProblemTypes.size());
     }
 
     @Override
