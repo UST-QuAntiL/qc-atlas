@@ -73,7 +73,11 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
             final List<ProblemType> sortedlistOfProblemTypes = getParentSortedProblemTypes();
             if (!orderOfSort)
                 Collections.reverse(sortedlistOfProblemTypes);
-            return new PageImpl<ProblemType>(sortedlistOfProblemTypes, pageable,
+            final int start = (pageable.getPageNumber()) * pageable.getPageSize();
+            final int end = (start + pageable.getPageSize()) >
+                    sortedlistOfProblemTypes.size() ? sortedlistOfProblemTypes.size() : (pageable.getPageSize() * (pageable.getPageNumber() + 1));
+            System.out.println(start + " , " + end);
+            return new PageImpl<ProblemType>(sortedlistOfProblemTypes.subList(start, end), pageable,
                     sortedlistOfProblemTypes.size());
         }
 
@@ -85,17 +89,17 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
         final Map<String, List<ProblemType>> parentProblemTypeMap =
                 new TreeMap<String, List<ProblemType>>(
                         Comparator.nullsFirst(Comparator.naturalOrder()));
-        for (ProblemType eachProblemType : unSortedlistOfProblemTypes) {
+        for (ProblemType problemType : unSortedlistOfProblemTypes) {
             String name = null;
-            if (getParent(eachProblemType) != null) {
-                name = getParent(eachProblemType).getName();
+            if (getParent(problemType) != null) {
+                name = getParent(problemType).getName();
             }
             if (parentProblemTypeMap.containsKey(name)) {
-                parentProblemTypeMap.get(name).add(eachProblemType);
+                parentProblemTypeMap.get(name).add(problemType);
             }
             else if (!parentProblemTypeMap.containsKey(name)) {
                 parentProblemTypeMap.put(name, new ArrayList<>(
-                        Collections.singletonList(eachProblemType)));
+                        Collections.singletonList(problemType)));
             }
         }
         final List<ProblemType> sortedlistOfProblemTypes = new ArrayList<>();
