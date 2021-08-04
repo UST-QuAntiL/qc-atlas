@@ -81,7 +81,7 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
     public List<ProblemType> getParentSortedProblemTypes() {
         final List<ProblemType> unSortedlistOfProblemTypes = problemTypeRepository.findAll();
         final Map<String, List<ProblemType>> parentProblemTypeMap =
-                new TreeMap<String, List<ProblemType>>(
+                new TreeMap<>(
                         Comparator.nullsFirst(Comparator.naturalOrder()));
         for (ProblemType problemType : unSortedlistOfProblemTypes) {
             String name = null;
