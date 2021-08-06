@@ -20,18 +20,25 @@
 package org.planqk.atlas.core.services;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.TreeMap;
 import java.util.UUID;
 import javax.transaction.Transactional;
 
 import org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException;
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.repository.ProblemTypeRepository;
+import org.planqk.atlas.core.util.Constants;
 import org.planqk.atlas.core.util.ServiceUtils;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import lombok.AllArgsConstructor;
@@ -56,7 +63,52 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
         if (!Objects.isNull(search) && !search.isEmpty()) {
             return problemTypeRepository.findAll(search, pageable);
         }
+        String propertyOfSort = null;
+        Boolean orderOfSort = null;
+        for (Sort.Order order : pageable.getSort()) {
+            propertyOfSort = order.getProperty();
+            orderOfSort = order.isAscending();
+        }
+        if (propertyOfSort != null && propertyOfSort.equals(Constants.PROPERTY_SORT)) {
+            final List<ProblemType> sortedlistOfProblemTypes = getParentSortedProblemTypes();
+            if (!orderOfSort)
+                Collections.reverse(sortedlistOfProblemTypes);
+            return convertListToPage(pageable, sortedlistOfProblemTypes);
+        }
         return problemTypeRepository.findAll(pageable);
+    }
+
+    public List<ProblemType> getParentSortedProblemTypes() {
+        final List<ProblemType> unSortedlistOfProblemTypes = problemTypeRepository.findAll();
+        final Map<String, List<ProblemType>> parentProblemTypeMap =
+                new TreeMap<>(
+                        Comparator.nullsFirst(Comparator.naturalOrder()));
+        for (ProblemType problemType : unSortedlistOfProblemTypes) {
+            String name = null;
+            if (getParent(problemType) != null) {
+                name = getParent(problemType).getName();
+            }
+            if (parentProblemTypeMap.containsKey(name)) {
+                parentProblemTypeMap.get(name).add(problemType);
+            }
+            else if (!parentProblemTypeMap.containsKey(name)) {
+                parentProblemTypeMap.put(name, new ArrayList<>(
+                        Collections.singletonList(problemType)));
+            }
+        }
+        final List<ProblemType> sortedlistOfProblemTypes = new ArrayList<>();
+        for (Map.Entry<String, List<ProblemType>> entry : parentProblemTypeMap.entrySet()) {
+            sortedlistOfProblemTypes.addAll(entry.getValue());
+        }
+        return sortedlistOfProblemTypes;
+    }
+
+    public Page<ProblemType> convertListToPage(Pageable pageable, List<ProblemType> sortedlistOfProblemTypes) {
+        final int start = (pageable.getPageNumber()) * pageable.getPageSize();
+        final int end = (start + pageable.getPageSize()) >
+                sortedlistOfProblemTypes.size() ? sortedlistOfProblemTypes.size() : (pageable.getPageSize() * (pageable.getPageNumber() + 1));
+        return new PageImpl<ProblemType>(sortedlistOfProblemTypes.subList(start, end), pageable,
+                sortedlistOfProblemTypes.size());
     }
 
     @Override
