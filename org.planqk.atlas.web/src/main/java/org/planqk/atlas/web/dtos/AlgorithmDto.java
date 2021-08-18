@@ -32,8 +32,6 @@ import org.planqk.atlas.web.utils.ValidationGroups;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
-import io.swagger.v3.oas.annotations.media.DiscriminatorMapping;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -46,17 +44,6 @@ import lombok.NoArgsConstructor;
 @JsonSubTypes({@JsonSubTypes.Type(value = QuantumAlgorithmDto.class, name = "QUANTUM"),
                       @JsonSubTypes.Type(value = ClassicAlgorithmDto.class, name = "CLASSIC"),
                       @JsonSubTypes.Type(value = QuantumAlgorithmDto.class, name = "HYBRID")})
-@Schema(
-    name = "AlgorithmDto",
-    description = "Either a quantum, hybrid or a classic algorithm",
-    discriminatorProperty = "computationModel",
-    oneOf = {ClassicAlgorithmDto.class, QuantumAlgorithmDto.class},
-    discriminatorMapping = {
-        @DiscriminatorMapping(value = "CLASSIC", schema = ClassicAlgorithmDto.class),
-        @DiscriminatorMapping(value = "QUANTUM", schema = QuantumAlgorithmDto.class),
-        @DiscriminatorMapping(value = "HYBRID", schema = QuantumAlgorithmDto.class)
-    }
-)
 public class AlgorithmDto implements Identifyable {
     @NotNull(groups = {ValidationGroups.IDOnly.class}, message = "An id is required to perform an update")
     @Null(groups = {ValidationGroups.Create.class}, message = "The id must be null for creating an algorithm")
