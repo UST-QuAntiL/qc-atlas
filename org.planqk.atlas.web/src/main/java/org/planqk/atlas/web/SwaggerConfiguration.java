@@ -43,18 +43,6 @@ public class SwaggerConfiguration {
     // AlgorithmDto -- (via oneOf) --> ClassicAlgorithmDto -- (extends) --> AlgorithmDto
 
     @Schema(
-            name = "AlgorithmDto",
-            description = "Either a quantum or a classic algorithm",
-            oneOf = {ClassicAlgorithmDto.class, QuantumAlgorithmDto.class},
-            discriminatorMapping = {
-                    @DiscriminatorMapping(value = "CLASSIC", schema = ClassicAlgorithmDto.class),
-                    @DiscriminatorMapping(value = "QUANTUM", schema = QuantumAlgorithmDto.class),
-            }
-    )
-    private static class AlgorithmSchema {
-    }
-
-    @Schema(
             name = "ImplementationDto",
             description = "Either a quantum or a classic implementation",
             oneOf = {ClassicImplementationDto.class, QuantumImplementationDto.class},

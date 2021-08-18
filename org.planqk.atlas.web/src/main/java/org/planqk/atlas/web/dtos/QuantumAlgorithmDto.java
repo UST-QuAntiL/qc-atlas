@@ -48,7 +48,7 @@ public class QuantumAlgorithmDto extends AlgorithmDto {
     private String speedUp;
 
     @Override
-    @Schema(type = "string", allowableValues = {"QUANTUM"})
+    @Schema(type = "string", allowableValues = {"QUANTUM", "HYBRID"})
     public ComputationModel getComputationModel() {
         return super.getComputationModel();
     }
