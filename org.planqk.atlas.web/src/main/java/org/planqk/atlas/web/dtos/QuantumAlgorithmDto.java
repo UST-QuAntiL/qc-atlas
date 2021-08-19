@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 the qc-atlas contributors.
+ * Copyright (c) 2020-2021 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -48,7 +48,7 @@ public class QuantumAlgorithmDto extends AlgorithmDto {
     private String speedUp;
 
     @Override
-    @Schema(type = "string", allowableValues = {"QUANTUM"})
+    @Schema(type = "string", allowableValues = {"QUANTUM", "HYBRID"})
     public ComputationModel getComputationModel() {
         return super.getComputationModel();
     }
