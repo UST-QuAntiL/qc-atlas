@@ -44,6 +44,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Configuration
 public class SwaggerConfiguration {
 
+    /**
+     * ModelConverter that allows overriding {@link io.swagger.v3.oas.models.media.Schema} objects for Java classes.
+     * Required for the different models (Quantum, Hybrid, or Classic) of AlgorithmDto and ImplementationDto,
+     * see private classes AlgorithmSchema and ImplementationSchema below.
+     */
     @Bean
     @Lazy(false)
     public OverrideModelConverter overrideModelConverter() {
