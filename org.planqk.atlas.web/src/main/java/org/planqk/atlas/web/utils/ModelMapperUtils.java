@@ -159,7 +159,7 @@ public final class ModelMapperUtils {
     }
 
     private static Algorithm newAlgorithmWithId(UUID id) {
-        //        Why we are creating new algorithm object should not we be fetching the algorithm
+        //algorithmService is null here.
         final Algorithm actualAlgo = algorithmService.findById(id);
         if (actualAlgo.getComputationModel().equals(ComputationModel.CLASSIC)) {
             final var algo = new ClassicAlgorithm();
