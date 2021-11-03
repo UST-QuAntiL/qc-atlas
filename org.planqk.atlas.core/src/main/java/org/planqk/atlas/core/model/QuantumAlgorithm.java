@@ -24,6 +24,8 @@ import javax.persistence.Entity;
 import org.hibernate.envers.AuditTable;
 import org.hibernate.envers.Audited;
 
+import com.fasterxml.jackson.annotation.JsonTypeName;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -34,6 +36,7 @@ import lombok.ToString;
 @Entity
 @AuditTable("quantum_algorithm_revisions")
 @Audited
+@JsonTypeName("QUANTUM")
 public class QuantumAlgorithm extends Algorithm {
 
     private boolean nisqReady;

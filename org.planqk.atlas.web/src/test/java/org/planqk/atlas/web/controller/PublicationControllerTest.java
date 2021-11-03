@@ -50,6 +50,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
+import org.planqk.atlas.core.model.ClassicImplementation;
 import org.planqk.atlas.core.model.ComputationModel;
 import org.planqk.atlas.core.model.DiscussionComment;
 import org.planqk.atlas.core.model.DiscussionTopic;
@@ -438,7 +439,7 @@ public class PublicationControllerTest {
     @Test
     @SneakyThrows
     void getAlgorithmOfPublication_returnOk() {
-        var algo = new Algorithm();
+        Algorithm algo = new ClassicAlgorithm();
         algo.setName("algo");
         algo.setId(UUID.randomUUID());
 
@@ -469,7 +470,7 @@ public class PublicationControllerTest {
     @SneakyThrows
     void linkPublicationAndAlgorithm_returnNoContent() {
         doNothing().when(linkingService).linkAlgorithmAndPublication(any(), any());
-        var algoDto = new AlgorithmDto();
+        AlgorithmDto algoDto = new ClassicAlgorithmDto();
         algoDto.setId(UUID.randomUUID());
         algoDto.setComputationModel(ComputationModel.QUANTUM);
 
@@ -487,7 +488,7 @@ public class PublicationControllerTest {
     @Test
     @SneakyThrows
     void linkPublicationAndAlgorithm_returnBadRequest() {
-        var algoDto = new AlgorithmDto();
+        AlgorithmDto algoDto = new ClassicAlgorithmDto();
         algoDto.setId(null);
         algoDto.setComputationModel(ComputationModel.QUANTUM);
 
@@ -506,7 +507,7 @@ public class PublicationControllerTest {
     @SneakyThrows
     void linkPublicationAndAlgorithm_returnNotFound() {
         doThrow(new NoSuchElementException()).when(linkingService).linkAlgorithmAndPublication(any(), any());
-        var algoDto = new AlgorithmDto();
+        AlgorithmDto algoDto = new ClassicAlgorithmDto();
         algoDto.setId(UUID.randomUUID());
         algoDto.setComputationModel(ComputationModel.QUANTUM);
 
@@ -575,7 +576,7 @@ public class PublicationControllerTest {
     @Test
     @SneakyThrows
     void getImplementationOfPublication_returnOk() {
-        var algo = new Implementation();
+        Implementation algo = new ClassicImplementation();
         algo.setName("algo");
         algo.setId(UUID.randomUUID());
 

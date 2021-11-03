@@ -44,6 +44,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException;
 import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.ClassicAlgorithm;
+import org.planqk.atlas.core.model.ClassicImplementation;
 import org.planqk.atlas.core.model.CloudService;
 import org.planqk.atlas.core.model.ComputeResource;
 import org.planqk.atlas.core.model.Implementation;
@@ -53,6 +55,7 @@ import org.planqk.atlas.core.services.LinkingService;
 import org.planqk.atlas.core.services.SoftwarePlatformService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
+import org.planqk.atlas.web.dtos.ClassicImplementationDto;
 import org.planqk.atlas.web.dtos.CloudServiceDto;
 import org.planqk.atlas.web.dtos.ComputeResourceDto;
 import org.planqk.atlas.web.dtos.ImplementationDto;
@@ -486,10 +489,10 @@ public class SoftwarePlatformControllerTest {
     @Test
     void listImplementations_notEmpty() throws Exception {
         var inputList = new ArrayList<Implementation>();
-        var algo = new Algorithm();
+        Algorithm algo = new ClassicAlgorithm();
         algo.setId(UUID.randomUUID());
         for (int i = 0; i < 50; i++) {
-            var element = new Implementation();
+            Implementation element = new ClassicImplementation();
             element.setImplementedAlgorithm(algo);
             element.setName("Test Element " + i);
             element.setId(UUID.randomUUID());
@@ -815,7 +818,7 @@ public class SoftwarePlatformControllerTest {
                 .when(linkingService)
                 .linkImplementationAndSoftwarePlatform(any(), any());
 
-        var implDto = new ImplementationDto();
+        ImplementationDto implDto = new ClassicImplementationDto();
         implDto.setId(UUID.randomUUID());
 
         mockMvc.perform(
@@ -835,7 +838,7 @@ public class SoftwarePlatformControllerTest {
                 .when(linkingService)
                 .linkImplementationAndSoftwarePlatform(any(), any());
 
-        var implDto = new ImplementationDto();
+        ImplementationDto implDto = new ClassicImplementationDto();
         implDto.setId(UUID.randomUUID());
 
         mockMvc.perform(
@@ -855,7 +858,7 @@ public class SoftwarePlatformControllerTest {
                 .when(linkingService)
                 .linkImplementationAndSoftwarePlatform(any(), any());
 
-        var implDto = new ImplementationDto();
+        ImplementationDto implDto = new ClassicImplementationDto();
         implDto.setId(UUID.randomUUID());
 
         mockMvc.perform(
@@ -875,7 +878,7 @@ public class SoftwarePlatformControllerTest {
                 .when(linkingService)
                 .linkImplementationAndSoftwarePlatform(any(), any());
 
-        var implDto = new ImplementationDto();
+        ImplementationDto implDto = new ClassicImplementationDto();
         implDto.setId(null);
 
         mockMvc.perform(
@@ -940,7 +943,7 @@ public class SoftwarePlatformControllerTest {
         doNothing()
                 .when(softwarePlatformService)
                 .checkIfImplementationIsLinkedToSoftwarePlatform(any(), any());
-        var impl = new Implementation();
+        Implementation impl = new ClassicImplementation();
         impl.setId(UUID.randomUUID());
         doReturn(impl).when(implementationService).findById(any());
 

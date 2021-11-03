@@ -44,7 +44,7 @@ import lombok.NoArgsConstructor;
 @JsonSubTypes({@JsonSubTypes.Type(value = QuantumAlgorithmDto.class, name = "QUANTUM"),
                       @JsonSubTypes.Type(value = ClassicAlgorithmDto.class, name = "CLASSIC"),
                       @JsonSubTypes.Type(value = QuantumAlgorithmDto.class, name = "HYBRID")})
-public class AlgorithmDto implements Identifyable {
+public abstract class AlgorithmDto implements Identifyable {
     @NotNull(groups = {ValidationGroups.IDOnly.class}, message = "An id is required to perform an update")
     @Null(groups = {ValidationGroups.Create.class}, message = "The id must be null for creating an algorithm")
     private UUID id;

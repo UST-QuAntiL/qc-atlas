@@ -22,6 +22,7 @@ package org.planqk.atlas.web.controller;
 import java.util.Collection;
 import java.util.UUID;
 
+import org.planqk.atlas.core.model.ComputationModel;
 import org.planqk.atlas.core.model.ComputeResourceProperty;
 import org.planqk.atlas.core.model.File;
 import org.planqk.atlas.core.model.Implementation;
@@ -37,6 +38,7 @@ import org.planqk.atlas.core.services.PublicationService;
 import org.planqk.atlas.core.services.SoftwarePlatformService;
 import org.planqk.atlas.core.services.TagService;
 import org.planqk.atlas.web.Constants;
+import org.planqk.atlas.web.dtos.ClassicImplementationDto;
 import org.planqk.atlas.web.dtos.ComputeResourcePropertyDto;
 import org.planqk.atlas.web.dtos.DiscussionCommentDto;
 import org.planqk.atlas.web.dtos.DiscussionTopicDto;
@@ -44,6 +46,7 @@ import org.planqk.atlas.web.dtos.FileDto;
 import org.planqk.atlas.web.dtos.ImplementationDto;
 import org.planqk.atlas.web.dtos.ImplementationPackageDto;
 import org.planqk.atlas.web.dtos.PublicationDto;
+import org.planqk.atlas.web.dtos.QuantumImplementationDto;
 import org.planqk.atlas.web.dtos.SoftwarePlatformDto;
 import org.planqk.atlas.web.dtos.TagDto;
 import org.planqk.atlas.web.utils.ListParameters;
@@ -176,7 +179,12 @@ public class ImplementationController {
         implementationService.checkIfImplementationIsOfAlgorithm(implementationId, algorithmId);
 
         final var implementation = implementationService.findById(implementationId);
-        return ResponseEntity.ok(ModelMapperUtils.convert(implementation, ImplementationDto.class));
+        if (implementation.getImplementedAlgorithm().getComputationModel().equals(ComputationModel.CLASSIC)) {
+            return ResponseEntity.ok(ModelMapperUtils.convert(implementation, ClassicImplementationDto.class));
+        }
+        else {
+            return ResponseEntity.ok(ModelMapperUtils.convert(implementation, QuantumImplementationDto.class));
+        }
     }
 
     @Operation(responses = {

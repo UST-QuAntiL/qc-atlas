@@ -21,10 +21,13 @@ package org.planqk.atlas.web.controller;
 
 import java.util.UUID;
 
+import org.planqk.atlas.core.model.ComputationModel;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.web.Constants;
+import org.planqk.atlas.web.dtos.ClassicImplementationDto;
 import org.planqk.atlas.web.dtos.ImplementationDto;
+import org.planqk.atlas.web.dtos.QuantumImplementationDto;
 import org.planqk.atlas.web.dtos.RevisionDto;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
@@ -76,7 +79,12 @@ public class ImplementationGlobalController {
     @GetMapping("/{implementationId}")
     public ResponseEntity<ImplementationDto> getImplementation(@PathVariable UUID implementationId) {
         final var implementation = this.implementationService.findById(implementationId);
-        return ResponseEntity.ok(ModelMapperUtils.convert(implementation, ImplementationDto.class));
+        if (implementation.getImplementedAlgorithm().getComputationModel().equals(ComputationModel.CLASSIC)) {
+            return ResponseEntity.ok(ModelMapperUtils.convert(implementation, ClassicImplementationDto.class));
+        }
+        else {
+            return ResponseEntity.ok(ModelMapperUtils.convert(implementation, QuantumImplementationDto.class));
+        }
     }
 
     @Operation(responses = {

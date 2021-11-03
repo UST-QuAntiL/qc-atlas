@@ -43,6 +43,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.ClassicAlgorithm;
+import org.planqk.atlas.core.model.ClassicImplementation;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.services.FileService;
 import org.planqk.atlas.core.services.ImplementationService;
@@ -111,10 +113,10 @@ public class ImplementationGlobalControllerTest {
     @Test
     @SneakyThrows
     void getImplementations_SingleElement_returnOk() {
-        var impl = new Implementation();
+        Implementation impl = new ClassicImplementation();
         impl.setName("test-i");
         impl.setId(UUID.randomUUID());
-        var algo = new Algorithm();
+        Algorithm algo = new ClassicAlgorithm();
         algo.setId(UUID.randomUUID());
         impl.setImplementedAlgorithm(algo);
 
@@ -133,10 +135,10 @@ public class ImplementationGlobalControllerTest {
     @Test
     @SneakyThrows
     public void getImplementation_returnOk() {
-        var algo = new Algorithm();
+        Algorithm algo = new ClassicAlgorithm();
         algo.setId(UUID.randomUUID());
         algo.setName("dummy");
-        var impl = new Implementation();
+        Implementation impl = new ClassicImplementation();
         impl.setName("implementation for Shor");
         impl.setId(UUID.randomUUID());
         impl.setImplementedAlgorithm(algo);
@@ -154,7 +156,7 @@ public class ImplementationGlobalControllerTest {
     @Test
     @SneakyThrows
     void getImplementationRevisions_SingleElement_returnOk() {
-        var impl = new Implementation();
+        Implementation impl = new ClassicImplementation();
         impl.setName("implementation for Shor");
         impl.setId(UUID.randomUUID());
 
@@ -201,7 +203,7 @@ public class ImplementationGlobalControllerTest {
     @Test
     @SneakyThrows
     void getImplementationRevision_returnOk() {
-        var impl = new Implementation();
+        Implementation impl = new ClassicImplementation();
         impl.setName("implementation for Shor");
         impl.setId(UUID.randomUUID());
 

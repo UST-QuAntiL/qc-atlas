@@ -21,6 +21,7 @@ package org.planqk.atlas.web.controller;
 
 import java.util.UUID;
 
+import org.planqk.atlas.core.model.ComputationModel;
 import org.planqk.atlas.core.model.Publication;
 import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.core.services.ImplementationService;
@@ -28,10 +29,12 @@ import org.planqk.atlas.core.services.LinkingService;
 import org.planqk.atlas.core.services.PublicationService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
+import org.planqk.atlas.web.dtos.ClassicImplementationDto;
 import org.planqk.atlas.web.dtos.DiscussionCommentDto;
 import org.planqk.atlas.web.dtos.DiscussionTopicDto;
 import org.planqk.atlas.web.dtos.ImplementationDto;
 import org.planqk.atlas.web.dtos.PublicationDto;
+import org.planqk.atlas.web.dtos.QuantumImplementationDto;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
@@ -399,7 +402,12 @@ public class PublicationController {
         publicationService.checkIfImplementationIsLinkedToPublication(publicationId, implementationId);
 
         final var implementation = implementationService.findById(implementationId);
-        return ResponseEntity.ok(ModelMapperUtils.convert(implementation, ImplementationDto.class));
+        if (implementation.getImplementedAlgorithm().getComputationModel().equals(ComputationModel.CLASSIC)) {
+            return ResponseEntity.ok(ModelMapperUtils.convert(implementation, ClassicImplementationDto.class));
+        }
+        else {
+            return ResponseEntity.ok(ModelMapperUtils.convert(implementation, QuantumImplementationDto.class));
+        }
     }
 }
 

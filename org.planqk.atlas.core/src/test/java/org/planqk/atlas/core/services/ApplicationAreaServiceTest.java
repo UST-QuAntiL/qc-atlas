@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Test;
 import org.planqk.atlas.core.exceptions.EntityReferenceConstraintViolationException;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.ApplicationArea;
+import org.planqk.atlas.core.model.ClassicAlgorithm;
 import org.planqk.atlas.core.model.ComputationModel;
 import org.planqk.atlas.core.repository.ApplicationAreaRepository;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
@@ -127,7 +128,7 @@ public class ApplicationAreaServiceTest extends AtlasDatabaseTestBase {
     void deleteApplicationArea_LinkedToOtherEntity() {
         var area = getFullApplicationArea("TEST");
 
-        var algorithm = new Algorithm();
+        Algorithm algorithm = new ClassicAlgorithm();
         algorithm.setName("algorithmName");
         algorithm.setComputationModel(ComputationModel.CLASSIC);
         algorithm = algorithmService.create(algorithm);

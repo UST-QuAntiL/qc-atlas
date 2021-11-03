@@ -42,6 +42,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.ClassicAlgorithm;
 import org.planqk.atlas.core.model.ComputationModel;
 import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.model.PatternRelationType;
@@ -151,11 +152,11 @@ public class PatternRelationControllerTest {
         UUID typeId2 = UUID.randomUUID();
 
         // Init Algorithms and DTOs
-        algorithm1 = new Algorithm();
+        algorithm1 = new ClassicAlgorithm();
         algorithm1.setId(algoId1);
         algorithm1.setName("Algorithm1");
         algorithm1.setComputationModel(ComputationModel.CLASSIC);
-        algorithm2 = new Algorithm();
+        algorithm2 = new ClassicAlgorithm();
         algorithm2.setId(algoId2);
         algorithm2.setName("Algorithm2");
         algorithm2.setComputationModel(ComputationModel.CLASSIC);

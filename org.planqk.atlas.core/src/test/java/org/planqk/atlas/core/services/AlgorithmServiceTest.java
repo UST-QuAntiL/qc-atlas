@@ -36,6 +36,7 @@ import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.model.AlgorithmRelationType;
 import org.planqk.atlas.core.model.ApplicationArea;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
+import org.planqk.atlas.core.model.ClassicImplementation;
 import org.planqk.atlas.core.model.ComputationModel;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.PatternRelation;
@@ -287,7 +288,7 @@ public class AlgorithmServiceTest extends AtlasDatabaseTestBase {
         algorithm = algorithmService.create(algorithm);
 
         // add Implementation
-        Implementation implementation = new Implementation();
+        Implementation implementation = new ClassicImplementation();
         implementation.setName("implementationName");
         implementation.setImplementedAlgorithm(algorithm);
         implementationService.create(implementation, algorithm.getId());

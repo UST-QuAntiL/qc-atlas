@@ -51,6 +51,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
+import org.planqk.atlas.core.model.ClassicImplementation;
 import org.planqk.atlas.core.model.ComputationModel;
 import org.planqk.atlas.core.model.ComputeResourceProperty;
 import org.planqk.atlas.core.model.ComputeResourcePropertyDataType;
@@ -78,6 +79,7 @@ import org.planqk.atlas.core.services.PublicationService;
 import org.planqk.atlas.core.services.SoftwarePlatformService;
 import org.planqk.atlas.core.services.TagService;
 import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
+import org.planqk.atlas.web.dtos.ClassicImplementationDto;
 import org.planqk.atlas.web.dtos.ComputeResourcePropertyDto;
 import org.planqk.atlas.web.dtos.ComputeResourcePropertyTypeDto;
 import org.planqk.atlas.web.dtos.DiscussionCommentDto;
@@ -198,12 +200,12 @@ public class ImplementationControllerTest {
         algorithm2.setName("alg2");
         algorithm2.setComputationModel(ComputationModel.CLASSIC);
 
-        implementation1 = new Implementation();
+        implementation1 = new ClassicImplementation();
         implementation1.setId(UUID.randomUUID());
         implementation1.setName("Impl1");
         implementation1.setImplementedAlgorithm(algorithm1);
 
-        implementation2 = new Implementation();
+        implementation2 = new ClassicImplementation();
         implementation2.setId(UUID.randomUUID());
         implementation2.setName("Impl2");
         implementation2.setImplementedAlgorithm(algorithm2);
@@ -250,13 +252,13 @@ public class ImplementationControllerTest {
     @Test
     @SneakyThrows
     void createImplementation_returnOk() {
-        var implDto = new ImplementationDto();
+        ImplementationDto implDto = new ClassicImplementationDto();
         implDto.setName("test-impl");
 
-        var impl = new Implementation();
+        Implementation impl = new ClassicImplementation();
         impl.setId(UUID.randomUUID());
         impl.setName(implDto.getName());
-        var algo = new Algorithm();
+        Algorithm algo = new ClassicAlgorithm();
         algo.setId(UUID.randomUUID());
         algo.setName("test-algo");
         impl.setImplementedAlgorithm(algo);
@@ -278,7 +280,7 @@ public class ImplementationControllerTest {
     @Test
     @SneakyThrows
     void createImplementation_returnBadRequest() {
-        var implDto = new ImplementationDto();
+        ImplementationDto implDto = new ClassicImplementationDto();
         implDto.setName(null);
         implDto.setId(UUID.randomUUID());
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
@@ -292,7 +294,7 @@ public class ImplementationControllerTest {
     @Test
     @SneakyThrows
     void createImplementation_returnNotFound() {
-        var implDto = new ImplementationDto();
+        ImplementationDto implDto = new ClassicImplementationDto();
         implDto.setName("test-impl");
 
         doThrow(new NoSuchElementException()).when(implementationService).create(any(), any());
@@ -308,13 +310,13 @@ public class ImplementationControllerTest {
     @Test
     @SneakyThrows
     void updateImplementation_returnOk() {
-        var implDto = new ImplementationDto();
+        ImplementationDto implDto = new ClassicImplementationDto();
         implDto.setName("test-impl");
 
-        var impl = new Implementation();
+        Implementation impl = new ClassicImplementation();
         impl.setId(UUID.randomUUID());
         impl.setName(implDto.getName());
-        var algo = new Algorithm();
+        Algorithm algo = new ClassicAlgorithm();
         algo.setId(UUID.randomUUID());
         algo.setName("test-algo");
         impl.setImplementedAlgorithm(algo);
@@ -336,7 +338,7 @@ public class ImplementationControllerTest {
     @Test
     @SneakyThrows
     void updateImplementation_returnBadRequest() {
-        var implDto = new ImplementationDto();
+        ImplementationDto implDto = new ClassicImplementationDto();
         implDto.setName(null);
 
         var url = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
@@ -350,7 +352,7 @@ public class ImplementationControllerTest {
     @Test
     @SneakyThrows
     void updateImplementation_returnNotFound() {
-        var implDto = new ImplementationDto();
+        ImplementationDto implDto = new ClassicImplementationDto();
         implDto.setName("test-impl");
 
         doThrow(new NoSuchElementException()).when(implementationService).update(any());
@@ -387,11 +389,11 @@ public class ImplementationControllerTest {
     @Test
     @SneakyThrows
     void getTagsOfImplementation_EmptyList_returnOk() {
-        var impl = new Implementation();
+        Implementation impl = new ClassicImplementation();
         impl.setId(UUID.randomUUID());
         impl.setName("test-impl");
         impl.setTags(Set.of());
-        var algo = new Algorithm();
+        Algorithm algo = new ClassicAlgorithm();
         algo.setId(UUID.randomUUID());
         algo.setName("test-algo");
         impl.setImplementedAlgorithm(algo);
@@ -409,14 +411,14 @@ public class ImplementationControllerTest {
     @Test
     @SneakyThrows
     void getTagsOfImplementation_SingleElementList_returnOk() {
-        var impl = new Implementation();
+        Implementation impl = new ClassicImplementation();
         impl.setId(UUID.randomUUID());
         impl.setName("test-impl");
         var tag = new Tag();
         tag.setValue("test");
         tag.setCategory("test-c");
         impl.setTags(Set.of(tag));
-        var algo = new Algorithm();
+        Algorithm algo = new ClassicAlgorithm();
         algo.setId(UUID.randomUUID());
         algo.setName("test-algo");
         impl.setImplementedAlgorithm(algo);
@@ -565,10 +567,10 @@ public class ImplementationControllerTest {
     @Test
     @SneakyThrows
     void getImplementation_returnOk() {
-        var impl = new Implementation();
+        Implementation impl = new ClassicImplementation();
         impl.setId(UUID.randomUUID());
         impl.setName("test-impl");
-        var algo = new Algorithm();
+        Algorithm algo = new ClassicAlgorithm();
         algo.setId(UUID.randomUUID());
         algo.setName("test-algo");
         impl.setImplementedAlgorithm(algo);
@@ -1633,7 +1635,7 @@ public class ImplementationControllerTest {
     @SneakyThrows
     void getImplementationPackages() {
         // Given
-        var impl = new Implementation();
+        Implementation impl = new ClassicImplementation();
         impl.setName("implementation for Shor");
         impl.setId(UUID.randomUUID());
 
@@ -1642,7 +1644,7 @@ public class ImplementationControllerTest {
         implementationPackage.setPackageType(ImplementationPackageType.FILE);
         implementationPackage.setId(UUID.randomUUID());
 
-        var algo = new Algorithm();
+        Algorithm algo = new ClassicAlgorithm();
         algo.setId(UUID.randomUUID());
 
         List<ImplementationPackage> implementationPackages = new ArrayList<>();
@@ -1670,7 +1672,7 @@ public class ImplementationControllerTest {
     @SneakyThrows
     void getImplementationPackage() {
         // Given
-        var impl = new Implementation();
+        Implementation impl = new ClassicImplementation();
         impl.setName("implementation for Shor");
         impl.setId(UUID.randomUUID());
 
@@ -1679,7 +1681,7 @@ public class ImplementationControllerTest {
         implementationPackage.setPackageType(ImplementationPackageType.FILE);
         implementationPackage.setId(UUID.randomUUID());
 
-        var algo = new Algorithm();
+        Algorithm algo = new ClassicAlgorithm();
         algo.setId(UUID.randomUUID());
 
         when(implementationPackageService.findById(implementationPackage.getId())).thenReturn(implementationPackage);
@@ -1705,7 +1707,7 @@ public class ImplementationControllerTest {
     @SneakyThrows
     void getImplementationPackageAndFail() {
         // Given
-        var impl = new Implementation();
+        Implementation impl = new ClassicImplementation();
         impl.setName("implementation for Shor");
         impl.setId(UUID.randomUUID());
 
@@ -1714,7 +1716,7 @@ public class ImplementationControllerTest {
         implementationPackage.setPackageType(ImplementationPackageType.FILE);
         implementationPackage.setId(UUID.randomUUID());
 
-        var algo = new Algorithm();
+        Algorithm algo = new ClassicAlgorithm();
         algo.setId(UUID.randomUUID());
 
         doThrow(new NoSuchElementException()).when(implementationPackageService)
@@ -1731,7 +1733,7 @@ public class ImplementationControllerTest {
     @SneakyThrows
     void createImplementationPackage() {
         // Given
-        var impl = new Implementation();
+        Implementation impl = new ClassicImplementation();
         impl.setName("implementation for Shor");
         impl.setId(UUID.randomUUID());
 
@@ -1740,7 +1742,7 @@ public class ImplementationControllerTest {
         implementationPackage.setPackageType(ImplementationPackageType.FILE);
         implementationPackage.setId(UUID.randomUUID());
 
-        var algo = new Algorithm();
+        Algorithm algo = new ClassicAlgorithm();
         algo.setId(UUID.randomUUID());
 
         when(implementationPackageService.create(any(), any())).thenReturn(implementationPackage);
@@ -1771,7 +1773,7 @@ public class ImplementationControllerTest {
     @SneakyThrows
     void createImplementationPackageAndFail() {
         // Given
-        var impl = new Implementation();
+        Implementation impl = new ClassicImplementation();
         impl.setName("implementation for Shor");
         impl.setId(UUID.randomUUID());
 
@@ -1780,7 +1782,7 @@ public class ImplementationControllerTest {
         implementationPackage.setPackageType(ImplementationPackageType.FILE);
         implementationPackage.setId(UUID.randomUUID());
 
-        var algo = new Algorithm();
+        Algorithm algo = new ClassicAlgorithm();
         algo.setId(UUID.randomUUID());
 
         ImplementationPackageDto implementationPackageDto = new ImplementationPackageDto();
@@ -1799,7 +1801,7 @@ public class ImplementationControllerTest {
     @SneakyThrows
     void updateImplementationPackage() {
         // Given
-        var impl = new Implementation();
+        Implementation impl = new ClassicImplementation();
         impl.setName("implementation for Shor");
         impl.setId(UUID.randomUUID());
 
@@ -1811,7 +1813,7 @@ public class ImplementationControllerTest {
 
         ImplementationPackageDto implementationPackageDto = ModelMapperUtils.convert(implementationPackage, ImplementationPackageDto.class);
 
-        var algo = new Algorithm();
+        Algorithm algo = new ClassicAlgorithm();
         algo.setId(UUID.randomUUID());
 
         when(implementationPackageService.update(any())).thenReturn(implementationPackage);
@@ -1855,7 +1857,7 @@ public class ImplementationControllerTest {
     @SneakyThrows
     void deleteImplementationPackage() {
         // Given
-        var impl = new Implementation();
+        Implementation impl = new ClassicImplementation();
         impl.setName("implementation for Shor");
         impl.setId(UUID.randomUUID());
 
@@ -1865,7 +1867,7 @@ public class ImplementationControllerTest {
         implementationPackage.setId(UUID.randomUUID());
         implementationPackage.setDescription("Test123");
 
-        var algo = new Algorithm();
+        Algorithm algo = new ClassicAlgorithm();
         algo.setId(UUID.randomUUID());
 
         final String path = linkBuilderService.urlStringTo(methodOn(ImplementationController.class)
@@ -1879,7 +1881,7 @@ public class ImplementationControllerTest {
     @SneakyThrows
     void deleteImplementationPackageAndFail() {
         // Given
-        var impl = new Implementation();
+        Implementation impl = new ClassicImplementation();
         impl.setName("implementation for Shor");
         impl.setId(UUID.randomUUID());
 
@@ -1889,7 +1891,7 @@ public class ImplementationControllerTest {
         implementationPackage.setId(UUID.randomUUID());
         implementationPackage.setDescription("Test123");
 
-        var algo = new Algorithm();
+        Algorithm algo = new ClassicAlgorithm();
         algo.setId(UUID.randomUUID());
 
         doThrow(new NoSuchElementException()).when(implementationPackageService).checkIfImplementationPackageIsLinkedToImplementation(any(), any());
@@ -1904,7 +1906,7 @@ public class ImplementationControllerTest {
     @SneakyThrows
     public void testCreateFileForImplementationPackage_returnOk() {
         // Given
-        var impl = new Implementation();
+        Implementation impl = new ClassicImplementation();
         impl.setName("implementation for Shor");
         impl.setId(UUID.randomUUID());
 
@@ -1912,7 +1914,7 @@ public class ImplementationControllerTest {
         implementationPackage.setName("implementation for Shor");
         implementationPackage.setId(UUID.randomUUID());
 
-        var algo = new Algorithm();
+        Algorithm algo = new ClassicAlgorithm();
         algo.setId(UUID.randomUUID());
 
         byte[] testFile = new byte[20];
@@ -1938,11 +1940,11 @@ public class ImplementationControllerTest {
         implementationPackage.setName("implementation for Shor");
         implementationPackage.setId(UUID.randomUUID());
 
-        var impl = new Implementation();
+        Implementation impl = new ClassicImplementation();
         impl.setName("implementation for Shor");
         impl.setId(UUID.randomUUID());
 
-        var algo = new Algorithm();
+        Algorithm algo = new ClassicAlgorithm();
         algo.setId(UUID.randomUUID());
 
         when(implementationPackageService.findLinkedFile(implementationPackage.getId())).thenReturn(new File());
@@ -1965,11 +1967,11 @@ public class ImplementationControllerTest {
         implementationPackage.setName("implementation for Shor");
         implementationPackage.setId(UUID.randomUUID());
 
-        var impl = new Implementation();
+        Implementation impl = new ClassicImplementation();
         impl.setName("implementation for Shor");
         impl.setId(UUID.randomUUID());
 
-        var algo = new Algorithm();
+        Algorithm algo = new ClassicAlgorithm();
         algo.setId(UUID.randomUUID());
 
         var file = new File();
@@ -2003,11 +2005,11 @@ public class ImplementationControllerTest {
         implementationPackage.setName("implementation for Shor");
         implementationPackage.setId(UUID.randomUUID());
 
-        var impl = new Implementation();
+        Implementation impl = new ClassicImplementation();
         impl.setName("implementation for Shor");
         impl.setId(UUID.randomUUID());
 
-        var algo = new Algorithm();
+        Algorithm algo = new ClassicAlgorithm();
         algo.setId(UUID.randomUUID());
 
         var file = new File();
@@ -2030,11 +2032,11 @@ public class ImplementationControllerTest {
     @Test
     @SneakyThrows
     public void testDeleteFile_response_file_not_found() {
-        var impl = new Implementation();
+        Implementation impl = new ClassicImplementation();
         impl.setName("implementation for Shor");
         impl.setId(UUID.randomUUID());
 
-        var algo = new Algorithm();
+        Algorithm algo = new ClassicAlgorithm();
         algo.setId(UUID.randomUUID());
 
         var implementationPackage = new TOSCAImplementationPackage();
@@ -2055,11 +2057,11 @@ public class ImplementationControllerTest {
     @Test
     @SneakyThrows
     public void testDeleteFile_response_no_content() {
-        var impl = new Implementation();
+        Implementation impl = new ClassicImplementation();
         impl.setName("implementation for Shor");
         impl.setId(UUID.randomUUID());
 
-        var algo = new Algorithm();
+        Algorithm algo = new ClassicAlgorithm();
         algo.setId(UUID.randomUUID());
 
         var implementationPackage = new TOSCAImplementationPackage();

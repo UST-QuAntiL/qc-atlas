@@ -41,6 +41,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.ClassicAlgorithm;
+import org.planqk.atlas.core.model.ClassicImplementation;
 import org.planqk.atlas.core.model.ComputationModel;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.Tag;
@@ -221,7 +223,7 @@ public class TagControllerTest {
     @Test
     public void getImplementations_SingleElement_returnOk() throws Exception {
         var tag = getTestTag();
-        var impl = new Implementation();
+        Implementation impl = new ClassicImplementation();
         impl.setId(UUID.randomUUID());
         impl.setName("test-impl");
         tag.setImplementations(Set.of(impl));
@@ -247,7 +249,7 @@ public class TagControllerTest {
     @Test
     public void getAlgorithms_SingleElement_returnOk() throws Exception {
         var tag = getTestTag();
-        var algo = new Algorithm();
+        Algorithm algo = new ClassicAlgorithm();
         algo.setId(UUID.randomUUID());
         algo.setName("test-algo");
         algo.setComputationModel(ComputationModel.CLASSIC);

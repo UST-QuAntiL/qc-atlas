@@ -36,6 +36,9 @@ import org.hibernate.envers.AuditTable;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -51,7 +54,11 @@ import lombok.ToString;
 @Entity
 @AuditTable("algorithm_revisions")
 @Audited
-public class Algorithm extends KnowledgeArtifact {
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "computationModel", visible = true)
+@JsonSubTypes({@JsonSubTypes.Type(value = QuantumAlgorithm.class, name = "QUANTUM"),
+        @JsonSubTypes.Type(value = ClassicAlgorithm.class, name = "CLASSIC"),
+        @JsonSubTypes.Type(value = QuantumAlgorithm.class, name = "HYBRID")})
+public abstract class Algorithm extends KnowledgeArtifact {
 
     private String name;
 

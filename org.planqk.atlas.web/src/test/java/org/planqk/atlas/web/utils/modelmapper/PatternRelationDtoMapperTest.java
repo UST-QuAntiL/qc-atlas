@@ -25,6 +25,7 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.ClassicAlgorithm;
 import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.web.dtos.PatternRelationDto;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
@@ -33,7 +34,7 @@ public class PatternRelationDtoMapperTest {
 
     @Test
     void mapToDto() {
-        var algorithm = new Algorithm();
+        Algorithm algorithm = new ClassicAlgorithm();
         algorithm.setId(UUID.randomUUID());
 
         var patternRelation = new PatternRelation();

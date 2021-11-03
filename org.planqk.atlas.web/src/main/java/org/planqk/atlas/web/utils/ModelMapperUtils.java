@@ -31,6 +31,8 @@ import org.modelmapper.module.jsr310.Jsr310ModuleConfig;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
+import org.planqk.atlas.core.model.ClassicImplementation;
+import org.planqk.atlas.core.model.ComputationModel;
 import org.planqk.atlas.core.model.ComputeResource;
 import org.planqk.atlas.core.model.FileImplementationPackage;
 import org.planqk.atlas.core.model.FunctionImplementationPackage;
@@ -39,11 +41,14 @@ import org.planqk.atlas.core.model.ImplementationPackage;
 import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.model.Qpu;
 import org.planqk.atlas.core.model.QuantumAlgorithm;
+import org.planqk.atlas.core.model.QuantumImplementation;
 import org.planqk.atlas.core.model.Simulator;
 import org.planqk.atlas.core.model.TOSCAImplementationPackage;
+import org.planqk.atlas.core.services.AlgorithmService;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
 import org.planqk.atlas.web.dtos.ClassicAlgorithmDto;
+import org.planqk.atlas.web.dtos.ClassicImplementationDto;
 import org.planqk.atlas.web.dtos.ComputeResourceDto;
 import org.planqk.atlas.web.dtos.FileImplementationPackageDto;
 import org.planqk.atlas.web.dtos.FunctionImplementationPackageDto;
@@ -52,6 +57,7 @@ import org.planqk.atlas.web.dtos.ImplementationPackageDto;
 import org.planqk.atlas.web.dtos.PatternRelationDto;
 import org.planqk.atlas.web.dtos.QPUDto;
 import org.planqk.atlas.web.dtos.QuantumAlgorithmDto;
+import org.planqk.atlas.web.dtos.QuantumImplementationDto;
 import org.planqk.atlas.web.dtos.SimulatorDto;
 import org.planqk.atlas.web.dtos.TOSCAImplementationPackageDto;
 import org.springframework.data.domain.Page;
@@ -61,6 +67,8 @@ import lombok.NonNull;
 public final class ModelMapperUtils {
 
     public static final ModelMapper mapper = initModelMapper();
+
+    private static AlgorithmService algorithmService;
 
     private ModelMapperUtils() {
     }
@@ -131,10 +139,16 @@ public final class ModelMapperUtils {
                 .addMapping(e -> newAlgorithmWithId(e.getSourceAlgorithmId()), AlgorithmRelation::setSourceAlgorithm)
                 .addMapping(e -> newAlgorithmWithId(e.getTargetAlgorithmId()), AlgorithmRelation::setTargetAlgorithm);
 
-        // Implementations
-        mapper.createTypeMap(Implementation.class, ImplementationDto.class)
+        //Classic Implementations
+        mapper.createTypeMap(ClassicImplementation.class, ClassicImplementationDto.class)
                 .addMapping(e -> e.getImplementedAlgorithm().getId(), ImplementationDto::setImplementedAlgorithmId);
-        mapper.createTypeMap(ImplementationDto.class, Implementation.class)
+        mapper.createTypeMap(ClassicImplementationDto.class, ClassicImplementation.class)
+                .addMapping(e -> newAlgorithmWithId(e.getImplementedAlgorithmId()), Implementation::setImplementedAlgorithm);
+
+        // Quantum Implementations
+        mapper.createTypeMap(QuantumImplementation.class, QuantumImplementationDto.class)
+                .addMapping(e -> e.getImplementedAlgorithm().getId(), ImplementationDto::setImplementedAlgorithmId);
+        mapper.createTypeMap(QuantumImplementationDto.class, QuantumImplementation.class)
                 .addMapping(e -> newAlgorithmWithId(e.getImplementedAlgorithmId()), Implementation::setImplementedAlgorithm);
 
         // Pattern Relations
@@ -145,8 +159,17 @@ public final class ModelMapperUtils {
     }
 
     private static Algorithm newAlgorithmWithId(UUID id) {
-        final var algo = new Algorithm();
-        algo.setId(id);
-        return algo;
+        //        Why we are creating new algorithm object should not we be fetching the algorithm
+        final Algorithm actualAlgo = algorithmService.findById(id);
+        if (actualAlgo.getComputationModel().equals(ComputationModel.CLASSIC)) {
+            final var algo = new ClassicAlgorithm();
+            algo.setId(id);
+            return algo;
+        }
+        else {
+            final var algo = new QuantumAlgorithm();
+            algo.setId(id);
+            return algo;
+        }
     }
 }

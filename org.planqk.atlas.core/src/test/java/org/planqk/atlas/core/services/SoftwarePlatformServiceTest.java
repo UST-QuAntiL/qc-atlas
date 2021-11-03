@@ -33,6 +33,8 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.ClassicAlgorithm;
+import org.planqk.atlas.core.model.ClassicImplementation;
 import org.planqk.atlas.core.model.CloudService;
 import org.planqk.atlas.core.model.ComputeResource;
 import org.planqk.atlas.core.model.Implementation;
@@ -167,10 +169,10 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
         assertDoesNotThrow(() -> softwarePlatformService.findById(storedSoftwarePlatform.getId()));
 
         // Add Implementation Reference
-        Algorithm algorithm = new Algorithm();
+        Algorithm algorithm = new ClassicAlgorithm();
         algorithm = algorithmService.create(algorithm);
 
-        Implementation implementation = new Implementation();
+        Implementation implementation = new ClassicImplementation();
         implementation.setName("implementationName");
         Implementation storedImplementation = implementationService.create(implementation, algorithm.getId());
         linkingService.linkImplementationAndSoftwarePlatform(storedImplementation.getId(), storedSoftwarePlatform.getId());
@@ -204,12 +206,12 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
         SoftwarePlatform softwarePlatform = getFullSoftwarePlatform("softwarePlatformName");
         SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.create(softwarePlatform);
 
-        Algorithm algorithm = new Algorithm();
+        Algorithm algorithm = new ClassicAlgorithm();
         algorithm = algorithmService.create(algorithm);
 
         Set<Implementation> storedImplementations = new HashSet<>();
         for (int i = 0; i < 10; i++) {
-            Implementation implementation = new Implementation();
+            Implementation implementation = new ClassicImplementation();
             implementation.setName("implementationName" + i);
             Implementation storedImplementation = implementationService.create(implementation, algorithm.getId());
             storedImplementations.add(storedImplementation);
@@ -276,10 +278,10 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
         SoftwarePlatform softwarePlatform = getFullSoftwarePlatform("softwarePlatformName");
         SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.create(softwarePlatform);
 
-        Algorithm algorithm = new Algorithm();
+        Algorithm algorithm = new ClassicAlgorithm();
         algorithm = algorithmService.create(algorithm);
 
-        Implementation implementation = new Implementation();
+        Implementation implementation = new ClassicImplementation();
         implementation.setName("implementationName");
         Implementation storedImplementation = implementationService.create(implementation, algorithm.getId());
 
@@ -294,10 +296,10 @@ public class SoftwarePlatformServiceTest extends AtlasDatabaseTestBase {
         SoftwarePlatform softwarePlatform = getFullSoftwarePlatform("softwarePlatformName");
         SoftwarePlatform storedSoftwarePlatform = softwarePlatformService.create(softwarePlatform);
 
-        Algorithm algorithm = new Algorithm();
+        Algorithm algorithm = new ClassicAlgorithm();
         algorithm = algorithmService.create(algorithm);
 
-        Implementation implementation = new Implementation();
+        Implementation implementation = new ClassicImplementation();
         implementation.setName("implementationName");
         Implementation storedImplementation = implementationService.create(implementation, algorithm.getId());
 

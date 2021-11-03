@@ -30,12 +30,14 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.ClassicAlgorithm;
 import org.planqk.atlas.core.model.ComputationModel;
 import org.planqk.atlas.core.model.PatternRelation;
 import org.planqk.atlas.core.model.PatternRelationType;
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.model.QuantumAlgorithm;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
+import org.planqk.atlas.web.dtos.ClassicAlgorithmDto;
 import org.planqk.atlas.web.dtos.PatternRelationDto;
 import org.planqk.atlas.web.dtos.ProblemTypeDto;
 import org.springframework.data.domain.Page;
@@ -67,8 +69,8 @@ public class ModelMapperUtilsTest {
         UUID problemTypeId2 = UUID.randomUUID();
 
         // Init Objects
-        algorithm = new Algorithm();
-        algorithmDto = new AlgorithmDto();
+        algorithm = new ClassicAlgorithm();
+        algorithmDto = new ClassicAlgorithmDto();
 
         // Fill Algorithm Object
         algorithm.setId(id);
