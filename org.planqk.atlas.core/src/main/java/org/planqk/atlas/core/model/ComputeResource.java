@@ -59,6 +59,8 @@ public class ComputeResource extends HasId {
 
     private QuantumComputationModel quantumComputationModel;
 
+    private Boolean qprovOrigin;
+
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @ManyToMany(fetch = FetchType.LAZY,
