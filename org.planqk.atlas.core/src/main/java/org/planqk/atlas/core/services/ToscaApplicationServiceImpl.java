@@ -46,12 +46,26 @@ public class ToscaApplicationServiceImpl implements ToscaApplicationService {
     }
 
     @Override
-    public Page<ToscaApplication> findAll(Pageable pageable) {
+    public Page<ToscaApplication> findAll(@NonNull Pageable pageable) {
         return this.toscaApplicationRepository.findAll(pageable);
     }
 
     @Override
     public ToscaApplication findById(@NonNull UUID toscaApplicationId) {
         return ServiceUtils.findById(toscaApplicationId, ToscaApplication.class, this.toscaApplicationRepository);
+    }
+
+    @Override
+    public ToscaApplication update(@NonNull ToscaApplication toscaApplication) {
+        final ToscaApplication persistedToscaApplication = findById(toscaApplication.getId());
+
+        persistedToscaApplication.setName(toscaApplication.getName());
+
+        return this.toscaApplicationRepository.save(persistedToscaApplication);
+    }
+
+    @Override
+    public void delete(@NonNull UUID toscaApplicationId) {
+        this.toscaApplicationRepository.deleteById(toscaApplicationId);
     }
 }

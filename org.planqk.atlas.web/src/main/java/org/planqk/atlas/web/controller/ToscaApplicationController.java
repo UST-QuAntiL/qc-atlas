@@ -40,9 +40,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -88,5 +90,27 @@ public class ToscaApplicationController {
             @PathVariable UUID toscaApplicationId) {
         final var application = this.toscaApplicationService.findById(toscaApplicationId);
         return ResponseEntity.ok(ModelMapperUtils.convert(application, AlgorithmDto.class));
+    }
+
+    @PutMapping("/{toscaApplicationId}")
+    public ResponseEntity<ToscaApplicationDto> updateApplication(
+            @PathVariable UUID toscaApplicationId,
+            @Validated(ValidationGroups.Update.class) @RequestBody ToscaApplicationDto toscaApplicationDto) {
+        toscaApplicationDto.setId(toscaApplicationId);
+        final ToscaApplication updatedApplication = this.toscaApplicationService.update(
+                ModelMapperUtils.convert(toscaApplicationDto, ToscaApplication.class));
+        return ResponseEntity.ok(ModelMapperUtils.convert(updatedApplication, ToscaApplicationDto.class));
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "204"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "404", description = "Not Found. TOSCA application  with given ID doesn't exist.")
+    }, description = "Delete a TOSCA application.")
+    @DeleteMapping("/{toscaApplicationId}")
+    public ResponseEntity<Void> deleteApplication(
+            @PathVariable UUID toscaApplicationId) {
+        this.toscaApplicationService.delete(toscaApplicationId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

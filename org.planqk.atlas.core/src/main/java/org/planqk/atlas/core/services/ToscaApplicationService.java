@@ -34,4 +34,8 @@ public interface ToscaApplicationService {
     Page<ToscaApplication> findAll(Pageable pageable);
 
     ToscaApplication findById(UUID toscaApplicationId);
+
+    ToscaApplication update(ToscaApplication toscaApplication);
+
+    void delete(UUID toscaApplicationId);
 }
