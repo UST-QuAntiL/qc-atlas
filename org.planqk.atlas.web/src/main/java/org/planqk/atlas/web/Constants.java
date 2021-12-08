@@ -69,6 +69,10 @@ public final class Constants {
 
     public static final String TAGS = "tags";
 
+    public static final String TOSCA_APPLICATIONS = "tosca/applications";
+
+    public static final String TOSCA_SERVICETEMPLATES = "/tosca/servicetemplates";
+
     public static final String REVISIONS = "revisions";
 
     // default Pagination params that are exposed in HATEOAS links
@@ -117,6 +121,8 @@ public final class Constants {
     public static final String LEARNING_METHODS = "learning-methods";
 
     public static final String TAG_LEARNING_METHOD = "learning_method";
+
+    public static final String TAG_TOSCA = "tosca-application-controller";
 
     private Constants() {
     }
