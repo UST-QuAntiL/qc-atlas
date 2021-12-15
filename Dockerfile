@@ -1,4 +1,5 @@
 FROM maven:3-jdk-11 as builder
+RUN apt-get update -qq && apt-get install -qqy python build-essential
 COPY . /tmp/atlas
 WORKDIR /tmp/atlas
 RUN mvn package -DskipTests && mkdir /build && unzip /tmp/atlas/org.planqk.atlas.web/target/org.planqk.atlas.web.war -d /build/atlas
