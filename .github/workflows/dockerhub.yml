@@ -6,7 +6,7 @@ on:
   push:
     branches:
       - master
-      - docker-m1
+      - feature/docker-m1
     tags:
       - "v*.*.*"
       - "paper**"
