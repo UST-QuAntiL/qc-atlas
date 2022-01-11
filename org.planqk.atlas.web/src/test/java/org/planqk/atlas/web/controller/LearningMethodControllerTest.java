@@ -21,11 +21,14 @@ package org.planqk.atlas.web.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -207,5 +210,34 @@ public class LearningMethodControllerTest {
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class).
                 getLearningMethodsOfAlgorithm(algorithm.getId(), new ListParameters(pageable, null)));
         mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void updateLearningMethod_returnOk() throws Exception {
+        LearningMethod testLearningMethod = getTestLearningMethod();
+        when(learningMethodService.update(testLearningMethod)).thenReturn(testLearningMethod);
+        LearningMethodDto learningMethodDto = ModelMapperUtils.convert(testLearningMethod, LearningMethodDto.class);
+        var url = linkBuilderService.urlStringTo(methodOn(LearningMethodController.class)
+                .updateLearningMethod(testLearningMethod.getId(),learningMethodDto));
+        MvcResult result = mockMvc
+                .perform(put(url).content(mapper.writeValueAsString(learningMethodDto))
+                        .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
+        LearningMethodDto response = ObjectMapperUtils.mapMvcResultToDto(result, LearningMethodDto.class);
+        assertEquals(response.getName(), testLearningMethod.getName());
+        assertEquals(response.getId(), testLearningMethod.getId());
+    }
+
+    @Test
+    public void deleteLearningMethod_returnNoContent() throws Exception {
+        LearningMethod testLearningMethod = getTestLearningMethod();
+        doNothing().when(learningMethodService).delete(testLearningMethod.getId());
+        LearningMethodDto learningMethodDto = ModelMapperUtils.convert(testLearningMethod, LearningMethodDto.class);
+        var url = linkBuilderService.urlStringTo(methodOn(LearningMethodController.class)
+                .deleteLearningMethod(testLearningMethod.getId()));
+        MvcResult result = mockMvc
+                .perform(delete(url).content(mapper.writeValueAsString(learningMethodDto))
+                        .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent()).andReturn();
     }
 }
