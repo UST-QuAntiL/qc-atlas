@@ -2382,7 +2382,7 @@ public class AlgorithmControllerTest {
     }
 
     @Test
-    public void getLearningMethodsoFAlgorithm_returnOk() throws Exception {
+    public void getLearningMethodsOfAlgorithm_returnOk() throws Exception {
         LearningMethod learningMethod = new LearningMethod();
         learningMethod.setId(UUID.randomUUID());
         learningMethod.setName("supervised");

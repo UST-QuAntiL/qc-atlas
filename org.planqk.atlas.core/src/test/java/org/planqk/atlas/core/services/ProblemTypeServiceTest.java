@@ -21,6 +21,7 @@ package org.planqk.atlas.core.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.data.domain.Sort.Direction.ASC;
 
@@ -87,18 +88,25 @@ public class ProblemTypeServiceTest extends AtlasDatabaseTestBase {
         Sort sort = Sort.by(orders);
         Pageable pageable = PageRequest.of(page,size,sort);
 
-        ProblemType problemType = getFullProblemType("cproblemTypeName");
-        ProblemType parentProblemType = getFullProblemType("bparentProblemTypeName");
-        ProblemType parentParentProblemType = getFullProblemType("aparentParentProblemTypeName");
-        ProblemType storedParentParentProblemType = problemTypeService.create(parentParentProblemType);
-        parentProblemType.setParentProblemType(storedParentParentProblemType.getId());
-        ProblemType storedParentProblemType = problemTypeService.create(parentProblemType);
-        problemType.setParentProblemType(storedParentProblemType.getId());
-        ProblemType storedProblemType = problemTypeService.create(problemType);
+        ProblemType grandParentProblemType = problemTypeService.create(
+            getFullProblemType("aParentParentProblemTypeName")
+        );
+
+        ProblemType parentProblemType = getFullProblemType("bParentProblemTypeName");
+        parentProblemType.setParentProblemType(grandParentProblemType.getId());
+        parentProblemType = problemTypeService.create(parentProblemType);
+
+        ProblemType problemType = getFullProblemType("cProblemTypeName");
+        problemType.setParentProblemType(parentProblemType.getId());
+        problemType = problemTypeService.create(problemType);
 
         List<ProblemType> problemTypes = problemTypeService.findAll(pageable, "").getContent();
-        assertThat(problemTypes.get(1).getParentProblemType()).isEqualTo(storedParentParentProblemType.getId());
-        assertThat(problemTypes.get(2).getParentProblemType()).isEqualTo(storedParentProblemType.getId());
+        assertThat(problemTypes.get(0).getId()).isEqualTo(grandParentProblemType.getId());
+        assertNull(problemTypes.get(0).getParentProblemType());
+        assertThat(problemTypes.get(1).getId()).isEqualTo(parentProblemType.getId());
+        assertThat(problemTypes.get(1).getParentProblemType()).isEqualTo(grandParentProblemType.getId());
+        assertThat(problemTypes.get(2).getId()).isEqualTo(problemType.getId());
+        assertThat(problemTypes.get(2).getParentProblemType()).isEqualTo(parentProblemType.getId());
     }
 
     @Test
@@ -223,7 +231,6 @@ public class ProblemTypeServiceTest extends AtlasDatabaseTestBase {
         ProblemType problemType = new ProblemType();
 
         problemType.setName(name);
-        problemType.setParentProblemType(UUID.randomUUID());
 
         return problemType;
     }
