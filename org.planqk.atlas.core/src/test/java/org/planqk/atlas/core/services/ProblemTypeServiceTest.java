@@ -21,8 +21,11 @@ package org.planqk.atlas.core.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.springframework.data.domain.Sort.Direction.ASC;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -37,7 +40,9 @@ import org.planqk.atlas.core.model.ComputationModel;
 import org.planqk.atlas.core.model.ProblemType;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -49,6 +54,8 @@ public class ProblemTypeServiceTest extends AtlasDatabaseTestBase {
 
     @Autowired
     private AlgorithmService algorithmService;
+
+
 
     @Test
     void createProblemType() {
@@ -67,10 +74,39 @@ public class ProblemTypeServiceTest extends AtlasDatabaseTestBase {
         problemTypeService.create(problemType1);
         ProblemType problemType2 = getFullProblemType("problemTypeName2");
         problemTypeService.create(problemType2);
-
         List<ProblemType> problemTypes = problemTypeService.findAll(Pageable.unpaged(), "").getContent();
-
         assertThat(problemTypes.size()).isEqualTo(2);
+    }
+
+    @Test
+    void findAllSortedByParent(){
+
+        int page = 0;
+        int size = 10;
+        List<Sort.Order> orders = new ArrayList<>();
+        orders.add(new Sort.Order(ASC,"parentProblemTypeName"));
+        Sort sort = Sort.by(orders);
+        Pageable pageable = PageRequest.of(page,size,sort);
+
+        ProblemType grandParentProblemType = problemTypeService.create(
+            getFullProblemType("aParentParentProblemTypeName")
+        );
+
+        ProblemType parentProblemType = getFullProblemType("bParentProblemTypeName");
+        parentProblemType.setParentProblemType(grandParentProblemType.getId());
+        parentProblemType = problemTypeService.create(parentProblemType);
+
+        ProblemType problemType = getFullProblemType("cProblemTypeName");
+        problemType.setParentProblemType(parentProblemType.getId());
+        problemType = problemTypeService.create(problemType);
+
+        List<ProblemType> problemTypes = problemTypeService.findAll(pageable, "").getContent();
+        assertThat(problemTypes.get(0).getId()).isEqualTo(grandParentProblemType.getId());
+        assertNull(problemTypes.get(0).getParentProblemType());
+        assertThat(problemTypes.get(1).getId()).isEqualTo(parentProblemType.getId());
+        assertThat(problemTypes.get(1).getParentProblemType()).isEqualTo(grandParentProblemType.getId());
+        assertThat(problemTypes.get(2).getId()).isEqualTo(problemType.getId());
+        assertThat(problemTypes.get(2).getParentProblemType()).isEqualTo(parentProblemType.getId());
     }
 
     @Test
@@ -195,7 +231,6 @@ public class ProblemTypeServiceTest extends AtlasDatabaseTestBase {
         ProblemType problemType = new ProblemType();
 
         problemType.setName(name);
-        problemType.setParentProblemType(UUID.randomUUID());
 
         return problemType;
     }
