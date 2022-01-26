@@ -19,6 +19,9 @@
 
 package org.planqk.atlas.core.model;
 
+import java.util.Date;
+import java.util.UUID;
+
 import javax.persistence.Entity;
 
 import lombok.Data;
@@ -29,9 +32,23 @@ import org.hibernate.envers.Audited;
 @NoArgsConstructor
 @Entity
 @Data
-@AuditTable("tosca_application_revisions")
 @Audited
+@AuditTable("tosca_application_revisions")
 public class ToscaApplication extends HasId {
 
     private String name;
+
+    private UUID importID;
+
+    private String toscaID;
+
+    private String toscaNamespace;
+
+    private String createdBy;
+
+    private Date createdAt;
+
+    private String modifiedBy;
+
+    private Date modifiedAt;
 }

@@ -19,6 +19,7 @@
 
 package org.planqk.atlas.web.dtos;
 
+import java.util.Date;
 import java.util.UUID;
 
 import javax.validation.constraints.NotNull;
@@ -43,4 +44,18 @@ public class ToscaApplicationDto implements Identifyable {
             message = "Application-Name must not be null!")
     @NotNull(message = "Application-Name must not be null!")
     private String name;
+
+    private UUID importID;
+
+    private String toscaID;
+
+    private String toscaNamespace;
+
+    private String createdBy;
+
+    private Date createdAt;
+
+    private String modifiedBy;
+
+    private Date modifiedAt;
 }
