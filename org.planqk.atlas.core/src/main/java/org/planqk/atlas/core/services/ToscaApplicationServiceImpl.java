@@ -29,8 +29,17 @@ import org.planqk.atlas.core.repository.ToscaApplicationRepository;
 import org.planqk.atlas.core.util.ServiceUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @Service
@@ -43,6 +52,30 @@ public class ToscaApplicationServiceImpl implements ToscaApplicationService {
     @Transactional
     public ToscaApplication create(ToscaApplication toscaApplication) {
         return this.toscaApplicationRepository.save(toscaApplication);
+    }
+
+    @Override
+    public ToscaApplication createFromFile(MultipartFile file, String name) {
+        log.info("Got file " + file.getOriginalFilename() + " of size " + file.getSize());
+        final HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+        final MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        body.add("file", file.getResource());
+        body.add("name", name);
+        final HttpEntity<MultiValueMap<String, Object>> postRequestEntity = new HttpEntity<>(body, headers);
+
+        final String serverUrl = "http://localhost:8091";
+
+        final RestTemplate restTemplate = new RestTemplate();
+        final ResponseEntity<String> response = restTemplate
+                .postForEntity(serverUrl + "/winery/", postRequestEntity, String.class);
+        if (response.getStatusCode().equals(HttpStatus.CREATED) && response.getHeaders().getLocation() != null) {
+            final String path = response.getHeaders().getLocation().getPath();
+            log.info(path);
+            final String jsonResponse = restTemplate.getForObject(serverUrl + path, String.class);
+            log.info(jsonResponse);
+        }
+        return new ToscaApplication();
     }
 
     @Override

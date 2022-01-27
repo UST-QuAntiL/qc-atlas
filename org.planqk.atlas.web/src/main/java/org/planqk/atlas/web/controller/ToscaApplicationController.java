@@ -37,6 +37,7 @@ import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.ValidationGroups;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -47,7 +48,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @io.swagger.v3.oas.annotations.tags.Tag(name = Constants.TAG_TOSCA)
 @RestController
@@ -73,10 +76,21 @@ public class ToscaApplicationController {
             @ApiResponse(responseCode = "201"),
             @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
     }, description = "Create a TOSCA Application.")
-    @PostMapping()
+    @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<ToscaApplicationDto> createApplication(
             @Validated(ValidationGroups.Create.class) @RequestBody ToscaApplicationDto toscaApplicationDto) {
         final ToscaApplication savedToscaApplication = this.toscaApplicationService.create(ModelMapperUtils.convert(toscaApplicationDto, ToscaApplication.class));
+        return new ResponseEntity<>(ModelMapperUtils.convert(savedToscaApplication, ToscaApplicationDto.class), HttpStatus.CREATED);
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "201"),
+            @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
+    }, description = "Create a TOSCA Application.")
+    @PostMapping()
+    public ResponseEntity<ToscaApplicationDto> createApplication(@RequestPart("file") MultipartFile file,
+                                                                 @RequestPart("name") String name) {
+        final ToscaApplication savedToscaApplication = this.toscaApplicationService.createFromFile(file, name);
         return new ResponseEntity<>(ModelMapperUtils.convert(savedToscaApplication, ToscaApplicationDto.class), HttpStatus.CREATED);
     }
 
