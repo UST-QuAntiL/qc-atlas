@@ -53,4 +53,6 @@ public class ToscaApplication extends HasId {
     private String modifiedBy;
 
     private Date modifiedAt;
+
+    private String wineryLocation;
 }

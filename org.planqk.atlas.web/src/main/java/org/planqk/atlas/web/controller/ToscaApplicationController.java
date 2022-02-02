@@ -29,7 +29,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.planqk.atlas.core.model.ToscaApplication;
 import org.planqk.atlas.core.services.ToscaApplicationService;
 import org.planqk.atlas.web.Constants;
-import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.ToscaApplicationDto;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
@@ -37,7 +36,6 @@ import org.planqk.atlas.web.utils.ModelMapperUtils;
 import org.planqk.atlas.web.utils.ValidationGroups;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -71,17 +69,7 @@ public class ToscaApplicationController {
             @Parameter(hidden = true) ListParameters listParameters) {
         return ResponseEntity.ok(ModelMapperUtils.convertPage(toscaApplicationService.findAll(listParameters.getPageable()), ToscaApplicationDto.class));
     }
-
-    @Operation(responses = {
-            @ApiResponse(responseCode = "201"),
-            @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
-    }, description = "Create a TOSCA Application.")
-    @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<ToscaApplicationDto> createApplication(
-            @Validated(ValidationGroups.Create.class) @RequestBody ToscaApplicationDto toscaApplicationDto) {
-        final ToscaApplication savedToscaApplication = this.toscaApplicationService.create(ModelMapperUtils.convert(toscaApplicationDto, ToscaApplication.class));
-        return new ResponseEntity<>(ModelMapperUtils.convert(savedToscaApplication, ToscaApplicationDto.class), HttpStatus.CREATED);
-    }
+    
 
     @Operation(responses = {
             @ApiResponse(responseCode = "201"),
@@ -100,10 +88,10 @@ public class ToscaApplicationController {
             @ApiResponse(responseCode = "404", description = "Not Found. TOSCA application with given ID doesn't exist.")
     }, description = "Retrieve a specific TOSCA application and its basic properties.")
     @GetMapping("/{toscaApplicationId}")
-    public ResponseEntity<AlgorithmDto> getApplication(
+    public ResponseEntity<ToscaApplicationDto> getApplication(
             @PathVariable UUID toscaApplicationId) {
         final var application = this.toscaApplicationService.findById(toscaApplicationId);
-        return ResponseEntity.ok(ModelMapperUtils.convert(application, AlgorithmDto.class));
+        return ResponseEntity.ok(ModelMapperUtils.convert(application, ToscaApplicationDto.class));
     }
 
     @PutMapping("/{toscaApplicationId}")

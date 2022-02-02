@@ -54,6 +54,8 @@ public class ToscaApplicationServiceImpl implements ToscaApplicationService {
 
     private final ObjectMapper mapper = new ObjectMapper();
 
+    private final String serverUrl = "http://localhost:8091";
+
     @Override
     @Transactional
     public ToscaApplication create(ToscaApplication toscaApplication) {
@@ -69,8 +71,6 @@ public class ToscaApplicationServiceImpl implements ToscaApplicationService {
         body.add("file", file.getResource());
         body.add("name", name);
         final HttpEntity<MultiValueMap<String, Object>> postRequestEntity = new HttpEntity<>(body, headers);
-
-        final String serverUrl = "http://localhost:8091";
 
         final RestTemplate restTemplate = new RestTemplate();
         final ResponseEntity<String> response = restTemplate
@@ -90,6 +90,7 @@ public class ToscaApplicationServiceImpl implements ToscaApplicationService {
                 toscaApplication.setToscaNamespace(firstElement.get("targetNamespace").asText());
                 toscaApplication.setToscaName(firstElement.get("name").asText());
                 toscaApplication.setName(name);
+                toscaApplication.setWineryLocation(path);
                 return this.toscaApplicationRepository.save(toscaApplication);
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
@@ -119,6 +120,10 @@ public class ToscaApplicationServiceImpl implements ToscaApplicationService {
 
     @Override
     public void delete(@NonNull UUID toscaApplicationId) {
+        final ToscaApplication persistedToscaApplication = findById(toscaApplicationId);
+        final String path = persistedToscaApplication.getWineryLocation();
+        final RestTemplate restTemplate = new RestTemplate();
+        restTemplate.delete(serverUrl + path);
         this.toscaApplicationRepository.deleteById(toscaApplicationId);
     }
 }
