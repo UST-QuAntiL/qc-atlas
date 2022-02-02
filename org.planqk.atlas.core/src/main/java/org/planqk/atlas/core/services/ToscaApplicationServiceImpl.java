@@ -19,8 +19,12 @@
 
 package org.planqk.atlas.core.services;
 
+import java.util.InputMismatchException;
 import java.util.UUID;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -48,6 +52,8 @@ public class ToscaApplicationServiceImpl implements ToscaApplicationService {
 
     private final ToscaApplicationRepository toscaApplicationRepository;
 
+    private final ObjectMapper mapper = new ObjectMapper();
+
     @Override
     @Transactional
     public ToscaApplication create(ToscaApplication toscaApplication) {
@@ -73,7 +79,21 @@ public class ToscaApplicationServiceImpl implements ToscaApplicationService {
             final String path = response.getHeaders().getLocation().getPath();
             log.info(path);
             final String jsonResponse = restTemplate.getForObject(serverUrl + path, String.class);
-            log.info(jsonResponse);
+            try {
+                final JsonNode node = this.mapper.readTree(jsonResponse).get("serviceTemplateOrNodeTypeOrNodeTypeImplementation");
+                if (node.size() != 1) {
+                    throw new InputMismatchException();
+                }
+                final JsonNode firstElement = node.get(0);
+                final ToscaApplication toscaApplication = new ToscaApplication();
+                toscaApplication.setToscaID(firstElement.get("id").asText());
+                toscaApplication.setToscaNamespace(firstElement.get("targetNamespace").asText());
+                toscaApplication.setToscaName(firstElement.get("name").asText());
+                toscaApplication.setName(name);
+                return this.toscaApplicationRepository.save(toscaApplication);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
         }
         return new ToscaApplication();
     }

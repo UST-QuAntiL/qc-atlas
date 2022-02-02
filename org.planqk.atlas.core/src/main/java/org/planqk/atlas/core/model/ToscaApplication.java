@@ -42,6 +42,8 @@ public class ToscaApplication extends HasId {
 
     private String toscaID;
 
+    private String toscaName;
+
     private String toscaNamespace;
 
     private String createdBy;
