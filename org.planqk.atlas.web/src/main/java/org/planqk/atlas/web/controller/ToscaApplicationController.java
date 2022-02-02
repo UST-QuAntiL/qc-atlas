@@ -69,7 +69,7 @@ public class ToscaApplicationController {
             @Parameter(hidden = true) ListParameters listParameters) {
         return ResponseEntity.ok(ModelMapperUtils.convertPage(toscaApplicationService.findAll(listParameters.getPageable()), ToscaApplicationDto.class));
     }
-    
+
 
     @Operation(responses = {
             @ApiResponse(responseCode = "201"),
