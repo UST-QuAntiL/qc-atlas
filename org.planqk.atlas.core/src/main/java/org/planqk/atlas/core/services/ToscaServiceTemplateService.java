@@ -20,4 +20,14 @@
 package org.planqk.atlas.core.services;
 
 public interface ToscaServiceTemplateService {
+
+    String getAll();
+
+    String get(String namespace, String name);
+
+    String getSelfServicePortal(String namespace, String name);
+
+    byte[] getSelfServicePortalIcon(String namespace, String name);
+
+    byte[] getSelfServicePortalImage(String namespace, String name);
 }
