@@ -19,10 +19,11 @@
 
 package org.planqk.atlas.core.services;
 
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.planqk.atlas.core.WineryService;
 import org.springframework.stereotype.Service;
+
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service

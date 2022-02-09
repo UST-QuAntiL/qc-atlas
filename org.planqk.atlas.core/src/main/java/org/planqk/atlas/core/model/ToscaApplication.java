@@ -21,13 +21,13 @@ package org.planqk.atlas.core.model;
 
 import java.util.Date;
 import java.util.UUID;
-
 import javax.persistence.Entity;
+
+import org.hibernate.envers.AuditTable;
+import org.hibernate.envers.Audited;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.envers.AuditTable;
-import org.hibernate.envers.Audited;
 
 @NoArgsConstructor
 @Entity

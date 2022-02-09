@@ -21,11 +21,6 @@ package org.planqk.atlas.core;
 
 import java.util.InputMismatchException;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
 import org.planqk.atlas.core.model.ToscaApplication;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -41,6 +36,13 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
+
 @Slf4j
 @Component
 public class WineryService {
@@ -52,9 +54,9 @@ public class WineryService {
 
     public WineryService(
             @Value("${org.planqk.atlas.winery.hostname}") String hostname,
-            @Value("${org.planqk.atlas.winery.port}") int port
+            @Value("${org.planqk.atlas.winery.port}") String port
     ) {
-        this.baseAPIEndpoint = String.format("http://%s:%d/", hostname, port);
+        this.baseAPIEndpoint = String.format("http://%s:%s/", hostname, port);
     }
 
     public String get(@NonNull String route) {
