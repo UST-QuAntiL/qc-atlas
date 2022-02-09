@@ -23,4 +23,10 @@ spring.jackson.serialization.write-dates-as-timestamps=false
 # Embedded Tomcat
 server.servlet.contextPath=/atlas
 # Max file upload size
-spring.servlet.multipart.max-file-size=10MB
+spring.servlet.multipart.enabled=true
+spring.servlet.multipart.max-file-size=500MB
+spring.servlet.multipart.max-request-size=500MB
+
+# Winery
+org.planqk.atlas.winery.hostname={{.Env.WINERY_HOSTNAME}}
+org.planqk.atlas.winery.port={{.Env.WINERY_PORT}}
