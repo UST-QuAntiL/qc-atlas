@@ -21,7 +21,6 @@ package org.planqk.atlas.core.services;
 
 import java.util.UUID;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.planqk.atlas.core.model.ToscaApplication;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

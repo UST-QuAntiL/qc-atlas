@@ -24,7 +24,9 @@ import java.util.InputMismatchException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.planqk.atlas.core.model.ToscaApplication;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -36,8 +38,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 
 @Slf4j
 @Component
@@ -55,7 +58,25 @@ public class WineryService {
         this.baseAPIEndpoint = String.format("http://%s:%d/", hostname, port);
     }
 
-    public ToscaApplication uploadCsar(Resource file, String name) {
+    public String get(@NonNull String route) {
+        return this.get(route, String.class);
+    }
+
+    public <T> T get(String route, Class<T> responseType) {
+
+        final RestTemplate restTemplate = new RestTemplate();
+        try {
+            final ResponseEntity<T> response = restTemplate.getForEntity(this.baseAPIEndpoint + route, responseType);
+            if (!response.getStatusCode().equals(HttpStatus.OK)) {
+                throw new ResponseStatusException(response.getStatusCode());
+            }
+            return response.getBody();
+        } catch (HttpClientErrorException.NotFound notFound) {
+            throw new ResponseStatusException(notFound.getStatusCode());
+        }
+    }
+
+    public ToscaApplication uploadCsar(@NonNull Resource file, String name) {
         final HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
         final MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
@@ -67,10 +88,10 @@ public class WineryService {
         final ResponseEntity<String> response = restTemplate
                 .postForEntity(this.baseAPIEndpoint + "/winery/", postRequestEntity, String.class);
         if (!response.getStatusCode().equals(HttpStatus.CREATED)) {
-            throw new HttpServerErrorException(response.getStatusCode());
+            throw new ResponseStatusException(response.getStatusCode());
         }
         if (response.getHeaders().getLocation() == null) {
-            throw new HttpServerErrorException(HttpStatus.NOT_FOUND);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
         final String path = response.getHeaders().getLocation().getPath();
         log.info(path);
@@ -90,11 +111,11 @@ public class WineryService {
             toscaApplication.setWineryLocation(path);
             return toscaApplication;
         } catch (JsonProcessingException e) {
-            throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    public void delete(ToscaApplication toscaApplication) {
+    public void delete(@NotNull ToscaApplication toscaApplication) {
         final String path = toscaApplication.getWineryLocation();
         final RestTemplate restTemplate = new RestTemplate();
         restTemplate.delete(this.baseAPIEndpoint + path);

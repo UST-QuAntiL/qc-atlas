@@ -21,47 +21,38 @@ package org.planqk.atlas.core.services;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.planqk.atlas.core.WineryService;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 @Slf4j
 @Service
 @AllArgsConstructor
 public class ToscaServiceTemplateServiceImpl implements ToscaServiceTemplateService {
 
-    private final String serverUrl = "http://localhost:8091";
-
-    private <T> T getToWinery(String route, Class<T> responseType) {
-        final RestTemplate restTemplate = new RestTemplate();
-        return restTemplate.getForObject(serverUrl + route, responseType);
-    }
-
-    private String getToWinery(String route) {
-        return getToWinery(route, String.class);
-    }
+    private final WineryService wineryService;
 
     @Override
     public String getAll() {
-        return getToWinery("/winery/servicetemplates");
+        return this.wineryService.get("/winery/servicetemplates");
     }
 
     @Override
     public String get(String namespace, String name) {
-        return getToWinery(String.format("/winery/servicetemplates/%s/%s", namespace, name));
+        return this.wineryService.get(String.format("/winery/servicetemplates/%s/%s", namespace, name));
     }
 
     @Override
     public String getSelfServicePortal(String namespace, String name) {
-        return getToWinery(String.format("/winery/servicetemplates/%s/%s/selfserviceportal", namespace, name));
+        return this.wineryService.get(String.format("/winery/servicetemplates/%s/%s/selfserviceportal", namespace, name));
     }
 
     @Override
     public byte[] getSelfServicePortalIcon(String namespace, String name) {
-        return getToWinery(String.format("/winery/servicetemplates/%s/%s/selfserviceportal/icon.jpg", namespace, name), byte[].class);
+        return this.wineryService.get(String.format("/winery/servicetemplates/%s/%s/selfserviceportal/icon.jpg", namespace, name), byte[].class);
     }
 
     @Override
     public byte[] getSelfServicePortalImage(String namespace, String name) {
-        return getToWinery(String.format("/winery/servicetemplates/%s/%s/selfserviceportal/image.jpg", namespace, name), byte[].class);
+        return this.wineryService.get(String.format("/winery/servicetemplates/%s/%s/selfserviceportal/image.jpg", namespace, name), byte[].class);
     }
 }
