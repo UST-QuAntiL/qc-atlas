@@ -26,7 +26,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.planqk.atlas.core.model.ToscaApplication;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -115,7 +114,7 @@ public class WineryService {
         }
     }
 
-    public void delete(@NotNull ToscaApplication toscaApplication) {
+    public void delete(@NonNull ToscaApplication toscaApplication) {
         final String path = toscaApplication.getWineryLocation();
         final RestTemplate restTemplate = new RestTemplate();
         restTemplate.delete(this.baseAPIEndpoint + path);
