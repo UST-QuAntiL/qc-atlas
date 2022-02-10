@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020-2022 the qc-atlas contributors.
+ * Copyright (c) 2022 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -53,10 +53,15 @@ public class WineryService {
     private final ObjectMapper mapper = new ObjectMapper();
 
     public WineryService(
+            @Value("${org.planqk.atlas.winery.protocol}") String protocol,
             @Value("${org.planqk.atlas.winery.hostname}") String hostname,
             @Value("${org.planqk.atlas.winery.port}") String port
     ) {
-        this.baseAPIEndpoint = String.format("http://%s:%s/", hostname, port);
+        if ("".equals(protocol)) {
+            this.baseAPIEndpoint = String.format("http://%s:%s/", hostname, port);
+        } else {
+            this.baseAPIEndpoint = String.format("%s://%s:%s/", protocol, hostname, port);
+        }
     }
 
     public String get(@NonNull String route) {
