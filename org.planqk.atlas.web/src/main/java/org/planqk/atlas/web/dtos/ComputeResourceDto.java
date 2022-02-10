@@ -56,4 +56,6 @@ public class ComputeResourceDto implements Identifyable {
     private String technology;
 
     private QuantumComputationModel quantumComputationModel;
+
+    private boolean qprovOrigin;
 }

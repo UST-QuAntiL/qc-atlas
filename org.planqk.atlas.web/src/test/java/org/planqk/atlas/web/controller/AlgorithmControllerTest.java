@@ -105,6 +105,7 @@ import org.planqk.atlas.web.dtos.ComputeResourcePropertyDto;
 import org.planqk.atlas.web.dtos.ComputeResourcePropertyTypeDto;
 import org.planqk.atlas.web.dtos.DiscussionCommentDto;
 import org.planqk.atlas.web.dtos.DiscussionTopicDto;
+import org.planqk.atlas.web.dtos.LearningMethodDto;
 import org.planqk.atlas.web.dtos.PatternRelationDto;
 import org.planqk.atlas.web.dtos.PatternRelationTypeDto;
 import org.planqk.atlas.web.dtos.ProblemTypeDto;
@@ -2380,5 +2381,40 @@ public class AlgorithmControllerTest {
 
         // call
         mockMvc.perform(delete(path)).andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void getLearningMethodsOfAlgorithm_returnOk() throws Exception {
+        LearningMethod learningMethod = new LearningMethod();
+        learningMethod.setId(UUID.randomUUID());
+        learningMethod.setName("supervised");
+        when(algorithmService.getLearningMethodOfAlgorithm(any(), any())).thenReturn(learningMethod);
+
+        var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class).
+                getLearningMethodOfAlgorithm(UUID.randomUUID(), learningMethod.getId()));
+        MvcResult mvcResult = mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON)).andReturn();
+
+        assertEquals(mvcResult.getResponse().getStatus(), 200);
+    }
+
+    @Test
+    public void linkAlgorithmAndLearningMethod_returnNoContent() throws Exception{
+        LearningMethod learningMethod = new LearningMethod();
+        learningMethod.setId(UUID.randomUUID());
+        learningMethod.setName("supervised");
+        LearningMethodDto learningMethodDto = ModelMapperUtils.convert(learningMethod,LearningMethodDto.class);
+        doNothing().when(linkingService).linkAlgorithmAndLearningMethod(any(),any());
+        var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class).
+                linkAlgorithmAndLearningMethod(UUID.randomUUID(), learningMethodDto));
+        mockMvc.perform(post(url).accept(MediaType.APPLICATION_JSON).contentType(APPLICATION_JSON).content(mapper.writeValueAsString(learningMethodDto))).andExpect(status().isNoContent());
+    }
+
+
+    @Test
+    public void unlinkAlgorithmAndLearningMethod_returnNoContent() throws Exception{
+        doNothing().when(linkingService).unlinkAlgorithmAndLearningMethod(any(),any());
+        var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class).
+                unlinkAlgorithmAndLearningMethod(UUID.randomUUID(), UUID.randomUUID()));
+        mockMvc.perform(delete(url).accept(MediaType.APPLICATION_JSON)).andExpect(status().isNoContent());
     }
 }
