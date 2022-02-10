@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020-2021 the qc-atlas contributors.
+ * Copyright (c) 2022 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.

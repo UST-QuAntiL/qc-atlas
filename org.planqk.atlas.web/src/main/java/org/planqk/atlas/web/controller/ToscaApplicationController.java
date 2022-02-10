@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020-2021 the qc-atlas contributors.
+ * Copyright (c) 2022 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -107,7 +107,7 @@ public class ToscaApplicationController {
     @Operation(responses = {
             @ApiResponse(responseCode = "204"),
             @ApiResponse(responseCode = "400"),
-            @ApiResponse(responseCode = "404", description = "Not Found. TOSCA application  with given ID doesn't exist.")
+            @ApiResponse(responseCode = "404", description = "Not Found. TOSCA application with given ID doesn't exist.")
     }, description = "Delete a TOSCA application.")
     @DeleteMapping("/{toscaApplicationId}")
     public ResponseEntity<Void> deleteApplication(
