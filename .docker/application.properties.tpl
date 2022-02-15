@@ -24,8 +24,8 @@ spring.jackson.serialization.write-dates-as-timestamps=false
 server.servlet.contextPath=/atlas
 # Max file upload size
 spring.servlet.multipart.enabled=true
-spring.servlet.multipart.max-file-size={{.Env.UPLOAD_FILE_SIZE}}
-spring.servlet.multipart.max-request-size={{.Env.UPLOAD_FILE_SIZE}}
+spring.servlet.multipart.max-file-size={{ default .Env.UPLOAD_FILE_SIZE "150MB"}}
+spring.servlet.multipart.max-request-size={{ default .Env.UPLOAD_FILE_SIZE "150MB"}}
 
 # Winery
 org.planqk.atlas.winery.protocol={{.Env.WINERY_PROTOCOL}}
