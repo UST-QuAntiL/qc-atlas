@@ -84,6 +84,16 @@ class ToscaApplicationControllerTest {
 
     @Test
     public void addToscaApplication_returnCreated() throws Exception{
+
+        UUID uuid = UUID.randomUUID();
+        String name = "Test Name";
+
+        var returnedResource = new ToscaApplication();
+        returnedResource.setName(name);
+        returnedResource.setId(uuid);
+
+        doReturn(returnedResource).when(toscaApplicationService).createFromFile(any(), any());
+
         MockMultipartFile file
                 = new MockMultipartFile(
                 "file",
@@ -91,15 +101,19 @@ class ToscaApplicationControllerTest {
                 MediaType.TEXT_PLAIN_VALUE,
                 "Hello, World!".getBytes()
         );
-        MockPart name = new MockPart("name", "name".getBytes());
+        MockPart namePart = new MockPart("name", "name", name.getBytes());
+        namePart.getHeaders().setContentType(MediaType.TEXT_PLAIN);
+
 
         mockMvc.perform(
                 multipart(
                         linkBuilderService.urlStringTo(
                                 methodOn(ToscaApplicationController.class).createApplication(null,null)
                         )
-                ).part(name).file(file)
-        ).andExpect(status().isCreated());
+                ).file(file).part(namePart)
+        ).andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(uuid.toString()))
+                .andExpect(jsonPath("$.name").value(name));;
     }
 
     @Test
