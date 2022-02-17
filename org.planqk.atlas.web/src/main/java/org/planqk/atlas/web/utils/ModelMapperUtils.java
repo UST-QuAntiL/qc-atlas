@@ -23,8 +23,10 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.UUID;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.module.jsr310.Jsr310Module;
 import org.modelmapper.module.jsr310.Jsr310ModuleConfig;
@@ -104,10 +106,17 @@ public final class ModelMapperUtils {
                 .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), ClassicAlgorithmDto.class));
         mapper.createTypeMap(QuantumAlgorithm.class, AlgorithmDto.class)
                 .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), QuantumAlgorithmDto.class));
-        mapper.createTypeMap(ClassicAlgorithmDto.class, Algorithm.class)
-                .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), ClassicAlgorithm.class));
-        mapper.createTypeMap(QuantumAlgorithmDto.class, Algorithm.class)
-                .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), QuantumAlgorithm.class));
+//        mapper.createTypeMap(ClassicAlgorithmDto.class, Algorithm.class)
+//                .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), ClassicAlgorithm.class));
+
+        mapper.typeMap(ClassicAlgorithmDto.class, Algorithm.class)
+            .setConverter(converterWithDestinationSupplier(ClassicAlgorithm::new));
+        mapper.typeMap(QuantumAlgorithmDto.class, Algorithm.class)
+            .setConverter(converterWithDestinationSupplier(QuantumAlgorithm::new));
+
+
+//        mapper.createTypeMap(QuantumAlgorithmDto.class, Algorithm.class)
+//                .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), QuantumAlgorithm.class));
         mapper.createTypeMap(FileImplementationPackage.class, ImplementationPackageDto.class)
                 .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), FileImplementationPackageDto.class));
         mapper.createTypeMap(TOSCAImplementationPackage.class, ImplementationPackageDto.class)
@@ -128,6 +137,10 @@ public final class ModelMapperUtils {
                 .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), Qpu.class));
         mapper.createTypeMap(SimulatorDto.class, ComputeResource.class)
                 .setConverter(mappingContext -> mapper.map(mappingContext.getSource(), Simulator.class));
+    }
+
+    private static <S, D> Converter<S, D> converterWithDestinationSupplier(Supplier<? extends D> supplier ) {
+        return ctx -> ctx.getMappingEngine().map(ctx.create(ctx.getSource(), supplier.get()));
     }
 
     private static void initializeUUIDMappings(ModelMapper mapper) {
