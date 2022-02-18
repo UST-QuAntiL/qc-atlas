@@ -6,6 +6,5 @@ services:
             POSTGRES_USER: planqk
             POSTGRES_PASSWORD: planqk
             POSTGRES_DB: planqk
-        command: -p 5060
         ports:
             - "5060:5060"
