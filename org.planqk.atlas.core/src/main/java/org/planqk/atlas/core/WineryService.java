@@ -23,6 +23,7 @@ import java.util.InputMismatchException;
 
 import org.planqk.atlas.core.model.ToscaApplication;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -52,11 +53,14 @@ public class WineryService {
 
     private final ObjectMapper mapper = new ObjectMapper();
 
+    private final RestTemplate restTemplate;
+
     public WineryService(
             @Value("${org.planqk.atlas.winery.protocol}") String protocol,
             @Value("${org.planqk.atlas.winery.hostname}") String hostname,
-            @Value("${org.planqk.atlas.winery.port}") String port
-    ) {
+            @Value("${org.planqk.atlas.winery.port}") String port,
+            RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
         if ("".equals(protocol)) {
             this.baseAPIEndpoint = String.format("http://%s:%s/", hostname, port);
         } else {
@@ -69,8 +73,6 @@ public class WineryService {
     }
 
     public <T> T get(String route, Class<T> responseType) {
-
-        final RestTemplate restTemplate = new RestTemplate();
         try {
             final ResponseEntity<T> response = restTemplate.getForEntity(this.baseAPIEndpoint + route, responseType);
             if (!response.getStatusCode().equals(HttpStatus.OK)) {
@@ -90,8 +92,7 @@ public class WineryService {
         body.add("name", name);
         final HttpEntity<MultiValueMap<String, Object>> postRequestEntity = new HttpEntity<>(body, headers);
 
-        final RestTemplate restTemplate = new RestTemplate();
-        final ResponseEntity<String> response = restTemplate
+        final ResponseEntity<String> response = this.restTemplate
                 .postForEntity(this.baseAPIEndpoint + "/winery/", postRequestEntity, String.class);
         if (!response.getStatusCode().equals(HttpStatus.CREATED)) {
             throw new ResponseStatusException(response.getStatusCode());
@@ -101,7 +102,7 @@ public class WineryService {
         }
         final String path = response.getHeaders().getLocation().getPath();
         log.info(path);
-        final String jsonResponse = restTemplate.getForObject(this.baseAPIEndpoint + path, String.class);
+        final String jsonResponse = this.restTemplate.getForObject(this.baseAPIEndpoint + path, String.class);
         final JsonNode node;
         try {
             node = this.mapper.readTree(jsonResponse).get("serviceTemplateOrNodeTypeOrNodeTypeImplementation");
@@ -123,8 +124,12 @@ public class WineryService {
 
     public void delete(@NonNull ToscaApplication toscaApplication) {
         final String path = toscaApplication.getWineryLocation();
-        final RestTemplate restTemplate = new RestTemplate();
-        restTemplate.delete(this.baseAPIEndpoint + path);
+        this.restTemplate.delete(this.baseAPIEndpoint + path);
+    }
+
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
     }
 }
 
