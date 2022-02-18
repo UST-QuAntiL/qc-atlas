@@ -133,11 +133,11 @@ public final class ModelMapperUtils {
     private static void initializeUUIDMappings(ModelMapper mapper) {
         // Algorithm Relations
         mapper.createTypeMap(AlgorithmRelation.class, AlgorithmRelationDto.class)
-                .addMapping(e -> e.getSourceAlgorithm().getId(), AlgorithmRelationDto::setSourceAlgorithmId)
-                .addMapping(e -> e.getTargetAlgorithm().getId(), AlgorithmRelationDto::setTargetAlgorithmId);
+                .addMapping(algorithmRelation -> algorithmRelation.getSourceAlgorithm().getId(), AlgorithmRelationDto::setSourceAlgorithmId)
+                .addMapping(algorithmRelation -> algorithmRelation.getTargetAlgorithm().getId(), AlgorithmRelationDto::setTargetAlgorithmId);
         mapper.createTypeMap(AlgorithmRelationDto.class, AlgorithmRelation.class)
-                .addMapping(e -> newAlgorithmWithId(e.getSourceAlgorithmId()), AlgorithmRelation::setSourceAlgorithm)
-                .addMapping(e -> newAlgorithmWithId(e.getTargetAlgorithmId()), AlgorithmRelation::setTargetAlgorithm);
+                .addMapping(algorithmRelationDto -> newAlgorithmWithId(algorithmRelationDto.getSourceAlgorithmId()), AlgorithmRelation::setSourceAlgorithm)
+                .addMapping(algorithmRelationDto -> newAlgorithmWithId(algorithmRelationDto.getTargetAlgorithmId()), AlgorithmRelation::setTargetAlgorithm);
 
         //Classic Implementations
         mapper.createTypeMap(ClassicImplementation.class, ClassicImplementationDto.class)
@@ -159,17 +159,19 @@ public final class ModelMapperUtils {
     }
 
     private static Algorithm newAlgorithmWithId(UUID id) {
-        //algorithmService is null here.
-        final Algorithm actualAlgo = algorithmService.findById(id);
-        if (actualAlgo.getComputationModel().equals(ComputationModel.CLASSIC)) {
-            final var algo = new ClassicAlgorithm();
-            algo.setId(id);
-            return algo;
+        // during initialization, the id and the algorithmService may be null, thus, avoid null pointer exceptions
+        if (id != null && algorithmService != null) {
+            final Algorithm actualAlgo = algorithmService.findById(id);
+            if (actualAlgo.getComputationModel().equals(ComputationModel.CLASSIC)) {
+                final var algo = new ClassicAlgorithm();
+                algo.setId(id);
+                return algo;
+            } else {
+                final var algo = new QuantumAlgorithm();
+                algo.setId(id);
+                return algo;
+            }
         }
-        else {
-            final var algo = new QuantumAlgorithm();
-            algo.setId(id);
-            return algo;
-        }
+        return null;
     }
 }
