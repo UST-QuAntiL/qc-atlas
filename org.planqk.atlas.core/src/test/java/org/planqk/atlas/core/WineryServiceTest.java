@@ -19,6 +19,10 @@
 
 package org.planqk.atlas.core;
 
+import java.io.ByteArrayInputStream;
+import java.net.URI;
+
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,8 +32,15 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.planqk.atlas.core.model.ToscaApplication;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -68,6 +79,87 @@ class WineryServiceTest {
         Mockito.when(restTemplate.getForEntity(eq(wineryEndPoint + testRoute), eq(String.class))).thenReturn(new ResponseEntity<>(HttpStatus.NOT_FOUND));
         ResponseStatusException responseStatusException = assertThrows(ResponseStatusException.class, () -> wineryService.get(testRoute));
         assertEquals(HttpStatus.NOT_FOUND, responseStatusException.getStatus());
+    }
+
+    @Test
+    @SneakyThrows
+    public void uploadCsar_notFound(){
+        var uploadRoute = wineryEndPoint + "winery/";
+        Resource file = new InputStreamResource(new ByteArrayInputStream("test input stream".getBytes()));
+        String name = "test-name";
+
+        final HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+        final MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        body.add("file", file);
+        body.add("name", name);
+        final HttpEntity<MultiValueMap<String, Object>> postRequestEntity = new HttpEntity<>(body, headers);
+
+        Mockito.when(restTemplate.postForEntity(eq(uploadRoute), eq(postRequestEntity), eq(String.class))).thenReturn(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        ResponseStatusException responseStatusException = assertThrows(ResponseStatusException.class, () -> wineryService.uploadCsar(file, name));
+        assertEquals(HttpStatus.NOT_FOUND, responseStatusException.getStatus());
+    }
+
+    @Test
+    @SneakyThrows
+    public void uploadCsar_created(){
+        var uploadRoute = wineryEndPoint + "winery/";
+        var location = "this/is/the/serviceTemplate/location";
+        var locationRoute = wineryEndPoint + "this/is/the/serviceTemplate/location";
+        Resource file = new InputStreamResource(new ByteArrayInputStream("test input stream".getBytes()));
+        String name = "test-name";
+
+        String abbreviatedWineryJsonResponse = "{\n" +
+                "\t\"documentation\": [\n" +
+                "\t],\n" +
+                "\t\"any\": [\n" +
+                "\t],\n" +
+                "\t\"otherAttributes\": {\n" +
+                "\t},\n" +
+                "\t\"id\": \"otsteIgeneral-Java_Web_Application__MySQL\",\n" +
+                "\t\"serviceTemplateOrNodeTypeOrNodeTypeImplementation\": [\n" +
+                "\t\t{\n" +
+                "\t\t\t\"documentation\": [\n" +
+                "\t\t\t],\n" +
+                "\t\t\t\"any\": [\n" +
+                "\t\t\t],\n" +
+                "\t\t\t\"otherAttributes\": {\n" +
+                "\t\t\t},\n" +
+                "\t\t\t\"id\": \"Java_Web_Application__MySQL\",\n" +
+                "\t\t\t\"boundaryDefinitions\": {\n" +
+                "\t\t\t},\n" +
+                "\t\t\t\"topologyTemplate\": {\n" +
+                "\t\t\t},\n" +
+                "\t\t\t\"name\": \"Java_Web_Application__MySQL\",\n" +
+                "\t\t\t\"targetNamespace\": \"http://opentosca.org/servicetemplates\"\n" +
+                "\t\t}\n" +
+                "\t],\n" +
+                "\t\"targetNamespace\": \"http://opentosca.org/servicetemplates\",\n" +
+                "\t\"import\": [\t]\n" +
+                "}";
+
+        ToscaApplication expectedToscaApplication = new ToscaApplication();
+        expectedToscaApplication.setToscaID("Java_Web_Application__MySQL");
+        expectedToscaApplication.setToscaName("Java_Web_Application__MySQL");
+        expectedToscaApplication.setToscaNamespace("http://opentosca.org/servicetemplates");
+        expectedToscaApplication.setName(name);
+        expectedToscaApplication.setWineryLocation("/" + location);
+
+        final HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+        final MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        body.add("file", file);
+        body.add("name", name);
+        final HttpEntity<MultiValueMap<String, Object>> postRequestEntity = new HttpEntity<>(body, headers);
+
+
+        ResponseEntity<String> responseEntity = ResponseEntity.created(new URI(locationRoute)).build();
+
+        Mockito.when(restTemplate.postForEntity(eq(uploadRoute), eq(postRequestEntity), eq(String.class))).thenReturn(responseEntity);
+        Mockito.when(restTemplate.getForObject(eq(locationRoute), eq(String.class))).thenReturn(abbreviatedWineryJsonResponse);
+
+        ToscaApplication toscaApplication = wineryService.uploadCsar(file, name);
+        assertEquals(expectedToscaApplication, toscaApplication);
     }
 
     @Test

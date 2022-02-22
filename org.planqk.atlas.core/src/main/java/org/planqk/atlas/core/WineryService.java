@@ -19,6 +19,7 @@
 
 package org.planqk.atlas.core;
 
+import java.net.URI;
 import java.util.InputMismatchException;
 
 import org.planqk.atlas.core.model.ToscaApplication;
@@ -43,6 +44,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+
+import static org.aspectj.weaver.tools.cache.SimpleCacheFactory.path;
 
 @Slf4j
 @Component
@@ -93,16 +96,15 @@ public class WineryService {
         final HttpEntity<MultiValueMap<String, Object>> postRequestEntity = new HttpEntity<>(body, headers);
 
         final ResponseEntity<String> response = this.restTemplate
-                .postForEntity(this.baseAPIEndpoint + "/winery/", postRequestEntity, String.class);
+                .postForEntity(this.baseAPIEndpoint + "winery/", postRequestEntity, String.class);
         if (!response.getStatusCode().equals(HttpStatus.CREATED)) {
             throw new ResponseStatusException(response.getStatusCode());
         }
-        if (response.getHeaders().getLocation() == null) {
+        final URI location = response.getHeaders().getLocation();
+        if (location == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-        final String path = response.getHeaders().getLocation().getPath();
-        log.info(path);
-        final String jsonResponse = this.restTemplate.getForObject(this.baseAPIEndpoint + path, String.class);
+        final String jsonResponse = this.restTemplate.getForObject(location.toString(), String.class);
         final JsonNode node;
         try {
             node = this.mapper.readTree(jsonResponse).get("serviceTemplateOrNodeTypeOrNodeTypeImplementation");
@@ -115,7 +117,7 @@ public class WineryService {
             toscaApplication.setToscaNamespace(firstElement.get("targetNamespace").asText());
             toscaApplication.setToscaName(firstElement.get("name").asText());
             toscaApplication.setName(name);
-            toscaApplication.setWineryLocation(path);
+            toscaApplication.setWineryLocation(location.getPath());
             return toscaApplication;
         } catch (JsonProcessingException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
