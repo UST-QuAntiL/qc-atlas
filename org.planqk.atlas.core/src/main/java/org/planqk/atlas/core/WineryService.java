@@ -22,9 +22,9 @@ package org.planqk.atlas.core;
 import java.net.URI;
 import java.util.InputMismatchException;
 
+import org.apache.http.client.utils.URIBuilder;
 import org.planqk.atlas.core.model.ToscaApplication;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -43,16 +43,15 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.NonNull;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-
-import static org.aspectj.weaver.tools.cache.SimpleCacheFactory.path;
 
 @Slf4j
 @Component
 public class WineryService {
 
     // API Endpoints
-    private final String baseAPIEndpoint;
+    private final URIBuilder baseAPIEndpoint;
 
     private final ObjectMapper mapper = new ObjectMapper();
 
@@ -61,13 +60,15 @@ public class WineryService {
     public WineryService(
             @Value("${org.planqk.atlas.winery.protocol}") String protocol,
             @Value("${org.planqk.atlas.winery.hostname}") String hostname,
-            @Value("${org.planqk.atlas.winery.port}") String port,
+            @Value("${org.planqk.atlas.winery.port}") int port,
             RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
+        this.baseAPIEndpoint = new URIBuilder();
+        this.baseAPIEndpoint.setHost(hostname).setPort(port);
         if ("".equals(protocol)) {
-            this.baseAPIEndpoint = String.format("http://%s:%s/", hostname, port);
+            this.baseAPIEndpoint.setScheme("http");
         } else {
-            this.baseAPIEndpoint = String.format("%s://%s:%s/", protocol, hostname, port);
+            this.baseAPIEndpoint.setScheme(protocol);
         }
     }
 
@@ -75,9 +76,10 @@ public class WineryService {
         return this.get(route, String.class);
     }
 
+    @SneakyThrows
     public <T> T get(String route, Class<T> responseType) {
         try {
-            final ResponseEntity<T> response = restTemplate.getForEntity(this.baseAPIEndpoint + route, responseType);
+            final ResponseEntity<T> response = restTemplate.getForEntity(this.baseAPIEndpoint.setPath(route).build(), responseType);
             if (!response.getStatusCode().equals(HttpStatus.OK)) {
                 throw new ResponseStatusException(response.getStatusCode());
             }
@@ -87,6 +89,7 @@ public class WineryService {
         }
     }
 
+    @SneakyThrows
     public ToscaApplication uploadCsar(@NonNull Resource file, String name) {
         final HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
@@ -96,7 +99,7 @@ public class WineryService {
         final HttpEntity<MultiValueMap<String, Object>> postRequestEntity = new HttpEntity<>(body, headers);
 
         final ResponseEntity<String> response = this.restTemplate
-                .postForEntity(this.baseAPIEndpoint + "winery/", postRequestEntity, String.class);
+                .postForEntity(this.baseAPIEndpoint.setPath("/winery/").build(), postRequestEntity, String.class);
         if (!response.getStatusCode().equals(HttpStatus.CREATED)) {
             throw new ResponseStatusException(response.getStatusCode());
         }
@@ -104,7 +107,7 @@ public class WineryService {
         if (location == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-        final String jsonResponse = this.restTemplate.getForObject(location.toString(), String.class);
+        final String jsonResponse = this.restTemplate.getForObject(baseAPIEndpoint.setPath(location.getPath()).build(), String.class);
         final JsonNode node;
         try {
             node = this.mapper.readTree(jsonResponse).get("serviceTemplateOrNodeTypeOrNodeTypeImplementation");
@@ -124,14 +127,12 @@ public class WineryService {
         }
     }
 
+    @SneakyThrows
     public void delete(@NonNull ToscaApplication toscaApplication) {
         final String path = toscaApplication.getWineryLocation();
-        this.restTemplate.delete(this.baseAPIEndpoint + path);
+        this.restTemplate.delete(this.baseAPIEndpoint.setPath(path).build());
     }
 
-    @Bean
-    public RestTemplate restTemplate() {
-        return new RestTemplate();
-    }
+
 }
 

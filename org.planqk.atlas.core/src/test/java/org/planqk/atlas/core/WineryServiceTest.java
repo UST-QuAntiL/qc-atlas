@@ -23,6 +23,7 @@ import java.io.ByteArrayInputStream;
 import java.net.URI;
 
 import lombok.SneakyThrows;
+import org.apache.http.client.utils.URIBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -57,26 +58,30 @@ class WineryServiceTest {
 
     private WineryService wineryService;
 
-    private final String wineryEndPoint = "http://localhost:8091/";
+    private URIBuilder wineryEndPoint;
 
     @BeforeEach
     void init(){
-        wineryService = new WineryService("http", "localhost", "8091", restTemplate);
+        wineryService = new WineryService("http", "localhost", 8091, restTemplate);
+        wineryEndPoint = new URIBuilder();
+        wineryEndPoint.setScheme("http").setHost("localhost").setPort(8091);
     }
 
+    @SneakyThrows
     @Test
     public void get_returnOK() {
         var testRoute = "this/is/the/test/route";
         var expectedResult = "Test-Body";
-        Mockito.when(restTemplate.getForEntity(eq(wineryEndPoint + testRoute), eq(String.class))).thenReturn(new ResponseEntity<>(expectedResult, HttpStatus.OK));
+        Mockito.when(restTemplate.getForEntity(eq(wineryEndPoint.setPath(testRoute).build()), eq(String.class))).thenReturn(new ResponseEntity<>(expectedResult, HttpStatus.OK));
         String result = wineryService.get(testRoute);
         assertEquals(expectedResult, result);
     }
 
+    @SneakyThrows
     @Test
     public void get_notFound() {
         var testRoute = "this/is/the/test/route";
-        Mockito.when(restTemplate.getForEntity(eq(wineryEndPoint + testRoute), eq(String.class))).thenReturn(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        Mockito.when(restTemplate.getForEntity(eq(wineryEndPoint.setPath(testRoute).build()), eq(String.class))).thenReturn(new ResponseEntity<>(HttpStatus.NOT_FOUND));
         ResponseStatusException responseStatusException = assertThrows(ResponseStatusException.class, () -> wineryService.get(testRoute));
         assertEquals(HttpStatus.NOT_FOUND, responseStatusException.getStatus());
     }
@@ -84,7 +89,7 @@ class WineryServiceTest {
     @Test
     @SneakyThrows
     public void uploadCsar_notFound(){
-        var uploadRoute = wineryEndPoint + "winery/";
+        var uploadRoute = "/winery/";
         Resource file = new InputStreamResource(new ByteArrayInputStream("test input stream".getBytes()));
         String name = "test-name";
 
@@ -95,7 +100,7 @@ class WineryServiceTest {
         body.add("name", name);
         final HttpEntity<MultiValueMap<String, Object>> postRequestEntity = new HttpEntity<>(body, headers);
 
-        Mockito.when(restTemplate.postForEntity(eq(uploadRoute), eq(postRequestEntity), eq(String.class))).thenReturn(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        Mockito.when(restTemplate.postForEntity(eq(wineryEndPoint.setPath(uploadRoute).build()), eq(postRequestEntity), eq(String.class))).thenReturn(new ResponseEntity<>(HttpStatus.NOT_FOUND));
         ResponseStatusException responseStatusException = assertThrows(ResponseStatusException.class, () -> wineryService.uploadCsar(file, name));
         assertEquals(HttpStatus.NOT_FOUND, responseStatusException.getStatus());
     }
@@ -103,9 +108,8 @@ class WineryServiceTest {
     @Test
     @SneakyThrows
     public void uploadCsar_created(){
-        var uploadRoute = wineryEndPoint + "winery/";
-        var location = "this/is/the/serviceTemplate/location";
-        var locationRoute = wineryEndPoint + "this/is/the/serviceTemplate/location";
+        var uploadRoute = "/winery/";
+        var locationRoute = "/this/is/the/serviceTemplate/location";
         Resource file = new InputStreamResource(new ByteArrayInputStream("test input stream".getBytes()));
         String name = "test-name";
 
@@ -143,7 +147,7 @@ class WineryServiceTest {
         expectedToscaApplication.setToscaName("Java_Web_Application__MySQL");
         expectedToscaApplication.setToscaNamespace("http://opentosca.org/servicetemplates");
         expectedToscaApplication.setName(name);
-        expectedToscaApplication.setWineryLocation("/" + location);
+        expectedToscaApplication.setWineryLocation(locationRoute);
 
         final HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
@@ -155,20 +159,21 @@ class WineryServiceTest {
 
         ResponseEntity<String> responseEntity = ResponseEntity.created(new URI(locationRoute)).build();
 
-        Mockito.when(restTemplate.postForEntity(eq(uploadRoute), eq(postRequestEntity), eq(String.class))).thenReturn(responseEntity);
-        Mockito.when(restTemplate.getForObject(eq(locationRoute), eq(String.class))).thenReturn(abbreviatedWineryJsonResponse);
+        Mockito.when(restTemplate.postForEntity(eq(wineryEndPoint.setPath(uploadRoute).build()), eq(postRequestEntity), eq(String.class))).thenReturn(responseEntity);
+        Mockito.when(restTemplate.getForObject(eq(wineryEndPoint.setPath(locationRoute).build()), eq(String.class))).thenReturn(abbreviatedWineryJsonResponse);
 
         ToscaApplication toscaApplication = wineryService.uploadCsar(file, name);
         assertEquals(expectedToscaApplication, toscaApplication);
     }
 
+    @SneakyThrows
     @Test
     public void delete() {
         var wineryLocation = "this/is/the/winery/location";
         ToscaApplication toscaApplication = new ToscaApplication();
         toscaApplication.setWineryLocation(wineryLocation);
         wineryService.delete(toscaApplication);
-        Mockito.verify(restTemplate).delete(wineryEndPoint + wineryLocation);
+        Mockito.verify(restTemplate).delete(wineryEndPoint.setPath(wineryLocation).build());
     }
 
 
