@@ -62,7 +62,7 @@ class WineryServiceTest {
 
     @BeforeEach
     void init(){
-        wineryService = new WineryService("http", "localhost", 8091, restTemplate);
+        wineryService = new WineryService("http", "localhost", "8091", restTemplate);
         wineryEndPoint = new URIBuilder();
         wineryEndPoint.setScheme("http").setHost("localhost").setPort(8091);
     }

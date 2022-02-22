@@ -60,11 +60,11 @@ public class WineryService {
     public WineryService(
             @Value("${org.planqk.atlas.winery.protocol}") String protocol,
             @Value("${org.planqk.atlas.winery.hostname}") String hostname,
-            @Value("${org.planqk.atlas.winery.port}") int port,
+            @Value("${org.planqk.atlas.winery.port}") String port,
             RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
         this.baseAPIEndpoint = new URIBuilder();
-        this.baseAPIEndpoint.setHost(hostname).setPort(port);
+        this.baseAPIEndpoint.setHost(hostname).setPort(Integer.parseInt(port));
         if ("".equals(protocol)) {
             this.baseAPIEndpoint.setScheme("http");
         } else {
