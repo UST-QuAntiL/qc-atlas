@@ -1,0 +1,524 @@
+{
+    "documentation": [
+    ],
+    "any": [
+    ],
+    "otherAttributes": {
+    },
+    "id": "otsteIgeneral-Java_Web_Application__MySQL",
+    "serviceTemplateOrNodeTypeOrNodeTypeImplementation": [
+        {
+            "documentation": [
+            ],
+            "any": [
+            ],
+            "otherAttributes": {
+            },
+            "id": "Java_Web_Application__MySQL",
+            "boundaryDefinitions": {
+            },
+            "topologyTemplate": {
+                "documentation": [
+                ],
+                "any": [
+                ],
+                "otherAttributes": {
+                },
+                "relationshipTemplates": [
+                    {
+                        "id": "con_71",
+                        "documentation": [
+                        ],
+                        "any": [
+                        ],
+                        "otherAttributes": {
+                        },
+                        "type": "{http://docs.oasis-open.org/tosca/ns/2011/12/ToscaBaseTypes}DependsOn",
+                        "sourceElement": {
+                            "ref": "Tomcat8"
+                        },
+                        "targetElement": {
+                            "ref": "Java8"
+                        },
+                        "name": "con_71"
+                    },
+                    {
+                        "id": "con_171",
+                        "documentation": [
+                        ],
+                        "any": [
+                        ],
+                        "otherAttributes": {
+                        },
+                        "type": "{http://docs.oasis-open.org/tosca/ns/2011/12/ToscaBaseTypes}HostedOn",
+                        "sourceElement": {
+                            "ref": "Java_Shop_Application"
+                        },
+                        "targetElement": {
+                            "ref": "Tomcat8"
+                        },
+                        "name": "con_171"
+                    },
+                    {
+                        "id": "con_183",
+                        "documentation": [
+                        ],
+                        "any": [
+                        ],
+                        "otherAttributes": {
+                        },
+                        "type": "{http://docs.oasis-open.org/tosca/ns/2011/12/ToscaBaseTypes}ConnectsTo",
+                        "sourceElement": {
+                            "ref": "Java_Shop_Application"
+                        },
+                        "targetElement": {
+                            "ref": "MySQL-DB"
+                        },
+                        "name": "con_183"
+                    },
+                    {
+                        "id": "con_HostedOn_0",
+                        "documentation": [
+                        ],
+                        "any": [
+                        ],
+                        "otherAttributes": {
+                        },
+                        "type": "{http://docs.oasis-open.org/tosca/ns/2011/12/ToscaBaseTypes}HostedOn",
+                        "sourceElement": {
+                            "ref": "Tomcat8"
+                        },
+                        "targetElement": {
+                            "ref": "Ubuntu-VM_18.04-w1"
+                        },
+                        "name": "HostedOn"
+                    },
+                    {
+                        "id": "con_HostedOn_2",
+                        "documentation": [
+                        ],
+                        "any": [
+                        ],
+                        "otherAttributes": {
+                        },
+                        "type": "{http://docs.oasis-open.org/tosca/ns/2011/12/ToscaBaseTypes}HostedOn",
+                        "sourceElement": {
+                            "ref": "Ubuntu-VM_18.04-w1"
+                        },
+                        "targetElement": {
+                            "ref": "OpenStack-Liberty-12"
+                        },
+                        "name": "HostedOn"
+                    },
+                    {
+                        "id": "con_HostedOn_3",
+                        "documentation": [
+                        ],
+                        "any": [
+                        ],
+                        "otherAttributes": {
+                        },
+                        "type": "{http://docs.oasis-open.org/tosca/ns/2011/12/ToscaBaseTypes}HostedOn",
+                        "sourceElement": {
+                            "ref": "Java8"
+                        },
+                        "targetElement": {
+                            "ref": "Ubuntu-VM_18.04-w1"
+                        },
+                        "name": "HostedOn"
+                    },
+                    {
+                        "id": "con_HostedOn_1",
+                        "documentation": [
+                        ],
+                        "any": [
+                        ],
+                        "otherAttributes": {
+                        },
+                        "type": "{http://docs.oasis-open.org/tosca/ns/2011/12/ToscaBaseTypes}HostedOn",
+                        "sourceElement": {
+                            "ref": "MySQL-DB"
+                        },
+                        "targetElement": {
+                            "ref": "MySQL-DBMS_5.7-w1"
+                        },
+                        "name": "HostedOn"
+                    },
+                    {
+                        "id": "con_HostedOn_4",
+                        "documentation": [
+                        ],
+                        "any": [
+                        ],
+                        "otherAttributes": {
+                        },
+                        "type": "{http://docs.oasis-open.org/tosca/ns/2011/12/ToscaBaseTypes}HostedOn",
+                        "sourceElement": {
+                            "ref": "MySQL-DBMS_5.7-w1"
+                        },
+                        "targetElement": {
+                            "ref": "Ubuntu-VM_18.04-w1"
+                        },
+                        "name": "HostedOn"
+                    }
+                ],
+                "nodeTemplates": [
+                    {
+                        "id": "MySQL-DB",
+                        "documentation": [
+                        ],
+                        "any": [
+                        ],
+                        "otherAttributes": {
+                            "{http://www.opentosca.org/winery/extensions/tosca/2013/02/12}location": "undefined",
+                            "{http://www.opentosca.org/winery/extensions/tosca/2013/02/12}x": "1034",
+                            "{http://www.opentosca.org/winery/extensions/tosca/2013/02/12}y": "113"
+                        },
+                        "properties": {
+                            "propertyType": "KV",
+                            "namespace": "http://www.example.org",
+                            "elementName": "Properties",
+                            "kvproperties": {
+                                "DBName": "shop",
+                                "DBUser": "app",
+                                "DBPassword": "installed"
+                            }
+                        },
+                        "type": "{http://opentosca.org/nodetypes}MySQL-DB",
+                        "deploymentArtifacts": [
+                            {
+                                "documentation": [
+                                ],
+                                "any": [
+                                ],
+                                "otherAttributes": {
+                                },
+                                "name": "schema",
+                                "artifactType": "{http://opentosca.org/artifacttypes}SQLArtifact",
+                                "artifactRef": "{http://opentosca.org/artifacttemplates}Petclinic-Schema-DA_w1-wip1"
+                            }
+                        ],
+                        "name": "Web Application DB",
+                        "minInstances": 1,
+                        "maxInstances": "1",
+                        "x": "1034",
+                        "y": "113"
+                    },
+                    {
+                        "id": "Java8",
+                        "documentation": [
+                        ],
+                        "any": [
+                        ],
+                        "otherAttributes": {
+                            "{http://www.opentosca.org/winery/extensions/tosca/2013/02/12}location": "undefined",
+                            "{http://www.opentosca.org/winery/extensions/tosca/2013/02/12}x": "242",
+                            "{http://www.opentosca.org/winery/extensions/tosca/2013/02/12}y": "523"
+                        },
+                        "type": "{http://opentosca.org/nodetypes}Java8",
+                        "name": "JRE",
+                        "minInstances": 1,
+                        "maxInstances": "1",
+                        "x": "242",
+                        "y": "523"
+                    },
+                    {
+                        "id": "Tomcat8",
+                        "documentation": [
+                        ],
+                        "any": [
+                        ],
+                        "otherAttributes": {
+                            "{http://www.opentosca.org/winery/extensions/tosca/2013/02/12}location": "undefined",
+                            "{http://www.opentosca.org/winery/extensions/tosca/2013/02/12}x": "390",
+                            "{http://www.opentosca.org/winery/extensions/tosca/2013/02/12}y": "296"
+                        },
+                        "type": "{http://opentosca.org/nodetypes}Tomcat8",
+                        "name": "Tomcat",
+                        "minInstances": 1,
+                        "maxInstances": "1",
+                        "x": "390",
+                        "y": "296"
+                    },
+                    {
+                        "id": "Java_Shop_Application",
+                        "documentation": [
+                        ],
+                        "any": [
+                        ],
+                        "otherAttributes": {
+                            "{http://www.opentosca.org/winery/extensions/tosca/2013/02/12}location": "undefined",
+                            "{http://www.opentosca.org/winery/extensions/tosca/2013/02/12}x": "393",
+                            "{http://www.opentosca.org/winery/extensions/tosca/2013/02/12}y": "86"
+                        },
+                        "type": "{http://opentosca.org/nodetypes}Java_Shop_Application",
+                        "deploymentArtifacts": [
+                            {
+                                "documentation": [
+                                ],
+                                "any": [
+                                ],
+                                "otherAttributes": {
+                                },
+                                "name": "shop",
+                                "artifactType": "{http://opentosca.org/artifacttypes}WAR",
+                                "artifactRef": "{http://opentosca.org/artifacttemplates}Java_Shop_Application_DA"
+                            }
+                        ],
+                        "name": "Java_Shop_Application",
+                        "minInstances": 1,
+                        "maxInstances": "1",
+                        "x": "393",
+                        "y": "86"
+                    },
+                    {
+                        "id": "OpenStack-Liberty-12",
+                        "documentation": [
+                        ],
+                        "any": [
+                        ],
+                        "otherAttributes": {
+                            "{http://www.opentosca.org/winery/extensions/tosca/2013/02/12}x": "704",
+                            "{http://www.opentosca.org/winery/extensions/tosca/2013/02/12}y": "703"
+                        },
+                        "properties": {
+                            "propertyType": "KV",
+                            "namespace": "http://www.example.org",
+                            "elementName": "Properties",
+                            "kvproperties": {
+                                "HypervisorEndpoint": "asflexsm.informatik.uni-stuttgart.de",
+                                "HypervisorTenantID": "SmartServices",
+                                "HypervisorUserName": "get_input: OpenStackUser",
+                                "HypervisorUserPassword": "get_input: OpenStackUserPassword"
+                            }
+                        },
+                        "type": "{http://opentosca.org/nodetypes}OpenStack-Liberty-12",
+                        "name": "OpenStack-Liberty-12",
+                        "minInstances": 1,
+                        "maxInstances": "1",
+                        "x": "704",
+                        "y": "703"
+                    },
+                    {
+                        "id": "Ubuntu-VM_18.04-w1",
+                        "documentation": [
+                        ],
+                        "any": [
+                        ],
+                        "otherAttributes": {
+                            "{http://www.opentosca.org/winery/extensions/tosca/2013/02/12}x": "703",
+                            "{http://www.opentosca.org/winery/extensions/tosca/2013/02/12}y": "515"
+                        },
+                        "properties": {
+                            "propertyType": "KV",
+                            "namespace": "http://www.example.org",
+                            "elementName": "Properties",
+                            "kvproperties": {
+                                "VMIP": "",
+                                "VMInstanceID": "",
+                                "VMType": "m1.small",
+                                "VMUserName": "ubuntu",
+                                "VMUserPassword": "N/A",
+                                "VMPrivateKey": "get_input: VMPrivateKey",
+                                "VMPublicKey": "N/A",
+                                "VMKeyPairName": "get_input: VMKeyPair"
+                            }
+                        },
+                        "type": "{http://opentosca.org/nodetypes}Ubuntu-VM_18.04-w1",
+                        "name": "Ubuntu-VM_18.04-w1",
+                        "minInstances": 1,
+                        "maxInstances": "1",
+                        "x": "703",
+                        "y": "515"
+                    },
+                    {
+                        "id": "MySQL-DBMS_5.7-w1",
+                        "documentation": [
+                        ],
+                        "any": [
+                        ],
+                        "otherAttributes": {
+                            "{http://www.opentosca.org/winery/extensions/tosca/2013/02/12}x": "1039",
+                            "{http://www.opentosca.org/winery/extensions/tosca/2013/02/12}y": "395"
+                        },
+                        "properties": {
+                            "propertyType": "KV",
+                            "namespace": "http://www.example.org",
+                            "elementName": "Properties",
+                            "kvproperties": {
+                                "DBMSUser": "root",
+                                "DBMSPassword": "installed",
+                                "DBMSPort": "3306"
+                            }
+                        },
+                        "type": "{http://opentosca.org/nodetypes}MySQL-DBMS_5.7-w1",
+                        "name": "MySQL-DBMS_5.7-w1",
+                        "minInstances": 1,
+                        "maxInstances": "1",
+                        "x": "1039",
+                        "y": "395"
+                    }
+                ]
+            },
+            "name": "Java_Web_Application__MySQL",
+            "targetNamespace": "http://opentosca.org/servicetemplates"
+        }
+    ],
+    "targetNamespace": "http://opentosca.org/servicetemplates",
+    "import": [
+        {
+            "documentation": [
+            ],
+            "any": [
+            ],
+            "otherAttributes": {
+            },
+            "namespace": "http://opentosca.org/nodetypes",
+            "location": "nodetypes__MySQL-DBMS_5.7-w1.tosca",
+            "importType": "http://docs.oasis-open.org/tosca/ns/2011/12"
+        },
+        {
+            "documentation": [
+            ],
+            "any": [
+            ],
+            "otherAttributes": {
+            },
+            "namespace": "http://opentosca.org/nodetypes",
+            "location": "nodetypes__OpenStack-Liberty-12.tosca",
+            "importType": "http://docs.oasis-open.org/tosca/ns/2011/12"
+        },
+        {
+            "documentation": [
+            ],
+            "any": [
+            ],
+            "otherAttributes": {
+            },
+            "namespace": "http://opentosca.org/artifacttypes",
+            "location": "artifacttypes__SQLArtifact.tosca",
+            "importType": "http://docs.oasis-open.org/tosca/ns/2011/12"
+        },
+        {
+            "documentation": [
+            ],
+            "any": [
+            ],
+            "otherAttributes": {
+            },
+            "namespace": "http://opentosca.org/nodetypes",
+            "location": "nodetypes__Java8.tosca",
+            "importType": "http://docs.oasis-open.org/tosca/ns/2011/12"
+        },
+        {
+            "documentation": [
+            ],
+            "any": [
+            ],
+            "otherAttributes": {
+            },
+            "namespace": "http://docs.oasis-open.org/tosca/ns/2011/12/ToscaBaseTypes",
+            "location": "ToscaBaseTypes__DependsOn.tosca",
+            "importType": "http://docs.oasis-open.org/tosca/ns/2011/12"
+        },
+        {
+            "documentation": [
+            ],
+            "any": [
+            ],
+            "otherAttributes": {
+            },
+            "namespace": "http://opentosca.org/nodetypes",
+            "location": "nodetypes__Tomcat8.tosca",
+            "importType": "http://docs.oasis-open.org/tosca/ns/2011/12"
+        },
+        {
+            "documentation": [
+            ],
+            "any": [
+            ],
+            "otherAttributes": {
+            },
+            "namespace": "http://docs.oasis-open.org/tosca/ns/2011/12/ToscaBaseTypes",
+            "location": "ToscaBaseTypes__ConnectsTo.tosca",
+            "importType": "http://docs.oasis-open.org/tosca/ns/2011/12"
+        },
+        {
+            "documentation": [
+            ],
+            "any": [
+            ],
+            "otherAttributes": {
+            },
+            "namespace": "http://docs.oasis-open.org/tosca/ns/2011/12/ToscaBaseTypes",
+            "location": "ToscaBaseTypes__HostedOn.tosca",
+            "importType": "http://docs.oasis-open.org/tosca/ns/2011/12"
+        },
+        {
+            "documentation": [
+            ],
+            "any": [
+            ],
+            "otherAttributes": {
+            },
+            "namespace": "http://opentosca.org/artifacttemplates",
+            "location": "artifacttemplates__Petclinic-Schema-DA_w1-wip1.tosca",
+            "importType": "http://docs.oasis-open.org/tosca/ns/2011/12"
+        },
+        {
+            "documentation": [
+            ],
+            "any": [
+            ],
+            "otherAttributes": {
+            },
+            "namespace": "http://opentosca.org/nodetypes",
+            "location": "nodetypes__Java_Shop_Application.tosca",
+            "importType": "http://docs.oasis-open.org/tosca/ns/2011/12"
+        },
+        {
+            "documentation": [
+            ],
+            "any": [
+            ],
+            "otherAttributes": {
+            },
+            "namespace": "http://opentosca.org/nodetypes",
+            "location": "nodetypes__MySQL-DB.tosca",
+            "importType": "http://docs.oasis-open.org/tosca/ns/2011/12"
+        },
+        {
+            "documentation": [
+            ],
+            "any": [
+            ],
+            "otherAttributes": {
+            },
+            "namespace": "http://opentosca.org/artifacttypes",
+            "location": "artifacttypes__WAR.tosca",
+            "importType": "http://docs.oasis-open.org/tosca/ns/2011/12"
+        },
+        {
+            "documentation": [
+            ],
+            "any": [
+            ],
+            "otherAttributes": {
+            },
+            "namespace": "http://opentosca.org/nodetypes",
+            "location": "nodetypes__Ubuntu-VM_18.04-w1.tosca",
+            "importType": "http://docs.oasis-open.org/tosca/ns/2011/12"
+        },
+        {
+            "documentation": [
+            ],
+            "any": [
+            ],
+            "otherAttributes": {
+            },
+            "namespace": "http://opentosca.org/artifacttemplates",
+            "location": "artifacttemplates__Java_Shop_Application_DA.tosca",
+            "importType": "http://docs.oasis-open.org/tosca/ns/2011/12"
+        }
+    ]
+}

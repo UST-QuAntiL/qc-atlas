@@ -20,7 +20,10 @@
 package org.planqk.atlas.core;
 
 import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.net.URI;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 import lombok.SneakyThrows;
 import org.apache.http.client.utils.URIBuilder;
@@ -113,34 +116,10 @@ class WineryServiceTest {
         Resource file = new InputStreamResource(new ByteArrayInputStream("test input stream".getBytes()));
         String name = "test-name";
 
-        String abbreviatedWineryJsonResponse = "{\n" +
-                "\t\"documentation\": [\n" +
-                "\t],\n" +
-                "\t\"any\": [\n" +
-                "\t],\n" +
-                "\t\"otherAttributes\": {\n" +
-                "\t},\n" +
-                "\t\"id\": \"otsteIgeneral-Java_Web_Application__MySQL\",\n" +
-                "\t\"serviceTemplateOrNodeTypeOrNodeTypeImplementation\": [\n" +
-                "\t\t{\n" +
-                "\t\t\t\"documentation\": [\n" +
-                "\t\t\t],\n" +
-                "\t\t\t\"any\": [\n" +
-                "\t\t\t],\n" +
-                "\t\t\t\"otherAttributes\": {\n" +
-                "\t\t\t},\n" +
-                "\t\t\t\"id\": \"Java_Web_Application__MySQL\",\n" +
-                "\t\t\t\"boundaryDefinitions\": {\n" +
-                "\t\t\t},\n" +
-                "\t\t\t\"topologyTemplate\": {\n" +
-                "\t\t\t},\n" +
-                "\t\t\t\"name\": \"Java_Web_Application__MySQL\",\n" +
-                "\t\t\t\"targetNamespace\": \"http://opentosca.org/servicetemplates\"\n" +
-                "\t\t}\n" +
-                "\t],\n" +
-                "\t\"targetNamespace\": \"http://opentosca.org/servicetemplates\",\n" +
-                "\t\"import\": [\t]\n" +
-                "}";
+        InputStream resourceAsStream = getClass().getClassLoader().getResourceAsStream("winery_response.json");
+        assert resourceAsStream != null;
+        String wineryJsonResponse = new String(resourceAsStream.readAllBytes(), StandardCharsets.UTF_8);
+
 
         ToscaApplication expectedToscaApplication = new ToscaApplication();
         expectedToscaApplication.setToscaID("Java_Web_Application__MySQL");
@@ -160,7 +139,7 @@ class WineryServiceTest {
         ResponseEntity<String> responseEntity = ResponseEntity.created(new URI(locationRoute)).build();
 
         Mockito.when(restTemplate.postForEntity(eq(wineryEndPoint.setPath(uploadRoute).build()), eq(postRequestEntity), eq(String.class))).thenReturn(responseEntity);
-        Mockito.when(restTemplate.getForObject(eq(wineryEndPoint.setPath(locationRoute).build()), eq(String.class))).thenReturn(abbreviatedWineryJsonResponse);
+        Mockito.when(restTemplate.getForObject(eq(wineryEndPoint.setPath(locationRoute).build()), eq(String.class))).thenReturn(wineryJsonResponse);
 
         ToscaApplication toscaApplication = wineryService.uploadCsar(file, name);
         assertEquals(expectedToscaApplication, toscaApplication);
