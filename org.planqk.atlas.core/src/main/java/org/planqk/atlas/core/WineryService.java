@@ -19,8 +19,11 @@
 
 package org.planqk.atlas.core;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.InputMismatchException;
 
+import org.apache.http.client.utils.URIBuilder;
 import org.planqk.atlas.core.model.ToscaApplication;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -48,19 +51,24 @@ import lombok.extern.slf4j.Slf4j;
 public class WineryService {
 
     // API Endpoints
-    private final String baseAPIEndpoint;
+    private final URIBuilder baseAPIEndpoint;
 
     private final ObjectMapper mapper = new ObjectMapper();
+
+    private final RestTemplate restTemplate;
 
     public WineryService(
             @Value("${org.planqk.atlas.winery.protocol}") String protocol,
             @Value("${org.planqk.atlas.winery.hostname}") String hostname,
-            @Value("${org.planqk.atlas.winery.port}") String port
-    ) {
+            @Value("${org.planqk.atlas.winery.port}") int port,
+            RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+        this.baseAPIEndpoint = new URIBuilder();
+        this.baseAPIEndpoint.setHost(hostname).setPort(port);
         if ("".equals(protocol)) {
-            this.baseAPIEndpoint = String.format("http://%s:%s/", hostname, port);
+            this.baseAPIEndpoint.setScheme("http");
         } else {
-            this.baseAPIEndpoint = String.format("%s://%s:%s/", protocol, hostname, port);
+            this.baseAPIEndpoint.setScheme(protocol);
         }
     }
 
@@ -68,19 +76,21 @@ public class WineryService {
         return this.get(route, String.class);
     }
 
-    public <T> T get(String route, Class<T> responseType) {
 
-        final RestTemplate restTemplate = new RestTemplate();
+    public <T> T get(String route, Class<T> responseType) {
         try {
-            final ResponseEntity<T> response = restTemplate.getForEntity(this.baseAPIEndpoint + route, responseType);
+            final ResponseEntity<T> response = restTemplate.getForEntity(this.baseAPIEndpoint.setPath(route).build(), responseType);
             if (!response.getStatusCode().equals(HttpStatus.OK)) {
                 throw new ResponseStatusException(response.getStatusCode());
             }
             return response.getBody();
         } catch (HttpClientErrorException.NotFound notFound) {
             throw new ResponseStatusException(notFound.getStatusCode());
+        } catch (URISyntaxException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
     }
+
 
     public ToscaApplication uploadCsar(@NonNull Resource file, String name) {
         final HttpHeaders headers = new HttpHeaders();
@@ -90,18 +100,26 @@ public class WineryService {
         body.add("name", name);
         final HttpEntity<MultiValueMap<String, Object>> postRequestEntity = new HttpEntity<>(body, headers);
 
-        final RestTemplate restTemplate = new RestTemplate();
-        final ResponseEntity<String> response = restTemplate
-                .postForEntity(this.baseAPIEndpoint + "/winery/", postRequestEntity, String.class);
+        final ResponseEntity<String> response;
+        try {
+            response = this.restTemplate
+                    .postForEntity(this.baseAPIEndpoint.setPath("/winery/").build(), postRequestEntity, String.class);
+        } catch (URISyntaxException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
         if (!response.getStatusCode().equals(HttpStatus.CREATED)) {
             throw new ResponseStatusException(response.getStatusCode());
         }
-        if (response.getHeaders().getLocation() == null) {
+        final URI location = response.getHeaders().getLocation();
+        if (location == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-        final String path = response.getHeaders().getLocation().getPath();
-        log.info(path);
-        final String jsonResponse = restTemplate.getForObject(this.baseAPIEndpoint + path, String.class);
+        final String jsonResponse;
+        try {
+            jsonResponse = this.restTemplate.getForObject(baseAPIEndpoint.setPath(location.getPath()).build(), String.class);
+        } catch (URISyntaxException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
         final JsonNode node;
         try {
             node = this.mapper.readTree(jsonResponse).get("serviceTemplateOrNodeTypeOrNodeTypeImplementation");
@@ -114,7 +132,7 @@ public class WineryService {
             toscaApplication.setToscaNamespace(firstElement.get("targetNamespace").asText());
             toscaApplication.setToscaName(firstElement.get("name").asText());
             toscaApplication.setName(name);
-            toscaApplication.setWineryLocation(path);
+            toscaApplication.setWineryLocation(location.getPath());
             return toscaApplication;
         } catch (JsonProcessingException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -123,8 +141,13 @@ public class WineryService {
 
     public void delete(@NonNull ToscaApplication toscaApplication) {
         final String path = toscaApplication.getWineryLocation();
-        final RestTemplate restTemplate = new RestTemplate();
-        restTemplate.delete(this.baseAPIEndpoint + path);
+        try {
+            this.restTemplate.delete(this.baseAPIEndpoint.setPath(path).build());
+        } catch (URISyntaxException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
+
+
 }
 
