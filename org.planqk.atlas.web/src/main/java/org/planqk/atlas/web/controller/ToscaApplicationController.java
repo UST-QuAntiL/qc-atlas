@@ -46,6 +46,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -70,14 +71,13 @@ public class ToscaApplicationController {
         return ResponseEntity.ok(ModelMapperUtils.convertPage(toscaApplicationService.findAll(listParameters.getPageable()), ToscaApplicationDto.class));
     }
 
-
     @Operation(responses = {
             @ApiResponse(responseCode = "201"),
             @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
     }, description = "Create a TOSCA Application.")
     @PostMapping()
     public ResponseEntity<ToscaApplicationDto> createApplication(@RequestPart("file") MultipartFile file,
-                                                                 @RequestPart("name") String name) {
+                                                                 @RequestParam("payload") String name) {
         final ToscaApplication savedToscaApplication = this.toscaApplicationService.createFromFile(file, name);
         return new ResponseEntity<>(ModelMapperUtils.convert(savedToscaApplication, ToscaApplicationDto.class), HttpStatus.CREATED);
     }
