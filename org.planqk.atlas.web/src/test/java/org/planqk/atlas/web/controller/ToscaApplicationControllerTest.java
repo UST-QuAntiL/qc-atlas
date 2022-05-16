@@ -50,6 +50,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -90,13 +91,11 @@ class ToscaApplicationControllerTest {
     public void createApplication_returnCreated() {
 
         UUID uuid = UUID.randomUUID();
-        String name = "Test Name";
+        String name = "Test-Name";
 
         var returnedResource = new ToscaApplication();
         returnedResource.setName(name);
         returnedResource.setId(uuid);
-
-        doReturn(returnedResource).when(toscaApplicationService).createFromFile(any(), any());
 
         MockMultipartFile file
                 = new MockMultipartFile(
@@ -105,15 +104,18 @@ class ToscaApplicationControllerTest {
                 MediaType.TEXT_PLAIN_VALUE,
                 "Hello, World!".getBytes()
         );
-        MockPart namePart = new MockPart("name", "name", name.getBytes());
-        namePart.getHeaders().setContentType(MediaType.TEXT_PLAIN);
+
+        doReturn(returnedResource).when(toscaApplicationService).createFromFile(eq(file), eq(name));
+
+        var url = linkBuilderService.urlStringTo(
+                methodOn(ToscaApplicationController.class).createApplication(null, null)
+        );
+
+        // remove query part
+        url = url.split("\\?")[0];
 
         mockMvc.perform(
-                        multipart(
-                                linkBuilderService.urlStringTo(
-                                        methodOn(ToscaApplicationController.class).createApplication(null, null)
-                                )
-                        ).file(file).part(namePart)
+                        multipart(url).file(file).param("payload", name)
                 ).andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(uuid.toString()))
                 .andExpect(jsonPath("$.name").value(name));
