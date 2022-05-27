@@ -19,8 +19,12 @@
 
 package org.planqk.atlas.web.controller;
 
+import java.util.Map;
 import java.util.UUID;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.MapType;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -46,7 +50,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -60,6 +63,8 @@ import org.springframework.web.multipart.MultipartFile;
 public class ToscaApplicationController {
 
     private final ToscaApplicationService toscaApplicationService;
+
+    private ObjectMapper mapper = new ObjectMapper();
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200")
@@ -77,8 +82,10 @@ public class ToscaApplicationController {
     }, description = "Create a TOSCA Application.")
     @PostMapping()
     public ResponseEntity<ToscaApplicationDto> createApplication(@RequestPart("file") MultipartFile file,
-                                                                 @RequestParam("payload") String name) {
-        final ToscaApplication savedToscaApplication = this.toscaApplicationService.createFromFile(file, name);
+                                                                 @RequestPart("payload") String payload) throws JsonProcessingException {
+        final MapType mapType = mapper.getTypeFactory().constructMapType(Map.class, String.class, Object.class);
+        final Map<String, Object> payloadMap = mapper.readValue(payload, mapType);
+        final ToscaApplication savedToscaApplication = this.toscaApplicationService.createFromFile(file, payloadMap.get("name").toString());
         return new ResponseEntity<>(ModelMapperUtils.convert(savedToscaApplication, ToscaApplicationDto.class), HttpStatus.CREATED);
     }
 
