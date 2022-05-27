@@ -92,6 +92,7 @@ class ToscaApplicationControllerTest {
 
         UUID uuid = UUID.randomUUID();
         String name = "Test-Name";
+        String nameJson =  String.format("{\"name\":\"%s\"}", name);
 
         var returnedResource = new ToscaApplication();
         returnedResource.setName(name);
@@ -111,11 +112,11 @@ class ToscaApplicationControllerTest {
                 methodOn(ToscaApplicationController.class).createApplication(null, null)
         );
 
-        // remove query part
-        url = url.split("\\?")[0];
+        MockPart namePart = new MockPart("payload", "payload", nameJson.getBytes());
+        namePart.getHeaders().setContentType(MediaType.TEXT_PLAIN);
 
         mockMvc.perform(
-                        multipart(url).file(file).param("payload", name)
+                        multipart(url).file(file).part(namePart)
                 ).andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(uuid.toString()))
                 .andExpect(jsonPath("$.name").value(name));
