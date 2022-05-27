@@ -64,7 +64,7 @@ public class ToscaApplicationController {
 
     private final ToscaApplicationService toscaApplicationService;
 
-    private ObjectMapper mapper = new ObjectMapper();
+    private ObjectMapper mapper;
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200")
