@@ -19,8 +19,12 @@
 
 package org.planqk.atlas.web.controller;
 
+import java.util.Map;
 import java.util.UUID;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.MapType;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -60,6 +64,8 @@ public class ToscaApplicationController {
 
     private final ToscaApplicationService toscaApplicationService;
 
+    private ObjectMapper mapper;
+
     @Operation(responses = {
             @ApiResponse(responseCode = "200")
     }, description = "Retrieve all TOSCA applications.")
@@ -70,15 +76,16 @@ public class ToscaApplicationController {
         return ResponseEntity.ok(ModelMapperUtils.convertPage(toscaApplicationService.findAll(listParameters.getPageable()), ToscaApplicationDto.class));
     }
 
-
     @Operation(responses = {
             @ApiResponse(responseCode = "201"),
             @ApiResponse(responseCode = "400", description = "Bad Request. Invalid request body."),
     }, description = "Create a TOSCA Application.")
     @PostMapping()
     public ResponseEntity<ToscaApplicationDto> createApplication(@RequestPart("file") MultipartFile file,
-                                                                 @RequestPart("name") String name) {
-        final ToscaApplication savedToscaApplication = this.toscaApplicationService.createFromFile(file, name);
+                                                                 @RequestPart("payload") String payload) throws JsonProcessingException {
+        final MapType mapType = mapper.getTypeFactory().constructMapType(Map.class, String.class, Object.class);
+        final Map<String, Object> payloadMap = mapper.readValue(payload, mapType);
+        final ToscaApplication savedToscaApplication = this.toscaApplicationService.createFromFile(file, payloadMap.get("name").toString());
         return new ResponseEntity<>(ModelMapperUtils.convert(savedToscaApplication, ToscaApplicationDto.class), HttpStatus.CREATED);
     }
 
