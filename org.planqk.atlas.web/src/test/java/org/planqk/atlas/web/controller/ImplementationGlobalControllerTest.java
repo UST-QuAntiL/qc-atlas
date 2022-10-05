@@ -46,6 +46,7 @@ import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.services.FileService;
 import org.planqk.atlas.core.services.ImplementationService;
+import org.planqk.atlas.core.services.LinkingService;
 import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
 import org.planqk.atlas.web.dtos.ImplementationDto;
 import org.planqk.atlas.web.dtos.RevisionDto;
@@ -88,6 +89,9 @@ public class ImplementationGlobalControllerTest {
     @MockBean
     private FileService fileService;
 
+    @MockBean
+    private LinkingService linkingService;
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -116,7 +120,7 @@ public class ImplementationGlobalControllerTest {
         impl.setId(UUID.randomUUID());
         var algo = new Algorithm();
         algo.setId(UUID.randomUUID());
-        impl.setImplementedAlgorithm(algo);
+        impl.addAlgorithm(algo);
 
         doReturn(new PageImpl<>(List.of(impl))).when(implementationService).findAll(any());
 
@@ -127,7 +131,6 @@ public class ImplementationGlobalControllerTest {
         ImplementationDto implementationDto = ObjectMapperUtils.mapResponseToList(mvcResult, ImplementationDto.class).get(0);
         assertEquals(implementationDto.getName(), impl.getName());
         assertEquals(implementationDto.getId(), impl.getId());
-        assertEquals(implementationDto.getImplementedAlgorithmId(), algo.getId());
     }
 
     @Test
@@ -139,7 +142,7 @@ public class ImplementationGlobalControllerTest {
         var impl = new Implementation();
         impl.setName("implementation for Shor");
         impl.setId(UUID.randomUUID());
-        impl.setImplementedAlgorithm(algo);
+        impl.addAlgorithm(algo);
 
         doReturn(impl).when(implementationService).findById(any());
 
@@ -148,7 +151,7 @@ public class ImplementationGlobalControllerTest {
         mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(impl.getId().toString()))
-                .andExpect(jsonPath("$.implementedAlgorithmId").value(algo.getId().toString()));
+                .andExpect(jsonPath("$.name").value(impl.getName()));
     }
 
     @Test

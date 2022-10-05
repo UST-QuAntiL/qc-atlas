@@ -85,9 +85,7 @@ public class ServiceTestUtils {
         assertThat(implementation1.getAssumptions()).isEqualTo(implementation2.getAssumptions());
         assertThat(implementation1.getParameter()).isEqualTo(implementation2.getParameter());
         assertThat(implementation1.getDependencies()).isEqualTo(implementation2.getDependencies());
-        assertThat(implementation1.getImplementedAlgorithm().getId())
-                .isEqualTo(implementation2.getImplementedAlgorithm().getId());
-        assertAlgorithmEquality(implementation1.getImplementedAlgorithm(), implementation2.getImplementedAlgorithm());
+        assertCollectionEquality(implementation1.getImplementedAlgorithms(), implementation2.getImplementedAlgorithms());
     }
 
     public static void assertPublicationEquality(Publication publication1, Publication publication2) {

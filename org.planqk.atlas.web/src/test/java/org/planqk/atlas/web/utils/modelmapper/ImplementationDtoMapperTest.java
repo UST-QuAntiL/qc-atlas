@@ -37,26 +37,21 @@ public class ImplementationDtoMapperTest {
         algorithm.setId(UUID.randomUUID());
 
         var implementation = new Implementation();
-        implementation.setImplementedAlgorithm(algorithm);
         implementation.setId(UUID.randomUUID());
 
         var mappedImplementationDto = ModelMapperUtils.convert(implementation, ImplementationDto.class);
 
         assertThat(mappedImplementationDto.getId()).isEqualTo(implementation.getId());
-        assertThat(mappedImplementationDto.getImplementedAlgorithmId()).isEqualTo(algorithm.getId());
     }
 
     @Test
     void mapFromDto() {
         var implementationDto = new ImplementationDto();
         implementationDto.setId(UUID.randomUUID());
-        implementationDto.setImplementedAlgorithmId(UUID.randomUUID());
 
         var mappedImplementation = ModelMapperUtils.convert(implementationDto, Implementation.class);
 
         assertThat(mappedImplementation.getId())
                 .isEqualTo(implementationDto.getId());
-        assertThat(mappedImplementation.getImplementedAlgorithm().getId())
-                .isEqualTo(implementationDto.getImplementedAlgorithmId());
     }
 }
