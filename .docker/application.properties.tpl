@@ -28,6 +28,6 @@ spring.servlet.multipart.max-file-size={{ default .Env.UPLOAD_FILE_SIZE "150MB"}
 spring.servlet.multipart.max-request-size={{ default .Env.UPLOAD_FILE_SIZE "150MB"}}
 
 # Winery
-org.planqk.atlas.winery.protocol={{.Env.WINERY_PROTOCOL}}
-org.planqk.atlas.winery.hostname={{.Env.WINERY_HOSTNAME}}
-org.planqk.atlas.winery.port={{.Env.WINERY_PORT}}
+org.planqk.atlas.winery.protocol={{ default .Env.WINERY_PROTOCOL "http" }}
+org.planqk.atlas.winery.hostname={{ default .Env.WINERY_HOSTNAME "localhost" }}
+org.planqk.atlas.winery.port={{ default .Env.WINERY_PORT "8080" }}
