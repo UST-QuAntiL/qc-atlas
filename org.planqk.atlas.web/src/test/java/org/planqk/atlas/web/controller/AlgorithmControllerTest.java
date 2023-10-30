@@ -65,6 +65,7 @@ import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.model.AlgorithmRelationType;
 import org.planqk.atlas.core.model.ApplicationArea;
 import org.planqk.atlas.core.model.ClassicAlgorithm;
+import org.planqk.atlas.core.model.ClassicImplementation;
 import org.planqk.atlas.core.model.ComputationModel;
 import org.planqk.atlas.core.model.ComputeResourceProperty;
 import org.planqk.atlas.core.model.ComputeResourcePropertyDataType;
@@ -99,6 +100,7 @@ import org.planqk.atlas.web.controller.util.ObjectMapperUtils;
 import org.planqk.atlas.web.dtos.AlgorithmDto;
 import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
 import org.planqk.atlas.web.dtos.ApplicationAreaDto;
+import org.planqk.atlas.web.dtos.ClassicAlgorithmDto;
 import org.planqk.atlas.web.dtos.ComputeResourcePropertyDto;
 import org.planqk.atlas.web.dtos.ComputeResourcePropertyTypeDto;
 import org.planqk.atlas.web.dtos.DiscussionCommentDto;
@@ -399,7 +401,7 @@ public class AlgorithmControllerTest {
     @Test
     @SneakyThrows
     void createAlgorithm_returnBadRequest() {
-        AlgorithmDto algoDto = new AlgorithmDto();
+        AlgorithmDto algoDto = new ClassicAlgorithmDto();
         algoDto.setId(UUID.randomUUID());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
@@ -446,7 +448,7 @@ public class AlgorithmControllerTest {
     @SneakyThrows
     void updateAlgorithm_returnBadRequest() {
         initializeAlgorithms();
-        AlgorithmDto algoDto = new AlgorithmDto();
+        AlgorithmDto algoDto = new ClassicAlgorithmDto();
         algoDto.setId(UUID.randomUUID());
 
         var url = linkBuilderService.urlStringTo(methodOn(AlgorithmController.class)
@@ -617,7 +619,7 @@ public class AlgorithmControllerTest {
     @Test
     @SneakyThrows
     void getTagsOfAlgorithm_returnOk() {
-        Algorithm algorithm = new Algorithm();
+        Algorithm algorithm = new ClassicAlgorithm();
         algorithm.setId(UUID.randomUUID());
         algorithm.setName("Algorithm");
         algorithm.setComputationModel(ComputationModel.CLASSIC);
@@ -1255,7 +1257,7 @@ public class AlgorithmControllerTest {
     void getImplementationsOfAlgorithm_WithElements_returnOk() {
         var inputList = new ArrayList<Implementation>();
         for (int i = 0; i < 10; i++) {
-            var element = new Implementation();
+            Implementation element = new ClassicImplementation();
             element.setName("Test Element " + i);
             element.setId(UUID.randomUUID());
             inputList.add(element);
@@ -1562,7 +1564,7 @@ public class AlgorithmControllerTest {
     @Test
     @SneakyThrows
     void createPatternRelationForAlgorithm_returnCreated() {
-        Algorithm algorithm = new Algorithm();
+        Algorithm algorithm = new ClassicAlgorithm();
         algorithm.setId(UUID.randomUUID());
         algorithm.setName("Algorithm");
         algorithm.setComputationModel(ComputationModel.CLASSIC);
@@ -1598,7 +1600,7 @@ public class AlgorithmControllerTest {
     @Test
     @SneakyThrows
     void createPatternRelationForAlgorithm_returnBadRequest() {
-        Algorithm algorithm = new Algorithm();
+        Algorithm algorithm = new ClassicAlgorithm();
         algorithm.setId(UUID.randomUUID());
         algorithm.setName("Algorithm");
         algorithm.setComputationModel(ComputationModel.CLASSIC);
@@ -1653,7 +1655,7 @@ public class AlgorithmControllerTest {
     @Test
     @SneakyThrows
     void updatePatternRelationOfAlgorithm_returnOk() {
-        Algorithm algorithm = new Algorithm();
+        Algorithm algorithm = new ClassicAlgorithm();
         algorithm.setId(UUID.randomUUID());
         algorithm.setName("Algorithm");
         algorithm.setComputationModel(ComputationModel.CLASSIC);
@@ -1690,7 +1692,7 @@ public class AlgorithmControllerTest {
     @Test
     @SneakyThrows
     void updatePatternRelationOfAlgorithm_returnBadRequest() {
-        Algorithm algorithm = new Algorithm();
+        Algorithm algorithm = new ClassicAlgorithm();
         algorithm.setId(UUID.randomUUID());
         algorithm.setName("Algorithm");
         algorithm.setComputationModel(ComputationModel.CLASSIC);
@@ -1772,7 +1774,7 @@ public class AlgorithmControllerTest {
     @Test
     @SneakyThrows
     void getPatternRelationOfAlgorithm_returnOk() {
-        Algorithm algorithm = new Algorithm();
+        Algorithm algorithm = new ClassicAlgorithm();
         algorithm.setId(UUID.randomUUID());
         algorithm.setName("Algorithm");
         algorithm.setComputationModel(ComputationModel.CLASSIC);
@@ -1806,7 +1808,7 @@ public class AlgorithmControllerTest {
     @Test
     @SneakyThrows
     void getPatternRelationOfAlgorithm_returnNotFound() {
-        Algorithm algorithm = new Algorithm();
+        Algorithm algorithm = new ClassicAlgorithm();
         algorithm.setId(UUID.randomUUID());
         algorithm.setName("Algorithm");
         algorithm.setComputationModel(ComputationModel.CLASSIC);

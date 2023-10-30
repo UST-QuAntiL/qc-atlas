@@ -26,6 +26,7 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
+import org.planqk.atlas.core.model.ClassicAlgorithm;
 import org.planqk.atlas.web.dtos.AlgorithmRelationDto;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
 
@@ -33,9 +34,9 @@ public class AlgorithmRelationDtoMapperTest {
 
     @Test
     void mapToDto() {
-        var sourceAlgorithm = new Algorithm();
+        var sourceAlgorithm = new ClassicAlgorithm();
         sourceAlgorithm.setId(UUID.randomUUID());
-        var targetAlgorithm = new Algorithm();
+        var targetAlgorithm = new ClassicAlgorithm();
         targetAlgorithm.setId(UUID.randomUUID());
 
         var relation = new AlgorithmRelation();
@@ -56,7 +57,8 @@ public class AlgorithmRelationDtoMapperTest {
         relationDto.setId(UUID.randomUUID());
         relationDto.setTargetAlgorithmId(UUID.randomUUID());
         relationDto.setSourceAlgorithmId(UUID.randomUUID());
-
+//        Error while mapping because AlgorithmRelation has 2 fields of type Algorithm,
+//        and not able to decide which subclass to choose while running
         var mappedRelation = ModelMapperUtils.convert(relationDto, AlgorithmRelation.class);
 
         assertThat(mappedRelation.getId()).isEqualTo(relationDto.getId());

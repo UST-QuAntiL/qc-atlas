@@ -27,6 +27,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -35,6 +37,9 @@ import javax.persistence.OneToMany;
 import org.hibernate.envers.AuditTable;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
+
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -48,10 +53,15 @@ import lombok.ToString;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Data
-@Entity
 @AuditTable("algorithm_revisions")
 @Audited
-public class Algorithm extends KnowledgeArtifact {
+@Entity
+@Inheritance(strategy = InheritanceType.JOINED)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "computationModel", visible = true)
+@JsonSubTypes({@JsonSubTypes.Type(value = QuantumAlgorithm.class, name = "QUANTUM"),
+        @JsonSubTypes.Type(value = ClassicAlgorithm.class, name = "CLASSIC"),
+        @JsonSubTypes.Type(value = QuantumAlgorithm.class, name = "HYBRID")})
+public abstract class Algorithm extends KnowledgeArtifact {
 
     private String name;
 

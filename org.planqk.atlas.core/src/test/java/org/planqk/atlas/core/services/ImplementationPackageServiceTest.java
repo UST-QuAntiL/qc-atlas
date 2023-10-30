@@ -28,6 +28,8 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.ClassicAlgorithm;
+import org.planqk.atlas.core.model.ClassicImplementation;
 import org.planqk.atlas.core.model.File;
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.model.ImplementationPackage;
@@ -88,11 +90,11 @@ public class ImplementationPackageServiceTest extends AtlasDatabaseTestBase {
         implementationPackage1.setDescription("Description1");
         implementationPackage1.setPackageType(ImplementationPackageType.TOSCA);
 
-        var algo = new Algorithm();
+        Algorithm algo = new ClassicAlgorithm();
         algo.setName("TestAlgo");
         algo = algorithmService.create(algo);
 
-        var impl = new Implementation();
+        Implementation impl = new ClassicImplementation();
         impl.setName("TestImpl");
         impl = implementationService.create(impl, algo.getId());
 
@@ -171,11 +173,11 @@ public class ImplementationPackageServiceTest extends AtlasDatabaseTestBase {
 
     @Test
     void checkIfImplementationPackageIsLinkedToImplementation() {
-        var algo = new Algorithm();
+        Algorithm algo = new ClassicAlgorithm();
         algo.setName("TestAlgo");
         algo = algorithmService.create(algo);
 
-        var impl = new Implementation();
+        Implementation impl = new ClassicImplementation();
         impl.setName("Impl");
         impl = implementationService.create(impl, algo.getId());
 
@@ -185,7 +187,7 @@ public class ImplementationPackageServiceTest extends AtlasDatabaseTestBase {
 
         Algorithm finalAlgo = algo;
         assertThrows(NoSuchElementException.class, () -> {
-            var impl2 = new Implementation();
+            Implementation impl2 = new ClassicImplementation();
             impl2.setName("Impl2");
             impl2 = implementationService.create(impl2, finalAlgo.getId());
             implementationPackageService.checkIfImplementationPackageIsLinkedToImplementation(implementationPackage.getId(), impl2.getId());

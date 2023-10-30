@@ -27,6 +27,9 @@ import javax.validation.constraints.Null;
 import org.planqk.atlas.web.utils.Identifyable;
 import org.planqk.atlas.web.utils.ValidationGroups;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -37,7 +40,11 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode
 @Data
 @NoArgsConstructor
-public class ImplementationDto implements Identifyable {
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "computationModel", visible = true)
+@JsonSubTypes({@JsonSubTypes.Type(value = QuantumImplementationDto.class, name = "QUANTUM"),
+        @JsonSubTypes.Type(value = ClassicImplementationDto.class, name = "CLASSIC"),
+        @JsonSubTypes.Type(value = QuantumImplementationDto.class, name = "HYBRID")})
+public abstract class ImplementationDto implements Identifyable {
 
     @NotNull(groups = {ValidationGroups.IDOnly.class}, message = "An id is required to perform an update")
     @Null(groups = {ValidationGroups.Create.class}, message = "The id must be null for creating an implementation")

@@ -41,6 +41,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.planqk.atlas.core.model.Algorithm;
+import org.planqk.atlas.core.model.ClassicAlgorithm;
 import org.planqk.atlas.core.model.ComputationModel;
 import org.planqk.atlas.core.model.LearningMethod;
 import org.planqk.atlas.core.services.AlgorithmService;
@@ -99,7 +100,7 @@ public class LearningMethodControllerTest {
     }
 
     private Algorithm getTestAlgorithm() {
-        Algorithm algorithm = new Algorithm();
+        Algorithm algorithm = new ClassicAlgorithm();
         algorithm.setId(UUID.randomUUID());
         algorithm.setComputationModel(ComputationModel.CLASSIC);
         algorithm.setName("QAOA");

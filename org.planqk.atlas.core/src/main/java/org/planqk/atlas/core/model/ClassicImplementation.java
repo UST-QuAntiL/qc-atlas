@@ -26,6 +26,8 @@ import javax.persistence.ManyToOne;
 import org.hibernate.envers.AuditTable;
 import org.hibernate.envers.Audited;
 
+import com.fasterxml.jackson.annotation.JsonTypeName;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -35,6 +37,7 @@ import lombok.ToString;
 @Entity
 @AuditTable("classic_implementation_revisions")
 @Audited
+@JsonTypeName("CLASSIC")
 public class ClassicImplementation extends Implementation {
 
     @ManyToOne(fetch = FetchType.LAZY)

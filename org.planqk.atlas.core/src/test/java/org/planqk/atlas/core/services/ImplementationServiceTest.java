@@ -160,15 +160,15 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
 
     @Test
     void findAllImplementations() {
-        Algorithm algorithm = new Algorithm();
+        Algorithm algorithm = new ClassicAlgorithm();
         algorithm.setName("algorithmName");
         algorithm = algorithmService.create(algorithm);
 
-        Implementation implementation1 = new Implementation();
+        Implementation implementation1 = new ClassicImplementation();
         implementation1.setName("implementationName1");
         implementation1.setImplementedAlgorithm(algorithm);
         implementationService.create(implementation1, algorithm.getId());
-        Implementation implementation2 = new Implementation();
+        Implementation implementation2 = new ClassicImplementation();
         implementation2.setName("implementationName2");
         implementation2.setImplementedAlgorithm(algorithm);
         implementationService.create(implementation2, algorithm.getId());
@@ -258,7 +258,7 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
         algorithm.setName("algorithmName");
         algorithm = algorithmService.create(algorithm);
 
-        var implementation = new Implementation();
+        Implementation implementation = new ClassicImplementation();
         implementation.setName("implementationName");
         implementation.setImplementedAlgorithm(algorithm);
 
@@ -384,11 +384,11 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
 
     @Test
     void checkIfImplementationIsOfAlgorithm_IsOfElement() {
-        Algorithm algorithm = new Algorithm();
+        Algorithm algorithm = new ClassicAlgorithm();
         algorithm.setName("algorithmName");
         Algorithm persistedAlgorithm = algorithmService.create(algorithm);
 
-        Implementation implementation = new Implementation();
+        Implementation implementation = new ClassicImplementation();
         implementation.setName("implementationName");
         implementation.setImplementedAlgorithm(persistedAlgorithm);
         implementationService.create(implementation, algorithm.getId());
@@ -399,14 +399,14 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
 
     @Test
     void checkIfImplementationIsOfAlgorithm_IsNotOfElement() {
-        Algorithm algorithm1 = new Algorithm();
+        Algorithm algorithm1 = new ClassicAlgorithm();
         algorithm1.setName("algorithmName1");
         Algorithm persistedAlgorithm1 = algorithmService.create(algorithm1);
-        Algorithm algorithm2 = new Algorithm();
+        Algorithm algorithm2 = new ClassicAlgorithm();
         algorithm1.setName("algorithmName2");
         Algorithm persistedAlgorithm2 = algorithmService.create(algorithm2);
 
-        Implementation implementation = new Implementation();
+        Implementation implementation = new ClassicImplementation();
         implementation.setName("implementationName");
         implementation.setImplementedAlgorithm(persistedAlgorithm1);
         implementationService.create(implementation, algorithm1.getId());
@@ -417,15 +417,15 @@ public class ImplementationServiceTest extends AtlasDatabaseTestBase {
 
     @Test
     void findByImplementedAlgorithm() {
-        Algorithm algorithm = new Algorithm();
+        Algorithm algorithm = new ClassicAlgorithm();
         algorithm.setName("algorithmName");
         algorithm = algorithmService.create(algorithm);
 
-        Implementation implementation1 = new Implementation();
+        Implementation implementation1 = new ClassicImplementation();
         implementation1.setName("implementationName1");
         implementation1.setImplementedAlgorithm(algorithm);
         implementationService.create(implementation1, algorithm.getId());
-        Implementation implementation2 = new Implementation();
+        Implementation implementation2 = new ClassicImplementation();
         implementation2.setName("implementationName2");
         implementation2.setImplementedAlgorithm(algorithm);
         implementationService.create(implementation2, algorithm.getId());

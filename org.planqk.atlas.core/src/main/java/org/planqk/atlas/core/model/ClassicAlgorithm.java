@@ -24,14 +24,19 @@ import javax.persistence.Entity;
 import org.hibernate.envers.AuditTable;
 import org.hibernate.envers.Audited;
 
+import com.fasterxml.jackson.annotation.JsonTypeName;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
 @AuditTable("classic_algorithm_revisions")
 @Audited
+@JsonTypeName("CLASSIC")
+@NoArgsConstructor
 public class ClassicAlgorithm extends Algorithm {
 
 }

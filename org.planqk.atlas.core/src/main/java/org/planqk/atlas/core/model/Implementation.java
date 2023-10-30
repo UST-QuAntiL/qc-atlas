@@ -24,6 +24,8 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -33,6 +35,9 @@ import javax.persistence.OneToMany;
 import org.hibernate.envers.AuditTable;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
+
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -45,11 +50,16 @@ import lombok.ToString;
  */
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-@Entity
 @Data
 @AuditTable("implementation_revisions")
 @Audited
-public class Implementation extends KnowledgeArtifact {
+@Entity
+@Inheritance(strategy = InheritanceType.JOINED)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "computationModel", visible = true)
+@JsonSubTypes({@JsonSubTypes.Type(value = QuantumImplementation.class, name = "QUANTUM"),
+        @JsonSubTypes.Type(value = ClassicImplementation.class, name = "CLASSIC"),
+        @JsonSubTypes.Type(value = QuantumImplementation.class, name = "HYBRID")})
+public abstract class Implementation extends KnowledgeArtifact {
 
     private String name;
 

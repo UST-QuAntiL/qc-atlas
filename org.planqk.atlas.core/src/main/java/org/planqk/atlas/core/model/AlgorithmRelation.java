@@ -52,4 +52,5 @@ public class AlgorithmRelation extends HasId {
     private AlgorithmRelationType algorithmRelationType;
 
     private String description;
+
 }

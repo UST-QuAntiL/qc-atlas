@@ -44,6 +44,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.planqk.atlas.core.model.Algorithm;
 import org.planqk.atlas.core.model.AlgorithmRelation;
 import org.planqk.atlas.core.model.AlgorithmRelationType;
+import org.planqk.atlas.core.model.ClassicAlgorithm;
 import org.planqk.atlas.core.model.ComputationModel;
 import org.planqk.atlas.core.services.AlgorithmRelationService;
 import org.planqk.atlas.core.services.AlgorithmService;
@@ -104,12 +105,12 @@ public class AlgorithmRelationControllerTest {
     @Test
     @SneakyThrows
     void getAlgorithmRelationsOfAlgorithm_SingleElement_returnOk() {
-        Algorithm sourceAlgorithm = new Algorithm();
+        Algorithm sourceAlgorithm = new ClassicAlgorithm();
         sourceAlgorithm.setId(UUID.randomUUID());
         sourceAlgorithm.setName("sourceAlgorithmName");
         sourceAlgorithm.setComputationModel(ComputationModel.CLASSIC);
 
-        Algorithm targetAlgorithm = new Algorithm();
+        Algorithm targetAlgorithm = new ClassicAlgorithm();
         targetAlgorithm.setId(UUID.randomUUID());
         targetAlgorithm.setName("targetAlgorithmName");
         targetAlgorithm.setComputationModel(ComputationModel.CLASSIC);
@@ -154,12 +155,12 @@ public class AlgorithmRelationControllerTest {
     @Test
     @SneakyThrows
     void createAlgorithmRelation_returnCreated() {
-        Algorithm sourceAlgorithm = new Algorithm();
+        Algorithm sourceAlgorithm = new ClassicAlgorithm();
         sourceAlgorithm.setId(UUID.randomUUID());
         sourceAlgorithm.setName("sourceAlgorithmName");
         sourceAlgorithm.setComputationModel(ComputationModel.CLASSIC);
 
-        Algorithm targetAlgorithm = new Algorithm();
+        Algorithm targetAlgorithm = new ClassicAlgorithm();
         targetAlgorithm.setId(UUID.randomUUID());
         targetAlgorithm.setName("targetAlgorithmName");
         targetAlgorithm.setComputationModel(ComputationModel.CLASSIC);
@@ -231,12 +232,12 @@ public class AlgorithmRelationControllerTest {
     @Test
     @SneakyThrows
     void updateAlgorithmRelation_returnOk() {
-        Algorithm sourceAlgorithm = new Algorithm();
+        Algorithm sourceAlgorithm = new ClassicAlgorithm();
         sourceAlgorithm.setId(UUID.randomUUID());
         sourceAlgorithm.setName("sourceAlgorithmName");
         sourceAlgorithm.setComputationModel(ComputationModel.CLASSIC);
 
-        Algorithm targetAlgorithm = new Algorithm();
+        Algorithm targetAlgorithm = new ClassicAlgorithm();
         targetAlgorithm.setId(UUID.randomUUID());
         targetAlgorithm.setName("targetAlgorithmName");
         targetAlgorithm.setComputationModel(ComputationModel.CLASSIC);
@@ -335,12 +336,12 @@ public class AlgorithmRelationControllerTest {
     @Test
     @SneakyThrows
     void getAlgorithmRelation_returnOk() {
-        Algorithm sourceAlgorithm = new Algorithm();
+        Algorithm sourceAlgorithm = new ClassicAlgorithm();
         sourceAlgorithm.setId(UUID.randomUUID());
         sourceAlgorithm.setName("sourceAlgorithmName");
         sourceAlgorithm.setComputationModel(ComputationModel.CLASSIC);
 
-        Algorithm targetAlgorithm = new Algorithm();
+        Algorithm targetAlgorithm = new ClassicAlgorithm();
         targetAlgorithm.setId(UUID.randomUUID());
         targetAlgorithm.setName("targetAlgorithmName");
         targetAlgorithm.setComputationModel(ComputationModel.CLASSIC);
