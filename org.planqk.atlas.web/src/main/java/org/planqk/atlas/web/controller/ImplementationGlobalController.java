@@ -22,6 +22,7 @@ package org.planqk.atlas.web.controller;
 import java.net.URI;
 import java.util.Collection;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.services.ImplementationService;
@@ -125,7 +126,12 @@ public class ImplementationGlobalController {
     public ResponseEntity<Collection<PatternUriDto>> getPatternsOfImplementation(
             @PathVariable UUID implementationId) {
         final Implementation implementation = implementationService.findById(implementationId);
-        return ResponseEntity.ok(ModelMapperUtils.convertCollection(implementation.getPatterns(), PatternUriDto.class));
+        final Collection<PatternUriDto> patternUriDtos = implementation.getPatterns().stream().map(uri -> {
+            final PatternUriDto dto = new PatternUriDto();
+            dto.setPatternURI(uri);
+            return dto;
+        }).collect(Collectors.toList());
+        return ResponseEntity.ok(patternUriDtos);
     }
 
     @Operation(responses = {
@@ -140,7 +146,9 @@ public class ImplementationGlobalController {
             @PathVariable UUID implementationId,
             @Validated(ValidationGroups.Create.class) @RequestBody PatternUriDto patternDto) {
         final Implementation implementation = implementationService.findById(implementationId);
-        implementation.addPattern(ModelMapperUtils.convert(patternDto, PatternUriDto.class).getPatternURI());
+        final URI patternURI = patternDto.getPatternURI();
+        implementation.addPattern(patternURI);
+        implementationService.update(implementation);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
@@ -157,6 +165,7 @@ public class ImplementationGlobalController {
             @Validated(ValidationGroups.IDOnly.class) @RequestBody PatternUriDto patternDto) {
         final Implementation implementation = implementationService.findById(implementationId);
         implementation.removePattern(ModelMapperUtils.convert(patternDto, PatternUriDto.class).getPatternURI());
+        implementationService.update(implementation);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 

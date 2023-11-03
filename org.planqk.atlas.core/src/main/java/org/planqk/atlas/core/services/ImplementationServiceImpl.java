@@ -105,6 +105,7 @@ public class ImplementationServiceImpl implements ImplementationService {
         persistedImplementation.setLicense(implementation.getLicense());
         persistedImplementation.setProblemStatement(implementation.getProblemStatement());
         persistedImplementation.setTechnology(implementation.getTechnology());
+        persistedImplementation.setPatterns(implementation.getPatterns());
 
         updateRevisions(persistedImplementation);
 
