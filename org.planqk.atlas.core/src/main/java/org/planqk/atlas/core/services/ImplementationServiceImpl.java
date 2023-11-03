@@ -223,8 +223,7 @@ public class ImplementationServiceImpl implements ImplementationService {
 
     @Override
     public Page<Implementation> findByImplementedPatterns(URI patternUri, Pageable pageable) {
-        // TODO
-        return null;
+        return implementationRepository.findImplementationsByPatterns(patternUri, pageable);
     }
 
     @Override

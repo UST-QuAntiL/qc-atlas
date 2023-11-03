@@ -45,6 +45,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -177,7 +178,8 @@ public class ImplementationGlobalController {
     }, description = "Retrieve all implementations associated with a specific pattern.")
     @GetMapping("/" + Constants.PATTERNS)
     public ResponseEntity<Page<ImplementationDto>> getImplementationsOfPattern(
-            @PathVariable URI patternURI, @Parameter(hidden = true) ListParameters listParameters) {
+            @Parameter(hidden = true) ListParameters listParameters,
+            @RequestParam("patternURI") URI patternURI) {
         final var implementations = implementationService.findByImplementedPatterns(patternURI, listParameters.getPageable());
         return ResponseEntity.ok(ModelMapperUtils.convertPage(implementations, ImplementationDto.class));
     }
