@@ -19,6 +19,7 @@
 
 package org.planqk.atlas.core.services;
 
+import java.net.URI;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
@@ -217,6 +218,12 @@ public class ImplementationServiceImpl implements ImplementationService {
         return implementationRepository.findRevision(implementationId, revisionId).orElseThrow(()
                 -> new NoSuchElementException("Implementation revision with Implementation ID: "
                 + implementationId + "and Revision ID " + revisionId + "does not exist"));
+    }
+
+    @Override
+    public Page<Implementation> findByImplementedPatterns(URI patternUri, Pageable pageable) {
+        // TODO
+        return null;
     }
 
     @Override

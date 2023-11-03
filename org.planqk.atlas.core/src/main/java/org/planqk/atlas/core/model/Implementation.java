@@ -19,10 +19,13 @@
 
 package org.planqk.atlas.core.model;
 
+import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -129,6 +132,11 @@ public class Implementation extends KnowledgeArtifact {
     @NotAudited
     private Set<ImplementationPackage> implementationPackages = new HashSet<>();
 
+    @ElementCollection
+    @CollectionTable(name = "pattern_uris", joinColumns = @JoinColumn(name = "implementation_id"))
+    @Column(name = "pattern_uri", nullable = false)
+    private Set<URI> patterns = new HashSet<>();
+
     public void addTag(@NonNull Tag tag) {
         if (tags.contains(tag)) {
             return;
@@ -191,5 +199,19 @@ public class Implementation extends KnowledgeArtifact {
         }
         this.implementationPackages.remove(implementationPackage);
         implementationPackage.setImplementation(null);
+    }
+
+    public void addPattern(@NonNull URI pattern) {
+        if (patterns.contains(pattern)) {
+            return;
+        }
+        this.patterns.add(pattern);
+    }
+
+    public void removePattern(@NonNull URI pattern) {
+        if (!patterns.contains(pattern)) {
+            return;
+        }
+        this.patterns.remove(pattern);
     }
 }
