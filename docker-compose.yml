@@ -7,8 +7,7 @@ services:
             POSTGRES_PASSWORD: planqk
             POSTGRES_DB: planqk
         ports:
-            - "5060:5060"
-        command: -p 5060
+            - "5060:5432"
 
     qc-atlas-ui:
         image: planqk/qc-atlas-ui:latest
