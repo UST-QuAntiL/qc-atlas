@@ -1,0 +1,11 @@
+{
+  "features": {
+    "nisqAnalyzer": "false",
+    "qprov": "false",
+    "patternAtlas": "false",
+    "nisqAnalyzerCompilerComparison": "false",
+    "nisqAnalyzerQpuSelection": "false",
+    "showSettings": "false",
+    "enableEditing": "false"
+  }
+}
