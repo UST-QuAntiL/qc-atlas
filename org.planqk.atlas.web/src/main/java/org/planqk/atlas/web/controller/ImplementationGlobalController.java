@@ -19,22 +19,33 @@
 
 package org.planqk.atlas.web.controller;
 
+import java.net.URI;
+import java.util.Collection;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.planqk.atlas.core.model.Implementation;
 import org.planqk.atlas.core.services.ImplementationService;
 import org.planqk.atlas.web.Constants;
 import org.planqk.atlas.web.dtos.ImplementationDto;
+import org.planqk.atlas.web.dtos.PatternUriDto;
 import org.planqk.atlas.web.dtos.RevisionDto;
 import org.planqk.atlas.web.utils.ListParameters;
 import org.planqk.atlas.web.utils.ListParametersDoc;
 import org.planqk.atlas.web.utils.ModelMapperUtils;
+import org.planqk.atlas.web.utils.ValidationGroups;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -71,7 +82,7 @@ public class ImplementationGlobalController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                         description = "Implementation with given ID doesn't exist")
+                    description = "Implementation with given ID doesn't exist")
     }, description = "Retrieve a specific implementation and its basic properties.")
     @GetMapping("/{implementationId}")
     public ResponseEntity<ImplementationDto> getImplementation(@PathVariable UUID implementationId) {
@@ -83,7 +94,7 @@ public class ImplementationGlobalController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400"),
             @ApiResponse(responseCode = "404",
-                description = "Implementation with given ID doesn't exist")
+                    description = "Implementation with given ID doesn't exist")
     }, description = "Retrieve all revisions of an implementation")
     @ListParametersDoc
     @GetMapping("/{implementationId}/" + Constants.REVISIONS)
@@ -104,5 +115,72 @@ public class ImplementationGlobalController {
             @PathVariable UUID implementationId, @PathVariable Integer revisionId) {
         final Implementation implementationRevision = implementationService.findImplementationRevision(implementationId, revisionId).getEntity();
         return ResponseEntity.ok(ModelMapperUtils.convert(implementationRevision, ImplementationDto.class));
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400",
+                    description = "Bad Request. Invalid request body."),
+            @ApiResponse(responseCode = "404", description = "Not Found. Implementation with given IDs don't exist.")
+    }, description = "Retrieve all patterns associated with a specific implementation.")
+    @GetMapping("/{implementationId}/" + Constants.PATTERNS)
+    public ResponseEntity<Collection<PatternUriDto>> getPatternsOfImplementation(
+            @PathVariable UUID implementationId) {
+        final Implementation implementation = implementationService.findById(implementationId);
+        final Collection<PatternUriDto> patternUriDtos = implementation.getPatterns().stream().map(uri -> {
+            final PatternUriDto dto = new PatternUriDto();
+            dto.setPatternURI(uri);
+            return dto;
+        }).collect(Collectors.toList());
+        return ResponseEntity.ok(patternUriDtos);
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400",
+                    description = "Bad Request. Invalid request body."),
+            @ApiResponse(responseCode = "404",
+                    description = "Not Found. Implementation with given IDs don't exist.")
+    }, description = "Add a pattern to an implementation. The pattern does not have to exist before adding it.")
+    @PostMapping("/{implementationId}/" + Constants.PATTERNS)
+    public ResponseEntity<Void> addPatternToImplementation(
+            @PathVariable UUID implementationId,
+            @Validated(ValidationGroups.Create.class) @RequestBody PatternUriDto patternDto) {
+        final Implementation implementation = implementationService.findById(implementationId);
+        final URI patternURI = patternDto.getPatternURI();
+        implementation.addPattern(patternURI);
+        implementationService.update(implementation);
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400",
+                    description = "Bad Request. Invalid request body."),
+            @ApiResponse(responseCode = "404",
+                    description = "Not Found. Implementation with given IDs or Pattern don't exist.")
+    }, description = "Remove a pattern from an implementation.")
+    @DeleteMapping("/{implementationId}/" + Constants.PATTERNS)
+    public ResponseEntity<Void> removePatternFromImplementation(
+            @PathVariable UUID implementationId,
+            @Validated(ValidationGroups.IDOnly.class) @RequestBody PatternUriDto patternDto) {
+        final Implementation implementation = implementationService.findById(implementationId);
+        implementation.removePattern(ModelMapperUtils.convert(patternDto, PatternUriDto.class).getPatternURI());
+        implementationService.update(implementation);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400",
+                    description = "Bad Request. Invalid request body."),
+            @ApiResponse(responseCode = "404", description = "Not Found. Implementation with given IDs don't exist.")
+    }, description = "Retrieve all implementations associated with a specific pattern.")
+    @GetMapping("/" + Constants.PATTERNS)
+    public ResponseEntity<Page<ImplementationDto>> getImplementationsOfPattern(
+            @Parameter(hidden = true) ListParameters listParameters,
+            @RequestParam("patternURI") URI patternURI) {
+        final var implementations = implementationService.findByImplementedPatterns(patternURI, listParameters.getPageable());
+        return ResponseEntity.ok(ModelMapperUtils.convertPage(implementations, ImplementationDto.class));
     }
 }

@@ -7,4 +7,38 @@ services:
             POSTGRES_PASSWORD: planqk
             POSTGRES_DB: planqk
         ports:
-            - "5060:5060"
+            - "5060:5432"
+
+    qc-atlas-ui:
+        image: planqk/qc-atlas-ui:latest
+        depends_on:
+            - config-server
+        environment:
+            # because the requests are performed from the browser and not
+            # from the container itself we have to specify localhost here
+            # and **not** the container name
+            QC_ATLAS_HOST_NAME: localhost
+            QC_ATLAS_PORT: 6626
+        ports:
+            - '80:80'
+        volumes:
+            - ./config:/opt/init-config.d
+        networks:
+            - default
+
+    config-server:
+        image: quay.io/coreos/etcd:v3.5.9
+        environment:
+            ETCD_NAME: config-node1
+            ETCD_CORS: "*"
+            ETCD_ENABLE_V2: 'true'
+            ETCDCTL_API: 3
+            ETCD_ADVERTISE_CLIENT_URLS: "http://config-server:2379"
+            ETCD_LISTEN_CLIENT_URLS: "http://0.0.0.0:2379"
+        ports:
+            - "2379:2379"
+        networks:
+            - default
+networks:
+    default:
+        driver: bridge

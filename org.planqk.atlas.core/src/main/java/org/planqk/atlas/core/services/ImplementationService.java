@@ -19,6 +19,7 @@
 
 package org.planqk.atlas.core.services;
 
+import java.net.URI;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Algorithm;
@@ -197,5 +198,21 @@ public interface ImplementationService {
      *
      */
     Revision<Integer, Implementation> findImplementationRevision(UUID implementationId, Integer revisionNumber);
+
+    /**
+     * Retrieve multiple {@link Implementation}s entries from the database which implement a given Pattern. If
+     * no entries are found an empty page is returned.
+     * <p>
+     * The amount of entries is based on the given {@link Pageable} parameter. If the {@link Pageable} is unpaged a
+     * {@link Page} with all entries is queried.
+     * <p>
+     * The given Pattern is identified through its URI given as a parameter. If no Pattern with the
+     * given ID can be found a {@link java.util.NoSuchElementException} is thrown.
+     *
+     * @param patternUri The URI of the Pattern we want find {@link Implementation}s for
+     * @param pageable    The page information, namely page size and page number, of the page we want to retrieve
+     * @return The page of queried {@link Implementation} entries which implement the given Pattern
+     */
+    Page<Implementation> findByImplementedPatterns(URI patternUri, Pageable pageable);
 
 }

@@ -19,6 +19,7 @@
 
 package org.planqk.atlas.core.repository;
 
+import java.net.URI;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.Implementation;
@@ -52,6 +53,12 @@ public interface ImplementationRepository extends RevisionRepository<Implementat
                    "JOIN i.softwarePlatforms sp " +
                    "WHERE sp.id = :spId")
     Page<Implementation> findImplementationsBySoftwarePlatformId(@Param("spId") UUID softwarePlatformId, Pageable pageable);
+
+    @Query("SELECT impl " +
+            "FROM Implementation impl " +
+            "JOIN impl.patterns uri " +
+            "WHERE  uri = :patternURI")
+    Page<Implementation> findImplementationsByPatterns(@Param("patternURI") URI patternURI, Pageable pageable);
 
     @Modifying()
     @Query(value = "DELETE FROM implementation_revisions WHERE id = :implId", nativeQuery = true)

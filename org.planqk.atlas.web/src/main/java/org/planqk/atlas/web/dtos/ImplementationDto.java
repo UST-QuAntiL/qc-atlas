@@ -19,6 +19,7 @@
 
 package org.planqk.atlas.web.dtos;
 
+import java.net.URI;
 import java.util.Set;
 import java.util.UUID;
 import javax.validation.constraints.NotNull;
@@ -72,4 +73,6 @@ public class ImplementationDto implements Identifyable {
     private String problemStatement;
 
     private Set<SoftwarePlatformDto> softwarePlatforms;
+
+    private Set<URI> patterns;
 }
