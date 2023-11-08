@@ -53,6 +53,7 @@
         <checkstyle.config.location>checkstyle.xml</checkstyle.config.location>
         <maven.checkstyle.version>3.1.1</maven.checkstyle.version>
         <checkstyle.addons.version>6.0.1</checkstyle.addons.version>
+        <okhttp3.version>4.9.1</okhttp3.version>
     </properties>
 
     <modules>
@@ -116,6 +117,11 @@
     </build>
 
     <dependencies>
+        <dependency>
+            <groupId>io.minio</groupId>
+            <artifactId>minio</artifactId>
+            <version>8.5.2</version>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>

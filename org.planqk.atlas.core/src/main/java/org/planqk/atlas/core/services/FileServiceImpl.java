@@ -41,7 +41,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
-@Profile("!google-cloud")
+@Profile("!google-cloud & !minio")
 @AllArgsConstructor
 public class FileServiceImpl implements FileService {
 

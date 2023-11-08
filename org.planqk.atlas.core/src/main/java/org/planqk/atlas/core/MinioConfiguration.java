@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 the qc-atlas contributors.
+ * Copyright (c) 2020-2023 the qc-atlas contributors.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -19,20 +19,39 @@
 
 package org.planqk.atlas.core;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 
-import com.google.cloud.storage.Storage;
-import com.google.cloud.storage.StorageOptions;
+import io.minio.MinioClient;
 
-@Profile({"google-cloud & !test & !minio"})
-@Primary
+@Profile({"!google-cloud & !test & minio"})
 @Configuration
-public class CloudStorageConfiguration {
+public class MinioConfiguration {
+
+    private final String accessKey;
+
+    private final String accessSecret;
+
+    private final String minioUrl;
+
+    public MinioConfiguration(
+            @Value("${minio.url}") String minioUrl,
+            @Value("${minio.access.name}") String accessKey,
+            @Value("${minio.access.secret}") String accessSecret
+    ) {
+        this.minioUrl = minioUrl;
+        this.accessKey = accessKey;
+        this.accessSecret = accessSecret;
+    }
+
     @Bean
-    public Storage storage() {
-        return StorageOptions.getDefaultInstance().getService();
+    public MinioClient generateMinioClient() {
+        return MinioClient.builder()
+                .endpoint(minioUrl)
+                .credentials(accessKey, accessSecret)
+                .build();
     }
 }
+
