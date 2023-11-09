@@ -22,6 +22,7 @@ package org.planqk.atlas.core.services;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.io.IOException;
 import java.util.NoSuchElementException;
 import java.util.Random;
 import java.util.UUID;
@@ -29,6 +30,7 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.planqk.atlas.core.model.File;
+import org.planqk.atlas.core.repository.FileDataRepository;
 import org.planqk.atlas.core.repository.FileRepository;
 import org.planqk.atlas.core.util.AtlasDatabaseTestBase;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,22 +47,24 @@ public class FileServiceTest extends AtlasDatabaseTestBase {
     private FileService fileService;
 
     @Autowired
+    private FileDataRepository fileDataRepository;
+
+    @Autowired
     private FileRepository fileRepository;
 
     private MultipartFile multipartFile;
 
     @BeforeEach
     public void initialize() {
-        MultipartFile file = new MockMultipartFile("file.txt", "file.txt", "text/plain", new byte[0]);
-        multipartFile = file;
+        multipartFile = new MockMultipartFile("file.txt", "file.txt", "text/plain", new byte[0]);
     }
 
     @Test
-    public void createFile() {
+    public void createFile() throws IOException {
         File file = fileService.create(multipartFile);
-        assertThat(new java.io.File(file.getFileURL()).isFile()).isTrue();
-        assertThat(new java.io.File(file.getFileURL()).exists()).isTrue();
         assertThat(fileRepository.findAll().size()).isEqualTo(1);
+        assertThat(fileDataRepository.findAll().size()).isEqualTo(1);
+        assertThat(fileDataRepository.findByFile(file).getData()).isEqualTo(multipartFile.getBytes());
     }
 
     @Test

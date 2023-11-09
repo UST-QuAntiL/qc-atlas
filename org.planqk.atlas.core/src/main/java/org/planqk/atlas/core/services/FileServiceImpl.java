@@ -19,16 +19,13 @@
 
 package org.planqk.atlas.core.services;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.File;
+import org.planqk.atlas.core.model.FileData;
+import org.planqk.atlas.core.repository.FileDataRepository;
 import org.planqk.atlas.core.repository.FileRepository;
 import org.planqk.atlas.core.util.ServiceUtils;
 import org.springframework.context.annotation.Profile;
@@ -47,42 +44,25 @@ public class FileServiceImpl implements FileService {
 
     private final FileRepository fileRepository;
 
-    private final String path = System.getProperty("java.io.tmpdir");
-
-    private final String storageFolder = path + java.io.File.separator + "qc-atlas";
+    private final FileDataRepository fileDataRepository;
 
     @Override
     public File create(MultipartFile file) {
         final InputStream inputStream;
-        final OutputStream outputStream;
-
-        final java.io.File dir = new java.io.File(storageFolder);
-        if (!dir.exists())
-            dir.mkdirs();
-        final java.io.File newFile = new java.io.File(dir.getAbsolutePath() + java.io.File.separator + file.getOriginalFilename());
-
         try {
             inputStream = file.getInputStream();
-
-            if (!newFile.exists()) {
-                newFile.createNewFile();
-            }
-            outputStream = new FileOutputStream(newFile);
-            int read = 0;
-            final int maxSize = 1024;
-            final byte[] bytes = new byte[maxSize];
-
-            while ((read = inputStream.read(bytes)) != -1) {
-                outputStream.write(bytes, 0, read);
-            }
-            outputStream.close();
 
             final File createdFile = new File();
             createdFile.setName(file.getOriginalFilename());
             createdFile.setMimeType(file.getContentType());
-            createdFile.setFileURL(newFile.getAbsolutePath());
+            createdFile.setFileURL(file.getOriginalFilename());
+
+            final FileData fileData = new FileData();
+            fileData.setData(inputStream.readAllBytes());
+            fileData.setFile(createdFile);
 
             final File savedFile = fileRepository.save(createdFile);
+            fileDataRepository.save(fileData);
             return savedFile;
         } catch (IOException e) {
             e.printStackTrace();
@@ -99,22 +79,16 @@ public class FileServiceImpl implements FileService {
     @Override
     @Transactional
     public void delete(UUID id) {
-        final String url = findById(id).getFileURL();
-        try {
-            Files.deleteIfExists(Paths.get(url));
-            fileRepository.deleteById(id);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        final File file = findById(id);
+        final FileData fileData = fileDataRepository.findByFile(file);
+        fileRepository.deleteById(id);
+        fileDataRepository.delete(fileData);
     }
 
     @Override
     public byte[] getFileContent(UUID id) {
         final File file = findById(id);
-        try {
-            return Files.readAllBytes(Paths.get(file.getFileURL()));
-        } catch (IOException e) {
-            throw new NoSuchElementException("File with URL \"" + file.getFileURL() + "\" does not exist");
-        }
+        final FileData fileData = fileDataRepository.findByFile(file);
+        return fileData.getData();
     }
 }
