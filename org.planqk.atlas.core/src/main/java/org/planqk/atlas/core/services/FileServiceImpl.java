@@ -23,8 +23,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.UUID;
 
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.planqk.atlas.core.model.File;
 import org.planqk.atlas.core.model.FileData;
 import org.planqk.atlas.core.repository.FileDataRepository;
@@ -35,6 +33,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 @Slf4j
 @Service
 @Profile("!google-cloud")
@@ -44,10 +45,6 @@ public class FileServiceImpl implements FileService {
     private final FileRepository fileRepository;
 
     private final FileDataRepository fileDataRepository;
-
-    private final String path = System.getProperty("java.io.tmpdir");
-
-    private final String storageFolder = path + java.io.File.separator + "qc-atlas";
 
     @Override
     public File create(MultipartFile file) {
