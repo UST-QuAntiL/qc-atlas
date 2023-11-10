@@ -28,7 +28,7 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-      - name: Build and push latest QC ATlas
+      - name: Build and push latest QC Atlas
         if: ${{ steps.vars.outputs.tag == 'master' }}
         uses: docker/build-push-action@v2
         with:
@@ -37,7 +37,7 @@ jobs:
           push: true
           tags: planqk/atlas:latest
 
-      - name: Build and push version of QC ATlas
+      - name: Build and push version of QC Atlas
         if: ${{ steps.vars.outputs.tag != 'master' }}
         uses: docker/build-push-action@v2
         with:
