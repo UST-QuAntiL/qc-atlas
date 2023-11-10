@@ -32,7 +32,8 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-
+      - name: Debug tags
+          run: echo "Tags: ${{ steps.meta.outputs.tags }}"
       - name: Build and push latest QC Atlas
         uses: docker/build-push-action@v4
         with:
