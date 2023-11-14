@@ -213,6 +213,6 @@ public interface ImplementationService {
      * @param pageable    The page information, namely page size and page number, of the page we want to retrieve
      * @return The page of queried {@link Implementation} entries which implement the given Pattern
      */
-    Page<Implementation> findByImplementedPatterns(URI patternUri, Pageable pageable);
+    Page<Implementation> findByImplementedPatterns(String patternUri, Pageable pageable);
 
 }

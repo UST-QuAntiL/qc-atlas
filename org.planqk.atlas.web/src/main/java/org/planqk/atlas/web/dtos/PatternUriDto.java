@@ -36,5 +36,5 @@ import lombok.EqualsAndHashCode;
 public class PatternUriDto {
 
     @NotNull(groups = {ValidationGroups.IDOnly.class, ValidationGroups.Create.class}, message = "URI value must not be null!")
-    private URI patternURI;
+    private String patternURI;
 }

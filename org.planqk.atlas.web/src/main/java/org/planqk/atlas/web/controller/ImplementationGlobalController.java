@@ -145,9 +145,8 @@ public class ImplementationGlobalController {
     @PostMapping("/{implementationId}/" + Constants.PATTERNS)
     public ResponseEntity<Void> addPatternToImplementation(
             @PathVariable UUID implementationId,
-            @Validated(ValidationGroups.Create.class) @RequestBody PatternUriDto patternDto) {
+            @Validated(ValidationGroups.Create.class) @RequestParam("patternURI") String patternURI) {
         final Implementation implementation = implementationService.findById(implementationId);
-        final URI patternURI = patternDto.getPatternURI();
         implementation.addPattern(patternURI);
         implementationService.update(implementation);
         return new ResponseEntity<>(HttpStatus.CREATED);
@@ -163,9 +162,9 @@ public class ImplementationGlobalController {
     @DeleteMapping("/{implementationId}/" + Constants.PATTERNS)
     public ResponseEntity<Void> removePatternFromImplementation(
             @PathVariable UUID implementationId,
-            @Validated(ValidationGroups.IDOnly.class) @RequestBody PatternUriDto patternDto) {
+            @Validated(ValidationGroups.IDOnly.class) @RequestParam("patternURI") String patternURI) {
         final Implementation implementation = implementationService.findById(implementationId);
-        implementation.removePattern(ModelMapperUtils.convert(patternDto, PatternUriDto.class).getPatternURI());
+        implementation.removePattern(patternURI);
         implementationService.update(implementation);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -179,7 +178,7 @@ public class ImplementationGlobalController {
     @GetMapping("/" + Constants.PATTERNS)
     public ResponseEntity<Page<ImplementationDto>> getImplementationsOfPattern(
             @Parameter(hidden = true) ListParameters listParameters,
-            @RequestParam("patternURI") URI patternURI) {
+            @RequestParam("patternURI") String patternURI) {
         final var implementations = implementationService.findByImplementedPatterns(patternURI, listParameters.getPageable());
         return ResponseEntity.ok(ModelMapperUtils.convertPage(implementations, ImplementationDto.class));
     }
