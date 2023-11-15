@@ -222,7 +222,7 @@ public class ImplementationServiceImpl implements ImplementationService {
     }
 
     @Override
-    public Page<Implementation> findByImplementedPatterns(URI patternUri, Pageable pageable) {
+    public Page<Implementation> findByImplementedPatterns(String patternUri, Pageable pageable) {
         return implementationRepository.findImplementationsByPatterns(patternUri, pageable);
     }
 

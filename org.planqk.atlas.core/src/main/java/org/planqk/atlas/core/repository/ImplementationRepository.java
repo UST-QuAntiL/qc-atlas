@@ -58,7 +58,7 @@ public interface ImplementationRepository extends RevisionRepository<Implementat
             "FROM Implementation impl " +
             "JOIN impl.patterns uri " +
             "WHERE  uri = :patternURI")
-    Page<Implementation> findImplementationsByPatterns(@Param("patternURI") URI patternURI, Pageable pageable);
+    Page<Implementation> findImplementationsByPatterns(@Param("patternURI") String patternURI, Pageable pageable);
 
     @Modifying()
     @Query(value = "DELETE FROM implementation_revisions WHERE id = :implId", nativeQuery = true)

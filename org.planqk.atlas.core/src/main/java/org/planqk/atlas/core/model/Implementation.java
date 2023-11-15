@@ -135,7 +135,7 @@ public class Implementation extends KnowledgeArtifact {
     @ElementCollection
     @CollectionTable(name = "pattern_uris", joinColumns = @JoinColumn(name = "implementation_id"))
     @Column(name = "pattern_uri", nullable = false)
-    private Set<URI> patterns = new HashSet<>();
+    private Set<String> patterns = new HashSet<>();
 
     public void addTag(@NonNull Tag tag) {
         if (tags.contains(tag)) {
@@ -201,14 +201,14 @@ public class Implementation extends KnowledgeArtifact {
         implementationPackage.setImplementation(null);
     }
 
-    public void addPattern(@NonNull URI pattern) {
+    public void addPattern(@NonNull String pattern) {
         if (patterns.contains(pattern)) {
             return;
         }
         this.patterns.add(pattern);
     }
 
-    public void removePattern(@NonNull URI pattern) {
+    public void removePattern(@NonNull String pattern) {
         if (!patterns.contains(pattern)) {
             return;
         }
