@@ -74,5 +74,5 @@ public class ImplementationDto implements Identifyable {
 
     private Set<SoftwarePlatformDto> softwarePlatforms;
 
-    private Set<URI> patterns;
+    private Set<String> patterns;
 }
