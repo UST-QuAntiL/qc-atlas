@@ -21,6 +21,7 @@ package org.planqk.atlas.core.services;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLConnection;
 import java.util.UUID;
 
 import org.planqk.atlas.core.model.File;
@@ -54,7 +55,14 @@ public class FileServiceImpl implements FileService {
 
             final File createdFile = new File();
             createdFile.setName(file.getOriginalFilename());
-            createdFile.setMimeType(file.getContentType());
+
+            var contentType = file.getContentType();
+
+            if (contentType == null) {
+                contentType = URLConnection.guessContentTypeFromName(file.getOriginalFilename());
+            }
+
+            createdFile.setMimeType(contentType);
             createdFile.setFileURL(file.getOriginalFilename());
 
             final FileData fileData = new FileData();
