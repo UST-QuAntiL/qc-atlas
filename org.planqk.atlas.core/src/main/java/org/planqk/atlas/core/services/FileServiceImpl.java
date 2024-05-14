@@ -80,9 +80,9 @@ public class FileServiceImpl implements FileService {
     @Transactional
     public void delete(UUID id) {
         final File file = findById(id);
-        final FileData fileData = fileDataRepository.findByFile(file);
-        fileRepository.deleteById(id);
+        final var fileData = fileDataRepository.findByFile(file);
         fileDataRepository.delete(fileData);
+        fileRepository.delete(file);
     }
 
     @Override
