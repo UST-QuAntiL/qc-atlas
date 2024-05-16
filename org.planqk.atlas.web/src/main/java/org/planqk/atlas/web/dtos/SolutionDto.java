@@ -39,4 +39,7 @@ public class SolutionDto implements Identifyable {
 
     @NotNull(groups = {ValidationGroups.Create.class}, message = "A patternId is required for a solution")
     private UUID patternId;
+
+    @NotNull(groups = {ValidationGroups.Create.class}, message = "A solution type is required for a solution")
+    private String solutionType;
 }

@@ -49,4 +49,6 @@ public class Solution extends KnowledgeArtifact {
             inverseJoinColumns = @JoinColumn(name = "file_id")
     )
     private File file;
+
+    private String solutionType;
 }
