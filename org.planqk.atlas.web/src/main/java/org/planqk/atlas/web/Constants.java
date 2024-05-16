@@ -77,6 +77,8 @@ public final class Constants {
 
     public static final String REVISIONS = "revisions";
 
+    public static final String SOLUTIONS = "solutions";
+
     // default Pagination params that are exposed in HATEOAS links
     public static final Integer DEFAULT_PAGE_NUMBER = 0;
 
@@ -125,6 +127,8 @@ public final class Constants {
     public static final String TAG_LEARNING_METHOD = "learning_method";
 
     public static final String TAG_TOSCA = "tosca-application-controller";
+
+    public static final String TAG_SOLUTION = "solution";
 
     private Constants() {
     }
