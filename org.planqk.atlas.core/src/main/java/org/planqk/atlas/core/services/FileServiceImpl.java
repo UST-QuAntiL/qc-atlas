@@ -63,7 +63,7 @@ public class FileServiceImpl implements FileService {
             }
 
             createdFile.setMimeType(contentType);
-            createdFile.setFileURL(file.getOriginalFilename());
+            createdFile.setFileURL(UUID.randomUUID().toString());
 
             final FileData fileData = new FileData();
             fileData.setData(inputStream.readAllBytes());
