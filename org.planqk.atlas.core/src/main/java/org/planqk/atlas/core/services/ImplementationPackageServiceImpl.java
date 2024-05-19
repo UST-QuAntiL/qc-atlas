@@ -118,6 +118,11 @@ public class ImplementationPackageServiceImpl implements ImplementationPackageSe
     public File addFileToImplementationPackage(UUID implementationPackageId, MultipartFile multipartFile) {
         final ImplementationPackage implementationPackage =
                 ServiceUtils.findById(implementationPackageId, ImplementationPackage.class, implementationPackageRepository);
+
+        if (implementationPackage.getFile() != null) {
+            throw new RuntimeException("the implementation package already has a file");
+        }
+        
         final File file = fileService.create(multipartFile);
         implementationPackage.setFile(file);
         implementationPackageRepository.save(implementationPackage);
