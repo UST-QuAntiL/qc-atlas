@@ -85,6 +85,11 @@ public class SolutionServiceImpl implements SolutionService {
     public File addFileToSolution(UUID solutionId, MultipartFile multipartFile) {
         final Solution solution =
                 ServiceUtils.findById(solutionId, Solution.class, solutionRepository);
+
+        if (solution.getFile() != null) {
+            throw new RuntimeException("the solution already has a file");
+        }
+
         final File file = fileService.create(multipartFile);
         solution.setFile(file);
         solutionRepository.save(solution);
