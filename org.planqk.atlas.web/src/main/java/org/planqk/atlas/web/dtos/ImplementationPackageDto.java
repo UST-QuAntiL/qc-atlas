@@ -49,6 +49,8 @@ public class ImplementationPackageDto implements Identifyable {
 
     private String description;
 
+    private String type;
+
     @NotNull(groups = {ValidationGroups.Update.class, ValidationGroups.Create.class},
              message = "PackageType must not be null!")
     private ImplementationPackageType packageType;

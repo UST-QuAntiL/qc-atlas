@@ -40,6 +40,8 @@ public class ImplementationPackage extends HasId {
 
     private String description;
 
+    private String type;
+
     private ImplementationPackageType packageType;
 
     @ManyToOne(fetch = FetchType.LAZY)
