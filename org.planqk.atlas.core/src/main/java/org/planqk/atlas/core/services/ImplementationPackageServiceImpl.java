@@ -73,6 +73,7 @@ public class ImplementationPackageServiceImpl implements ImplementationPackageSe
         persistedImplementationPackage.setName(implementationPackage.getName());
         persistedImplementationPackage.setDescription(implementationPackage.getDescription());
         persistedImplementationPackage.setPackageType(implementationPackage.getPackageType());
+        persistedImplementationPackage.setType(implementationPackage.getType());
         return implementationPackageRepository.save(persistedImplementationPackage);
     }
 
